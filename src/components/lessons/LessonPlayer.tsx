@@ -2,6 +2,26 @@ import React, { useState, useEffect } from 'react';
 import Lesson1_1_WhatIsMoney from './Lesson1_1_WhatIsMoney';
 import Lesson1_2_WhereMoneyComesFrom from './Lesson1_2_WhereMoneyComesFrom';
 import Lesson1_3_NeedsVsWants from './Lesson1_3_NeedsVsWants';
+import Lesson2_1_TasksAndAllowance from './Lesson2_1_TasksAndAllowance';
+import Lesson2_2_SmartPurchaseDecisions from './Lesson2_2_SmartPurchaseDecisions';
+import Lesson2_3_Saving from './Lesson2_3_Saving';
+import Lesson2_4_MyFirstSavingGoals from './Lesson2_4_MyFirstSavingGoals';
+// Lecciones para 11-13 años
+import Lesson1_1_WhatIsBudget from './Lesson1_1_WhatIsBudget';
+import Lesson1_2_ExpenseTracking from './Lesson1_2_ExpenseTracking';
+import Lesson2_1_WhatIsBank from './Lesson2_1_WhatIsBank';
+import Lesson2_2_SavingsAccounts from './Lesson2_2_SavingsAccounts';
+import Lesson3_1_PriceQualityComparison from './Lesson3_1_PriceQualityComparison';
+import Lesson3_2_OffersAndDiscounts from './Lesson3_2_OffersAndDiscounts';
+// Lecciones para 14-16 años
+import Lesson4_1_PlanificacionFinanciera from './Lesson4_1_PlanificacionFinanciera';
+import Lesson4_2_IngresosTrabajos from './Lesson4_2_IngresosTrabajos';
+import Lesson5_1_QueEsCredito from './Lesson5_1_QueEsCredito';
+import Lesson5_2_HistorialCrediticio from './Lesson5_2_HistorialCrediticio';
+import Lesson6_1_QueSonInversiones from './Lesson6_1_QueSonInversiones';
+import Lesson6_2_RiesgoRendimiento from './Lesson6_2_RiesgoRendimiento';
+import Lesson7_1_CostosVidaIndependiente from './Lesson7_1_CostosVidaIndependiente';
+import Lesson7_2_SegurosProteccion from './Lesson7_2_SegurosProteccion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +48,7 @@ interface LessonProgress {
 
 interface LessonPlayerProps {
   initialLessonId?: string;
+  ageRange?: string;
   onExit: () => void;
   userProgress?: LessonProgress[];
   onProgressUpdate: (progress: LessonProgress) => void;
@@ -35,6 +56,7 @@ interface LessonPlayerProps {
 
 const LessonPlayer: React.FC<LessonPlayerProps> = ({
   initialLessonId,
+  ageRange = "7-10",
   onExit,
   userProgress = [],
   onProgressUpdate
@@ -44,39 +66,234 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
   const [showCelebration, setShowCelebration] = useState(false);
   const [lastCompletedLesson, setLastCompletedLesson] = useState<LessonProgress | null>(null);
 
-  // Datos de las lecciones disponibles
-  const lessons = [
-    {
-      id: '1.1',
-      title: '¿Qué es el Dinero?',
-      description: 'Descubre qué es el dinero y cómo reconocer monedas y billetes',
-      duration: '30 min',
-      difficulty: 'Fácil',
-      component: Lesson1_1_WhatIsMoney,
-      emoji: '💰',
-      unlocked: true
-    },
-    {
-      id: '1.2',
-      title: 'De Dónde Viene el Dinero',
-      description: 'Aprende sobre el trabajo y cómo las personas ganan dinero',
-      duration: '25 min',
-      difficulty: 'Fácil',
-      component: Lesson1_2_WhereMoneyComesFrom,
-      emoji: '💼',
-      unlocked: completedLessons.some(p => p.lessonId === '1.1')
-    },
-    {
-      id: '1.3',
-      title: 'Necesidades vs Deseos',
-      description: 'Distingue entre lo que necesitas y lo que quieres',
-      duration: '35 min',
-      difficulty: 'Fácil',
-      component: Lesson1_3_NeedsVsWants,
-      emoji: '🛒',
-      unlocked: completedLessons.some(p => p.lessonId === '1.2')
+  // Datos de las lecciones disponibles según el rango de edad
+  const getLessonsByAgeRange = (ageRange: string) => {
+    switch (ageRange) {
+      case "7-10":
+        return [
+          {
+            id: '1.1',
+            title: '¿Qué es el Dinero?',
+            description: 'Descubre qué es el dinero y cómo reconocer monedas y billetes',
+            duration: '30 min',
+            difficulty: 'Fácil',
+            component: Lesson1_1_WhatIsMoney,
+            emoji: '💰',
+            unlocked: true
+          },
+          {
+            id: '1.2',
+            title: 'De Dónde Viene el Dinero',
+            description: 'Aprende sobre el trabajo y cómo las personas ganan dinero',
+            duration: '25 min',
+            difficulty: 'Fácil',
+            component: Lesson1_2_WhereMoneyComesFrom,
+            emoji: '💼',
+            unlocked: completedLessons.some(p => p.lessonId === '1.1')
+          },
+          {
+            id: '1.3',
+            title: 'Necesidades vs Deseos',
+            description: 'Distingue entre lo que necesitas y lo que quieres',
+            duration: '35 min',
+            difficulty: 'Fácil',
+            component: Lesson1_3_NeedsVsWants,
+            emoji: '🛒',
+            unlocked: completedLessons.some(p => p.lessonId === '1.2')
+          },
+          {
+            id: '2.1',
+            title: 'Tareas y Mesada',
+            description: 'Aprende a ganar dinero a través de responsabilidades',
+            duration: '35 min',
+            difficulty: 'Fácil',
+            component: Lesson2_1_TasksAndAllowance,
+            emoji: '⭐',
+            unlocked: completedLessons.some(p => p.lessonId === '1.3')
+          },
+          {
+            id: '2.2',
+            title: 'Decisiones Inteligentes de Compra',
+            description: 'Aprende a tomar decisiones inteligentes al comprar',
+            duration: '40 min',
+            difficulty: 'Intermedio',
+            component: Lesson2_2_SmartPurchaseDecisions,
+            emoji: '🧠',
+            unlocked: completedLessons.some(p => p.lessonId === '2.1')
+          },
+          {
+            id: '2.3',
+            title: 'El Ahorro',
+            description: 'Descubre la importancia del ahorro y cómo hacerlo',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson2_3_Saving,
+            emoji: '💰',
+            unlocked: completedLessons.some(p => p.lessonId === '2.2')
+          },
+          {
+            id: '2.4',
+            title: 'Mis Primeras Metas de Ahorro',
+            description: 'Aprende a establecer y alcanzar metas de ahorro',
+            duration: '50 min',
+            difficulty: 'Intermedio',
+            component: Lesson2_4_MyFirstSavingGoals,
+            emoji: '🎯',
+            unlocked: completedLessons.some(p => p.lessonId === '2.3')
+          }
+        ];
+      case "11-13":
+        return [
+          {
+            id: '1.1',
+            title: '¿Qué es un Presupuesto?',
+            description: 'Crea y mantén tu primer presupuesto personal',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson1_1_WhatIsBudget,
+            emoji: '📊',
+            unlocked: true
+          },
+          {
+            id: '1.2',
+            title: 'Seguimiento de Gastos',
+            description: 'Registra y analiza tus patrones de gasto',
+            duration: '50 min',
+            difficulty: 'Intermedio',
+            component: Lesson1_2_ExpenseTracking,
+            emoji: '📝',
+            unlocked: completedLessons.some(p => p.lessonId === '1.1')
+          },
+          {
+            id: '2.1',
+            title: '¿Qué es un Banco?',
+            description: 'Entiende el sistema bancario y sus funciones',
+            duration: '40 min',
+            difficulty: 'Intermedio',
+            component: Lesson2_1_WhatIsBank,
+            emoji: '🏦',
+            unlocked: completedLessons.some(p => p.lessonId === '1.2')
+          },
+          {
+            id: '2.2',
+            title: 'Cuentas de Ahorro',
+            description: 'Aprende sobre intereses y crecimiento del dinero',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson2_2_SavingsAccounts,
+            emoji: '💰',
+            unlocked: completedLessons.some(p => p.lessonId === '2.1')
+          },
+          {
+            id: '3.1',
+            title: 'Comparando Precios y Calidad',
+            description: 'Aprende a tomar decisiones de compra inteligentes',
+            duration: '50 min',
+            difficulty: 'Intermedio',
+            component: Lesson3_1_PriceQualityComparison,
+            emoji: '🔍',
+            unlocked: completedLessons.some(p => p.lessonId === '2.2')
+          },
+          {
+            id: '3.2',
+            title: 'Ofertas y Descuentos',
+            description: 'Aprende a calcular descuentos y distinguir ofertas reales',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson3_2_OffersAndDiscounts,
+            emoji: '🏷️',
+            unlocked: completedLessons.some(p => p.lessonId === '3.1')
+          }
+        ];
+      case "14-16":
+        return [
+          {
+            id: '4.1',
+            title: 'Planificación Financiera a Largo Plazo',
+            description: 'Crea metas financieras y planes estructurados para el futuro',
+            duration: '60 min',
+            difficulty: 'Avanzado',
+            component: Lesson4_1_PlanificacionFinanciera,
+            emoji: '🎯',
+            unlocked: true
+          },
+          {
+            id: '4.2',
+            title: 'Ingresos y Trabajos de Medio Tiempo',
+            description: 'Oportunidades laborales y gestión de ingresos variables',
+            duration: '55 min',
+            difficulty: 'Avanzado',
+            component: Lesson4_2_IngresosTrabajos,
+            emoji: '💼',
+            unlocked: completedLessons.some(p => p.lessonId === '4.1')
+          },
+          {
+            id: '5.1',
+            title: '¿Qué es el Crédito?',
+            description: 'Entender los fundamentos del crédito y tipos disponibles',
+            duration: '50 min',
+            difficulty: 'Avanzado',
+            component: Lesson5_1_QueEsCredito,
+            emoji: '💳',
+            unlocked: completedLessons.some(p => p.lessonId === '4.2')
+          },
+          {
+            id: '5.2',
+            title: 'Historial Crediticio y Score',
+            description: 'Construir y mantener un buen historial crediticio',
+            duration: '55 min',
+            difficulty: 'Avanzado',
+            component: Lesson5_2_HistorialCrediticio,
+            emoji: '📊',
+            unlocked: completedLessons.some(p => p.lessonId === '5.1')
+          },
+          {
+            id: '6.1',
+            title: '¿Qué son las Inversiones?',
+            description: 'Fundamentos de inversión y tipos de activos',
+            duration: '60 min',
+            difficulty: 'Avanzado',
+            component: Lesson6_1_QueSonInversiones,
+            emoji: '📈',
+            unlocked: completedLessons.some(p => p.lessonId === '5.2')
+          },
+          {
+            id: '6.2',
+            title: 'Riesgo y Rendimiento',
+            description: 'Entender la relación riesgo-rendimiento y diversificación',
+            duration: '65 min',
+            difficulty: 'Avanzado',
+            component: Lesson6_2_RiesgoRendimiento,
+            emoji: '⚖️',
+            unlocked: completedLessons.some(p => p.lessonId === '6.1')
+          },
+          {
+            id: '7.1',
+            title: 'Costos de la Vida Independiente',
+            description: 'Entender y planificar los costos de la vida independiente',
+            duration: '70 min',
+            difficulty: 'Avanzado',
+            component: Lesson7_1_CostosVidaIndependiente,
+            emoji: '🏠',
+            unlocked: completedLessons.some(p => p.lessonId === '6.2')
+          },
+          {
+            id: '7.2',
+            title: 'Seguros y Protección Financiera',
+            description: 'Entender la importancia de los seguros y protección',
+            duration: '60 min',
+            difficulty: 'Avanzado',
+            component: Lesson7_2_SegurosProteccion,
+            emoji: '🛡️',
+            unlocked: completedLessons.some(p => p.lessonId === '7.1')
+          }
+        ];
+      default:
+        return [];
     }
-  ];
+  };
+
+  const lessons = getLessonsByAgeRange(ageRange);
 
   const handleLessonComplete = (lessonId: string, score: number, progressData: any) => {
     const newProgress: LessonProgress = {
@@ -185,8 +402,15 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
             Volver al Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Exploradores Financieros</h1>
-            <p className="text-gray-600">Nivel 1: Primeros Pasos con el Dinero</p>
+            <h1 className="text-3xl font-bold text-gray-800">
+              {ageRange === "7-10" ? "Exploradores Financieros" : "Administradores Junior"}
+            </h1>
+            <p className="text-gray-600">
+              {ageRange === "7-10" 
+                ? "Nivel 1: Primeros Pasos con el Dinero" 
+                : "Nivel 1: Mi Primer Presupuesto"
+              }
+            </p>
           </div>
         </div>
         <div className="text-right">
@@ -202,7 +426,9 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Trophy className="w-6 h-6 text-yellow-600" />
-            <span>Tu Progreso en Exploradores Financieros</span>
+            <span>
+              Tu Progreso en {ageRange === "7-10" ? "Exploradores Financieros" : "Administradores Junior"}
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
