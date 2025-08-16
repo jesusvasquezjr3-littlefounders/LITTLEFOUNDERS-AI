@@ -10,7 +10,8 @@ import {
   Settings,
   HelpCircle,
   ChevronLeft,
-  Home
+  Home,
+  BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const menuItems = [
   { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
   { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
   { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
+  { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
   { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
   { title: "Crecimiento", url: "/growth", icon: TrendingUp, color: "text-primary" },
 ];
