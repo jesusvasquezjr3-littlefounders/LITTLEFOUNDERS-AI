@@ -1,6 +1,7 @@
 import { Search, Bell, User, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -90,9 +91,11 @@ export function TopNav() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Mi perfil</span>
+            <DropdownMenuItem asChild>
+              <Link to="/profile">
+                <User className="mr-2 h-4 w-4" />
+                <span>Mi perfil</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />

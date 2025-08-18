@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const menuItems = [
-  { title: "Inicio", url: "/", icon: Home, color: "text-primary" },
+  { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
   { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
   { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
   { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
@@ -42,7 +42,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const currentPath = location.pathname;
 
   const isActive = (path: string) => {
-    if (path === "/") return currentPath === "/";
+    if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
   };
 
