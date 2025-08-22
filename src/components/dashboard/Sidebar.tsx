@@ -6,7 +6,7 @@ import {
   Package,
   UserCheck,
   DollarSign,
-  TrendingUp,
+  CreditCard,
   Settings,
   HelpCircle,
   ChevronLeft,
@@ -24,7 +24,7 @@ const menuItems = [
   { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
   { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
   { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
-  { title: "Crecimiento", url: "/growth", icon: TrendingUp, color: "text-primary" },
+  { title: "Banca Digital", url: "/banking", icon: CreditCard, color: "text-primary" },
 ];
 
 const bottomItems = [

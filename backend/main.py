@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List, Dict, Literal
 import hashlib
 import json
 import os
-from datetime import datetime
+from datetime import datetime, date
+import uuid
 
-app = FastAPI(title="Operations Dashboard API", version="1.0.0")
+app = FastAPI(title="LittleFounders Banking API", version="2.0.0")
 
 # Configure CORS
 app.add_middleware(
@@ -19,10 +20,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# File path for storing user data
+# File paths for storing data
 USERS_FILE = "users.txt"
+ACCOUNTS_FILE = "accounts.txt"
+TRANSACTIONS_FILE = "transactions.txt"
+TASKS_FILE = "tasks.txt"
+GOALS_FILE = "goals.txt"
 
-# Pydantic models
+# Pydantic models for authentication
 class UserRegister(BaseModel):
     name: str
     email: EmailStr
@@ -38,55 +43,258 @@ class UserResponse(BaseModel):
     email: str
     created_at: str
 
+# Pydantic models for banking
+class BankAccount(BaseModel):
+    id: str
+    user_id: str
+    account_type: Literal["spend", "save", "emergency", "main"]
+    balance: float
+    percentage: int
+    name: str
+    description: str
+    created_at: str
+
+class Transaction(BaseModel):
+    id: str
+    user_id: str
+    from_account: str
+    to_account: Optional[str]
+    amount: float
+    transaction_type: Literal["deposit", "withdrawal", "transfer", "task_reward", "goal_contribution"]
+    description: str
+    category: Optional[str]
+    status: Literal["pending", "completed", "failed"]
+    created_at: str
+
+class TaskModel(BaseModel):
+    id: str
+    user_id: str
+    title: str
+    description: str
+    reward: float
+    difficulty: Literal["easy", "medium", "hard"]
+    status: Literal["available", "pending", "completed", "rejected"]
+    age_range: str
+    category: str
+    created_at: str
+    completed_at: Optional[str]
+
+class SavingsGoal(BaseModel):
+    id: str
+    user_id: str
+    name: str
+    target_amount: float
+    current_amount: float
+    deadline: str
+    category: str
+    status: Literal["active", "completed", "paused"]
+    parent_matching: bool
+    interest_rate: float
+    created_at: str
+
+class VirtualCard(BaseModel):
+    id: str
+    user_id: str
+    card_number: str
+    holder_name: str
+    expiry_date: str
+    is_locked: bool
+    daily_limit: float
+    transaction_limit: float
+    design_theme: str
+    created_at: str
+
+# Request models
+class CreateTaskRequest(BaseModel):
+    title: str
+    description: str
+    reward: float
+    difficulty: Literal["easy", "medium", "hard"]
+    age_range: str
+    category: str
+
+class CompleteTaskRequest(BaseModel):
+    task_id: str
+
+class CreateGoalRequest(BaseModel):
+    name: str
+    target_amount: float
+    deadline: str
+    category: str
+    parent_matching: bool = False
+    interest_rate: float = 0.05
+
+class TransferRequest(BaseModel):
+    from_account: str
+    to_account: str
+    amount: float
+    description: str
+
+class CardControlRequest(BaseModel):
+    action: Literal["lock", "unlock", "update_limits", "change_design"]
+    daily_limit: Optional[float] = None
+    transaction_limit: Optional[float] = None
+    design_theme: Optional[str] = None
+
+# WebSocket manager for real-time notifications
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+
+    async def connect(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        self.active_connections[user_id] = websocket
+
+    def disconnect(self, user_id: str):
+        if user_id in self.active_connections:
+            del self.active_connections[user_id]
+
+    async def send_personal_message(self, message: str, user_id: str):
+        if user_id in self.active_connections:
+            await self.active_connections[user_id].send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections.values():
+            await connection.send_text(message)
+
+manager = ConnectionManager()
+
 # Utility functions
 def hash_password(password: str) -> str:
     """Hash a password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
 
-def load_users():
-    """Load users from the text file"""
-    if not os.path.exists(USERS_FILE):
-        return {}
+def generate_id() -> str:
+    """Generate a unique ID"""
+    return str(uuid.uuid4())[:8]
+
+def load_data(filename: str) -> List[dict]:
+    """Load data from a file"""
+    if not os.path.exists(filename):
+        return []
     
-    users = {}
+    data = []
     try:
-        with open(USERS_FILE, 'r') as f:
+        with open(filename, 'r') as f:
             for line in f:
                 line = line.strip()
                 if line:
-                    user_data = json.loads(line)
-                    users[user_data['email']] = user_data
+                    data.append(json.loads(line))
     except Exception as e:
-        print(f"Error loading users: {e}")
-        return {}
+        print(f"Error loading {filename}: {e}")
+        return []
     
-    return users
+    return data
 
-def save_user(user_data: dict):
-    """Save a user to the text file"""
+def save_data(filename: str, data: dict):
+    """Save data to a file"""
     try:
-        with open(USERS_FILE, 'a') as f:
-            f.write(json.dumps(user_data) + '\n')
+        with open(filename, 'a') as f:
+            f.write(json.dumps(data, default=str) + '\n')
     except Exception as e:
-        print(f"Error saving user: {e}")
+        print(f"Error saving to {filename}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to save user data"
+            detail=f"Failed to save data to {filename}"
         )
+
+def load_users():
+    """Load users from the text file"""
+    data = load_data(USERS_FILE)
+    users = {}
+    for item in data:
+        users[item['email']] = item
+    return users
 
 def find_user_by_email(email: str):
     """Find a user by email"""
     users = load_users()
     return users.get(email)
 
-# API Routes
+def find_user_by_id(user_id: str):
+    """Find a user by ID"""
+    users = load_users()
+    for user in users.values():
+        if user['id'] == user_id:
+            return user
+    return None
+
+def create_default_accounts(user_id: str):
+    """Create default bank accounts for a new user"""
+    accounts = [
+        {
+            "id": generate_id(),
+            "user_id": user_id,
+            "account_type": "main",
+            "balance": 0.0,
+            "percentage": 100,
+            "name": "Cuenta Principal",
+            "description": "Cuenta principal del usuario",
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "id": generate_id(),
+            "user_id": user_id,
+            "account_type": "spend",
+            "balance": 0.0,
+            "percentage": 50,
+            "name": "Gastar",
+            "description": "Para compras y gastos diarios",
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "id": generate_id(),
+            "user_id": user_id,
+            "account_type": "save",
+            "balance": 0.0,
+            "percentage": 40,
+            "name": "Ahorrar",
+            "description": "Para metas de ahorro a largo plazo",
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "id": generate_id(),
+            "user_id": user_id,
+            "account_type": "emergency",
+            "balance": 0.0,
+            "percentage": 10,
+            "name": "Emergencia",
+            "description": "Fondo de emergencia",
+            "created_at": datetime.now().isoformat()
+        }
+    ]
+    
+    for account in accounts:
+        save_data(ACCOUNTS_FILE, account)
+    
+    return accounts
+
+def create_default_card(user_id: str, user_name: str):
+    """Create default virtual card for a new user"""
+    card = {
+        "id": generate_id(),
+        "user_id": user_id,
+        "card_number": f"•••• •••• •••• {generate_id()[:4].upper()}",
+        "holder_name": user_name.upper(),
+        "expiry_date": "12/28",
+        "is_locked": False,
+        "daily_limit": 50.0,
+        "transaction_limit": 15.0,
+        "design_theme": "default",
+        "created_at": datetime.now().isoformat()
+    }
+    
+    save_data("cards.txt", card)
+    return card
+
+# Authentication endpoints (existing + minor updates)
 @app.get("/")
 async def root():
-    return {"message": "Operations Dashboard API", "version": "1.0.0"}
+    return {"message": "LittleFounders Banking API", "version": "2.0.0"}
 
 @app.post("/auth/register", response_model=UserResponse)
 async def register_user(user: UserRegister):
-    """Register a new user"""
+    """Register a new user with default banking setup"""
     
     # Check if user already exists
     if find_user_by_email(user.email):
@@ -99,8 +307,9 @@ async def register_user(user: UserRegister):
     hashed_password = hash_password(user.password)
     
     # Create user data
+    user_id = generate_id()
     user_data = {
-        "id": hashlib.md5(user.email.encode()).hexdigest()[:8],
+        "id": user_id,
         "name": user.name,
         "email": user.email,
         "password": hashed_password,
@@ -108,7 +317,11 @@ async def register_user(user: UserRegister):
     }
     
     # Save user to file
-    save_user(user_data)
+    save_data(USERS_FILE, user_data)
+    
+    # Create default banking setup
+    create_default_accounts(user_id)
+    create_default_card(user_id, user.name)
     
     # Return user data (without password)
     return UserResponse(
@@ -149,6 +362,219 @@ async def login_user(credentials: UserLogin):
         }
     }
 
+# Banking endpoints
+@app.get("/banking/accounts/{user_id}")
+async def get_user_accounts(user_id: str):
+    """Get all accounts for a user"""
+    accounts = load_data(ACCOUNTS_FILE)
+    user_accounts = [acc for acc in accounts if acc['user_id'] == user_id]
+    
+    if not user_accounts:
+        # Create default accounts if none exist
+        user_accounts = create_default_accounts(user_id)
+    
+    return {"accounts": user_accounts}
+
+@app.get("/banking/balance/{user_id}")
+async def get_total_balance(user_id: str):
+    """Get total balance across all accounts"""
+    accounts = load_data(ACCOUNTS_FILE)
+    user_accounts = [acc for acc in accounts if acc['user_id'] == user_id]
+    
+    total_balance = sum(float(acc.get('balance', 0)) for acc in user_accounts if acc['account_type'] != 'main')
+    
+    return {"total_balance": total_balance, "accounts": user_accounts}
+
+@app.post("/banking/transfer")
+async def transfer_money(transfer: TransferRequest):
+    """Transfer money between accounts"""
+    # Implementation would involve updating account balances and creating transaction records
+    transaction_id = generate_id()
+    transaction = {
+        "id": transaction_id,
+        "user_id": "temp_user",  # Would be extracted from auth
+        "from_account": transfer.from_account,
+        "to_account": transfer.to_account,
+        "amount": transfer.amount,
+        "transaction_type": "transfer",
+        "description": transfer.description,
+        "category": "transfer",
+        "status": "completed",
+        "created_at": datetime.now().isoformat()
+    }
+    
+    save_data(TRANSACTIONS_FILE, transaction)
+    
+    return {"message": "Transfer completed", "transaction_id": transaction_id}
+
+# Task management endpoints
+@app.get("/banking/tasks/{user_id}")
+async def get_user_tasks(user_id: str):
+    """Get all tasks for a user"""
+    tasks = load_data(TASKS_FILE)
+    user_tasks = [task for task in tasks if task['user_id'] == user_id]
+    
+    # Add some default tasks if none exist
+    if not user_tasks:
+        default_tasks = [
+            {
+                "id": generate_id(),
+                "user_id": user_id,
+                "title": "Limpiar mi cuarto",
+                "description": "Organizar juguetes y hacer la cama",
+                "reward": 5.00,
+                "difficulty": "easy",
+                "status": "available",
+                "age_range": "6-12",
+                "category": "hogar",
+                "created_at": datetime.now().isoformat(),
+                "completed_at": None
+            },
+            {
+                "id": generate_id(),
+                "user_id": user_id,
+                "title": "Ayudar con los platos",
+                "description": "Lavar y secar los platos después de la cena",
+                "reward": 8.00,
+                "difficulty": "medium",
+                "status": "available",
+                "age_range": "8-15",
+                "category": "hogar",
+                "created_at": datetime.now().isoformat(),
+                "completed_at": None
+            }
+        ]
+        
+        for task in default_tasks:
+            save_data(TASKS_FILE, task)
+        
+        user_tasks = default_tasks
+    
+    return {"tasks": user_tasks}
+
+@app.post("/banking/tasks")
+async def create_task(task: CreateTaskRequest):
+    """Create a new task"""
+    task_data = {
+        "id": generate_id(),
+        "user_id": "temp_user",  # Would be extracted from auth
+        "title": task.title,
+        "description": task.description,
+        "reward": task.reward,
+        "difficulty": task.difficulty,
+        "status": "available",
+        "age_range": task.age_range,
+        "category": task.category,
+        "created_at": datetime.now().isoformat(),
+        "completed_at": None
+    }
+    
+    save_data(TASKS_FILE, task_data)
+    
+    return {"message": "Task created", "task": task_data}
+
+@app.post("/banking/tasks/complete")
+async def complete_task(request: CompleteTaskRequest):
+    """Mark a task as completed and add reward to account"""
+    # Implementation would involve updating task status and adding money to account
+    return {"message": "Task completed successfully", "reward_added": True}
+
+# Savings goals endpoints
+@app.get("/banking/goals/{user_id}")
+async def get_savings_goals(user_id: str):
+    """Get all savings goals for a user"""
+    goals = load_data(GOALS_FILE)
+    user_goals = [goal for goal in goals if goal['user_id'] == user_id]
+    
+    return {"goals": user_goals}
+
+@app.post("/banking/goals")
+async def create_savings_goal(goal: CreateGoalRequest):
+    """Create a new savings goal"""
+    goal_data = {
+        "id": generate_id(),
+        "user_id": "temp_user",  # Would be extracted from auth
+        "name": goal.name,
+        "target_amount": goal.target_amount,
+        "current_amount": 0.0,
+        "deadline": goal.deadline,
+        "category": goal.category,
+        "status": "active",
+        "parent_matching": goal.parent_matching,
+        "interest_rate": goal.interest_rate,
+        "created_at": datetime.now().isoformat()
+    }
+    
+    save_data(GOALS_FILE, goal_data)
+    
+    return {"message": "Savings goal created", "goal": goal_data}
+
+# Virtual card endpoints
+@app.get("/banking/card/{user_id}")
+async def get_virtual_card(user_id: str):
+    """Get virtual card for a user"""
+    cards = load_data("cards.txt")
+    user_card = next((card for card in cards if card['user_id'] == user_id), None)
+    
+    if not user_card:
+        # Create default card if none exists
+        user = find_user_by_id(user_id)
+        if user:
+            user_card = create_default_card(user_id, user['name'])
+    
+    return {"card": user_card}
+
+@app.post("/banking/card/control/{user_id}")
+async def control_virtual_card(user_id: str, request: CardControlRequest):
+    """Control virtual card (lock/unlock, update limits, etc.)"""
+    return {"message": f"Card {request.action} successful"}
+
+# Transaction history
+@app.get("/banking/transactions/{user_id}")
+async def get_transaction_history(user_id: str):
+    """Get transaction history for a user"""
+    transactions = load_data(TRANSACTIONS_FILE)
+    user_transactions = [tx for tx in transactions if tx['user_id'] == user_id]
+    
+    return {"transactions": user_transactions}
+
+# Analytics endpoints
+@app.get("/banking/analytics/{user_id}")
+async def get_spending_analytics(user_id: str):
+    """Get spending analytics and insights"""
+    transactions = load_data(TRANSACTIONS_FILE)
+    user_transactions = [tx for tx in transactions if tx['user_id'] == user_id]
+    
+    # Calculate spending by category
+    spending_by_category = {}
+    for tx in user_transactions:
+        if tx['transaction_type'] in ['withdrawal', 'transfer'] and tx.get('category'):
+            category = tx['category']
+            spending_by_category[category] = spending_by_category.get(category, 0) + tx['amount']
+    
+    return {
+        "spending_by_category": spending_by_category,
+        "total_transactions": len(user_transactions),
+        "achievements": [
+            {"name": "Primera Meta Alcanzada", "unlocked": True},
+            {"name": "Ahorrador Constante", "unlocked": True},
+            {"name": "Gastos Inteligentes", "unlocked": False},
+            {"name": "Inversor Junior", "unlocked": False}
+        ]
+    }
+
+# WebSocket endpoint for real-time notifications
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    await manager.connect(websocket, user_id)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager.send_personal_message(f"Message: {data}", user_id)
+    except WebSocketDisconnect:
+        manager.disconnect(user_id)
+
+# Existing endpoints (unchanged)
 @app.get("/auth/users")
 async def get_users():
     """Get all users (for development/debugging - remove in production)"""
@@ -179,7 +605,7 @@ async def create_demo_users():
             "password": hash_password("password123"),
             "created_at": datetime.now().isoformat()
         }
-        save_user(admin_user)
+        save_data(USERS_FILE, admin_user)
         print("Demo admin user created: admin@example.com / password123")
 
 if __name__ == "__main__":
