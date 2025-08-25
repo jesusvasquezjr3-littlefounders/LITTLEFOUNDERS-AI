@@ -32,11 +32,18 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: "¡Bienvenid@ de vuelta!",
-          description: "Has iniciado sesión y ya puedes seguir aprendiendo y jugando.",
-        });
+        // Store complete user data including user_type and metrics
         localStorage.setItem('user', JSON.stringify(data.user));
+        
+        const userTypeLabel = data.user.user_type === 'tutor' ? 'Padre o Tutor' : 
+                             data.user.user_type === 'child' ? 'Niño' : 
+                             data.user.user_type === 'sponsor' ? 'Patrocinador' : 'Usuario';
+        
+        toast({
+          title: `¡Bienvenid@ de vuelta, ${data.user.name}!`,
+          description: `Has iniciado sesión como ${userTypeLabel}. ¡Disfruta tu experiencia en LittleFounders!`,
+        });
+        
         navigate('/dashboard');
       } else {
         toast({
@@ -141,11 +148,25 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Demo Credentials, puedes eliminarlo o personalizarlo */}
-        <div className="p-3 bg-muted/50 rounded-lg">
-          <p className="text-xs text-muted-foreground text-center">
-            Demo: admin@example.com / password123
+        {/* Demo Credentials */}
+        <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+          <p className="text-xs text-muted-foreground text-center font-medium">
+            Credenciales de Prueba:
           </p>
+          <div className="grid grid-cols-1 gap-1 text-xs">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Padre/Tutor:</span>
+              <span className="font-mono">tutor@demo.com / password123</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Niño:</span>
+              <span className="font-mono">nino@demo.com / password123</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Patrocinador:</span>
+              <span className="font-mono">patrocinador@demo.com / password123</span>
+            </div>
+          </div>
         </div>
       </form>
     </AuthLayout>

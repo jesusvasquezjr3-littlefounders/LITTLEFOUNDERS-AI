@@ -7,12 +7,11 @@ import json
 import os
 from datetime import datetime
 
-app = FastAPI(title="Operations Dashboard API", version="1.0.0")
+app = FastAPI(title="LittleFounders API", version="1.0.0")
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    #allow_origins=["http://localhost:5173", "http://localhost:3000"],  # React dev server
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
@@ -27,6 +26,9 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
+    user_type: str  # "tutor", "child", "sponsor"
+    birth_date: Optional[str] = None
+    gender: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -36,7 +38,13 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    user_type: str
     created_at: str
+
+class RegistrationData(BaseModel):
+    tutor: dict
+    child: dict
+    sponsor: Optional[dict] = None
 
 # Utility functions
 def hash_password(password: str) -> str:
@@ -82,41 +90,110 @@ def find_user_by_email(email: str):
 # API Routes
 @app.get("/")
 async def root():
-    return {"message": "Operations Dashboard API", "version": "1.0.0"}
+    return {"message": "LittleFounders API", "version": "1.0.0"}
 
-@app.post("/auth/register", response_model=UserResponse)
-async def register_user(user: UserRegister):
-    """Register a new user"""
+@app.post("/auth/register", response_model=dict)
+async def register_family(registration_data: RegistrationData):
+    """Register a complete family (tutor, child, optional sponsor)"""
     
-    # Check if user already exists
-    if find_user_by_email(user.email):
+    try:
+        # Register tutor
+        tutor_data = registration_data.tutor
+        if find_user_by_email(tutor_data['email']):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Tutor email already registered"
+            )
+        
+        tutor_user = {
+            "id": hashlib.md5(tutor_data['email'].encode()).hexdigest()[:8],
+            "name": tutor_data['name'],
+            "email": tutor_data['email'],
+            "password": hash_password(tutor_data['password']),
+            "user_type": "tutor",
+            "birth_date": tutor_data.get('birth_date'),
+            "gender": tutor_data.get('gender'),
+            "created_at": datetime.now().isoformat()
+        }
+        save_user(tutor_user)
+        
+        # Register child
+        child_data = registration_data.child
+        if find_user_by_email(child_data['email']):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Child email already registered"
+            )
+        
+        child_user = {
+            "id": hashlib.md5(child_data['email'].encode()).hexdigest()[:8],
+            "name": child_data['name'],
+            "email": child_data['email'],
+            "password": hash_password(child_data['password']),
+            "user_type": "child",
+            "birth_date": child_data.get('birth_date'),
+            "gender": child_data.get('gender'),
+            "tutor_email": tutor_data['email'],  # Link to tutor
+            "created_at": datetime.now().isoformat(),
+            "lessons_completed": 0,
+            "minutes_studied": 0,
+            "points_earned": 0
+        }
+        save_user(child_user)
+        
+        # Register sponsor if provided
+        sponsor_user = None
+        if registration_data.sponsor:
+            sponsor_data = registration_data.sponsor
+            if find_user_by_email(sponsor_data['email']):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Sponsor email already registered"
+                )
+            
+            sponsor_user = {
+                "id": hashlib.md5(sponsor_data['email'].encode()).hexdigest()[:8],
+                "name": sponsor_data['name'],
+                "email": sponsor_data['email'],
+                "password": hash_password(sponsor_data['password']),
+                "user_type": "sponsor",
+                "birth_date": sponsor_data.get('birth_date'),
+                "gender": sponsor_data.get('gender'),
+                "child_email": child_data['email'],  # Link to child
+                "created_at": datetime.now().isoformat()
+            }
+            save_user(sponsor_user)
+        
+        return {
+            "message": "Family registration successful",
+            "tutor": {
+                "id": tutor_user["id"],
+                "name": tutor_user["name"],
+                "email": tutor_user["email"],
+                "user_type": tutor_user["user_type"]
+            },
+            "child": {
+                "id": child_user["id"],
+                "name": child_user["name"],
+                "email": child_user["email"],
+                "user_type": child_user["user_type"]
+            },
+            "sponsor": sponsor_user and {
+                "id": sponsor_user["id"],
+                "name": sponsor_user["name"],
+                "email": sponsor_user["email"],
+                "user_type": sponsor_user["user_type"]
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Registration error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to register family"
         )
-    
-    # Hash the password
-    hashed_password = hash_password(user.password)
-    
-    # Create user data
-    user_data = {
-        "id": hashlib.md5(user.email.encode()).hexdigest()[:8],
-        "name": user.name,
-        "email": user.email,
-        "password": hashed_password,
-        "created_at": datetime.now().isoformat()
-    }
-    
-    # Save user to file
-    save_user(user_data)
-    
-    # Return user data (without password)
-    return UserResponse(
-        id=user_data["id"],
-        name=user_data["name"],
-        email=user_data["email"],
-        created_at=user_data["created_at"]
-    )
 
 @app.post("/auth/login", response_model=dict)
 async def login_user(credentials: UserLogin):
@@ -145,7 +222,11 @@ async def login_user(credentials: UserLogin):
             "id": user["id"],
             "name": user["name"],
             "email": user["email"],
-            "created_at": user["created_at"]
+            "user_type": user["user_type"],
+            "created_at": user["created_at"],
+            "lessons_completed": user.get("lessons_completed", 0),
+            "minutes_studied": user.get("minutes_studied", 0),
+            "points_earned": user.get("points_earned", 0)
         }
     }
 
@@ -156,12 +237,20 @@ async def get_users():
     # Remove passwords from response
     safe_users = []
     for email, user in users.items():
-        safe_users.append({
+        safe_user = {
             "id": user["id"],
             "name": user["name"],
             "email": user["email"],
+            "user_type": user["user_type"],
             "created_at": user["created_at"]
-        })
+        }
+        if user["user_type"] == "child":
+            safe_user.update({
+                "lessons_completed": user.get("lessons_completed", 0),
+                "minutes_studied": user.get("minutes_studied", 0),
+                "points_earned": user.get("points_earned", 0)
+            })
+        safe_users.append(safe_user)
     return {"users": safe_users, "count": len(safe_users)}
 
 # Add some demo users on startup
@@ -170,17 +259,55 @@ async def create_demo_users():
     """Create demo users if none exist"""
     users = load_users()
     
-    # Create admin user if it doesn't exist
-    if "admin@example.com" not in users:
-        admin_user = {
-            "id": "admin001",
-            "name": "Admin User",
-            "email": "admin@example.com",
+    # Create demo tutor if it doesn't exist
+    if "tutor@demo.com" not in users:
+        tutor_user = {
+            "id": "tutor001",
+            "name": "María González",
+            "email": "tutor@demo.com",
             "password": hash_password("password123"),
+            "user_type": "tutor",
+            "birth_date": "1985-03-15",
+            "gender": "femenino",
             "created_at": datetime.now().isoformat()
         }
-        save_user(admin_user)
-        print("Demo admin user created: admin@example.com / password123")
+        save_user(tutor_user)
+        print("Demo tutor created: tutor@demo.com / password123")
+    
+    # Create demo child if it doesn't exist
+    if "nino@demo.com" not in users:
+        child_user = {
+            "id": "child001",
+            "name": "Carlos González",
+            "email": "nino@demo.com",
+            "password": hash_password("password123"),
+            "user_type": "child",
+            "birth_date": "2015-07-22",
+            "gender": "masculino",
+            "tutor_email": "tutor@demo.com",
+            "created_at": datetime.now().isoformat(),
+            "lessons_completed": 5,
+            "minutes_studied": 120,
+            "points_earned": 250
+        }
+        save_user(child_user)
+        print("Demo child created: nino@demo.com / password123")
+    
+    # Create demo sponsor if it doesn't exist
+    if "patrocinador@demo.com" not in users:
+        sponsor_user = {
+            "id": "sponsor001",
+            "name": "Roberto Martínez",
+            "email": "patrocinador@demo.com",
+            "password": hash_password("password123"),
+            "user_type": "sponsor",
+            "birth_date": "1980-11-08",
+            "gender": "masculino",
+            "child_email": "nino@demo.com",
+            "created_at": datetime.now().isoformat()
+        }
+        save_user(sponsor_user)
+        print("Demo sponsor created: patrocinador@demo.com / password123")
 
 if __name__ == "__main__":
     import uvicorn

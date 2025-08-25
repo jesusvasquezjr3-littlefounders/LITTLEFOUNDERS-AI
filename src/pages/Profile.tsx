@@ -26,43 +26,43 @@ import { ProfileInfo } from "@/components/profile/ProfileInfo";
 
 // Datos de ejemplo para avatares prediseñados
 const predefinedAvatars = [
-  { id: 1, name: "Explorador", src: "/avatars/explorer.png", rarity: "common" },
-  { id: 2, name: "Astrónomo", src: "/avatars/astronomer.png", rarity: "common" },
-  { id: 3, name: "Inventor", src: "/avatars/inventor.png", rarity: "rare" },
-  { id: 4, name: "Mago", src: "/avatars/wizard.png", rarity: "rare" },
-  { id: 5, name: "Dragón", src: "/avatars/dragon.png", rarity: "epic" },
-  { id: 6, name: "Fénix", src: "/avatars/phoenix.png", rarity: "epic" },
-  { id: 7, name: "Unicornio", src: "/avatars/unicorn.png", rarity: "legendary" },
-  { id: 8, name: "Robot", src: "/avatars/robot.png", rarity: "legendary" },
-  { id: 9, name: "Ninja", src: "/avatars/ninja.png", rarity: "rare" },
-  { id: 10, name: "Pirata", src: "/avatars/pirate.png", rarity: "rare" },
-  { id: 11, name: "Superhéroe", src: "/avatars/superhero.png", rarity: "epic" },
-  { id: 12, name: "Alien", src: "/avatars/alien.png", rarity: "epic" },
+  { id: 1, name: "Explorador", src: "/avatars/explorer.png", rarity: "common" as const },
+  { id: 2, name: "Astrónomo", src: "/avatars/astronomer.png", rarity: "common" as const },
+  { id: 3, name: "Inventor", src: "/avatars/inventor.png", rarity: "rare" as const },
+  { id: 4, name: "Mago", src: "/avatars/wizard.png", rarity: "rare" as const },
+  { id: 5, name: "Dragón", src: "/avatars/dragon.png", rarity: "epic" as const },
+  { id: 6, name: "Fénix", src: "/avatars/phoenix.png", rarity: "epic" as const },
+  { id: 7, name: "Unicornio", src: "/avatars/unicorn.png", rarity: "legendary" as const },
+  { id: 8, name: "Robot", src: "/avatars/robot.png", rarity: "legendary" as const },
+  { id: 9, name: "Ninja", src: "/avatars/ninja.png", rarity: "rare" as const },
+  { id: 10, name: "Pirata", src: "/avatars/pirate.png", rarity: "rare" as const },
+  { id: 11, name: "Superhéroe", src: "/avatars/superhero.png", rarity: "epic" as const },
+  { id: 12, name: "Alien", src: "/avatars/alien.png", rarity: "epic" as const },
 ];
 
 // Fondos de perfil disponibles
 const profileBanners = [
-  { id: 1, name: "Cielo Azul", src: "/banners/blue-sky.jpg", category: "nature", unlocked: true, rarity: "common" },
-  { id: 2, name: "Bosque Mágico", src: "/banners/magic-forest.jpg", category: "nature", unlocked: true, rarity: "common" },
-  { id: 3, name: "Espacio", src: "/banners/space.jpg", category: "space", unlocked: true, rarity: "rare" },
-  { id: 4, name: "Océano", src: "/banners/ocean.jpg", category: "nature", unlocked: true, rarity: "common" },
-  { id: 5, name: "Galaxia", src: "/banners/galaxy.jpg", category: "space", unlocked: false, rarity: "epic" },
-  { id: 6, name: "Aurora", src: "/banners/aurora.jpg", category: "nature", unlocked: false, rarity: "epic" },
-  { id: 7, name: "Montañas", src: "/banners/mountains.jpg", category: "nature", unlocked: true, rarity: "common" },
-  { id: 8, name: "Nebulosa", src: "/banners/nebula.jpg", category: "space", unlocked: false, rarity: "legendary" },
-  { id: 9, name: "Atardecer", src: "/banners/sunset.jpg", category: "nature", unlocked: true, rarity: "rare" },
+  { id: 1, name: "Cielo Azul", src: "/banners/blue-sky.jpg", category: "nature", unlocked: true, rarity: "common" as const },
+  { id: 2, name: "Bosque Mágico", src: "/banners/magic-forest.jpg", category: "nature", unlocked: true, rarity: "common" as const },
+  { id: 3, name: "Espacio", src: "/banners/space.jpg", category: "space", unlocked: true, rarity: "rare" as const },
+  { id: 4, name: "Océano", src: "/banners/ocean.jpg", category: "nature", unlocked: true, rarity: "common" as const },
+  { id: 5, name: "Galaxia", src: "/banners/galaxy.jpg", category: "space", unlocked: false, rarity: "epic" as const },
+  { id: 6, name: "Aurora", src: "/banners/aurora.jpg", category: "nature", unlocked: false, rarity: "epic" as const },
+  { id: 7, name: "Montañas", src: "/banners/mountains.jpg", category: "nature", unlocked: true, rarity: "common" as const },
+  { id: 8, name: "Nebulosa", src: "/banners/nebula.jpg", category: "space", unlocked: false, rarity: "legendary" as const },
+  { id: 9, name: "Atardecer", src: "/banners/sunset.jpg", category: "nature", unlocked: true, rarity: "rare" as const },
 ];
 
 // Badges y logros del usuario
 const userBadges = [
-  { id: 1, name: "Primer Ahorro", icon: Coins, color: "text-yellow-500", description: "Ahorraste tu primera moneda", earned: true, rarity: "common", earnedDate: "2024-01-15" },
-  { id: 2, name: "Estudiante Dedicado", icon: BookOpen, color: "text-blue-500", description: "Completaste 10 lecciones", earned: true, rarity: "common", earnedDate: "2024-01-20" },
-  { id: 3, name: "Meta Alcanzada", icon: Target, color: "text-green-500", description: "Lograste tu primera meta de ahorro", earned: true, rarity: "rare", earnedDate: "2024-02-01" },
-  { id: 4, name: "Protector", icon: Shield, color: "text-purple-500", description: "Aprendiste sobre seguridad financiera", earned: false, rarity: "rare" },
-  { id: 5, name: "Rey del Ahorro", icon: Crown, color: "text-orange-500", description: "Ahorraste $100", earned: false, rarity: "epic" },
-  { id: 6, name: "Super Estrella", icon: Star, color: "text-pink-500", description: "Completaste 50 lecciones", earned: false, rarity: "epic" },
-  { id: 7, name: "Inversor Junior", icon: Sparkles, color: "text-indigo-500", description: "Aprendiste sobre inversiones", earned: true, rarity: "rare", earnedDate: "2024-02-10" },
-  { id: 8, name: "Maestro del Presupuesto", icon: Target, color: "text-emerald-500", description: "Creaste 5 presupuestos exitosos", earned: false, rarity: "legendary" },
+  { id: 1, name: "Primer Ahorro", icon: Coins, color: "text-yellow-500", description: "Ahorraste tu primera moneda", earned: true, rarity: "common" as const, earnedDate: "2024-01-15" },
+  { id: 2, name: "Estudiante Dedicado", icon: BookOpen, color: "text-blue-500", description: "Completaste 10 lecciones", earned: true, rarity: "common" as const, earnedDate: "2024-01-20" },
+  { id: 3, name: "Meta Alcanzada", icon: Target, color: "text-green-500", description: "Lograste tu primera meta de ahorro", earned: true, rarity: "rare" as const, earnedDate: "2024-02-01" },
+  { id: 4, name: "Protector", icon: Shield, color: "text-purple-500", description: "Aprendiste sobre seguridad financiera", earned: false, rarity: "rare" as const },
+  { id: 5, name: "Rey del Ahorro", icon: Crown, color: "text-orange-500", description: "Ahorraste $100", earned: false, rarity: "epic" as const },
+  { id: 6, name: "Super Estrella", icon: Star, color: "text-pink-500", description: "Completaste 50 lecciones", earned: false, rarity: "epic" as const },
+  { id: 7, name: "Inversor Junior", icon: Sparkles, color: "text-indigo-500", description: "Aprendiste sobre inversiones", earned: true, rarity: "rare" as const, earnedDate: "2024-02-10" },
+  { id: 8, name: "Maestro del Presupuesto", icon: Target, color: "text-emerald-500", description: "Creaste 5 presupuestos exitosos", earned: false, rarity: "legendary" as const },
 ];
 
 const Profile = () => {

@@ -1,0 +1,300 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { 
+  BookOpen, 
+  Clock, 
+  Star, 
+  Trophy, 
+  Target, 
+  TrendingUp,
+  Play,
+  Award,
+  Zap,
+  Heart
+} from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface ChildDashboardProps {
+  user: any;
+}
+
+export function ChildDashboard({ user }: ChildDashboardProps) {
+  const [currentStreak, setCurrentStreak] = useState(5);
+  const [weeklyGoal, setWeeklyGoal] = useState(3);
+  const [weeklyProgress, setWeeklyProgress] = useState(2);
+
+  const stats = [
+    {
+      title: "Lecciones Completadas",
+      value: user?.lessons_completed || 0,
+      icon: BookOpen,
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
+      description: "¡Sigue así!"
+    },
+    {
+      title: "Minutos Estudiados",
+      value: user?.minutes_studied || 0,
+      icon: Clock,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
+      description: "Tiempo bien invertido"
+    },
+    {
+      title: "Puntos Ganados",
+      value: user?.points_earned || 0,
+      icon: Star,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-100",
+      description: "¡Eres un experto!"
+    },
+    {
+      title: "Racha Actual",
+      value: currentStreak,
+      icon: Zap,
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
+      description: "¡Días seguidos!"
+    }
+  ];
+
+  const achievements = [
+    {
+      title: "Primera Lección",
+      description: "Completaste tu primera lección",
+      icon: Trophy,
+      unlocked: user?.lessons_completed >= 1,
+      color: "text-yellow-600"
+    },
+    {
+      title: "Estudiante Dedicado",
+      description: "Estudiaste 60 minutos",
+      icon: Clock,
+      unlocked: user?.minutes_studied >= 60,
+      color: "text-blue-600"
+    },
+    {
+      title: "Puntos Dorados",
+      description: "Ganaste 100 puntos",
+      icon: Star,
+      unlocked: user?.points_earned >= 100,
+      color: "text-yellow-600"
+    },
+    {
+      title: "Racha de 7 Días",
+      description: "7 días seguidos estudiando",
+      icon: Zap,
+      unlocked: currentStreak >= 7,
+      color: "text-purple-600"
+    }
+  ];
+
+  const nextLessons = [
+    {
+      title: "¿Qué es el Dinero?",
+      difficulty: "Fácil",
+      duration: "15 min",
+      points: 50,
+      completed: false
+    },
+    {
+      title: "Ahorrar es Divertido",
+      difficulty: "Fácil",
+      duration: "20 min",
+      points: 75,
+      completed: false
+    },
+    {
+      title: "Necesidades vs Deseos",
+      difficulty: "Medio",
+      duration: "25 min",
+      points: 100,
+      completed: false
+    }
+  ];
+
+  return (
+    <div className="space-y-6 p-6">
+      {/* Welcome Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          ¡Hola, {user?.name}! 👋
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          ¡Prepárate para una nueva aventura de aprendizaje!
+        </p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground">{stat.description}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Weekly Goal Progress */}
+      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-blue-800">
+            <Target className="h-5 w-5" />
+            <span>Meta Semanal</span>
+          </CardTitle>
+          <CardDescription>
+            {weeklyProgress} de {weeklyGoal} lecciones completadas esta semana
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Progress value={(weeklyProgress / weeklyGoal) * 100} className="h-3" />
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Progreso</span>
+              <span className="font-medium">{Math.round((weeklyProgress / weeklyGoal) * 100)}%</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Next Lessons */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Play className="h-5 w-5 text-green-600" />
+              <span>Próximas Lecciones</span>
+            </CardTitle>
+            <CardDescription>
+              ¡Continúa tu aprendizaje con estas lecciones emocionantes!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {nextLessons.map((lesson, index) => (
+              <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex-1">
+                  <h4 className="font-medium">{lesson.title}</h4>
+                  <div className="flex items-center space-x-4 mt-1">
+                    <Badge variant="outline" className="text-xs">
+                      {lesson.difficulty}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {lesson.duration}
+                    </span>
+                    <span className="text-sm text-muted-foreground flex items-center">
+                      <Star className="h-3 w-3 mr-1" />
+                      {lesson.points} pts
+                    </span>
+                  </div>
+                </div>
+                <Button size="sm" className="bg-gradient-to-r from-green-500 to-blue-500 hover:opacity-90">
+                  <Play className="h-4 w-4 mr-1" />
+                  Empezar
+                </Button>
+              </div>
+            ))}
+            <Button asChild className="w-full mt-4 bg-gradient-to-r from-primary to-purple-600">
+              <Link to="/lecciones">
+                Ver Todas las Lecciones
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Achievements */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Award className="h-5 w-5 text-yellow-600" />
+              <span>Logros</span>
+            </CardTitle>
+            <CardDescription>
+              ¡Desbloquea logros especiales mientras aprendes!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {achievements.map((achievement, index) => (
+              <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-2 transition-all ${
+                achievement.unlocked 
+                  ? 'border-green-200 bg-green-50' 
+                  : 'border-gray-200 bg-gray-50'
+              }`}>
+                <div className={`p-2 rounded-full ${
+                  achievement.unlocked ? 'bg-green-100' : 'bg-gray-100'
+                }`}>
+                  <achievement.icon className={`h-5 w-5 ${
+                    achievement.unlocked ? achievement.color : 'text-gray-400'
+                  }`} />
+                </div>
+                <div className="flex-1">
+                  <h4 className={`font-medium ${
+                    achievement.unlocked ? 'text-green-800' : 'text-gray-500'
+                  }`}>
+                    {achievement.title}
+                  </h4>
+                  <p className={`text-sm ${
+                    achievement.unlocked ? 'text-green-600' : 'text-gray-400'
+                  }`}>
+                    {achievement.description}
+                  </p>
+                </div>
+                {achievement.unlocked && (
+                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                    ¡Logrado!
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-purple-800">
+            <Heart className="h-5 w-5" />
+            <span>Acciones Rápidas</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Button asChild className="h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90">
+              <Link to="/lecciones" className="flex flex-col items-center space-y-1">
+                <BookOpen className="h-6 w-6" />
+                <span className="text-sm">Estudiar</span>
+              </Link>
+            </Button>
+            <Button asChild className="h-16 bg-gradient-to-r from-green-500 to-green-600 hover:opacity-90">
+              <Link to="/profile" className="flex flex-col items-center space-y-1">
+                <Trophy className="h-6 w-6" />
+                <span className="text-sm">Mi Perfil</span>
+              </Link>
+            </Button>
+            <Button asChild className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:opacity-90">
+              <Link to="/lecciones" className="flex flex-col items-center space-y-1">
+                <TrendingUp className="h-6 w-6" />
+                <span className="text-sm">Progreso</span>
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

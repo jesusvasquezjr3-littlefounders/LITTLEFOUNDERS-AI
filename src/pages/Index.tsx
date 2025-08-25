@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { ChildDashboard } from "@/components/dashboard/ChildDashboard";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { CustomerAnalytics } from "@/components/dashboard/CustomerAnalytics";
@@ -17,13 +19,36 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  // If user is a child, show the child dashboard
+  if (user?.user_type === 'child') {
+    return (
+      <DashboardLayout>
+        <ChildDashboard user={user} />
+      </DashboardLayout>
+    );
+  }
+
+  // For tutor and sponsor, show the regular dashboard
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Panel de Control</h1>
+            <h1 className="text-3xl font-bold">
+              {user?.user_type === 'tutor' ? 'Panel de Control - Padre o Tutor' : 
+               user?.user_type === 'sponsor' ? 'Panel de Control - Patrocinador' : 
+               'Panel de Control'}
+            </h1>
             <p className="text-muted-foreground">
               Monitorea tus métricas importantes y indicadores de rendimiento
             </p>

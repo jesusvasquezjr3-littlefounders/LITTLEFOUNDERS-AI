@@ -18,6 +18,8 @@ interface TutorData {
   name: string;
   birthDate: Date | undefined;
   gender: string;
+  password: string;
+  confirmPassword: string;
 }
 
 interface ChildData {
@@ -25,6 +27,8 @@ interface ChildData {
   name: string;
   birthDate: Date | undefined;
   gender: string;
+  password: string;
+  confirmPassword: string;
 }
 
 interface SponsorData {
@@ -32,6 +36,8 @@ interface SponsorData {
   name: string;
   birthDate: Date | undefined;
   gender: string;
+  password: string;
+  confirmPassword: string;
 }
 
 const Register = () => {
@@ -41,19 +47,31 @@ const Register = () => {
     name: "",
     birthDate: undefined,
     gender: "",
+    password: "",
+    confirmPassword: "",
   });
   const [childData, setChildData] = useState<ChildData>({
     email: "",
     name: "",
     birthDate: undefined,
     gender: "",
+    password: "",
+    confirmPassword: "",
   });
   const [sponsorData, setSponsorData] = useState<SponsorData>({
     email: "",
     name: "",
     birthDate: undefined,
     gender: "",
+    password: "",
+    confirmPassword: "",
   });
+  const [showTutorPassword, setShowTutorPassword] = useState(false);
+  const [showTutorConfirmPassword, setShowTutorConfirmPassword] = useState(false);
+  const [showChildPassword, setShowChildPassword] = useState(false);
+  const [showChildConfirmPassword, setShowChildConfirmPassword] = useState(false);
+  const [showSponsorPassword, setShowSponsorPassword] = useState(false);
+  const [showSponsorConfirmPassword, setShowSponsorConfirmPassword] = useState(false);
   const [showSponsorForm, setShowSponsorForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -72,7 +90,7 @@ const Register = () => {
   };
 
   const validateTutorData = () => {
-    if (!tutorData.email || !tutorData.name || !tutorData.birthDate || !tutorData.gender) {
+    if (!tutorData.email || !tutorData.name || !tutorData.birthDate || !tutorData.gender || !tutorData.password || !tutorData.confirmPassword) {
       toast({
         title: "Datos incompletos",
         description: "Por favor completa todos los campos del tutor.",
@@ -80,11 +98,30 @@ const Register = () => {
       });
       return false;
     }
+
+    if (tutorData.password.length < 6) {
+      toast({
+        title: "Contraseña muy corta",
+        description: "La contraseña debe tener al menos 6 caracteres.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (tutorData.password !== tutorData.confirmPassword) {
+      toast({
+        title: "Contraseñas no coinciden",
+        description: "Las contraseñas no coinciden. Por favor verifica.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     return true;
   };
 
   const validateChildData = () => {
-    if (!childData.email || !childData.name || !childData.birthDate || !childData.gender) {
+    if (!childData.email || !childData.name || !childData.birthDate || !childData.gender || !childData.password || !childData.confirmPassword) {
       toast({
         title: "Datos incompletos",
         description: "Por favor completa todos los campos del niño.",
@@ -92,11 +129,30 @@ const Register = () => {
       });
       return false;
     }
+
+    if (childData.password.length < 6) {
+      toast({
+        title: "Contraseña muy corta",
+        description: "La contraseña debe tener al menos 6 caracteres.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (childData.password !== childData.confirmPassword) {
+      toast({
+        title: "Contraseñas no coinciden",
+        description: "Las contraseñas no coinciden. Por favor verifica.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     return true;
   };
 
   const validateSponsorData = () => {
-    if (!sponsorData.email || !sponsorData.name || !sponsorData.birthDate || !sponsorData.gender) {
+    if (!sponsorData.email || !sponsorData.name || !sponsorData.birthDate || !sponsorData.gender || !sponsorData.password || !sponsorData.confirmPassword) {
       toast({
         title: "Datos incompletos",
         description: "Por favor completa todos los campos del patrocinador.",
@@ -104,6 +160,25 @@ const Register = () => {
       });
       return false;
     }
+
+    if (sponsorData.password.length < 6) {
+      toast({
+        title: "Contraseña muy corta",
+        description: "La contraseña debe tener al menos 6 caracteres.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (sponsorData.password !== sponsorData.confirmPassword) {
+      toast({
+        title: "Contraseñas no coinciden",
+        description: "Las contraseñas no coinciden. Por favor verifica.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     return true;
   };
 
@@ -136,8 +211,23 @@ const Register = () => {
   };
 
   const handleSponsorSubmit = () => {
+    toast({
+      title: "Procesando registro del patrocinador",
+      description: "Validando datos del patrocinador...",
+    });
+    
     if (validateSponsorData()) {
+      toast({
+        title: "Datos válidos",
+        description: "Enviando registro completo al servidor...",
+      });
       handleFinalSubmit();
+    } else {
+      toast({
+        title: "Error de validación",
+        description: "Por favor revisa los datos del patrocinador.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -145,21 +235,62 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Aquí iría la lógica para enviar todos los datos al backend
-      // Por ahora simulamos un delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setCurrentStep('success');
-      
-      // Redirigir al dashboard después de 3 segundos
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000);
+      // Prepare registration data
+      const registrationData = {
+        tutor: {
+          email: tutorData.email,
+          name: tutorData.name,
+          password: tutorData.password,
+          birth_date: tutorData.birthDate?.toISOString().split('T')[0],
+          gender: tutorData.gender
+        },
+        child: {
+          email: childData.email,
+          name: childData.name,
+          password: childData.password,
+          birth_date: childData.birthDate?.toISOString().split('T')[0],
+          gender: childData.gender
+        },
+        sponsor: showSponsorForm ? {
+          email: sponsorData.email,
+          name: sponsorData.name,
+          password: sponsorData.password,
+          birth_date: sponsorData.birthDate?.toISOString().split('T')[0],
+          gender: sponsorData.gender
+        } : null
+      };
+
+      // Send registration data to backend
+      const response = await fetch('http://localhost:8000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCurrentStep('success');
+        
+        // Redirigir al login después de 3 segundos
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      } else {
+        toast({
+          title: "Error de registro",
+          description: data.detail || "No pudimos completar el registro. Intenta de nuevo.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
+      console.error('Registration error:', error);
       toast({
-        title: "Error de registro",
-        description: "No pudimos completar el registro. Intenta de nuevo.",
+        title: "Error de conexión",
+        description: "No pudimos conectar con el servidor. Intenta más tarde.",
         variant: "destructive",
       });
     } finally {
@@ -201,7 +332,7 @@ const Register = () => {
         </div>
       </div>
 
-            <div className="space-y-2">
+      <div className="space-y-2">
         <Label>Fecha de nacimiento</Label>
         <DatePicker
           selected={tutorData.birthDate}
@@ -223,6 +354,64 @@ const Register = () => {
             <SelectItem value="otro">Otro</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="tutor-password">Contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="tutor-password"
+            type={showTutorPassword ? "text" : "password"}
+            placeholder="Mínimo 6 caracteres"
+            value={tutorData.password}
+            onChange={(e) => handleTutorChange('password', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowTutorPassword(!showTutorPassword)}
+          >
+            {showTutorPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="tutor-confirm-password">Confirmar contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="tutor-confirm-password"
+            type={showTutorConfirmPassword ? "text" : "password"}
+            placeholder="Repite la contraseña"
+            value={tutorData.confirmPassword}
+            onChange={(e) => handleTutorChange('confirmPassword', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowTutorConfirmPassword(!showTutorConfirmPassword)}
+          >
+            {showTutorConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <Button 
@@ -269,7 +458,7 @@ const Register = () => {
         </div>
       </div>
 
-            <div className="space-y-2">
+      <div className="space-y-2">
         <Label>Fecha de nacimiento</Label>
         <DatePicker
           selected={childData.birthDate}
@@ -290,6 +479,64 @@ const Register = () => {
             <SelectItem value="femenino">Femenino</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="child-password">Contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="child-password"
+            type={showChildPassword ? "text" : "password"}
+            placeholder="Mínimo 6 caracteres"
+            value={childData.password}
+            onChange={(e) => handleChildChange('password', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowChildPassword(!showChildPassword)}
+          >
+            {showChildPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="child-confirm-password">Confirmar contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="child-confirm-password"
+            type={showChildConfirmPassword ? "text" : "password"}
+            placeholder="Repite la contraseña"
+            value={childData.confirmPassword}
+            onChange={(e) => handleChildChange('confirmPassword', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowChildConfirmPassword(!showChildConfirmPassword)}
+          >
+            {showChildConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="flex space-x-2">
@@ -382,7 +629,7 @@ const Register = () => {
         </div>
       </div>
 
-            <div className="space-y-2">
+      <div className="space-y-2">
         <Label>Fecha de nacimiento</Label>
         <DatePicker
           selected={sponsorData.birthDate}
@@ -404,6 +651,64 @@ const Register = () => {
             <SelectItem value="otro">Otro</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="sponsor-password">Contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="sponsor-password"
+            type={showSponsorPassword ? "text" : "password"}
+            placeholder="Mínimo 6 caracteres"
+            value={sponsorData.password}
+            onChange={(e) => handleSponsorChange('password', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowSponsorPassword(!showSponsorPassword)}
+          >
+            {showSponsorPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="sponsor-confirm-password">Confirmar contraseña</Label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="sponsor-confirm-password"
+            type={showSponsorConfirmPassword ? "text" : "password"}
+            placeholder="Repite la contraseña"
+            value={sponsorData.confirmPassword}
+            onChange={(e) => handleSponsorChange('confirmPassword', e.target.value)}
+            className="pl-10 pr-10"
+            required
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowSponsorConfirmPassword(!showSponsorConfirmPassword)}
+          >
+            {showSponsorConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="flex space-x-2">
@@ -431,9 +736,12 @@ const Register = () => {
         <Check className="w-8 h-8 text-green-600" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-2xl font-bold text-green-600">¡Felicidades, bienvenido a tu nueva aventura!</h3>
+        <h3 className="text-2xl font-bold text-green-600">¡Registro completado exitosamente!</h3>
         <p className="text-muted-foreground">
-          Tu registro se ha completado exitosamente. Serás redirigido al dashboard en unos segundos...
+          Tu cuenta ha sido creada y guardada. Serás redirigido a la página de inicio de sesión en unos segundos...
+        </p>
+        <p className="text-sm text-muted-foreground mt-4">
+          ¡Ya puedes iniciar sesión con tu correo y contraseña para comenzar a usar LittleFounders!
         </p>
       </div>
     </div>
