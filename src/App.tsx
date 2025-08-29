@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
+import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
@@ -11,6 +13,8 @@ import Register from "./pages/Register";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
 import DigitalBanking from "./pages/DigitalBanking";
+import Tasks from "./pages/Tasks";
+import ParentTasks from "./pages/ParentTasks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +44,16 @@ const App = () => (
             <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
+          } />
+          <Route path="/tasks" element={
+            <ChildProtectedRoute>
+              <Tasks />
+            </ChildProtectedRoute>
+          } />
+          <Route path="/parent-tasks" element={
+            <ParentProtectedRoute>
+              <ParentTasks />
+            </ParentProtectedRoute>
           } />
           <Route path="/growth" element={
             <ProtectedRoute>

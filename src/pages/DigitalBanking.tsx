@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountOverview } from "@/components/banking/AccountOverview";
-import { TasksSystem } from "@/components/banking/TasksSystem";
 import { SavingsGoals } from "@/components/banking/SavingsGoals";
 import { VirtualCard } from "@/components/banking/VirtualCard";
 import { ParentalControls } from "@/components/banking/ParentalControls";
@@ -17,7 +16,6 @@ import {
   AlertTriangle,
   TrendingUp,
   Settings,
-  Trophy,
   BookOpen,
   Gamepad2,
   BarChart3
@@ -41,14 +39,10 @@ const DigitalBanking = () => {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="accounts">
               <CreditCard className="h-4 w-4 mr-2" />
               Cuentas
-            </TabsTrigger>
-            <TabsTrigger value="tasks">
-              <Trophy className="h-4 w-4 mr-2" />
-              Tareas
             </TabsTrigger>
             <TabsTrigger value="savings">
               <PiggyBank className="h-4 w-4 mr-2" />
@@ -78,11 +72,6 @@ const DigitalBanking = () => {
                 <VirtualCard />
               </div>
             </div>
-          </TabsContent>
-
-          {/* Tasks Tab */}
-          <TabsContent value="tasks">
-            <TasksSystem />
           </TabsContent>
 
           {/* Savings Tab */}

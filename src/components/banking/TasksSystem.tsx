@@ -3,6 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Trophy, 
   Clock, 
@@ -15,7 +18,11 @@ import {
   Users,
   Home,
   BookOpen,
-  Utensils
+  Utensils,
+  RefreshCw,
+  Camera,
+  Image,
+  X
 } from "lucide-react";
 
 interface Task {
@@ -32,6 +39,7 @@ interface Task {
   isFirstDibs?: boolean;
   completedDate?: string;
   approvalDate?: string;
+  photoEvidence?: string; // URL de la foto como evidencia
 }
 
 const mockTasks: Task[] = [
@@ -72,10 +80,10 @@ const mockTasks: Task[] = [
     isApproved: false,
     completedDate: "2024-01-14"
   },
-  {
-    id: "4",
-    title: "Tarea First-Dibs: Ayudar a mamá con las compras",
-    description: "Acompañar a mamá al supermercado y ayudar con las bolsas",
+     {
+     id: "4",
+     title: "¡Importante!: Ayudar a mamá con las compras",
+     description: "Acompañar a mamá al supermercado y ayudar con las bolsas",
     category: "bonus",
     difficulty: "easy",
     reward: 15.00,
@@ -85,17 +93,29 @@ const mockTasks: Task[] = [
     isFirstDibs: true,
     dueDate: "2024-01-17"
   },
-  {
-    id: "5",
-    title: "Leer 20 páginas del libro",
-    description: "Continuar con la lectura del libro 'El Principito'",
-    category: "education",
-    difficulty: "easy",
-    reward: 6.00,
-    timeEstimate: 40,
-    isCompleted: false,
-    isApproved: null
-  }
+     {
+     id: "5",
+     title: "Leer 20 páginas del libro",
+     description: "Continuar con la lectura del libro 'El Principito'",
+     category: "education",
+     difficulty: "easy",
+     reward: 6.00,
+     timeEstimate: 40,
+     isCompleted: false,
+     isApproved: null
+   },
+   {
+     id: "6",
+     title: "Hacer la tarea de ciencias",
+     description: "Completar el experimento de plantas y escribir el reporte",
+     category: "education",
+     difficulty: "medium",
+     reward: 12.00,
+     timeEstimate: 45,
+     isCompleted: true,
+     isApproved: null,
+     completedDate: "2024-01-16"
+   }
 ];
 
 const categoryIcons = {
@@ -121,13 +141,61 @@ const difficultyColors = {
 export function TasksSystem() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [activeTab, setActiveTab] = useState<'available' | 'completed' | 'pending'>('available');
+  const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false);
+  const [selectedTaskForPhoto, setSelectedTaskForPhoto] = useState<Task | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
 
   const handleCompleteTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setSelectedTaskForPhoto(task);
+      setIsPhotoDialogOpen(true);
+    }
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmitTaskWithPhoto = () => {
+    if (!selectedTaskForPhoto) return;
+
+    // En un entorno real, aquí subirías la foto al servidor
+    // Por ahora, usamos la preview como URL
+    const photoUrl = photoPreview || 'data:image/jpeg;base64,placeholder';
+
     setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, isCompleted: true, completedDate: new Date().toISOString().split('T')[0] }
+      task.id === selectedTaskForPhoto.id 
+        ? { 
+            ...task, 
+            isCompleted: true, 
+            completedDate: new Date().toISOString().split('T')[0],
+            photoEvidence: photoUrl
+          }
         : task
     ));
+
+    // Limpiar el estado
+    setPhotoFile(null);
+    setPhotoPreview('');
+    setSelectedTaskForPhoto(null);
+    setIsPhotoDialogOpen(false);
+  };
+
+  const handleCancelPhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview('');
+    setSelectedTaskForPhoto(null);
+    setIsPhotoDialogOpen(false);
   };
 
   const availableTasks = tasks.filter(task => !task.isCompleted);
@@ -139,13 +207,23 @@ export function TasksSystem() {
 
   const renderTask = (task: Task, showCompleteButton: boolean = false) => {
     const CategoryIcon = categoryIcons[task.category];
+    const isReassigned = task.isCompleted && task.isApproved === false;
     
     return (
-      <Card key={task.id} className={`relative ${task.isFirstDibs ? 'border-yellow-300 bg-yellow-50' : ''}`}>
+      <Card key={task.id} className={`relative ${
+        task.isFirstDibs ? 'border-yellow-300 bg-yellow-50' : 
+        isReassigned ? 'border-blue-300 bg-blue-50' : ''
+      }`}>
         {task.isFirstDibs && (
           <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
-            <Zap className="h-3 w-3 mr-1" />
-            First-Dibs
+                         <Zap className="h-3 w-3 mr-1" />
+             ¡Importante!
+          </div>
+        )}
+        {isReassigned && (
+          <div className="absolute -top-2 -right-2 bg-blue-400 text-blue-800 text-xs font-bold px-2 py-1 rounded-full flex items-center">
+            <RefreshCw className="h-3 w-3 mr-1" />
+            Reasignada
           </div>
         )}
         <CardHeader className="pb-3">
@@ -157,7 +235,7 @@ export function TasksSystem() {
                 {task.isCompleted && (
                   <CheckCircle className={`h-5 w-5 ${
                     task.isApproved === true ? 'text-green-600' : 
-                    task.isApproved === false ? 'text-red-600' : 
+                    task.isApproved === false ? 'text-blue-600' : 
                     'text-yellow-600'
                   }`} />
                 )}
@@ -197,28 +275,43 @@ export function TasksSystem() {
             </div>
           )}
 
-          {task.isCompleted && (
-            <div className="space-y-2 mb-4">
-              <div className="text-sm">
-                <strong>Completada el:</strong> {task.completedDate ? new Date(task.completedDate).toLocaleDateString('es-ES') : 'N/A'}
-              </div>
-              {task.isApproved === true && task.approvalDate && (
-                <div className="text-sm text-green-600">
-                  <strong>Aprobada el:</strong> {new Date(task.approvalDate).toLocaleDateString('es-ES')}
-                </div>
-              )}
-              {task.isApproved === false && (
-                <div className="text-sm text-red-600">
-                  <strong>Estado:</strong> Necesita ser completada nuevamente
-                </div>
-              )}
-              {task.isApproved === null && (
-                <div className="text-sm text-yellow-600">
-                  <strong>Estado:</strong> Esperando aprobación de los padres
-                </div>
-              )}
-            </div>
-          )}
+                     {task.isCompleted && (
+             <div className="space-y-2 mb-4">
+               <div className="text-sm">
+                 <strong>Completada el:</strong> {task.completedDate ? new Date(task.completedDate).toLocaleDateString('es-ES') : 'N/A'}
+               </div>
+               {task.photoEvidence && (
+                 <div className="mt-3">
+                   <div className="text-sm font-medium mb-2 flex items-center">
+                     <Image className="h-4 w-4 mr-1" />
+                     Evidencia fotográfica:
+                   </div>
+                   <div className="relative">
+                     <img 
+                       src={task.photoEvidence} 
+                       alt="Evidencia de tarea completada"
+                       className="w-full h-32 object-cover rounded-lg border"
+                     />
+                   </div>
+                 </div>
+               )}
+               {task.isApproved === true && task.approvalDate && (
+                 <div className="text-sm text-green-600">
+                   <strong>Aprobada el:</strong> {new Date(task.approvalDate).toLocaleDateString('es-ES')}
+                 </div>
+               )}
+               {task.isApproved === false && (
+                 <div className="text-sm text-blue-600">
+                   <strong>Estado:</strong> Tarea reasignada
+                 </div>
+               )}
+               {task.isApproved === null && (
+                 <div className="text-sm text-yellow-600">
+                   <strong>Estado:</strong> Esperando aprobación de los padres
+                 </div>
+               )}
+             </div>
+           )}
 
           {showCompleteButton && !task.isCompleted && (
             <Button 
@@ -386,11 +479,80 @@ export function TasksSystem() {
               </Card>
             )}
           </>
-        )}
-      </div>
-    </div>
-  );
-}
+                 )}
+       </div>
+
+       {/* Modal para subir foto de evidencia */}
+       <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
+         <DialogContent className="sm:max-w-[500px]">
+           <DialogHeader>
+             <DialogTitle className="flex items-center">
+               <Camera className="h-5 w-5 mr-2" />
+               Agregar evidencia fotográfica
+             </DialogTitle>
+             <DialogDescription>
+               Toma una foto o sube una imagen para demostrar que completaste la tarea "{selectedTaskForPhoto?.title}"
+             </DialogDescription>
+           </DialogHeader>
+           
+           <div className="space-y-4 py-4">
+             <div className="space-y-2">
+               <Label htmlFor="photo-upload">Seleccionar foto</Label>
+               <Input
+                 id="photo-upload"
+                 type="file"
+                 accept="image/*"
+                 onChange={handlePhotoUpload}
+                 className="cursor-pointer"
+               />
+               <p className="text-xs text-muted-foreground">
+                 Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB
+               </p>
+             </div>
+
+             {photoPreview && (
+               <div className="space-y-2">
+                 <Label>Vista previa:</Label>
+                 <div className="relative">
+                   <img 
+                     src={photoPreview} 
+                     alt="Vista previa"
+                     className="w-full h-48 object-cover rounded-lg border"
+                   />
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     className="absolute top-2 right-2"
+                     onClick={() => {
+                       setPhotoFile(null);
+                       setPhotoPreview('');
+                     }}
+                   >
+                     <X className="h-4 w-4" />
+                   </Button>
+                 </div>
+               </div>
+             )}
+           </div>
+
+           <DialogFooter>
+             <Button variant="outline" onClick={handleCancelPhoto}>
+               Cancelar
+             </Button>
+             <Button 
+               onClick={handleSubmitTaskWithPhoto}
+               disabled={!photoFile}
+               className="bg-green-600 hover:bg-green-700"
+             >
+               <CheckCircle className="h-4 w-4 mr-2" />
+               Completar Tarea
+             </Button>
+           </DialogFooter>
+         </DialogContent>
+       </Dialog>
+     </div>
+   );
+ }
 
 
 

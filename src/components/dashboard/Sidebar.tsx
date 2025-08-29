@@ -11,21 +11,54 @@ import {
   HelpCircle,
   ChevronLeft,
   Home,
-  BookOpen
+  BookOpen,
+  Trophy,
+  ClipboardList,
+  Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const menuItems = [
-  { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
-  { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
-  { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
-  { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
-  { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
-  { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
-  { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
-  { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
-];
+// Obtener información del usuario
+const getUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || '{}');
+  } catch {
+    return {};
+  }
+};
+
+const getMenuItems = () => {
+  const user = getUser();
+  
+  if (user.user_type === 'child') {
+    // Menú para niños
+    return [
+      { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
+      { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
+      { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
+      { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
+      { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
+      { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
+      { title: "Mis Tareas", url: "/tasks", icon: Trophy, color: "text-yellow-600" },
+      { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
+      { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
+    ];
+  } else {
+    // Menú para padres y patrocinadores
+    return [
+      { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
+      { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
+      { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
+      { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
+      { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
+      { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
+      { title: "Gestión de Tareas", url: "/parent-tasks", icon: ClipboardList, color: "text-purple-600" },
+      { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
+      { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
+    ];
+  }
+};
 
 const bottomItems = [
   { title: "Configuración", url: "/settings", icon: Settings },
@@ -75,7 +108,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Navegación Principal */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => (
+        {getMenuItems().map((item) => (
           <NavLink
             key={item.title}
             to={item.url}
