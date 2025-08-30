@@ -14,7 +14,8 @@ import {
   BookOpen,
   Trophy,
   ClipboardList,
-  Target
+  Target,
+  PiggyBank
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ const getMenuItems = () => {
     // Menú para niños
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
-      { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
+      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
       { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
       { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
@@ -48,7 +49,7 @@ const getMenuItems = () => {
     // Menú para padres y patrocinadores
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
-      { title: "Ahorros", url: "/revenue", icon: DollarSign, color: "text-revenue" },
+      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
       { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
       { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },

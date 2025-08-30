@@ -433,21 +433,21 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
                <div className="text-sm">
                  <strong>Completada el:</strong> {task.completedDate ? new Date(task.completedDate).toLocaleDateString('es-ES') : 'N/A'}
                </div>
-               {task.photoEvidence && (
-                 <div className="mt-3">
-                   <div className="text-sm font-medium mb-2 flex items-center">
-                     <Image className="h-4 w-4 mr-1" />
-                     Evidencia fotográfica:
-                   </div>
-                   <div className="relative">
-                     <img 
-                       src={task.photoEvidence} 
-                       alt="Evidencia de tarea completada"
-                       className="w-full h-32 object-cover rounded-lg border"
-                     />
-                   </div>
-                 </div>
-               )}
+                               {task.photoEvidence && (
+                  <div className="mt-3">
+                    <div className="text-sm font-medium mb-2 flex items-center">
+                      <Image className="h-4 w-4 mr-1" />
+                      Evidencia fotográfica (opcional):
+                    </div>
+                    <div className="relative">
+                      <img 
+                        src={task.photoEvidence} 
+                        alt="Evidencia de tarea completada"
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                    </div>
+                  </div>
+                )}
                {task.isApproved === true && task.approvalDate && (
                  <div className="text-sm text-green-600">
                    <strong>Aprobada el:</strong> {new Date(task.approvalDate).toLocaleDateString('es-ES')}

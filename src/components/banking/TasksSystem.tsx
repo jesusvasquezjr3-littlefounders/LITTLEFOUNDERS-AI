@@ -170,8 +170,8 @@ export function TasksSystem() {
     if (!selectedTaskForPhoto) return;
 
     // En un entorno real, aquí subirías la foto al servidor
-    // Por ahora, usamos la preview como URL
-    const photoUrl = photoPreview || 'data:image/jpeg;base64,placeholder';
+    // Por ahora, usamos la preview como URL (si existe)
+    const photoUrl = photoPreview || undefined;
 
     setTasks(tasks.map(task => 
       task.id === selectedTaskForPhoto.id 
@@ -280,21 +280,21 @@ export function TasksSystem() {
                <div className="text-sm">
                  <strong>Completada el:</strong> {task.completedDate ? new Date(task.completedDate).toLocaleDateString('es-ES') : 'N/A'}
                </div>
-               {task.photoEvidence && (
-                 <div className="mt-3">
-                   <div className="text-sm font-medium mb-2 flex items-center">
-                     <Image className="h-4 w-4 mr-1" />
-                     Evidencia fotográfica:
-                   </div>
-                   <div className="relative">
-                     <img 
-                       src={task.photoEvidence} 
-                       alt="Evidencia de tarea completada"
-                       className="w-full h-32 object-cover rounded-lg border"
-                     />
-                   </div>
-                 </div>
-               )}
+                               {task.photoEvidence && (
+                  <div className="mt-3">
+                    <div className="text-sm font-medium mb-2 flex items-center">
+                      <Image className="h-4 w-4 mr-1" />
+                      Evidencia fotográfica (opcional):
+                    </div>
+                    <div className="relative">
+                      <img 
+                        src={task.photoEvidence} 
+                        alt="Evidencia de tarea completada"
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                    </div>
+                  </div>
+                )}
                {task.isApproved === true && task.approvalDate && (
                  <div className="text-sm text-green-600">
                    <strong>Aprobada el:</strong> {new Date(task.approvalDate).toLocaleDateString('es-ES')}
@@ -490,25 +490,25 @@ export function TasksSystem() {
                <Camera className="h-5 w-5 mr-2" />
                Agregar evidencia fotográfica
              </DialogTitle>
-             <DialogDescription>
-               Toma una foto o sube una imagen para demostrar que completaste la tarea "{selectedTaskForPhoto?.title}"
-             </DialogDescription>
+                           <DialogDescription>
+                Opcionalmente, puedes tomar una foto o subir una imagen para demostrar que completaste la tarea "{selectedTaskForPhoto?.title}"
+              </DialogDescription>
            </DialogHeader>
            
            <div className="space-y-4 py-4">
-             <div className="space-y-2">
-               <Label htmlFor="photo-upload">Seleccionar foto</Label>
-               <Input
-                 id="photo-upload"
-                 type="file"
-                 accept="image/*"
-                 onChange={handlePhotoUpload}
-                 className="cursor-pointer"
-               />
-               <p className="text-xs text-muted-foreground">
-                 Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB
-               </p>
-             </div>
+                           <div className="space-y-2">
+                <Label htmlFor="photo-upload">Seleccionar foto (opcional)</Label>
+                <Input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB. La foto es opcional.
+                </p>
+              </div>
 
              {photoPreview && (
                <div className="space-y-2">
@@ -539,14 +539,13 @@ export function TasksSystem() {
              <Button variant="outline" onClick={handleCancelPhoto}>
                Cancelar
              </Button>
-             <Button 
-               onClick={handleSubmitTaskWithPhoto}
-               disabled={!photoFile}
-               className="bg-green-600 hover:bg-green-700"
-             >
-               <CheckCircle className="h-4 w-4 mr-2" />
-               Completar Tarea
-             </Button>
+                           <Button 
+                onClick={handleSubmitTaskWithPhoto}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Completar Tarea
+              </Button>
            </DialogFooter>
          </DialogContent>
        </Dialog>

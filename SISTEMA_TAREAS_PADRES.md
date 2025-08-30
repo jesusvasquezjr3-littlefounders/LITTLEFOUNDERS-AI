@@ -52,13 +52,13 @@ Se ha implementado un sistema completo de gestión de tareas para padres y patro
 - **Aprobar**: Confirmar completado y pagar recompensa
 - **Rechazar**: Con motivo específico y comentarios
 - **Ver detalles**: Revisar información completa
-- **Ver evidencia fotográfica**: Revisar fotos subidas por el niño
+- **Ver evidencia fotográfica**: Revisar fotos subidas por el niño (si existen)
 
 #### Para Tareas Completadas/Rechazadas
 - **Ver detalles**: Historial completo con fechas
 - **Comentarios**: Notas de aprobación/rechazo
 - **Reasignar**: Crear nueva tarea basada en la rechazada con comentarios
-- **Evidencia fotográfica**: Acceso a fotos de evidencia
+- **Evidencia fotográfica**: Acceso a fotos de evidencia (si existen)
 
 ### 4. Interfaz de Usuario
 
@@ -105,9 +105,9 @@ src/
 5. La tarea aparece en la pestaña "Asignadas"
 
 ### 2. Proceso de Aprobación
-1. Niño completa la tarea en su interfaz y sube foto de evidencia
+1. Niño completa la tarea en su interfaz (opcionalmente sube foto de evidencia)
 2. La tarea se mueve a "Pendientes" para el padre/patrocinador
-3. Padre/Patrocinador revisa la evidencia fotográfica y decide:
+3. Padre/Patrocinador revisa la tarea (y evidencia fotográfica si existe) y decide:
    - **Aprobar**: Confirma completado y paga recompensa
    - **Rechazar**: Proporciona motivo y la tarea queda en estado rechazado
    - **Reasignar**: Crea una nueva tarea basada en la rechazada con comentarios adicionales
@@ -132,18 +132,20 @@ src/
 - **Indicador visual azul** para tareas reasignadas
 - **Comentarios constructivos** en lugar de negativos
 - **Nueva oportunidad** para completar la tarea correctamente
-- **Subir fotos de evidencia** al completar tareas
+- **Subir fotos de evidencia** al completar tareas (opcional)
 - **Vista previa** de fotos antes de enviar
-- **Evidencia visual** para demostrar completado
+- **Evidencia visual** para demostrar completado (cuando se proporciona)
+- **Flexibilidad** para completar tareas con o sin foto
 
 ### Experiencia del Padre/Patrocinador
 - **Vista completa** del historial de rechazos
 - **Comentarios opcionales** para la reasignación
 - **Trazabilidad** de tareas reasignadas
 - **Control total** sobre el proceso
-- **Revisión de evidencia fotográfica** antes de aprobar
-- **Verificación visual** de tareas completadas
+- **Revisión de evidencia fotográfica** antes de aprobar (cuando existe)
+- **Verificación visual** de tareas completadas (cuando se proporciona)
 - **Mayor confianza** en el proceso de aprobación
+- **Flexibilidad** para aprobar tareas con o sin evidencia fotográfica
 
 ## Seguridad y Control de Acceso
 

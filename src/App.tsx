@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
 import DigitalBanking from "./pages/DigitalBanking";
+import Savings from "./pages/Savings";
 import Tasks from "./pages/Tasks";
 import ParentTasks from "./pages/ParentTasks";
 import NotFound from "./pages/NotFound";
@@ -58,6 +59,11 @@ const App = () => (
           <Route path="/growth" element={
             <ProtectedRoute>
               <DigitalBanking />
+            </ProtectedRoute>
+          } />
+          <Route path="/savings" element={
+            <ProtectedRoute>
+              <Savings />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
