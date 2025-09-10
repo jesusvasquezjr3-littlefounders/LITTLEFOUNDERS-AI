@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import { 
   PairedTaskComponent, 
   PracticalTool, 
@@ -12,7 +13,7 @@ import {
   BiasMetric,
   LessonProgress 
 } from './BernheimFrameworkComponents';
-import { Calculator, Target, CheckCircle, AlertCircle, BookOpen } from 'lucide-react';
+import { Calculator, Target, CheckCircle, AlertCircle, BookOpen, TrendingUp, Coins } from 'lucide-react';
 
 interface Lesson1_1Props {
   onComplete: (score: number, progress: LessonProgress) => void;
@@ -36,18 +37,19 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
       <Card className="border-green-200">
         <CardHeader className="bg-green-50">
           <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
-            Herramienta: Calculadora de Equivalencia Monetaria
+            <Coins className="h-5 w-5" />
+            Herramienta: Calculadora de Valor Monetario
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-green-100 p-4 rounded-lg">
             <h4 className="font-bold text-green-800 mb-2">Pasos para usar la herramienta:</h4>
             <ol className="list-decimal list-inside space-y-2 text-sm text-green-700">
-              <li><strong>Identificar:</strong> Reconoce todas las monedas y billetes que tienes</li>
-              <li><strong>Calcular:</strong> Suma el valor de cada moneda y billete</li>
-              <li><strong>Comparar:</strong> Compara tu total con el precio del objeto</li>
-              <li><strong>Decidir:</strong> Si tu total ≥ precio, tienes suficiente dinero</li>
+              <li><strong>Identificar cada denominación:</strong> Reconoce monedas y billetes</li>
+              <li><strong>Leer el valor numérico:</strong> Cada moneda/billete tiene su valor impreso</li>
+              <li><strong>Sumar metodicamente:</strong> Agrupa por denominación y suma</li>
+              <li><strong>Verificar el total:</strong> Revisa que hayas contado todo</li>
+              <li><strong>Aplicar el valor de intercambio:</strong> Usa el total para evaluar compras</li>
             </ol>
           </div>
           
@@ -55,8 +57,12 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
           
           <div className="bg-gray-100 p-3 rounded-lg">
             <p className="text-sm text-gray-700">
-              <strong>Fórmula:</strong> Total de dinero ≥ Precio del objeto = ¿Puedes comprarlo?
+              <strong>Denominaciones básicas mexicanas:</strong> 
             </p>
+            <ul className="text-xs text-gray-600 mt-1 space-y-1">
+              <li>• Monedas: $0.50, $1, $2, $5, $10</li>
+              <li>• Billetes: $20, $50, $100, $200, $500</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -65,20 +71,40 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
 
   // ETAPA 2: DECISIONES DE VALUACIÓN - TAREAS PAREADAS
   const pairedTask: PairedTask = {
-    id: 'money-valuation-task',
+    id: 'money-value-recognition-task',
     complexProblem: {
-      question: "Lucas quiere comprar un juguete que cuesta $50. Él tiene: 2 billetes de $20, 1 moneda de $5, 3 monedas de $1, y 1 moneda de $2. ¿Cuánto dinero tiene Lucas y puede comprar el juguete?",
-      context: "Lucas está en la juguetería con su dinero. Necesita saber si puede comprar el juguete antes de ir a la caja.",
-      correctAnswer: 50,
-      explanation: "Lucas tiene: $20+$20+$5+$1+$1+$1+$2 = $50. Como $50 = $50, sí puede comprar el juguete."
+      question: "Sofía va a la tienda con su alcancía que tiene: 3 monedas doradas grandes, 5 monedas plateadas medianas, 2 papeles verdes, y 4 monedas cobrizas pequeñas. El tendero le dice que las monedas doradas grandes valen $10 cada una, las plateadas $2, los papeles verdes $20, y las cobrizas $1. Sofía quiere comprar un juguete que cuesta $67. ¿Cuánto dinero tiene Sofía en total?",
+      context: "Sofía debe identificar el valor real de diferentes tipos de dinero sin dejarse confundir por las descripciones físicas.",
+      correctAnswer: 67,
+      explanation: "Sofía tiene: 3×$10 + 5×$2 + 2×$20 + 4×$1 = $30 + $10 + $40 + $4 = $84 total."
     },
     transparentProblem: {
-      question: "Si tienes exactamente $50 y un objeto cuesta $50, ¿puedes comprarlo?",
-      context: "Problema equivalente pero con números simples.",
-      correctAnswer: 50,
-      explanation: "Si tienes $50 y algo cuesta $50, tienes exactamente lo suficiente para comprarlo."
+      question: "¿Cuánto dinero tiene Diego si cuenta: 3 monedas de $10, 5 monedas de $2, 2 billetes de $20, y 4 monedas de $1?",
+      context: "Cálculo directo del valor total usando denominaciones claramente identificadas.",
+      correctAnswer: 84,
+      explanation: "3×$10 + 5×$2 + 2×$20 + 4×$1 = $30 + $10 + $40 + $4 = $84."
     }
   };
+
+  // Tarea pareada adicional para efectos heterogéneos
+  const pairedTaskAdvanced: PairedTask = {
+    id: 'money-exchange-value-task',
+    complexProblem: {
+      question: "Carlos encuentra estas cosas en su mochila: una moneda redonda que dice '10', dos papeles rectangulares que dicen '50', tres moneditas que dicen '5', y cinco monedas pequeñas que dicen '1'. Su hermana le ofrece cambiarle todo eso por un solo billete de $100. ¿Debería Carlos aceptar el intercambio?",
+      context: "Carlos debe calcular el valor total de su dinero para evaluar si el intercambio es justo.",
+      correctAnswer: 0, // No debería aceptar (el valor real es $126, mayor que $100)
+      explanation: "Carlos tiene: 1×$10 + 2×$50 + 3×$5 + 5×$1 = $10 + $100 + $15 + $5 = $130. No debería aceptar $100 por $130."
+    },
+    transparentProblem: {
+      question: "¿Es justo intercambiar $130 por $100?",
+      context: "Comparación directa entre dos valores monetarios claros.",
+      correctAnswer: 0, // No es justo
+      explanation: "$130 es mayor que $100, por lo que no es un intercambio justo."
+    }
+  };
+
+  const [currentPairedTask, setCurrentPairedTask] = useState<PairedTask>(pairedTask);
+  const [tasksCompleted, setTasksCompleted] = useState<number>(0);
 
   // ETAPA 3: EVALUACIÓN - MEDICIÓN DE COMPETENCIA DELIBERATIVA
   const handleTaskComplete = (complexAnswer: number, transparentAnswer: number, biasScore: number) => {
@@ -86,16 +112,25 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
     setBiasHistory(newBiasHistory);
     setCurrentBias(biasScore);
     
+    const newTasksCompleted = tasksCompleted + 1;
+    setTasksCompleted(newTasksCompleted);
+    
+    if (newTasksCompleted === 1) {
+      // Mostrar segunda tarea pareada para efectos heterogéneos
+      setCurrentPairedTask(pairedTaskAdvanced);
+      return;
+    }
+    
     // Calcular reducción de sesgo
     const avgBias = newBiasHistory.reduce((a, b) => a + Math.abs(b), 0) / newBiasHistory.length;
     const biasReduction = newBiasHistory.length > 1 ? 
       Math.abs(newBiasHistory[0]) - Math.abs(biasScore) : 0;
 
     const newProgress: LessonProgress = {
-      conceptMastered: Math.abs(biasScore) <= 5, // Competencia si sesgo ≤ 5
+      conceptMastered: Math.abs(biasScore) <= 3, // Competencia si sesgo ≤ $3 en reconocimiento monetario
       biasReduction: biasReduction,
-      completedTasks: [...lessonProgress.completedTasks, 'money-valuation-task'],
-      timeSpent: lessonProgress.timeSpent + 300 // 5 minutos estimados por tarea
+      completedTasks: [...lessonProgress.completedTasks, currentPairedTask.id],
+      timeSpent: lessonProgress.timeSpent + 400 // 6-7 minutos estimados por tarea
     };
 
     setLessonProgress(newProgress);
@@ -104,7 +139,7 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
 
   const handleComplete = () => {
     const finalScore = lessonProgress.conceptMastered ? 100 : 
-      Math.max(0, 100 - Math.abs(currentBias) * 2);
+      Math.max(0, 100 - Math.abs(currentBias) * 3);
     onComplete(finalScore, lessonProgress);
   };
 
@@ -114,8 +149,8 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
       <Card className="border-2 border-purple-200">
         <CardHeader className="bg-purple-50">
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-6 w-6" />
-            LECCIÓN: Herramienta de Valuación Monetaria
+            <TrendingUp className="h-6 w-6" />
+            LECCIÓN: Calculadora de Valor Monetario
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
@@ -124,7 +159,7 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
               Edad: 8-12 años
             </Badge>
             <Badge variant="outline" className="bg-green-100">
-              Duración: 15-20 minutos
+              Duración: 20-25 minutos
             </Badge>
             <Badge variant="outline" className="bg-purple-100">
               Etapa: {currentStage === 'intervention' ? '1. Herramienta' : 
@@ -141,35 +176,35 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
             <CardHeader className="bg-blue-50">
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                1. CONCEPTO SUSTANTIVO: Calculadora de Equivalencia Monetaria
+                1. CONCEPTO SUSTANTIVO: Calculadora de Valor Monetario
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-700">
-                Aprende a usar una herramienta práctica para determinar si tienes suficiente dinero 
-                para comprar algo. Esta herramienta te ayuda a contar dinero de forma sistemática y 
-                comparar con precios.
+                Aprende a identificar y calcular el valor total de diferentes combinaciones de monedas y billetes 
+                usando un método sistemático y preciso. Esta herramienta te permite determinar exactamente 
+                cuánto dinero tienes y evaluar si es suficiente para tus compras.
               </p>
 
               <PracticalTool
-                title="Calculadora de Equivalencia Monetaria"
-                description="Herramienta sistemática para contar dinero mixto y comparar con precios"
+                title="Calculadora de Valor Monetario"
+                description="Sistema para identificar, contar y sumar el valor de dinero en efectivo"
                 tool={practicalTool}
                 examples={[
                   {
-                    input: { monedas: "2×$10, 1×$5", precio: "$25" },
-                    output: { total: "$25", puedoComprar: "Sí" },
-                    explanation: "2×$10 + 1×$5 = $25. Como $25 = $25, puedes comprar."
+                    input: { monedas: "2 de $10, 3 de $5" },
+                    output: { total: "$35" },
+                    explanation: "2×$10 + 3×$5 = $20 + $15 = $35"
                   },
                   {
-                    input: { monedas: "1×$20, 3×$1", precio: "$25" },
-                    output: { total: "$23", puedoComprar: "No" },
-                    explanation: "1×$20 + 3×$1 = $23. Como $23 < $25, no puedes comprar."
+                    input: { dinero: "1 billete de $50, 4 monedas de $2" },
+                    output: { total: "$58" },
+                    explanation: "1×$50 + 4×$2 = $50 + $8 = $58"
                   },
                   {
-                    input: { monedas: "1×$50", precio: "$30" },
-                    output: { total: "$50", puedoComprar: "Sí" },
-                    explanation: "1×$50 = $50. Como $50 > $30, puedes comprar y te sobra dinero."
+                    input: { combinado: "1 de $20, 2 de $10, 5 de $1" },
+                    output: { total: "$45" },
+                    explanation: "1×$20 + 2×$10 + 5×$1 = $20 + $20 + $5 = $45"
                   }
                 ]}
               />
@@ -192,19 +227,21 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
             <CardHeader className="bg-orange-50">
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
-                2. PRÁCTICA CON RETROALIMENTACIÓN: Tareas Pareadas
+                2. PRÁCTICA CON RETROALIMENTACIÓN: Tareas Pareadas ({tasksCompleted + 1}/2)
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <p className="text-gray-700 mb-4">
-                Ahora vas a practicar con dos problemas equivalentes. Usa la herramienta que acabas 
-                de aprender para resolver ambos problemas de la forma más consistente posible.
+                Practica identificando y calculando valores monetarios en situaciones reales. Usa la calculadora 
+                de valor monetario para resolver ambos problemas de manera consistente. {tasksCompleted === 0 ? 
+                "Completarás 2 ejercicios que muestran diferentes formas de describir el dinero." : 
+                "Este es tu segundo ejercicio con evaluación de intercambios."}
               </p>
             </CardContent>
           </Card>
 
           <PairedTaskComponent
-            task={pairedTask}
+            task={currentPairedTask}
             onComplete={handleTaskComplete}
             showFeedback={true}
           />
@@ -218,80 +255,113 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
             <CardHeader className="bg-green-50">
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5" />
-                3. EVALUACIÓN: Competencia Deliberativa
+                3. EVALUACIÓN: Competencia Deliberativa en Reconocimiento Monetario
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <p className="text-gray-700 mb-4">
-                Tu desempeño se mide por qué tan consistentes son tus respuestas entre problemas 
-                complejos y simples. Menor diferencia = mayor competencia deliberativa.
+                Tu competencia se mide por la consistencia en calcular valores monetarios, 
+                independientemente de cómo se presente la información. Una herramienta bien 
+                dominada produce cálculos coherentes sin importar la complejidad de la descripción.
               </p>
             </CardContent>
           </Card>
 
           <CompetenceTracker
             biasHistory={biasHistory}
-            targetReduction={10}
+            targetReduction={5}
             currentBias={currentBias}
           />
 
-          {/* Métricas específicas al concepto */}
+          {/* Métricas específicas del reconocimiento monetario */}
           <Card className="border-purple-200">
             <CardHeader className="bg-purple-50">
-              <CardTitle>Métricas de Competencia en Valuación Monetaria</CardTitle>
+              <CardTitle>Métricas de Competencia en Valor Monetario</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-blue-100 rounded-lg">
                   <p className="text-2xl font-bold text-blue-600">
-                    {lessonProgress.conceptMastered ? 'SÍ' : 'NO'}
+                    {lessonProgress.conceptMastered ? 'DOMINADO' : 'EN PROGRESO'}
                   </p>
-                  <p className="text-sm text-blue-800">Concepto Dominado</p>
+                  <p className="text-sm text-blue-800">Identificación de Dinero</p>
                 </div>
                 <div className="text-center p-4 bg-green-100 rounded-lg">
                   <p className="text-2xl font-bold text-green-600">
-                    {Math.abs(currentBias)} pts
+                    ${Math.abs(currentBias)}
                   </p>
-                  <p className="text-sm text-green-800">Sesgo Métrico</p>
+                  <p className="text-sm text-green-800">Sesgo de Cálculo</p>
+                </div>
+                <div className="text-center p-4 bg-orange-100 rounded-lg">
+                  <p className="text-2xl font-bold text-orange-600">
+                    {tasksCompleted}/2
+                  </p>
+                  <p className="text-sm text-orange-800">Escenarios Practicados</p>
                 </div>
               </div>
 
-              {/* Interpretación del sesgo */}
-              {Math.abs(currentBias) <= 5 && (
+              {/* Interpretación del sesgo específica para reconocimiento monetario */}
+              {Math.abs(currentBias) <= 3 && (
                 <Alert className="border-green-200 bg-green-50">
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>¡Excelente competencia deliberativa!</strong> Tus respuestas son muy consistentes. 
-                    Dominas la herramienta de valuación monetaria.
+                    <strong>¡Excelente dominio del reconocimiento monetario!</strong> Calculas valores 
+                    de manera consistente sin importar cómo se presente la información. Puedes identificar 
+                    y contar dinero con confianza.
                   </AlertDescription>
                 </Alert>
               )}
 
-              {Math.abs(currentBias) > 5 && Math.abs(currentBias) <= 15 && (
+              {Math.abs(currentBias) > 3 && Math.abs(currentBias) <= 10 && (
                 <Alert className="border-yellow-200 bg-yellow-50">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>Competencia en desarrollo.</strong> Hay una pequeña diferencia en tus respuestas. 
-                    Practica más con la herramienta sistemática.
+                    <strong>Buen progreso en reconocimiento monetario.</strong> Tienes diferencias menores 
+                    al calcular valores. Practica más para mantener consistencia con diferentes descripciones del dinero.
                   </AlertDescription>
                 </Alert>
               )}
 
-              {Math.abs(currentBias) > 15 && (
+              {Math.abs(currentBias) > 10 && (
                 <Alert className="border-red-200 bg-red-50">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>Necesita más práctica.</strong> Gran diferencia entre tus respuestas complejas y simples. 
-                    Vuelve a practicar con la herramienta paso a paso.
+                    <strong>Necesita más práctica con la herramienta.</strong> Las variaciones en tus cálculos 
+                    sugieren que debes revisar los pasos para identificar y sumar el valor del dinero.
                   </AlertDescription>
                 </Alert>
               )}
+
+              {/* Efectos heterogéneos - consejos personalizados */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <h4 className="font-bold text-blue-800 mb-2">Perfil de Reconocimiento Personalizado:</h4>
+                  {currentBias > 5 && (
+                    <p className="text-sm text-blue-700">
+                      Tiendes a sobrestimar el valor del dinero cuando se presenta de manera compleja. 
+                      La herramienta te ayudará a mantener cálculos precisos independientemente de cómo se describa el dinero.
+                    </p>
+                  )}
+                  {currentBias < -5 && (
+                    <p className="text-sm text-blue-700">
+                      Tiendes a subestimar el valor del dinero en escenarios complejos. Usa la calculadora 
+                      paso a paso para asegurar que no pases por alto ninguna denominación.
+                    </p>
+                  )}
+                  {Math.abs(currentBias) <= 5 && (
+                    <p className="text-sm text-blue-700">
+                      ¡Tienes un excelente reconocimiento monetario natural! Puedes identificar y calcular 
+                      el valor del dinero de manera confiable en cualquier situación.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
 
               <Button 
                 onClick={handleComplete}
                 className="w-full bg-green-600 hover:bg-green-700"
               >
-                Completar Lección
+                Completar Lección de Reconocimiento Monetario
               </Button>
             </CardContent>
           </Card>
@@ -304,84 +374,120 @@ const Lesson1_1_WhatIsMoney_Bernheim: React.FC<Lesson1_1Props> = ({ onComplete, 
           Salir
         </Button>
         <div className="text-sm text-gray-600">
-          Tiempo estimado: {lessonProgress.timeSpent} minutos
+          Tiempo estimado: {Math.ceil(lessonProgress.timeSpent / 60)} minutos
         </div>
       </div>
     </div>
   );
 };
 
-// Componente auxiliar para la calculadora interactiva
+// Componente auxiliar para la calculadora de dinero
 const MoneyCalculator: React.FC = () => {
-  const [coins, setCoins] = useState<{[key: string]: number}>({
-    '1': 0,
-    '2': 0,
-    '5': 0,
-    '10': 0,
-    '20': 0,
-    '50': 0,
-    '100': 0
-  });
+  const [coins10, setCoins10] = useState<number>(0);
+  const [coins5, setCoins5] = useState<number>(0);
+  const [coins2, setCoins2] = useState<number>(0);
+  const [coins1, setCoins1] = useState<number>(0);
+  const [bills20, setBills20] = useState<number>(0);
+  const [bills50, setBills50] = useState<number>(0);
 
   const calculateTotal = () => {
-    return Object.entries(coins).reduce((total, [value, count]) => {
-      return total + (parseInt(value) * count);
-    }, 0);
+    return (coins10 * 10) + (coins5 * 5) + (coins2 * 2) + (coins1 * 1) + (bills20 * 20) + (bills50 * 50);
   };
 
   const resetCalculator = () => {
-    setCoins({
-      '1': 0,
-      '2': 0,
-      '5': 0,
-      '10': 0,
-      '20': 0,
-      '50': 0,
-      '100': 0
-    });
+    setCoins10(0);
+    setCoins5(0);
+    setCoins2(0);
+    setCoins1(0);
+    setBills20(0);
+    setBills50(0);
   };
 
+  const total = calculateTotal();
+
   return (
-    <div className="bg-white p-4 border rounded-lg">
-      <h4 className="font-bold mb-3">Calculadora Práctica</h4>
+    <div className="bg-white p-4 border rounded-lg space-y-4">
+      <h4 className="font-bold mb-3">Calculadora Práctica de Dinero</h4>
       
-      <div className="grid grid-cols-4 gap-3 mb-4">
-        {Object.entries(coins).map(([value, count]) => (
-          <div key={value} className="text-center">
-            <div className="text-sm font-medium mb-1">${value}</div>
-            <div className="flex items-center justify-center gap-1">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setCoins(prev => ({
-                  ...prev,
-                  [value]: Math.max(0, prev[value] - 1)
-                }))}
-              >
-                -
-              </Button>
-              <span className="w-8 text-center">{count}</span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setCoins(prev => ({
-                  ...prev,
-                  [value]: prev[value] + 1
-                }))}
-              >
-                +
-              </Button>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Monedas $10</label>
+          <Input
+            type="number"
+            value={coins10 || ''}
+            onChange={(e) => setCoins10(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Monedas $5</label>
+          <Input
+            type="number"
+            value={coins5 || ''}
+            onChange={(e) => setCoins5(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Monedas $2</label>
+          <Input
+            type="number"
+            value={coins2 || ''}
+            onChange={(e) => setCoins2(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Monedas $1</label>
+          <Input
+            type="number"
+            value={coins1 || ''}
+            onChange={(e) => setCoins1(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Billetes $20</label>
+          <Input
+            type="number"
+            value={bills20 || ''}
+            onChange={(e) => setBills20(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Billetes $50</label>
+          <Input
+            type="number"
+            value={bills50 || ''}
+            onChange={(e) => setBills50(Number(e.target.value))}
+            placeholder="0"
+            min="0"
+          />
+        </div>
       </div>
 
-      <div className="border-t pt-3">
-        <div className="flex justify-between items-center mb-2">
-          <span className="font-bold">Total:</span>
-          <span className="text-lg font-bold text-green-600">${calculateTotal()}</span>
+      <div className="border-t pt-4">
+        <div className="text-center p-4 bg-green-100 rounded-lg">
+          <div className="text-sm font-medium mb-1">Total Calculado</div>
+          <div className="text-3xl font-bold text-green-600">
+            ${total}
+          </div>
         </div>
-        <Button variant="outline" onClick={resetCalculator} className="w-full">
+        
+        <div className="mt-3 p-2 bg-gray-100 rounded text-center text-sm">
+          <span className="font-medium">Cálculo: </span>
+          <span>
+            ({coins10}×$10) + ({coins5}×$5) + ({coins2}×$2) + ({coins1}×$1) + ({bills20}×$20) + ({bills50}×$50) = ${total}
+          </span>
+        </div>
+
+        <Button variant="outline" onClick={resetCalculator} className="w-full mt-3">
           Resetear
         </Button>
       </div>
