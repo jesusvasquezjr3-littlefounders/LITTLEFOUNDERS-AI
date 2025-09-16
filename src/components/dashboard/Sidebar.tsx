@@ -16,7 +16,9 @@ import {
   ClipboardList,
   Target,
   PiggyBank,
-  Store
+  Store,
+  Lightbulb,
+  Coins
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -43,6 +45,7 @@ const getMenuItems = () => {
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
       { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
+      { title: "Aprende a Invertir", url: "/lemonade-stand", icon: Lightbulb, color: "text-orange-500" },
       { title: "Mis Tareas", url: "/tasks", icon: Trophy, color: "text-yellow-600" },
       { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
@@ -57,6 +60,7 @@ const getMenuItems = () => {
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
       { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
+      { title: "Aprende a Invertir", url: "/lemonade-stand", icon: Lightbulb, color: "text-orange-500" },
       { title: "Gestión de Tareas", url: "/parent-tasks", icon: ClipboardList, color: "text-purple-600" },
       { title: "Reportes", url: "/analytics", icon: BarChart3, color: "text-primary" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
