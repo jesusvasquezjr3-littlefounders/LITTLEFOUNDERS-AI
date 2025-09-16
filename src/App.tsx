@@ -17,6 +17,7 @@ import DigitalBanking from "./pages/DigitalBanking";
 import Savings from "./pages/Savings";
 import Tasks from "./pages/Tasks";
 import ParentTasks from "./pages/ParentTasks";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,11 @@ const App = () => (
           <Route path="/savings" element={
             <ProtectedRoute>
               <Savings />
+            </ProtectedRoute>
+          } />
+          <Route path="/store" element={
+            <ProtectedRoute>
+              <Store />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
