@@ -18,6 +18,8 @@ import Savings from "./pages/Savings";
 import Tasks from "./pages/Tasks";
 import ParentTasks from "./pages/ParentTasks";
 import Store from "./pages/Store";
+import InvestmentGames from "./pages/InvestmentGames";
+import LemonadeStand from "./pages/LemonadeStand";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,6 +78,16 @@ const App = () => (
           <Route path="/store" element={
             <ProtectedRoute>
               <Store />
+            </ProtectedRoute>
+          } />
+          <Route path="/investment-games" element={
+            <ProtectedRoute>
+              <InvestmentGames />
+            </ProtectedRoute>
+          } />
+          <Route path="/lemonade-stand" element={
+            <ProtectedRoute>
+              <LemonadeStand />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
