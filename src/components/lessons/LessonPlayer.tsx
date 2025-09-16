@@ -57,7 +57,7 @@ interface LessonPlayerProps {
 
 const LessonPlayer: React.FC<LessonPlayerProps> = ({
   initialLessonId,
-  ageRange = "7-10",
+  ageRange = "8-10",
   onExit,
   userProgress = [],
   onProgressUpdate
@@ -70,7 +70,7 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
   // Datos de las lecciones disponibles según el rango de edad
   const getLessonsByAgeRange = (ageRange: string) => {
     switch (ageRange) {
-      case "7-10":
+      case "8-10":
         return [
           {
             id: '1.1',
@@ -414,10 +414,10 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
-              {ageRange === "7-10" ? "Exploradores Financieros" : "Administradores Junior"}
+              {ageRange === "8-10" ? "Exploradores Financieros" : "Administradores Junior"}
             </h1>
             <p className="text-gray-600">
-              {ageRange === "7-10" 
+              {ageRange === "8-10" 
                 ? "Nivel 1: Primeros Pasos con el Dinero" 
                 : "Nivel 1: Mi Primer Presupuesto"
               }
@@ -438,7 +438,7 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           <CardTitle className="flex items-center space-x-2">
             <Trophy className="w-6 h-6 text-yellow-600" />
             <span>
-              Tu Progreso en {ageRange === "7-10" ? "Exploradores Financieros" : "Administradores Junior"}
+              Tu Progreso en {ageRange === "8-10" ? "Exploradores Financieros" : "Administradores Junior"}
             </span>
           </CardTitle>
         </CardHeader>

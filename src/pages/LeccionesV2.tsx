@@ -64,14 +64,14 @@ interface AgeRange {
 const LeccionesV2 = () => {
   const [showInteractiveLessons, setShowInteractiveLessons] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<string>("nivel-1");
-  const [selectedAgeRange, setSelectedAgeRange] = useState<string>("7-10");
+  const [selectedAgeRange, setSelectedAgeRange] = useState<string>("8-10");
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // Definir los rangos de edad disponibles
   const ageRanges: AgeRange[] = [
     {
-      id: "7-10",
-      label: "7-10 años",
+      id: "8-10",
+      label: "8-10 años",
       description: "Exploradores Financieros - Conceptos básicos y actividades interactivas",
       icon: Calendar
     },
@@ -92,7 +92,7 @@ const LeccionesV2 = () => {
   // Función para obtener los niveles según el rango de edad seleccionado
   const getLevelsByAgeRange = (ageRange: string): Level[] => {
     switch (ageRange) {
-      case "7-10":
+      case "8-10":
         return [
           {
             id: "nivel-1",
