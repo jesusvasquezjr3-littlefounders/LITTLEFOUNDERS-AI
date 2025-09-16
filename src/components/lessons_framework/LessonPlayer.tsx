@@ -1,28 +1,34 @@
 import React, { useState, useEffect } from 'react';
 // FRAMEWORK DE BERNHEIM - Lecciones científicamente validadas (framework)
 import Lesson1_1_WhatIsMoney_Bernheim from './Lesson1_1_WhatIsMoney_Bernheim';
-import Lesson1_2_WhereMoneyComesFrom from './Lesson1_2_WhereMoneyComesFrom';
+import Lesson1_2_WhereMoneyComesFrom_Bernheim from './Lesson1_2_WhereMoneyComesFrom_Bernheim';
 import Lesson1_3_NeedsVsWants_Bernheim from './Lesson1_3_NeedsVsWants_Bernheim';
-import Lesson2_1_TasksAndAllowance from './Lesson2_1_TasksAndAllowance';
-import Lesson2_2_SmartPurchaseDecisions from './Lesson2_2_SmartPurchaseDecisions';
+import Lesson2_1_TasksAndAllowance_Bernheim from './Lesson2_1_TasksAndAllowance_Bernheim';
+import Lesson2_2_SmartPurchaseDecisions_Bernheim from './Lesson2_2_SmartPurchaseDecisions_Bernheim';
 import Lesson2_3_Saving_Bernheim from './Lesson2_3_Saving_Bernheim';
-import Lesson2_4_MyFirstSavingGoals from './Lesson2_4_MyFirstSavingGoals';
+import Lesson2_4_MyFirstSavingGoals_Bernheim from './Lesson2_4_MyFirstSavingGoals_Bernheim';
 // Lecciones para 11-13 años (framework)
 import Lesson1_1_WhatIsBudget_Bernheim from './Lesson1_1_WhatIsBudget_Bernheim';
-import Lesson1_2_ExpenseTracking from './Lesson1_2_ExpenseTracking';
-import Lesson2_1_WhatIsBank from './Lesson2_1_WhatIsBank';
-import Lesson2_2_SavingsAccounts from './Lesson2_2_SavingsAccounts';
+import Lesson1_2_ExpenseTracking_Bernheim from './Lesson1_2_ExpenseTracking_Bernheim';
+import Lesson2_1_WhatIsBank_Bernheim from './Lesson2_1_WhatIsBank_Bernheim';
+import Lesson2_2_SavingsAccounts_Bernheim from './Lesson2_2_SavingsAccounts_Bernheim';
 import Lesson3_1_PriceQualityComparison_Bernheim from './Lesson3_1_PriceQualityComparison_Bernheim';
-import Lesson3_2_OffersAndDiscounts from './Lesson3_2_OffersAndDiscounts';
-// Lecciones para 14-16 años
-import Lesson4_1_PlanificacionFinanciera from './Lesson4_1_PlanificacionFinanciera';
-import Lesson4_2_IngresosTrabajos from './Lesson4_2_IngresosTrabajos';
-import Lesson5_1_QueEsCredito from './Lesson5_1_QueEsCredito';
-import Lesson5_2_HistorialCrediticio from './Lesson5_2_HistorialCrediticio';
-import Lesson6_1_QueSonInversiones from './Lesson6_1_QueSonInversiones';
-import Lesson6_2_RiesgoRendimiento from './Lesson6_2_RiesgoRendimiento';
-import Lesson7_1_CostosVidaIndependiente from './Lesson7_1_CostosVidaIndependiente';
-import Lesson7_2_SegurosProteccion from './Lesson7_2_SegurosProteccion';
+import Lesson3_2_OffersAndDiscounts_Bernheim from './Lesson3_2_OffersAndDiscounts_Bernheim';
+// Lecciones para 14-16 años (framework)
+import Lesson4_1_PlanificacionFinanciera_Bernheim from './Lesson4_1_PlanificacionFinanciera_Bernheim';
+import Lesson4_2_IngresosTrabajos_Bernheim from './Lesson4_2_IngresosTrabajos_Bernheim';
+import Lesson5_1_QueEsCredito_Bernheim from './Lesson5_1_QueEsCredito_Bernheim';
+import Lesson5_2_HistorialCrediticio_Bernheim from './Lesson5_2_HistorialCrediticio_Bernheim';
+import Lesson6_1_QueSonInversiones_Bernheim from './Lesson6_1_QueSonInversiones_Bernheim';
+import Lesson6_2_RiesgoRendimiento_Bernheim from './Lesson6_2_RiesgoRendimiento_Bernheim';
+import Lesson7_1_CostosVidaIndependiente_Bernheim from './Lesson7_1_CostosVidaIndependiente_Bernheim';
+import Lesson7_2_SegurosProteccion_Bernheim from './Lesson7_2_SegurosProteccion_Bernheim';
+// Lecciones por edad específica (framework)
+import Lesson_Ages8to10_SavingsGoals_Bernheim from './Lesson_Ages8to10_SavingsGoals_Bernheim';
+import Lesson_Ages8to10_ValueComparison_Bernheim from './Lesson_Ages8to10_ValueComparison_Bernheim';
+import Lesson_Ages11to13_BudgetingTool_Bernheim from './Lesson_Ages11to13_BudgetingTool_Bernheim';
+import Lesson_Ages11to13_SmartSpending_Bernheim from './Lesson_Ages11to13_SmartSpending_Bernheim';
+import Lesson_Ages14to16_CompoundInterest_Bernheim from './Lesson_Ages14to16_CompoundInterest_Bernheim';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -84,11 +90,11 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           },
           {
             id: '1.2',
-            title: 'De Dónde Viene el Dinero',
-            description: 'Aprende sobre el trabajo y cómo las personas ganan dinero',
+            title: 'De Dónde Viene el Dinero (framework)',
+            description: 'Herramienta de comprensión del trabajo y ingresos - Framework científico de Bernheim',
             duration: '25 min',
             difficulty: 'Fácil',
-            component: Lesson1_2_WhereMoneyComesFrom,
+            component: Lesson1_2_WhereMoneyComesFrom_Bernheim,
             emoji: '💼',
             unlocked: completedLessons.some(p => p.lessonId === '1.1')
           },
@@ -104,21 +110,21 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           },
           {
             id: '2.1',
-            title: 'Tareas y Mesada',
-            description: 'Aprende a ganar dinero a través de responsabilidades',
+            title: 'Tareas y Mesada (framework)',
+            description: 'Herramienta de responsabilidad y recompensas - Framework científico de Bernheim',
             duration: '35 min',
             difficulty: 'Fácil',
-            component: Lesson2_1_TasksAndAllowance,
+            component: Lesson2_1_TasksAndAllowance_Bernheim,
             emoji: '⭐',
             unlocked: completedLessons.some(p => p.lessonId === '1.3')
           },
           {
             id: '2.2',
-            title: 'Decisiones Inteligentes de Compra',
-            description: 'Aprende a tomar decisiones inteligentes al comprar',
+            title: 'Decisiones Inteligentes de Compra (framework)',
+            description: 'Herramienta de análisis de decisiones de compra - Framework científico de Bernheim',
             duration: '40 min',
             difficulty: 'Intermedio',
-            component: Lesson2_2_SmartPurchaseDecisions,
+            component: Lesson2_2_SmartPurchaseDecisions_Bernheim,
             emoji: '🧠',
             unlocked: completedLessons.some(p => p.lessonId === '2.1')
           },
@@ -134,13 +140,33 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           },
           {
             id: '2.4',
-            title: 'Mis Primeras Metas de Ahorro',
-            description: 'Aprende a establecer y alcanzar metas de ahorro',
+            title: 'Mis Primeras Metas de Ahorro (framework)',
+            description: 'Herramienta de establecimiento de metas de ahorro - Framework científico de Bernheim',
             duration: '50 min',
             difficulty: 'Intermedio',
-            component: Lesson2_4_MyFirstSavingGoals,
+            component: Lesson2_4_MyFirstSavingGoals_Bernheim,
             emoji: '🎯',
             unlocked: completedLessons.some(p => p.lessonId === '2.3')
+          },
+          {
+            id: '3.1',
+            title: 'Metas de Ahorro Avanzadas (framework)',
+            description: 'Herramienta especializada de planificación de ahorros - Framework científico de Bernheim',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson_Ages8to10_SavingsGoals_Bernheim,
+            emoji: '💰',
+            unlocked: completedLessons.some(p => p.lessonId === '2.4')
+          },
+          {
+            id: '3.2',
+            title: 'Comparación de Valores (framework)',
+            description: 'Herramienta de análisis de valor y comparación - Framework científico de Bernheim',
+            duration: '40 min',
+            difficulty: 'Intermedio',
+            component: Lesson_Ages8to10_ValueComparison_Bernheim,
+            emoji: '⚖️',
+            unlocked: completedLessons.some(p => p.lessonId === '3.1')
           }
         ];
       case "11-13":
@@ -157,31 +183,31 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           },
           {
             id: '1.2',
-            title: 'Seguimiento de Gastos',
-            description: 'Registra y analiza tus patrones de gasto',
+            title: 'Seguimiento de Gastos (framework)',
+            description: 'Herramienta de análisis de patrones de gasto - Framework científico de Bernheim',
             duration: '50 min',
             difficulty: 'Intermedio',
-            component: Lesson1_2_ExpenseTracking,
+            component: Lesson1_2_ExpenseTracking_Bernheim,
             emoji: '📝',
             unlocked: completedLessons.some(p => p.lessonId === '1.1')
           },
           {
             id: '2.1',
-            title: '¿Qué es un Banco?',
-            description: 'Entiende el sistema bancario y sus funciones',
+            title: '¿Qué es un Banco? (framework)',
+            description: 'Herramienta de comprensión del sistema bancario - Framework científico de Bernheim',
             duration: '40 min',
             difficulty: 'Intermedio',
-            component: Lesson2_1_WhatIsBank,
+            component: Lesson2_1_WhatIsBank_Bernheim,
             emoji: '🏦',
             unlocked: completedLessons.some(p => p.lessonId === '1.2')
           },
           {
             id: '2.2',
-            title: 'Cuentas de Ahorro',
-            description: 'Aprende sobre intereses y crecimiento del dinero',
+            title: 'Cuentas de Ahorro (framework)',
+            description: 'Herramienta de comprensión de intereses y crecimiento - Framework científico de Bernheim',
             duration: '45 min',
             difficulty: 'Intermedio',
-            component: Lesson2_2_SavingsAccounts,
+            component: Lesson2_2_SavingsAccounts_Bernheim,
             emoji: '💰',
             unlocked: completedLessons.some(p => p.lessonId === '2.1')
           },
@@ -197,96 +223,126 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           },
           {
             id: '3.2',
-            title: 'Ofertas y Descuentos',
-            description: 'Aprende a calcular descuentos y distinguir ofertas reales',
+            title: 'Ofertas y Descuentos (framework)',
+            description: 'Herramienta de análisis de ofertas y descuentos - Framework científico de Bernheim',
             duration: '45 min',
             difficulty: 'Intermedio',
-            component: Lesson3_2_OffersAndDiscounts,
+            component: Lesson3_2_OffersAndDiscounts_Bernheim,
             emoji: '🏷️',
             unlocked: completedLessons.some(p => p.lessonId === '3.1')
+          },
+          {
+            id: '4.1',
+            title: 'Herramienta de Presupuesto Avanzada (framework)',
+            description: 'Herramienta especializada de presupuestación - Framework científico de Bernheim',
+            duration: '55 min',
+            difficulty: 'Intermedio',
+            component: Lesson_Ages11to13_BudgetingTool_Bernheim,
+            emoji: '📊',
+            unlocked: completedLessons.some(p => p.lessonId === '3.2')
+          },
+          {
+            id: '4.2',
+            title: 'Gastos Inteligentes (framework)',
+            description: 'Herramienta de análisis de gastos inteligentes - Framework científico de Bernheim',
+            duration: '50 min',
+            difficulty: 'Intermedio',
+            component: Lesson_Ages11to13_SmartSpending_Bernheim,
+            emoji: '🧠',
+            unlocked: completedLessons.some(p => p.lessonId === '4.1')
           }
         ];
       case "14-16":
         return [
           {
             id: '4.1',
-            title: 'Planificación Financiera a Largo Plazo',
-            description: 'Crea metas financieras y planes estructurados para el futuro',
+            title: 'Planificación Financiera a Largo Plazo (framework)',
+            description: 'Herramienta de planificación financiera estructurada - Framework científico de Bernheim',
             duration: '60 min',
             difficulty: 'Avanzado',
-            component: Lesson4_1_PlanificacionFinanciera,
+            component: Lesson4_1_PlanificacionFinanciera_Bernheim,
             emoji: '🎯',
             unlocked: true
           },
           {
             id: '4.2',
-            title: 'Ingresos y Trabajos de Medio Tiempo',
-            description: 'Oportunidades laborales y gestión de ingresos variables',
+            title: 'Ingresos y Trabajos de Medio Tiempo (framework)',
+            description: 'Herramienta de gestión de ingresos y oportunidades laborales - Framework científico de Bernheim',
             duration: '55 min',
             difficulty: 'Avanzado',
-            component: Lesson4_2_IngresosTrabajos,
+            component: Lesson4_2_IngresosTrabajos_Bernheim,
             emoji: '💼',
             unlocked: completedLessons.some(p => p.lessonId === '4.1')
           },
           {
             id: '5.1',
-            title: '¿Qué es el Crédito?',
-            description: 'Entender los fundamentos del crédito y tipos disponibles',
+            title: '¿Qué es el Crédito? (framework)',
+            description: 'Herramienta de comprensión del crédito y sus fundamentos - Framework científico de Bernheim',
             duration: '50 min',
             difficulty: 'Avanzado',
-            component: Lesson5_1_QueEsCredito,
+            component: Lesson5_1_QueEsCredito_Bernheim,
             emoji: '💳',
             unlocked: completedLessons.some(p => p.lessonId === '4.2')
           },
           {
             id: '5.2',
-            title: 'Historial Crediticio y Score',
-            description: 'Construir y mantener un buen historial crediticio',
+            title: 'Historial Crediticio y Score (framework)',
+            description: 'Herramienta de gestión del historial crediticio - Framework científico de Bernheim',
             duration: '55 min',
             difficulty: 'Avanzado',
-            component: Lesson5_2_HistorialCrediticio,
+            component: Lesson5_2_HistorialCrediticio_Bernheim,
             emoji: '📊',
             unlocked: completedLessons.some(p => p.lessonId === '5.1')
           },
           {
             id: '6.1',
-            title: '¿Qué son las Inversiones?',
-            description: 'Fundamentos de inversión y tipos de activos',
+            title: '¿Qué son las Inversiones? (framework)',
+            description: 'Herramienta de comprensión de inversiones y activos - Framework científico de Bernheim',
             duration: '60 min',
             difficulty: 'Avanzado',
-            component: Lesson6_1_QueSonInversiones,
+            component: Lesson6_1_QueSonInversiones_Bernheim,
             emoji: '📈',
             unlocked: completedLessons.some(p => p.lessonId === '5.2')
           },
           {
             id: '6.2',
-            title: 'Riesgo y Rendimiento',
-            description: 'Entender la relación riesgo-rendimiento y diversificación',
+            title: 'Riesgo y Rendimiento (framework)',
+            description: 'Herramienta de análisis de riesgo-rendimiento y diversificación - Framework científico de Bernheim',
             duration: '65 min',
             difficulty: 'Avanzado',
-            component: Lesson6_2_RiesgoRendimiento,
+            component: Lesson6_2_RiesgoRendimiento_Bernheim,
             emoji: '⚖️',
             unlocked: completedLessons.some(p => p.lessonId === '6.1')
           },
           {
             id: '7.1',
-            title: 'Costos de la Vida Independiente',
-            description: 'Entender y planificar los costos de la vida independiente',
+            title: 'Costos de la Vida Independiente (framework)',
+            description: 'Herramienta de planificación de costos de vida independiente - Framework científico de Bernheim',
             duration: '70 min',
             difficulty: 'Avanzado',
-            component: Lesson7_1_CostosVidaIndependiente,
+            component: Lesson7_1_CostosVidaIndependiente_Bernheim,
             emoji: '🏠',
             unlocked: completedLessons.some(p => p.lessonId === '6.2')
           },
           {
             id: '7.2',
-            title: 'Seguros y Protección Financiera',
-            description: 'Entender la importancia de los seguros y protección',
+            title: 'Seguros y Protección Financiera (framework)',
+            description: 'Herramienta de comprensión de seguros y protección financiera - Framework científico de Bernheim',
             duration: '60 min',
             difficulty: 'Avanzado',
-            component: Lesson7_2_SegurosProteccion,
+            component: Lesson7_2_SegurosProteccion_Bernheim,
             emoji: '🛡️',
             unlocked: completedLessons.some(p => p.lessonId === '7.1')
+          },
+          {
+            id: '8.1',
+            title: 'Interés Compuesto Avanzado (framework)',
+            description: 'Herramienta especializada de análisis de interés compuesto - Framework científico de Bernheim',
+            duration: '65 min',
+            difficulty: 'Avanzado',
+            component: Lesson_Ages14to16_CompoundInterest_Bernheim,
+            emoji: '📈',
+            unlocked: completedLessons.some(p => p.lessonId === '7.2')
           }
         ];
       default:
@@ -404,12 +460,16 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
-              {ageRange === "7-10" ? "Exploradores Financieros (framework)" : "Administradores Junior (framework)"}
+              {ageRange === "7-10" ? "Exploradores Financieros (framework)" : 
+               ageRange === "11-13" ? "Administradores Junior (framework)" : 
+               "Financieros Avanzados (framework)"}
             </h1>
             <p className="text-gray-600">
               {ageRange === "7-10" 
                 ? "Herramientas prácticas - Framework científico de Bernheim" 
-                : "Competencia deliberativa - Framework científico de Bernheim"
+                : ageRange === "11-13"
+                ? "Competencia deliberativa - Framework científico de Bernheim"
+                : "Análisis crítico - Framework científico de Bernheim"
               }
             </p>
           </div>
@@ -428,7 +488,9 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
           <CardTitle className="flex items-center space-x-2">
             <Trophy className="w-6 h-6 text-yellow-600" />
             <span>
-              Tu Progreso en {ageRange === "7-10" ? "Exploradores Financieros (framework)" : "Administradores Junior (framework)"}
+              Tu Progreso en {ageRange === "7-10" ? "Exploradores Financieros (framework)" : 
+                              ageRange === "11-13" ? "Administradores Junior (framework)" : 
+                              "Financieros Avanzados (framework)"}
             </span>
           </CardTitle>
         </CardHeader>

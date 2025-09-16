@@ -15,7 +15,8 @@ import {
   Trophy,
   ClipboardList,
   Target,
-  PiggyBank
+  PiggyBank,
+  Store
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,7 @@ const getMenuItems = () => {
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
       { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
       { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
-      { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
+      { title: "Tiendita", url: "/store", icon: Store, color: "text-product" },
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
       { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
@@ -52,7 +53,7 @@ const getMenuItems = () => {
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
       { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
       { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
-      { title: "Mis Logros", url: "/product", icon: Package, color: "text-product" },
+      { title: "Tiendita", url: "/store", icon: Store, color: "text-product" },
       { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
       { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },

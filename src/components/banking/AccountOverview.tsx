@@ -10,9 +10,10 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Eye,
-  EyeOff
+  EyeOff,
+  Store
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface AccountData {
   main: {
@@ -37,27 +38,53 @@ interface AccountData {
   };
 }
 
-const mockAccountData: AccountData = {
-  main: {
-    balance: 125.50,
-    currency: "USD"
-  },
-  subAccounts: {
-    spend: {
-      balance: 62.75,
-      percentage: 50,
-      limit: 100
-    },
-    save: {
-      balance: 50.20,
-      percentage: 40,
-      goal: 200
-    },
-    emergency: {
-      balance: 12.55,
-      percentage: 10
+// Función para obtener datos de la tarjeta virtual desde localStorage
+const getVirtualCardData = () => {
+  try {
+    const savedCard = localStorage.getItem('virtualCard');
+    if (savedCard) {
+      return JSON.parse(savedCard);
     }
+  } catch (error) {
+    console.error('Error loading virtual card data:', error);
   }
+  
+  // Datos por defecto si no hay datos guardados
+  return {
+    balance: 62.75,
+    dailyLimit: 25.00,
+    transactionLimit: 10.00,
+    allowedCategories: ['food', 'entertainment', 'books'],
+    isFrozen: false
+  };
+};
+
+// Función para calcular la distribución del dinero
+const calculateAccountData = (virtualCardBalance: number): AccountData => {
+  const total = virtualCardBalance + 62.75; // Sumamos ahorros fijos como ejemplo
+  
+  return {
+    main: {
+      balance: total,
+      currency: "USD"
+    },
+    subAccounts: {
+      spend: {
+        balance: virtualCardBalance,
+        percentage: Math.round((virtualCardBalance / total) * 100),
+        limit: 100
+      },
+      save: {
+        balance: 50.20,
+        percentage: Math.round((50.20 / total) * 100),
+        goal: 200
+      },
+      emergency: {
+        balance: 12.55,
+        percentage: Math.round((12.55 / total) * 100)
+      }
+    }
+  };
 };
 
 interface Transaction {
@@ -69,36 +96,81 @@ interface Transaction {
   category: string;
 }
 
-const recentTransactions: Transaction[] = [
-  {
-    id: "1",
-    type: "income",
-    amount: 10.00,
-    description: "Tarea completada: Lavar los platos",
-    date: "2024-01-15",
-    category: "Tareas"
-  },
-  {
-    id: "2",
-    type: "expense",
-    amount: 5.50,
-    description: "Compra de dulces",
-    date: "2024-01-14",
-    category: "Gastos"
-  },
-  {
-    id: "3",
-    type: "income",
-    amount: 15.00,
-    description: "Mesada semanal",
-    date: "2024-01-13",
-    category: "Mesada"
+// Función para obtener transacciones del localStorage
+const getTransactions = (): Transaction[] => {
+  try {
+    const savedTransactions = localStorage.getItem('transactions');
+    if (savedTransactions) {
+      return JSON.parse(savedTransactions);
+    }
+  } catch (error) {
+    console.error('Error loading transactions:', error);
   }
-];
+  
+  // Transacciones por defecto si no hay datos guardados
+  return [
+    {
+      id: "1",
+      type: "income",
+      amount: 10.00,
+      description: "Tarea completada: Lavar los platos",
+      date: "2024-01-15",
+      category: "Tareas"
+    },
+    {
+      id: "2",
+      type: "expense",
+      amount: 5.50,
+      description: "Compra de dulces",
+      date: "2024-01-14",
+      category: "Gastos"
+    },
+    {
+      id: "3",
+      type: "income",
+      amount: 15.00,
+      description: "Mesada semanal",
+      date: "2024-01-13",
+      category: "Mesada"
+    }
+  ];
+};
 
 export function AccountOverview() {
   const [showBalance, setShowBalance] = useState(true);
-  const { main, subAccounts } = mockAccountData;
+  const [accountData, setAccountData] = useState<AccountData>(() => {
+    const virtualCard = getVirtualCardData();
+    return calculateAccountData(virtualCard.balance);
+  });
+  const [transactions, setTransactions] = useState<Transaction[]>(getTransactions());
+  
+  // Actualizar datos cuando cambie el localStorage
+  useEffect(() => {
+    const updateData = () => {
+      const virtualCard = getVirtualCardData();
+      const newAccountData = calculateAccountData(virtualCard.balance);
+      const newTransactions = getTransactions();
+      
+      setAccountData(newAccountData);
+      setTransactions(newTransactions);
+    };
+
+    // Actualizar datos inmediatamente
+    updateData();
+
+    // Escuchar cambios en localStorage
+    window.addEventListener('storage', updateData);
+    
+    // También podemos usar un intervalo para comprobar cambios regulares
+    const interval = setInterval(updateData, 1000);
+
+    return () => {
+      window.removeEventListener('storage', updateData);
+      clearInterval(interval);
+    };
+  }, []);
+  
+  const { main, subAccounts } = accountData;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -229,7 +301,7 @@ export function AccountOverview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {recentTransactions.map((transaction) => (
+            {transactions.slice(0, 5).map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-full ${
@@ -239,6 +311,8 @@ export function AccountOverview() {
                   }`}>
                     {transaction.type === 'income' ? (
                       <ArrowUpRight className="h-4 w-4" />
+                    ) : transaction.description.includes('Compra:') ? (
+                      <Store className="h-4 w-4" />
                     ) : (
                       <ArrowDownLeft className="h-4 w-4" />
                     )}

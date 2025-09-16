@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,23 +46,65 @@ interface VirtualCard {
   };
 }
 
-const mockCard: VirtualCard = {
-  id: "1",
-  cardNumber: "4532 1234 5678 9012",
-  holderName: "JUAN PÉREZ",
-  expiryDate: "12/28",
-  cvv: "123",
-  balance: 62.75,
-  isActive: true,
-  isFrozen: false,
-  theme: 'gradient-blue',
-  dailyLimit: 25.00,
-  transactionLimit: 10.00,
-  allowedCategories: ['food', 'entertainment', 'books'],
-  notifications: {
-    transactions: true,
-    dailyLimit: true,
-    lowBalance: false
+// Función para obtener datos de la tarjeta virtual desde localStorage
+const getVirtualCardData = (): VirtualCard => {
+  try {
+    const savedCard = localStorage.getItem('virtualCard');
+    if (savedCard) {
+      const cardData = JSON.parse(savedCard);
+      // Asegurar que tenga todas las propiedades necesarias
+      return {
+        id: cardData.id || "1",
+        cardNumber: cardData.cardNumber || "4532 1234 5678 9012",
+        holderName: cardData.holderName || "JUAN PÉREZ",
+        expiryDate: cardData.expiryDate || "12/28",
+        cvv: cardData.cvv || "123",
+        balance: cardData.balance || 62.75,
+        isActive: cardData.isActive !== undefined ? cardData.isActive : true,
+        isFrozen: cardData.isFrozen || false,
+        theme: cardData.theme || 'gradient-blue',
+        dailyLimit: cardData.dailyLimit || 25.00,
+        transactionLimit: cardData.transactionLimit || 10.00,
+        allowedCategories: cardData.allowedCategories || ['food', 'entertainment', 'books'],
+        notifications: cardData.notifications || {
+          transactions: true,
+          dailyLimit: true,
+          lowBalance: false
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error loading virtual card data:', error);
+  }
+  
+  // Datos por defecto si no hay datos guardados
+  return {
+    id: "1",
+    cardNumber: "4532 1234 5678 9012",
+    holderName: "JUAN PÉREZ",
+    expiryDate: "12/28",
+    cvv: "123",
+    balance: 62.75,
+    isActive: true,
+    isFrozen: false,
+    theme: 'gradient-blue',
+    dailyLimit: 25.00,
+    transactionLimit: 10.00,
+    allowedCategories: ['food', 'entertainment', 'books'],
+    notifications: {
+      transactions: true,
+      dailyLimit: true,
+      lowBalance: false
+    }
+  };
+};
+
+// Función para guardar datos de la tarjeta virtual
+const saveVirtualCardData = (cardData: VirtualCard) => {
+  try {
+    localStorage.setItem('virtualCard', JSON.stringify(cardData));
+  } catch (error) {
+    console.error('Error saving virtual card data:', error);
   }
 };
 
@@ -99,10 +141,32 @@ const spendingCategories = [
 ];
 
 export function VirtualCard() {
-  const [card, setCard] = useState<VirtualCard>(mockCard);
+  const [card, setCard] = useState<VirtualCard>(getVirtualCardData());
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [customImage, setCustomImage] = useState<string | null>(null);
+
+  // Actualizar datos cuando cambie el localStorage
+  useEffect(() => {
+    const updateCardData = () => {
+      const newCardData = getVirtualCardData();
+      setCard(newCardData);
+    };
+
+    // Actualizar datos inmediatamente
+    updateCardData();
+
+    // Escuchar cambios en localStorage
+    window.addEventListener('storage', updateCardData);
+    
+    // También podemos usar un intervalo para comprobar cambios regulares
+    const interval = setInterval(updateCardData, 1000);
+
+    return () => {
+      window.removeEventListener('storage', updateCardData);
+      clearInterval(interval);
+    };
+  }, []);
 
   const formatCardNumber = (number: string) => {
     return number.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
@@ -116,25 +180,32 @@ export function VirtualCard() {
   };
 
   const toggleCardStatus = () => {
-    setCard({
+    const updatedCard = {
       ...card,
       isFrozen: !card.isFrozen
-    });
+    };
+    setCard(updatedCard);
+    saveVirtualCardData(updatedCard);
   };
 
   const updateTheme = (theme: VirtualCard['theme']) => {
-    setCard({
+    const updatedCard = {
       ...card,
       theme: theme
-    });
+    };
+    setCard(updatedCard);
+    saveVirtualCardData(updatedCard);
   };
 
   const updateLimit = (type: 'daily' | 'transaction', value: number) => {
+    let updatedCard;
     if (type === 'daily') {
-      setCard({ ...card, dailyLimit: value });
+      updatedCard = { ...card, dailyLimit: value };
     } else {
-      setCard({ ...card, transactionLimit: value });
+      updatedCard = { ...card, transactionLimit: value };
     }
+    setCard(updatedCard);
+    saveVirtualCardData(updatedCard);
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -142,17 +213,21 @@ export function VirtualCard() {
       ? card.allowedCategories.filter(id => id !== categoryId)
       : [...card.allowedCategories, categoryId];
     
-    setCard({ ...card, allowedCategories: categories });
+    const updatedCard = { ...card, allowedCategories: categories };
+    setCard(updatedCard);
+    saveVirtualCardData(updatedCard);
   };
 
   const updateNotifications = (type: keyof VirtualCard['notifications'], enabled: boolean) => {
-    setCard({
+    const updatedCard = {
       ...card,
       notifications: {
         ...card.notifications,
         [type]: enabled
       }
-    });
+    };
+    setCard(updatedCard);
+    saveVirtualCardData(updatedCard);
   };
 
   const currentTheme = cardThemes[card.theme];

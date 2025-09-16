@@ -13,6 +13,7 @@ import Lesson2_1_WhatIsBank from './Lesson2_1_WhatIsBank';
 import Lesson2_2_SavingsAccounts from './Lesson2_2_SavingsAccounts';
 import Lesson3_1_PriceQualityComparison from './Lesson3_1_PriceQualityComparison';
 import Lesson3_2_OffersAndDiscounts from './Lesson3_2_OffersAndDiscounts';
+import Lesson3_3_MicrocreditosEmprendimiento from './Lesson3_3_MicrocreditosEmprendimiento';
 // Lecciones para 14-16 años
 import Lesson4_1_PlanificacionFinanciera from './Lesson4_1_PlanificacionFinanciera';
 import Lesson4_2_IngresosTrabajos from './Lesson4_2_IngresosTrabajos';
@@ -203,6 +204,16 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
             component: Lesson3_2_OffersAndDiscounts,
             emoji: '🏷️',
             unlocked: completedLessons.some(p => p.lessonId === '3.1')
+          },
+          {
+            id: '3.3',
+            title: 'Microcréditos y Emprendimiento',
+            description: 'Aprende sobre financiamiento para jóvenes emprendedores',
+            duration: '45 min',
+            difficulty: 'Intermedio',
+            component: Lesson3_3_MicrocreditosEmprendimiento,
+            emoji: '💡',
+            unlocked: completedLessons.some(p => p.lessonId === '3.2')
           }
         ];
       case "14-16":
