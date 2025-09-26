@@ -6,6 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
+import { PostHogProvider } from "@/components/PostHogProvider";
+import { SimpleTimeDemo } from "@/components/analytics/SimpleTimeDemo";
+import { PostHogAnalyticsDemo } from "@/components/analytics/PostHogAnalyticsDemo";
+import { UserAnalyticsDemo } from "@/components/analytics/UserAnalyticsDemo";
+import { PostHogEventsDemo } from "@/components/analytics/PostHogEventsDemo";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
@@ -30,7 +35,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
+        <PostHogProvider>
+          <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
@@ -92,7 +98,12 @@ const App = () => (
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
+          </Routes>
+          <SimpleTimeDemo />
+          <PostHogAnalyticsDemo showDemo={import.meta.env.DEV} />
+          <UserAnalyticsDemo showDemo={import.meta.env.DEV} />
+          <PostHogEventsDemo showDemo={import.meta.env.DEV} />
+        </PostHogProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -46,7 +46,7 @@ const getVirtualCardData = () => {
       return JSON.parse(savedCard);
     }
   } catch (error) {
-    console.error('Error loading virtual card data:', error);
+    console.error('Error cargando datos de tarjeta virtual:', error);
   }
   
   // Datos por defecto si no hay datos guardados
@@ -104,7 +104,7 @@ const getTransactions = (): Transaction[] => {
       return JSON.parse(savedTransactions);
     }
   } catch (error) {
-    console.error('Error loading transactions:', error);
+    console.error('Error cargando transacciones:', error);
   }
   
   // Transacciones por defecto si no hay datos guardados

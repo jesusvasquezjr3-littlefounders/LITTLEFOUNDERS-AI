@@ -26,7 +26,7 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
-    user_type: str  # "tutor", "child", "sponsor"
+    user_type: str  # "tutor", "child", "sponsor" 
     birth_date: Optional[str] = None
     gender: Optional[str] = None
 

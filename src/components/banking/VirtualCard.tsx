@@ -22,7 +22,8 @@ import {
   RotateCcw,
   Bell,
   DollarSign,
-  Calendar
+  Calendar,
+  RotateCw
 } from "lucide-react";
 
 interface VirtualCard {
@@ -74,7 +75,7 @@ const getVirtualCardData = (): VirtualCard => {
       };
     }
   } catch (error) {
-    console.error('Error loading virtual card data:', error);
+    console.error('Error cargando datos de tarjeta virtual:', error);
   }
   
   // Datos por defecto si no hay datos guardados
@@ -104,7 +105,7 @@ const saveVirtualCardData = (cardData: VirtualCard) => {
   try {
     localStorage.setItem('virtualCard', JSON.stringify(cardData));
   } catch (error) {
-    console.error('Error saving virtual card data:', error);
+    console.error('Error guardando datos de tarjeta virtual:', error);
   }
 };
 
@@ -145,6 +146,7 @@ export function VirtualCard() {
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [customImage, setCustomImage] = useState<string | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   // Actualizar datos cuando cambie el localStorage
   useEffect(() => {
@@ -261,49 +263,119 @@ export function VirtualCard() {
           <div className="space-y-6">
             {/* Virtual Card Visual */}
             <div className="relative mx-auto max-w-md">
-              <div className={`relative bg-gradient-to-r ${currentTheme.gradient} rounded-lg p-6 text-white aspect-[1.6/1] shadow-xl`}>
-                {card.isFrozen && (
-                  <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Lock className="h-8 w-8 mx-auto mb-2" />
-                      <div className="text-sm font-medium">Tarjeta Bloqueada</div>
+              <div className="relative h-64 perspective-1000">
+                {/* Card Container with 3D Transform */}
+                <div 
+                  className={`relative w-full h-full transition-transform duration-700 ease-in-out transform-style-preserve-3d ${
+                    isFlipped ? 'rotate-y-180' : ''
+                  }`}
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  }}
+                >
+                  {/* Front of Card */}
+                  <div 
+                    className="absolute inset-0 w-full h-full backface-hidden"
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
+                    <div className={`relative bg-gradient-to-r ${currentTheme.gradient} rounded-lg p-6 text-white aspect-[1.6/1] shadow-xl h-full`}>
+                      {card.isFrozen && (
+                        <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                          <div className="text-center">
+                            <Lock className="h-8 w-8 mx-auto mb-2" />
+                            <div className="text-sm font-medium">Tarjeta Bloqueada</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="absolute top-4 left-4">
+                        <div className="text-xs opacity-80">LITTLE FOUNDERS</div>
+                      </div>
+                      
+                      <div className="absolute top-4 right-4">
+                        <div className="w-8 h-8 bg-white/20 rounded-full"></div>
+                      </div>
+                      
+                      <div className="absolute bottom-16 left-4 right-4">
+                        <div className="text-lg font-mono tracking-wider">
+                          {showCardDetails 
+                            ? formatCardNumber(card.cardNumber)
+                            : "•••• •••• •••• " + card.cardNumber.slice(-4)
+                          }
+                        </div>
+                      </div>
+                      
+                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                        <div>
+                          <div className="text-xs opacity-80 mb-1">DUEÑO</div>
+                          <div className="text-sm font-semibold">{card.holderName}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs opacity-80 mb-1">EXPIRA</div>
+                          <div className="text-sm font-semibold">
+                            {showCardDetails ? card.expiryDate : "••/••"}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                )}
-                
-                <div className="absolute top-4 left-4">
-                  <div className="text-xs opacity-80">LITTLE FOUNDERS</div>
-                </div>
-                
-                <div className="absolute top-4 right-4">
-                  <div className="w-8 h-8 bg-white/20 rounded-full"></div>
-                </div>
-                
-                <div className="absolute bottom-16 left-4 right-4">
-                  <div className="text-lg font-mono tracking-wider">
-                    {showCardDetails 
-                      ? formatCardNumber(card.cardNumber)
-                      : "•••• •••• •••• " + card.cardNumber.slice(-4)
-                    }
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                  <div>
-                    <div className="text-xs opacity-80 mb-1">CARDHOLDER</div>
-                    <div className="text-sm font-semibold">{card.holderName}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs opacity-80 mb-1">EXPIRES</div>
-                    <div className="text-sm font-semibold">
-                      {showCardDetails ? card.expiryDate : "••/••"}
+
+                  {/* Back of Card */}
+                  <div 
+                    className="absolute inset-0 w-full h-full backface-hidden rotate-y-180"
+                    style={{ 
+                      backfaceVisibility: 'hidden',
+                      transform: 'rotateY(180deg)'
+                    }}
+                  >
+                    <div className={`relative bg-gradient-to-r ${currentTheme.gradient} rounded-lg p-6 text-white aspect-[1.6/1] shadow-xl h-full`}>
+                      {card.isFrozen && (
+                        <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                          <div className="text-center">
+                            <Lock className="h-8 w-8 mx-auto mb-2" />
+                            <div className="text-sm font-medium">Tarjeta Bloqueada</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Magnetic Strip */}
+                      <div className="absolute top-0 left-0 right-0 h-12 bg-black/60 rounded-t-lg"></div>
+                      
+                      {/* CVV Section */}
+                      <div className="absolute top-20 left-4 right-4">
+                        <div className="bg-white/20 rounded-lg p-4">
+                          <div className="text-xs opacity-80 mb-2">CÓDIGO DE SEGURIDAD</div>
+                          <div className="flex justify-between items-center">
+                            <div className="bg-white/30 rounded px-3 py-2 min-w-[60px] text-center">
+                              <span className="text-lg font-mono font-bold">
+                                {showCardDetails ? card.cvv : "•••"}
+                              </span>
+                            </div>
+                            <div className="text-xs opacity-80 text-right">
+                              <div>CVV</div>
+                              <div>3 dígitos</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Signature Strip */}
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <div className="bg-white/10 rounded p-2 h-8 flex items-center">
+                          <div className="text-xs opacity-60 flex-1">Firma del portador</div>
+                          <div className="text-xs opacity-40 italic">
+                            {card.holderName}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Card Actions */}
-              <div className="flex justify-center mt-4 space-x-4">
+              <div className="flex justify-center mt-4 space-x-2 flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -311,6 +383,15 @@ export function VirtualCard() {
                 >
                   {showCardDetails ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   {showCardDetails ? "Ocultar" : "Mostrar"} Detalles
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFlipped(!isFlipped)}
+                >
+                  {isFlipped ? <RotateCcw className="h-4 w-4" /> : <RotateCw className="h-4 w-4" />}
+                  {isFlipped ? "Ver Frente" : "Ver Reverso"}
                 </Button>
                 
                 <Dialog>
@@ -529,53 +610,6 @@ export function VirtualCard() {
         </CardContent>
       </Card>
 
-      {/* Security Features */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Shield className="h-5 w-5" />
-            <span>Funciones de Seguridad</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-                <div>
-                  <div className="font-medium">Protección Zero Liability</div>
-                  <div className="text-sm text-muted-foreground">100% protegido contra fraude</div>
-                </div>
-              </div>
-              <Badge variant="secondary">Activo</Badge>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Bell className="h-6 w-6 text-blue-600" />
-                <div>
-                  <div className="font-medium">Alertas en Tiempo Real</div>
-                  <div className="text-sm text-muted-foreground">Notificaciones instantáneas</div>
-                </div>
-              </div>
-              <Badge variant="secondary">
-                {card.notifications.transactions ? 'Activo' : 'Inactivo'}
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-6 w-6 text-yellow-600" />
-                <div>
-                  <div className="font-medium">Control Parental</div>
-                  <div className="text-sm text-muted-foreground">Los padres pueden supervisar y controlar</div>
-                </div>
-              </div>
-              <Badge variant="secondary">Activo</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

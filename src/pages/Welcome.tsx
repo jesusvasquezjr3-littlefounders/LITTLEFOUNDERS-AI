@@ -10,8 +10,23 @@ import {
   Sparkles
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePostHog } from "@/hooks/usePostHog";
 
 const Welcome = () => {
+  const { trackEvent } = usePostHog();
+
+  const handleLoginClick = () => {
+    trackEvent('welcome_login_clicked', {
+      timestamp: new Date().toISOString()
+    });
+  };
+
+  const handleRegisterClick = () => {
+    trackEvent('welcome_register_clicked', {
+      timestamp: new Date().toISOString()
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -91,14 +106,14 @@ const Welcome = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" className="px-8 py-6 text-lg bg-gradient-to-r from-primary to-customers hover:opacity-90">
-                <Link to="/login">
+                <Link to="/login" onClick={handleLoginClick}>
                   Iniciar Sesión
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
               
               <Button asChild variant="outline" size="lg" className="px-8 py-6 text-lg">
-                <Link to="/register">
+                <Link to="/register" onClick={handleRegisterClick}>
                   ¡Crear mi cuenta!
                 </Link>
               </Button>

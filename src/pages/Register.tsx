@@ -10,6 +10,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, ArrowRight, Check } from "luc
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
+import { usePostHog } from "@/hooks/usePostHog";
 
 type RegistrationStep = 'tutor' | 'child' | 'sponsor' | 'success';
 
@@ -76,6 +77,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { trackEvent } = usePostHog();
 
   const handleTutorChange = (field: keyof TutorData, value: any) => {
     setTutorData(prev => ({ ...prev, [field]: value }));
@@ -185,10 +187,18 @@ const Register = () => {
   const handleNextStep = () => {
     if (currentStep === 'tutor') {
       if (validateTutorData()) {
+        trackEvent('registration_step_completed', {
+          step: 'tutor',
+          timestamp: new Date().toISOString()
+        });
         setCurrentStep('child');
       }
     } else if (currentStep === 'child') {
       if (validateChildData()) {
+        trackEvent('registration_step_completed', {
+          step: 'child',
+          timestamp: new Date().toISOString()
+        });
         setCurrentStep('sponsor');
       }
     }
@@ -203,6 +213,11 @@ const Register = () => {
   };
 
   const handleSponsorResponse = (wantsSponsor: boolean) => {
+    trackEvent('sponsor_choice', {
+      wants_sponsor: wantsSponsor,
+      timestamp: new Date().toISOString()
+    });
+    
     if (wantsSponsor) {
       setShowSponsorForm(true);
     } else {
@@ -272,6 +287,12 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Track successful registration
+        trackEvent('registration_success', {
+          has_sponsor: showSponsorForm,
+          timestamp: new Date().toISOString()
+        });
+        
         setCurrentStep('success');
         
         // Redirigir al login después de 3 segundos
@@ -279,6 +300,12 @@ const Register = () => {
           navigate('/login');
         }, 3000);
       } else {
+        // Track registration error
+        trackEvent('registration_failed', {
+          error: data.detail || "Unknown error",
+          timestamp: new Date().toISOString()
+        });
+        
         toast({
           title: "Error de registro",
           description: data.detail || "No pudimos completar el registro. Intenta de nuevo.",
@@ -288,6 +315,13 @@ const Register = () => {
       
     } catch (error) {
       console.error('Registration error:', error);
+      
+      // Track connection error
+      trackEvent('registration_error', {
+        error: 'Connection error',
+        timestamp: new Date().toISOString()
+      });
+      
       toast({
         title: "Error de conexión",
         description: "No pudimos conectar con el servidor. Intenta más tarde.",

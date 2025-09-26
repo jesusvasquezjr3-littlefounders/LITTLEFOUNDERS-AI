@@ -28,7 +28,7 @@ export function ParentProtectedRoute({ children }: ParentProtectedRouteProps) {
 
     return <>{children}</>;
   } catch (error) {
-    console.error('Error parsing user data:', error);
+    console.error('Error analizando datos de usuario:', error);
     return <Navigate to="/login" replace />;
   }
 }

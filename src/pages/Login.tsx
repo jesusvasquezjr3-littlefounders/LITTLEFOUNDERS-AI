@@ -7,6 +7,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePostHog } from "@/hooks/usePostHog";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,10 +16,17 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { trackEvent, identifyUser } = usePostHog();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Track login attempt
+    trackEvent('login_attempt', {
+      email: email,
+      timestamp: new Date().toISOString()
+    });
 
     try {
       const response = await fetch('http://localhost:8000/auth/login', {
@@ -39,6 +47,20 @@ const Login = () => {
                              data.user.user_type === 'child' ? 'Niño' : 
                              data.user.user_type === 'sponsor' ? 'Patrocinador' : 'Usuario';
         
+        // Track successful login and identify user
+        trackEvent('login_success', {
+          user_type: data.user.user_type,
+          user_id: data.user.id,
+          timestamp: new Date().toISOString()
+        });
+        
+        identifyUser(data.user.id.toString(), {
+          email: data.user.email,
+          name: data.user.name,
+          user_type: data.user.user_type,
+          birth_date: data.user.birth_date
+        });
+        
         toast({
           title: `¡Bienvenid@ de vuelta, ${data.user.name}!`,
           description: `Has iniciado sesión como ${userTypeLabel}. ¡Disfruta tu experiencia en LittleFounders!`,
@@ -46,6 +68,13 @@ const Login = () => {
         
         navigate('/dashboard');
       } else {
+        // Track failed login
+        trackEvent('login_failed', {
+          email: email,
+          error: data.detail || "Invalid credentials",
+          timestamp: new Date().toISOString()
+        });
+        
         toast({
           title: "No pudimos iniciar sesión",
           description: data.detail || "Correo o contraseña incorrectos. ¡Intenta de nuevo!",
@@ -53,6 +82,13 @@ const Login = () => {
         });
       }
     } catch (error) {
+      // Track connection error
+      trackEvent('login_error', {
+        email: email,
+        error: 'Connection error',
+        timestamp: new Date().toISOString()
+      });
+      
       toast({
         title: "Error de conexión",
         description: "No pudimos conectar con el servidor. Intenta más tarde.",

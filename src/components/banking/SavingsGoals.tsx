@@ -190,7 +190,7 @@ export function SavingsGoals() {
                 </Badge>
                 {goal.roundUpEnabled && (
                   <Badge variant="outline" className="text-xs">
-                    Round-up activo
+                    Redondeo activo
                   </Badge>
                 )}
               </div>
@@ -204,7 +204,7 @@ export function SavingsGoals() {
               </div>
               {goal.parentMatchPercentage && goal.parentMatchPercentage > 0 && (
                 <div className="text-xs text-green-600 font-medium">
-                  +{formatCurrency(parentMatch)} match parental
+                  +{formatCurrency(parentMatch)} coincidencia parental
                 </div>
               )}
             </div>
@@ -222,7 +222,7 @@ export function SavingsGoals() {
               {goal.parentMatchPercentage && goal.parentMatchPercentage > 0 && (
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs text-green-600">
-                    <span>Con match parental ({goal.parentMatchPercentage}%)</span>
+                    <span>Con coincidencia parental ({goal.parentMatchPercentage}%)</span>
                     <span>{formatCurrency(totalWithMatch)}</span>
                   </div>
                   <Progress 
@@ -332,7 +332,7 @@ export function SavingsGoals() {
                 />
               </div>
               <div>
-                <Label htmlFor="parentMatch">Match parental (%)</Label>
+                <Label htmlFor="parentMatch">Coincidencia parental (%)</Label>
                 <Input
                   id="parentMatch"
                   type="number"

@@ -465,7 +465,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
             )}
             {product.isPopular && (
               <Badge className="absolute top-2 right-2 bg-orange-500 text-white z-10">
-                Popular
+                Destacado
               </Badge>
             )}
             
@@ -486,7 +486,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                       <span className="text-sm ml-1">{product.rating}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      Stock: {product.inStock}
+                      Disponible: {product.inStock}
                     </Badge>
                   </div>
                 </div>

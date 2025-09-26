@@ -8,6 +8,7 @@ import {
   PulsingIcon,
   SuccessAnimation 
 } from "@/components/lemonade/GameEffects";
+import { DragDropStand } from "@/components/lemonade/DragDropStand";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -251,6 +252,8 @@ export function LemonadeStand() {
   const [animatedMoney, setAnimatedMoney] = useState(0);
   const [currentEvent, setCurrentEvent] = useState<any>(null);
   const [showAchievement, setShowAchievement] = useState<any>(null);
+  const [isStandBuilt, setIsStandBuilt] = useState(false);
+  const [showDragDropMode, setShowDragDropMode] = useState(false);
 
   // Generar cliente aleatorio
   const generateCustomer = useCallback((): Customer => {
@@ -395,6 +398,25 @@ export function LemonadeStand() {
       }));
     }
   }, [gameState.money]);
+
+  // Manejar cambios en la receta desde el drag and drop
+  const handleRecipeChange = useCallback((recipe: { lemons: number; sugar: number; ice: number; cups: number }) => {
+    setGameState(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        lemonsPerCup: recipe.lemons,
+        sugarPerCup: recipe.sugar,
+        icePerCup: recipe.ice,
+        price: Math.max(0.5, recipe.lemons * 0.3 + recipe.sugar * 0.1 + recipe.ice * 0.05 + 0.2) // Precio basado en ingredientes
+      }
+    }));
+  }, []);
+
+  // Manejar construcción del stand
+  const handleStandComplete = useCallback((isComplete: boolean) => {
+    setIsStandBuilt(isComplete);
+  }, []);
 
   // Verificar logros
   const checkAchievements = useCallback((stats: any) => {
@@ -569,78 +591,85 @@ export function LemonadeStand() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Stand Visualization */}
           <div className="lg:col-span-2">
-            <Card className="h-96 relative overflow-hidden bg-gradient-to-b from-sky-200 to-green-200">
-              <CardContent className="p-6 h-full relative">
-                {/* Weather Animation */}
-                <WeatherAnimation weather={gameState.weather} />
-                
-                {/* Weather Badge */}
-                <div className="absolute top-4 right-4">
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${weatherEffects[gameState.weather].color} bg-white shadow-sm`}>
-                    {React.createElement(weatherEffects[gameState.weather].icon, { 
-                      className: `h-5 w-5 mr-2 ${weatherEffects[gameState.weather].color}` 
-                    })}
-                    {gameState.temperature}°C
-                  </div>
-                </div>
-
-                {/* Floating Money Animation */}
-                <FloatingMoney amount={animatedMoney} isVisible={animatedMoney > 0} />
-
-                {/* Stand with Animation */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                  <StandAnimation isActive={isSellingMode}>
-                    <div className="bg-orange-300 w-48 h-32 rounded-t-lg border-4 border-orange-600 relative hover:shadow-lg transition-shadow duration-300">
-                      <div className="absolute -top-4 left-4 right-4 bg-red-500 h-6 rounded-full animate-pulse"></div>
-                      <div className="p-4 text-center">
-                        <h3 className="text-xl font-bold text-orange-900 mb-2">
-                          🍋 Limonada Fresca 🍋
-                        </h3>
-                        <div className="text-2xl font-bold text-green-700">
-                          ${gameState.recipe.price.toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </StandAnimation>
-                </div>
-
-                {/* Customer with Enhanced Animation */}
-                {currentCustomer && (
-                  <div className="absolute bottom-32 right-8">
-                    <BouncingCustomer 
-                      emoji={currentCustomer.emoji}
-                      name={currentCustomer.name}
-                      mood={calculateSatisfaction(currentCustomer) > 80 ? 'happy' : 
-                            calculateSatisfaction(currentCustomer) > 50 ? 'neutral' : 'sad'}
-                    />
-                    <div className="bg-yellow-100 px-2 py-1 rounded text-xs mt-2 text-center animate-pulse">
-                      {currentCustomer.pricePreference === 'cheap' && '💰 Busca barato'}
-                      {currentCustomer.pricePreference === 'value' && '⚖️ Busca valor'}
-                      {currentCustomer.pricePreference === 'premium' && '👑 Busca premium'}
+            {!showDragDropMode ? (
+              <Card className="h-96 relative overflow-hidden bg-gradient-to-b from-sky-200 to-green-200">
+                <CardContent className="p-6 h-full relative">
+                  {/* Weather Animation */}
+                  <WeatherAnimation weather={gameState.weather} />
+                  
+                  {/* Weather Badge */}
+                  <div className="absolute top-4 right-4">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${weatherEffects[gameState.weather].color} bg-white shadow-sm`}>
+                      {React.createElement(weatherEffects[gameState.weather].icon, { 
+                        className: `h-5 w-5 mr-2 ${weatherEffects[gameState.weather].color}` 
+                      })}
+                      {gameState.temperature}°C
                     </div>
                   </div>
-                )}
 
-                {/* Queue with Animation */}
-                {customerQueue.length > 1 && (
-                  <div className="absolute bottom-40 left-8 flex space-x-2 items-center">
-                    <div className="text-sm font-semibold text-gray-700 mb-2 animate-pulse">Cola:</div>
-                    {customerQueue.slice(1, 4).map((customer, index) => (
-                      <PulsingIcon key={customer.id} isActive={true}>
-                        <div className="text-2xl">
-                          {customer.emoji}
+                  {/* Floating Money Animation */}
+                  <FloatingMoney amount={animatedMoney} isVisible={animatedMoney > 0} />
+
+                  {/* Stand with Animation */}
+                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+                    <StandAnimation isActive={isSellingMode}>
+                      <div className="bg-orange-300 w-48 h-32 rounded-t-lg border-4 border-orange-600 relative hover:shadow-lg transition-shadow duration-300">
+                        <div className="absolute -top-4 left-4 right-4 bg-red-500 h-6 rounded-full animate-pulse"></div>
+                        <div className="p-4 text-center">
+                          <h3 className="text-xl font-bold text-orange-900 mb-2">
+                            🍋 Limonada Fresca 🍋
+                          </h3>
+                          <div className="text-2xl font-bold text-green-700">
+                            ${gameState.recipe.price.toFixed(2)}
+                          </div>
                         </div>
-                      </PulsingIcon>
-                    ))}
-                    {customerQueue.length > 4 && (
-                      <div className="text-sm text-gray-600 bg-white px-2 py-1 rounded-full animate-bounce">
-                        +{customerQueue.length - 4}
                       </div>
-                    )}
+                    </StandAnimation>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+
+                  {/* Customer with Enhanced Animation */}
+                  {currentCustomer && (
+                    <div className="absolute bottom-32 right-8">
+                      <BouncingCustomer 
+                        emoji={currentCustomer.emoji}
+                        name={currentCustomer.name}
+                        mood={calculateSatisfaction(currentCustomer) > 80 ? 'happy' : 
+                              calculateSatisfaction(currentCustomer) > 50 ? 'neutral' : 'sad'}
+                      />
+                      <div className="bg-yellow-100 px-2 py-1 rounded text-xs mt-2 text-center animate-pulse">
+                        {currentCustomer.pricePreference === 'cheap' && '💰 Busca barato'}
+                        {currentCustomer.pricePreference === 'value' && '⚖️ Busca valor'}
+                        {currentCustomer.pricePreference === 'premium' && '👑 Busca premium'}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Queue with Animation */}
+                  {customerQueue.length > 1 && (
+                    <div className="absolute bottom-40 left-8 flex space-x-2 items-center">
+                      <div className="text-sm font-semibold text-gray-700 mb-2 animate-pulse">Cola:</div>
+                      {customerQueue.slice(1, 4).map((customer, index) => (
+                        <PulsingIcon key={customer.id} isActive={true}>
+                          <div className="text-2xl">
+                            {customer.emoji}
+                          </div>
+                        </PulsingIcon>
+                      ))}
+                      {customerQueue.length > 4 && (
+                        <div className="text-sm text-gray-600 bg-white px-2 py-1 rounded-full animate-bounce">
+                          +{customerQueue.length - 4}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <DragDropStand 
+                onStandComplete={handleStandComplete}
+                onRecipeChange={handleRecipeChange}
+              />
+            )}
           </div>
 
           {/* Controls */}
@@ -727,6 +756,30 @@ export function LemonadeStand() {
               </CardContent>
             </Card>
 
+            {/* Mode Toggle */}
+            <Card className="bg-purple-50 border-purple-200">
+              <CardContent className="p-4">
+                <div className="flex space-x-2">
+                  <Button 
+                    onClick={() => setShowDragDropMode(false)}
+                    variant={!showDragDropMode ? "default" : "outline"}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    🎮 Jugar
+                  </Button>
+                  <Button 
+                    onClick={() => setShowDragDropMode(true)}
+                    variant={showDragDropMode ? "default" : "outline"}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    🏗️ Construir
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Action Buttons */}
             <div className="space-y-2">
               {!isSellingMode ? (
@@ -735,9 +788,10 @@ export function LemonadeStand() {
                     onClick={startSelling}
                     className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
                     size="lg"
+                    disabled={!isStandBuilt && !showDragDropMode}
                   >
                     <Zap className="h-5 w-5 mr-2" />
-                    ¡Empezar a Vender!
+                    {!isStandBuilt && !showDragDropMode ? "¡Construye tu stand primero!" : "¡Empezar a Vender!"}
                   </Button>
                   
                   <Button 

@@ -43,7 +43,7 @@ const getVirtualCardData = (): VirtualCard => {
       return JSON.parse(savedCard);
     }
   } catch (error) {
-    console.error('Error loading virtual card data:', error);
+    console.error('Error cargando datos de tarjeta virtual:', error);
   }
   
   // Datos mock por defecto
@@ -64,7 +64,7 @@ const getTransactions = (): Transaction[] => {
       return JSON.parse(savedTransactions);
     }
   } catch (error) {
-    console.error('Error loading transactions:', error);
+    console.error('Error cargando transacciones:', error);
   }
   
   return [];
@@ -75,7 +75,7 @@ const saveTransactions = (transactions: Transaction[]) => {
   try {
     localStorage.setItem('transactions', JSON.stringify(transactions));
   } catch (error) {
-    console.error('Error saving transactions:', error);
+    console.error('Error guardando transacciones:', error);
   }
 };
 
@@ -84,7 +84,7 @@ const saveVirtualCardData = (cardData: VirtualCard) => {
   try {
     localStorage.setItem('virtualCard', JSON.stringify(cardData));
   } catch (error) {
-    console.error('Error saving virtual card data:', error);
+    console.error('Error guardando datos de tarjeta virtual:', error);
   }
 };
 
@@ -152,7 +152,7 @@ const Store = () => {
       return {success: true, message: successMessage};
 
     } catch (error) {
-      console.error('Error processing purchase:', error);
+      console.error('Error procesando compra:', error);
       const errorMessage = "Error al procesar la compra. Por favor, inténtalo de nuevo.";
       setPurchaseNotification({success: false, message: errorMessage});
       setTimeout(() => setPurchaseNotification(null), 5000);
