@@ -1,22 +1,56 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr
-from typing import Optional
-import hashlib
-import json
-import os
-from datetime import datetime
+from .config import settings
+from .database import engine
+from . import models
 
-app = FastAPI(title="LittleFounders API", version="1.0.0")
+# Import routers
+from .auth.endpoints import router as auth_router
+from .dashboard.endpoints import router as dashboard_router
+from .tasks.endpoints import router as tasks_router
+from .parent_tasks.endpoints import router as parent_tasks_router
+from .savings.endpoints import router as savings_router
+from .store.endpoints import router as store_router
+from .lecciones.endpoints import router as lecciones_router
+from .lecciones_v2.endpoints import router as lecciones_v2_router
+from .investment_games.endpoints import router as investment_games_router
+
+# Create database tables
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title=settings.api_title,
+    version=settings.api_version,
+    description=settings.api_description
+)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.cors_origins,
+    allow_credentials=settings.cors_allow_credentials,
+    allow_methods=settings.cors_allow_methods,
+    allow_headers=settings.cors_allow_headers,
 )
+
+# Include routers
+app.include_router(auth_router)
+app.include_router(dashboard_router)
+app.include_router(tasks_router)
+app.include_router(parent_tasks_router)
+app.include_router(savings_router)
+app.include_router(store_router)
+app.include_router(lecciones_router)
+app.include_router(lecciones_v2_router)
+app.include_router(investment_games_router)
+
+@app.get("/")
+async def root():
+    return {
+        "message": "LittleFounders API",
+        "version": settings.api_version,
+        "status": "running"
+    }
 
 # File path for storing user data
 USERS_FILE = "users.txt"

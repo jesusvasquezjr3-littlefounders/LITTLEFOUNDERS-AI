@@ -41,7 +41,17 @@ interface AccountData {
 // Función para obtener datos de la tarjeta virtual desde localStorage
 const getVirtualCardData = () => {
   try {
-    const savedCard = localStorage.getItem('virtualCard');
+    const user = getCurrentUser();
+    let cardKey = 'virtualCard';
+    
+    // Si es un niño, usar la clave específica del niño
+    if (user?.user_type === 'child') {
+      // Obtener el ID del niño desde el usuario o usar un ID por defecto
+      const childId = user.id || 'child001';
+      cardKey = `virtualCard_${childId}`;
+    }
+    
+    const savedCard = localStorage.getItem(cardKey);
     if (savedCard) {
       return JSON.parse(savedCard);
     }
@@ -57,6 +67,19 @@ const getVirtualCardData = () => {
     allowedCategories: ['food', 'entertainment', 'books'],
     isFrozen: false
   };
+};
+
+// Función para obtener el usuario actual
+const getCurrentUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      return JSON.parse(userData);
+    }
+  } catch (error) {
+    console.error('Error obteniendo usuario actual:', error);
+  }
+  return null;
 };
 
 // Función para calcular la distribución del dinero
@@ -99,7 +122,17 @@ interface Transaction {
 // Función para obtener transacciones del localStorage
 const getTransactions = (): Transaction[] => {
   try {
-    const savedTransactions = localStorage.getItem('transactions');
+    const user = getCurrentUser();
+    let transactionKey = 'transactions';
+    
+    // Si es un niño, usar la clave específica del niño
+    if (user?.user_type === 'child') {
+      // Obtener el ID del niño desde el usuario o usar un ID por defecto
+      const childId = user.id || 'child001';
+      transactionKey = `transactions_${childId}`;
+    }
+    
+    const savedTransactions = localStorage.getItem(transactionKey);
     if (savedTransactions) {
       return JSON.parse(savedTransactions);
     }
@@ -168,6 +201,20 @@ export function AccountOverview() {
       window.removeEventListener('storage', updateData);
       clearInterval(interval);
     };
+  }, []);
+
+  // Sincronización automática para niños
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user?.user_type === 'child') {
+      // Importar y inicializar la sincronización
+      import('@/utils/accountSync').then(({ initializeAccountSync }) => {
+        const cleanup = initializeAccountSync();
+        return cleanup;
+      }).catch(error => {
+        console.error('Error inicializando sincronización:', error);
+      });
+    }
   }, []);
   
   const { main, subAccounts } = accountData;

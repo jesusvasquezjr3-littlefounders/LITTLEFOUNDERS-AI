@@ -202,11 +202,119 @@ export function ParentalControls() {
   };
 
   const handleApproval = (id: string, approved: boolean) => {
-    setApprovals(approvals.map(approval => 
+    const updatedApprovals = approvals.map(approval => 
       approval.id === id 
         ? { ...approval, status: approved ? 'approved' : 'denied' }
         : approval
-    ));
+    );
+    
+    setApprovals(updatedApprovals);
+    
+    // Si se aprueba una tarea, sincronizar con la cuenta del niño
+    if (approved) {
+      const approvedApproval = updatedApprovals.find(approval => approval.id === id);
+      if (approvedApproval && approvedApproval.type === 'task' && approvedApproval.amount) {
+        syncTaskApprovalToChild(approvedApproval);
+      }
+    }
+  };
+
+  // Función para sincronizar aprobación de tarea con la cuenta del niño
+  const syncTaskApprovalToChild = (approval: PendingApproval) => {
+    try {
+      // Obtener datos actuales del niño (usando el email del niño)
+      const childEmail = "nino@demo.com"; // En un sistema real, esto vendría del approval
+      const childId = "child001"; // En un sistema real, esto se obtendría del email
+      
+      const childCardData = getChildVirtualCardData(childId);
+      const childTransactions = getChildTransactions(childId);
+      
+      // Actualizar tarjeta virtual del niño
+      const updatedChildCard = {
+        ...childCardData,
+        balance: childCardData.balance + (approval.amount || 0)
+      };
+      saveChildVirtualCardData(updatedChildCard, childId);
+      
+      // Agregar transacción de ingreso al niño
+      const newChildTransaction = {
+        id: Date.now().toString(),
+        type: "income",
+        amount: approval.amount || 0,
+        description: approval.title,
+        date: new Date().toISOString().split('T')[0],
+        category: "Tareas"
+      };
+      
+      const updatedChildTransactions = [newChildTransaction, ...childTransactions];
+      saveChildTransactions(updatedChildTransactions, childId);
+      
+      console.log(`Aprobación de tarea sincronizada con cuenta del niño ${childId}`);
+    } catch (error) {
+      console.error('Error sincronizando aprobación de tarea con cuenta del niño:', error);
+    }
+  };
+
+  // Funciones auxiliares para manejar datos del niño
+  const getChildVirtualCardData = (childId: string) => {
+    try {
+      const savedCard = localStorage.getItem(`virtualCard_${childId}`);
+      if (savedCard) {
+        return JSON.parse(savedCard);
+      }
+    } catch (error) {
+      console.error('Error cargando datos de tarjeta virtual del niño:', error);
+    }
+    
+    // Datos por defecto para el niño
+    return {
+      id: childId,
+      cardNumber: "4532 1234 5678 9012",
+      holderName: "NIÑO",
+      expiryDate: "12/28",
+      cvv: "123",
+      balance: 0,
+      isActive: true,
+      isFrozen: false,
+      theme: 'gradient-blue',
+      dailyLimit: 25.00,
+      transactionLimit: 10.00,
+      allowedCategories: ['food', 'entertainment', 'books'],
+      notifications: {
+        transactions: true,
+        dailyLimit: true,
+        lowBalance: false
+      }
+    };
+  };
+
+  const saveChildVirtualCardData = (cardData: any, childId: string) => {
+    try {
+      localStorage.setItem(`virtualCard_${childId}`, JSON.stringify(cardData));
+    } catch (error) {
+      console.error('Error guardando datos de tarjeta virtual del niño:', error);
+    }
+  };
+
+  const getChildTransactions = (childId: string) => {
+    try {
+      const savedTransactions = localStorage.getItem(`transactions_${childId}`);
+      if (savedTransactions) {
+        return JSON.parse(savedTransactions);
+      }
+    } catch (error) {
+      console.error('Error cargando transacciones del niño:', error);
+    }
+    
+    return [];
+  };
+
+  const saveChildTransactions = (transactions: any[], childId: string) => {
+    try {
+      localStorage.setItem(`transactions_${childId}`, JSON.stringify(transactions));
+    } catch (error) {
+      console.error('Error guardando transacciones del niño:', error);
+    }
   };
 
   const formatTimestamp = (timestamp: string) => {

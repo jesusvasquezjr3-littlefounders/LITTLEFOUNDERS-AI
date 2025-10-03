@@ -1,16 +1,22 @@
-from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
+from database import Base
 import enum
 
-Base = declarative_base()
 
-# Enums para tipos de datos específicos
+# Enums
 class UserType(str, enum.Enum):
     TUTOR = "tutor"
     CHILD = "child"
     SPONSOR = "sponsor"
+
+
+class Gender(str, enum.Enum):
+    MASCULINO = "masculino"
+    FEMENINO = "femenino"
+    OTRO = "otro"
+
 
 class TaskCategory(str, enum.Enum):
     CHORES = "chores"
@@ -18,124 +24,218 @@ class TaskCategory(str, enum.Enum):
     SOCIAL = "social"
     BONUS = "bonus"
 
+
 class TaskDifficulty(str, enum.Enum):
     EASY = "easy"
     MEDIUM = "medium"
     HARD = "hard"
 
-class TaskStatus(str, enum.Enum):
-    ASSIGNED = "assigned"        # Tarea asignada pero no completada
-    PENDING = "pending"          # Completada por el niño, esperando aprobación
-    COMPLETED = "completed"      # Aprobada por padre/patrocinador
-    REJECTED = "rejected"        # Rechazada por padre/patrocinador
 
-class Gender(str, enum.Enum):
-    MASCULINO = "masculino"
-    FEMENINO = "femenino"
-    OTRO = "otro"
+class TransactionType(str, enum.Enum):
+    INCOME = "income"
+    EXPENSE = "expense"
+    DEPOSIT = "deposit"
+    WITHDRAWAL = "withdrawal"
+    REWARD = "reward"
+    PURCHASE = "purchase"
 
-# Modelo de Usuario
+
+class LessonDifficulty(str, enum.Enum):
+    FACIL = "Fácil"
+    INTERMEDIO = "Intermedio"
+    AVANZADO = "Avanzado"
+
+
+# User Model
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String, nullable=False)
-    user_type = Column(SQLEnum(UserType), nullable=False)
-    birth_date = Column(String, nullable=True)
-    gender = Column(SQLEnum(Gender), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    user_type = Column(Enum(UserType), nullable=False)
+    birth_date = Column(DateTime)
+    gender = Column(Enum(Gender))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    is_active = Column(Boolean, default=True)
     
-    # Campos específicos para niños
-    tutor_email = Column(String, nullable=True)  # Email del tutor responsable
+    # Relationships
+    tutor_email = Column(String(100), nullable=True)
+    child_email = Column(String(100), nullable=True)
+    
+    # Child specific fields
     lessons_completed = Column(Integer, default=0)
     minutes_studied = Column(Integer, default=0)
     points_earned = Column(Integer, default=0)
+    current_streak = Column(Integer, default=0)
     
-    # Campos específicos para patrocinadores
-    child_email = Column(String, nullable=True)  # Email del niño patrocinado
-    
-    # Relaciones
-    assigned_tasks = relationship("Task", foreign_keys="Task.assigned_by_id", back_populates="assigned_by")
-    received_tasks = relationship("Task", foreign_keys="Task.assigned_to_id", back_populates="assigned_to")
+    # Virtual balance
+    balance = Column(Float, default=0.0)
 
-# Modelo de Tarea
+
+# Lesson Models
+class Lesson(Base):
+    __tablename__ = "lessons"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_id = Column(String(50), unique=True, nullable=False)  # e.g., "1.1", "2.3"
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    content = Column(Text)
+    duration = Column(String(20))  # e.g., "30 min"
+    difficulty = Column(Enum(LessonDifficulty), default=LessonDifficulty.FACIL)
+    age_range = Column(String(20))  # e.g., "8-10"
+    level_id = Column(String(50))  # e.g., "nivel-1"
+    activities = Column(JSON)  # List of activities
+    points_reward = Column(Integer, default=10)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class UserLessonProgress(Base):
+    __tablename__ = "user_lesson_progress"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=False)
+    progress = Column(Integer, default=0)  # 0-100
+    completed = Column(Boolean, default=False)
+    started_at = Column(DateTime(timezone=True), server_default=func.now())
+    completed_at = Column(DateTime(timezone=True))
+    time_spent = Column(Integer, default=0)  # in minutes
+
+
+# Task Models
 class Task(Base):
     __tablename__ = "tasks"
     
-    id = Column(String, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    description = Column(Text, nullable=False)
-    category = Column(SQLEnum(TaskCategory), nullable=False)
-    difficulty = Column(SQLEnum(TaskDifficulty), nullable=False)
-    reward = Column(Float, nullable=False)
-    time_estimate = Column(Integer, nullable=False)  # En minutos
-    due_date = Column(DateTime, nullable=True)
-    is_important = Column(Boolean, default=False)  # isFirstDibs en el frontend
-    
-    # Estado y fechas
-    status = Column(SQLEnum(TaskStatus), default=TaskStatus.ASSIGNED)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    completed_at = Column(DateTime, nullable=True)
-    approved_at = Column(DateTime, nullable=True)
-    
-    # Asignación
-    assigned_by_id = Column(String, ForeignKey("users.id"), nullable=False)
-    assigned_to_id = Column(String, ForeignKey("users.id"), nullable=False)
-    
-    # Notas y evidencia
-    notes = Column(Text, nullable=True)  # Comentarios de rechazo o aprobación
-    photo_evidence_url = Column(String, nullable=True)  # URL de la foto de evidencia
-    
-    # ID de tarea original (para reasignaciones)
-    original_task_id = Column(String, nullable=True)
-    
-    # Relaciones
-    assigned_by = relationship("User", foreign_keys=[assigned_by_id], back_populates="assigned_tasks")
-    assigned_to = relationship("User", foreign_keys=[assigned_to_id], back_populates="received_tasks")
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    category = Column(Enum(TaskCategory), default=TaskCategory.CHORES)
+    difficulty = Column(Enum(TaskDifficulty), default=TaskDifficulty.EASY)
+    reward = Column(Float, nullable=False)  # Money reward
+    time_estimate = Column(Integer)  # in minutes
+    due_date = Column(DateTime)
+    is_first_dibs = Column(Boolean, default=False)  # Special/urgent task
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    assigned_to = Column(Integer, ForeignKey("users.id"))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-# Modelo para Historial de Tareas (para tracking de cambios)
-class TaskHistory(Base):
-    __tablename__ = "task_history"
-    
-    id = Column(String, primary_key=True, index=True)
-    task_id = Column(String, ForeignKey("tasks.id"), nullable=False)
-    action = Column(String, nullable=False)  # "created", "completed", "approved", "rejected", "reassigned"
-    performed_by_id = Column(String, ForeignKey("users.id"), nullable=False)
-    performed_at = Column(DateTime, default=datetime.utcnow)
-    notes = Column(Text, nullable=True)
-    
-    # Relaciones
-    task = relationship("Task")
-    performed_by = relationship("User")
 
-# Modelo para Recompensas y Pagos
-class Reward(Base):
-    __tablename__ = "rewards"
+class UserTask(Base):
+    __tablename__ = "user_tasks"
     
-    id = Column(String, primary_key=True, index=True)
-    task_id = Column(String, ForeignKey("tasks.id"), nullable=False)
-    child_id = Column(String, ForeignKey("users.id"), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
+    is_completed = Column(Boolean, default=False)
+    is_approved = Column(Boolean, default=None, nullable=True)
+    photo_evidence = Column(String(500))  # URL to photo
+    completed_date = Column(DateTime(timezone=True))
+    approval_date = Column(DateTime(timezone=True))
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# Savings Models
+class SavingsGoal(Base):
+    __tablename__ = "savings_goals"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    target_amount = Column(Float, nullable=False)
+    current_amount = Column(Float, default=0.0)
+    deadline = Column(DateTime)
+    image_url = Column(String(500))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    transaction_type = Column(Enum(TransactionType), nullable=False)
     amount = Column(Float, nullable=False)
-    paid_at = Column(DateTime, default=datetime.utcnow)
-    paid_by_id = Column(String, ForeignKey("users.id"), nullable=False)  # Padre o patrocinador
-    
-    # Relaciones
-    task = relationship("Task")
-    child = relationship("User", foreign_keys=[child_id])
-    paid_by = relationship("User", foreign_keys=[paid_by_id])
+    description = Column(String(300))
+    category = Column(String(50))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-# Modelo para Configuración de Familia
-class FamilySettings(Base):
-    __tablename__ = "family_settings"
+
+# Store Models
+class Product(Base):
+    __tablename__ = "products"
     
-    id = Column(String, primary_key=True, index=True)
-    tutor_id = Column(String, ForeignKey("users.id"), nullable=False)
-    weekly_allowance = Column(Float, default=0.0)
-    task_completion_goal = Column(Integer, default=5)  # Meta semanal de tareas
-    auto_approve_photos = Column(Boolean, default=False)
-    require_photo_evidence = Column(Boolean, default=False)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(200), nullable=False)
+    description = Column(Text)
+    price = Column(Float, nullable=False)
+    category = Column(String(50))
+    image_url = Column(String(500))
+    rating = Column(Float, default=0.0)
+    in_stock = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class Purchase(Base):
+    __tablename__ = "purchases"
     
-    # Relaciones
-    tutor = relationship("User")
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    quantity = Column(Integer, default=1)
+    total_price = Column(Float, nullable=False)
+    purchased_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# Achievement and Badge Models
+class Achievement(Base):
+    __tablename__ = "achievements"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    icon = Column(String(50))  # Icon name
+    color = Column(String(50))  # Color class
+    rarity = Column(String(20))  # common, rare, epic, legendary
+    requirement_type = Column(String(50))  # lessons_completed, points_earned, etc.
+    requirement_value = Column(Integer)
+    is_active = Column(Boolean, default=True)
+
+
+class UserAchievement(Base):
+    __tablename__ = "user_achievements"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"), nullable=False)
+    earned_date = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# Investment Game Models (Lemonade Stand)
+class GameSession(Base):
+    __tablename__ = "game_sessions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    game_type = Column(String(50))  # "lemonade_stand", etc.
+    day_number = Column(Integer, default=1)
+    cash = Column(Float, default=50.0)
+    inventory = Column(JSON)  # Ingredients inventory
+    weather_forecast = Column(JSON)
+    decisions = Column(JSON)  # Daily decisions
+    score = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    started_at = Column(DateTime(timezone=True), server_default=func.now())
+    ended_at = Column(DateTime(timezone=True))

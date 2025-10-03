@@ -47,10 +47,33 @@ interface VirtualCard {
   };
 }
 
+// Función para obtener el usuario actual
+const getCurrentUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      return JSON.parse(userData);
+    }
+  } catch (error) {
+    console.error('Error obteniendo usuario actual:', error);
+  }
+  return null;
+};
+
 // Función para obtener datos de la tarjeta virtual desde localStorage
 const getVirtualCardData = (): VirtualCard => {
   try {
-    const savedCard = localStorage.getItem('virtualCard');
+    const user = getCurrentUser();
+    let cardKey = 'virtualCard';
+    
+    // Si es un niño, usar la clave específica del niño
+    if (user?.user_type === 'child') {
+      // Obtener el ID del niño desde el usuario o usar un ID por defecto
+      const childId = user.id || 'child001';
+      cardKey = `virtualCard_${childId}`;
+    }
+    
+    const savedCard = localStorage.getItem(cardKey);
     if (savedCard) {
       const cardData = JSON.parse(savedCard);
       // Asegurar que tenga todas las propiedades necesarias
@@ -103,7 +126,17 @@ const getVirtualCardData = (): VirtualCard => {
 // Función para guardar datos de la tarjeta virtual
 const saveVirtualCardData = (cardData: VirtualCard) => {
   try {
-    localStorage.setItem('virtualCard', JSON.stringify(cardData));
+    const user = getCurrentUser();
+    let cardKey = 'virtualCard';
+    
+    // Si es un niño, usar la clave específica del niño
+    if (user?.user_type === 'child') {
+      // Obtener el ID del niño desde el usuario o usar un ID por defecto
+      const childId = user.id || 'child001';
+      cardKey = `virtualCard_${childId}`;
+    }
+    
+    localStorage.setItem(cardKey, JSON.stringify(cardData));
   } catch (error) {
     console.error('Error guardando datos de tarjeta virtual:', error);
   }
@@ -168,6 +201,32 @@ export function VirtualCard() {
       window.removeEventListener('storage', updateCardData);
       clearInterval(interval);
     };
+  }, []);
+
+  // Sincronización automática para niños
+  useEffect(() => {
+    const getCurrentUser = () => {
+      try {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          return JSON.parse(userData);
+        }
+      } catch (error) {
+        console.error('Error obteniendo usuario actual:', error);
+      }
+      return null;
+    };
+
+    const user = getCurrentUser();
+    if (user?.user_type === 'child') {
+      // Importar y inicializar la sincronización
+      import('@/utils/accountSync').then(({ initializeAccountSync }) => {
+        const cleanup = initializeAccountSync();
+        return cleanup;
+      }).catch(error => {
+        console.error('Error inicializando sincronización:', error);
+      });
+    }
   }, []);
 
   const formatCardNumber = (number: string) => {

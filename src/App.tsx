@@ -13,6 +13,7 @@ import { UserAnalyticsDemo } from "@/components/analytics/UserAnalyticsDemo";
 import { PostHogEventsDemo } from "@/components/analytics/PostHogEventsDemo";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Lecciones from "./pages/Lecciones";
@@ -37,7 +38,7 @@ const App = () => (
       <BrowserRouter>
         <PostHogProvider>
           <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Index />
@@ -99,10 +100,11 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
-          <SimpleTimeDemo />
+          {/* Analytics components hidden */}
+          {/* <SimpleTimeDemo />
           <PostHogAnalyticsDemo showDemo={import.meta.env.DEV} />
           <UserAnalyticsDemo showDemo={import.meta.env.DEV} />
-          <PostHogEventsDemo showDemo={import.meta.env.DEV} />
+          <PostHogEventsDemo showDemo={import.meta.env.DEV} /> */}
         </PostHogProvider>
       </BrowserRouter>
     </TooltipProvider>

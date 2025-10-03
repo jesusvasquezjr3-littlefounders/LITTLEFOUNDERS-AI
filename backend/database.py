@@ -1,35 +1,23 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
+from config import settings
 
-# Cargar variables de entorno
-load_dotenv()
+# Create database URL
+DATABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
 
-# Configuración de la base de datos PostgreSQL para GCP
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    # Formato para Google Cloud SQL: postgresql://usuario:contraseña@ip_publica/nombre_db
-    "postgresql://littlefounders_user:password@127.0.0.1:5432/littlefounders_db"
-)
+# Create engine
+engine = create_engine(DATABASE_URL)
 
-# Crear el engine de SQLAlchemy
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    pool_recycle=300,
-    echo=True  # Cambiar a False en producción
-)
-
-# Crear SessionLocal class
+# Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Crear Base class
+# Create base class for models
 Base = declarative_base()
 
-# Dependencia para obtener la sesión de base de datos
+
 def get_db():
+    """Dependency to get database session"""
     db = SessionLocal()
     try:
         yield db
