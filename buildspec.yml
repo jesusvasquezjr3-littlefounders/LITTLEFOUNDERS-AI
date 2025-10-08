@@ -1,19 +1,21 @@
 version: 0.2
 
+# Runtime estándar de AWS CodeBuild (Amazon Linux 2)
 phases:
-  pre_build:
+  install:
+    runtime-versions:
+      nodejs: 18
+      python: 3.11
     commands:
-      - echo "Iniciando pre-build phase..."
-      - echo "Instalando dependencias del sistema..."
-      
-      # Instalar Node.js 18 (LTS)
-      - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-      - apt-get install -y nodejs
-      
-      # Verificar versiones
+      - echo "Verificando versiones instaladas..."
       - node --version
       - npm --version
       - python3 --version
+      
+  pre_build:
+    commands:
+      - echo "Iniciando pre-build phase..."
+      - echo "Build started on `date`"
       
       - echo "Instalando dependencias del frontend..."
       - npm ci
@@ -27,7 +29,6 @@ phases:
   build:
     commands:
       - echo "Iniciando build phase..."
-      - echo "Build started on `date`"
       
       # Build del frontend
       - echo "Construyendo frontend con Vite..."
@@ -72,9 +73,9 @@ phases:
       
       - cp -r dist/* deploy/frontend/
       - cp -r backend/* deploy/backend/
-      - cp backend/start.sh deploy/
+      - cp backend/start.sh deploy/ 2>/dev/null || true
       
-      # Crear archivo de configuración para AWS
+      # Crear appspec.yml para CodeDeploy (si lo usas)
       - |
         cat > deploy/appspec.yml << 'EOF'
         version: 0.0
@@ -106,8 +107,8 @@ phases:
         set -e
         
         echo "Instalando dependencias del sistema..."
-        apt-get update
-        apt-get install -y python3 python3-pip nginx
+        yum update -y
+        yum install -y python3 python3-pip nginx
         
         echo "Instalando dependencias de Python..."
         cd /var/www/littlefounders/backend
@@ -122,7 +123,7 @@ phases:
         echo "Iniciando aplicación..."
         
         # Configurar Nginx para servir el frontend
-        cat > /etc/nginx/sites-available/littlefounders << 'NGINX_CONF'
+        cat > /etc/nginx/conf.d/littlefounders.conf << 'NGINX_CONF'
         server {
             listen 80;
             server_name _;
@@ -148,8 +149,6 @@ phases:
         }
         NGINX_CONF
         
-        ln -sf /etc/nginx/sites-available/littlefounders /etc/nginx/sites-enabled/
-        rm -f /etc/nginx/sites-enabled/default
         nginx -t
         systemctl restart nginx
         
@@ -161,7 +160,7 @@ phases:
         
         [Service]
         Type=simple
-        User=www-data
+        User=root
         WorkingDirectory=/var/www/littlefounders/backend
         Environment="PATH=/usr/local/bin:/usr/bin:/bin"
         ExecStart=/usr/local/bin/uvicorn main:app --host 0.0.0.0 --port 8000
@@ -209,4 +208,3 @@ cache:
 env:
   variables:
     NODE_ENV: "production"
-
