@@ -61,9 +61,42 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_active = Column(Boolean, default=True)
     
-    # Relationships
-    tutor_email = Column(String(100), nullable=True)
-    child_email = Column(String(100), nullable=True)
+    # Family Relationships - Foreign Keys
+    # For CHILD: reference to their tutor
+    tutor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    # For SPONSOR: reference to the child they sponsor
+    sponsored_child_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    # SQLAlchemy Relationships
+    # Children of this tutor (if user is TUTOR) - ONE tutor has MANY children
+    children = relationship(
+        "User",
+        foreign_keys=[tutor_id],
+        back_populates="tutor",
+        remote_side=[id]  # This is the "one" side
+    )
+    # Tutor of this child (if user is CHILD) - MANY children have ONE tutor
+    tutor = relationship(
+        "User",
+        foreign_keys=[tutor_id],
+        back_populates="children"
+        # No remote_side here - this is the "many" side
+    )
+    
+    # Sponsors of this child (if user is CHILD) - ONE child has MANY sponsors
+    sponsors = relationship(
+        "User",
+        foreign_keys=[sponsored_child_id],
+        back_populates="sponsored_child"
+        # No remote_side here - this is the "many" side
+    )
+    # Child that this sponsor supports (if user is SPONSOR) - MANY sponsors have ONE child
+    sponsored_child = relationship(
+        "User",
+        foreign_keys=[sponsored_child_id],
+        back_populates="sponsors",
+        remote_side=[id]  # This is the "one" side
+    )
     
     # Child specific fields
     lessons_completed = Column(Integer, default=0)

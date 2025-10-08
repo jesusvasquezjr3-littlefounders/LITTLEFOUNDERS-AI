@@ -194,8 +194,8 @@ interface ParentTasksSystemProps {
 }
 
 export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [children, setChildren] = useState<ChildInfo[]>(mockChildren);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [children, setChildren] = useState<ChildInfo[]>([]);
   const [activeTab, setActiveTab] = useState<'assigned' | 'pending' | 'completed' | 'rejected'>('assigned');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -205,6 +205,7 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [rejectNotes, setRejectNotes] = useState('');
   const [reassignNotes, setReassignNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -217,6 +218,70 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
     isFirstDibs: false
   });
 
+  // Cargar children y tareas del backend
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Cargar children
+        const childrenResponse = await fetch(`http://localhost:8000/parent-tasks/children/${user.id}`);
+        if (childrenResponse.ok) {
+          const childrenData = await childrenResponse.json();
+          const formattedChildren = childrenData.children.map((c: any) => ({
+            id: c.id.toString(),
+            name: c.name,
+            email: c.email
+          }));
+          setChildren(formattedChildren);
+          
+          // Cargar tareas para cada child
+          const allTasks: Task[] = [];
+          for (const child of formattedChildren) {
+            try {
+              const tasksResponse = await fetch(`http://localhost:8000/parent-tasks/child-tasks/${child.id}`);
+              if (tasksResponse.ok) {
+                const tasksData = await tasksResponse.json();
+                const formattedTasks = tasksData.tasks.map((t: any) => ({
+                  id: t.id.toString(),
+                  title: t.title,
+                  description: t.description,
+                  category: t.category,
+                  difficulty: t.difficulty,
+                  reward: t.reward,
+                  timeEstimate: t.time_estimate || 30,
+                  isCompleted: t.is_completed,
+                  isApproved: t.is_approved,
+                  dueDate: t.due_date,
+                  isFirstDibs: t.is_first_dibs,
+                  assignedBy: user.email,
+                  assignedTo: child.email,
+                  createdAt: t.created_at || new Date().toISOString().split('T')[0]
+                }));
+                allTasks.push(...formattedTasks);
+              }
+            } catch (error) {
+              console.error(`Error loading tasks for child ${child.id}:`, error);
+            }
+          }
+          setTasks(allTasks);
+        }
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // Usar datos mock como fallback
+        setChildren(mockChildren);
+        setTasks(mockTasks);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user && user.id) {
+      loadData();
+    }
+  }, [user]);
+
   const assignedTasks = tasks.filter(task => !task.isCompleted);
   const pendingTasks = tasks.filter(task => task.isCompleted && task.isApproved === null);
   const completedTasks = tasks.filter(task => task.isCompleted && task.isApproved === true);
@@ -226,7 +291,7 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
   const tasksCompletedThisWeek = completedTasks.length;
   const tasksPendingApproval = pendingTasks.length;
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
     // Validaciones básicas
     if (!newTask.title.trim()) {
       alert('Por favor ingresa un título para la tarea');
@@ -249,28 +314,83 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
       return;
     }
 
-    const task: Task = {
-      id: Date.now().toString(),
-      ...newTask,
-      isCompleted: false,
-      isApproved: null,
-      assignedBy: user.email,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    
-    setTasks([...tasks, task]);
-    setNewTask({
-      title: '',
-      description: '',
-      category: 'chores',
-      difficulty: 'easy',
-      reward: 5.00,
-      timeEstimate: 15,
-      dueDate: '',
-      assignedTo: '',
-      isFirstDibs: false
-    });
-    setIsCreateDialogOpen(false);
+    try {
+      // Encontrar el child por email para obtener su ID
+      const selectedChild = children.find(c => c.email === newTask.assignedTo);
+      if (!selectedChild) {
+        alert('Error: No se encontró el child seleccionado');
+        return;
+      }
+
+      // Preparar datos para el backend
+      const taskData = {
+        title: newTask.title,
+        description: newTask.description,
+        category: newTask.category,
+        difficulty: newTask.difficulty,
+        reward: newTask.reward,
+        time_estimate: newTask.timeEstimate,
+        due_date: newTask.dueDate || null,
+        is_first_dibs: newTask.isFirstDibs,
+        assigned_to: parseInt(selectedChild.id) // Usar el ID del child
+      };
+
+      // Enviar al backend
+      const response = await fetch(`http://localhost:8000/parent-tasks/?parent_id=${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Error al crear la tarea');
+      }
+
+      const createdTask = await response.json();
+
+      // Agregar la tarea al estado local
+      const task: Task = {
+        id: createdTask.id.toString(),
+        title: createdTask.title,
+        description: createdTask.description,
+        category: createdTask.category,
+        difficulty: createdTask.difficulty,
+        reward: createdTask.reward,
+        timeEstimate: createdTask.time_estimate,
+        dueDate: createdTask.due_date,
+        isFirstDibs: createdTask.is_first_dibs,
+        isCompleted: false,
+        isApproved: null,
+        assignedBy: user.email,
+        assignedTo: newTask.assignedTo,
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+      
+      setTasks([...tasks, task]);
+      
+      // Resetear formulario
+      setNewTask({
+        title: '',
+        description: '',
+        category: 'chores',
+        difficulty: 'easy',
+        reward: 5.00,
+        timeEstimate: 15,
+        dueDate: '',
+        assignedTo: '',
+        isFirstDibs: false
+      });
+      
+      setIsCreateDialogOpen(false);
+      alert('✅ Tarea creada exitosamente y asignada al niño');
+      
+    } catch (error: any) {
+      console.error('Error al crear tarea:', error);
+      alert(`❌ Error al crear la tarea: ${error.message}`);
+    }
   };
 
   const handleApproveTask = (taskId: string) => {

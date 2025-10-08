@@ -1,19 +1,26 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from .config import settings
-from .database import engine
-from . import models
+from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from typing import Optional
+import hashlib
+import json
+import os
+
+from config import settings
+from database import engine
+import models
 
 # Import routers
-from .auth.endpoints import router as auth_router
-from .dashboard.endpoints import router as dashboard_router
-from .tasks.endpoints import router as tasks_router
-from .parent_tasks.endpoints import router as parent_tasks_router
-from .savings.endpoints import router as savings_router
-from .store.endpoints import router as store_router
-from .lecciones.endpoints import router as lecciones_router
-from .lecciones_v2.endpoints import router as lecciones_v2_router
-from .investment_games.endpoints import router as investment_games_router
+from auth.endpoints import router as auth_router
+from dashboard.endpoints import router as dashboard_router
+from tasks.endpoints import router as tasks_router
+from parent_tasks.endpoints import router as parent_tasks_router
+from savings.endpoints import router as savings_router
+from store.endpoints import router as store_router
+from lecciones.endpoints import router as lecciones_router
+from lecciones_v2.endpoints import router as lecciones_v2_router
+from investment_games.endpoints import router as investment_games_router
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)

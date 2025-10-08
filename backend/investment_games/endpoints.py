@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..database import get_db
-from ..models import GameSession, User
-from ..schemas import GameSessionCreate, GameSessionUpdate, GameSessionResponse
+from database import get_db
+from models import GameSession, User
+from schemas import GameSessionCreate, GameSessionUpdate, GameSessionResponse
+from auth.permissions import verify_family_access
 
 router = APIRouter(prefix="/investment-games", tags=["Investment Games"])
 
@@ -143,8 +144,11 @@ async def get_game_leaderboard(
 
 
 @router.get("/history/{user_id}")
-async def get_user_game_history(user_id: int, db: Session = Depends(get_db)):
-    """Get game history for a user"""
+async def get_user_game_history(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Get game history for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     sessions = db.query(GameSession).filter(
         GameSession.user_id == user_id
     ).order_by(GameSession.started_at.desc()).all()

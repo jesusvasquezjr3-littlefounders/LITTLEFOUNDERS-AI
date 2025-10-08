@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import LessonPlayer from "@/components/lessons_framework/LessonPlayer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,8 @@ import {
   TrendingUp,
   AlertTriangle,
   Home,
-  Shield
+  Shield,
+  RefreshCw
 } from "lucide-react";
 
 interface Module {
@@ -62,10 +63,97 @@ interface AgeRange {
 }
 
 const LeccionesV2 = () => {
-  const [showInteractiveLessons, setShowInteractiveLessons] = useState(false);
+  const [showInteractiveLessons, setShowInteractiveLessons] = useState(true); // Cambiado a true
   const [selectedLevel, setSelectedLevel] = useState<string>("nivel-1");
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>("8-10");
   const [userProgress, setUserProgress] = useState<any[]>([]);
+  const [userAge, setUserAge] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Calcular edad del usuario automáticamente y cargar progreso
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Obtener usuario del localStorage
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+          console.error('No user found in localStorage');
+          setIsLoading(false);
+          return;
+        }
+
+        const user = JSON.parse(userStr);
+        
+        // Verificar que el usuario tenga fecha de nacimiento
+        if (!user.birth_date) {
+          console.warn('User does not have birth_date');
+          setIsLoading(false);
+          return;
+        }
+
+        // Calcular edad
+        const birthDate = new Date(user.birth_date);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        // Ajustar edad si aún no ha cumplido años este año
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+
+        setUserAge(age);
+
+        // Determinar rango de edad apropiado
+        let ageRange = "8-10"; // Por defecto
+        if (age >= 0 && age <= 10) {
+          ageRange = "8-10";
+        } else if (age >= 11 && age <= 13) {
+          ageRange = "11-13";
+        } else if (age >= 14) {
+          ageRange = "14-16";
+        }
+
+        setSelectedAgeRange(ageRange);
+        console.log(`✅ Edad calculada: ${age} años → Rango: ${ageRange}`);
+
+        // Cargar progreso del usuario desde el backend
+        try {
+          const progressResponse = await fetch(
+            `http://localhost:8000/lecciones/progress/${user.id}?requester_id=${user.id}`
+          );
+
+          if (progressResponse.ok) {
+            const progressData = await progressResponse.json();
+            
+            // Formatear progreso para el componente
+            const formattedProgress = progressData.progress.map((p: any) => ({
+              lessonId: p.lesson_id?.toString(),
+              score: p.progress || 0,
+              completed: p.completed || false,
+              completedAt: p.completed_at ? new Date(p.completed_at) : new Date(),
+              timeSpent: p.time_spent || 0,
+              progressData: p
+            }));
+
+            setUserProgress(formattedProgress);
+            console.log(`✅ Progreso cargado: ${formattedProgress.length} lecciones`);
+          }
+        } catch (progressError) {
+          console.error('Error al cargar progreso:', progressError);
+          // Continuar sin progreso si hay error
+          setUserProgress([]);
+        }
+
+      } catch (error) {
+        console.error('Error al cargar datos del usuario:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   // Definir los rangos de edad disponibles
   const ageRanges: AgeRange[] = [
@@ -320,23 +408,188 @@ const LeccionesV2 = () => {
     setShowInteractiveLessons(true);
   };
 
-  const handleProgressUpdate = (progress: any) => {
-    setUserProgress(prev => {
-      const filtered = prev.filter(p => p.lessonId !== progress.lessonId);
-      return [...filtered, progress];
-    });
+  const handleProgressUpdate = async (progress: any) => {
+    try {
+      // Actualizar estado local inmediatamente
+      setUserProgress(prev => {
+        const filtered = prev.filter(p => p.lessonId !== progress.lessonId);
+        return [...filtered, progress];
+      });
+
+      // Guardar progreso en el backend
+      const userStr = localStorage.getItem('user');
+      if (!userStr) return;
+
+      const user = JSON.parse(userStr);
+
+      // Si la lección se completó, enviar al backend
+      if (progress.completed) {
+        const completeResponse = await fetch(
+          `http://localhost:8000/lecciones/complete?user_id=${user.id}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              lesson_id: parseInt(progress.lessonId),
+              time_spent: Math.round(progress.timeSpent / 1000 / 60) // Convertir a minutos
+            }),
+          }
+        );
+
+        if (completeResponse.ok) {
+          const result = await completeResponse.json();
+          console.log(`✅ Lección completada guardada en DB:`, result);
+          
+          // Actualizar usuario en localStorage con nuevos puntos
+          const updatedUser = {
+            ...user,
+            lessons_completed: (user.lessons_completed || 0) + 1,
+            points_earned: (user.points_earned || 0) + (result.points_earned || 0),
+            minutes_studied: (user.minutes_studied || 0) + Math.round(progress.timeSpent / 1000 / 60)
+          };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      } else {
+        // Si es progreso parcial, actualizar progreso
+        const updateResponse = await fetch(
+          `http://localhost:8000/lecciones/progress/update?user_id=${user.id}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              lesson_id: parseInt(progress.lessonId),
+              progress: progress.score,
+              time_spent: Math.round(progress.timeSpent / 1000 / 60)
+            }),
+          }
+        );
+
+        if (updateResponse.ok) {
+          console.log(`✅ Progreso actualizado en DB`);
+        }
+      }
+
+    } catch (error) {
+      console.error('Error al actualizar progreso:', error);
+      // Mantener progreso local aunque falle el backend
+    }
   };
 
   // Si se activan las lecciones interactivas, mostrar el nuevo sistema
   if (showInteractiveLessons) {
     return (
       <DashboardLayout>
-        <LessonPlayer
-          ageRange={selectedAgeRange}
-          onExit={() => setShowInteractiveLessons(false)}
-          userProgress={userProgress}
-          onProgressUpdate={handleProgressUpdate}
-        />
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Lecciones V.2 (framework)</h1>
+              <p className="text-gray-600 mt-2">Framework científico de B. Douglas Bernheim - Competencia deliberativa</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="text-sm">
+                <Star className="w-4 h-4 mr-1" />
+                Framework Científico
+              </Badge>
+            </div>
+          </div>
+
+          {/* Age Information - Automatic */}
+          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Trophy className="w-5 h-5 mr-2" />
+                {selectedAgeRange === "8-10" ? "Exploradores Financieros" : 
+                 selectedAgeRange === "11-13" ? "Administradores Junior" : 
+                 "Financieros Avanzados"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Calculando tu edad...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-3 bg-primary/10 rounded-full">
+                        <Calendar className="w-8 h-8 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Tu edad</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {userAge !== null ? `${userAge} años` : 'No disponible'}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <Badge className="text-sm px-4 py-2 bg-primary">
+                        {ageRanges.find(r => r.id === selectedAgeRange)?.label}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-white rounded-lg shadow-sm">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Trophy className="w-6 h-6 text-yellow-600" />
+                          <span className="text-lg font-medium">Progreso General</span>
+                        </div>
+                        <span className="text-2xl font-bold text-blue-600">
+                          {userProgress.length > 0 
+                            ? Math.round((userProgress.filter(p => p.completed).length / userProgress.length) * 100)
+                            : 0}%
+                        </span>
+                      </div>
+                      <Progress 
+                        value={userProgress.length > 0 
+                          ? (userProgress.filter(p => p.completed).length / userProgress.length) * 100
+                          : 0} 
+                        className="h-3" 
+                      />
+                      <div className="grid grid-cols-3 gap-4 text-center text-sm">
+                        <div>
+                          <div className="font-bold text-green-600">
+                            {userProgress.filter(p => p.completed).length}
+                          </div>
+                          <div className="text-gray-600">Completadas</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-yellow-600">
+                            {userProgress.reduce((total, p) => total + (p.score || 0), 0)}
+                          </div>
+                          <div className="text-gray-600">Puntos Totales</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-blue-600">
+                            {Math.round(userProgress.reduce((sum, l) => sum + (l.timeSpent || 0), 0) / 1000 / 60)}
+                          </div>
+                          <div className="text-gray-600">Minutos Aprendiendo</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Lesson Player */}
+          {!isLoading && (
+            <LessonPlayer
+              ageRange={selectedAgeRange}
+              onExit={() => setShowInteractiveLessons(false)}
+              userProgress={userProgress}
+              onProgressUpdate={handleProgressUpdate}
+            />
+          )}
+        </div>
       </DashboardLayout>
     );
   }
@@ -358,44 +611,70 @@ const LeccionesV2 = () => {
           </div>
         </div>
 
-        {/* Age Range Selector */}
-        <Card>
+        {/* Age Information - Automatic */}
+        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Users className="w-5 h-5 mr-2" />
-              Selecciona tu Rango de Edad
+              Tu Nivel de Lecciones
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {ageRanges.map((range) => (
-                <Card
-                  key={range.id}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                    selectedAgeRange === range.id
-                      ? "ring-2 ring-primary bg-primary/5"
-                      : "hover:bg-gray-50"
-                  }`}
-                  onClick={() => setSelectedAgeRange(range.id)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <range.icon className="w-8 h-8 text-primary" />
-                      <div>
-                        <h3 className="font-semibold text-lg">{range.label}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{range.description}</p>
-                      </div>
+            {isLoading ? (
+              <div className="text-center py-4">
+                <p className="text-gray-600">Calculando tu edad...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-primary/10 rounded-full">
+                      <Calendar className="w-8 h-8 text-primary" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Tu edad</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {userAge !== null ? `${userAge} años` : 'No disponible'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <Badge className="text-sm px-4 py-2 bg-primary">
+                      {ageRanges.find(r => r.id === selectedAgeRange)?.label}
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-start space-x-3">
+                    <Star className="w-5 h-5 text-primary mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {ageRanges.find(r => r.id === selectedAgeRange)?.description}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Las lecciones se han seleccionado automáticamente según tu edad para ofrecerte 
+                        el contenido más apropiado para tu nivel de desarrollo.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Levels and Modules */}
-        <div className="space-y-6">
-          {levels.map((level) => (
+        {isLoading ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <RefreshCw className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
+              <p className="text-muted-foreground">Preparando tus lecciones...</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {levels.map((level) => (
             <Card key={level.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -470,19 +749,22 @@ const LeccionesV2 = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Start Button */}
-        <div className="flex justify-center">
-          <Button
-            onClick={handleStartLessons}
-            size="lg"
-            className="px-8 py-3 text-lg"
-          >
-            <PlayCircle className="w-5 h-5 mr-2" />
-            Comenzar Lecciones V.2 (framework)
-          </Button>
-        </div>
+        {!isLoading && (
+          <div className="flex justify-center">
+            <Button
+              onClick={handleStartLessons}
+              size="lg"
+              className="px-8 py-3 text-lg"
+            >
+              <PlayCircle className="w-5 h-5 mr-2" />
+              Comenzar Lecciones V.2 (framework)
+            </Button>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

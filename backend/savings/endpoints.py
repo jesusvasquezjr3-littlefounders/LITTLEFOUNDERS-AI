@@ -2,15 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..database import get_db
-from ..models import SavingsGoal, Transaction, User, TransactionType
-from ..schemas import (
+from database import get_db
+from models import SavingsGoal, Transaction, User, TransactionType
+from schemas import (
     SavingsGoalCreate,
     SavingsGoalUpdate,
     SavingsGoalResponse,
     TransactionCreate,
     TransactionResponse
 )
+from auth.permissions import verify_family_access, verify_ownership
 
 router = APIRouter(prefix="/savings", tags=["Savings"])
 
@@ -33,8 +34,11 @@ async def create_savings_goal(goal: SavingsGoalCreate, user_id: int, db: Session
 
 
 @router.get("/goals/{user_id}", response_model=List[SavingsGoalResponse])
-async def get_savings_goals(user_id: int, db: Session = Depends(get_db)):
-    """Get all savings goals for a user"""
+async def get_savings_goals(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Get all savings goals for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     goals = db.query(SavingsGoal).filter(
         SavingsGoal.user_id == user_id,
         SavingsGoal.is_active == True
@@ -43,11 +47,14 @@ async def get_savings_goals(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/goals/{goal_id}", response_model=SavingsGoalResponse)
-async def update_savings_goal(goal_id: int, goal_update: SavingsGoalUpdate, db: Session = Depends(get_db)):
-    """Update a savings goal"""
+async def update_savings_goal(goal_id: int, goal_update: SavingsGoalUpdate, requester_id: int, db: Session = Depends(get_db)):
+    """Update a savings goal (owner only)"""
     db_goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id).first()
     if not db_goal:
         raise HTTPException(status_code=404, detail="Savings goal not found")
+    
+    # Verify ownership
+    verify_ownership(db, requester_id, db_goal.user_id, "savings goal")
     
     if goal_update.current_amount is not None:
         db_goal.current_amount = goal_update.current_amount
@@ -66,10 +73,13 @@ async def deposit_to_savings(
     amount: float,
     db: Session = Depends(get_db)
 ):
-    """Deposit money to a savings goal"""
+    """Deposit money to a savings goal (owner only)"""
     goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id).first()
     if not goal:
         raise HTTPException(status_code=404, detail="Savings goal not found")
+    
+    # Verify goal ownership
+    verify_ownership(db, user_id, goal.user_id, "savings goal")
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -103,10 +113,13 @@ async def withdraw_from_savings(
     amount: float,
     db: Session = Depends(get_db)
 ):
-    """Withdraw money from a savings goal"""
+    """Withdraw money from a savings goal (owner only)"""
     goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id).first()
     if not goal:
         raise HTTPException(status_code=404, detail="Savings goal not found")
+    
+    # Verify goal ownership
+    verify_ownership(db, user_id, goal.user_id, "savings goal")
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -134,8 +147,11 @@ async def withdraw_from_savings(
 
 
 @router.get("/transactions/{user_id}", response_model=List[TransactionResponse])
-async def get_transactions(user_id: int, limit: int = 50, db: Session = Depends(get_db)):
-    """Get transaction history for a user"""
+async def get_transactions(user_id: int, requester_id: int, limit: int = 50, db: Session = Depends(get_db)):
+    """Get transaction history for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     transactions = db.query(Transaction).filter(
         Transaction.user_id == user_id
     ).order_by(Transaction.created_at.desc()).limit(limit).all()
@@ -143,11 +159,14 @@ async def get_transactions(user_id: int, limit: int = 50, db: Session = Depends(
 
 
 @router.delete("/goals/{goal_id}")
-async def delete_savings_goal(goal_id: int, db: Session = Depends(get_db)):
-    """Delete (deactivate) a savings goal"""
+async def delete_savings_goal(goal_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Delete (deactivate) a savings goal (owner only)"""
     goal = db.query(SavingsGoal).filter(SavingsGoal.id == goal_id).first()
     if not goal:
         raise HTTPException(status_code=404, detail="Savings goal not found")
+    
+    # Verify ownership
+    verify_ownership(db, requester_id, goal.user_id, "savings goal")
     
     goal.is_active = False
     db.commit()

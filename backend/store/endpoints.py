@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from ..database import get_db
-from ..models import Product, Purchase, User, Transaction, TransactionType
-from ..schemas import ProductCreate, ProductResponse, PurchaseCreate, PurchaseResponse
+from database import get_db
+from models import Product, Purchase, User, Transaction, TransactionType
+from schemas import ProductCreate, ProductResponse, PurchaseCreate, PurchaseResponse
+from auth.permissions import verify_family_access
 
 router = APIRouter(prefix="/store", tags=["Store"])
 
@@ -116,8 +117,11 @@ async def purchase_products(
 
 
 @router.get("/purchases/{user_id}")
-async def get_user_purchases(user_id: int, db: Session = Depends(get_db)):
-    """Get purchase history for a user"""
+async def get_user_purchases(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Get purchase history for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     purchases = db.query(Purchase, Product).join(Product).filter(
         Purchase.user_id == user_id
     ).order_by(Purchase.purchased_at.desc()).all()

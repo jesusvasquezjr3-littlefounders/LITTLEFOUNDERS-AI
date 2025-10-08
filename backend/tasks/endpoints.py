@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-from ..database import get_db
-from ..models import Task, UserTask, User, Transaction, TransactionType
-from ..schemas import TaskCreate, TaskResponse, TaskComplete, TaskApproval
+from database import get_db
+from models import Task, UserTask, User, Transaction, TransactionType
+from schemas import TaskCreate, TaskResponse, TaskComplete, TaskApproval
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -33,11 +33,36 @@ async def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 
 @router.get("/available/{user_id}")
 async def get_available_tasks(user_id: int, db: Session = Depends(get_db)):
-    """Get all available tasks for a child"""
-    tasks = db.query(Task).filter(
+    """Get all available tasks for a child (only from their tutor and sponsor)"""
+    # Get the child user
+    child = db.query(User).filter(User.id == user_id).first()
+    if not child:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get authorized creators (tutor and sponsor)
+    authorized_creators = []
+    if child.tutor_id:
+        authorized_creators.append(child.tutor_id)
+    
+    # Get sponsor(s) who have this child as sponsored_child_id
+    sponsors = db.query(User).filter(
+        User.sponsored_child_id == user_id,
+        User.user_type == "sponsor"
+    ).all()
+    for sponsor in sponsors:
+        authorized_creators.append(sponsor.id)
+    
+    # Get tasks created by authorized users
+    query = db.query(Task).filter(
         Task.assigned_to == user_id,
         Task.is_active == True
-    ).all()
+    )
+    
+    # Only filter by authorized creators if there are any
+    if authorized_creators:
+        query = query.filter(Task.created_by.in_(authorized_creators))
+    
+    tasks = query.all()
     
     # Get task completion status
     task_data = []
@@ -46,6 +71,9 @@ async def get_available_tasks(user_id: int, db: Session = Depends(get_db)):
             UserTask.task_id == task.id,
             UserTask.user_id == user_id
         ).first()
+        
+        # Get creator info
+        creator = db.query(User).filter(User.id == task.created_by).first()
         
         task_data.append({
             "id": task.id,
@@ -57,6 +85,8 @@ async def get_available_tasks(user_id: int, db: Session = Depends(get_db)):
             "time_estimate": task.time_estimate,
             "due_date": task.due_date.isoformat() if task.due_date else None,
             "is_first_dibs": task.is_first_dibs,
+            "created_by": creator.name if creator else "Unknown",
+            "created_by_type": creator.user_type.value if creator else None,
             "is_completed": user_task.is_completed if user_task else False,
             "is_approved": user_task.is_approved if user_task else None,
             "photo_evidence": user_task.photo_evidence if user_task else None
@@ -164,3 +194,69 @@ async def delete_task(task_id: int, db: Session = Depends(get_db)):
     task.is_active = False
     db.commit()
     return {"message": "Task deleted"}
+
+
+@router.get("/debug/all-tasks")
+async def debug_all_tasks(db: Session = Depends(get_db)):
+    """Debug endpoint to see all tasks in the database"""
+    tasks = db.query(Task).all()
+    user_tasks = db.query(UserTask).all()
+    
+    return {
+        "total_tasks": len(tasks),
+        "total_user_tasks": len(user_tasks),
+        "tasks": [
+            {
+                "id": task.id,
+                "title": task.title,
+                "created_by": task.created_by,
+                "assigned_to": task.assigned_to,
+                "is_active": task.is_active,
+                "created_at": task.created_at.isoformat() if task.created_at else None
+            }
+            for task in tasks
+        ],
+        "user_tasks": [
+            {
+                "id": ut.id,
+                "user_id": ut.user_id,
+                "task_id": ut.task_id,
+                "is_completed": ut.is_completed
+            }
+            for ut in user_tasks
+        ]
+    }
+
+
+@router.get("/debug/user/{user_id}")
+async def debug_user_info(user_id: int, db: Session = Depends(get_db)):
+    """Debug endpoint to see user info and their family relationships"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get authorized creators
+    authorized_creators = []
+    if user.tutor_id:
+        authorized_creators.append(user.tutor_id)
+    
+    sponsors = db.query(User).filter(
+        User.sponsored_child_id == user_id,
+        User.user_type == "sponsor"
+    ).all()
+    for sponsor in sponsors:
+        authorized_creators.append(sponsor.id)
+    
+    return {
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type.value,
+            "tutor_id": user.tutor_id,
+            "sponsored_child_id": user.sponsored_child_id
+        },
+        "authorized_creators": authorized_creators,
+        "tasks_assigned_to_user": db.query(Task).filter(Task.assigned_to == user_id).count(),
+        "user_tasks_count": db.query(UserTask).filter(UserTask.user_id == user_id).count()
+    }

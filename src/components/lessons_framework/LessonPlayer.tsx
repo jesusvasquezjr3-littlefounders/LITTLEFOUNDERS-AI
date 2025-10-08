@@ -453,26 +453,20 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={onExit}>
-            <Home className="w-4 h-4 mr-2" />
-            Volver al Dashboard
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              {ageRange === "8-10" ? "Exploradores Financieros (framework)" : 
-               ageRange === "11-13" ? "Administradores Junior (framework)" : 
-               "Financieros Avanzados (framework)"}
-            </h1>
-            <p className="text-gray-600">
-              {ageRange === "8-10" 
-                ? "Herramientas prácticas - Framework científico de Bernheim" 
-                : ageRange === "11-13"
-                ? "Competencia deliberativa - Framework científico de Bernheim"
-                : "Análisis crítico - Framework científico de Bernheim"
-              }
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {ageRange === "8-10" ? "Exploradores Financieros (framework)" : 
+             ageRange === "11-13" ? "Administradores Junior (framework)" : 
+             "Financieros Avanzados (framework)"}
+          </h1>
+          <p className="text-gray-600">
+            {ageRange === "8-10" 
+              ? "Herramientas prácticas - Framework científico de Bernheim" 
+              : ageRange === "11-13"
+              ? "Competencia deliberativa - Framework científico de Bernheim"
+              : "Análisis crítico - Framework científico de Bernheim"
+            }
+          </p>
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-blue-600">🏆 {getTotalPoints()} puntos</div>

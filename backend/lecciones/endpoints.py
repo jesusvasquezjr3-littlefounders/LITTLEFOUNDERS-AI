@@ -3,14 +3,15 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-from ..database import get_db
-from ..models import Lesson, UserLessonProgress, User
-from ..schemas import (
+from database import get_db
+from models import Lesson, UserLessonProgress, User
+from schemas import (
     LessonCreate,
     LessonResponse,
     LessonProgressUpdate,
     LessonComplete
 )
+from auth.permissions import verify_family_access
 
 router = APIRouter(prefix="/lecciones", tags=["Lecciones"])
 
@@ -68,8 +69,11 @@ async def get_lessons_by_level(level_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/progress/{user_id}")
-async def get_user_progress(user_id: int, db: Session = Depends(get_db)):
-    """Get lesson progress for a user"""
+async def get_user_progress(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Get lesson progress for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     progress_records = db.query(UserLessonProgress, Lesson).join(Lesson).filter(
         UserLessonProgress.user_id == user_id
     ).all()
@@ -173,8 +177,11 @@ async def complete_lesson(
 
 
 @router.get("/completed/{user_id}")
-async def get_completed_lessons(user_id: int, db: Session = Depends(get_db)):
-    """Get all completed lessons for a user"""
+async def get_completed_lessons(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+    """Get all completed lessons for a user (with family access control)"""
+    # Verify family access
+    verify_family_access(db, requester_id, user_id, allow_self=True)
+    
     completed = db.query(Lesson, UserLessonProgress).join(UserLessonProgress).filter(
         UserLessonProgress.user_id == user_id,
         UserLessonProgress.completed == True

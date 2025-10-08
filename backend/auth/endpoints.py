@@ -3,16 +3,16 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ..database import get_db
-from ..models import User, UserType
-from .schemas import (
+from database import get_db
+from models import User, UserType
+from auth.schemas import (
     FamilyRegistration,
     UserLogin,
     UserResponse,
     Token
 )
-from .utils import verify_password, get_password_hash, create_access_token
-from ..config import settings
+from auth.utils import verify_password, get_password_hash, create_access_token
+from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -56,9 +56,9 @@ async def register_family(registration_data: FamilyRegistration, db: Session = D
             gender=registration_data.tutor.gender,
         )
         db.add(tutor_user)
-        db.flush()
+        db.flush()  # Get the tutor_user.id
         
-        # Create child user
+        # Create child user with reference to tutor
         child_birth_date = None
         if registration_data.child.birth_date:
             try:
@@ -73,14 +73,14 @@ async def register_family(registration_data: FamilyRegistration, db: Session = D
             user_type=UserType.CHILD,
             birth_date=child_birth_date,
             gender=registration_data.child.gender,
-            tutor_email=registration_data.tutor.email,
+            tutor_id=tutor_user.id,  # Link to tutor via ID
             lessons_completed=0,
             minutes_studied=0,
             points_earned=0,
             balance=0.0
         )
         db.add(child_user)
-        db.flush()
+        db.flush()  # Get the child_user.id
         
         # Create sponsor if provided
         sponsor_user = None
@@ -106,7 +106,7 @@ async def register_family(registration_data: FamilyRegistration, db: Session = D
                 user_type=UserType.SPONSOR,
                 birth_date=sponsor_birth_date,
                 gender=registration_data.sponsor.gender,
-                child_email=registration_data.child.email,
+                sponsored_child_id=child_user.id,  # Link to child via ID
             )
             db.add(sponsor_user)
         
@@ -252,3 +252,94 @@ async def get_current_user(db: Session = Depends(get_db)):
     # This would normally use the JWT token to identify the user
     # For now, it's a placeholder
     pass
+
+
+@router.get("/family/{user_id}")
+async def get_user_family(user_id: int, db: Session = Depends(get_db)):
+    """
+    Get complete family information for a user (tutor, child, sponsors)
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    family_data = {
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type.value
+        },
+        "tutor": None,
+        "children": [],
+        "sponsors": []
+    }
+    
+    # If user is a CHILD, get their tutor and sponsors
+    if user.user_type == UserType.CHILD:
+        if user.tutor_id:
+            tutor = db.query(User).filter(User.id == user.tutor_id).first()
+            if tutor:
+                family_data["tutor"] = {
+                    "id": tutor.id,
+                    "name": tutor.name,
+                    "email": tutor.email,
+                    "user_type": tutor.user_type.value
+                }
+        
+        # Get sponsors
+        sponsors = db.query(User).filter(
+            User.sponsored_child_id == user_id,
+            User.user_type == UserType.SPONSOR
+        ).all()
+        family_data["sponsors"] = [
+            {
+                "id": sponsor.id,
+                "name": sponsor.name,
+                "email": sponsor.email,
+                "user_type": sponsor.user_type.value
+            }
+            for sponsor in sponsors
+        ]
+    
+    # If user is a TUTOR, get their children
+    elif user.user_type == UserType.TUTOR:
+        children = db.query(User).filter(User.tutor_id == user_id).all()
+        family_data["children"] = [
+            {
+                "id": child.id,
+                "name": child.name,
+                "email": child.email,
+                "user_type": child.user_type.value,
+                "balance": child.balance,
+                "points_earned": child.points_earned
+            }
+            for child in children
+        ]
+    
+    # If user is a SPONSOR, get the sponsored child and their tutor
+    elif user.user_type == UserType.SPONSOR:
+        if user.sponsored_child_id:
+            child = db.query(User).filter(User.id == user.sponsored_child_id).first()
+            if child:
+                family_data["children"] = [{
+                    "id": child.id,
+                    "name": child.name,
+                    "email": child.email,
+                    "user_type": child.user_type.value,
+                    "balance": child.balance,
+                    "points_earned": child.points_earned
+                }]
+                
+                # Get the child's tutor
+                if child.tutor_id:
+                    tutor = db.query(User).filter(User.id == child.tutor_id).first()
+                    if tutor:
+                        family_data["tutor"] = {
+                            "id": tutor.id,
+                            "name": tutor.name,
+                            "email": tutor.email,
+                            "user_type": tutor.user_type.value
+                        }
+    
+    return family_data

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -139,12 +139,69 @@ const difficultyColors = {
 };
 
 export function TasksSystem() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTab, setActiveTab] = useState<'available' | 'completed' | 'pending'>('available');
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false);
   const [selectedTaskForPhoto, setSelectedTaskForPhoto] = useState<Task | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar tareas del backend
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Obtener usuario del localStorage
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+          console.error('No user found in localStorage');
+          setTasks(mockTasks); // Fallback a datos mock
+          return;
+        }
+        
+        const user = JSON.parse(userStr);
+        
+        // Cargar tareas desde el backend
+        const response = await fetch(`http://localhost:8000/tasks/available/${user.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Error loading tasks');
+        }
+        
+        const data = await response.json();
+        
+        // Formatear tareas para el componente
+        const formattedTasks: Task[] = data.tasks.map((t: any) => ({
+          id: t.id.toString(),
+          title: t.title,
+          description: t.description,
+          category: t.category,
+          difficulty: t.difficulty,
+          reward: t.reward,
+          timeEstimate: t.time_estimate || 30,
+          isCompleted: t.is_completed,
+          isApproved: t.is_approved,
+          completedDate: t.completed_date,
+          isFirstDibs: t.is_first_dibs,
+          photoEvidence: t.photo_evidence
+        }));
+        
+        setTasks(formattedTasks);
+        console.log('✅ Tareas cargadas:', formattedTasks.length);
+        
+      } catch (error) {
+        console.error('Error al cargar tareas:', error);
+        // Fallback a datos mock en caso de error
+        setTasks(mockTasks);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadTasks();
+  }, []); // Solo cargar una vez al montar el componente
 
   const handleCompleteTask = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
@@ -425,10 +482,19 @@ export function TasksSystem() {
 
       {/* Task Lists */}
       <div className="space-y-4">
-        {activeTab === 'available' && (
+        {isLoading ? (
+          <Card>
+            <CardContent className="text-center py-8">
+              <RefreshCw className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
+              <p className="text-muted-foreground">Cargando tareas...</p>
+            </CardContent>
+          </Card>
+        ) : (
           <>
-            <h3 className="text-lg font-semibold">Tareas Disponibles</h3>
-            {availableTasks.length > 0 ? (
+            {activeTab === 'available' && (
+              <>
+                <h3 className="text-lg font-semibold">Tareas Disponibles</h3>
+                {availableTasks.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {availableTasks.map(task => renderTask(task, true))}
               </div>
@@ -479,8 +545,10 @@ export function TasksSystem() {
               </Card>
             )}
           </>
-                 )}
-       </div>
+        )}
+          </>
+        )}
+      </div>
 
        {/* Modal para subir foto de evidencia */}
        <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
