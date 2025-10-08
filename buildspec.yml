@@ -4,7 +4,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 20.17.0
       python: 3.11
     commands:
       - echo "Verificando versiones instaladas..."
@@ -17,8 +17,11 @@ phases:
       - echo "Iniciando pre-build phase..."
       - echo "Build started on `date`"
       
-      - echo "Instalando dependencias del frontend..."
-      - npm ci
+      - echo "Instalando dependencias del frontend (incluyendo devDependencies)..."
+      - npm ci --include=dev
+      
+      - echo "Verificando que TypeScript está instalado..."
+      - npx tsc --version
       
       - echo "Instalando dependencias del backend..."
       - cd backend

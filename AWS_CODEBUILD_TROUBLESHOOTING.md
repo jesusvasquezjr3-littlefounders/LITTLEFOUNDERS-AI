@@ -87,6 +87,33 @@ El build debería funcionar ahora. La secuencia será:
 
 ## 🐛 Otros Problemas Comunes
 
+### Problema: `tsc: command not found` ✅ RESUELTO
+
+**Error:**
+```
+sh: line 1: tsc: command not found
+npm run build exit status 127
+Phase complete: BUILD State: FAILED
+```
+
+**Causa:**
+Las **devDependencies** (como TypeScript) no se instalaron. Por defecto, en algunos ambientes, `npm ci` puede omitir las devDependencies.
+
+**Solución Aplicada:**
+```yaml
+pre_build:
+  commands:
+    # Instalar TODAS las dependencias (incluyendo devDependencies)
+    - npm ci --include=dev
+    
+    # Verificar que TypeScript está instalado
+    - npx tsc --version
+```
+
+El flag `--include=dev` asegura que se instalen las devDependencies necesarias para el build (TypeScript, Vite, etc.).
+
+---
+
 ### Problema: Error en `npm ci`
 
 **Error:**

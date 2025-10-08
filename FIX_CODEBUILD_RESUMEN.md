@@ -1,6 +1,8 @@
-# ✅ Fix Aplicado - AWS CodeBuild Error
+# ✅ Fixes Aplicados - AWS CodeBuild Errors
 
-## 🔴 Problema Original
+## 🔴 Problemas Originales
+
+### Error 1: Sistema Operativo Incompatible
 
 Tu build en AWS CodeBuild falló con este error:
 
