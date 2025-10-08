@@ -43,10 +43,10 @@ const InvestmentGames = () => {
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
-            Aprende a Invertir
+            Aprende a Emprender
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Descubre el mundo de las inversiones y el emprendimiento a través de juegos educativos divertidos e interactivos.
+            Descubre el mundo del emprendimiento a través de juegos educativos divertidos e interactivos.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ const InvestmentGames = () => {
                     💡 Consejo para Padres
                   </h3>
                   <p className="text-orange-700 text-sm leading-relaxed">
-                    Los juegos de inversión están diseñados para enseñar conceptos financieros básicos de manera divertida. 
+                    Los juegos de emprendimiento están diseñados para enseñar conceptos financieros básicos de manera divertida. 
                     Acompaña a tu hijo durante el juego y discutan juntos las decisiones tomadas para maximizar el aprendizaje.
                   </p>
                 </div>

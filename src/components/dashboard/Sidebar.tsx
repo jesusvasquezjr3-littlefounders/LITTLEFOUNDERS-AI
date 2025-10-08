@@ -2,11 +2,6 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   BarChart3,
-  Users,
-  Package,
-  UserCheck,
-  DollarSign,
-  TrendingUp,
   Settings,
   HelpCircle,
   ChevronLeft,
@@ -14,11 +9,10 @@ import {
   BookOpen,
   Trophy,
   ClipboardList,
-  Target,
   PiggyBank,
   Store,
   Lightbulb,
-  Coins
+  TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,13 +34,10 @@ const getMenuItems = () => {
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
       { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
-      { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
       { title: "Tiendita", url: "/store", icon: Store, color: "text-product" },
-      { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
-      { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
-      { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
+      { title: "Lecciones", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
       { title: "Mis Tareas", url: "/tasks", icon: Trophy, color: "text-yellow-600" },
-      { title: "Aprende a invertir", url: "/investment-games", icon: Lightbulb, color: "text-orange-500" },
+      { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
     ];
   } else {
@@ -54,13 +45,10 @@ const getMenuItems = () => {
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary" },
       { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600" },
-      { title: "Amiguitos", url: "/customers", icon: Users, color: "text-customers" },
       { title: "Tiendita", url: "/store", icon: Store, color: "text-product" },
-      { title: "Mi Equipo", url: "/team", icon: UserCheck, color: "text-team" },
-      { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-blue-600" },
-      { title: "Lecciones (V.2)", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
+      { title: "Lecciones", url: "/lecciones-v2", icon: BookOpen, color: "text-purple-600" },
       { title: "Gestión de Tareas", url: "/parent-tasks", icon: ClipboardList, color: "text-purple-600" },
-      { title: "Aprende a invertir", url: "/investment-games", icon: Lightbulb, color: "text-orange-500" },
+      { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-primary" },
     ];
   }

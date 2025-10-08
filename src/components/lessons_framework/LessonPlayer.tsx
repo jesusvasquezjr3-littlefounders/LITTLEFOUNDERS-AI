@@ -451,71 +451,11 @@ const LessonPlayer: React.FC<LessonPlayerProps> = ({
   // Mostrar menú de lecciones
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            {ageRange === "8-10" ? "Exploradores Financieros (framework)" : 
-             ageRange === "11-13" ? "Administradores Junior (framework)" : 
-             "Financieros Avanzados (framework)"}
-          </h1>
-          <p className="text-gray-600">
-            {ageRange === "8-10" 
-              ? "Herramientas prácticas - Framework científico de Bernheim" 
-              : ageRange === "11-13"
-              ? "Competencia deliberativa - Framework científico de Bernheim"
-              : "Análisis crítico - Framework científico de Bernheim"
-            }
-          </p>
-        </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-blue-600">🏆 {getTotalPoints()} puntos</div>
-          <div className="text-sm text-gray-600">
-            {completedLessons.length}/{lessons.length} lecciones completadas
-          </div>
-        </div>
-      </div>
 
-      {/* Progreso general */}
-      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Trophy className="w-6 h-6 text-yellow-600" />
-            <span>
-              Tu Progreso en {ageRange === "8-10" ? "Exploradores Financieros (framework)" : 
-                              ageRange === "11-13" ? "Administradores Junior (framework)" : 
-                              "Financieros Avanzados (framework)"}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-medium">Progreso General</span>
-              <span className="text-2xl font-bold text-blue-600">
-                {getCompletionPercentage()}%
-              </span>
-            </div>
-            <Progress value={getCompletionPercentage()} className="h-3" />
-            <div className="grid grid-cols-3 gap-4 text-center text-sm">
-              <div>
-                <div className="font-bold text-green-600">{completedLessons.length}</div>
-                <div className="text-gray-600">Completadas</div>
-              </div>
-              <div>
-                <div className="font-bold text-yellow-600">{getTotalPoints()}</div>
-                <div className="text-gray-600">Puntos Totales</div>
-              </div>
-              <div>
-                <div className="font-bold text-blue-600">
-                  {Math.round(completedLessons.reduce((sum, l) => sum + l.timeSpent, 0) / 1000 / 60)}
-                </div>
-                <div className="text-gray-600">Minutos Aprendiendo</div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
+
+
+
 
       {/* Lista de lecciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

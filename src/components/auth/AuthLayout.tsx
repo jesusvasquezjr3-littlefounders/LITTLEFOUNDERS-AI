@@ -29,7 +29,7 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
             {showBackToWelcome && (
               <div>
                 <Link 
-                  to="/welcome" 
+                  to="/" 
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   ← Regresar al Inicio
