@@ -37,9 +37,18 @@ async def create_game_session(
         game_type=session.game_type,
         day_number=1,
         cash=50.0,  # Starting cash
-        inventory={"lemons": 0, "sugar": 0, "cups": 0},
+        inventory={"lemons": 0, "sugar": 0, "cups": 0, "ice": 0},
+        recipe={"lemonsPerCup": 3, "sugarPerCup": 2, "icePerCup": 3, "price": 1.0},
+        weather="sunny",
+        temperature=75,
+        location="park",
         weather_forecast={},
         decisions={},
+        daily_stats={"cupsSold": 0, "revenue": 0.0, "profit": 0.0, "customersServed": 0},
+        achievements=[],
+        reputation=50,
+        experience=0,
+        level=1,
         score=0
     )
     db.add(db_session)
@@ -78,16 +87,35 @@ async def update_game_session(
     if not db_session:
         raise HTTPException(status_code=404, detail="Game session not found")
     
+    # Actualizar todos los campos si están presentes
     if session_update.day_number is not None:
         db_session.day_number = session_update.day_number
     if session_update.cash is not None:
         db_session.cash = session_update.cash
     if session_update.inventory is not None:
         db_session.inventory = session_update.inventory
+    if session_update.recipe is not None:
+        db_session.recipe = session_update.recipe
+    if session_update.weather is not None:
+        db_session.weather = session_update.weather
+    if session_update.temperature is not None:
+        db_session.temperature = session_update.temperature
+    if session_update.location is not None:
+        db_session.location = session_update.location
     if session_update.weather_forecast is not None:
         db_session.weather_forecast = session_update.weather_forecast
     if session_update.decisions is not None:
         db_session.decisions = session_update.decisions
+    if session_update.daily_stats is not None:
+        db_session.daily_stats = session_update.daily_stats
+    if session_update.achievements is not None:
+        db_session.achievements = session_update.achievements
+    if session_update.reputation is not None:
+        db_session.reputation = session_update.reputation
+    if session_update.experience is not None:
+        db_session.experience = session_update.experience
+    if session_update.level is not None:
+        db_session.level = session_update.level
     if session_update.score is not None:
         db_session.score = session_update.score
     

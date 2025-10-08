@@ -24,8 +24,11 @@ async def create_savings_goal(goal: SavingsGoalCreate, user_id: int, db: Session
         title=goal.title,
         description=goal.description,
         target_amount=goal.target_amount,
+        category=goal.category,
         deadline=goal.deadline,
-        image_url=goal.image_url
+        image_url=goal.image_url,
+        parent_match_percentage=goal.parent_match_percentage,
+        round_up_enabled=goal.round_up_enabled
     )
     db.add(db_goal)
     db.commit()

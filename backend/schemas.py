@@ -98,8 +98,11 @@ class SavingsGoalBase(BaseModel):
     title: str
     description: Optional[str] = None
     target_amount: float
+    category: Optional[str] = "other"
     deadline: Optional[datetime] = None
     image_url: Optional[str] = None
+    parent_match_percentage: Optional[int] = 0
+    round_up_enabled: Optional[bool] = False
 
 
 class SavingsGoalCreate(SavingsGoalBase):
@@ -109,6 +112,9 @@ class SavingsGoalCreate(SavingsGoalBase):
 class SavingsGoalUpdate(BaseModel):
     current_amount: Optional[float] = None
     is_active: Optional[bool] = None
+    category: Optional[str] = None
+    parent_match_percentage: Optional[int] = None
+    round_up_enabled: Optional[bool] = None
 
 
 class SavingsGoalResponse(SavingsGoalBase):
@@ -226,8 +232,17 @@ class GameSessionUpdate(BaseModel):
     day_number: Optional[int] = None
     cash: Optional[float] = None
     inventory: Optional[dict] = None
+    recipe: Optional[dict] = None
+    weather: Optional[str] = None
+    temperature: Optional[int] = None
+    location: Optional[str] = None
     weather_forecast: Optional[dict] = None
     decisions: Optional[dict] = None
+    daily_stats: Optional[dict] = None
+    achievements: Optional[list] = None
+    reputation: Optional[int] = None
+    experience: Optional[int] = None
+    level: Optional[int] = None
     score: Optional[int] = None
 
 
@@ -238,8 +253,17 @@ class GameSessionResponse(BaseModel):
     day_number: int
     cash: float
     inventory: Optional[dict] = None
+    recipe: Optional[dict] = None
+    weather: Optional[str] = None
+    temperature: Optional[int] = None
+    location: Optional[str] = None
     weather_forecast: Optional[dict] = None
     decisions: Optional[dict] = None
+    daily_stats: Optional[dict] = None
+    achievements: Optional[list] = None
+    reputation: Optional[int] = None
+    experience: Optional[int] = None
+    level: Optional[int] = None
     score: int
     is_active: bool
     started_at: datetime

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -98,8 +98,9 @@ const categoryColors = {
 };
 
 export function SavingsGoals() {
-  const [goals, setGoals] = useState<SavingsGoal[]>(mockSavingsGoals);
+  const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [isAddingGoal, setIsAddingGoal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [newGoal, setNewGoal] = useState({
     title: "",
     description: "",
@@ -110,37 +111,146 @@ export function SavingsGoals() {
     roundUpEnabled: false
   });
 
+  // Cargar metas de ahorro desde el backend
+  useEffect(() => {
+    const loadGoals = async () => {
+      try {
+        setIsLoading(true);
+        
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+          console.error('No user found in localStorage');
+          setGoals(mockSavingsGoals); // Fallback
+          return;
+        }
+        
+        const user = JSON.parse(userStr);
+        
+        const response = await fetch(
+          `http://localhost:8000/savings/goals/${user.id}?requester_id=${user.id}`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Error loading savings goals');
+        }
+        
+        const data = await response.json();
+        
+        // Formatear goals para el componente
+        const formattedGoals: SavingsGoal[] = data.map((g: any) => ({
+          id: g.id.toString(),
+          title: g.title,
+          description: g.description || '',
+          targetAmount: g.target_amount,
+          currentAmount: g.current_amount,
+          category: g.category || 'other',
+          deadline: g.deadline,
+          isCompleted: g.current_amount >= g.target_amount,
+          parentMatchPercentage: g.parent_match_percentage || 0,
+          roundUpEnabled: g.round_up_enabled || false,
+          createdDate: g.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+          imageUrl: g.image_url
+        }));
+        
+        setGoals(formattedGoals);
+        console.log(`✅ Metas de ahorro cargadas: ${formattedGoals.length}`);
+        
+      } catch (error) {
+        console.error('Error al cargar metas de ahorro:', error);
+        setGoals(mockSavingsGoals); // Fallback
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadGoals();
+  }, []);
+
   const activeGoals = goals.filter(goal => !goal.isCompleted);
   const completedGoals = goals.filter(goal => goal.isCompleted);
 
-  const handleAddGoal = () => {
-    if (!newGoal.title || !newGoal.targetAmount) return;
+  const handleAddGoal = async () => {
+    if (!newGoal.title || !newGoal.targetAmount) {
+      alert('Por favor completa el título y el monto objetivo');
+      return;
+    }
 
-    const goal: SavingsGoal = {
-      id: Date.now().toString(),
-      title: newGoal.title,
-      description: newGoal.description,
-      targetAmount: parseFloat(newGoal.targetAmount),
-      currentAmount: 0,
-      category: newGoal.category,
-      deadline: newGoal.deadline || undefined,
-      isCompleted: false,
-      parentMatchPercentage: parseInt(newGoal.parentMatchPercentage) || 0,
-      roundUpEnabled: newGoal.roundUpEnabled,
-      createdDate: new Date().toISOString().split('T')[0]
-    };
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        alert('Error: Usuario no encontrado');
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
 
-    setGoals([...goals, goal]);
-    setNewGoal({
-      title: "",
-      description: "",
-      targetAmount: "",
-      category: "other",
-      deadline: "",
-      parentMatchPercentage: "0",
-      roundUpEnabled: false
-    });
-    setIsAddingGoal(false);
+      // Preparar datos para el backend
+      const goalData = {
+        title: newGoal.title,
+        description: newGoal.description,
+        target_amount: parseFloat(newGoal.targetAmount),
+        category: newGoal.category,
+        deadline: newGoal.deadline || null,
+        image_url: null,
+        parent_match_percentage: parseInt(newGoal.parentMatchPercentage) || 0,
+        round_up_enabled: newGoal.roundUpEnabled
+      };
+
+      // Enviar al backend
+      const response = await fetch(
+        `http://localhost:8000/savings/goals?user_id=${user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(goalData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Error al crear la meta de ahorro');
+      }
+
+      const createdGoal = await response.json();
+
+      // Agregar al estado local
+      const goal: SavingsGoal = {
+        id: createdGoal.id.toString(),
+        title: createdGoal.title,
+        description: createdGoal.description || '',
+        targetAmount: createdGoal.target_amount,
+        currentAmount: createdGoal.current_amount,
+        category: createdGoal.category || 'other',
+        deadline: createdGoal.deadline,
+        isCompleted: false,
+        parentMatchPercentage: createdGoal.parent_match_percentage || 0,
+        roundUpEnabled: createdGoal.round_up_enabled || false,
+        createdDate: createdGoal.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+        imageUrl: createdGoal.image_url
+      };
+
+      setGoals([...goals, goal]);
+      
+      // Resetear formulario
+      setNewGoal({
+        title: "",
+        description: "",
+        targetAmount: "",
+        category: "other",
+        deadline: "",
+        parentMatchPercentage: "0",
+        roundUpEnabled: false
+      });
+      
+      setIsAddingGoal(false);
+      alert('✅ Meta de ahorro creada exitosamente');
+
+    } catch (error: any) {
+      console.error('Error al crear meta de ahorro:', error);
+      alert(`❌ Error al crear la meta: ${error.message}`);
+    }
   };
 
   const formatCurrency = (amount: number) => {

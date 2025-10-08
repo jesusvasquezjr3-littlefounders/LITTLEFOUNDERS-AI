@@ -214,39 +214,144 @@ const specialEvents = [
 export function LemonadeStand() {
   const [gameState, setGameState] = useState<GameState>({
     day: 1,
-    money: 20, // Dinero inicial
-    inventory: {
-      lemons: 10,
-      sugar: 10,
-      cups: 20,
-      ice: 15
-    },
-    recipe: {
-      lemonsPerCup: 2,
-      sugarPerCup: 1,
-      icePerCup: 1,
-      price: 1.0
-    },
+    money: 20,
+    inventory: { lemons: 10, sugar: 10, cups: 20, ice: 15 },
+    recipe: { lemonsPerCup: 2, sugarPerCup: 1, icePerCup: 1, price: 1.0 },
     weather: 'sunny',
     temperature: 24,
     location: 'park',
     customers: [],
-    dailyStats: {
-      cupsSold: 0,
-      revenue: 0,
-      profit: 0,
-      customersServed: 0
-    },
+    dailyStats: { cupsSold: 0, revenue: 0, profit: 0, customersServed: 0 },
     achievements: [],
     reputation: 50,
     experience: 0,
     level: 1
   });
 
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [showRecipeDialog, setShowRecipeDialog] = useState(false);
   const [showStatsDialog, setShowStatsDialog] = useState(false);
   const [customerQueue, setCustomerQueue] = useState<Customer[]>([]);
+
+  // Cargar o crear sesión de juego al iniciar
+  useEffect(() => {
+    const loadOrCreateSession = async () => {
+      try {
+        setIsLoadingSession(true);
+        
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+          console.error('No user found');
+          setIsLoadingSession(false);
+          return;
+        }
+        
+        const user = JSON.parse(userStr);
+
+        // Intentar obtener sesión activa
+        try {
+          const getResponse = await fetch(
+            `http://localhost:8000/investment-games/session/${user.id}/lemonade_stand`
+          );
+
+          if (getResponse.ok) {
+            // Sesión existente encontrada
+            const session = await getResponse.json();
+            setSessionId(session.id);
+            loadSessionToState(session);
+            console.log('✅ Sesión existente cargada:', session.id);
+            return;
+          }
+        } catch (error) {
+          // No hay sesión activa, crear una nueva
+        }
+
+        // Crear nueva sesión
+        const createResponse = await fetch(
+          `http://localhost:8000/investment-games/session?user_id=${user.id}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ game_type: 'lemonade_stand' })
+          }
+        );
+
+        if (createResponse.ok) {
+          const newSession = await createResponse.json();
+          setSessionId(newSession.id);
+          loadSessionToState(newSession);
+          console.log('✅ Nueva sesión creada:', newSession.id);
+        }
+
+      } catch (error) {
+        console.error('Error al cargar/crear sesión:', error);
+      } finally {
+        setIsLoadingSession(false);
+      }
+    };
+
+    loadOrCreateSession();
+  }, []);
+
+  // Función helper para cargar sesión al estado
+  const loadSessionToState = (session: any) => {
+    setGameState({
+      day: session.day_number || 1,
+      money: session.cash || 20,
+      inventory: session.inventory || { lemons: 10, sugar: 10, cups: 20, ice: 15 },
+      recipe: session.recipe || { lemonsPerCup: 2, sugarPerCup: 1, icePerCup: 1, price: 1.0 },
+      weather: session.weather || 'sunny',
+      temperature: session.temperature || 24,
+      location: session.location || 'park',
+      customers: [],
+      dailyStats: session.daily_stats || { cupsSold: 0, revenue: 0, profit: 0, customersServed: 0 },
+      achievements: session.achievements || [],
+      reputation: session.reputation || 50,
+      experience: session.experience || 0,
+      level: session.level || 1
+    });
+  };
+
+  // Función para guardar progreso en la base de datos
+  const saveGameProgress = useCallback(async () => {
+    if (!sessionId) return;
+
+    try {
+      const sessionUpdate = {
+        day_number: gameState.day,
+        cash: gameState.money,
+        inventory: gameState.inventory,
+        recipe: gameState.recipe,
+        weather: gameState.weather,
+        temperature: gameState.temperature,
+        location: gameState.location,
+        daily_stats: gameState.dailyStats,
+        achievements: gameState.achievements,
+        reputation: gameState.reputation,
+        experience: gameState.experience,
+        level: gameState.level,
+        score: Math.round(gameState.money + gameState.experience / 10)
+      };
+
+      const response = await fetch(
+        `http://localhost:8000/investment-games/session/${sessionId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sessionUpdate)
+        }
+      );
+
+      if (response.ok) {
+        console.log('✅ Progreso guardado en DB');
+      }
+    } catch (error) {
+      console.error('Error al guardar progreso:', error);
+    }
+  }, [sessionId, gameState]);
+
   const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
   const [isSellingMode, setIsSellingMode] = useState(false);
   const [animatedMoney, setAnimatedMoney] = useState(0);
@@ -468,12 +573,15 @@ export function LemonadeStand() {
   }, [gameState.achievements, gameState.money, gameState.reputation, gameState.day]);
 
   // Siguiente día
-  const nextDay = useCallback(() => {
+  const nextDay = useCallback(async () => {
     const locationCost = locations[gameState.location].rentCost;
     const nextDayNumber = gameState.day + 1;
     
     // Verificar logros antes de cambiar de día
     checkAchievements(gameState.dailyStats);
+    
+    // Guardar progreso del día actual antes de avanzar
+    await saveGameProgress();
     
     // Verificar evento especial
     const dayEvent = specialEvents.find(event => event.day === nextDayNumber);
@@ -498,7 +606,27 @@ export function LemonadeStand() {
     setIsSellingMode(false);
     setCustomerQueue([]);
     setCurrentCustomer(null);
-  }, [gameState, generateWeather, checkAchievements]);
+  }, [gameState, generateWeather, checkAchievements, saveGameProgress]);
+
+  // Autoguardado periódico (cada 30 segundos)
+  useEffect(() => {
+    if (!sessionId || isLoadingSession) return;
+
+    const autoSaveInterval = setInterval(() => {
+      saveGameProgress();
+    }, 30000); // 30 segundos
+
+    return () => clearInterval(autoSaveInterval);
+  }, [sessionId, isLoadingSession, saveGameProgress]);
+
+  // Guardar al desmontar el componente (cuando el usuario sale)
+  useEffect(() => {
+    return () => {
+      if (sessionId) {
+        saveGameProgress();
+      }
+    };
+  }, [sessionId, saveGameProgress]);
 
   // Efectos
   useEffect(() => {

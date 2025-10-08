@@ -185,8 +185,11 @@ class SavingsGoal(Base):
     description = Column(Text)
     target_amount = Column(Float, nullable=False)
     current_amount = Column(Float, default=0.0)
+    category = Column(String(50), default='other')  # toy, education, experience, electronics, other
     deadline = Column(DateTime)
     image_url = Column(String(500))
+    parent_match_percentage = Column(Integer, default=0)  # Porcentaje de match del tutor
+    round_up_enabled = Column(Boolean, default=False)  # Redondeo automático
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -265,9 +268,18 @@ class GameSession(Base):
     game_type = Column(String(50))  # "lemonade_stand", etc.
     day_number = Column(Integer, default=1)
     cash = Column(Float, default=50.0)
-    inventory = Column(JSON)  # Ingredients inventory
-    weather_forecast = Column(JSON)
+    inventory = Column(JSON)  # Ingredients inventory: {lemons, sugar, cups, ice}
+    recipe = Column(JSON)  # Recipe settings: {lemonsPerCup, sugarPerCup, icePerCup, price}
+    weather = Column(String(20))  # Current weather: sunny, cloudy, rainy, cold
+    temperature = Column(Integer)  # Temperature
+    location = Column(String(50))  # Location: park, school, mall, beach
+    weather_forecast = Column(JSON)  # Weather predictions
     decisions = Column(JSON)  # Daily decisions
+    daily_stats = Column(JSON)  # Daily statistics: {cupsSold, revenue, profit, customersServed}
+    achievements = Column(JSON)  # Array of achievement IDs
+    reputation = Column(Integer, default=50)  # Customer reputation (0-100)
+    experience = Column(Integer, default=0)  # XP points
+    level = Column(Integer, default=1)  # Player level
     score = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
     started_at = Column(DateTime(timezone=True), server_default=func.now())
