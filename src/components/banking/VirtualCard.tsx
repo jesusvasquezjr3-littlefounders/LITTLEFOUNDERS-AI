@@ -180,6 +180,51 @@ export function VirtualCard() {
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [hasVirtualCard, setHasVirtualCard] = useState<boolean>(false);
+  const [bankingActivated, setBankingActivated] = useState<boolean>(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+
+  // Verificar estado real de la tarjeta virtual desde el backend
+  useEffect(() => {
+    const checkVirtualCardStatus = async () => {
+      try {
+        const user = getCurrentUser();
+        if (!user?.id) return;
+        
+        const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasVirtualCard(data.has_card || false);
+          setBankingActivated(data.banking_activated || false);
+        } else {
+          setHasVirtualCard(false);
+          setBankingActivated(false);
+        }
+      } catch (error) {
+        console.error('Error checking virtual card status:', error);
+        setHasVirtualCard(false);
+        setBankingActivated(false);
+      } finally {
+        setIsCheckingStatus(false);
+      }
+    };
+
+    checkVirtualCardStatus();
+  }, []);
+
+  // Escuchar eventos de activación de tarjeta virtual
+  useEffect(() => {
+    const handleVirtualCardActivated = () => {
+      // Refrescar el estado cuando se active una tarjeta virtual
+      checkVirtualCardStatus();
+    };
+
+    window.addEventListener('virtualCardActivated', handleVirtualCardActivated);
+    
+    return () => {
+      window.removeEventListener('virtualCardActivated', handleVirtualCardActivated);
+    };
+  }, []);
 
   // Actualizar datos cuando cambie el localStorage
   useEffect(() => {
@@ -292,6 +337,43 @@ export function VirtualCard() {
   };
 
   const currentTheme = cardThemes[card.theme];
+
+  // Si está verificando el estado, mostrar loading
+  if (isCheckingStatus) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <div className="flex flex-col items-center space-y-4">
+            <CreditCard className="h-12 w-12 text-muted-foreground animate-pulse" />
+            <p className="text-muted-foreground">Verificando estado de la tarjeta...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Si no tiene banca activada, mostrar mensaje
+  if (!bankingActivated) {
+    const user = getCurrentUser();
+    const isChild = user?.user_type === 'child';
+    
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <div className="flex flex-col items-center space-y-4">
+            <Lock className="h-12 w-12 text-muted-foreground" />
+            <h3 className="text-lg font-semibold">Tarjeta Virtual no Disponible</h3>
+            <p className="text-muted-foreground text-sm">
+              {isChild 
+                ? 'Tu tutor o patrocinador debe activar tu tarjeta virtual para que puedas usarla.'
+                : 'Genera tu tarjeta virtual desde la sección de Gestión Familiar para empezar a usarla.'
+              }
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">

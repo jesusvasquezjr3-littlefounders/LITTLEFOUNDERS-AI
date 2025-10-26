@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SavingsLoadingScreen } from "@/components/ui/LoadingScreen";
 import { 
   PiggyBank, 
   Target,
@@ -19,7 +21,8 @@ import {
   DollarSign,
   TrendingUp,
   CheckCircle,
-  Clock
+  Clock,
+  Users
 } from "lucide-react";
 
 interface SavingsGoal {
@@ -36,6 +39,18 @@ interface SavingsGoal {
   createdDate: string;
   completedDate?: string;
   imageUrl?: string;
+  createdBy?: number;
+  assignedTo?: number;
+  userId?: number;
+  userName?: string; // Nombre del usuario propietario de la meta
+  createdByName?: string;
+  assignedToName?: string;
+}
+
+interface Child {
+  id: number;
+  name: string;
+  email: string;
 }
 
 const mockSavingsGoals: SavingsGoal[] = [
@@ -101,6 +116,8 @@ export function SavingsGoals() {
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [isAddingGoal, setIsAddingGoal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [userType, setUserType] = useState<string>("");
   const [newGoal, setNewGoal] = useState({
     title: "",
     description: "",
@@ -108,62 +125,105 @@ export function SavingsGoals() {
     category: "other" as SavingsGoal['category'],
     deadline: "",
     parentMatchPercentage: "0",
-    roundUpEnabled: false
+    roundUpEnabled: false,
+    assignedTo: "self"
   });
 
-  // Cargar metas de ahorro desde el backend
-  useEffect(() => {
-    const loadGoals = async () => {
-      try {
-        setIsLoading(true);
-        
-        const userStr = localStorage.getItem('user');
-        if (!userStr) {
-          console.error('No user found in localStorage');
-          setGoals(mockSavingsGoals); // Fallback
-          return;
-        }
-        
-        const user = JSON.parse(userStr);
-        
-        const response = await fetch(
-          `http://localhost:8000/savings/goals/${user.id}?requester_id=${user.id}`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Error loading savings goals');
-        }
-        
-        const data = await response.json();
-        
-        // Formatear goals para el componente
-        const formattedGoals: SavingsGoal[] = data.map((g: any) => ({
-          id: g.id.toString(),
-          title: g.title,
-          description: g.description || '',
-          targetAmount: g.target_amount,
-          currentAmount: g.current_amount,
-          category: g.category || 'other',
-          deadline: g.deadline,
-          isCompleted: g.current_amount >= g.target_amount,
-          parentMatchPercentage: g.parent_match_percentage || 0,
-          roundUpEnabled: g.round_up_enabled || false,
-          createdDate: g.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-          imageUrl: g.image_url
-        }));
-        
-        setGoals(formattedGoals);
-        console.log(`✅ Metas de ahorro cargadas: ${formattedGoals.length}`);
-        
-      } catch (error) {
-        console.error('Error al cargar metas de ahorro:', error);
+  // Función para cargar metas de ahorro
+  const loadGoals = async () => {
+    try {
+      setIsLoading(true);
+      
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        console.error('No user found in localStorage');
         setGoals(mockSavingsGoals); // Fallback
-      } finally {
-        setIsLoading(false);
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      setUserType(user.user_type);
+      
+      // If user is tutor, load children
+      if (user.user_type === 'tutor') {
+        const childrenResponse = await fetch(
+          `http://localhost:8000/savings/children/${user.id}`
+        );
+        if (childrenResponse.ok) {
+          const childrenData = await childrenResponse.json();
+          setChildren(childrenData.children || []);
+        }
+      }
+      
+      const response = await fetch(
+        `http://localhost:8000/savings/goals/${user.id}?requester_id=${user.id}&t=${Date.now()}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Error loading savings goals');
+      }
+      
+      const data = await response.json();
+      
+      // Formatear goals para el componente
+      const formattedGoals: SavingsGoal[] = data.map((g: any) => ({
+        id: g.id.toString(),
+        title: g.title,
+        description: g.description || '',
+        targetAmount: g.target_amount,
+        currentAmount: g.current_amount,
+        category: g.category || 'other',
+        deadline: g.deadline,
+        isCompleted: g.current_amount >= g.target_amount,
+        parentMatchPercentage: g.parent_match_percentage || 0,
+        roundUpEnabled: g.round_up_enabled || false,
+        createdDate: g.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+        imageUrl: g.image_url,
+        createdBy: g.created_by,
+        assignedTo: g.assigned_to,
+        userId: g.user_id,
+        userName: g.user_name
+      }));
+      
+      setGoals(formattedGoals);
+      console.log(`✅ Metas de ahorro cargadas: ${formattedGoals.length}`);
+      
+    } catch (error) {
+      console.error('Error al cargar metas de ahorro:', error);
+      setGoals(mockSavingsGoals); // Fallback
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Cargar metas de ahorro y children (si es tutor) desde el backend
+  useEffect(() => {
+    loadGoals();
+  }, []);
+
+  // Detectar cuando el usuario regresa a la pestaña y refrescar datos
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Usuario regresó a la pestaña, refrescar datos
+        console.log('🔄 Usuario regresó a la pestaña, refrescando metas...');
+        loadGoals();
       }
     };
-    
-    loadGoals();
+
+    const handleFocus = () => {
+      // También refrescar cuando la ventana recibe foco
+      console.log('🔄 Ventana recibió foco, refrescando metas...');
+      loadGoals();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const activeGoals = goals.filter(goal => !goal.isCompleted);
@@ -193,7 +253,8 @@ export function SavingsGoals() {
         deadline: newGoal.deadline || null,
         image_url: null,
         parent_match_percentage: parseInt(newGoal.parentMatchPercentage) || 0,
-        round_up_enabled: newGoal.roundUpEnabled
+        round_up_enabled: newGoal.roundUpEnabled,
+        assigned_to: (newGoal.assignedTo && newGoal.assignedTo !== 'self') ? parseInt(newGoal.assignedTo) : null
       };
 
       // Enviar al backend
@@ -215,23 +276,9 @@ export function SavingsGoals() {
 
       const createdGoal = await response.json();
 
-      // Agregar al estado local
-      const goal: SavingsGoal = {
-        id: createdGoal.id.toString(),
-        title: createdGoal.title,
-        description: createdGoal.description || '',
-        targetAmount: createdGoal.target_amount,
-        currentAmount: createdGoal.current_amount,
-        category: createdGoal.category || 'other',
-        deadline: createdGoal.deadline,
-        isCompleted: false,
-        parentMatchPercentage: createdGoal.parent_match_percentage || 0,
-        roundUpEnabled: createdGoal.round_up_enabled || false,
-        createdDate: createdGoal.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-        imageUrl: createdGoal.image_url
-      };
-
-      setGoals([...goals, goal]);
+      // Refrescar datos desde el backend para asegurar consistencia
+      console.log('✅ Meta creada exitosamente, refrescando datos...');
+      await loadGoals();
       
       // Resetear formulario
       setNewGoal({
@@ -241,7 +288,8 @@ export function SavingsGoals() {
         category: "other",
         deadline: "",
         parentMatchPercentage: "0",
-        roundUpEnabled: false
+        roundUpEnabled: false,
+        assignedTo: "self"
       });
       
       setIsAddingGoal(false);
@@ -275,6 +323,12 @@ export function SavingsGoals() {
     const totalWithMatch = goal.currentAmount + parentMatch;
     const daysLeft = goal.deadline ? calculateDaysLeft(goal.deadline) : null;
     
+    // Get user info to check ownership
+    const userStr = localStorage.getItem('user');
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+    const isOwnGoal = currentUser && goal.userId === currentUser.id;
+    const wasAssigned = goal.assignedTo && goal.createdBy !== goal.userId;
+    
     return (
       <Card key={goal.id} className={`relative ${goal.isCompleted ? 'bg-green-50 border-green-200' : ''}`}>
         {goal.isCompleted && (
@@ -290,8 +344,15 @@ export function SavingsGoals() {
                 <span>{goal.title}</span>
                 {goal.isCompleted && <CheckCircle className="h-5 w-5 text-green-600" />}
               </CardTitle>
-              <CardDescription>{goal.description}</CardDescription>
-              <div className="flex items-center space-x-2">
+              <CardDescription>
+                {goal.description}
+                {userType === 'tutor' && goal.userName && (
+                  <div className="mt-1 text-sm text-blue-600 font-medium">
+                    Meta de: {goal.userName}
+                  </div>
+                )}
+              </CardDescription>
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge className={categoryColors[goal.category]}>
                   {goal.category === 'toy' ? 'Juguete' :
                    goal.category === 'education' ? 'Educación' :
@@ -301,6 +362,17 @@ export function SavingsGoals() {
                 {goal.roundUpEnabled && (
                   <Badge variant="outline" className="text-xs">
                     Redondeo activo
+                  </Badge>
+                )}
+                {!isOwnGoal && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Users className="h-3 w-3 mr-1" />
+                    Meta de hijo
+                  </Badge>
+                )}
+                {wasAssigned && (
+                  <Badge variant="outline" className="text-xs bg-blue-50">
+                    Asignada por tutor
                   </Badge>
                 )}
               </div>
@@ -381,6 +453,11 @@ export function SavingsGoals() {
     );
   };
 
+  // Pantalla de carga mientras se cargan las metas
+  if (isLoading) {
+    return <SavingsLoadingScreen />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header with Add Goal Button */}
@@ -389,84 +466,120 @@ export function SavingsGoals() {
           <h2 className="text-2xl font-bold">Mis Metas de Ahorro</h2>
           <p className="text-muted-foreground">Crea metas y ahorra para conseguir lo que quieres</p>
         </div>
-        <Dialog open={isAddingGoal} onOpenChange={setIsAddingGoal}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva Meta
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Crear Nueva Meta de Ahorro</DialogTitle>
-              <DialogDescription>
-                Define tu meta y comienza a ahorrar para conseguirla
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">¿Qué quieres conseguir?</Label>
-                <Input
-                  id="title"
-                  placeholder="Ej: Nintendo Switch, Bicicleta nueva..."
-                  value={newGoal.title}
-                  onChange={(e) => setNewGoal({...newGoal, title: e.target.value})}
-                />
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={loadGoals}
+            disabled={isLoading}
+          >
+            <Target className="h-4 w-4 mr-2" />
+            {isLoading ? 'Cargando...' : 'Actualizar'}
+          </Button>
+          <Dialog open={isAddingGoal} onOpenChange={setIsAddingGoal}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nueva Meta
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Crear Nueva Meta de Ahorro</DialogTitle>
+                <DialogDescription>
+                  Define tu meta y comienza a ahorrar para conseguirla
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                {/* Selector de child (solo para tutores) */}
+                {userType === 'tutor' && children.length > 0 && (
+                  <div>
+                    <Label htmlFor="assignedTo">Asignar a (opcional)</Label>
+                    <Select 
+                      value={newGoal.assignedTo} 
+                      onValueChange={(value) => setNewGoal({...newGoal, assignedTo: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un hijo (o déjalo vacío para ti)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="self">Para mí</SelectItem>
+                        {children.map((child) => (
+                          <SelectItem key={child.id} value={child.id.toString()}>
+                            {child.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Si asignas a un hijo, la meta aparecerá en su cuenta
+                    </p>
+                  </div>
+                )}
+                
+                <div>
+                  <Label htmlFor="title">¿Qué quieres conseguir?</Label>
+                  <Input
+                    id="title"
+                    placeholder="Ej: Nintendo Switch, Bicicleta nueva..."
+                    value={newGoal.title}
+                    onChange={(e) => setNewGoal({...newGoal, title: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Descripción</Label>
+                  <Input
+                    id="description"
+                    placeholder="Describe tu meta..."
+                    value={newGoal.description}
+                    onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="amount">¿Cuánto cuesta?</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="100.00"
+                    value={newGoal.targetAmount}
+                    onChange={(e) => setNewGoal({...newGoal, targetAmount: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="deadline">Fecha límite (opcional)</Label>
+                  <Input
+                    id="deadline"
+                    type="date"
+                    value={newGoal.deadline}
+                    onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parentMatch">Coincidencia parental (%)</Label>
+                  <Input
+                    id="parentMatch"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="25"
+                    value={newGoal.parentMatchPercentage}
+                    onChange={(e) => setNewGoal({...newGoal, parentMatchPercentage: e.target.value})}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Porcentaje que los padres agregarán por cada dólar ahorrado
+                  </p>
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsAddingGoal(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleAddGoal}>
+                    Crear Meta
+                  </Button>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="description">Descripción</Label>
-                <Input
-                  id="description"
-                  placeholder="Describe tu meta..."
-                  value={newGoal.description}
-                  onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="amount">¿Cuánto cuesta?</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="100.00"
-                  value={newGoal.targetAmount}
-                  onChange={(e) => setNewGoal({...newGoal, targetAmount: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="deadline">Fecha límite (opcional)</Label>
-                <Input
-                  id="deadline"
-                  type="date"
-                  value={newGoal.deadline}
-                  onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="parentMatch">Coincidencia parental (%)</Label>
-                <Input
-                  id="parentMatch"
-                  type="number"
-                  min="0"
-                  max="100"
-                  placeholder="25"
-                  value={newGoal.parentMatchPercentage}
-                  onChange={(e) => setNewGoal({...newGoal, parentMatchPercentage: e.target.value})}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Porcentaje que los padres agregarán por cada dólar ahorrado
-                </p>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsAddingGoal(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleAddGoal}>
-                  Crear Meta
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Stats Overview */}
@@ -545,14 +658,29 @@ export function SavingsGoals() {
         <Card>
           <CardContent className="text-center py-12">
             <PiggyBank className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">¡Crea tu primera meta de ahorro!</h3>
-            <p className="text-muted-foreground mb-6">
-              Establece una meta, ahorra dinero y consigue lo que más quieres
-            </p>
-            <Button onClick={() => setIsAddingGoal(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Crear Mi Primera Meta
-            </Button>
+            {userType === 'tutor' ? (
+              <>
+                <h3 className="text-xl font-semibold mb-2">No hay metas de ahorro</h3>
+                <p className="text-muted-foreground mb-6">
+                  Tus hijos aún no han creado metas de ahorro. Puedes ayudarlos creando metas para ellos.
+                </p>
+                <Button onClick={() => setIsAddingGoal(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Meta para Mi Hijo
+                </Button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold mb-2">¡Crea tu primera meta de ahorro!</h3>
+                <p className="text-muted-foreground mb-6">
+                  Establece una meta, ahorra dinero y consigue lo que más quieres
+                </p>
+                <Button onClick={() => setIsAddingGoal(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Mi Primera Meta
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       )}

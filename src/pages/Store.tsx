@@ -46,11 +46,11 @@ const getVirtualCardData = (): VirtualCard => {
     console.error('Error cargando datos de tarjeta virtual:', error);
   }
   
-  // Datos mock por defecto
+  // Datos mock por defecto en pesos mexicanos
   return {
-    balance: 62.75,
-    dailyLimit: 25.00,
-    transactionLimit: 10.00,
+    balance: 1000,
+    dailyLimit: 500,
+    transactionLimit: 200,
     allowedCategories: ['food', 'entertainment', 'books'],
     isFrozen: false
   };
@@ -92,9 +92,46 @@ const Store = () => {
   const [virtualCard, setVirtualCard] = useState<VirtualCard>(getVirtualCardData());
   const [transactions, setTransactions] = useState<Transaction[]>(getTransactions());
   const [purchaseNotification, setPurchaseNotification] = useState<{success: boolean, message: string} | null>(null);
+  const [hasVirtualCard, setHasVirtualCard] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null);
+
+  // Verificar si el usuario tiene tarjeta virtual
+  useEffect(() => {
+    const checkCardStatus = async () => {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        
+        if (parsedUser.user_type === 'child') {
+          try {
+            const response = await fetch(`http://localhost:8000/virtual-cards/status/${parsedUser.id}`);
+            if (response.ok) {
+              const data = await response.json();
+              setHasVirtualCard(data.has_card);
+            }
+          } catch (error) {
+            console.error('Error checking card status:', error);
+          }
+        } else {
+          // Si no es child, permitir acceso
+          setHasVirtualCard(true);
+        }
+      }
+    };
+    
+    checkCardStatus();
+  }, []);
 
   // Función para procesar compras
   const handlePurchase = async (items: CartItem[], total: number): Promise<{success: boolean, message: string}> => {
+    // Verificar si tiene tarjeta virtual
+    if (user?.user_type === 'child' && !hasVirtualCard) {
+      return {
+        success: false,
+        message: 'No tienes una tarjeta virtual activa. Habla con tu tutor o patrocinador.'
+      };
+    }
     try {
       // Validaciones adicionales
       if (virtualCard.isFrozen) {

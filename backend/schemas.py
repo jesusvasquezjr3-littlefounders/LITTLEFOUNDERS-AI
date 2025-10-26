@@ -106,7 +106,7 @@ class SavingsGoalBase(BaseModel):
 
 
 class SavingsGoalCreate(SavingsGoalBase):
-    pass
+    assigned_to: Optional[int] = None  # For tutors assigning goals to children
 
 
 class SavingsGoalUpdate(BaseModel):
@@ -120,9 +120,12 @@ class SavingsGoalUpdate(BaseModel):
 class SavingsGoalResponse(SavingsGoalBase):
     id: int
     user_id: int
+    created_by: int
+    assigned_to: Optional[int] = None
     current_amount: float
     is_active: bool
     created_at: datetime
+    user_name: Optional[str] = None  # Nombre del usuario propietario
     
     class Config:
         from_attributes = True

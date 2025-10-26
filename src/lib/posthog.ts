@@ -13,7 +13,6 @@ export const initPostHog = () => {
     capture_pageleave: true,
     // Enable session recording (optional)
     session_recording: {
-      enabled: true,
       // Record only in production or when explicitly enabled
       recordCrossOriginIframes: false,
     },

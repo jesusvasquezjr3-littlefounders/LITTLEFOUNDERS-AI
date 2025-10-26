@@ -96,17 +96,17 @@ export function AccountStatement() {
   }, []);
 
   useEffect(() => {
-    if (selectedMonth && user?.user_type === 'child') {
+    if (selectedMonth && user) {
       generateStatement();
     }
   }, [selectedMonth, user]);
 
   const generateStatement = () => {
-    if (!user || user.user_type !== 'child') return;
+    if (!user) return;
 
-    const childId = user.id || 'child001';
-    const allTransactions = getChildTransactions(childId);
-    const cardData = getChildVirtualCardData(childId);
+    const userId = user.id || (user.user_type === 'child' ? 'child001' : 'tutor001');
+    const allTransactions = getChildTransactions(userId);
+    const cardData = getChildVirtualCardData(userId);
 
     // Filtrar transacciones del mes seleccionado
     const [year, month] = selectedMonth.split('-');
@@ -181,7 +181,7 @@ export function AccountStatement() {
 
     setIsGenerating(true);
 
-    // Crear contenido HTML para el PDF
+    // Crear contenido HTML para el PDF con formato estilo BBVA
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -189,100 +189,512 @@ export function AccountStatement() {
         <meta charset="utf-8">
         <title>Estado de Cuenta - ${user?.name}</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 20px; }
-          .header { text-align: center; margin-bottom: 30px; }
-          .header h1 { color: #2563eb; margin: 0; }
-          .header p { margin: 5px 0; color: #666; }
-          .summary { display: flex; justify-content: space-between; margin-bottom: 30px; }
-          .summary-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; }
-          .summary-card h3 { margin: 0 0 10px 0; color: #333; }
-          .summary-card .amount { font-size: 24px; font-weight: bold; }
-          .income { color: #16a34a; }
-          .expense { color: #dc2626; }
-          .balance { color: #2563eb; }
-          .transactions { margin-top: 30px; }
-          .transactions h3 { color: #333; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-          .transaction { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-          .transaction:last-child { border-bottom: none; }
-          .transaction-info { flex: 1; }
-          .transaction-date { color: #666; font-size: 12px; }
-          .transaction-amount { font-weight: bold; }
-          .income-amount { color: #16a34a; }
-          .expense-amount { color: #dc2626; }
-          .categories { margin-top: 30px; }
-          .category-section { margin-bottom: 20px; }
-          .category-item { display: flex; justify-content: space-between; padding: 5px 0; }
-          .footer { margin-top: 40px; text-align: center; color: #666; font-size: 12px; }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            font-size: 12px;
+            line-height: 1.4;
+          }
+          
+          /* Header estilo BBVA */
+          .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 15px;
+          }
+          
+          .header-left {
+            flex: 1;
+          }
+          
+          .header-right {
+            text-align: right;
+            flex: 1;
+          }
+          
+          .bank-name { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #2563eb; 
+            margin: 0 0 5px 0;
+          }
+          
+          .account-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+          }
+          
+          .page-info {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+          }
+          
+          /* Información del cliente */
+          .client-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+          }
+          
+          .client-details {
+            flex: 1;
+          }
+          
+          .account-details {
+            flex: 1;
+            text-align: right;
+          }
+          
+          .info-row {
+            display: flex;
+            margin-bottom: 5px;
+            font-size: 11px;
+          }
+          
+          .info-label {
+            font-weight: bold;
+            width: 120px;
+            color: #333;
+          }
+          
+          .info-value {
+            color: #666;
+          }
+          
+          /* Información financiera estilo BBVA */
+          .financial-info {
+            margin-bottom: 20px;
+          }
+          
+          .financial-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #2563eb;
+            padding-bottom: 5px;
+          }
+          
+          .financial-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+          }
+          
+          .financial-section {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+          }
+          
+          .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 12px;
+          }
+          
+          .financial-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 11px;
+          }
+          
+          .financial-label {
+            color: #666;
+          }
+          
+          .financial-value {
+            font-weight: bold;
+            color: #333;
+          }
+          
+          .income-value {
+            color: #16a34a;
+          }
+          
+          .expense-value {
+            color: #dc2626;
+          }
+          
+          .balance-value {
+            color: #2563eb;
+          }
+          
+          /* Comisiones */
+          .commissions {
+            margin-bottom: 20px;
+          }
+          
+          .commissions-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #2563eb;
+            padding-bottom: 5px;
+          }
+          
+          .commissions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+          }
+          
+          .commission-section {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+          }
+          
+          /* Movimientos */
+          .movements {
+            margin-bottom: 20px;
+          }
+          
+          .movements-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #2563eb;
+            padding-bottom: 5px;
+          }
+          
+          .movements-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+          }
+          
+          .movements-table th {
+            background-color: #2563eb;
+            color: white;
+            padding: 8px 4px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #1d4ed8;
+          }
+          
+          .movements-table td {
+            padding: 6px 4px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+          }
+          
+          .movements-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+          }
+          
+          .date-cell {
+            width: 80px;
+            text-align: center;
+          }
+          
+          .description-cell {
+            width: 200px;
+          }
+          
+          .reference-cell {
+            width: 100px;
+            text-align: center;
+            font-family: monospace;
+          }
+          
+          .charges-cell {
+            width: 80px;
+            text-align: right;
+            color: #dc2626;
+            font-weight: bold;
+          }
+          
+          .credits-cell {
+            width: 80px;
+            text-align: right;
+            color: #16a34a;
+            font-weight: bold;
+          }
+          
+          .balance-cell {
+            width: 80px;
+            text-align: right;
+            font-weight: bold;
+            color: #2563eb;
+          }
+          
+          /* Resumen por categorías */
+          .categories {
+            margin-bottom: 20px;
+          }
+          
+          .categories-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #2563eb;
+            padding-bottom: 5px;
+          }
+          
+          .categories-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+          }
+          
+          .category-section {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+          }
+          
+          .category-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 12px;
+          }
+          
+          .category-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 11px;
+          }
+          
+          .category-name {
+            color: #666;
+          }
+          
+          .category-amount {
+            font-weight: bold;
+          }
+          
+          .category-income {
+            color: #16a34a;
+          }
+          
+          .category-expense {
+            color: #dc2626;
+          }
+          
+          /* Footer */
+          .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+          }
+          
+          .footer p {
+            margin: 2px 0;
+          }
         </style>
       </head>
       <body>
+        <!-- Header estilo BBVA -->
         <div class="header">
-          <h1>LITTLE FOUNDERS</h1>
-          <h2>Estado de Cuenta</h2>
-          <p><strong>Cliente:</strong> ${user?.name}</p>
-          <p><strong>Período:</strong> ${statementData.period}</p>
-          <p><strong>Fecha de emisión:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
-        </div>
-
-        <div class="summary">
-          <div class="summary-card">
-            <h3>Balance de Apertura</h3>
-            <div class="amount balance">${formatCurrency(statementData.openingBalance)}</div>
+          <div class="header-left">
+            <div class="bank-name">LITTLE FOUNDERS</div>
+            <div class="account-title">Estado de Cuenta</div>
           </div>
-          <div class="summary-card">
-            <h3>Total Ingresos</h3>
-            <div class="amount income">${formatCurrency(statementData.totalIncome)}</div>
-          </div>
-          <div class="summary-card">
-            <h3>Total Gastos</h3>
-            <div class="amount expense">${formatCurrency(statementData.totalExpenses)}</div>
-          </div>
-          <div class="summary-card">
-            <h3>Balance de Cierre</h3>
-            <div class="amount balance">${formatCurrency(statementData.closingBalance)}</div>
+          <div class="header-right">
+            <div class="page-info">PÁGINA 1/1</div>
+            <div class="page-info">${new Date().toLocaleDateString('es-ES')}</div>
           </div>
         </div>
 
-        <div class="transactions">
-          <h3>Movimientos del Período (${statementData.transactions.length} transacciones)</h3>
-          ${statementData.transactions.map(transaction => `
-            <div class="transaction">
-              <div class="transaction-info">
-                <div>${transaction.description}</div>
-                <div class="transaction-date">${formatDate(transaction.date)} - ${transaction.category}</div>
+        <!-- Información del cliente -->
+        <div class="client-info">
+          <div class="client-details">
+            <div class="info-row">
+              <span class="info-label">Cliente:</span>
+              <span class="info-value">${user?.name}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Período:</span>
+              <span class="info-value">DEL ${statementData.startDate} AL ${statementData.endDate}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Fecha de Corte:</span>
+              <span class="info-value">${statementData.endDate}</span>
+            </div>
+          </div>
+          <div class="account-details">
+            <div class="info-row">
+              <span class="info-label">No. de Cuenta:</span>
+              <span class="info-value">LF${user?.id || '001'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Tipo de Cuenta:</span>
+              <span class="info-value">Cuenta Digital Infantil</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Moneda:</span>
+              <span class="info-value">USD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información Financiera -->
+        <div class="financial-info">
+          <div class="financial-title">Información Financiera</div>
+          <div class="financial-grid">
+            <div class="financial-section">
+              <div class="section-title">Rendimiento</div>
+              <div class="financial-row">
+                <span class="financial-label">Saldo Promedio:</span>
+                <span class="financial-value">${formatCurrency((statementData.openingBalance + statementData.closingBalance) / 2)}</span>
               </div>
-              <div class="transaction-amount ${transaction.type === 'income' ? 'income-amount' : 'expense-amount'}">
-                ${transaction.type === 'income' ? '+' : '-'}${formatCurrency(transaction.amount)}
+              <div class="financial-row">
+                <span class="financial-label">Días del Período:</span>
+                <span class="financial-value">${Math.ceil((new Date(statementData.endDate).getTime() - new Date(statementData.startDate).getTime()) / (1000 * 60 * 60 * 24))}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Tasa Bruta Anual %:</span>
+                <span class="financial-value">0.000</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Intereses a Favor (+):</span>
+                <span class="financial-value">$0.00</span>
               </div>
             </div>
-          `).join('')}
+            <div class="financial-section">
+              <div class="section-title">Comportamiento</div>
+              <div class="financial-row">
+                <span class="financial-label">Saldo Anterior:</span>
+                <span class="financial-value">${formatCurrency(statementData.openingBalance)}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Depósitos/Abonos (+):</span>
+                <span class="financial-value">${statementData.transactions.filter(t => t.type === 'income').length} ${formatCurrency(statementData.totalIncome)}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Retiros/Cargos (-):</span>
+                <span class="financial-value">${statementData.transactions.filter(t => t.type === 'expense').length} ${formatCurrency(statementData.totalExpenses)}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Saldo Final:</span>
+                <span class="financial-value">${formatCurrency(statementData.closingBalance)}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
+        <!-- Comisiones -->
+        <div class="commissions">
+          <div class="commissions-title">Comisiones</div>
+          <div class="commissions-grid">
+            <div class="commission-section">
+              <div class="section-title">Comisiones Principales</div>
+              <div class="financial-row">
+                <span class="financial-label">Manejo de Cuenta:</span>
+                <span class="financial-value">$0.00</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Total Comisiones:</span>
+                <span class="financial-value">$0.00</span>
+              </div>
+            </div>
+            <div class="commission-section">
+              <div class="section-title">Resumen de Movimientos</div>
+              <div class="financial-row">
+                <span class="financial-label">Total Transacciones:</span>
+                <span class="financial-value">${statementData.transactions.length}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Promedio por Transacción:</span>
+                <span class="financial-value">${formatCurrency(statementData.transactions.length > 0 ? (statementData.totalIncome + statementData.totalExpenses) / statementData.transactions.length : 0)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalle de Movimientos -->
+        <div class="movements">
+          <div class="movements-title">Detalle de Movimientos Realizados</div>
+          <table class="movements-table">
+            <thead>
+              <tr>
+                <th class="date-cell">FECHA</th>
+                <th class="description-cell">DESCRIPCIÓN</th>
+                <th class="reference-cell">REFERENCIA</th>
+                <th class="charges-cell">CARGOS</th>
+                <th class="credits-cell">ABONOS</th>
+                <th class="balance-cell">SALDO</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${statementData.transactions.map((transaction, index) => {
+                const date = new Date(transaction.date);
+                const formattedDate = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase();
+                const runningBalance = statementData.openingBalance + 
+                  statementData.transactions.slice(0, index + 1).reduce((sum, t) => 
+                    sum + (t.type === 'income' ? t.amount : -t.amount), 0);
+                
+                return `
+                  <tr>
+                    <td class="date-cell">${formattedDate}</td>
+                    <td class="description-cell">${transaction.description}</td>
+                    <td class="reference-cell">LF${String(index + 1).padStart(6, '0')}</td>
+                    <td class="charges-cell">${transaction.type === 'expense' ? formatCurrency(transaction.amount) : ''}</td>
+                    <td class="credits-cell">${transaction.type === 'income' ? formatCurrency(transaction.amount) : ''}</td>
+                    <td class="balance-cell">${formatCurrency(runningBalance)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Resumen por Categorías -->
         <div class="categories">
-          <div class="category-section">
-            <h3>Resumen por Categorías - Ingresos</h3>
-            ${Object.entries(statementData.summary.incomeByCategory).map(([category, amount]) => `
-              <div class="category-item">
-                <span>${category}</span>
-                <span class="income-amount">${formatCurrency(amount)}</span>
-              </div>
-            `).join('')}
-          </div>
-
-          <div class="category-section">
-            <h3>Resumen por Categorías - Gastos</h3>
-            ${Object.entries(statementData.summary.expenseByCategory).map(([category, amount]) => `
-              <div class="category-item">
-                <span>${category}</span>
-                <span class="expense-amount">${formatCurrency(amount)}</span>
-              </div>
-            `).join('')}
+          <div class="categories-title">Resumen por Categorías</div>
+          <div class="categories-grid">
+            <div class="category-section">
+              <div class="category-title">Ingresos por Categoría</div>
+              ${Object.entries(statementData.summary.incomeByCategory).length > 0 ? 
+                Object.entries(statementData.summary.incomeByCategory).map(([category, amount]) => `
+                  <div class="category-item">
+                    <span class="category-name">${category}</span>
+                    <span class="category-amount category-income">${formatCurrency(amount)}</span>
+                  </div>
+                `).join('') : 
+                '<div class="category-item"><span class="category-name">Sin ingresos</span><span class="category-amount">$0.00</span></div>'
+              }
+            </div>
+            <div class="category-section">
+              <div class="category-title">Gastos por Categoría</div>
+              ${Object.entries(statementData.summary.expenseByCategory).length > 0 ? 
+                Object.entries(statementData.summary.expenseByCategory).map(([category, amount]) => `
+                  <div class="category-item">
+                    <span class="category-name">${category}</span>
+                    <span class="category-amount category-expense">${formatCurrency(amount)}</span>
+                  </div>
+                `).join('') : 
+                '<div class="category-item"><span class="category-name">Sin gastos</span><span class="category-amount">$0.00</span></div>'
+              }
+            </div>
           </div>
         </div>
 
+        <!-- Footer -->
         <div class="footer">
+          <p><strong>LITTLE FOUNDERS - Plataforma de Educación Financiera Infantil</strong></p>
           <p>Este estado de cuenta ha sido generado automáticamente por Little Founders</p>
           <p>Para consultas, contacta a tus padres o tutores</p>
+          <p>Fecha de generación: ${new Date().toLocaleString('es-ES')}</p>
         </div>
       </body>
       </html>
@@ -324,13 +736,13 @@ export function AccountStatement() {
     return options;
   };
 
-  if (!user || user.user_type !== 'child') {
+  if (!user) {
     return (
       <Card>
         <CardContent className="p-6">
           <div className="text-center text-muted-foreground">
             <User className="h-12 w-12 mx-auto mb-4" />
-            <p>Este componente es solo para usuarios tipo "child"</p>
+            <p>Cargando información...</p>
           </div>
         </CardContent>
       </Card>

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from database import get_db
-from models import SavingsGoal, Transaction, User, TransactionType
+from models import SavingsGoal, Transaction, User, TransactionType, UserType
 from schemas import (
     SavingsGoalCreate,
     SavingsGoalUpdate,
@@ -16,11 +16,67 @@ from auth.permissions import verify_family_access, verify_ownership
 router = APIRouter(prefix="/savings", tags=["Savings"])
 
 
+@router.get("/children/{tutor_id}")
+async def get_tutor_children(tutor_id: int, db: Session = Depends(get_db)):
+    """Get list of children for a tutor (for assigning goals)"""
+    tutor = db.query(User).filter(User.id == tutor_id).first()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor not found")
+    
+    if tutor.user_type.value != "tutor":
+        raise HTTPException(status_code=403, detail="User is not a tutor")
+    
+    # Get children
+    children = db.query(User).filter(
+        User.tutor_id == tutor_id,
+        User.user_type == "child",
+        User.is_active == True
+    ).all()
+    
+    return {
+        "children": [
+            {
+                "id": child.id,
+                "name": child.name,
+                "email": child.email
+            }
+            for child in children
+        ]
+    }
+
+
 @router.post("/goals", response_model=SavingsGoalResponse)
 async def create_savings_goal(goal: SavingsGoalCreate, user_id: int, db: Session = Depends(get_db)):
-    """Create a new savings goal"""
+    """Create a new savings goal
+    
+    - If assigned_to is provided (tutor assigning to child), user_id = assigned_to
+    - If not, user_id = creator (child creating for themselves)
+    - created_by always = user_id (the requester)
+    """
+    # Get creator info
+    creator = db.query(User).filter(User.id == user_id).first()
+    if not creator:
+        raise HTTPException(status_code=404, detail="Creator user not found")
+    
+    # Determine the owner of the goal
+    if goal.assigned_to:
+        # Tutor/Sponsor assigning to a child
+        target_user = db.query(User).filter(User.id == goal.assigned_to).first()
+        if not target_user:
+            raise HTTPException(status_code=404, detail="Assigned user not found")
+        
+        # Verify family relationship
+        verify_family_access(db, user_id, goal.assigned_to, allow_self=False)
+        
+        goal_user_id = goal.assigned_to
+    else:
+        # User creating for themselves
+        goal_user_id = user_id
+    
     db_goal = SavingsGoal(
-        user_id=user_id,
+        user_id=goal_user_id,
+        created_by=user_id,
+        assigned_to=goal.assigned_to,
         title=goal.title,
         description=goal.description,
         target_amount=goal.target_amount,
@@ -38,14 +94,73 @@ async def create_savings_goal(goal: SavingsGoalCreate, user_id: int, db: Session
 
 @router.get("/goals/{user_id}", response_model=List[SavingsGoalResponse])
 async def get_savings_goals(user_id: int, requester_id: int, db: Session = Depends(get_db)):
-    """Get all savings goals for a user (with family access control)"""
+    """Get all savings goals for a user (with family access control)
+    
+    - For CHILD: returns their own goals
+    - For TUTOR: returns goals of their children (tutors don't have personal goals)
+    - For SPONSOR: returns goals of their sponsored child
+    """
     # Verify family access
     verify_family_access(db, requester_id, user_id, allow_self=True)
     
-    goals = db.query(SavingsGoal).filter(
-        SavingsGoal.user_id == user_id,
-        SavingsGoal.is_active == True
-    ).all()
+    # Get user info
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    goals = []
+    
+    # For CHILD: get their own goals
+    if user.user_type.value == "child":
+        goals = db.query(SavingsGoal).filter(
+            SavingsGoal.user_id == user_id,
+            SavingsGoal.is_active == True
+        ).all()
+    
+    # For TUTOR: get goals of their children + tutor's own goals
+    elif user.user_type.value == "tutor":
+        # Get tutor's own goals (created by tutor for themselves)
+        tutor_own_goals = db.query(SavingsGoal).filter(
+            SavingsGoal.user_id == user_id,
+            SavingsGoal.is_active == True
+        ).all()
+        goals.extend(tutor_own_goals)
+        
+        # Get all children of this tutor using direct query
+        children = db.query(User).filter(
+            User.tutor_id == user_id,
+            User.user_type == UserType.CHILD,
+            User.is_active == True
+        ).all()
+        
+        print(f"🔍 DEBUG: Tutor {user_id} has {len(children)} children")
+        
+        # Get children's goals (created by child or assigned by tutor)
+        for child in children:
+            child_goals = db.query(SavingsGoal).filter(
+                SavingsGoal.user_id == child.id,
+                SavingsGoal.is_active == True
+            ).all()
+            print(f"🔍 DEBUG: Child {child.id} ({child.name}) has {len(child_goals)} goals")
+            # Agregar nombre del niño a cada meta
+            for goal in child_goals:
+                goal.user_name = child.name
+            goals.extend(child_goals)
+    
+    # For SPONSOR: get goals of sponsored child
+    elif user.user_type.value == "sponsor":
+        if user.sponsored_child_id:
+            sponsored_child = db.query(User).filter(User.id == user.sponsored_child_id).first()
+            if sponsored_child:
+                sponsored_goals = db.query(SavingsGoal).filter(
+                    SavingsGoal.user_id == user.sponsored_child_id,
+                    SavingsGoal.is_active == True
+                ).all()
+                # Agregar nombre del niño patrocinado a cada meta
+                for goal in sponsored_goals:
+                    goal.user_name = sponsored_child.name
+                goals.extend(sponsored_goals)
+    
     return goals
 
 

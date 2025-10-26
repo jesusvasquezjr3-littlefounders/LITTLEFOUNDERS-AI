@@ -203,7 +203,8 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
             "minutes_studied": user.minutes_studied,
             "points_earned": user.points_earned,
             "balance": user.balance,
-            "current_streak": user.current_streak
+            "current_streak": user.current_streak,
+            "has_virtual_card": user.has_virtual_card if hasattr(user, 'has_virtual_card') else False
         })
     
     return {

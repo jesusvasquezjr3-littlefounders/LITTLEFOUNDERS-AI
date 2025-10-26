@@ -21,6 +21,7 @@ from store.endpoints import router as store_router
 from lecciones.endpoints import router as lecciones_router
 from lecciones_v2.endpoints import router as lecciones_v2_router
 from investment_games.endpoints import router as investment_games_router
+from virtual_cards.endpoints import router as virtual_cards_router
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -50,6 +51,7 @@ app.include_router(store_router)
 app.include_router(lecciones_router)
 app.include_router(lecciones_v2_router)
 app.include_router(investment_games_router)
+app.include_router(virtual_cards_router)
 
 @app.get("/")
 async def root():

@@ -148,12 +148,50 @@ export function ParentAccountManagement() {
   const [selectedChild, setSelectedChild] = useState<string | null>(null);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showAddChildDialog, setShowAddChildDialog] = useState(false);
+  const [showGenerateCardDialog, setShowGenerateCardDialog] = useState(false);
+  const [childrenData, setChildrenData] = useState<any[]>([]);
+  const [selectedChildForCard, setSelectedChildForCard] = useState<string>('');
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const [isGeneratingOwnCard, setIsGeneratingOwnCard] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [hasOwnCard, setHasOwnCard] = useState(false);
   const [transferForm, setTransferForm] = useState({
     toAccount: '',
     amount: 0,
     description: '',
     type: 'manual' as 'manual' | 'allowance' | 'bonus'
   });
+
+  // Cargar children desde el backend
+  useEffect(() => {
+    const loadChildren = async () => {
+      try {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+        
+        // Cargar estado de tarjetas virtuales
+        const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.children) {
+            setChildrenData(data.children);
+          }
+          // Actualizar estado de tarjeta propia
+          setHasOwnCard(data.has_card || false);
+        }
+      } catch (error) {
+        console.error('Error loading children:', error);
+      }
+    };
+    
+    loadChildren();
+    const interval = setInterval(loadChildren, 5000); // Actualizar cada 5 segundos
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Actualizar datos cuando cambie el localStorage
   useEffect(() => {
@@ -417,6 +455,108 @@ export function ParentAccountManagement() {
     }
   };
 
+  // Función para generar tarjeta virtual para hijo
+  const handleGenerateCard = async () => {
+    if (!selectedChildForCard) {
+      alert('Por favor selecciona un hijo');
+      return;
+    }
+
+    try {
+      setIsGeneratingCard(true);
+      const userStr = localStorage.getItem('user');
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      
+      const response = await fetch(`http://localhost:8000/virtual-cards/generate/${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          child_id: parseInt(selectedChildForCard)
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`✅ Tarjeta virtual generada exitosamente para ${data.child_name}`);
+        setShowGenerateCardDialog(false);
+        setSelectedChildForCard('');
+        
+        // Recargar datos
+        const statusResponse = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          if (statusData.children) {
+            setChildrenData(statusData.children);
+          }
+        }
+        
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('virtualCardActivated', {
+          detail: { childId: selectedChildForCard, childName: data.child_name }
+        }));
+      } else {
+        const error = await response.json();
+        alert(`❌ Error: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error('Error generating card:', error);
+      alert('❌ Error al generar la tarjeta');
+    } finally {
+      setIsGeneratingCard(false);
+    }
+  };
+
+  // Función para generar tarjeta virtual para sí mismo
+  const handleGenerateOwnCard = async () => {
+    try {
+      setIsGeneratingOwnCard(true);
+      const userStr = localStorage.getItem('user');
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      
+      const response = await fetch(`http://localhost:8000/virtual-cards/generate-for-self/${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`✅ Tarjeta virtual generada exitosamente para ti`);
+        setHasOwnCard(true);
+        
+        // Recargar datos
+        const statusResponse = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          setHasOwnCard(statusData.has_card || false);
+          if (statusData.children) {
+            setChildrenData(statusData.children);
+          }
+        }
+        
+        // Disparar evento personalizado para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('virtualCardActivated', {
+          detail: { userId: user.id, userName: user.name }
+        }));
+      } else {
+        const error = await response.json();
+        alert(`❌ Error: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error('Error generating own card:', error);
+      alert('❌ Error al generar la tarjeta');
+    } finally {
+      setIsGeneratingOwnCard(false);
+    }
+  };
+
   const totalBalance = childAccounts.reduce((sum, account) => sum + account.balance, 0);
   const activeChildren = childAccounts.filter(account => account.isActive).length;
 
@@ -612,11 +752,166 @@ export function ParentAccountManagement() {
 
       {/* Contenido Principal */}
       <Tabs defaultValue="accounts" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="accounts">Cuentas de Hijos</TabsTrigger>
+          <TabsTrigger value="cards">Tarjetas Virtuales</TabsTrigger>
           <TabsTrigger value="transfers">Transferencias</TabsTrigger>
           <TabsTrigger value="allowances">Mesadas</TabsTrigger>
         </TabsList>
+
+        {/* Tarjetas Virtuales */}
+        <TabsContent value="cards">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Gestión de Tarjetas Virtuales</CardTitle>
+                  <CardDescription>
+                    Genera y administra las tarjetas virtuales de tus hijos y la tuya
+                  </CardDescription>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Dialog open={showGenerateCardDialog} onOpenChange={setShowGenerateCardDialog}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Generar para Hijo
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Generar Tarjeta Virtual para Hijo</DialogTitle>
+                        <DialogDescription>
+                          Selecciona el hijo al que deseas generar una tarjeta virtual
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div>
+                          <Label>Seleccionar Hijo</Label>
+                          <select 
+                            value={selectedChildForCard}
+                            onChange={(e) => setSelectedChildForCard(e.target.value)}
+                            className="w-full p-2 border rounded-md mt-2"
+                          >
+                            <option value="">Seleccionar...</option>
+                            {childrenData
+                              .filter(child => !child.has_virtual_card)
+                              .map(child => (
+                                <option key={child.id} value={child.id.toString()}>
+                                  {child.name}
+                                </option>
+                              ))
+                            }
+                          </select>
+                          {childrenData.filter(c => !c.has_virtual_card).length === 0 && (
+                            <p className="text-sm text-muted-foreground mt-2">
+                              Todos los hijos ya tienen tarjeta virtual
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="outline" onClick={() => setShowGenerateCardDialog(false)}>
+                          Cancelar
+                        </Button>
+                        <Button 
+                          onClick={handleGenerateCard}
+                          disabled={!selectedChildForCard || isGeneratingCard}
+                        >
+                          {isGeneratingCard ? 'Generando...' : 'Generar Tarjeta'}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Tarjeta Propia del Tutor */}
+                <div className="p-4 border-2 border-primary/30 rounded-lg bg-primary/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`p-3 rounded-full ${hasOwnCard ? 'bg-primary/20' : 'bg-gray-100'}`}>
+                        <CreditCard className={`h-6 w-6 ${hasOwnCard ? 'text-primary' : 'text-gray-400'}`} />
+                      </div>
+                      <div>
+                        <div className="font-semibold flex items-center space-x-2">
+                          <span>{currentUser?.name || 'Tu Cuenta'}</span>
+                          <Badge variant="outline" className="text-xs">Tutor</Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground">{currentUser?.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      {hasOwnCard ? (
+                        <>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-primary">
+                              {formatCurrency(0)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Balance</div>
+                          </div>
+                          <Badge variant="default">
+                            <CheckCircle className="h-3 w-3 mr-1" /> Activa
+                          </Badge>
+                        </>
+                      ) : (
+                        <Button 
+                          onClick={handleGenerateOwnCard}
+                          disabled={isGeneratingOwnCard}
+                          size="sm"
+                        >
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          {isGeneratingOwnCard ? 'Generando...' : 'Generar Mi Tarjeta'}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tarjetas de los Hijos */}
+                {childrenData.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No hay hijos registrados</p>
+                  </div>
+                ) : (
+                  childrenData.map((child) => (
+                    <div key={child.id} className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className={`p-3 rounded-full ${child.has_virtual_card ? 'bg-green-100' : 'bg-gray-100'}`}>
+                            <CreditCard className={`h-6 w-6 ${child.has_virtual_card ? 'text-green-600' : 'text-gray-400'}`} />
+                          </div>
+                          <div>
+                            <div className="font-medium">{child.name}</div>
+                            <div className="text-sm text-muted-foreground">{child.email}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <div className="text-lg font-bold">
+                              {child.has_virtual_card ? formatCurrency(child.balance) : '-'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Balance</div>
+                          </div>
+                          <Badge variant={child.has_virtual_card ? "default" : "secondary"}>
+                            {child.has_virtual_card ? (
+                              <><CheckCircle className="h-3 w-3 mr-1" /> Activa</>
+                            ) : (
+                              <><AlertTriangle className="h-3 w-3 mr-1" /> Sin tarjeta</>
+                            )}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Cuentas de Hijos */}
         <TabsContent value="accounts">

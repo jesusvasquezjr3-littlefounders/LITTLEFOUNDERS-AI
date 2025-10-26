@@ -17,7 +17,7 @@ interface PageAnalyticsTrackerProps {
 
 export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) => {
   const location = useLocation()
-  const { trackEvent, posthog } = usePostHog()
+  const { trackEvent } = usePostHog()
   const [currentPageStartTime, setCurrentPageStartTime] = useState<number>(Date.now())
   const [sessionPageVisits, setSessionPageVisits] = useState<string[]>([])
   const [pageVisitTimes, setPageVisitTimes] = useState<Map<string, number>>(new Map())

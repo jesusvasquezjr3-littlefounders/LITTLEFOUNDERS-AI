@@ -204,7 +204,7 @@ export function ParentalControls() {
   const handleApproval = (id: string, approved: boolean) => {
     const updatedApprovals = approvals.map(approval => 
       approval.id === id 
-        ? { ...approval, status: approved ? 'approved' : 'denied' }
+        ? { ...approval, status: (approved ? 'approved' : 'denied') as 'pending' | 'approved' | 'denied' }
         : approval
     );
     

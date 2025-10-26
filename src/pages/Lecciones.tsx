@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import LessonPlayer from "@/components/lessons/LessonPlayer";
+import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +67,29 @@ const Lecciones = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>("nivel-1");
   const [selectedAgeRange, setSelectedAgeRange] = useState<string>("8-10");
   const [userProgress, setUserProgress] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simular carga de datos de lecciones
+  useEffect(() => {
+    const loadLessonsData = async () => {
+      try {
+        // Simular tiempo de carga
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Aquí podrías cargar datos reales del backend
+        // const response = await fetch('/api/lessons/progress');
+        // const data = await response.json();
+        // setUserProgress(data.progress);
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading lessons data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    loadLessonsData();
+  }, []);
 
   // Definir los rangos de edad disponibles
   const ageRanges: AgeRange[] = [
@@ -739,6 +763,15 @@ const Lecciones = () => {
           userProgress={userProgress}
           onProgressUpdate={handleProgressUpdate}
         />
+      </DashboardLayout>
+    );
+  }
+
+  // Pantalla de carga mientras se cargan las lecciones
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <LessonsLoadingScreen />
       </DashboardLayout>
     );
   }

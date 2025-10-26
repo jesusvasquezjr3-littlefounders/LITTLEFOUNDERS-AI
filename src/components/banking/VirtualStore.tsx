@@ -48,13 +48,13 @@ interface VirtualCard {
   isFrozen: boolean;
 }
 
-// Datos mock de productos organizados por categoría
+// Datos mock de productos organizados por categoría con precios reales en pesos mexicanos
 const products: Product[] = [
   // Comida y Bebidas
   {
     id: "food-1",
     name: "Pizza Margarita",
-    price: 12.99,
+    price: 180,
     description: "Deliciosa pizza con queso mozzarella y albahaca fresca",
     category: "food",
     image: "🍕",
@@ -65,7 +65,7 @@ const products: Product[] = [
   {
     id: "food-2",
     name: "Hamburguesa Clásica",
-    price: 8.99,
+    price: 120,
     description: "Hamburguesa de carne con lechuga, tomate y queso",
     category: "food",
     image: "🍔",
@@ -75,7 +75,7 @@ const products: Product[] = [
   {
     id: "food-3",
     name: "Smoothie de Frutas",
-    price: 5.99,
+    price: 65,
     description: "Batido natural de frutas mixtas",
     category: "food",
     image: "🥤",
@@ -85,7 +85,7 @@ const products: Product[] = [
   {
     id: "food-4",
     name: "Donut Glaseada",
-    price: 2.50,
+    price: 25,
     description: "Donut suave con glaseado de azúcar",
     category: "food",
     image: "🍩",
@@ -97,7 +97,7 @@ const products: Product[] = [
   {
     id: "entertainment-1",
     name: "Videojuego Aventura",
-    price: 29.99,
+    price: 450,
     description: "Emocionante juego de aventuras para todas las edades",
     category: "entertainment",
     image: "🎮",
@@ -109,7 +109,7 @@ const products: Product[] = [
   {
     id: "entertainment-2",
     name: "Entrada al Cine",
-    price: 10.50,
+    price: 80,
     description: "Boleto para película en cines locales",
     category: "entertainment",
     image: "🎬",
@@ -119,7 +119,7 @@ const products: Product[] = [
   {
     id: "entertainment-3",
     name: "Revista de Cómics",
-    price: 4.99,
+    price: 60,
     description: "Última edición de tu cómic favorito",
     category: "entertainment",
     image: "📚",
@@ -131,7 +131,7 @@ const products: Product[] = [
   {
     id: "books-1",
     name: "Libro de Ciencias",
-    price: 15.99,
+    price: 250,
     description: "Libro educativo sobre experimentos científicos",
     category: "books",
     image: "📖",
@@ -141,7 +141,7 @@ const products: Product[] = [
   {
     id: "books-2",
     name: "Set de Lápices de Colores",
-    price: 12.50,
+    price: 180,
     description: "Pack de 24 lápices de colores profesionales",
     category: "books",
     image: "✏️",
@@ -150,8 +150,8 @@ const products: Product[] = [
   },
   {
     id: "books-3",
-    name: "Cuaderno Premium",
-    price: 7.99,
+    name: "Cuaderno Profesional",
+    price: 60,
     description: "Cuaderno de hojas puntadas para tus apuntes",
     category: "books",
     image: "📓",
@@ -162,8 +162,8 @@ const products: Product[] = [
   // Ropa
   {
     id: "clothing-1",
-    name: "Camiseta Cool",
-    price: 18.99,
+    name: "Camiseta",
+    price: 280,
     description: "Camiseta de algodón con diseño moderno",
     category: "clothing",
     image: "👕",
@@ -173,7 +173,7 @@ const products: Product[] = [
   {
     id: "clothing-2",
     name: "Gorra Deportiva",
-    price: 14.50,
+    price: 220,
     description: "Gorra ajustable para deportes",
     category: "clothing",
     image: "🧢",
@@ -183,7 +183,7 @@ const products: Product[] = [
   {
     id: "clothing-3",
     name: "Sudadera Cómoda",
-    price: 25.99,
+    price: 420,
     description: "Sudadera suave y cálida para el invierno",
     category: "clothing",
     image: "🧥",
@@ -193,20 +193,9 @@ const products: Product[] = [
 
   // Juguetes
   {
-    id: "toys-1",
-    name: "Robot Interactivo",
-    price: 35.99,
-    description: "Robot programable con funciones interactivas",
-    category: "toys",
-    image: "🤖",
-    rating: 4.9,
-    inStock: 5,
-    isPopular: true
-  },
-  {
     id: "toys-2",
     name: "Peluche Unicornio",
-    price: 16.99,
+    price: 320,
     description: "Suave peluche de unicornio multicolor",
     category: "toys",
     image: "🦄",
@@ -216,7 +205,7 @@ const products: Product[] = [
   {
     id: "toys-3",
     name: "Puzzle 1000 Piezas",
-    price: 19.99,
+    price: 350,
     description: "Desafiante puzzle de paisajes naturales",
     category: "toys",
     image: "🧩",
@@ -228,7 +217,7 @@ const products: Product[] = [
   {
     id: "sports-1",
     name: "Balón de Fútbol",
-    price: 22.99,
+    price: 380,
     description: "Balón oficial para fútbol",
     category: "sports",
     image: "⚽",
@@ -238,7 +227,7 @@ const products: Product[] = [
   {
     id: "sports-2",
     name: "Raqueta de Tenis",
-    price: 45.50,
+    price: 750,
     description: "Raqueta de tenis junior profesional",
     category: "sports",
     image: "🎾",
@@ -248,7 +237,7 @@ const products: Product[] = [
   {
     id: "sports-3",
     name: "Cuerda para Saltar",
-    price: 8.99,
+    price: 150,
     description: "Cuerda ajustable para ejercicios",
     category: "sports",
     image: "🪢",
@@ -280,13 +269,13 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [purchaseResult, setPurchaseResult] = useState<{success: boolean, message: string} | null>(null);
 
-  // Filtrar productos
+  // Filtrar productos - Mostrar todos los productos sin restricciones de categoría
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const categoryAllowed = virtualCard.allowedCategories.includes(product.category);
-    return matchesCategory && matchesSearch && categoryAllowed;
+    // Removido el filtro de categorías permitidas para mostrar todos los productos
+    return matchesCategory && matchesSearch;
   });
 
   // Funciones del carrito
@@ -343,6 +332,17 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
       return;
     }
 
+    // Verificar categorías permitidas
+    const restrictedItems = cart.filter(item => 
+      !virtualCard.allowedCategories.includes(item.product.category)
+    );
+    
+    if (restrictedItems.length > 0) {
+      const restrictedCategories = restrictedItems.map(item => item.product.category).join(', ');
+      setPurchaseResult({success: false, message: `No puedes comprar productos de estas categorías: ${restrictedCategories}. Pídele a tus padres que habiliten estas categorías.`});
+      return;
+    }
+
     if (total > virtualCard.balance) {
       setPurchaseResult({success: false, message: "Saldo insuficiente"});
       return;
@@ -378,9 +378,9 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-US', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'MXN'
     }).format(amount);
   };
 
@@ -538,14 +538,13 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                 : 'No hay productos que coincidan con tu búsqueda.'
               }
             </p>
-            {virtualCard.allowedCategories.length === 0 && (
-              <Alert className="mt-4">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  No tienes categorías de compra habilitadas. Pídele a tus padres que configuren tu tarjeta.
-                </AlertDescription>
-              </Alert>
-            )}
+            {/* Mensaje informativo sobre categorías */}
+            <Alert className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Todos los productos están disponibles para visualización. Las restricciones de compra se aplicarán al momento del pago.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
       )}

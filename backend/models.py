@@ -106,6 +106,14 @@ class User(Base):
     
     # Virtual balance
     balance = Column(Float, default=0.0)
+    
+    # Virtual card status
+    has_virtual_card = Column(Boolean, default=False)
+    
+    # Digital banking activation status
+    banking_activated = Column(Boolean, default=False)
+    banking_activated_at = Column(DateTime(timezone=True), nullable=True)
+    banking_activated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 
 
 # Lesson Models
@@ -180,7 +188,9 @@ class SavingsGoal(Base):
     __tablename__ = "savings_goals"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Owner of the goal
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Who created the goal (tutor/child/sponsor)
+    assigned_to = Column(Integer, ForeignKey("users.id"))  # For tutors assigning goals to children
     title = Column(String(200), nullable=False)
     description = Column(Text)
     target_amount = Column(Float, nullable=False)

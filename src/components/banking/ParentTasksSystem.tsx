@@ -206,11 +206,21 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
   const [rejectNotes, setRejectNotes] = useState('');
   const [reassignNotes, setReassignNotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<{
+    title: string;
+    description: string;
+    category: 'chores' | 'education' | 'social' | 'bonus';
+    difficulty: 'easy' | 'medium' | 'hard';
+    reward: number;
+    timeEstimate: number;
+    dueDate: string;
+    assignedTo: string;
+    isFirstDibs: boolean;
+  }>({
     title: '',
     description: '',
-    category: 'chores' as const,
-    difficulty: 'easy' as const,
+    category: 'chores',
+    difficulty: 'easy',
     reward: 5.00,
     timeEstimate: 15,
     dueDate: '',
