@@ -184,31 +184,32 @@ export function VirtualCard() {
   const [bankingActivated, setBankingActivated] = useState<boolean>(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
-  // Verificar estado real de la tarjeta virtual desde el backend
-  useEffect(() => {
-    const checkVirtualCardStatus = async () => {
-      try {
-        const user = getCurrentUser();
-        if (!user?.id) return;
-        
-        const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setHasVirtualCard(data.has_card || false);
-          setBankingActivated(data.banking_activated || false);
-        } else {
-          setHasVirtualCard(false);
-          setBankingActivated(false);
-        }
-      } catch (error) {
-        console.error('Error checking virtual card status:', error);
+  // Función para verificar estado real de la tarjeta virtual desde el backend
+  const checkVirtualCardStatus = async () => {
+    try {
+      const user = getCurrentUser();
+      if (!user?.id) return;
+      
+      const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHasVirtualCard(data.has_card || false);
+        setBankingActivated(data.banking_activated || false);
+      } else {
         setHasVirtualCard(false);
         setBankingActivated(false);
-      } finally {
-        setIsCheckingStatus(false);
       }
-    };
+    } catch (error) {
+      console.error('Error checking virtual card status:', error);
+      setHasVirtualCard(false);
+      setBankingActivated(false);
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
 
+  // Verificar estado al montar el componente
+  useEffect(() => {
     checkVirtualCardStatus();
   }, []);
 
