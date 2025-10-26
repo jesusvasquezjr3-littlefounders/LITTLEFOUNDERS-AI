@@ -67,14 +67,16 @@ phases:
     commands:
       - echo "Iniciando post-build phase..."
       
-      # Crear estructura de artefactos
-      - echo "Preparando artefactos para deployment..."
+      # Subir frontend a S3 con permisos públicos
+      - echo "Subiendo frontend a S3..."
+      - aws s3 sync dist/ s3://littlefounders-bucket/ --acl public-read --delete
+      - echo "Frontend subido exitosamente a S3"
       
-      # Copiar archivos necesarios
-      - mkdir -p deploy/frontend
+      # Crear estructura de artefactos para backend
+      - echo "Preparando artefactos para deployment del backend..."
+      
+      # Copiar archivos necesarios del backend
       - mkdir -p deploy/backend
-      
-      - cp -r dist/* deploy/frontend/
       - cp -r backend/* deploy/backend/
       - cp backend/start.sh deploy/ 2>/dev/null || true
       
