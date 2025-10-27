@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { usePostHog } from "@/hooks/usePostHog";
+import { API_URL } from "@/config/api";
 
 type RegistrationStep = 'tutor' | 'child' | 'sponsor' | 'success';
 
@@ -276,7 +277,7 @@ const Register = () => {
       };
 
       // Send registration data to backend
-      const response = await fetch('http://localhost:8000/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

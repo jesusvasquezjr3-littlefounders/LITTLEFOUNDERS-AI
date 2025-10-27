@@ -22,3 +22,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Cloudflare Tunnel
+cloudflare-config.yml
+.cloudflared/
+*.pem
+*.p12
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+*.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+*.pid

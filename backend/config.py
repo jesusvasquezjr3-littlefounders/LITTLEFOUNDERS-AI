@@ -32,7 +32,12 @@ class Settings(BaseSettings):
     api_description: str = "API para la plataforma educativa financiera LittleFounders"
     
     # CORS configuration
-    cors_origins: list[str] = ["*"]
+    cors_origins: list[str] = [
+        "http://localhost:5173",
+        "http://localhost:80",
+        "https://combines-bowl-endangered-screw.trycloudflare.com",
+        "https://owners-beverages-hall-accurate.trycloudflare.com"
+    ]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
     cors_allow_headers: list[str] = ["*"]
