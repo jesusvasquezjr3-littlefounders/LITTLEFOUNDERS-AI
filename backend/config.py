@@ -35,8 +35,11 @@ class Settings(BaseSettings):
     cors_origins: list[str] = [
         "http://localhost:5173",
         "http://localhost:80",
-        "https://combines-bowl-endangered-screw.trycloudflare.com",
-        "https://owners-beverages-hall-accurate.trycloudflare.com"
+        # Producción
+        "https://littlefounders.ai",
+        "https://www.littlefounders.ai",
+        # Backend subdominio (no suele ser necesario, pero no estorba)
+        "https://api.littlefounders.ai",
     ]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
