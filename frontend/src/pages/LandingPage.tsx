@@ -334,7 +334,7 @@ const LandingPage = () => {
             Educando a la próxima generación de emprendedores financieros
           </p>
           <div className="flex justify-center space-x-8 text-gray-400">
-            <span>© 2024 Little Founders</span>
+            <span>© 2025 Little Founders</span>
             <span>•</span>
             <span>Privacidad</span>
             <span>•</span>

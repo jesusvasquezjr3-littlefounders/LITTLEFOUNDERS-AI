@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/date-picker";
 import { usePostHog } from "@/hooks/usePostHog";
 import { API_URL } from "@/config/api";
+import { PasswordStrength } from "@/components/auth/PasswordStrength";
 
 type RegistrationStep = 'tutor' | 'child' | 'sponsor' | 'success';
 
@@ -418,6 +419,7 @@ const Register = () => {
             )}
           </Button>
         </div>
+        <PasswordStrength password={tutorData.password} />
       </div>
 
       <div className="space-y-2">
@@ -543,6 +545,7 @@ const Register = () => {
             )}
           </Button>
         </div>
+        <PasswordStrength password={childData.password} />
       </div>
 
       <div className="space-y-2">
@@ -715,6 +718,7 @@ const Register = () => {
             )}
           </Button>
         </div>
+        <PasswordStrength password={sponsorData.password} />
       </div>
 
       <div className="space-y-2">

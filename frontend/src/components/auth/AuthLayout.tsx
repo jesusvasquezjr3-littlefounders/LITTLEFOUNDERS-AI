@@ -23,7 +23,7 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
           <div className="text-center space-y-2">
             <Badge variant="outline" className="px-3 py-1">
               <Zap className="w-4 h-4 mr-2" />
-              LittleFoundera AI
+              LittleFounders AI
             </Badge>
             
             {showBackToWelcome && (
@@ -51,7 +51,8 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
 
           {/* Footer */}
           <div className="text-center text-sm text-muted-foreground">
-            <p>Una pagina segura para los pequeños fundadores</p>
+            {/* antes de activar, hay que verificar que tenga los certificados de seguridad adecuados */}
+            {/* <p>Una pagina segura para los pequeños fundadores</p> */}
           </div>
         </div>
       </div>

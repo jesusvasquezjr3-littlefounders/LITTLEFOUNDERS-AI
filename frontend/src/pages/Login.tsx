@@ -186,6 +186,7 @@ const Login = () => {
         </div>
 
         {/* Demo Credentials */}
+        {/*
         <div className="p-4 bg-muted/50 rounded-lg space-y-2">
           <p className="text-xs text-muted-foreground text-center font-medium">
             Credenciales de Prueba:
@@ -205,6 +206,7 @@ const Login = () => {
             </div>
           </div>
         </div>
+        */}
       </form>
     </AuthLayout>
   );
