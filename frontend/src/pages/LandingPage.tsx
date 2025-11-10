@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
+import {
+  Users,
   Shield,
   ArrowRight,
   Sparkles,
@@ -36,7 +35,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveSection(prev => (prev + 1) % 3);
+      setActiveSection(prev => (prev + 1) % 4);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -91,29 +90,37 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Sticky Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' 
+        isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200'
           : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/logo-main.png" 
-                alt="Little Founders" 
-                className="h-10 w-auto"
-              />
-              <span className={`text-2xl font-bold transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                Little Founders
-              </span>
-            </div>
+            {/* Logo & Banner Group */}
             <div className="flex items-center space-x-4">
-              <Button asChild variant="ghost" className={isScrolled ? 'text-gray-700' : 'text-white'}>
+              <div className="flex-shrink-0">
+                <img
+                  src="/logo-main.png"
+                  alt="Little Founders"
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="hidden lg:flex min-w-0">
+                <div className="px-4 py-2 rounded-full transition-all duration-300 bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md">
+                  <p className="font-semibold truncate">
+                    <Sparkles className="w-4 h-4 mr-2 inline-block" />
+                    ¡La educación financiera nunca fue tan divertida!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <Button asChild variant="ghost" className={`transition-colors ${isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'}`} onClick={handleLoginClick}>
                 <Link to="/login">Iniciar Sesión</Link>
               </Button>
-              <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white">
+              <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-shadow" onClick={handleRegisterClick}>
                 <Link to="/register">¡Empezar Ahora!</Link>
               </Button>
             </div>
@@ -138,36 +145,30 @@ const LandingPage = () => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8">
-            {/* Badge */}
-            <Badge className="px-6 py-3 text-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 shadow-lg">
-              <Sparkles className="w-5 h-5 mr-2" />
-              ¡La educación financiera nunca fue tan divertida!
-            </Badge>
-
+          <div className="space-y-8 pt-16">
             {/* Main Logo */}
             <div className="space-y-6">
               <div className="flex justify-center">
-                <img 
-                  src="/logo-hero.png" 
-                  alt="Little Founders" 
+                <img
+                  src="/logo-hero.png"
+                  alt="Little Founders"
                   className="h-48 md:h-64 lg:h-96 w-auto drop-shadow-2xl"
                 />
               </div>
               
               <p className="text-2xl md:text-3xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
-                La plataforma donde los niños aprenden sobre dinero, 
-                <span className="text-pink-600 font-bold"> ahorran</span>, 
-                <span className="text-purple-600 font-bold"> invierten</span> y se convierten en 
+                La plataforma donde los niños aprenden sobre dinero,
+                <span className="text-pink-600 font-bold"> ahorran</span>,
+                <span className="text-purple-600 font-bold"> invierten</span> y se convierten en
                 <span className="text-blue-600 font-bold"> pequeños empresarios</span>
               </p>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
-               <Button 
-                 asChild 
-                 size="lg" 
+               <Button
+                 asChild
+                 size="lg"
                  className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
                  onClick={handleRegisterClick}
                >
@@ -178,10 +179,10 @@ const LandingPage = () => {
                  </Link>
                </Button>
                
-               <Button 
-                 asChild 
-                 variant="outline" 
-                 size="lg" 
+               <Button
+                 asChild
+                 variant="outline"
+                 size="lg"
                  className="px-12 py-6 text-2xl border-2 border-purple-300 text-purple-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-green-500/50 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500"
                  onClick={handleLoginClick}
                >
@@ -213,8 +214,8 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 cursor-pointer ${
                   activeSection === index ? 'ring-4 ring-pink-500/50 scale-105' : ''
                 }`}
@@ -253,8 +254,8 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="text-center group"
               >
                 <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all duration-300">
@@ -277,19 +278,19 @@ const LandingPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-8">
             <h2 className="text-6xl font-bold text-gray-900">
-              ¿Listo para comenzar tu 
+              ¿Listo para comenzar tu
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600"> aventura financiera</span>?
             </h2>
             
             <p className="text-2xl text-gray-600 leading-relaxed">
-              Únete a Little Founders hoy y descubre un mundo donde aprender sobre dinero es divertido, 
+              Únete a Little Founders hoy y descubre un mundo donde aprender sobre dinero es divertido,
               seguro y emocionante. ¡Tu futuro financiero te está esperando!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
-               <Button 
-                 asChild 
-                 size="lg" 
+               <Button
+                 asChild
+                 size="lg"
                  className="px-16 py-8 text-3xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-yellow-500 hover:to-orange-600 hover:shadow-yellow-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-125 hover:-translate-y-3 transition-all duration-500 animate-pulse-glow"
                  onClick={handleRegisterClick}
                >
@@ -323,9 +324,9 @@ const LandingPage = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center items-center space-x-3 mb-6">
-            <img 
-              src="/logo-main.png" 
-              alt="Little Founders" 
+            <img
+              src="/logo-main.png"
+              alt="Little Founders"
               className="h-12 w-auto"
             />
             <span className="text-3xl font-bold">Little Founders</span>
