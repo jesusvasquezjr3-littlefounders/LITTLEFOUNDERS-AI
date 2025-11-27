@@ -7,10 +7,12 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { GoogleAnalyticsProvider } from "@/components/GoogleAnalyticsProvider";
 import { SimpleTimeDemo } from "@/components/analytics/SimpleTimeDemo";
 import { PostHogAnalyticsDemo } from "@/components/analytics/PostHogAnalyticsDemo";
 import { UserAnalyticsDemo } from "@/components/analytics/UserAnalyticsDemo";
 import { PostHogEventsDemo } from "@/components/analytics/PostHogEventsDemo";
+import { GoogleAnalyticsDemo } from "@/components/analytics/GoogleAnalyticsDemo";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import LandingPage from "./pages/LandingPage";
@@ -37,7 +39,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <PostHogProvider>
-          <Routes>
+          <GoogleAnalyticsProvider>
+            <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
@@ -104,7 +107,9 @@ const App = () => (
           {/* <SimpleTimeDemo />
           <PostHogAnalyticsDemo showDemo={import.meta.env.DEV} />
           <UserAnalyticsDemo showDemo={import.meta.env.DEV} />
-          <PostHogEventsDemo showDemo={import.meta.env.DEV} /> */}
+          <PostHogEventsDemo showDemo={import.meta.env.DEV} />
+          <GoogleAnalyticsDemo showDemo={import.meta.env.DEV} /> */}
+          </GoogleAnalyticsProvider>
         </PostHogProvider>
       </BrowserRouter>
     </TooltipProvider>
