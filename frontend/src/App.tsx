@@ -27,6 +27,15 @@ import Store from "./pages/Store";
 import LemonadeStand from "./pages/LemonadeStand";
 import InvestmentGames from "./pages/InvestmentGames";
 import NotFound from "./pages/NotFound";
+import Demo from "./pages/demo/Demo";
+import { DemoLemonadeStand } from "./pages/demo/DemoLemonadeStand";
+import { DemoLecciones } from "./pages/demo/DemoLecciones";
+import { DemoVirtualCard } from "./pages/demo/DemoVirtualCard";
+import { DemoDigitalBanking } from "./pages/demo/DemoDigitalBanking";
+import { DemoInvestmentGames } from "./pages/demo/DemoInvestmentGames";
+import { DemoSavings } from "./pages/demo/DemoSavings";
+import { DemoStore } from "./pages/demo/DemoStore";
+import { DemoTasks } from "./pages/demo/DemoTasks";
 
 const queryClient = new QueryClient();
 
@@ -38,67 +47,78 @@ const App = () => (
       <BrowserRouter>
         <PostHogProvider>
           <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Index />
-            </ProtectedRoute>
-          } />  
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/lecciones" element={
-            <ProtectedRoute>
-              <Lecciones />
-            </ProtectedRoute>
-          } />
-          <Route path="/lecciones-v2" element={
-            <ProtectedRoute>
-              <LeccionesV2 />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/tasks" element={
-            <ChildProtectedRoute>
-              <Tasks />
-            </ChildProtectedRoute>
-          } />
-          <Route path="/parent-tasks" element={
-            <ParentProtectedRoute>
-              <ParentTasks />
-            </ParentProtectedRoute>
-          } />
-          <Route path="/growth" element={
-            <ProtectedRoute>
-              <DigitalBanking />
-            </ProtectedRoute>
-          } />
-          <Route path="/savings" element={
-            <ProtectedRoute>
-              <Savings />
-            </ProtectedRoute>
-          } />
-          <Route path="/store" element={
-            <ProtectedRoute>
-              <Store />
-            </ProtectedRoute>
-          } />
-          <Route path="/investment-games" element={
-            <ProtectedRoute>
-              <InvestmentGames />
-            </ProtectedRoute>
-          } />
-          <Route path="/lemonade-stand" element={
-            <ChildProtectedRoute>
-              <LemonadeStand />
-            </ChildProtectedRoute>
-          } />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/lecciones" element={
+              <ProtectedRoute>
+                <Lecciones />
+              </ProtectedRoute>
+            } />
+            <Route path="/lecciones-v2" element={
+              <ProtectedRoute>
+                <LeccionesV2 />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/tasks" element={
+              <ChildProtectedRoute>
+                <Tasks />
+              </ChildProtectedRoute>
+            } />
+            <Route path="/parent-tasks" element={
+              <ParentProtectedRoute>
+                <ParentTasks />
+              </ParentProtectedRoute>
+            } />
+            <Route path="/growth" element={
+              <ProtectedRoute>
+                <DigitalBanking />
+              </ProtectedRoute>
+            } />
+            <Route path="/savings" element={
+              <ProtectedRoute>
+                <Savings />
+              </ProtectedRoute>
+            } />
+            <Route path="/store" element={
+              <ProtectedRoute>
+                <Store />
+              </ProtectedRoute>
+            } />
+            <Route path="/investment-games" element={
+              <ProtectedRoute>
+                <InvestmentGames />
+              </ProtectedRoute>
+            } />
+            <Route path="/lemonade-stand" element={
+              <ChildProtectedRoute>
+                <LemonadeStand />
+              </ChildProtectedRoute>
+            } />
+            {/* Demo Routes */}
+            <Route path="/demo" element={<Demo />} />
+            <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
+            <Route path="/demo/lecciones" element={<DemoLecciones />} />
+            <Route path="/demo/card" element={<DemoVirtualCard />} />
+            <Route path="/demo/growth" element={<DemoDigitalBanking />} />
+            <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
+            <Route path="/demo/savings" element={<DemoSavings />} />
+            <Route path="/demo/store" element={<DemoStore />} />
+            <Route path="/demo/tasks" element={<DemoTasks />} />
+
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
           {/* Analytics components hidden */}
           {/* <SimpleTimeDemo />

@@ -89,11 +89,10 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Sticky Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200'
-          : 'bg-transparent'
-      }`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200'
+        : 'bg-transparent'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo & Banner Group */}
@@ -136,7 +135,7 @@ const LandingPage = () => {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}></div>
         </div>
-        
+
         {/* Floating Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-20 h-20 bg-pink-400/20 rounded-full blur-xl animate-pulse"></div>
@@ -155,7 +154,7 @@ const LandingPage = () => {
                   className="h-48 md:h-64 lg:h-96 w-auto drop-shadow-2xl"
                 />
               </div>
-              
+
               <p className="text-2xl md:text-3xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
                 La plataforma donde los niños aprenden sobre dinero,
                 <span className="text-pink-600 font-bold"> ahorran</span>,
@@ -165,31 +164,33 @@ const LandingPage = () => {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
-               <Button
-                 asChild
-                 size="lg"
-                 className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
-                 onClick={handleRegisterClick}
-               >
-                 <Link to="/register">
-                   <Play className="w-6 h-6 mr-3" />
-                   ¡Comenzar Aventura!
-                   <ArrowRight className="w-6 h-6 ml-3" />
-                 </Link>
-               </Button>
-               
-               <Button
-                 asChild
-                 variant="outline"
-                 size="lg"
-                 className="px-12 py-6 text-2xl border-2 border-purple-300 text-purple-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-green-500/50 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500"
-                 onClick={handleLoginClick}
-               >
-                 <Link to="/login">
-                   Ya tengo cuenta
-                 </Link>
-               </Button>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center sm:items-start pt-8">
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  asChild
+                  size="lg"
+                  className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
+                >
+                  <Link to="/demo">
+                    🚀 Verlo en acción
+                  </Link>
+                </Button>
+                <p className="text-xs text-gray-500 font-medium">
+                  No se requiere tarjeta de crédito ni registro
+                </p>
+              </div>
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="px-12 py-6 text-2xl border-2 border-purple-300 text-purple-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-green-500/50 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500"
+                onClick={handleLoginClick}
+              >
+                <Link to="/login">
+                  Ya tengo cuenta
+                </Link>
+              </Button>
             </div>
 
             {/* Scroll Indicator */}
@@ -216,9 +217,8 @@ const LandingPage = () => {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 cursor-pointer ${
-                  activeSection === index ? 'ring-4 ring-pink-500/50 scale-105' : ''
-                }`}
+                className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 cursor-pointer ${activeSection === index ? 'ring-4 ring-pink-500/50 scale-105' : ''
+                  }`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
                 <CardHeader className="text-center relative z-10">
@@ -281,25 +281,25 @@ const LandingPage = () => {
               ¿Listo para comenzar tu
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600"> aventura financiera</span>?
             </h2>
-            
+
             <p className="text-2xl text-gray-600 leading-relaxed">
               Únete a Little Founders hoy y descubre un mundo donde aprender sobre dinero es divertido,
               seguro y emocionante. ¡Tu futuro financiero te está esperando!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
-               <Button
-                 asChild
-                 size="lg"
-                 className="px-16 py-8 text-3xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-yellow-500 hover:to-orange-600 hover:shadow-yellow-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-125 hover:-translate-y-3 transition-all duration-500 animate-pulse-glow"
-                 onClick={handleRegisterClick}
-               >
-                 <Link to="/register">
-                   <Award className="w-8 h-8 mr-4" />
-                   ¡Empezar Ahora!
-                   <ArrowRight className="w-8 h-8 ml-4" />
-                 </Link>
-               </Button>
+              <Button
+                asChild
+                size="lg"
+                className="px-16 py-8 text-3xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-yellow-500 hover:to-orange-600 hover:shadow-yellow-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-125 hover:-translate-y-3 transition-all duration-500 animate-pulse-glow"
+                onClick={handleRegisterClick}
+              >
+                <Link to="/register">
+                  <Award className="w-8 h-8 mr-4" />
+                  ¡Empezar Ahora!
+                  <ArrowRight className="w-8 h-8 ml-4" />
+                </Link>
+              </Button>
             </div>
 
             <div className="flex items-center justify-center space-x-8 pt-12">
