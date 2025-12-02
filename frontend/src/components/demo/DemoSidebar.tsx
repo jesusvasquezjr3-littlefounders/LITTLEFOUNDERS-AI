@@ -29,13 +29,13 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
     };
 
     const menuItems = [
-        { title: "Inicio", url: "/demo", icon: Home, color: "text-primary" },
-        { title: "Mis Ahorros", url: "/demo/savings", icon: PiggyBank, color: "text-green-600" },
-        { title: "Tiendita", url: "/demo/store", icon: Store, color: "text-product" },
-        { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "text-purple-600" },
-        { title: "Mis Tareas", url: "/demo/tasks", icon: Trophy, color: "text-yellow-600" },
-        { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "text-orange-500" },
-        { title: "Banca Digital", url: "/demo/growth", icon: TrendingUp, color: "text-primary" },
+        { title: "Inicio", url: "/demo", icon: Home, color: "text-primary", id: "demo-nav-home" },
+        { title: "Mis Ahorros", url: "/demo/savings", icon: PiggyBank, color: "text-green-600", id: "demo-nav-savings" },
+        { title: "Tiendita", url: "/demo/store", icon: Store, color: "text-product", id: "demo-nav-store" },
+        { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "text-purple-600", id: "demo-nav-lessons" },
+        { title: "Mis Tareas", url: "/demo/tasks", icon: Trophy, color: "text-yellow-600", id: "demo-nav-tasks" },
+        { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "text-orange-500", id: "demo-nav-games" },
+        { title: "Banca Digital", url: "/demo/growth", icon: TrendingUp, color: "text-primary", id: "demo-nav-banking" },
     ];
 
     return (
@@ -71,6 +71,7 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                     <NavLink
                         key={item.title}
                         to={item.url}
+                        id={item.id}
                         className={({ isActive: linkActive }) =>
                             cn(
                                 "flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
@@ -94,15 +95,26 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
 
             {/* Demo Badge */}
             <div className="p-4 border-t border-border">
-                {!collapsed ? (
-                    <div className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-md text-center text-sm font-bold">
-                        MODO DEMO
-                    </div>
-                ) : (
-                    <div className="bg-yellow-100 text-yellow-800 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mx-auto">
-                        D
-                    </div>
-                )}
+                <Button
+                    variant="ghost"
+                    className={cn(
+                        "w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 transition-all duration-200 group relative overflow-hidden",
+                        collapsed ? "h-10 w-10 rounded-full p-0" : "px-3 py-2"
+                    )}
+                    onClick={() => window.dispatchEvent(new Event('restartDemoTour'))}
+                    title="Reiniciar Tutorial"
+                >
+                    {!collapsed ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="text-sm font-bold">VER TUTORIAL</span>
+                            <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity absolute right-2">
+                                ↺
+                            </span>
+                        </div>
+                    ) : (
+                        <span className="text-xs font-bold">D</span>
+                    )}
+                </Button>
             </div>
         </div>
     );

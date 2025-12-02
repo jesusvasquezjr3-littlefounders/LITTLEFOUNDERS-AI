@@ -1,6 +1,7 @@
 import { useState, ReactNode } from "react";
 import { DemoSidebar } from "./DemoSidebar";
 import { DemoTopNav } from "./DemoTopNav";
+import { DemoTour } from "./DemoTour";
 
 interface DemoDashboardLayoutProps {
     children: ReactNode;
@@ -23,6 +24,7 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
                     </main>
                 </div>
             </div>
+            <DemoTour />
         </div>
     );
 }

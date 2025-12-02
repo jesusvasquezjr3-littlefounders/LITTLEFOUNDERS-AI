@@ -218,8 +218,8 @@ export function DemoLecciones() {
                                 <Card
                                     key={ageRange.id}
                                     className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${selectedAgeRange === ageRange.id
-                                            ? "ring-2 ring-blue-500 bg-blue-50"
-                                            : "hover:bg-gray-50 opacity-60"
+                                        ? "ring-2 ring-blue-500 bg-blue-50"
+                                        : "hover:bg-gray-50 opacity-60"
                                         }`}
                                     onClick={() => {
                                         if (ageRange.id !== "8-10") {
