@@ -28,6 +28,7 @@ import ParentTasks from "./pages/ParentTasks";
 import Store from "./pages/Store";
 import LemonadeStand from "./pages/LemonadeStand";
 import InvestmentGames from "./pages/InvestmentGames";
+import GuestDashboard from "./pages/GuestDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,9 @@ const App = () => (
           <GoogleAnalyticsProvider>
             <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/guest-dashboard" element={<GuestDashboard />} />
+          <Route path="/lecciones-guest" element={<LeccionesV2 />} />
+          <Route path="/emprendimiento-guest" element={<InvestmentGames />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Index />

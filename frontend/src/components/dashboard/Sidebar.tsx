@@ -28,7 +28,16 @@ const getUser = () => {
 
 const getMenuItems = () => {
   const user = getUser();
-  
+
+  // Menú para invitados (sin sesión iniciada)
+  if (!user || !user.user_type) {
+    return [
+      { title: "Inicio", url: "/guest-dashboard", icon: Home, color: "text-primary" },
+      { title: "Lecciones", url: "/lecciones-guest", icon: BookOpen, color: "text-purple-600" },
+      { title: "Emprendimiento", url: "/emprendimiento-guest", icon: Lightbulb, color: "text-orange-500" },
+    ];
+  }
+
   if (user.user_type === 'child') {
     // Menú para niños
     return [
