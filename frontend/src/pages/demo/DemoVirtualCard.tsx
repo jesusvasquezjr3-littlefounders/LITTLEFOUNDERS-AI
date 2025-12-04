@@ -23,6 +23,7 @@ import {
     Upload
 } from "lucide-react";
 import { ThreeDCard } from "@/components/demo/ThreeDCard";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface VirtualCard {
     id: string;
@@ -183,16 +184,18 @@ export function DemoVirtualCard() {
                     <div className="space-y-6">
                         {/* Virtual Card Visual */}
                         <div className="relative mx-auto max-w-md">
-                            <ThreeDCard
-                                cardNumber={card.cardNumber}
-                                holderName={card.holderName}
-                                expiryDate={card.expiryDate}
-                                cvv={card.cvv}
-                                theme={card.theme}
-                                isFlipped={isFlipped}
-                                showDetails={showCardDetails}
-                                isFrozen={card.isFrozen}
-                            />
+                            <ErrorBoundary>
+                                <ThreeDCard
+                                    cardNumber={card.cardNumber}
+                                    holderName={card.holderName}
+                                    expiryDate={card.expiryDate}
+                                    cvv={card.cvv}
+                                    theme={card.theme}
+                                    isFlipped={isFlipped}
+                                    showDetails={showCardDetails}
+                                    isFrozen={card.isFrozen}
+                                />
+                            </ErrorBoundary>
                         </div>
 
                         {/* Card Actions */}
