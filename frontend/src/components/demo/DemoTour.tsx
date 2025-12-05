@@ -30,6 +30,12 @@ const steps: TourStep[] = [
         position: "right"
     },
     {
+        targetId: "demo-nav-lessons",
+        title: "Lecciones Divertidas",
+        description: "¡Aprende sobre finanzas y emprendimiento jugando! Lecciones interactivas que te convertirán en un experto.",
+        position: "right"
+    },
+    {
         targetId: "demo-nav-tasks",
         title: "Misiones y Tareas",
         description: "Tus papás te dejarán misiones aquí. ¡Complétalas todas para ganar recompensas reales!",
@@ -57,7 +63,7 @@ const steps: TourStep[] = [
 export function DemoTour() {
     const [currentStep, setCurrentStep] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [coords, setCoords] = useState({ top: 0, left: 0 });
+    const [coords, setCoords] = useState({ top: 0, left: 0, arrowTop: 60 });
 
     useEffect(() => {
         // Check if tour was already completed
@@ -87,9 +93,32 @@ export function DemoTour() {
             const element = document.getElementById(step.targetId);
             if (element) {
                 const rect = element.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const cardHeight = 300; // Approximate height
+                const arrowOffsetBase = 60; // Where the arrow is normally located relative to card top
+
+                // Calculate ideal top to center the arrow on the element
+                let top = rect.top + (rect.height / 2) - arrowOffsetBase;
+
+                // Clamp top to prevent going off screen bottom
+                // Leave 20px margin
+                if (top + cardHeight > viewportHeight - 20) {
+                    top = viewportHeight - cardHeight - 20;
+                }
+
+                // Clamp top to prevent going off screen top
+                if (top < 20) {
+                    top = 20;
+                }
+
+                // Calculate where the arrow should be to point to the element
+                // Arrow Y relative to card = Element Center Y - Card Top
+                const arrowTop = (rect.top + (rect.height / 2)) - top;
+
                 setCoords({
-                    top: rect.top + (rect.height / 2) - 60, // Center vertically relative to item
-                    left: rect.right + 20 // Offset to the right
+                    top,
+                    left: rect.right + 20, // Offset to the right
+                    arrowTop
                 });
 
                 // Add highlight class
@@ -202,7 +231,10 @@ export function DemoTour() {
 
                     {/* Arrow for non-center steps */}
                     {!isCenter && (
-                        <div className="absolute top-[60px] -left-2 w-4 h-4 bg-background border-l-2 border-b-2 border-primary transform rotate-45" />
+                        <div
+                            className="absolute -left-2 w-4 h-4 bg-background border-l-2 border-b-2 border-primary transform rotate-45 transition-[top] duration-300"
+                            style={{ top: `${coords.arrowTop}px` }}
+                        />
                     )}
                 </Card>
             </div>
