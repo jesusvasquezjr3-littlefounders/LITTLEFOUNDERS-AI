@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
-  Target, 
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
+  Target,
   TrendingUp,
   Play,
   Award,
@@ -30,33 +30,33 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
     {
       title: "Lecciones Completadas",
       value: user?.lessons_completed || 0,
-      icon: BookOpen,
+      lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
       color: "text-blue-600",
-      bgColor: "bg-blue-100",
+      bgColor: "bg-blue-50",
       description: "¡Sigue así!"
     },
     {
       title: "Minutos Estudiados",
       value: user?.minutes_studied || 0,
-      icon: Clock,
+      lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
       color: "text-green-600",
-      bgColor: "bg-green-100",
+      bgColor: "bg-green-50",
       description: "Tiempo bien invertido"
     },
     {
       title: "Puntos Ganados",
       value: user?.points_earned || 0,
-      icon: Star,
+      lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
       color: "text-yellow-600",
-      bgColor: "bg-yellow-100",
+      bgColor: "bg-yellow-50",
       description: "¡Eres un experto!"
     },
     {
       title: "Racha Actual",
       value: currentStreak,
-      icon: Zap,
+      lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
       color: "text-purple-600",
-      bgColor: "bg-purple-100",
+      bgColor: "bg-purple-50",
       description: "¡Días seguidos!"
     }
   ];
@@ -131,15 +131,21 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all">
+          <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all overflow-hidden relative">
             <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <div className="flex flex-col items-center text-center space-y-2 relative z-10">
+                <div className={`p-2 rounded-full ${stat.bgColor} mb-2`}>
+                  {/* @ts-ignore */}
+                  <dotlottie-wc
+                    src={stat.lottieSrc}
+                    style={{ width: '120px', height: '120px' }}
+                    autoplay
+                    loop
+                  ></dotlottie-wc>
                 </div>
-                <div className="flex-1">
+                <div>
                   <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-3xl font-bold my-1">{stat.value}</p>
                   <p className="text-xs text-muted-foreground">{stat.description}</p>
                 </div>
               </div>
@@ -229,27 +235,22 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {achievements.map((achievement, index) => (
-              <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-2 transition-all ${
-                achievement.unlocked 
-                  ? 'border-green-200 bg-green-50' 
+              <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-2 transition-all ${achievement.unlocked
+                  ? 'border-green-200 bg-green-50'
                   : 'border-gray-200 bg-gray-50'
-              }`}>
-                <div className={`p-2 rounded-full ${
-                  achievement.unlocked ? 'bg-green-100' : 'bg-gray-100'
                 }`}>
-                  <achievement.icon className={`h-5 w-5 ${
-                    achievement.unlocked ? achievement.color : 'text-gray-400'
-                  }`} />
+                <div className={`p-2 rounded-full ${achievement.unlocked ? 'bg-green-100' : 'bg-gray-100'
+                  }`}>
+                  <achievement.icon className={`h-5 w-5 ${achievement.unlocked ? achievement.color : 'text-gray-400'
+                    }`} />
                 </div>
                 <div className="flex-1">
-                  <h4 className={`font-medium ${
-                    achievement.unlocked ? 'text-green-800' : 'text-gray-500'
-                  }`}>
+                  <h4 className={`font-medium ${achievement.unlocked ? 'text-green-800' : 'text-gray-500'
+                    }`}>
                     {achievement.title}
                   </h4>
-                  <p className={`text-sm ${
-                    achievement.unlocked ? 'text-green-600' : 'text-gray-400'
-                  }`}>
+                  <p className={`text-sm ${achievement.unlocked ? 'text-green-600' : 'text-gray-400'
+                    }`}>
                     {achievement.description}
                   </p>
                 </div>

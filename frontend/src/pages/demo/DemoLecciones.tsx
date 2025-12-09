@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -189,13 +190,16 @@ export function DemoLecciones() {
         }
     };
 
+    const navigate = useNavigate();
+
     const handleLessonClick = (module: Module) => {
         if (module.locked) {
             setShowLockedDialog(true);
+        } else if (module.id === "1.1") {
+            navigate("/demo/lecciones/1");
         } else {
-            // In a real implementation, this would open the lesson player
-            // For demo, we can just show an alert or maybe simulate opening it
-            alert("¡Esta es la lección de demostración! Aquí se abriría el reproductor de lecciones.");
+            // For other unlocked lessons in demo (if any), show placeholder
+            alert("Esta lección aún no está disponible en la demo.");
         }
     }
 

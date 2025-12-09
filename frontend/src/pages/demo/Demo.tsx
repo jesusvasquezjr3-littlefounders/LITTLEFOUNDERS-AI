@@ -18,33 +18,33 @@ export default function Demo() {
         {
             title: "Lecciones Completadas",
             value: 1,
-            icon: BookOpen,
+            lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
             color: "text-blue-600",
-            bgColor: "bg-blue-100",
+            bgColor: "bg-blue-50",
             description: "¡Sigue así!"
         },
         {
             title: "Minutos Estudiados",
             value: 15,
-            icon: Clock,
+            lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
             color: "text-green-600",
-            bgColor: "bg-green-100",
+            bgColor: "bg-green-50",
             description: "Tiempo bien invertido"
         },
         {
             title: "Puntos Ganados",
             value: 50,
-            icon: Star,
+            lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
             color: "text-yellow-600",
-            bgColor: "bg-yellow-100",
+            bgColor: "bg-yellow-50",
             description: "¡Eres un experto!"
         },
         {
             title: "Racha Actual",
             value: currentStreak,
-            icon: Zap,
+            lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
             color: "text-purple-600",
-            bgColor: "bg-purple-100",
+            bgColor: "bg-purple-50",
             description: "¡Días seguidos!"
         }
     ];
@@ -58,22 +58,28 @@ export default function Demo() {
                         ¡Hola, Pequeño Fundador! 👋
                     </h1>
                     <p className="text-lg text-muted-foreground">
-                        ¡Bienvenido a la versión DEMO de Little Founders!
+                        ¡Bienvenido a la sesión DEMO de Little Founders!
                     </p>
                 </div>
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {stats.map((stat, index) => (
-                        <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all">
+                        <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all overflow-hidden relative">
                             <CardContent className="p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                                        <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                                <div className="flex flex-col items-center text-center space-y-2 relative z-10">
+                                    <div className={`p-2 rounded-full ${stat.bgColor} mb-2`}>
+                                        {/* @ts-ignore */}
+                                        <dotlottie-wc
+                                            src={stat.lottieSrc}
+                                            style={{ width: '120px', height: '120px' }}
+                                            autoplay
+                                            loop
+                                        ></dotlottie-wc>
                                     </div>
-                                    <div className="flex-1">
+                                    <div>
                                         <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                                        <p className="text-2xl font-bold">{stat.value}</p>
+                                        <p className="text-3xl font-bold my-1">{stat.value}</p>
                                         <p className="text-xs text-muted-foreground">{stat.description}</p>
                                     </div>
                                 </div>
@@ -82,47 +88,51 @@ export default function Demo() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                    {/* Quick Links to Demo Features */}
-                    <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-                        <CardHeader>
-                            <CardTitle className="flex items-center space-x-2 text-purple-800">
-                                <Star className="h-5 w-5" />
-                                <span>Explora las Funcionalidades</span>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <Button asChild className="h-32 bg-white hover:bg-gray-50 text-black border-2 border-blue-200 hover:border-blue-400 shadow-sm group">
-                                    <Link to="/demo/lecciones" className="flex flex-col items-center justify-center space-y-2">
-                                        <div className="p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">
-                                            <BookOpen className="h-8 w-8 text-blue-600" />
-                                        </div>
-                                        <span className="font-bold text-lg">Lecciones Interactivas</span>
-                                        <span className="text-xs text-gray-500">Aprende jugando</span>
-                                    </Link>
-                                </Button>
-                                <Button asChild className="h-32 bg-white hover:bg-gray-50 text-black border-2 border-orange-200 hover:border-orange-400 shadow-sm group">
-                                    <Link to="/demo/lemonade-stand" className="flex flex-col items-center justify-center space-y-2">
-                                        <div className="p-3 bg-orange-100 rounded-full group-hover:bg-orange-200 transition-colors">
-                                            <Lightbulb className="h-8 w-8 text-orange-600" />
-                                        </div>
-                                        <span className="font-bold text-lg">Puesto de Limonada</span>
-                                        <span className="text-xs text-gray-500">Simulador de Negocios</span>
-                                    </Link>
-                                </Button>
-                                <Button asChild className="h-32 bg-white hover:bg-gray-50 text-black border-2 border-green-200 hover:border-green-400 shadow-sm group">
-                                    <Link to="/demo/card" className="flex flex-col items-center justify-center space-y-2">
-                                        <div className="p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
-                                            <CreditCard className="h-8 w-8 text-green-600" />
-                                        </div>
-                                        <span className="font-bold text-lg">Tarjeta Virtual</span>
-                                        <span className="text-xs text-gray-500">Personaliza tu tarjeta</span>
-                                    </Link>
-                                </Button>
+                <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-gray-800 px-1">Explora las Funcionalidades 🚀</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Interactive Lessons Card */}
+                        <Link to="/demo/lecciones" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+                                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                    <BookOpen className="h-10 w-10 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white mb-1">Aprender</h3>
+                                    <p className="text-blue-100 font-medium text-sm">Lecciones Interactivas</p>
+                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </Link>
+
+                        {/* Lemonade Stand Card */}
+                        <Link to="/demo/lemonade-stand" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-red-500"></div>
+                            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+                                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                    <Lightbulb className="h-10 w-10 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white mb-1">Emprender</h3>
+                                    <p className="text-orange-100 font-medium text-sm">Puesto de Limonada</p>
+                                </div>
+                            </div>
+                        </Link>
+
+                        {/* Virtual Card Card */}
+                        <Link to="/demo/growth" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-green-600"></div>
+                            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+                                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                    <CreditCard className="h-10 w-10 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white mb-1">Tarjeta Virtual</h3>
+                                    <p className="text-green-100 font-medium text-sm">Personaliza tu Tarjeta Virtual</p>
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </DemoDashboardLayout>

@@ -57,7 +57,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
         <div
             className={cn(
                 "relative flex flex-col h-screen transition-all duration-300 ease-in-out z-20",
-                collapsed ? "w-20" : "w-72",
+                collapsed ? "w-24" : "w-72",
                 "bg-[#fdfbf7] border-r-4 border-[#e5e0d8]", // Paper-like background
                 "shadow-[4px_0_24px_rgba(0,0,0,0.05)]",
                 className
@@ -75,7 +75,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                             <MapIcon className="w-6 h-6 text-white" />
                         </div>
                         <span className="font-black text-xl text-slate-700 tracking-tight">
-                            Mi Perfil
+                            Littlefounders
                         </span>
                     </div>
                 )}
@@ -83,7 +83,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                     variant="ghost"
                     size="icon"
                     onClick={onToggle}
-                    className="hover:bg-orange-100 text-orange-600"
+                    className="hover:bg-orange-100 text-orange-600 mx-auto"
                 >
                     {collapsed ? <Menu className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
                 </Button>
@@ -117,13 +117,15 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 className={({ isActive }) => cn(
                                     "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
                                     "hover:translate-x-2",
-                                    isActive ? "bg-white shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60"
+                                    isActive ? "bg-white shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60",
+                                    collapsed && "justify-center px-1" // Center content when collapsed
                                 )}
                             >
                                 {/* Icon Node */}
                                 <div className={cn(
-                                    "relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300",
+                                    "relative rounded-2xl flex items-center justify-center transition-all duration-300",
                                     "shadow-[0_4px_0_rgba(0,0,0,0.1)]", // 3D bottom shadow
+                                    collapsed ? "w-16 h-12" : "w-12 h-12", // Wider icons when collapsed
                                     active
                                         ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white")
                                         : "bg-white border-2 border-slate-100 group-hover:border-orange-200"
