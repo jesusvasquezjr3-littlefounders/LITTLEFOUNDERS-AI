@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+/* Main Font Settings are handled by the app's global styles, but specific overrides can go here */
+.lemonade-game-container {
+    font-family: 'Comic Neue', 'Outfit', sans-serif;
+}
+
+.lemonade-game-container .animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.lemonade-game-container .mascot-enter {
+    animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100%) scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Easter Egg Animations */
+@keyframes rollAcross {
+    0% {
+        left: -10%;
+        transform: rotate(0deg);
+    }
+
+    100% {
+        left: 110%;
+        transform: rotate(720deg);
+    }
+}
+
+.lemonade-game-container .rolling-lemon {
+    position: fixed;
+    bottom: 20px;
+    font-size: 5rem;
+    animation: rollAcross 4s linear forwards;
+    z-index: 100;
+}
+
+@keyframes rainDown {
+    0% {
+        top: -10%;
+        opacity: 1;
+    }
+
+    100% {
+        top: 110%;
+        opacity: 0;
+    }
+}
+
+.lemonade-game-container .raining-lemon {
+    position: fixed;
+    font-size: 3rem;
+    animation: rainDown 3s linear forwards;
+    z-index: 90;
+}
+
+@keyframes spinMascot {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.5);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.lemonade-game-container .spinning-mascot {
+    animation: spinMascot 2s ease-in-out infinite;
+}
+
+/* Kahoot Style Win */
+.lemonade-game-container .kahoot-bg {
+    background: linear-gradient(45deg, #46178f, #864cbf, #e2b714);
+    background-size: 400% 400%;
+    animation: gradientBG 5s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Custom Animations */
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes wiggle {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-5deg);
+    }
+
+    75% {
+        transform: rotate(5deg);
+    }
+}
+
+.lemonade-game-container .animate-bounce-custom {
+    animation: bounce 1s infinite;
+}
+
+.lemonade-game-container .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out infinite;
+}
+
+.lemonade-game-container .animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Custom scrollbar */
+.lemonade-game-container ::-webkit-scrollbar {
+    width: 12px;
+}
+
+.lemonade-game-container ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.lemonade-game-container ::-webkit-scrollbar-thumb {
+    background: #fbbf24;
+    border-radius: 10px;
+}
+
+.lemonade-game-container ::-webkit-scrollbar-thumb:hover {
+    background: #f59e0b;
+}
+
+/* Stand Customization Styles */
+.lemonade-game-container .stand-basic {
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    border: 8px solid #92400e;
+}
+
+.lemonade-game-container .stand-improved {
+    background: linear-gradient(135deg, #a7f3d0, #34d399);
+    border: 8px solid #065f46;
+    box-shadow: 0 10px 25px rgba(6, 95, 70, 0.3);
+}
+
+.lemonade-game-container .stand-premium {
+    background: linear-gradient(135deg, #c7d2fe, #818cf8);
+    border: 8px solid #3730a3;
+    box-shadow: 0 15px 35px rgba(55, 48, 163, 0.4);
+}
+
+.lemonade-game-container .stand-deluxe {
+    background: linear-gradient(135deg, #fbcfe8, #f472b6);
+    border: 8px solid #9d174d;
+    box-shadow: 0 20px 40px rgba(157, 23, 77, 0.5);
+}
+
+.lemonade-game-container .stand-ultimate {
+    background: linear-gradient(135deg, #fef3c7, #f59e0b);
+    border: 12px solid #d97706;
+    box-shadow: 0 25px 50px rgba(217, 119, 6, 0.6);
+}
+
+.lemonade-game-container .banner-basic {
+    background: #ef4444;
+    color: white;
+}
+
+.lemonade-game-container .banner-improved {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    color: white;
+    animation: bannerGlow 2s infinite alternate;
+}
+
+@keyframes bannerGlow {
+    from {
+        box-shadow: 0 0 10px #3b82f6;
+    }
+
+    to {
+        box-shadow: 0 0 20px #8b5cf6;
+    }
+}
+
+.lemonade-game-container .banner-premium {
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+    color: white;
+    background-size: 200% 200%;
+    animation: gradientShift 3s infinite alternate;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}

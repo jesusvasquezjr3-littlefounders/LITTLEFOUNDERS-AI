@@ -17,7 +17,6 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Lecciones from "./pages/Lecciones";
-import LeccionesV2 from "./pages/LeccionesV2";
 import Profile from "./pages/Profile";
 import DigitalBanking from "./pages/DigitalBanking";
 import Savings from "./pages/Savings";
@@ -60,11 +59,6 @@ const App = () => (
             <Route path="/lecciones" element={
               <ProtectedRoute>
                 <Lecciones />
-              </ProtectedRoute>
-            } />
-            <Route path="/lecciones-v2" element={
-              <ProtectedRoute>
-                <LeccionesV2 />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={

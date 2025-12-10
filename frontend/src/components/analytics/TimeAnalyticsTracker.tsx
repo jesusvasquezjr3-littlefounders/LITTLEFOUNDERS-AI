@@ -22,7 +22,7 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
   const [currentPageStartTime, setCurrentPageStartTime] = useState<number>(Date.now())
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now())
   const [pageTimes, setPageTimes] = useState<Map<string, number[]>>(new Map())
-  
+
   const pageStartTimeRef = useRef<number>(Date.now())
   const sessionStartTimeRef = useRef<number>(Date.now())
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -82,7 +82,7 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
   const trackPageTime = (pagePath: string, duration: number) => {
     const now = new Date().toISOString()
     const timeData = getTimeAnalyticsData()
-    
+
     // Obtener tiempos existentes para esta página
     const existingData = timeData.get(pagePath)
     const existingTimes = pageTimes.get(pagePath) || []
@@ -90,7 +90,7 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
 
     // Calcular estadísticas
     const stats = calculateTimeStats(allTimes)
-    
+
     const newData: TimeAnalyticsData = {
       page: pagePath,
       lastUpdated: now,
@@ -142,7 +142,6 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
       '/login': 'Login',
       '/register': 'Register',
       '/lecciones': 'Lessons',
-      '/lecciones-v2': 'Lessons V2',
       '/profile': 'Profile',
       '/tasks': 'Tasks',
       '/parent-tasks': 'Parent Tasks',
@@ -176,9 +175,9 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
     const sessionDuration = Date.now() - sessionStartTimeRef.current
     const timeData = getTimeAnalyticsData()
     const allPages = Array.from(timeData.values())
-    
-    const totalAverageTime = allPages.length > 0 
-      ? allPages.reduce((sum, page) => sum + page.averageTime, 0) / allPages.length 
+
+    const totalAverageTime = allPages.length > 0
+      ? allPages.reduce((sum, page) => sum + page.averageTime, 0) / allPages.length
       : 0
 
     const mostEngagingPage = allPages.sort((a, b) => b.averageTime - a.averageTime)[0]
@@ -215,7 +214,7 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
     if (hasTrackedPageLeave.current === false && pageStartTimeRef.current > 0) {
       const duration = Date.now() - pageStartTimeRef.current
       const previousPage = location.pathname
-      
+
       if (duration > 1000) { // Solo trackear si pasó más de 1 segundo
         trackPageTime(previousPage, duration)
       }
@@ -253,7 +252,7 @@ export const TimeAnalyticsTracker = ({ children }: TimeAnalyticsTrackerProps) =>
   // Efecto para trackear estadísticas de sesión periódicamente
   useEffect(() => {
     const interval = setInterval(trackSessionTimeStats, 60000) // Cada minuto
-    
+
     return () => clearInterval(interval)
   }, [])
 
@@ -306,11 +305,11 @@ export const useTimeAnalytics = () => {
   const getAverageTimeByPage = (): Record<string, number> => {
     const timeData = getTimeAnalyticsData()
     const averages: Record<string, number> = {}
-    
+
     timeData.forEach((data, path) => {
       averages[path] = data.averageTime
     })
-    
+
     return averages
   }
 
@@ -324,7 +323,7 @@ export const useTimeAnalytics = () => {
   const getOverallTimeStats = () => {
     const timeData = getTimeAnalyticsData()
     const pages = Array.from(timeData.values())
-    
+
     if (pages.length === 0) {
       return {
         totalPages: 0,
@@ -337,9 +336,9 @@ export const useTimeAnalytics = () => {
 
     const totalTime = pages.reduce((sum, page) => sum + page.totalTime, 0)
     const overallAverageTime = pages.reduce((sum, page) => sum + page.averageTime, 0) / pages.length
-    
+
     const sortedByTime = pages.sort((a, b) => b.averageTime - a.averageTime)
-    
+
     return {
       totalPages: pages.length,
       overallAverageTime: Math.round(overallAverageTime),

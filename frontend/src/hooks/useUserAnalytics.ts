@@ -7,7 +7,7 @@ export const useUserAnalytics = () => {
     const seconds = Math.floor(ms / 1000)
     const minutes = Math.floor(seconds / 60)
     const hours = Math.floor(minutes / 60)
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ${seconds % 60}s`
     } else if (minutes > 0) {
@@ -54,7 +54,6 @@ export const useUserAnalytics = () => {
       '/store': { name: 'Tiendita', description: 'Tienda virtual', category: 'Comercio' },
       '/team': { name: 'Mi Equipo', description: 'Gestión de equipo', category: 'Colaboración' },
       '/lecciones': { name: 'Lecciones', description: 'Sistema de aprendizaje', category: 'Educación' },
-      '/lecciones-v2': { name: 'Lecciones V.2', description: 'Nueva versión de lecciones', category: 'Educación' },
       '/tasks': { name: 'Mis Tareas', description: 'Tareas del niño', category: 'Productividad' },
       '/parent-tasks': { name: 'Gestión de Tareas', description: 'Tareas para padres', category: 'Productividad' },
       '/investment-games': { name: 'Aprende a invertir', description: 'Juegos de inversión', category: 'Educación' },

@@ -21,7 +21,7 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   const [currentPageStartTime, setCurrentPageStartTime] = useState<number>(Date.now())
   const [sessionPageVisits, setSessionPageVisits] = useState<string[]>([])
   const [pageVisitTimes, setPageVisitTimes] = useState<Map<string, number>>(new Map())
-  
+
   const pageStartTimeRef = useRef<number>(Date.now())
   const hasTrackedPageLeave = useRef<boolean>(false)
 
@@ -53,24 +53,24 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   const trackPageVisit = (pagePath: string, duration: number) => {
     const now = new Date().toISOString()
     const pageData = getPageVisitData()
-    
+
     const existingData = pageData.get(pagePath)
-    const newData: PageVisitData = existingData 
+    const newData: PageVisitData = existingData
       ? {
-          ...existingData,
-          visitCount: existingData.visitCount + 1,
-          totalTime: existingData.totalTime + duration,
-          averageTime: (existingData.totalTime + duration) / (existingData.visitCount + 1),
-          lastVisit: now
-        }
+        ...existingData,
+        visitCount: existingData.visitCount + 1,
+        totalTime: existingData.totalTime + duration,
+        averageTime: (existingData.totalTime + duration) / (existingData.visitCount + 1),
+        lastVisit: now
+      }
       : {
-          page: pagePath,
-          visitCount: 1,
-          totalTime: duration,
-          averageTime: duration,
-          lastVisit: now,
-          firstVisit: now
-        }
+        page: pagePath,
+        visitCount: 1,
+        totalTime: duration,
+        averageTime: duration,
+        lastVisit: now,
+        firstVisit: now
+      }
 
     pageData.set(pagePath, newData)
     savePageVisitData(pageData)
@@ -113,7 +113,6 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
       '/login': 'Login',
       '/register': 'Register',
       '/lecciones': 'Lessons',
-      '/lecciones-v2': 'Lessons V2',
       '/profile': 'Profile',
       '/tasks': 'Tasks',
       '/parent-tasks': 'Parent Tasks',
@@ -129,9 +128,9 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   // Función para obtener el ranking de popularidad de una página
   const getPopularityRank = (pageData: Map<string, PageVisitData>, currentPage: string): number => {
     const sortedPages = Array.from(pageData.entries())
-      .sort(([,a], [,b]) => b.visitCount - a.visitCount)
+      .sort(([, a], [, b]) => b.visitCount - a.visitCount)
       .map(([path]) => path)
-    
+
     return sortedPages.indexOf(currentPage) + 1
   }
 
@@ -139,7 +138,7 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   const trackSessionStats = () => {
     const sessionDuration = Date.now() - pageStartTimeRef.current
     const uniquePages = new Set(sessionPageVisits).size
-    
+
     trackEvent('session_analytics', {
       session_duration_ms: sessionDuration,
       session_duration_minutes: Math.round(sessionDuration / 60000 * 100) / 100,
@@ -157,7 +156,7 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
     if (hasTrackedPageLeave.current === false && pageStartTimeRef.current > 0) {
       const duration = Date.now() - pageStartTimeRef.current
       const previousPage = sessionPageVisits[sessionPageVisits.length - 1]
-      
+
       if (previousPage && duration > 1000) { // Solo trackear si pasó más de 1 segundo
         trackPageVisit(previousPage, duration)
       }
@@ -197,7 +196,7 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   // Efecto para trackear estadísticas de sesión periódicamente
   useEffect(() => {
     const interval = setInterval(trackSessionStats, 30000) // Cada 30 segundos
-    
+
     return () => clearInterval(interval)
   }, [sessionPageVisits])
 
@@ -241,11 +240,11 @@ export const PageAnalyticsTracker = ({ children }: PageAnalyticsTrackerProps) =>
   const getAverageTimeByPage = (): Record<string, number> => {
     const pageData = getPageVisitData()
     const averages: Record<string, number> = {}
-    
+
     pageData.forEach((data, path) => {
       averages[path] = data.averageTime
     })
-    
+
     return averages
   }
 
@@ -277,11 +276,11 @@ export const usePageAnalytics = () => {
   const getAverageTimeByPage = (): Record<string, number> => {
     const pageData = getPageVisitData()
     const averages: Record<string, number> = {}
-    
+
     pageData.forEach((data, path) => {
       averages[path] = data.averageTime
     })
-    
+
     return averages
   }
 
@@ -293,11 +292,11 @@ export const usePageAnalytics = () => {
   const getOverallStats = () => {
     const pageData = getPageVisitData()
     const pages = Array.from(pageData.values())
-    
+
     const totalVisits = pages.reduce((sum, page) => sum + page.visitCount, 0)
     const totalTime = pages.reduce((sum, page) => sum + page.totalTime, 0)
     const averageTime = pages.length > 0 ? totalTime / pages.length : 0
-    
+
     return {
       totalPages: pages.length,
       totalVisits,

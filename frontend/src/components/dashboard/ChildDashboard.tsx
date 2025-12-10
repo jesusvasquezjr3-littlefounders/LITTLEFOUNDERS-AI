@@ -13,7 +13,9 @@ import {
   Play,
   Award,
   Zap,
-  Heart
+  Heart,
+  CreditCard,
+  Lightbulb
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -236,8 +238,8 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           <CardContent className="space-y-4">
             {achievements.map((achievement, index) => (
               <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-2 transition-all ${achievement.unlocked
-                  ? 'border-green-200 bg-green-50'
-                  : 'border-gray-200 bg-gray-50'
+                ? 'border-green-200 bg-green-50'
+                : 'border-gray-200 bg-gray-50'
                 }`}>
                 <div className={`p-2 rounded-full ${achievement.unlocked ? 'bg-green-100' : 'bg-gray-100'
                   }`}>
@@ -265,37 +267,53 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-purple-800">
-            <Heart className="h-5 w-5" />
-            <span>Acciones Rápidas</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button asChild className="h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90">
-              <Link to="/lecciones" className="flex flex-col items-center space-y-1">
-                <BookOpen className="h-6 w-6" />
-                <span className="text-sm">Estudiar</span>
-              </Link>
-            </Button>
-            <Button asChild className="h-16 bg-gradient-to-r from-green-500 to-green-600 hover:opacity-90">
-              <Link to="/profile" className="flex flex-col items-center space-y-1">
-                <Trophy className="h-6 w-6" />
-                <span className="text-sm">Mi Perfil</span>
-              </Link>
-            </Button>
-            <Button asChild className="h-16 bg-gradient-to-r from-purple-500 to-purple-600 hover:opacity-90">
-              <Link to="/lecciones" className="flex flex-col items-center space-y-1">
-                <TrendingUp className="h-6 w-6" />
-                <span className="text-sm">Progreso</span>
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Explore Features Section */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-gray-800 px-1">Explora las Funcionalidades 🚀</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Interactive Lessons Card */}
+          <Link to="/lecciones" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600"></div>
+            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="h-10 w-10 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-1">Aprender</h3>
+                <p className="text-blue-100 font-medium text-sm">Lecciones Interactivas</p>
+              </div>
+            </div>
+          </Link>
+
+          {/* Lemonade Stand Card */}
+          <Link to="/investment-games" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-red-500"></div>
+            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <Lightbulb className="h-10 w-10 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-1">Emprender</h3>
+                <p className="text-orange-100 font-medium text-sm">Juegos de Inversión</p>
+              </div>
+            </div>
+          </Link>
+
+          {/* Virtual Card Card */}
+          <Link to="/growth" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-green-600"></div>
+            <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
+              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <CreditCard className="h-10 w-10 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-1">Tarjeta Virtual</h3>
+                <p className="text-green-100 font-medium text-sm">Banca Digital</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

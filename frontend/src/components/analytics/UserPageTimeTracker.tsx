@@ -31,7 +31,6 @@ const SIDEBAR_PAGES: Record<string, string> = {
   '/store': 'Tiendita',
   '/team': 'Mi Equipo',
   '/lecciones': 'Lecciones',
-  '/lecciones-v2': 'Lecciones V.2',
   '/tasks': 'Mis Tareas',
   '/parent-tasks': 'Gestión de Tareas',
   '/investment-games': 'Aprende a invertir',
@@ -59,7 +58,7 @@ const getUserInfo = () => {
 
 // Función para determinar si una ruta pertenece a una página del sidebar
 const isSidebarPage = (path: string): boolean => {
-  return Object.keys(SIDEBAR_PAGES).some(sidebarPath => 
+  return Object.keys(SIDEBAR_PAGES).some(sidebarPath =>
     path === sidebarPath || path.startsWith(sidebarPath + '/')
   )
 }
@@ -107,7 +106,7 @@ export const useUserPageTimeTracking = () => {
       ...prev,
       lastActivity: Date.now()
     }))
-    
+
     if (!isPageActive) {
       setIsPageActive(true)
       trackEvent('user_page_activity_resumed', {
@@ -143,7 +142,7 @@ export const useUserPageTimeTracking = () => {
   const trackPageTime = () => {
     if (pageStartTime > 0 && isPageActive && isSidebarPage(currentPage)) {
       const duration = Date.now() - pageStartTime
-      
+
       trackEvent('user_page_time_update', {
         page: currentPage,
         page_name: currentPageName,
@@ -160,12 +159,12 @@ export const useUserPageTimeTracking = () => {
 
       // Actualizar datos de sesión
       setSessionData(prev => {
-        const updatedPages = prev.pages.map(p => 
-          p.page === currentPage 
+        const updatedPages = prev.pages.map(p =>
+          p.page === currentPage
             ? { ...p, duration: duration }
             : p
         )
-        
+
         return {
           ...prev,
           pages: updatedPages,
@@ -179,7 +178,7 @@ export const useUserPageTimeTracking = () => {
   const finalizePageTime = (page: string, pageName: string, startTime: number) => {
     if (startTime > 0 && isSidebarPage(page)) {
       const duration = Date.now() - startTime
-      
+
       trackEvent('user_page_time_final', {
         page: page,
         page_name: pageName,
@@ -230,7 +229,7 @@ export const useUserPageTimeTracking = () => {
     const newPage = location.pathname
     const newPageName = getSidebarPageName(newPage)
     const newStartTime = Date.now()
-    
+
     setCurrentPage(newPage)
     setCurrentPageName(newPageName)
     setPageStartTime(newStartTime)
@@ -266,7 +265,7 @@ export const useUserPageTimeTracking = () => {
   // Efecto para detectar actividad del usuario
   useEffect(() => {
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
-    
+
     events.forEach(event => {
       document.addEventListener(event, updateActivity, true)
     })
@@ -276,7 +275,7 @@ export const useUserPageTimeTracking = () => {
       events.forEach(event => {
         document.removeEventListener(event, updateActivity, true)
       })
-      
+
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current)
       }
@@ -287,7 +286,7 @@ export const useUserPageTimeTracking = () => {
   useEffect(() => {
     sessionTimerRef.current = setInterval(() => {
       const sessionDuration = Date.now() - sessionData.sessionStart
-      
+
       trackEvent('user_session_time_update', {
         user_type: userInfo.userType,
         user_id: userInfo.userId,
@@ -324,7 +323,7 @@ export const useUserPageTimeTracking = () => {
     const totalDuration = Date.now() - sessionData.sessionStart
     const activePages = sessionData.pages.filter(p => p.isActive)
     const totalPageTime = sessionData.pages.reduce((sum, p) => sum + (p.duration || 0), 0)
-    
+
     return {
       sessionDuration: totalDuration,
       sessionDurationMinutes: Math.round(totalDuration / 60000 * 100) / 100,
@@ -343,7 +342,7 @@ export const useUserPageTimeTracking = () => {
   // Función para finalizar sesión
   const finalizeSession = () => {
     const stats = getSessionStats()
-    
+
     trackEvent('user_session_final', {
       user_type: userInfo.userType,
       user_id: userInfo.userId,
