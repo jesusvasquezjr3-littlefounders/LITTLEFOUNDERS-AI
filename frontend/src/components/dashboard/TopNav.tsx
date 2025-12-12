@@ -62,90 +62,103 @@ export function TopNav() {
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
-        {/* Quick Actions */}
-        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-            <span className="text-xs">⌘</span>K
-          </kbd>
-        </Button>
-
-        {/* Notifications */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-5 w-5" />
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-              >
-                3
-              </Badge>
+        {!user ? (
+          <>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/register">Registrarse</Link>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="space-y-2 p-2">
-              <div className="p-3 bg-revenue-light rounded-lg">
-                <p className="font-medium text-sm">¡Meta lograda!</p>
-                <p className="text-xs text-muted-foreground">¡Felicitaciones! Alcanzaste tu objetivo de ahorro.</p>
-              </div>
-              <div className="p-3 bg-customers-light rounded-lg">
-                <p className="font-medium text-sm">Recordatorio</p>
-                <p className="text-xs text-muted-foreground">No olvides hacer tu reto de finanzas hoy.</p>
-              </div>
-              <div className="p-3 bg-product-light rounded-lg">
-                <p className="font-medium text-sm">Nueva habilidad</p>
-                <p className="text-xs text-muted-foreground">¡Desbloqueaste una lección sobre presupuesto!</p>
-              </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder-avatar.jpg" alt="Usuario" />
-                <AvatarFallback className="bg-gradient-primary text-primary-foreground">
-                  {user ? getInitials(user.name) : "U"}
-                </AvatarFallback>
-              </Avatar>
+            <Button asChild size="sm" className="bg-primary text-primary-foreground">
+              <Link to="/login">Iniciar sesión</Link>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {user ? user.name : "Usuario"}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user ? getUserTypeLabel(user.user_type) : "Tipo de usuario"}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user ? user.email : "email@ejemplo.com"}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/profile">
-                <User className="mr-2 h-4 w-4" />
-                <span>Mi perfil</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Configuración</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Cerrar sesión</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </>
+        ) : (
+          <>
+            {/* Quick Actions */}
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+
+            {/* Notifications */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="h-5 w-5" />
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                  >
+                    3
+                  </Badge>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="space-y-2 p-2">
+                  <div className="p-3 bg-revenue-light rounded-lg">
+                    <p className="font-medium text-sm">¡Meta lograda!</p>
+                    <p className="text-xs text-muted-foreground">¡Felicitaciones! Alcanzaste tu objetivo de ahorro.</p>
+                  </div>
+                  <div className="p-3 bg-customers-light rounded-lg">
+                    <p className="font-medium text-sm">Recordatorio</p>
+                    <p className="text-xs text-muted-foreground">No olvides hacer tu reto de finanzas hoy.</p>
+                  </div>
+                  <div className="p-3 bg-product-light rounded-lg">
+                    <p className="font-medium text-sm">Nueva habilidad</p>
+                    <p className="text-xs text-muted-foreground">¡Desbloqueaste una lección sobre presupuesto!</p>
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/placeholder-avatar.jpg" alt="Usuario" />
+                    <AvatarFallback className="bg-gradient-primary text-primary-foreground">
+                      {user ? getInitials(user.name) : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user ? user.name : "Usuario"}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user ? getUserTypeLabel(user.user_type) : "Tipo de usuario"}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user ? user.email : "email@ejemplo.com"}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Mi perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Configuración</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Cerrar sesión</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        )}
       </div>
     </header>
   );

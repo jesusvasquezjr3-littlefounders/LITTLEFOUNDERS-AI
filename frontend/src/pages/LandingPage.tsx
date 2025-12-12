@@ -163,32 +163,17 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center sm:items-start pt-8">
-              <div className="flex flex-col items-center gap-2">
-                <Button
-                  asChild
-                  size="lg"
-                  className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
-                >
-                  <Link to="/demo">
-                    🚀 Verlo en acción
-                  </Link>
-                </Button>
-                <p className="text-xs text-gray-500 font-medium">
-                  No se requiere tarjeta de crédito ni registro
-                </p>
-              </div>
-
+            {/* CTA Button */}
+            <div className="flex justify-center items-center pt-8">
               <Button
                 asChild
-                variant="outline"
                 size="lg"
-                className="px-12 py-6 text-2xl border-2 border-purple-300 text-purple-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-green-500/50 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500"
-                onClick={handleLoginClick}
+                className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
               >
-                <Link to="/login">
-                  Ya tengo cuenta
+                <Link to="/guest-dashboard">
+                  <Play className="w-6 h-6 mr-3" />
+                  Comenzar a aprender
+                  <ArrowRight className="w-6 h-6 ml-3" />
                 </Link>
               </Button>
             </div>
