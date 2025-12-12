@@ -97,9 +97,9 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/lemonade-stand" element={
-              <ChildProtectedRoute>
+              <ProtectedRoute>
                 <LemonadeStand />
-              </ChildProtectedRoute>
+              </ProtectedRoute>
             } />
             {/* Demo Routes */}
             <Route path="/demo" element={<Demo />} />
