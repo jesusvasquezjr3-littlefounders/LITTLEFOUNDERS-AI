@@ -35,11 +35,18 @@ class Settings(BaseSettings):
     cors_origins: list[str] = [
         "http://localhost:5173",
         "http://localhost:80",
-        # Producción
+        # Producción - incluir con y sin barra al final y www
         "https://littlefounders.ai",
+        "https://littlefounders.ai/",
         "https://www.littlefounders.ai",
-        # Backend subdominio (no suele ser necesario, pero no estorba)
+        "https://www.littlefounders.ai/",
+        "http://littlefounders.ai",
+        "http://littlefounders.ai/",
+        "http://www.littlefounders.ai",
+        "http://www.littlefounders.ai/",
+        # Backend subdominio
         "https://api.littlefounders.ai",
+        "https://api.littlefounders.ai/",
     ]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
