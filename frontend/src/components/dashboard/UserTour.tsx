@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Rocket, ChevronRight, X, CheckCircle2, Sparkles } from "lucide-react";
+import { Rocket, ChevronRight, X, Sparkles, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TourStep {
@@ -11,7 +11,7 @@ interface TourStep {
     position?: "right" | "bottom" | "center";
 }
 
-const steps: TourStep[] = [
+const childSteps: TourStep[] = [
     {
         title: "¡Bienvenido a LittleFounders! 🚀",
         description: "Estás a punto de iniciar una misión especial. Vamos a explorar tu nuevo centro de comando financiero.",
@@ -60,76 +60,122 @@ const steps: TourStep[] = [
     }
 ];
 
+const parentSteps: TourStep[] = [
+    {
+        title: "Bienvenido a LittleFounders - Modo Tutor 🎓",
+        description: "Esta plataforma está diseñada para empoderar a los niños en su educación financiera. Aquí te mostramos cómo puedes supervisar y guiar.",
+        position: "center"
+    },
+    {
+        targetId: "nav-savings",
+        title: "Supervisión de Ahorros",
+        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
+        position: "right"
+    },
+    {
+        targetId: "nav-store",
+        title: "Control de Recompensas",
+        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
+        position: "right"
+    },
+    {
+        targetId: "nav-lessons",
+        title: "Currículo Educativo",
+        description: "Revisa el progreso académico. Las lecciones están diseñadas pedagógicamente para distintas edades.",
+        position: "right"
+    },
+    {
+        targetId: "nav-tasks",
+        title: "Gestión de Tareas",
+        description: "La herramienta principal para enseñar el valor del trabajo. Asigna tareas domésticas o retos con recompensas.",
+        position: "right"
+    },
+    {
+        targetId: "nav-games",
+        title: "Simuladores de Negocios",
+        description: "Monitorea su desempeño en los juegos de emprendimiento y utiliza los reportes para guiar su aprendizaje.",
+        position: "right"
+    },
+    {
+        targetId: "nav-banking",
+        title: "Control Parental Bancario",
+        description: "Define límites de gasto, bloquea tarjetas y monitorea transacciones en tiempo real.",
+        position: "right"
+    },
+    {
+        title: "Todo Listo 🌟",
+        description: "Explore libremente la plataforma. Recuerde que su rol es clave para la educación financiera de sus hijos.",
+        position: "center"
+    }
+];
+
 export function UserTour() {
     const [currentStep, setCurrentStep] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [userRole, setUserRole] = useState<'child' | 'parent'>('child'); // Default to child just in case
     const [coords, setCoords] = useState({ top: 0, left: 0, arrowTop: 60 });
     const [userKey, setUserKey] = useState("userTourCompleted");
 
+    // Initialize user data
     useEffect(() => {
-        // Try to get user ID to make storage key specific
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             if (user && user.id) {
                 setUserKey(`userTourCompleted_${user.id}`);
             }
+            // Simple robust check: if it's explicitly child, use child. Else assume parent/admin/tutor.
+            // Or stricter: if 'child' -> child, else -> parent.
+            if (user.user_type === 'child') {
+                setUserRole('child');
+            } else {
+                setUserRole('parent');
+            }
         } catch (e) {
             console.error("Error reading user from localStorage", e);
         }
-    }, []);
+    }, [isOpen]); // Check role when opening too, in case login changed without full reload (unlikely but safe)
 
+    // Handle Auto-start and Restart
     useEffect(() => {
-        // Check if tour was already completed
-        const completed = localStorage.getItem(userKey);
-
-        // Listen for restart event
-        const handleRestart = () => {
-            console.log("Reiniciando tutorial...");
-            setIsOpen(true);
-            setCurrentStep(0);
-            localStorage.removeItem(userKey);
-        };
-
-        window.addEventListener('restartUserTour', handleRestart);
-
-        // Logic to auto-start if not completed? 
-        // User request is mainly about the BUTTON to view tutorial.
-        // But usually tours auto-start. 
-        // Logic in DemoTour: if (!completed) start.
-        // I will keep it.
-        if (!completed && userKey !== "userTourCompleted") { // Simple check, only if we have a valid key potentially
-            // Actually, wait a bit for key to stabilize or just run it.
-            // The effect runs on mount. userKey might be default initially but updated in previous effect?
-            // No, define userKey determination logic inside this effect or use state properly.
-        }
-
-        return () => window.removeEventListener('restartUserTour', handleRestart);
-    }, [userKey]);
-
-    // Better effect for initialization and auto-start
-    useEffect(() => {
-        // Determine key
-        let key = "userTourCompleted";
+        // Define key to avoid closure stale state, though effect deps should handle it
+        let currentKey = "userTourCompleted";
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user && user.id) {
-                key = `userTourCompleted_${user.id}`;
-            }
+            if (user && user.id) currentKey = `userTourCompleted_${user.id}`;
         } catch (e) { }
-        setUserKey(key);
 
-        const completed = localStorage.getItem(key);
+        // Auto-start check
+        const completed = localStorage.getItem(currentKey);
         if (!completed) {
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
+
+        // Listener
+        const handleRestart = () => {
+            console.log("Reiniciando tutorial usuario...");
+            // Re-read role just to be sure
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                if (user.user_type === 'child') setUserRole('child');
+                else setUserRole('parent');
+            } catch (e) { }
+
+            setIsOpen(true);
+            setCurrentStep(0);
+            localStorage.removeItem(currentKey);
+        };
+
+        window.addEventListener('restartUserTour', handleRestart);
+        return () => window.removeEventListener('restartUserTour', handleRestart);
     }, []);
 
+    const activeSteps = userRole === 'child' ? childSteps : parentSteps;
 
     useEffect(() => {
         if (!isOpen) return;
 
-        const step = steps[currentStep];
+        const step = activeSteps[currentStep];
         if (step.targetId) {
             const element = document.getElementById(step.targetId);
             if (element) {
@@ -163,10 +209,10 @@ export function UserTour() {
                 };
             }
         }
-    }, [currentStep, isOpen]);
+    }, [currentStep, isOpen, userRole]);
 
     const handleNext = () => {
-        if (currentStep < steps.length - 1) {
+        if (currentStep < activeSteps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
             handleClose();
@@ -180,7 +226,7 @@ export function UserTour() {
 
     if (!isOpen) return null;
 
-    const step = steps[currentStep];
+    const step = activeSteps[currentStep];
     const isCenter = step.position === "center";
 
     return (
@@ -202,6 +248,7 @@ export function UserTour() {
                     "w-[320px] p-6 shadow-2xl border-2 relative overflow-hidden",
                     isCenter ? "text-center border-primary/20 scale-110" : "border-primary animate-in fade-in slide-in-from-left-4"
                 )}>
+                    {/* Background decoration */}
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
                     <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl" />
 
@@ -218,8 +265,8 @@ export function UserTour() {
                         <div className={cn("mb-4 flex", isCenter ? "justify-center" : "justify-start")}>
                             <div className="p-3 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-full shadow-sm">
                                 {currentStep === 0 ? (
-                                    <Rocket className="w-8 h-8 text-orange-500 animate-bounce" />
-                                ) : currentStep === steps.length - 1 ? (
+                                    userRole === 'child' ? <Rocket className="w-8 h-8 text-orange-500 animate-bounce" /> : <GraduationCap className="w-8 h-8 text-orange-500" />
+                                ) : currentStep === activeSteps.length - 1 ? (
                                     <Sparkles className="w-8 h-8 text-yellow-500 animate-pulse" />
                                 ) : (
                                     <span className="text-xl font-bold text-orange-600 w-8 h-8 flex items-center justify-center">
@@ -238,7 +285,7 @@ export function UserTour() {
 
                         <div className="flex items-center justify-between">
                             <div className="flex gap-1">
-                                {steps.map((_, idx) => (
+                                {activeSteps.map((_, idx) => (
                                     <div
                                         key={idx}
                                         className={cn(
@@ -249,8 +296,8 @@ export function UserTour() {
                                 ))}
                             </div>
                             <Button onClick={handleNext} size="sm" className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white shadow-md group">
-                                {currentStep === steps.length - 1 ? "¡Empezar!" : "Siguiente"}
-                                {currentStep !== steps.length - 1 && (
+                                {currentStep === activeSteps.length - 1 ? "¡Empezar!" : "Siguiente"}
+                                {currentStep !== activeSteps.length - 1 && (
                                     <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                 )}
                             </Button>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Rocket, ChevronRight, X, CheckCircle2, Sparkles } from "lucide-react";
+import { Rocket, ChevronRight, X, CheckCircle2, Sparkles, User, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TourStep {
@@ -11,7 +11,7 @@ interface TourStep {
     position?: "right" | "bottom" | "center";
 }
 
-const steps: TourStep[] = [
+const childSteps: TourStep[] = [
     {
         title: "¡Bienvenido a LittleFounders! 🚀",
         description: "Estás a punto de iniciar una misión especial. Vamos a explorar tu nuevo centro de comando financiero.",
@@ -60,24 +60,75 @@ const steps: TourStep[] = [
     }
 ];
 
+const tutorSteps: TourStep[] = [
+    {
+        title: "Bienvenido a LittleFounders - Modo Tutor 🎓",
+        description: "Esta plataforma está diseñada para empoderar a los niños en su educación financiera. Aquí te mostramos cómo puedes supervisar y guiar.",
+        position: "center"
+    },
+    {
+        targetId: "demo-nav-savings",
+        title: "Supervisión de Ahorros",
+        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-store",
+        title: "Control de Recompensas",
+        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-lessons",
+        title: "Currículo Educativo",
+        description: "Revisa el progreso académico. Las lecciones están diseñadas pedagógicamente para distintas edades.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-tasks",
+        title: "Asignación de Tareas",
+        description: "La herramienta principal para enseñar el valor del trabajo. Asigna tareas domésticas o retos con recompensas reales o virtuales.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-games",
+        title: "Simuladores de Negocios",
+        description: "Espacios seguros donde pueden fallar y aprender. Simulaciones de emprendimiento sin riesgo real.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-banking",
+        title: "Control Parental Bancario",
+        description: "Define límites de gasto, bloquea tarjetas y monitorea transacciones en tiempo real.",
+        position: "right"
+    },
+    {
+        title: "Todo Listo 🌟",
+        description: "Ha recorrido las funciones clave. Explore libremente la plataforma para ver el potencial educativo.",
+        position: "center"
+    }
+];
+
 export function DemoTour() {
     const [currentStep, setCurrentStep] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [role, setRole] = useState<'child' | 'tutor' | null>(null);
     const [coords, setCoords] = useState({ top: 0, left: 0, arrowTop: 60 });
 
     useEffect(() => {
-        // Check if tour was already completed
+        // En un escenario real podríamos persistir esto, pero para el demo
+        // queremos que siempre pregunten o al menos permitan reiniciar fácil
         const completed = localStorage.getItem("demoTourCompleted");
+
         if (!completed) {
-            // Small delay to ensure UI is ready
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
 
-        // Listen for restart event
         const handleRestart = () => {
             setIsOpen(true);
             setCurrentStep(0);
+            setRole(null); // Reset role on restart
             localStorage.removeItem("demoTourCompleted");
         };
 
@@ -85,55 +136,49 @@ export function DemoTour() {
         return () => window.removeEventListener('restartDemoTour', handleRestart);
     }, []);
 
-    useEffect(() => {
-        if (!isOpen) return;
+    const activeSteps = role === 'tutor' ? tutorSteps : childSteps;
 
-        const step = steps[currentStep];
+    useEffect(() => {
+        if (!isOpen || !role) return;
+
+        const step = activeSteps[currentStep];
         if (step.targetId) {
             const element = document.getElementById(step.targetId);
             if (element) {
                 const rect = element.getBoundingClientRect();
                 const viewportHeight = window.innerHeight;
-                const cardHeight = 300; // Approximate height
-                const arrowOffsetBase = 60; // Where the arrow is normally located relative to card top
+                const cardHeight = 300;
+                const arrowOffsetBase = 60;
 
-                // Calculate ideal top to center the arrow on the element
                 let top = rect.top + (rect.height / 2) - arrowOffsetBase;
 
-                // Clamp top to prevent going off screen bottom
-                // Leave 20px margin
                 if (top + cardHeight > viewportHeight - 20) {
                     top = viewportHeight - cardHeight - 20;
                 }
 
-                // Clamp top to prevent going off screen top
                 if (top < 20) {
                     top = 20;
                 }
 
-                // Calculate where the arrow should be to point to the element
-                // Arrow Y relative to card = Element Center Y - Card Top
                 const arrowTop = (rect.top + (rect.height / 2)) - top;
 
                 setCoords({
                     top,
-                    left: rect.right + 20, // Offset to the right
+                    left: rect.right + 20,
                     arrowTop
                 });
 
-                // Add highlight class
                 element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'bg-accent');
 
-                // Cleanup function to remove highlight
                 return () => {
                     element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'bg-accent');
                 };
             }
         }
-    }, [currentStep, isOpen]);
+    }, [currentStep, isOpen, role]);
 
     const handleNext = () => {
-        if (currentStep < steps.length - 1) {
+        if (currentStep < activeSteps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
             handleClose();
@@ -145,19 +190,74 @@ export function DemoTour() {
         localStorage.setItem("demoTourCompleted", "true");
     };
 
+    const handleRoleSelect = (selectedRole: 'child' | 'tutor') => {
+        setRole(selectedRole);
+        setCurrentStep(0);
+    };
+
     if (!isOpen) return null;
 
-    const step = steps[currentStep];
+    // --- RENDER ROLE SELECTION ---
+    if (!role) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <Card className="w-[400px] p-8 shadow-2xl border-2 border-white/50 bg-white/95 relative overflow-hidden text-center space-y-6">
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            ¡Hola! ¿Quién eres?
+                        </h2>
+                        <p className="text-muted-foreground">
+                            Selecciona tu perfil para personalizar tu experiencia
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={() => handleRoleSelect('child')}
+                            className="group relative flex flex-col items-center p-4 rounded-xl border-2 border-transparent bg-blue-50 hover:bg-blue-100 hover:border-blue-500 transition-all duration-300 transform hover:-translate-y-1"
+                        >
+                            <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <Rocket className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <span className="font-bold text-blue-900">Soy niño</span>
+                            <span className="text-xs text-blue-600 mt-1">¡Quiero jugar!</span>
+                        </button>
+
+                        <button
+                            onClick={() => handleRoleSelect('tutor')}
+                            className="group relative flex flex-col items-center p-4 rounded-xl border-2 border-transparent bg-orange-50 hover:bg-orange-100 hover:border-orange-500 transition-all duration-300 transform hover:-translate-y-1"
+                        >
+                            <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <GraduationCap className="w-8 h-8 text-orange-600" />
+                            </div>
+                            <span className="font-bold text-orange-900">Soy Tutor</span>
+                            <span className="text-xs text-orange-600 mt-1">Quiero supervisar</span>
+                        </button>
+                    </div>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClose}
+                        className="text-muted-foreground hover:text-foreground"
+                    >
+                        Saltar introducción
+                    </Button>
+                </Card>
+            </div>
+        );
+    }
+
+    // --- RENDER TOUR STEPS ---
+    const step = activeSteps[currentStep];
     const isCenter = step.position === "center";
 
     return (
         <div className="fixed inset-0 z-[100] pointer-events-none">
-            {/* Backdrop for center steps */}
             {isCenter && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto transition-opacity duration-500" />
             )}
 
-            {/* Tour Card */}
             <div
                 className={cn(
                     "absolute transition-all duration-500 ease-in-out pointer-events-auto",
@@ -175,7 +275,6 @@ export function DemoTour() {
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
                     <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl" />
 
-                    {/* Close button */}
                     <Button
                         variant="ghost"
                         size="icon"
@@ -185,13 +284,12 @@ export function DemoTour() {
                         <X className="w-4 h-4" />
                     </Button>
 
-                    {/* Content */}
                     <div className="relative z-10">
                         <div className={cn("mb-4 flex", isCenter ? "justify-center" : "justify-start")}>
                             <div className="p-3 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-full shadow-sm">
                                 {currentStep === 0 ? (
-                                    <Rocket className="w-8 h-8 text-orange-500 animate-bounce" />
-                                ) : currentStep === steps.length - 1 ? (
+                                    role === 'child' ? <Rocket className="w-8 h-8 text-orange-500 animate-bounce" /> : <GraduationCap className="w-8 h-8 text-orange-500" />
+                                ) : currentStep === activeSteps.length - 1 ? (
                                     <Sparkles className="w-8 h-8 text-yellow-500 animate-pulse" />
                                 ) : (
                                     <span className="text-xl font-bold text-orange-600 w-8 h-8 flex items-center justify-center">
@@ -210,7 +308,7 @@ export function DemoTour() {
 
                         <div className="flex items-center justify-between">
                             <div className="flex gap-1">
-                                {steps.map((_, idx) => (
+                                {activeSteps.map((_, idx) => (
                                     <div
                                         key={idx}
                                         className={cn(
@@ -221,15 +319,14 @@ export function DemoTour() {
                                 ))}
                             </div>
                             <Button onClick={handleNext} size="sm" className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white shadow-md group">
-                                {currentStep === steps.length - 1 ? "¡Empezar!" : "Siguiente"}
-                                {currentStep !== steps.length - 1 && (
+                                {currentStep === activeSteps.length - 1 ? "¡Empezar!" : "Siguiente"}
+                                {currentStep !== activeSteps.length - 1 && (
                                     <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                 )}
                             </Button>
                         </div>
                     </div>
 
-                    {/* Arrow for non-center steps */}
                     {!isCenter && (
                         <div
                             className="absolute -left-2 w-4 h-4 bg-background border-l-2 border-b-2 border-primary transform rotate-45 transition-[top] duration-300"
