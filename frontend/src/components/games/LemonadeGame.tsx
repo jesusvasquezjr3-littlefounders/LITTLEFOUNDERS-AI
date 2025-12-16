@@ -41,16 +41,18 @@ type StandType = 'basic' | 'improved' | 'premium' | 'deluxe' | 'ultimate';
 type BannerType = 'basic' | 'improved' | 'premium';
 type WeatherType = 'sunny' | 'cloudy' | 'rainy';
 
+// Game Levels Configuration
 const LEVELS = [
     {
         id: 1,
-        goal: 30,
+        goal: 20,
         unlock: [],
-        egg: null,
+        egg: 'jumping',
         title: "El Comienzo",
         standType: 'basic' as StandType,
         bannerType: 'basic' as BannerType,
-        marketingUnlock: false
+        marketingUnlock: false,
+        completionMessage: "¡Increíble comienzo! 🚀 Ya diste el primer paso para ser un gran emprendedor."
     },
     {
         id: 2,
@@ -60,7 +62,8 @@ const LEVELS = [
         title: "¡Sigue así!",
         standType: 'improved' as StandType,
         bannerType: 'basic' as BannerType,
-        marketingUnlock: false
+        marketingUnlock: false,
+        completionMessage: "¡Tu negocio está creciendo! 🌱 Cada vez tienes más clientes felices."
     },
     {
         id: 3,
@@ -70,7 +73,8 @@ const LEVELS = [
         title: "¡Hielo Fresco!",
         standType: 'improved' as StandType,
         bannerType: 'improved' as BannerType,
-        marketingUnlock: true
+        marketingUnlock: true,
+        completionMessage: "¡Excelente inversión! 🧊 El hielo hizo que a todos les encantara tu limonada."
     },
     {
         id: 4,
@@ -80,17 +84,19 @@ const LEVELS = [
         title: "Naranjadas",
         standType: 'premium' as StandType,
         bannerType: 'improved' as BannerType,
-        marketingUnlock: true
+        marketingUnlock: true,
+        completionMessage: "¡Naranjadas y Limonadas! 🍹 Eres un maestro de los sabores y las ventas."
     },
     {
         id: 5,
-        goal: 100,
-        unlock: ['ice', 'orange'],
-        egg: 'finale',
-        title: "Gran Magnate",
-        standType: 'deluxe' as StandType,
+        goal: 120, // Final challenge
+        unlock: ['ice', 'orange', 'sugar'],
+        egg: 'confetti',
+        title: "Imperio de Limonada",
+        standType: 'premium' as StandType,
         bannerType: 'premium' as BannerType,
-        marketingUnlock: true
+        marketingUnlock: true,
+        completionMessage: "¡Eres el REY de la limonada! 👑 Has completado el juego. ¡Felicidades, Founder!"
     }
 ];
 
@@ -206,61 +212,81 @@ const PRICES = {
     ice: 0.2
 };
 
-const LESSONS = {
+// --- Imports ---
+// --- Imports ---
+import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
+
+// Tutorial Interface Extension
+interface Lesson {
+    title: string;
+    text: string;
+    action: string;
+    highlightId?: string; // ID of the element to highlight
+}
+
+const LESSONS: Record<string, Lesson> = {
     intro: {
-        title: "¡Bienvenido Emprendedor!",
-        text: "Hola, soy Limo 🍋. En este juego aprenderás cómo manejar un negocio. Tu objetivo es superar los 5 niveles ganando dinero. ¡Vamos!",
-        action: "¡Empecemos!"
+        title: "¡Hola Amigo!",
+        text: "¡Soy Liruf! 🦖 Me encanta la limonada. ¿Me ayudas a vender mucha? ¡Seremos el mejor equipo!",
+        action: "¡Sí, vamos!"
     },
     ice: {
-        title: "¡Nuevo Ingrediente: Hielo!",
-        text: "Ahora puedes comprar Hielo 🧊. A la gente le encanta la limonada fría en días soleados. ¡Úsalo para vender más!",
-        action: "¡Qué fresco!"
+        title: "¡Hielo Fresco!",
+        text: "¡Brrr! 🧊 Con hielo la limonada sabe mejor. ¡A mis amigos les encanta fría! Compremos un poco.",
+        action: "¡Comprar Hielo!",
+        highlightId: "buy-ice-btn"
     },
     orange: {
-        title: "¡Diversificación!",
-        text: "¡Ahora puedes vender Naranjadas! 🍊 Tener diferentes productos te ayuda a ganar más dinero. ¡Prueba vender naranjadas hoy!",
-        action: "¡A vender!"
+        title: "¡Naranjadas!",
+        text: "¡Mmm! 🍊 ¿Y si vendemos naranjadas también? ¡A algunos dinos les gustan más! ¡Probemos!",
+        action: "¡Vender Naranjadas!",
+        highlightId: "product-selector"
     },
     investment: {
-        title: "Inversión",
-        text: "Acabas de gastar dinero para comprar ingredientes. A esto se le llama 'Inversión'. Gastas dinero ahora para ganar más dinero después.",
-        action: "Entendido"
+        title: "Invertir es Crecer",
+        text: "Gastamos dinero en limones... ¡pero es para ganar MÁS dinero luego! 💰 ¡Eso es ser muy listo!",
+        action: "¡Soy listo!",
+        highlightId: "buy-lemon-btn"
     },
     profit: {
-        title: "Ganancia",
-        text: "Ganancia = Ingresos - Costos. ¡Sigue así para llegar a la meta del nivel!",
-        action: "¡Anotado!"
+        title: "¡Ganamos!",
+        text: "¡Mira cuántas monedas! 🌟 Ganamos más de lo que gastamos. ¡Eso es tener éxito!",
+        action: "¡Yupii!"
     },
     loss: {
-        title: "Pérdida",
-        text: "¡Cuidado! Gastaste más de lo que ganaste. Ajusta tus precios o compra menos ingredientes.",
-        action: "Lo intentaré"
+        title: "¡Ups!",
+        text: "Hoy no ganamos mucho... 🦖 Pero no importa. ¡Mañana lo haremos mejor! Quizás bajemos el precio.",
+        action: "¡A intentar de nuevo!",
+        highlightId: "price-control"
     },
     savings: {
-        title: "Ahorro",
-        text: "No gastes todo tu dinero de golpe. ¡Siempre es bueno guardar un poco para emergencias!",
-        action: "Buen consejo"
+        title: "Guardar Monedas",
+        text: "¡No gastemos todo! 🏦 Guardemos un poco porsiacaso. ¡Los dinos precavidos valen por dos!",
+        action: "¡Ahorrar!"
     },
     quality: {
-        title: "Calidad vs Precio",
-        text: "Si usas más ingredientes, tu bebida será más deliciosa, pero costará más. ¡Busca el equilibrio perfecto!",
-        action: "Entendido"
+        title: "¿Rico o Barato?",
+        text: "Si ponemos muchos ingredientes sabe rico 😋, pero cuesta más. ¡Hay que buscar el punto medio!",
+        action: "¡Entendido!",
+        highlightId: "recipe-lemons"
     },
     marketing: {
-        title: "¡Marketing!",
-        text: "Ahora puedes hacer publicidad para tu puesto. ¡Atrae más clientes con volantes, música u ofertas especiales!",
-        action: "¡A publicitar!"
+        title: "¡Que todos sepan!",
+        text: "¡Gritemos fuerte! 📢 O usemos disfraces. Si nos ven, ¡vendrán a comprar!",
+        action: "¡Hacer ruido!",
+        highlightId: "marketing-section"
     },
     stand: {
-        title: "¡Mejora tu Puesto!",
-        text: "En cada nivel puedes mejorar cómo se ve tu puesto. ¡Un puesto bonito atrae más clientes!",
-        action: "¡Mejorar!"
+        title: "¡Puesto Nuevo!",
+        text: "¡Wow! Podemos hacer que el puesto se vea genial. 🎪 ¡Así vendrán más amigos!",
+        action: "¡Decorar!",
+        highlightId: "stand-selector"
     },
     pricing: {
-        title: "Estrategia de Precios",
-        text: "Precios bajos = más clientes pero menos ganancia. Precios altos = menos clientes pero más ganancia. ¡Encuentra el precio perfecto!",
-        action: "¡Buscaré el mejor precio!"
+        title: "El Precio Justo",
+        text: "Si es muy caro, nadie compra. 📉 Si es muy barato, no ganamos. ¡Busquemos el precio perfecto!",
+        action: "¡A probar!",
+        highlightId: "price-control"
     }
 };
 
@@ -270,18 +296,35 @@ const Mascot = ({ lesson, onClose }: { lesson: any, onClose: () => void }) => {
     if (!lesson) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden mascot-enter relative">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 p-4 flex items-center gap-4">
-                    <div className="text-6xl animate-bounce">🍋</div>
-                    <h3 className="text-2xl font-bold text-white">Limo te enseña:</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-[3rem] shadow-2xl max-w-4xl w-full overflow-hidden mascot-enter relative flex flex-col md:flex-row border-4 border-green-400">
+                {/* Visual Side */}
+                <div className="md:w-1/2 bg-gradient-to-b from-blue-100 to-green-100 p-8 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                    <div className="w-64 h-64 relative z-10">
+                        <DinoCharacter showBubble={false} className="transform scale-125" />
+                    </div>
                 </div>
-                <div className="p-6">
-                    <h4 className="text-xl font-bold text-yellow-600 mb-2">{lesson.title}</h4>
-                    <p className="text-gray-700 text-lg mb-6 leading-relaxed">{lesson.text}</p>
+
+                {/* Content Side */}
+                <div className="md:w-1/2 p-8 flex flex-col justify-center bg-white relative">
+                    <div className="absolute top-4 right-4 text-green-200">
+                        <IconMegaphone size={48} />
+                    </div>
+
+                    <h4 className="text-3xl font-extrabold text-green-600 mb-4 font-fredoka">{lesson.title}</h4>
+
+                    <div className="bg-green-50 p-6 rounded-2xl border-l-4 border-green-500 mb-8 relative">
+                        <div className="absolute -top-3 -left-3 bg-green-500 rounded-full p-1">
+                            <span className="text-xl">💬</span>
+                        </div>
+                        <p className="text-gray-700 text-lg leading-relaxed italic">"{lesson.text}"</p>
+                    </div>
+
                     <button onClick={onClose}
-                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold py-3 rounded-xl shadow-lg transition-transform hover:scale-[1.02]">
-                        {lesson.action}
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-2">
+                        <span>{lesson.action}</span>
+                        <span className="text-2xl">➔</span>
                     </button>
                 </div>
             </div>
@@ -341,6 +384,100 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }: any) 
     );
 };
 
+// Tutorial Steps
+const TUTORIAL_STEPS = [
+    {
+        text: "¡Hola! Soy Liruf 🦖 Te mostraré cómo jugar al juego de limonada.",
+        highlightId: null,
+        position: 'center'
+    },
+    {
+        text: "Aquí ves tu dinero 💰 Úsalo para comprar ingredientes.",
+        highlightId: "money-display",
+        position: 'bottom'
+    },
+    {
+        text: "Compra limones, azúcar y vasos aquí 🍋 ¡Necesitas ingredientes para hacer limonada!",
+        highlightId: "ingredients-section",
+        position: 'top'
+    },
+    {
+        text: "Ajusta tu receta aquí 🥤 Más limones = mejor sabor, pero cuesta más.",
+        highlightId: "recipe-section",
+        position: 'top'
+    },
+    {
+        text: "Elige el precio de venta 💵 No muy caro, no muy barato.",
+        highlightId: "price-control",
+        position: 'top'
+    },
+    {
+        text: "¡Presiona aquí para empezar a vender! 🚀",
+        highlightId: "start-day-btn",
+        position: 'top'
+    },
+    {
+        text: "¡Ahora sabes jugar! 🎉 ¡Diviértete vendiendo limonada!",
+        highlightId: null,
+        position: 'center'
+    }
+];
+
+const TutorialOverlay = ({ step, onNext, onSkip }: { step: number, onNext: () => void, onSkip: () => void }) => {
+    const currentStep = TUTORIAL_STEPS[step];
+    if (!currentStep) return null;
+
+    // Get highlighted element position
+    const highlightedElement = currentStep.highlightId ? document.getElementById(currentStep.highlightId) : null;
+    const rect = highlightedElement?.getBoundingClientRect();
+
+    return (
+        <div className="fixed inset-0 z-[200]">
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-black/70" onClick={onNext} />
+
+            {/* Spotlight on highlighted element */}
+            {rect && (
+                <div
+                    className="absolute bg-white/10 ring-4 ring-yellow-400 rounded-2xl animate-pulse"
+                    style={{
+                        top: `${rect.top - 8}px`,
+                        left: `${rect.left - 8}px`,
+                        width: `${rect.width + 16}px`,
+                        height: `${rect.height + 16}px`,
+                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.7)'
+                    }}
+                />
+            )}
+
+            {/* Liruf with message */}
+            <div className="fixed bottom-4 right-4 w-64 h-64 pointer-events-auto z-[201]">
+                <DinoCharacter
+                    currentText={currentStep.text}
+                    showBubble={true}
+                    mood="happy"
+                />
+            </div>
+
+            {/* Navigation buttons */}
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-4 pointer-events-auto z-[201]">
+                <button
+                    onClick={onSkip}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                >
+                    Saltar Tutorial
+                </button>
+                <button
+                    onClick={onNext}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg"
+                >
+                    {step < TUTORIAL_STEPS.length - 1 ? 'Siguiente →' : '¡Entendido!'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const EasterEgg = ({ type }: { type: any }) => {
     if (!type) return null;
 
@@ -380,6 +517,12 @@ export const LemonadeGame = () => {
     const [customers, setCustomers] = useState<any[]>([]);
     const [dailyStats, setDailyStats] = useState({ sold: 0, revenue: 0, cost: 0 });
     const [notification, setNotification] = useState('');
+    const [lirufMood, setLirufMood] = useState<DinoMood>('happy');
+    const [lirufAdvice, setLirufAdvice] = useState('');
+
+    // Tutorial System
+    const [showTutorial, setShowTutorial] = useState(false);
+    const [tutorialStep, setTutorialStep] = useState(0);
 
     // Educational & UI State
     const [currentLesson, setCurrentLesson] = useState<any>(null);
@@ -396,10 +539,128 @@ export const LemonadeGame = () => {
 
     const currentLevelData = LEVELS.find(l => l.id === currentLevel) || LEVELS[0];
 
-    // Helper to show notifications
+    // --- Smart Coaching System (Liruf's Brain) ---
+    useEffect(() => {
+        if (screen === 'shop') {
+            const getAdvice = () => {
+                const canBuyIce = currentLevelData.unlock.includes('ice');
+
+                // 1. Weather-specific advice
+                if (weather === 'rainy') {
+                    if (canBuyIce && inventory.ice > 5) {
+                        setLirufMood('thinking');
+                        return "¡Llueve! 🌧️ Mejor no compremos mucho hielo, nadie querrá cosas frías.";
+                    }
+                    setLirufMood('thinking');
+                    return "Está lloviendo 🌧️ La gente no saldrá mucho hoy. Cuidado con comprar demasiado.";
+                }
+
+                if (weather === 'sunny') {
+                    if (canBuyIce && inventory.ice < 5) {
+                        setLirufMood('excited');
+                        return "¡Hace calor! ☀️ Si compramos hielo venderemos muchísimo más.";
+                    }
+                    setLirufMood('happy');
+                    return canBuyIce
+                        ? "¡Día soleado! ☀️ Perfecto para vender limonada fría."
+                        : "¡Día soleado! ☀️ Perfecto para vender limonada refrescante.";
+                }
+
+                if (weather === 'hot') {
+                    if (canBuyIce && inventory.ice < 10) {
+                        setLirufMood('excited');
+                        return "¡Hace MUCHO calor! 🔥 ¡Compremos hielo! La gente querrá limonada helada.";
+                    }
+                    setLirufMood('happy');
+                    return "¡Día perfecto! 🔥 Con este calor venderemos mucho.";
+                }
+
+                if (weather === 'cloudy') {
+                    setLirufMood('thinking');
+                    return "Está nublado ☁️ El clima está bien, ni muy caliente ni muy frío.";
+                }
+
+                // 2. Price Logic
+                if (price > 2.5) {
+                    setLirufMood('sad');
+                    return "¡Cuidado! 💰 El precio está muy alto. La gente no comprará.";
+                }
+                if (price < 0.75) {
+                    setLirufMood('thinking');
+                    return "El precio está muy bajo 📉 Ganaremos poco dinero así.";
+                }
+
+                // 3. Inventory warnings
+                if (inventory.lemons < 5 && inventory.oranges < 5) {
+                    setLirufMood('shocked');
+                    return "¡No tenemos ingredientes! 🍋 Compremos limones o naranjas.";
+                }
+
+                // 4. Money management
+                if (money < 5) {
+                    setLirufMood('sad');
+                    return "Nos queda poco dinero 💵 Cuidado con los gastos.";
+                }
+
+                // 5. Default encouragement
+                setLirufMood('happy');
+                return "¡Todo listo! 🦖 Compremos lo que necesitemos y empecemos a vender.";
+            };
+
+            setLirufAdvice(getAdvice());
+        }
+
+        // Results screen advice
+        if (screen === 'results') {
+            const profit = dailyStats.revenue - dailyStats.cost;
+            const isLevelComplete = money >= currentLevelData.goal;
+
+            if (isLevelComplete) {
+                setLirufMood('excited');
+                // Use the special completion message
+                const msg = currentLevelData.completionMessage || "¡Nivel Completado! 🎉";
+                setLirufAdvice(`${msg}`);
+            } else if (profit > 5) {
+                setLirufMood('excited');
+                setLirufAdvice(`¡Excelente! 🎉 Ganamos $${profit.toFixed(2)}. ¡Sigamos así!`);
+            } else if (profit > 0) {
+                setLirufMood('happy');
+                setLirufAdvice(`Bien hecho 👍 Ganamos $${profit.toFixed(2)}. Podemos mejorar.`);
+            } else {
+                setLirufMood('sad');
+                setLirufAdvice(`Perdimos dinero 😔 Ajustemos el precio o la receta para el próximo día.`);
+            }
+        }
+    }, [screen, weather, price, inventory, money, dailyStats]);
+
+    // Helper to show notifications (Feed into Liruf)
     const showNotification = (message: string) => {
         setNotification(message);
-        setTimeout(() => setNotification(''), 3000);
+        setLirufMood('excited');
+        setTimeout(() => {
+            setNotification('');
+            setLirufMood('happy');
+        }, 3000);
+    };
+
+    // Tutorial handlers
+    const startTutorial = () => {
+        setShowTutorial(true);
+        setTutorialStep(0);
+    };
+
+    const nextTutorialStep = () => {
+        if (tutorialStep < TUTORIAL_STEPS.length - 1) {
+            setTutorialStep(prev => prev + 1);
+        } else {
+            setShowTutorial(false);
+            setTutorialStep(0);
+        }
+    };
+
+    const skipTutorial = () => {
+        setShowTutorial(false);
+        setTutorialStep(0);
     };
 
     // Trigger Easter Egg on Level Start
@@ -486,8 +747,6 @@ export const LemonadeGame = () => {
             return;
         }
 
-        const randomWeather = WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)];
-        setWeather(randomWeather.type);
         setScreen('selling');
     };
 
@@ -562,7 +821,7 @@ export const LemonadeGame = () => {
 
             const actualSales = Math.min(potentialCustomers, maxGlasses);
 
-            const customerDelay = 300;
+            const customerDelay = 500;
             for (let i = 0; i < actualSales; i++) {
                 if (!isMounted) return;
                 await new Promise(r => setTimeout(r, customerDelay));
@@ -600,6 +859,17 @@ export const LemonadeGame = () => {
 
             setScreen('results');
 
+            // Post-Game Analysis by Liruf
+            if (profit > 0) {
+                setLirufMood('excited');
+                setLirufAdvice(`¡Genial! Ganamos $${profit.toFixed(2)}. 🎉 ¡Buen precio y buenos ingredientes!`);
+            } else {
+                setLirufMood('sad');
+                if (price > 4) setLirufAdvice("¡Demasiado caro! 💸 Nadie quiso comprar.");
+                else if (actualSales === 0) setLirufAdvice("¡Oh no! No vendimos nada. 🤔 Revisa el precio o la receta.");
+                else setLirufAdvice("Gastamos mucho en ingredientes... 📉 ¡Intentemos gastar menos mañana!");
+            }
+
             // Trigger Result Lessons
             setTimeout(() => {
                 if (profit > 0) {
@@ -623,6 +893,10 @@ export const LemonadeGame = () => {
         setScreen('shop');
         setCustomers([]);
 
+        // New Weather for the next day
+        const randomWeather = WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)];
+        setWeather(randomWeather.type);
+
         // Remove expired marketing
         setActiveMarketing(prev => prev.filter(action => day < action.activeUntil));
     };
@@ -637,7 +911,12 @@ export const LemonadeGame = () => {
             setProduct('lemonade');
             setActiveMarketing([]);
             setMarketingBudget(0);
+            setMarketingBudget(0);
             setScreen('shop');
+
+            // New Weather for the level
+            const randomWeather = WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)];
+            setWeather(randomWeather.type);
 
             // Check for unlocks
             const nextLvl = LEVELS.find(l => l.id === currentLevel + 1);
@@ -669,6 +948,11 @@ export const LemonadeGame = () => {
 
     const startGame = () => {
         setScreen('shop');
+
+        // Initial Weather
+        const randomWeather = WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)];
+        setWeather(randomWeather.type);
+
         if (!hasShownIntro) {
             setTimeout(() => {
                 setCurrentLesson(LESSONS.intro);
@@ -747,7 +1031,7 @@ export const LemonadeGame = () => {
                                     </button>
                                     <button onClick={() => setShowRules(true)}
                                         className="w-full bg-white border-2 border-blue-400 text-blue-500 hover:bg-blue-50 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
-                                        <IconBook size={20} /> Cómo Jugar
+                                        <IconBook size={20} /> Reglas del Juego
                                     </button>
                                 </div>
                             </div>
@@ -830,6 +1114,7 @@ export const LemonadeGame = () => {
                 )}
 
                 {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+                {showTutorial && <TutorialOverlay step={tutorialStep} onNext={nextTutorialStep} onSkip={skipTutorial} />}
 
                 {/* Background Decor */}
                 <div className="absolute bottom-0 w-full h-1/3 bg-gradient-to-t from-green-300/30 to-transparent pointer-events-none"></div>
@@ -858,10 +1143,11 @@ export const LemonadeGame = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button onClick={() => setShowRules(true)} className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200">
-                                <IconBook />
+                            <button onClick={startTutorial} className="px-4 py-2 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 font-bold flex items-center gap-2 transition-transform hover:scale-105" title="Ver Tutorial">
+                                <IconMegaphone size={20} />
+                                <span className="hidden md:inline">Ver Tutorial</span>
                             </button>
-                            <div className="flex items-center gap-2 text-green-600 font-bold text-3xl">
+                            <div id="money-display" className="flex items-center gap-2 text-green-600 font-bold text-3xl">
                                 <IconDollar /> {money.toFixed(2)}
                             </div>
                         </div>
@@ -869,7 +1155,7 @@ export const LemonadeGame = () => {
 
                     <div className="grid lg:grid-cols-3 gap-6 mb-6">
                         {/* Tienda */}
-                        <div className="bg-white p-6 rounded-3xl shadow-lg">
+                        <div id="ingredients-section" className="bg-white p-6 rounded-3xl shadow-lg">
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">🛒 Tienda de Ingredientes</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-xl hover:scale-[1.02] transition-transform">
@@ -950,7 +1236,7 @@ export const LemonadeGame = () => {
                         </div>
 
                         {/* Receta y Precio */}
-                        <div className="bg-white p-6 rounded-3xl shadow-lg">
+                        <div id="recipe-section" className="bg-white p-6 rounded-3xl shadow-lg">
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">📝 Receta y Precio</h3>
 
                             {canBuyOrange && (
@@ -1066,7 +1352,7 @@ export const LemonadeGame = () => {
                                     </div>
 
                                     <h5 className="font-bold text-gray-600 mb-2 text-sm">Nuevas Campañas:</h5>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 ${currentLesson?.highlightId === 'marketing-section' ? 'ring-4 ring-yellow-400 rounded-xl p-2 animate-pulse bg-yellow-50' : ''}`}>
                                         {MARKETING_ACTIONS.map(action => (
                                             <button
                                                 key={action.id}
@@ -1088,7 +1374,7 @@ export const LemonadeGame = () => {
                         </div>
                     </div>
 
-                    <button onClick={startDay}
+                    <button id="start-day-btn" onClick={startDay}
                         className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-2xl font-bold py-4 rounded-2xl shadow-xl transition-transform hover:scale-[1.02] animate-pulse-slow">
                         🚀 ¡Empezar el Día de Venta!
                     </button>
@@ -1101,12 +1387,13 @@ export const LemonadeGame = () => {
                 )}
                 <Mascot lesson={currentLesson} onClose={() => setCurrentLesson(null)} />
                 {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+                {showTutorial && <TutorialOverlay step={tutorialStep} onNext={nextTutorialStep} onSkip={skipTutorial} />}
                 <ConfirmationModal
                     isOpen={showQuitConfirm}
                     onClose={() => setShowQuitConfirm(false)}
                     onConfirm={resetGame}
-                    title="¿Abandonar Partida?"
-                    message="Si sales ahora, perderás todo tu progreso. ¿Estás seguro?"
+                    title="¿Salir del Juego?"
+                    message="Perderás tu progreso actual. ¿Estás seguro?"
                 />
             </div>
         );
@@ -1131,18 +1418,19 @@ export const LemonadeGame = () => {
                             {activeMarketing.map((action, index) => (
                                 <div key={index} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
                                     {action.emoji} {action.name}
+                                    ```
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    {/* Stand Display */}
-                    <div className="mt-8 flex justify-center">
-                        <div className="relative">
-                            <RenderStand
-                                type={standType}
-                                bannerType={bannerType}
-                                size="large"
+                    {/* Persistent Companion Liruf (Bottom Right) */}
+                    <div className="fixed bottom-4 right-4 z-40 w-56 h-56 md:w-72 md:h-72 pointer-events-none">
+                        <div className="relative w-full h-full pointer-events-auto transition-all duration-500 hover:scale-110 filter drop-shadow-2xl">
+                            <DinoCharacter
+                                currentText={notification || lirufAdvice}
+                                showBubble={!!notification || !!lirufAdvice}
+                                mood={lirufMood}
                             />
                         </div>
                     </div>
@@ -1339,6 +1627,17 @@ export const LemonadeGame = () => {
                             </div>
                         </div>
                     )}
+                    {/* Persistent Companion Liruf (Bottom Right) */}
+                    <div className="fixed bottom-0 right-4 z-30 w-48 h-48 md:w-64 md:h-64 pointer-events-none">
+                        <div className="relative w-full h-full pointer-events-auto transition-all duration-500 hover:scale-110">
+                            <DinoCharacter
+                                currentText={notification || lirufAdvice}
+                                showBubble={!!(notification || lirufAdvice)}
+                                mood={lirufMood}
+                                className="drop-shadow-2xl"
+                            />
+                        </div>
+                    </div>
                 </div>
                 <Mascot lesson={currentLesson} onClose={() => setCurrentLesson(null)} />
                 <ConfirmationModal

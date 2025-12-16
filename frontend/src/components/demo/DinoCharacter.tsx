@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from "@/lib/utils";
 
+export type DinoMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
+
 interface DinoCharacterProps {
     currentText?: string;
     showBubble?: boolean;
     className?: string;
+    mood?: DinoMood;
 }
 
-export function DinoCharacter({ currentText, showBubble, className }: DinoCharacterProps) {
+export function DinoCharacter({ currentText, showBubble, className, mood = 'happy' }: DinoCharacterProps) {
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [randomMsg, setRandomMsg] = useState("¡Hola soy Dino!");
@@ -74,20 +77,20 @@ export function DinoCharacter({ currentText, showBubble, className }: DinoCharac
             <div
                 ref={bubbleRef}
                 className={cn(
-                    "absolute top-[15%] left-1/2 -translate-x-1/2 md:left-[20%] md:translate-x-0 bg-white p-6 rounded-[2rem] shadow-lg max-w-[200px] text-center transition-all duration-500 ease-out z-10 pointer-events-none",
+                    "absolute -top-40 md:-top-44 left-1/2 -translate-x-1/2 bg-white p-5 rounded-[2rem] shadow-lg max-w-[85vw] w-auto md:max-w-[280px] text-center transition-all duration-500 ease-out z-10 pointer-events-none border-4 border-gray-800",
                     (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-0 translate-y-4"
                 )}
             >
-                <p className="text-gray-700 font-bold text-lg leading-tight font-fredoka">
+                <p className="text-gray-800 font-bold text-lg leading-tight font-fredoka">
                     {currentText || randomMsg}
                 </p>
-                {/* Bubble Tail */}
-                <div className="absolute -bottom-2 right-8 w-6 h-6 bg-white rotate-45"></div>
+                {/* Bubble Tail - pointing DOWN toward Liruf */}
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-gray-800"></div>
             </div>
 
             <svg
                 id="dino-svg"
-                viewBox="0 0 400 400"
+                viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-full max-w-[500px] h-auto cursor-pointer overflow-visible"
                 onClick={handleClick}
@@ -177,9 +180,35 @@ export function DinoCharacter({ currentText, showBubble, className }: DinoCharac
 
                         {/* MOUTH GROUP */}
                         <g className={cn("mouth-group", showBubble ? "mouth-anim" : "")} transform="translate(0, 0)">
-                            <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />
-                            <path d="M0 40 Q 30 40 40 25 Q 20 20 0 40 Z" fill="#f87171" />
-                            <path d="M40 5 L 45 15 L 50 5 Z" fill="white" />
+                            {/* Standard Happy */}
+                            {mood === 'happy' && (
+                                <>
+                                    <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />
+                                    <path d="M0 40 Q 30 40 40 25 Q 20 20 0 40 Z" fill="#f87171" />
+                                    <path d="M40 5 L 45 15 L 50 5 Z" fill="white" />
+                                </>
+                            )}
+
+                            {/* Sad / Disappointed */}
+                            {mood === 'sad' && (
+                                <path d="M-30 40 Q 20 40 60 30 Q 60 10 0 10 Q -30 10 -30 40 Z" fill="#374151" />
+                            )}
+
+                            {/* Excited / Talking */}
+                            {mood === 'excited' && (
+                                <ellipse cx="15" cy="20" rx="25" ry="20" fill="#374151" />
+                            )}
+                            {mood === 'excited' && <ellipse cx="15" cy="25" rx="15" ry="10" fill="#f87171" />}
+
+                            {/* Thinking / Neutral */}
+                            {mood === 'thinking' && (
+                                <path d="M-20 25 Q 20 25 50 20" stroke="#374151" strokeWidth="4" fill="none" />
+                            )}
+
+                            {/* Shocked */}
+                            {mood === 'shocked' && (
+                                <circle cx="15" cy="25" r="15" fill="#374151" />
+                            )}
                         </g>
 
                         {/* CHEEK */}
@@ -198,11 +227,16 @@ export function DinoCharacter({ currentText, showBubble, className }: DinoCharac
                         {/* RIGHT EYE */}
                         <g transform="translate(35, -45)">
                             <circle cx="0" cy="0" r="22" fill="white" stroke="#22c55e" strokeWidth="2" />
-                            <g className="pupil-group">
+                            <g className="pupil-group" style={{ transform: mood === 'shocked' ? 'scale(0.5)' : 'scale(1)' }}>
                                 <circle cx="5" cy="0" r="9" fill="#111827" />
                                 <circle cx="8" cy="-3" r="3" fill="white" />
                             </g>
-                            <path d="M-15 -18 Q 0 -28 15 -18" stroke="#166534" strokeWidth="3" fill="none" />
+                            {/* Eyebrow changes for mood */}
+                            {mood === 'sad' && <path d="M-15 -25 Q 0 -15 15 -25" stroke="#166534" strokeWidth="3" fill="none" />}
+                            {mood === 'thinking' && <path d="M-15 -28 Q 0 -38 15 -28" stroke="#166534" strokeWidth="3" fill="none" />}
+                            {mood === 'happy' && <path d="M-15 -18 Q 0 -28 15 -18" stroke="#166534" strokeWidth="3" fill="none" />}
+                            {mood === 'excited' && <path d="M-15 -28 Q 0 -38 15 -28" stroke="#166534" strokeWidth="3" fill="none" />}
+                            {mood === 'shocked' && <path d="M-15 -35 Q 0 -45 15 -35" stroke="#166534" strokeWidth="3" fill="none" />}
                         </g>
 
                         {/* NOSTRILS */}
@@ -212,7 +246,7 @@ export function DinoCharacter({ currentText, showBubble, className }: DinoCharac
                 </g>
             </svg>
             <p className="absolute bottom-4 text-gray-400 text-sm animate-pulse hidden md:block">
-                Muévete para mirar &bull; Haz clic para hablar
+                ¡Hola! Soy Liruf &bull; Muévete para mirar
             </p>
         </div>
     );
