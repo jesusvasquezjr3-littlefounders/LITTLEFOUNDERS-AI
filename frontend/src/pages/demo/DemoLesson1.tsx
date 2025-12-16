@@ -158,6 +158,7 @@ export function DemoLesson1() {
                             <DinoCharacter
                                 currentText={currentText}
                                 showBubble={isPlaying && !!currentText}
+                                bubblePosition="demo"
                             />
                         </div>
 

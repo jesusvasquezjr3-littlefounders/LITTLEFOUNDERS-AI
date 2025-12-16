@@ -8,9 +8,10 @@ interface DinoCharacterProps {
     showBubble?: boolean;
     className?: string;
     mood?: DinoMood;
+    bubblePosition?: 'demo' | 'tutorial' | 'standard';
 }
 
-export function DinoCharacter({ currentText, showBubble, className, mood = 'happy' }: DinoCharacterProps) {
+export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard' }: DinoCharacterProps) {
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [randomMsg, setRandomMsg] = useState("¡Hola soy Dino!");
@@ -77,15 +78,26 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
             <div
                 ref={bubbleRef}
                 className={cn(
-                    "absolute -top-40 md:-top-44 left-1/2 -translate-x-1/2 bg-white p-5 rounded-[2rem] shadow-lg max-w-[85vw] w-auto md:max-w-[280px] text-center transition-all duration-500 ease-out z-10 pointer-events-none border-4 border-gray-800",
+                    "absolute bg-white p-5 rounded-[2rem] shadow-lg max-w-[85vw] w-auto md:max-w-[320px] text-center transition-all duration-500 ease-out z-10 pointer-events-none border-4 border-gray-800",
+                    // Standard: Centered above
+                    bubblePosition === 'standard' && "-top-40 md:-top-44 left-1/2 -translate-x-1/2",
+                    // Demo: Inside, Top-Left (Next to Liruf, inside video limits)
+                    bubblePosition === 'demo' && "top-6 left-6 md:left-12 max-w-[260px]",
+                    // Tutorial: Bottom-Right corner friendly (anchored right, grows left, floats above)
+                    bubblePosition === 'tutorial' && "bottom-[85%] right-0 mb-4",
                     (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-0 translate-y-4"
                 )}
             >
                 <p className="text-gray-800 font-bold text-lg leading-tight font-fredoka">
                     {currentText || randomMsg}
                 </p>
-                {/* Bubble Tail - pointing DOWN toward Liruf */}
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-gray-800"></div>
+                {/* Bubble Tail - position varies based on bubble position */}
+                <div className={cn(
+                    "absolute -bottom-3 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-gray-800",
+                    bubblePosition === 'standard' && "left-1/2 -translate-x-1/2",
+                    bubblePosition === 'demo' && "left-[20%] border-r-4 border-b-4",
+                    bubblePosition === 'tutorial' && "right-[20%]"
+                )}></div>
             </div>
 
             <svg

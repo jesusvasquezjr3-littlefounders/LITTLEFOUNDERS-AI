@@ -456,6 +456,7 @@ const TutorialOverlay = ({ step, onNext, onSkip }: { step: number, onNext: () =>
                     currentText={currentStep.text}
                     showBubble={true}
                     mood="happy"
+                    bubblePosition="tutorial"
                 />
             </div>
 
