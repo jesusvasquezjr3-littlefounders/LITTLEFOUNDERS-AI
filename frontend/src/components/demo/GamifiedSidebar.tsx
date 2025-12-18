@@ -33,12 +33,12 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
 
     const menuItems = [
         { title: "Inicio", url: "/demo", icon: Home, color: "text-blue-500", bg: "bg-blue-100", id: "demo-nav-home" },
-        { title: "Mis Ahorros", url: "/demo/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "demo-nav-savings" },
-        { title: "Tiendita", url: "/demo/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "demo-nav-store" },
         { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-100", id: "demo-nav-lessons" },
         { title: "Mis Tareas", url: "/demo/tasks", icon: Trophy, color: "text-yellow-600", bg: "bg-yellow-100", id: "demo-nav-tasks" },
+        { title: "Mis Ahorros", url: "/demo/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "demo-nav-savings" },
         { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "demo-nav-games" },
         { title: "Banca Digital", url: "/demo/growth", icon: TrendingUp, color: "text-red-500", bg: "bg-red-100", id: "demo-nav-banking" },
+        { title: "Tiendita", url: "/demo/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "demo-nav-store" },
     ];
 
     const containerRef = useRef<HTMLDivElement>(null);

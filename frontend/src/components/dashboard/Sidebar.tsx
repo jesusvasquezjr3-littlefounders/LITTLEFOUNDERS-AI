@@ -35,23 +35,23 @@ const getMenuItems = () => {
     // Menú para niños (Gamified colors)
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-blue-500", bg: "bg-blue-100", id: "nav-home" },
-      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "nav-savings" },
-      { title: "Tiendita", url: "/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "nav-store" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-100", id: "nav-lessons" },
       { title: "Mis Tareas", url: "/tasks", icon: Trophy, color: "text-yellow-600", bg: "bg-yellow-100", id: "nav-tasks" },
+      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "nav-savings" },
       { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "nav-games" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-red-500", bg: "bg-red-100", id: "nav-banking" },
+      { title: "Tiendita", url: "/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "nav-store" },
     ];
   } else {
     // Menú para padres (More sober but consistent structure)
     return [
       { title: "Inicio", url: "/dashboard", icon: Home, color: "text-primary", bg: "bg-primary/10", id: "nav-home" },
-      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "nav-savings" },
-      { title: "Tiendita", url: "/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "nav-store" },
       { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-100", id: "nav-lessons" },
       { title: "Gestión de Tareas", url: "/parent-tasks", icon: ClipboardList, color: "text-yellow-600", bg: "bg-yellow-100", id: "nav-tasks" },
+      { title: "Mis Ahorros", url: "/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "nav-savings" },
       { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "nav-games" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-red-500", bg: "bg-red-100", id: "nav-banking" },
+      { title: "Tiendita", url: "/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "nav-store" },
     ];
   }
 };
