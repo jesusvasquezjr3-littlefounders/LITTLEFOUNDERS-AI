@@ -7,6 +7,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { GoogleAnalyticsProvider } from "@/components/GoogleAnalyticsProvider";
 import { SimpleTimeDemo } from "@/components/analytics/SimpleTimeDemo";
 import { PostHogAnalyticsDemo } from "@/components/analytics/PostHogAnalyticsDemo";
 import { UserAnalyticsDemo } from "@/components/analytics/UserAnalyticsDemo";
@@ -45,6 +46,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <GoogleAnalyticsProvider>
         <PostHogProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -122,6 +124,7 @@ const App = () => (
           <UserAnalyticsDemo showDemo={import.meta.env.DEV} />
           <PostHogEventsDemo showDemo={import.meta.env.DEV} /> */}
         </PostHogProvider>
+        </GoogleAnalyticsProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
