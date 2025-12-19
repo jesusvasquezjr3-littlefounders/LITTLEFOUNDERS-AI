@@ -545,7 +545,7 @@ export function SavingsGoals() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="deadline">Fecha límite (opcional)</Label>
+                  <Label htmlFor="deadline">Fecha límite para completarla (opcional)</Label>
                   <Input
                     id="deadline"
                     type="date"
@@ -554,7 +554,7 @@ export function SavingsGoals() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="parentMatch">Coincidencia parental (%)</Label>
+                  <Label htmlFor="parentMatch">¿Qué porcentaje aportará el padre?</Label>
                   <Input
                     id="parentMatch"
                     type="number"

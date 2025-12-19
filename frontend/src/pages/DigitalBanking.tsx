@@ -25,7 +25,8 @@ import {
   Gamepad2,
   BarChart3,
   Users,
-  FileText
+  FileText,
+  History
 } from "lucide-react";
 
 const DigitalBanking = () => {
@@ -237,37 +238,23 @@ const DigitalBanking = () => {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`grid w-full ${isChild ? 'grid-cols-5' : 'grid-cols-6'}`}>
+          <TabsList className={`grid w-full ${isChild ? 'grid-cols-3' : 'grid-cols-4'}`}>
             <TabsTrigger value="accounts">
               <CreditCard className="h-4 w-4 mr-2" />
               Cuentas
             </TabsTrigger>
-            <TabsTrigger value="income">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Ingresos
-            </TabsTrigger>
-            <TabsTrigger value="expenses">
-              <TrendingDown className="h-4 w-4 mr-2" />
-              Gastos
+            <TabsTrigger value="history">
+              <History className="h-4 w-4 mr-2" />
+              Historial
             </TabsTrigger>
             {isChild && (
-              <>
-                <TabsTrigger value="statement">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Estado de Cuenta
-                </TabsTrigger>
-                <TabsTrigger value="test">
-                  <Users className="h-4 w-4 mr-2" />
-                  Prueba
-                </TabsTrigger>
-              </>
+              <TabsTrigger value="test">
+                <Users className="h-4 w-4 mr-2" />
+                Prueba
+              </TabsTrigger>
             )}
             {isAdult && (
               <>
-                <TabsTrigger value="statement">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Estado de Cuenta
-                </TabsTrigger>
                 <TabsTrigger value="family">
                   <Users className="h-4 w-4 mr-2" />
                   Gestión Familiar
@@ -301,34 +288,42 @@ const DigitalBanking = () => {
             </div>
           </TabsContent>
 
-          {/* Income Tab */}
-          <TabsContent value="income">
-            <IncomeHistory />
-          </TabsContent>
+          {/* History Tab - Engloba Ingresos, Gastos y Estado de Cuenta */}
+          <TabsContent value="history">
+            <Tabs defaultValue="income" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="income">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Ingresos
+                </TabsTrigger>
+                <TabsTrigger value="expenses">
+                  <TrendingDown className="h-4 w-4 mr-2" />
+                  Gastos
+                </TabsTrigger>
+                <TabsTrigger value="statement">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Estado de Cuenta
+                </TabsTrigger>
+              </TabsList>
 
-          {/* Expenses Tab - Para todos los usuarios */}
-          <TabsContent value="expenses">
-            <ExpenseHistory />
-          </TabsContent>
+              <TabsContent value="income">
+                <IncomeHistory />
+              </TabsContent>
 
-          {/* Statement Tab - Solo para niños */}
-          {isChild && (
-            <TabsContent value="statement">
-              <AccountStatement />
-            </TabsContent>
-          )}
+              <TabsContent value="expenses">
+                <ExpenseHistory />
+              </TabsContent>
+
+              <TabsContent value="statement">
+                <AccountStatement />
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
 
           {/* Test Tab - Solo para niños */}
           {isChild && (
             <TabsContent value="test">
               <ChildAccountTest />
-            </TabsContent>
-          )}
-
-          {/* Statement Tab - Para adultos */}
-          {isAdult && (
-            <TabsContent value="statement">
-              <AccountStatement />
             </TabsContent>
           )}
 
