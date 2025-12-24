@@ -10,7 +10,17 @@ interface DashboardLayoutProps {
 
 // Layout principal del panel de Littlefounders
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Initialize from localStorage or default to false (expanded/pinned)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    const stored = localStorage.getItem('main_sidebar_collapsed');
+    return stored ? JSON.parse(stored) : false;
+  });
+
+  const handleToggle = () => {
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    localStorage.setItem('main_sidebar_collapsed', JSON.stringify(newState));
+  };
 
   return (
     <div className="h-screen overflow-hidden bg-background">
@@ -19,7 +29,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Menú lateral: Flotante y responsivo */}
         <Sidebar
           collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onToggle={handleToggle}
         />
         <div className={cn(
           "flex-1 flex flex-col h-full overflow-hidden transition-all duration-300",

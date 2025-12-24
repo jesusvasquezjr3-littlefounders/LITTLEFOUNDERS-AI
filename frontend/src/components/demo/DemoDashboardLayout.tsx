@@ -9,7 +9,17 @@ interface DemoDashboardLayoutProps {
 }
 
 export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    // Initialize from localStorage or default to false (expanded/pinned)
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        const stored = localStorage.getItem('demo_sidebar_collapsed');
+        return stored ? JSON.parse(stored) : false;
+    });
+
+    const handleToggle = () => {
+        const newState = !sidebarCollapsed;
+        setSidebarCollapsed(newState);
+        localStorage.setItem('demo_sidebar_collapsed', JSON.stringify(newState));
+    };
 
     return (
         <div className="h-screen overflow-hidden bg-[#fdfbf7]" style={{
@@ -20,7 +30,7 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
                 {/* Sidebar is now autonomous/floating in its expansion, but occupies 16 (4rem) of space in the grid implicitly or via padding */}
                 <GamifiedSidebar
                     collapsed={sidebarCollapsed}
-                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    onToggle={handleToggle}
                 />
 
                 {/* Main Content - Shifts when Pinned (collapsed=false), otherwise 16/20 for icon bar */}
