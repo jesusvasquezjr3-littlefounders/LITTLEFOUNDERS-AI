@@ -40,8 +40,8 @@ export function DemoLecciones() {
             description: "Del trueque al dinero",
             duration: "30 min",
             difficulty: "Fácil" as const,
-            progress: 0,
-            completed: false,
+            progress: lesson1Completed ? 100 : 0,
+            completed: lesson1Completed,
             locked: false,
             icon: Coins,
             activities: ["Conceptos básicos"]
@@ -52,8 +52,8 @@ export function DemoLecciones() {
             description: "Introducción al concepto del dinero",
             duration: "25 min",
             difficulty: "Fácil" as const,
-            progress: 0,
-            completed: false,
+            progress: lesson2Completed ? 100 : 0,
+            completed: lesson2Completed,
             locked: !lesson1Completed, // Unlocks if L1 is done
             icon: Users,
             activities: ["Trabajo", "Ingresos"]
@@ -64,8 +64,8 @@ export function DemoLecciones() {
             description: "Diferenciación básica",
             duration: "35 min",
             difficulty: "Fácil" as const,
-            progress: 0,
-            completed: false,
+            progress: lesson3Completed ? 100 : 0,
+            completed: lesson3Completed,
             locked: !lesson2Completed,
             icon: Package,
             activities: ["Prioridades"]
@@ -76,8 +76,8 @@ export function DemoLecciones() {
             description: "El valor del esfuerzo y la colaboración",
             duration: "35 min",
             difficulty: "Fácil" as const,
-            progress: 0,
-            completed: false,
+            progress: lesson4Completed ? 100 : 0,
+            completed: lesson4Completed,
             locked: !lesson3Completed,
             icon: Star,
             activities: ["Responsabilidad", "Creatividad"]
