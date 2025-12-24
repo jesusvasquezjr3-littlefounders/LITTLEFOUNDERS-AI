@@ -74,28 +74,30 @@ export const LessonPath: React.FC<LessonPathProps> = ({ modules, onModuleClick }
                                                 className={cn(
                                                     "relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center border-b-8 transition-all active:border-b-0 active:translate-y-2 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50",
                                                     module.completed
-                                                        ? "bg-green-500 border-green-700 text-white hover:bg-green-400"
+                                                        ? "bg-gradient-to-b from-yellow-400 to-yellow-500 border-yellow-600 text-yellow-900 hover:brightness-110"
                                                         : module.locked
-                                                            ? "bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed"
-                                                            : "bg-primary border-primary/20 text-white hover:bg-primary/90 animate-pulse-gentle shadow-[0_0_20px_rgba(37,99,235,0.5)]"
+                                                            ? "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed"
+                                                            : "bg-gradient-to-b from-indigo-500 to-indigo-600 border-indigo-800 text-white ring-4 ring-indigo-200 hover:ring-indigo-300 animate-[bounce_2s_infinite]"
                                                 )}
                                             >
                                                 {/* Inner Icon */}
-                                                <div className="relative z-10">
+                                                <div className="relative z-10 w-full h-full flex items-center justify-center">
                                                     {module.locked ? (
-                                                        <Lock className="w-8 h-8 md:w-10 md:h-10" />
+                                                        <Lock className="w-8 h-8 md:w-10 md:h-10 opacity-50" />
                                                     ) : module.completed ? (
-                                                        <Check className="w-10 h-10 md:w-12 md:h-12" strokeWidth={3} />
+                                                        <Check className="w-10 h-10 md:w-12 md:h-12 drop-shadow-sm" strokeWidth={4} />
                                                     ) : (
-                                                        <module.icon className="w-10 h-10 md:w-12 md:h-12" />
+                                                        <div className="relative">
+                                                            <Play className="w-10 h-10 md:w-12 md:h-12 fill-current ml-1" />
+                                                        </div>
                                                     )}
                                                 </div>
 
-                                                {/* Stars for active/completed */}
-                                                {(module.completed || isNext) && (
-                                                    <div className="absolute -top-2 -right-2">
-                                                        <div className="bg-yellow-400 p-1.5 rounded-full border-2 border-white shadow-sm">
-                                                            <Star className="w-4 h-4 text-yellow-700 fill-yellow-700" />
+                                                {/* Stars for completed */}
+                                                {module.completed && (
+                                                    <div className="absolute -top-2 -right-2 z-20">
+                                                        <div className="bg-orange-400 p-2 rounded-full border-4 border-white shadow-sm flex items-center justify-center">
+                                                            <Star className="w-4 h-4 text-white fill-white" />
                                                         </div>
                                                     </div>
                                                 )}
@@ -121,20 +123,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({ modules, onModuleClick }
                 })}
 
                 {/* Footer Message */}
-                <div className="pt-16 pb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <div className="inline-block p-6 rounded-2xl bg-gradient-to-b from-gray-50 to-gray-100 border border-dashed border-gray-300 shadow-sm max-w-sm">
-                        <div className="flex justify-center mb-4">
-                            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                                {/* Simple placeholder using emoji/text directly if image fails or just use the div */}
-                                <span className="text-3xl">🚧</span>
-                            </div>
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-800 mb-2">¡Estamos construyendo un mejor sitio para ti!</h3>
-                        <p className="text-gray-500 text-sm">
-                            Nuevas lecciones y aventuras están en camino. ¡Vuelve pronto para seguir aprendiendo!
-                        </p>
-                    </div>
-                </div>
+
             </div>
         </div>
     );

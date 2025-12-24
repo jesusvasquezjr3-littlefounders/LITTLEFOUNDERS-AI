@@ -1,16 +1,46 @@
 import React, { useState, useRef, useEffect } from "react";
 import { DinoCharacter } from "./character/DinoCharacter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Play, RotateCcw, PartyPopper, CheckCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Card } from "@/components/ui/card";
+import { Play, RotateCcw, CheckCircle, ArrowRight, ShoppingCart, Repeat } from "lucide-react";
 import confetti from 'canvas-confetti';
+import { cn } from "@/lib/utils";
 
-interface ScriptSegment {
-  time: number;
-  text: string;
-  visual?: string;
-}
+// --- Types & Constants ---
+type StageParams = {
+  id: number;
+  startTime: number;
+  pauseTime: number; // When to pause audio for interaction
+  title: string;
+  instruction: string;
+};
+
+const SCRIPT = [
+  { time: 1, text: "¡Hola, exploradores curiosos!" },
+  { time: 3, text: "¿Listos para una aventura?" },
+  { time: 5, text: "Hoy descubriremos un gran misterio:" },
+  { time: 7, text: "¿Qué es el dinero?" },
+  { time: 9, text: "Imagina que tienes un juguete que ya no usas" },
+  { time: 12, text: "y tu amigo tiene unos lápices increíbles." },
+  { time: 15, text: "Si cambian, ¡los dos ganan!" },
+  { time: 18, text: "¡Eso se llama trueque!" },
+  { time: 21, text: "Pero, ¿y si tu amigo no quiere el juguete?" },
+  { time: 25, text: "Necesitamos algo que a todos les guste." },
+  { time: 28, text: "¡El dinero es un superpoder de intercambio!" },
+  { time: 32, text: "Es algo especial (como monedas o billetes)" },
+  { time: 35, text: "que usamos para comprar cosas." },
+  { time: 38, text: "Con dinero cambias lápices por helado," },
+  { time: 43, text: "No se come, pero vale mucho." },
+  { time: 47, text: "Es una herramienta mágica" },
+  { time: 50, text: "que nos ayuda a conseguir cosas." }
+];
+
+const STAGES: StageParams[] = [
+  { id: 1, startTime: 0, pauseTime: 20, title: "El Trueque", instruction: "Analiza con atención!" }, // 0-20s (Merged Intro + Barter)
+  { id: 2, startTime: 20, pauseTime: 36, title: "¿Qué es Dinero?", instruction: "Selecciona las formas de dinero" }, // 20-36s
+  { id: 3, startTime: 36, pauseTime: 54, title: "Comprando", instruction: "¡Compra el helado!" }, // 36-54s
+  { id: 4, startTime: 55, pauseTime: 999, title: "¡Esoo!", instruction: "¡Bien hecho!" } // Outro
+];
 
 interface LessonProps {
   onComplete: (score: number, progress: any) => void;
@@ -18,267 +48,332 @@ interface LessonProps {
 }
 
 const Lesson1_1_WhatIsMoney: React.FC<LessonProps> = ({ onComplete, onExit }) => {
-  const [started, setStarted] = useState(false);
-  const [currentText, setCurrentText] = useState("");
-  const [currentVisual, setCurrentVisual] = useState<string | undefined>(undefined);
+  // State
+  const [currentStage, setCurrentStage] = useState(0); // Index of STAGES
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [quizError, setQuizError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [startTime] = useState(Date.now());
+  const [audioReady, setAudioReady] = useState(false);
+  const [interactionActive, setInteractionActive] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+
+  // Minigame States
+  const [barterComplete, setBarterComplete] = useState(false);
+  const [quizSelection, setQuizSelection] = useState<string[]>([]);
+  const [quizComplete, setQuizComplete] = useState(false);
+  const [shopComplete, setShopComplete] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const script: ScriptSegment[] = [
-    { time: 1, text: "¡Hola, exploradores curiosos!", visual: "👋" },
-    { time: 2, text: "¿Listos para una aventura?", visual: "🎒" },
-    { time: 4, text: "Hoy descubriremos un gran misterio:", visual: "🕵️‍♂️" },
-    { time: 7, text: "¿Qué es el dinero?", visual: "❓" },
-    { time: 8, text: "Imagina que tienes un juguete que ya no usas", visual: "🧸" },
-    { time: 11, text: "y tu amigo tiene unos lápices de colores increíbles.", visual: "✏️" },
-    { time: 15, text: "Si intercambian, los dos ganan algo nuevo.", visual: "🔄" },
-    { time: 18, text: "¡Eso se llama trueque!", visual: "🤝" },
-    { time: 20, text: "Pero, ¿y si tu amigo no quiere el juguete?", visual: "🤔" },
-    { time: 24, text: "Ahí necesitamos algo que a todos les guste.", visual: "✨" },
-    { time: 27, text: "¡El dinero es como un superpoder de intercambio!", visual: "🦸‍♂️" },
-    { time: 31, text: "Es algo especial (como monedas o billetes)", visual: "🪙" },
-    { time: 34, text: "que todos aceptamos para comprar lo que necesitamos.", visual: "🛒" },
-    { time: 37, text: "Con dinero puedes cambiar esos lápices por un helado,", visual: "🍦" },
-    { time: 40, text: "un libro o un regalo para mamá.", visual: "🎁" },
-    { time: 43, text: "No se come, pero vale", visual: "🚫" },
-    { time: 44, text: "porque todos estamos de acuerdo en que vale.", visual: "✅" },
-    { time: 47, text: "Así que el dinero es una herramienta mágica", visual: "🪄" },
-    { time: 50, text: "que nos ayuda a compartir y conseguir cosas", visual: "🤲" },
-    { time: 53, text: "de forma fácil y justa.", visual: "⚖️" },
-    { time: 55, text: "¡Nos vemos en la próxima aventura aquí!", visual: "🚀" },
-  ];
-
+  // --- Audio Logic ---
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
     const handleTimeUpdate = () => {
-      if (audioRef.current) {
-        const time = audioRef.current.currentTime;
-        setCurrentTime(time);
+      const time = audio.currentTime;
+      const stage = STAGES[currentStage];
 
-        const activeSegment = [...script].reverse().find(s => time >= s.time);
+      // Update progress bar (approximate based on total 57s)
+      setProgress((time / 57) * 100);
 
-        if (activeSegment) {
-          setCurrentText(activeSegment.text);
-          setCurrentVisual(activeSegment.visual);
-        } else if (time < 1) {
-          setCurrentText("");
-          setCurrentVisual(undefined);
-        }
+      // Update Text
+      const activeLine = SCRIPT.slice().reverse().find(s => time >= s.time);
+      setCurrentText(activeLine ? activeLine.text : "");
 
-        if (time >= 57) {
-          handleLessonEnd();
-        }
+      // Check for pause point
+      if (time >= stage.pauseTime && isPlaying && !interactionActive) {
+        audio.pause();
+        setIsPlaying(false);
+        setInteractionActive(true);
       }
     };
 
-    const audio = audioRef.current;
-    if (audio) {
-      audio.addEventListener('timeupdate', handleTimeUpdate);
-      audio.addEventListener('ended', handleLessonEnd);
-      return () => {
-        audio.removeEventListener('timeupdate', handleTimeUpdate);
-        audio.removeEventListener('ended', handleLessonEnd);
-      };
-    }
-  }, [started]);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', () => setAudioReady(true));
+    audio.addEventListener('ended', handleLessonFinish);
 
-  const handleLessonEnd = () => {
-    setIsPlaying(false);
-    if (!showQuiz && !showSuccess) {
-      setShowQuiz(true);
-    }
-  };
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', () => setAudioReady(true));
+      audio.removeEventListener('ended', handleLessonFinish);
+    };
+  }, [currentStage, isPlaying, interactionActive]);
 
-  const handleStart = () => {
-    setStarted(true);
-    setIsPlaying(true);
-    audioRef.current?.play();
-  };
+  // --- Handlers ---
 
-  const handleReplay = () => {
+  const startLesson = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = 0;
       audioRef.current.play();
       setIsPlaying(true);
-      setShowQuiz(false);
-      setShowSuccess(false);
-      setQuizError(null);
-      setCurrentText("");
     }
   };
 
-  const handleQuizAnswer = (isCorrect: boolean) => {
-    if (isCorrect) {
-      setShowQuiz(false);
-      triggerConfetti();
-      setShowSuccess(true);
+  const nextStage = () => {
+    setInteractionActive(false);
+
+    // Move to next stage
+    const nextIdx = currentStage + 1;
+    if (nextIdx < STAGES.length) {
+      setCurrentStage(nextIdx);
+      if (audioRef.current) {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
     } else {
-      setQuizError("¡Inténtalo de nuevo! Pista: El dinero sirve para obtener cosas, ¡no para comer!");
+      handleLessonFinish();
     }
+  };
+
+  const handleLessonFinish = () => {
+    triggerConfetti();
+    setTimeout(() => {
+      onComplete(100, { endTime: Date.now() });
+    }, 2000);
   };
 
   const triggerConfetti = () => {
     confetti({
       particleCount: 150,
-      spread: 80,
-      origin: { y: 0.6 }
+      spread: 70,
+      origin: { y: 0.6 },
+      zIndex: 100 // Ensure it's above everything
     });
   };
 
-  const handleFinish = () => {
-    onComplete(100, { startTime, endTime: Date.now() });
+  // --- Minigame Handlers ---
+
+  // Stage 2: Barter
+  const handleBarterSwap = () => {
+    setBarterComplete(true);
+    triggerConfetti();
+    setTimeout(nextStage, 1500); // Auto advance after success
+  };
+
+  // Stage 3: Quiz (Identify Money)
+  const handleQuizSelect = (item: string) => {
+    if (quizComplete) return;
+
+    const newSelection = quizSelection.includes(item)
+      ? quizSelection.filter(i => i !== item)
+      : [...quizSelection, item];
+
+    setQuizSelection(newSelection);
+
+    // Check answers (Coin + Bill)
+    const required = ['coin', 'bill'];
+    const hasRequired = required.every(r => newSelection.includes(r));
+    const noWrong = !newSelection.some(s => ['toy', 'apple'].includes(s));
+
+    if (hasRequired && noWrong) {
+      setQuizComplete(true);
+      triggerConfetti();
+      // Wait a bit then show button or auto advance
+    }
+  };
+
+  // Stage 4: Shop
+  const handleBuyIceCream = () => {
+    if (shopComplete) return;
+    setShopComplete(true);
+    triggerConfetti();
+    setTimeout(nextStage, 2000);
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] w-full max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <Button variant="ghost" className="text-blue-600 hover:text-blue-700 pl-0" onClick={onExit}>
-          &larr; Volver a Lecciones
+    <div className="flex flex-col h-[calc(100vh-100px)] w-full max-w-4xl mx-auto font-sans">
+
+      {/* Audio Element Hidden */}
+      <audio ref={audioRef} src="/audio/1_8-10_QUE-ES-EL-DINERO.mp3" preload="auto" />
+
+      {/* --- Top Bar: Progress --- */}
+      <div className="flex items-center gap-4 mb-6 px-4">
+        <Button variant="ghost" size="icon" onClick={onExit} className="text-gray-400 hover:text-gray-600">
+          <span className="text-2xl">✕</span>
         </Button>
-        <h1 className="text-2xl font-bold text-gray-800">Lección 1: ¿Qué es el Dinero?</h1>
+        <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-green-500 transition-all duration-1000 ease-out rounded-full"
+            style={{ width: `${Math.min(100, (currentStage / (STAGES.length - 1)) * 100)}%` }} // Stage based progress
+          />
+        </div>
+        <div className="flex items-center gap-2 text-yellow-500 font-bold">
+          <span>💎</span>
+          <span>{currentStage * 20} XP</span>
+        </div>
       </div>
 
-      {/* Main Stage */}
-      <Card className="flex-1 bg-gradient-to-b from-blue-50 to-white relative overflow-hidden border-2 border-blue-100 flex flex-col shadow-lg">
-        <CardContent className="p-0 flex-1 relative">
-          {/* Audio Element */}
-          <audio ref={audioRef} src="/audio/1_8-10_QUE-ES-EL-DINERO.mp3" preload="auto" />
+      {/* --- Main Content Area --- */}
+      <div className="flex-1 relative flex flex-col md:flex-row gap-6 p-4">
 
-          {/* Interactive Dino Scene */}
-          <div className="w-full h-full relative z-10 min-h-[400px]">
-            {/* Visual Aid Overlay */}
-            {currentVisual && isPlaying && (
-              <div className="absolute top-[20%] right-[15%] text-9xl animate-in zoom-in slide-in-from-bottom-10 fade-in duration-700 pointer-events-none drop-shadow-2xl z-0">
-                {currentVisual}
-              </div>
-            )}
-
-            <DinoCharacter
-              currentText={currentText}
-              showBubble={isPlaying && !!currentText}
-            />
+        {/* Left: Liruf Character (Coach) */}
+        <div className={cn(
+          "relative transition-all duration-500 flex items-center justify-center",
+          interactionActive ? "md:w-1/3 scale-90" : "md:w-1/2 scale-100"
+        )}>
+          {/* Liruf's Speech Bubble (Instruction) */}
+          <div className={cn(
+            "absolute -top-12 z-20 bg-white border-2 border-gray-200 px-6 py-3 rounded-2xl shadow-sm transition-all duration-300",
+            interactionActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}>
+            <p className="font-bold text-gray-700">{STAGES[currentStage].instruction}</p>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45"></div>
           </div>
 
-          {/* Overlay Controls (Start) */}
-          {!started && (
-            <div className="absolute inset-0 z-20 bg-black/10 backdrop-blur-[2px] flex items-center justify-center">
+          <DinoCharacter
+            className="w-full max-w-[400px]"
+            showBubble={!interactionActive && isPlaying && !!currentText} // Show bubble when playing and not in minigame
+            currentText={currentText}
+            mood={interactionActive ? 'excited' : 'happy'}
+          />
+        </div>
+
+        {/* Right: Interactive Stage */}
+        <div className="flex-1 flex flex-col justify-center">
+
+          {/* STAGE 0: Start Screen */}
+          {currentStage === 0 && !isPlaying && !interactionActive && (
+            <div className="text-center animate-in zoom-in duration-500">
+              <h1 className="text-4xl font-extrabold text-blue-600 mb-4">¿Qué es el Dinero?</h1>
+              <p className="text-xl text-gray-500 mb-8">Lección 1.1</p>
               <Button
-                size="lg"
-                className="text-2xl py-8 px-12 rounded-full shadow-2xl animate-bounce bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105 transition-transform"
-                onClick={handleStart}
+                onClick={startLesson}
+                disabled={!audioReady}
+                className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold px-12 py-6 rounded-2xl shadow-[0_4px_0_rgb(21,128,61)] hover:shadow-[0_2px_0_rgb(21,128,61)] hover:translate-y-[2px] transition-all"
               >
-                <Play className="w-8 h-8 mr-4 fill-current" />
-                ¡COMENZAR!
+                {audioReady ? "¡EMPEZAR!" : "Cargando..."}
               </Button>
             </div>
           )}
 
-          {/* Replay Button (Floating) */}
-          {started && !isPlaying && !showQuiz && !showSuccess && (
-            <div className="absolute top-4 right-4 z-20">
-              <Button variant="outline" size="icon" onClick={handleReplay} title="Repetir">
-                <RotateCcw className="w-6 h-6 text-blue-600" />
-              </Button>
+          {/* STAGE 1: Passive Listening (No UI needed, just Liruf speaking) */}
+          {currentStage === 0 && isPlaying && (
+            <div className="hidden"></div> // Hidden because Liruf speaks now
+          )}
+
+          {/* STAGE 1: Barter Game */}
+          {currentStage === 0 && interactionActive && (
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-100 shadow-xl text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-8">¡Haz un Trueque!</h2>
+
+              <div className="flex items-center justify-between gap-4 mb-8">
+                {/* Player Item */}
+                <div className={cn(
+                  "w-24 h-24 rounded-2xl flex items-center justify-center text-4xl border-4 transition-all duration-500 bg-blue-50 border-blue-200 cursor-pointer hover:scale-110",
+                  barterComplete ? "translate-x-[150%] opacity-0" : ""
+                )} onClick={!barterComplete ? handleBarterSwap : undefined}>
+                  🧸
+                </div>
+
+                {/* Exchange Icon */}
+                <div className="text-gray-300">
+                  <Repeat size={32} />
+                </div>
+
+                {/* Friend Item */}
+                <div className={cn(
+                  "w-24 h-24 rounded-2xl flex items-center justify-center text-4xl border-4 transition-all duration-500 bg-orange-50 border-orange-200",
+                  barterComplete ? "-translate-x-[150%] scale-125 rotate-12 bg-green-100 border-green-400" : ""
+                )}>
+                  {barterComplete ? "🧸" : "✏️"}
+                </div>
+              </div>
+
+              {!barterComplete ? (
+                <p className="text-gray-500 animate-bounce">👇 ¡Toca el oso para cambiarlo!</p>
+              ) : (
+                <div className="text-green-500 font-bold text-xl animate-in slide-in-from-bottom">+ ¡Conseguiste Lápices!</div>
+              )}
             </div>
           )}
 
-        </CardContent>
+          {/* STAGE 2: Money ID Quiz */}
+          {currentStage === 1 && interactionActive && (
+            <div className="bg-white rounded-3xl p-6 border-2 border-gray-100 shadow-xl">
+              <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Toca TODO lo que sea dinero:</h2>
 
-        {/* Bottom Progress Bar */}
-        {started && (
-          <div className="bg-white border-t p-4 z-20 flex gap-4 items-center">
-            <Button variant="ghost" size="icon" onClick={handleReplay} title="Reiniciar" className="shrink-0">
-              <RotateCcw className="w-5 h-5 text-gray-500" />
-            </Button>
-            <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-              <div
-                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-500 ease-linear rounded-full"
-                style={{ width: `${(currentTime / 57) * 100}%` }}
-              />
-            </div>
-            <span className="text-sm font-mono text-gray-500 w-12 text-center">
-              {Math.floor(currentTime)}s
-            </span>
-          </div>
-        )}
-      </Card>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {[
+                  { id: 'toy', icon: '🚗', name: 'Juguete' },
+                  { id: 'coin', icon: '🪙', name: 'Moneda' },
+                  { id: 'bill', icon: '💵', name: 'Billete' },
+                  { id: 'apple', icon: '🍎', name: 'Manzana' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleQuizSelect(item.id)}
+                    className={cn(
+                      "p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all hover:scale-105 active:scale-95",
+                      quizSelection.includes(item.id)
+                        ? (['coin', 'bill'].includes(item.id) ? "bg-green-100 border-green-500" : "bg-red-100 border-red-500")
+                        : "bg-gray-50 border-gray-200"
+                    )}
+                  >
+                    <span className="text-4xl">{item.icon}</span>
+                    <span className="font-bold text-gray-600">{item.name}</span>
+                  </button>
+                ))}
+              </div>
 
-      {/* Quiz Dialog */}
-      <Dialog open={showQuiz} onOpenChange={(open) => !open && setShowQuiz(false)}>
-        <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle className="text-2xl text-center">¡Pregunta Rápida! 🧠</DialogTitle>
-            <DialogDescription className="text-center text-lg pt-2">
-              ¿El dinero se puede comer? 😋
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* Error Feedback Area */}
-          {quizError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-center animate-in shake duration-300">
-              {quizError}
+              {quizComplete && (
+                <Button onClick={nextStage} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-[0_4px_0_rgb(21,128,61)] active:shadow-none active:translate-y-[4px]">
+                  ¡Correcto! Continuar <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              )}
             </div>
           )}
 
-          <div className="flex gap-4 justify-center py-4">
-            <Button
-              variant="outline"
-              className="flex-1 h-24 text-lg hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all"
-              onClick={() => handleQuizAnswer(false)}
-            >
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-4xl">🍕</span>
-                <span>¡Sí!</span>
-              </div>
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 h-24 text-lg hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all"
-              onClick={() => handleQuizAnswer(true)}
-            >
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-4xl">🚫</span>
-                <span>¡No!</span>
-              </div>
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          {/* STAGE 3: Shopping */}
+          {currentStage === 2 && interactionActive && (
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-100 shadow-xl text-center relative overflow-hidden">
+              <h2 className="text-2xl font-bold text-gray-800 mb-8">¡Compra un helado!</h2>
 
-      {/* Success Dialog */}
-      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
-        <DialogContent className="sm:max-w-lg">
-          <div className="text-center space-y-4 pt-4">
-            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-              <PartyPopper className="w-10 h-10 text-yellow-600" />
-            </div>
-            <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-              ¡Misión Cumplida!
-            </DialogTitle>
-            <DialogDescription className="text-lg text-gray-600">
-              ¡Respuesta Correcta! Ya eres un experto en qué es el dinero. 🌟
-            </DialogDescription>
+              <div className="flex items-center justify-around mb-12">
+                {/* Wallet */}
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-gray-400 mb-2">TÚ</span>
+                  <div
+                    className={cn(
+                      "w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center text-4xl border-4 border-yellow-300 cursor-grab active:cursor-grabbing transition-all hover:scale-110 shadow-md z-10",
+                      shopComplete ? "scale-0 opacity-0" : ""
+                    )}
+                    onClick={handleBuyIceCream}
+                  >
+                    🪙
+                  </div>
+                </div>
 
-            <div className="bg-green-50 p-4 rounded-xl border border-green-100 mt-4">
-              <div className="flex items-center justify-center gap-2 text-green-700 font-bold mb-2">
-                <CheckCircle className="w-5 h-5" />
-                <span>+100 Puntos a tu cuenta</span>
+                <ArrowRight className="text-gray-300" />
+
+                {/* Shop */}
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-gray-400 mb-2">TIENDA</span>
+                  <div className={cn(
+                    "w-24 h-24 bg-pink-50 rounded-2xl flex items-center justify-center text-5xl border-4 border-pink-200 transition-all",
+                    shopComplete ? "scale-125 rotate-6 bg-green-100 border-green-500 shadow-none" : ""
+                  )}>
+                    {shopComplete ? "😋" : "🍦"}
+                  </div>
+                </div>
               </div>
-              <Button
-                onClick={handleFinish}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-lg py-6 shadow-lg hover:scale-[1.02] transition-transform"
-              >
-                ¡Continuar mi Aventura!
-              </Button>
+
+              {!shopComplete ? (
+                <p className="text-gray-500 animate-pulse">👆 ¡Toca la moneda para pagar!</p>
+              ) : (
+                <div className="text-green-500 font-bold text-2xl animate-in zoom-in">¡Qué rico!</div>
+              )}
             </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* Bottom Check Button (Optional, if needed for manual advance flows) */}
+      {/* <div className="h-24 border-t bg-white flex items-center justify-between px-8">
+          <div className="hidden md:block text-gray-400 font-bold uppercase tracking-wider">
+              {isPlaying ? "Escucha con atención..." : "¡Es tu turno!"}
           </div>
-        </DialogContent>
-      </Dialog>
+      </div> */}
+
     </div>
   );
 };
