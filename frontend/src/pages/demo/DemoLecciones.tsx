@@ -16,6 +16,7 @@ import {
     Search,
     Trophy
 } from "lucide-react";
+import { DinaCharacter } from "@/components/demo/DinaCharacter";
 
 export function DemoLecciones() {
     const navigate = useNavigate();
@@ -219,11 +220,21 @@ export function DemoLecciones() {
                     {/* Paywall Card - Layer 20 - Transparent BG */}
                     <div className="relative z-20 px-4 w-full max-w-md">
                         <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/60 mx-auto">
-                            <div className="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                <Trophy className="w-6 h-6 text-indigo-600" />
+
+                            <div className="relative w-72 h-64 mx-auto mb-6 flex items-center justify-center">
+                                {/* Effeto de brillo/resplandor detrás */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl transform scale-125 animate-pulse"></div>
+
+                                {/* Elementos decorativos flotantes */}
+                                <Star className="absolute top-4 right-8 w-8 h-8 text-yellow-400 fill-yellow-400 animate-bounce delay-100 drop-shadow-md" style={{ animationDuration: '3s' }} />
+                                <div className="absolute bottom-8 left-4 w-4 h-4 rounded-full bg-green-400/60 animate-ping" />
+                                <div className="absolute top-12 left-2 w-3 h-3 rounded-full bg-orange-300/80 animate-pulse" />
+
+                                {/* Dina más grande */}
+                                <DinaCharacter expression="neutral" className="w-full h-full relative z-10 drop-shadow-xl hover:scale-105 transition-transform duration-500" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2 drop-shadow-sm">¡Continúa tu Aventura!</h3>
-                            <p className="text-gray-700 mb-6 text-sm font-medium drop-shadow-sm" style={{ textShadow: "0 1px 1px rgba(255,255,255,0.8)" }}>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-3 drop-shadow-sm">¡Continúa tu Aventura!</h3>
+                            <p className="text-gray-700 mb-8 text-base font-medium drop-shadow-sm max-w-[85%] mx-auto" style={{ textShadow: "0 1px 1px rgba(255,255,255,0.8)" }}>
                                 Regístrate gratis para desbloquear el resto de las lecciones, minijuegos y recompensas.
                             </p>
 
