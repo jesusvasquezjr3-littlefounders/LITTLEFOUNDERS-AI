@@ -127,7 +127,7 @@ export function DemoLesson2() {
 
     const handleLessonFinish = () => {
         setIsCompleted(true);
-        localStorage.setItem('demo_lesson_1.2_completed', 'true');
+        localStorage.setItem('demo_lesson_2_completed', 'true');
         triggerConfetti();
         setTimeout(() => {
             setShowSuccess(true);
@@ -253,7 +253,7 @@ export function DemoLesson2() {
                             <h1 className="text-2xl font-bold text-gray-800">De Dónde Viene el Dinero</h1>
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full">
-                                    Lección 1.2
+                                    Lección 2
                                 </span>
                             </div>
                         </div>
@@ -311,7 +311,7 @@ export function DemoLesson2() {
                         {currentStage === 0 && !isPlaying && !interactionActive && (
                             <div className="text-center animate-in zoom-in duration-500 bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-white shadow-sm">
                                 <h1 className="text-4xl font-extrabold text-indigo-700 mb-4">¿De Dónde Viene?</h1>
-                                <p className="text-xl text-gray-500 mb-8">Lección 1.2 (Demo)</p>
+                                <p className="text-xl text-gray-500 mb-8">Lección 2</p>
                                 <Button
                                     onClick={startLesson}
                                     disabled={!audioReady}
@@ -498,7 +498,7 @@ export function DemoLesson2() {
                                     ¡Siguiente Aventura Desbloqueada!
                                 </p>
                                 <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-lg py-6 shadow-lg hover:scale-[1.02] transition-transform">
-                                    <Link to="/demo/lecciones/3">Ir a Lección 1.3: Necesidades vs Deseos</Link>
+                                    <Link to="/demo/lecciones/3">Ir a Lección 3: Necesidades vs Deseos</Link>
                                 </Button>
                             </div>
                         </div>

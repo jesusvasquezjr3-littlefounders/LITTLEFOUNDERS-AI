@@ -26,16 +26,16 @@ export function DemoLecciones() {
     const [lesson4Completed, setLesson4Completed] = useState(false);
 
     useEffect(() => {
-        setLesson1Completed(localStorage.getItem('demo_lesson_1.1_completed') === 'true');
-        setLesson2Completed(localStorage.getItem('demo_lesson_1.2_completed') === 'true');
-        setLesson3Completed(localStorage.getItem('demo_lesson_1.3_completed') === 'true');
-        setLesson4Completed(localStorage.getItem('demo_lesson_1.4_completed') === 'true');
+        setLesson1Completed(localStorage.getItem('demo_lesson_1_completed') === 'true');
+        setLesson2Completed(localStorage.getItem('demo_lesson_2_completed') === 'true');
+        setLesson3Completed(localStorage.getItem('demo_lesson_3_completed') === 'true');
+        setLesson4Completed(localStorage.getItem('demo_lesson_4_completed') === 'true');
     }, []);
 
     // Hardcoded demo modules formatted for LessonPath
     const demoModules = [
         {
-            id: "1.1",
+            id: "1",
             title: "¿Qué es el Dinero?",
             description: "Del trueque al dinero",
             duration: "30 min",
@@ -47,7 +47,7 @@ export function DemoLecciones() {
             activities: ["Conceptos básicos"]
         },
         {
-            id: "1.2",
+            id: "2",
             title: "De Dónde Viene el Dinero",
             description: "Introducción al concepto del dinero",
             duration: "25 min",
@@ -59,7 +59,7 @@ export function DemoLecciones() {
             activities: ["Trabajo", "Ingresos"]
         },
         {
-            id: "1.3",
+            id: "3",
             title: "Necesidades vs Deseos",
             description: "Diferenciación básica",
             duration: "35 min",
@@ -71,7 +71,7 @@ export function DemoLecciones() {
             activities: ["Prioridades"]
         },
         {
-            id: "1.4",
+            id: "4",
             title: "¡Ganando mis Monedas!",
             description: "El valor del esfuerzo y la colaboración",
             duration: "35 min",
@@ -84,7 +84,7 @@ export function DemoLecciones() {
         },
 
         {
-            id: "2.2",
+            id: "5",
             title: "Decisiones Inteligentes",
             description: "Tomar decisiones inteligentes al momento de comprar",
             duration: "40 min",
@@ -100,15 +100,15 @@ export function DemoLecciones() {
     const handleModuleClick = (module: any) => {
         if (module.locked) {
             setShowLockedDialog(true);
-        } else if (module.id === "1.1") {
+        } else if (module.id === "1") {
             navigate("/demo/lecciones/1");
-        } else if (module.id === "1.2") {
+        } else if (module.id === "2") {
             navigate("/demo/lecciones/2");
-        } else if (module.id === "1.3") {
+        } else if (module.id === "3") {
             navigate("/demo/lecciones/3");
-        } else if (module.id === "1.4") {
+        } else if (module.id === "4") {
             navigate("/demo/lecciones/4");
-        } else if (module.id === "2.2") {
+        } else if (module.id === "5") {
             navigate("/demo/lecciones/5"); // Navigate to the new lesson
         }
     };

@@ -15,7 +15,7 @@ export function DemoTopNav() {
                     <Link to="/login">Iniciar Sesión</Link>
                 </Button>
                 <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
-                    <Link to="/register">¡Empezar Ahora!</Link>
+                    <Link to="/register">¡Probar Ahora!</Link>
                 </Button>
             </div>
         </header>

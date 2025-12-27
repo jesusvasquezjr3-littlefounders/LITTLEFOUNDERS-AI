@@ -160,7 +160,7 @@ export function DemoLesson5() {
     };
 
     const handleLessonFinish = () => {
-        localStorage.setItem('demo_lesson_2.2_completed', 'true');
+        localStorage.setItem('demo_lesson_5_completed', 'true');
         triggerConfetti(150);
         setTimeout(() => setShowSuccess(true), 1500);
     };
@@ -289,7 +289,7 @@ export function DemoLesson5() {
                             </h1>
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide">
-                                    Lección 2.2
+                                    Lección 5
                                 </span>
                             </div>
                         </div>
@@ -349,7 +349,7 @@ export function DemoLesson5() {
                         {currentStage === 0 && !isPlaying && !interactionActive && (
                             <div className="text-center animate-in zoom-in duration-500 bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-white shadow-sm">
                                 <h1 className="text-4xl font-extrabold text-indigo-700 mb-4">Decisiones Inteligentes</h1>
-                                <p className="text-xl text-gray-500 mb-8">Lección 2.2 (Demo)</p>
+                                <p className="text-xl text-gray-500 mb-8">Lección 5</p>
                                 <Button
                                     onClick={startLesson}
                                     disabled={!audioReady}
