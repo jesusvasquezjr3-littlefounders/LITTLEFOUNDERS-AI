@@ -1,38 +1,30 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AccountOverview } from "@/components/banking/AccountOverview";
-import { VirtualCard } from "@/components/banking/VirtualCard";
-import { ParentalControls } from "@/components/banking/ParentalControls";
-import { FinancialEducationGame } from "@/components/banking/FinancialEducationGame";
-import { AnalyticsDashboard } from "@/components/banking/AnalyticsDashboard";
-import { IncomeHistory } from "@/components/banking/IncomeHistory";
-import { ExpenseHistory } from "@/components/banking/ExpenseHistory";
-import { ParentAccountManagement } from "@/components/banking/ParentAccountManagement";
-import { ChildAccountTest } from "@/components/banking/ChildAccountTest";
+import { BankingDashboard } from "@/components/banking/BankingDashboard";
+import { BankingActions } from "@/components/banking/BankingActions";
+import { TransactionHistory } from "@/components/banking/TransactionHistory";
+import { FamilyBanking } from "@/components/banking/FamilyBanking";
 import { AccountStatement } from "@/components/banking/AccountStatement";
 import { BankingLoadingScreen } from "@/components/ui/LoadingScreen";
 import { 
   CreditCard, 
-  Target,
-  AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Settings,
-  BookOpen,
-  Gamepad2,
-  BarChart3,
+  Home,
+  History,
   Users,
   FileText,
-  History
+  AlertTriangle,
+  Wallet
 } from "lucide-react";
 
+type ViewType = 'dashboard' | 'history' | 'family' | 'statement' | 'settings';
+type ActionType = 'transfer' | 'save' | 'deposit' | 'withdraw' | null;
+
 const DigitalBanking = () => {
-  const [activeTab, setActiveTab] = useState("accounts");
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [activeAction, setActiveAction] = useState<ActionType>(null);
   const [user, setUser] = useState<any>(null);
-  const [hasVirtualCard, setHasVirtualCard] = useState<boolean>(false);
   const [bankingActivated, setBankingActivated] = useState<boolean>(false);
   const [childrenWithoutCards, setChildrenWithoutCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,39 +36,36 @@ const DigitalBanking = () => {
     }
   }, []);
 
-  // Verificar estado de tarjeta virtual
+  // Verificar estado de banca
   useEffect(() => {
-    const checkVirtualCardStatus = async () => {
+    const checkBankingStatus = async () => {
       if (!user?.id) return;
       
       try {
         setIsLoading(true);
-        // Agregar timestamp para evitar caché
         const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
+        
         if (response.ok) {
           const data = await response.json();
           
           if (user.user_type === 'child') {
-            setHasVirtualCard(data.has_card || false);
             setBankingActivated(data.banking_activated || false);
           } else if (user.user_type === 'tutor' || user.user_type === 'sponsor') {
-            // Verificar si algún child no tiene tarjeta
+            setBankingActivated(true); // Tutores siempre tienen acceso
             const childrenWithoutCard = data.children?.filter((c: any) => !c.banking_activated) || [];
             setChildrenWithoutCards(childrenWithoutCard);
           }
         } else {
-          // Si hay error, asumir que no tiene tarjeta
           if (user.user_type === 'child') {
-            setHasVirtualCard(false);
             setBankingActivated(false);
+          } else {
+            setBankingActivated(true);
           }
         }
       } catch (error) {
-        console.error('Error checking virtual card status:', error);
-        // En caso de error, asumir que no tiene tarjeta
-        if (user.user_type === 'child') {
-          setHasVirtualCard(false);
-          setBankingActivated(false);
+        console.error('Error checking banking status:', error);
+        if (user.user_type !== 'child') {
+          setBankingActivated(true);
         }
       } finally {
         setIsLoading(false);
@@ -84,56 +73,45 @@ const DigitalBanking = () => {
     };
 
     if (user) {
-      checkVirtualCardStatus();
+      checkBankingStatus();
     }
   }, [user]);
 
-  // Escuchar eventos de activación de tarjeta virtual
+  // Escuchar eventos de activación
   useEffect(() => {
-    const handleVirtualCardActivated = () => {
-      // Refrescar el estado cuando se active una tarjeta virtual
-      refreshVirtualCardStatus();
+    const handleActivation = () => {
+      if (user?.id) {
+        fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`)
+          .then(res => res.json())
+          .then(data => {
+            if (user.user_type === 'child') {
+              setBankingActivated(data.banking_activated || false);
+            } else {
+              const childrenWithoutCard = data.children?.filter((c: any) => !c.banking_activated) || [];
+              setChildrenWithoutCards(childrenWithoutCard);
+            }
+          })
+          .catch(console.error);
+      }
     };
 
-    window.addEventListener('virtualCardActivated', handleVirtualCardActivated);
-    
-    return () => {
-      window.removeEventListener('virtualCardActivated', handleVirtualCardActivated);
-    };
+    window.addEventListener('virtualCardActivated', handleActivation);
+    return () => window.removeEventListener('virtualCardActivated', handleActivation);
   }, [user]);
 
-  // Determinar qué pestañas mostrar según el tipo de usuario
   const isChild = user?.user_type === 'child';
   const isAdult = user?.user_type === 'tutor' || user?.user_type === 'sponsor';
 
-  // Función para navegar a gestión familiar
-  const goToFamilyManagement = () => {
-    setActiveTab("family");
-  };
-
-  // Función para refrescar el estado de la tarjeta virtual
-  const refreshVirtualCardStatus = async () => {
-    if (!user?.id) return;
-    
-    try {
-      const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (user.user_type === 'child') {
-          setHasVirtualCard(data.has_card || false);
-          setBankingActivated(data.banking_activated || false);
-        } else if (user.user_type === 'tutor' || user.user_type === 'sponsor') {
-          const childrenWithoutCard = data.children?.filter((c: any) => !c.banking_activated) || [];
-          setChildrenWithoutCards(childrenWithoutCard);
-        }
-      }
-    } catch (error) {
-      console.error('Error refreshing virtual card status:', error);
+  // Manejar acciones
+  const handleAction = (action: string) => {
+    if (action === 'history') {
+      setActiveView('history');
+    } else {
+      setActiveAction(action as ActionType);
     }
   };
 
-  // Pantalla de carga mientras se verifica el estado
+  // Pantalla de carga
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -142,78 +120,29 @@ const DigitalBanking = () => {
     );
   }
 
-  // Si es child sin banca activada, mostrar mensaje
+  // Si es niño sin banca activada
   if (isChild && !bankingActivated) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Banca Digital</h1>
-              <p className="text-muted-foreground">
-                Administra tu dinero virtual, ahorra y aprende sobre finanzas
-              </p>
-            </div>
-          </div>
-
-          <Card className="p-8 text-center">
-            <CardContent>
-              <div className="flex flex-col items-center space-y-4">
-                <CreditCard className="h-16 w-16 text-muted-foreground" />
-                <h2 className="text-2xl font-bold">Banca en Línea no Activada</h2>
-                <p className="text-muted-foreground max-w-md">
-                  Habla con tu tutor o patrocinador para que active tu banca en línea 
-                  y puedas empezar a administrar tu dinero virtual.
-                </p>
-                <Button 
-                  variant="outline" 
-                  onClick={refreshVirtualCardStatus}
-                  className="mt-4"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Verificar Estado
-                </Button>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Card className="max-w-md w-full p-8 text-center">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center">
+                <CreditCard className="h-10 w-10 text-muted-foreground" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  // Si es tutor/sponsor con children sin tarjetas y no ha navegado a family management
-  if (isAdult && childrenWithoutCards.length > 0 && !isLoading && activeTab !== "family") {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Banca Digital</h1>
+              <h2 className="text-2xl font-bold">Banca Digital</h2>
               <p className="text-muted-foreground">
-                Administra las finanzas de tu hijo, supervisa gastos y configuraciones
+                Tu banca digital aún no está activada. Pide a tu tutor o patrocinador que active tu tarjeta virtual.
               </p>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.reload()}
+                className="mt-4"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Verificar Estado
+              </Button>
             </div>
-          </div>
-
-          <Card className="p-8 text-center">
-            <CardContent>
-              <div className="flex flex-col items-center space-y-4">
-                <AlertTriangle className="h-16 w-16 text-yellow-600" />
-                <h2 className="text-2xl font-bold">Activa la Banca en Línea</h2>
-                <p className="text-muted-foreground max-w-md">
-                  Genera una tarjeta virtual para que {childrenWithoutCards.length > 1 ? 'tus hijos puedan' : 'tu hijo pueda'} 
-                  {' '}empezar a usar la banca en línea.
-                </p>
-                <Button 
-                  size="lg"
-                  onClick={goToFamilyManagement}
-                  className="mt-4"
-                >
-                  <Users className="h-5 w-5 mr-2" />
-                  Ir a Gestión Familiar
-                </Button>
-              </div>
-            </CardContent>
           </Card>
         </div>
       </DashboardLayout>
@@ -224,140 +153,143 @@ const DigitalBanking = () => {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Banca Digital</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Wallet className="h-8 w-8 text-primary" />
+              Banca Digital
+            </h1>
+            <p className="text-muted-foreground mt-1">
               {isChild 
-                ? "Administra tu dinero virtual, ahorra y aprende sobre finanzas"
-                : "Administra las finanzas de tu hijo, supervisa gastos y configuraciones"
+                ? "Administra tu dinero, ahorra y aprende sobre finanzas"
+                : "Gestiona las finanzas familiares y supervisa las cuentas"
               }
             </p>
           </div>
+
+          {/* Alerta para tutores con hijos sin tarjeta */}
+          {isAdult && childrenWithoutCards.length > 0 && (
+            <Card className="border-orange-200 bg-orange-50 px-4 py-3">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-orange-800">
+                    {childrenWithoutCards.length === 1 
+                      ? '1 hijo sin tarjeta' 
+                      : `${childrenWithoutCards.length} hijos sin tarjeta`
+                    }
+                  </p>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                  onClick={() => setActiveView('family')}
+                >
+                  Activar
+                </Button>
+              </div>
+            </Card>
+          )}
         </div>
 
-        {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`grid w-full ${isChild ? 'grid-cols-3' : 'grid-cols-4'}`}>
-            <TabsTrigger value="accounts">
-              <CreditCard className="h-4 w-4 mr-2" />
-              Cuentas
-            </TabsTrigger>
-            <TabsTrigger value="history">
-              <History className="h-4 w-4 mr-2" />
-              Historial
-            </TabsTrigger>
-            {isChild && (
-              <TabsTrigger value="test">
-                <Users className="h-4 w-4 mr-2" />
-                Prueba
-              </TabsTrigger>
-            )}
+        {/* Navegación */}
+        <div className="border-b">
+          <nav className="flex space-x-1 overflow-x-auto pb-px">
+            <NavButton 
+              active={activeView === 'dashboard'} 
+              onClick={() => setActiveView('dashboard')}
+              icon={<Home className="h-4 w-4" />}
+              label="Inicio"
+            />
+            <NavButton 
+              active={activeView === 'history'} 
+              onClick={() => setActiveView('history')}
+              icon={<History className="h-4 w-4" />}
+              label="Historial"
+            />
             {isAdult && (
-              <>
-                <TabsTrigger value="family">
-                  <Users className="h-4 w-4 mr-2" />
-                  Gestión Familiar
-                </TabsTrigger>
-                <TabsTrigger value="settings">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configuración
-                </TabsTrigger>
-              </>
+              <NavButton 
+                active={activeView === 'family'} 
+                onClick={() => setActiveView('family')}
+                icon={<Users className="h-4 w-4" />}
+                label="Familia"
+                badge={childrenWithoutCards.length > 0 ? childrenWithoutCards.length : undefined}
+              />
             )}
-            {/* Education tab removed */}
-            {/* <TabsTrigger value="education">
-              <BookOpen className="h-4 w-4 mr-2" />
-              Educación
-            </TabsTrigger> */}
-            {/* Analytics tab hidden */}
-            {/* <TabsTrigger value="analytics">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Análisis
-            </TabsTrigger> */}
-          </TabsList>
+            <NavButton 
+              active={activeView === 'statement'} 
+              onClick={() => setActiveView('statement')}
+              icon={<FileText className="h-4 w-4" />}
+              label="Estado de Cuenta"
+            />
+          </nav>
+        </div>
 
-          {/* Accounts Tab */}
-          <TabsContent value="accounts">
-            <div className="space-y-6">
-              {/* Mi Tarjeta Virtual */}
-              <VirtualCard />
-              
-              {/* Mi Cuenta Principal */}
-              <AccountOverview />
-            </div>
-          </TabsContent>
-
-          {/* History Tab - Engloba Ingresos, Gastos y Estado de Cuenta */}
-          <TabsContent value="history">
-            <Tabs defaultValue="income" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="income">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Ingresos
-                </TabsTrigger>
-                <TabsTrigger value="expenses">
-                  <TrendingDown className="h-4 w-4 mr-2" />
-                  Gastos
-                </TabsTrigger>
-                <TabsTrigger value="statement">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Estado de Cuenta
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="income">
-                <IncomeHistory />
-              </TabsContent>
-
-              <TabsContent value="expenses">
-                <ExpenseHistory />
-              </TabsContent>
-
-              <TabsContent value="statement">
-                <AccountStatement />
-              </TabsContent>
-            </Tabs>
-          </TabsContent>
-
-          {/* Test Tab - Solo para niños */}
-          {isChild && (
-            <TabsContent value="test">
-              <ChildAccountTest />
-            </TabsContent>
+        {/* Contenido Principal */}
+        <div className="min-h-[60vh]">
+          {activeView === 'dashboard' && (
+            <BankingDashboard onAction={handleAction} />
           )}
 
-          {/* Family Management Tab - Solo para adultos */}
-          {isAdult && (
-            <TabsContent value="family">
-              <ParentAccountManagement />
-            </TabsContent>
+          {activeView === 'history' && (
+            <TransactionHistory onBack={() => setActiveView('dashboard')} />
           )}
 
-          {/* Settings Tab - Solo para adultos */}
-          {isAdult && (
-            <TabsContent value="settings">
-              <ParentalControls />
-            </TabsContent>
+          {activeView === 'family' && isAdult && (
+            <FamilyBanking onBack={() => setActiveView('dashboard')} />
           )}
 
-          {/* Education Tab removed */}
-          {/* <TabsContent value="education">
-            <FinancialEducationGame />
-          </TabsContent> */}
+          {activeView === 'statement' && (
+            <AccountStatement />
+          )}
+        </div>
 
-          {/* Analytics Tab hidden */}
-          {/* <TabsContent value="analytics">
-            <AnalyticsDashboard />
-          </TabsContent> */}
-        </Tabs>
+        {/* Modal de Acciones */}
+        <BankingActions 
+          action={activeAction}
+          onClose={() => setActiveAction(null)}
+          onSuccess={() => {
+            // Refrescar datos después de una acción exitosa
+            window.dispatchEvent(new Event('bankingDataUpdated'));
+          }}
+        />
       </div>
     </DashboardLayout>
   );
 };
 
+// Componente de navegación
+interface NavButtonProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  badge?: number;
+}
+
+function NavButton({ active, onClick, icon, label, badge }: NavButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors
+        border-b-2 -mb-px
+        ${active 
+          ? 'border-primary text-primary' 
+          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+        }
+      `}
+    >
+      {icon}
+      <span>{label}</span>
+      {badge !== undefined && badge > 0 && (
+        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default DigitalBanking;
-
-
-
-

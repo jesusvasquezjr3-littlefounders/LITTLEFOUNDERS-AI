@@ -29,18 +29,267 @@ const getCurrentUser = () => {
   return null;
 };
 
+// Datos de ejemplo realistas para el estado de cuenta
+const getDummyTransactionsForStatement = (): any[] => {
+  const today = new Date();
+  const formatDate = (daysAgo: number) => {
+    const date = new Date(today);
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString().split('T')[0];
+  };
+
+  return [
+    // Ingresos con descripciones bancarias reales
+    {
+      id: "stmt_1",
+      type: "income",
+      amount: 25.00,
+      description: "ABONO NÓMINA - MESADA SEMANAL",
+      date: formatDate(0),
+      category: "Mesada"
+    },
+    {
+      id: "stmt_2",
+      type: "income",
+      amount: 8.00,
+      description: "TRANSFERENCIA SPEI - TAREA ORDENAR",
+      date: formatDate(1),
+      category: "Tareas"
+    },
+    {
+      id: "stmt_3",
+      type: "income",
+      amount: 15.00,
+      description: "DEPÓSITO EFECTIVO - BONO ESCOLAR",
+      date: formatDate(3),
+      category: "Bonificación"
+    },
+    {
+      id: "stmt_4",
+      type: "income",
+      amount: 50.00,
+      description: "TRANSFERENCIA - REGALO CUMPLEAÑOS",
+      date: formatDate(5),
+      category: "Regalo"
+    },
+    {
+      id: "stmt_5",
+      type: "income",
+      amount: 5.00,
+      description: "TRANSFERENCIA SPEI - TAREA PLATOS",
+      date: formatDate(6),
+      category: "Tareas"
+    },
+    {
+      id: "stmt_6",
+      type: "income",
+      amount: 25.00,
+      description: "ABONO NÓMINA - MESADA SEMANAL",
+      date: formatDate(7),
+      category: "Mesada"
+    },
+    // Gastos con descripciones de comercios reales
+    {
+      id: "stmt_7",
+      type: "expense",
+      amount: 12.99,
+      description: "COMPRA TDC NINTENDO ESHOP*DIGITAL",
+      date: formatDate(0),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_8",
+      type: "expense",
+      amount: 4.50,
+      description: "COMPRA TDC OXXO SUC 4521",
+      date: formatDate(1),
+      category: "Comida"
+    },
+    {
+      id: "stmt_9",
+      type: "expense",
+      amount: 8.99,
+      description: "CARGO RECURRENTE SPOTIFY AB",
+      date: formatDate(2),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_10",
+      type: "expense",
+      amount: 15.50,
+      description: "COMPRA TDC CINEPOLIS PLAZA CTR",
+      date: formatDate(3),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_11",
+      type: "expense",
+      amount: 6.75,
+      description: "COMPRA TDC ARCOS DORADOS REST 8832",
+      date: formatDate(4),
+      category: "Comida"
+    },
+    {
+      id: "stmt_12",
+      type: "expense",
+      amount: 24.99,
+      description: "COMPRA INT AMAZON.COM.MX*RT5K29X",
+      date: formatDate(5),
+      category: "Compra"
+    },
+    {
+      id: "stmt_13",
+      type: "expense",
+      amount: 3.25,
+      description: "COMPRA TDC 7-ELEVEN #156",
+      date: formatDate(6),
+      category: "Comida"
+    },
+    {
+      id: "stmt_14",
+      type: "expense",
+      amount: 18.90,
+      description: "COMPRA TDC GANDHI SA DE CV",
+      date: formatDate(7),
+      category: "Educación"
+    },
+    {
+      id: "stmt_15",
+      type: "expense",
+      amount: 9.99,
+      description: "COMPRA INT ROBLOX CORPORATION",
+      date: formatDate(8),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_16",
+      type: "expense",
+      amount: 5.00,
+      description: "TRASPASO ENTRE CTAS - A AHORRO",
+      date: formatDate(9),
+      category: "Ahorro"
+    },
+    {
+      id: "stmt_17",
+      type: "expense",
+      amount: 7.50,
+      description: "COMPRA TDC STARBUCKS #2143",
+      date: formatDate(10),
+      category: "Comida"
+    },
+    {
+      id: "stmt_18",
+      type: "expense",
+      amount: 35.00,
+      description: "COMPRA TDC INDITEX ZARA KIDS",
+      date: formatDate(12),
+      category: "Compra"
+    },
+    {
+      id: "stmt_19",
+      type: "expense",
+      amount: 14.99,
+      description: "CARGO RECURRENTE APPLE.COM/BILL",
+      date: formatDate(14),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_20",
+      type: "income",
+      amount: 25.00,
+      description: "ABONO NÓMINA - MESADA SEMANAL",
+      date: formatDate(14),
+      category: "Mesada"
+    },
+    {
+      id: "stmt_21",
+      type: "expense",
+      amount: 11.25,
+      description: "COMPRA TDC ALSEA DOMINOS #4412",
+      date: formatDate(15),
+      category: "Comida"
+    },
+    {
+      id: "stmt_22",
+      type: "income",
+      amount: 12.00,
+      description: "TRANSFERENCIA SPEI - TAREA AUTO",
+      date: formatDate(16),
+      category: "Tareas"
+    },
+    {
+      id: "stmt_23",
+      type: "expense",
+      amount: 19.99,
+      description: "COMPRA INT STEAM PURCHASE",
+      date: formatDate(18),
+      category: "Entretenimiento"
+    },
+    {
+      id: "stmt_24",
+      type: "income",
+      amount: 25.00,
+      description: "ABONO NÓMINA - MESADA SEMANAL",
+      date: formatDate(21),
+      category: "Mesada"
+    },
+    {
+      id: "stmt_25",
+      type: "expense",
+      amount: 8.50,
+      description: "COMPRA TDC SUBWAY REST #7821",
+      date: formatDate(22),
+      category: "Comida"
+    },
+    {
+      id: "stmt_26",
+      type: "expense",
+      amount: 42.00,
+      description: "COMPRA INT TOYS R US ONLINE",
+      date: formatDate(25),
+      category: "Compra"
+    },
+    {
+      id: "stmt_27",
+      type: "income",
+      amount: 25.00,
+      description: "ABONO NÓMINA - MESADA SEMANAL",
+      date: formatDate(28),
+      category: "Mesada"
+    },
+    {
+      id: "stmt_28",
+      type: "expense",
+      amount: 16.75,
+      description: "COMPRA TDC MINISO ACCESSORIES",
+      date: formatDate(29),
+      category: "Compra"
+    },
+    {
+      id: "stmt_29",
+      type: "expense",
+      amount: 5.99,
+      description: "CARGO RECURRENTE NETFLIX.COM",
+      date: formatDate(30),
+      category: "Entretenimiento"
+    }
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
 // Función para obtener transacciones del niño
 const getChildTransactions = (childId: string) => {
   try {
     const savedTransactions = localStorage.getItem(`transactions_${childId}`);
     if (savedTransactions) {
-      return JSON.parse(savedTransactions);
+      const transactions = JSON.parse(savedTransactions);
+      if (transactions.length > 0) return transactions;
     }
   } catch (error) {
     console.error('Error cargando transacciones del niño:', error);
   }
   
-  return [];
+  // Retornar datos de ejemplo si no hay transacciones reales
+  return getDummyTransactionsForStatement();
 };
 
 // Función para obtener datos de la tarjeta virtual del niño
@@ -48,14 +297,16 @@ const getChildVirtualCardData = (childId: string) => {
   try {
     const savedCard = localStorage.getItem(`virtualCard_${childId}`);
     if (savedCard) {
-      return JSON.parse(savedCard);
+      const card = JSON.parse(savedCard);
+      if (card.balance > 0) return card;
     }
   } catch (error) {
     console.error('Error cargando datos de tarjeta virtual del niño:', error);
   }
   
+  // Datos de ejemplo realistas
   return {
-    balance: 0,
+    balance: 87.50,
     dailyLimit: 25.00,
     transactionLimit: 10.00,
     allowedCategories: ['food', 'entertainment', 'books'],
