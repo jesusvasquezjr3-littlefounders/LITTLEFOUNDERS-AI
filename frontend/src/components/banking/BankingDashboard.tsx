@@ -214,7 +214,7 @@ const getDummyTransactions = (): Transaction[] => {
   return [
     {
       id: "dash_1",
-      type: "expense",
+      type: "expense" as const,
       amount: 12.99,
       description: "NINTENDO ESHOP *GAME PURCHASE",
       date: formatDate(0),
@@ -222,7 +222,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_2",
-      type: "income",
+      type: "income" as const,
       amount: 25.00,
       description: "TRANSFERENCIA - MESADA SEMANAL",
       date: formatDate(0),
@@ -230,7 +230,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_3",
-      type: "expense",
+      type: "expense" as const,
       amount: 4.50,
       description: "OXXO TIENDA #4521 SNACKS",
       date: formatDate(1),
@@ -238,7 +238,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_4",
-      type: "income",
+      type: "income" as const,
       amount: 8.00,
       description: "TAREA COMPLETADA - ORDENAR CUARTO",
       date: formatDate(1),
@@ -246,7 +246,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_5",
-      type: "expense",
+      type: "expense" as const,
       amount: 8.99,
       description: "SPOTIFY PREMIUM FAMILY",
       date: formatDate(2),
@@ -254,7 +254,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_6",
-      type: "expense",
+      type: "expense" as const,
       amount: 15.50,
       description: "CINÉPOLIS PLAZA CENTRAL",
       date: formatDate(3),
@@ -262,7 +262,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_7",
-      type: "income",
+      type: "income" as const,
       amount: 15.00,
       description: "BONO - CALIFICACIONES EXCELENTES",
       date: formatDate(3),
@@ -270,7 +270,7 @@ const getDummyTransactions = (): Transaction[] => {
     },
     {
       id: "dash_8",
-      type: "expense",
+      type: "expense" as const,
       amount: 6.75,
       description: "MCDONALD'S REST #8832",
       date: formatDate(4),
