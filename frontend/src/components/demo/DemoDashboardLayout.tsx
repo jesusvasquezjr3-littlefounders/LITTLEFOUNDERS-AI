@@ -2,25 +2,44 @@ import { useState, ReactNode } from "react";
 import { GamifiedSidebar } from "./GamifiedSidebar";
 import { DemoTopNav } from "./DemoTopNav";
 import { DemoTour } from "./DemoTour";
+import { cn } from "@/lib/utils";
 
 interface DemoDashboardLayoutProps {
     children: ReactNode;
 }
 
 export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    // Initialize from localStorage or default to false (expanded/pinned)
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        const stored = localStorage.getItem('demo_sidebar_collapsed');
+        return stored ? JSON.parse(stored) : false;
+    });
+
+    const handleToggle = () => {
+        const newState = !sidebarCollapsed;
+        setSidebarCollapsed(newState);
+        localStorage.setItem('demo_sidebar_collapsed', JSON.stringify(newState));
+    };
 
     return (
         <div className="h-screen overflow-hidden bg-[#fdfbf7]" style={{
             backgroundImage: `radial-gradient(#e5e0d8 1px, transparent 1px)`,
             backgroundSize: '20px 20px'
         }}>
-            <div className="flex h-full overflow-hidden">
+            <div className="flex h-full overflow-hidden relative">
+                {/* Sidebar is now autonomous/floating in its expansion, but occupies 16 (4rem) of space in the grid implicitly or via padding */}
                 <GamifiedSidebar
                     collapsed={sidebarCollapsed}
-                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    onToggle={handleToggle}
                 />
-                <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+
+                {/* Main Content - Shifts when Pinned (collapsed=false), otherwise 16/20 for icon bar */}
+                <div
+                    className={cn(
+                        "flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300",
+                        !sidebarCollapsed ? "ml-72" : "ml-20 md:ml-24"
+                    )}
+                >
                     {/* Top Nav with glassmorphism */}
                     <div className="sticky top-0 z-10 bg-white/40 backdrop-blur-md border-b border-white/20">
                         <DemoTopNav />

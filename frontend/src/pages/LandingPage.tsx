@@ -120,7 +120,7 @@ const LandingPage = () => {
                 <Link to="/login">Iniciar Sesión</Link>
               </Button>
               <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-shadow" onClick={handleRegisterClick}>
-                <Link to="/register">¡Empezar Ahora!</Link>
+                <Link to="/demo">¡Probar Ahora!</Link>
               </Button>
             </div>
           </div>
@@ -287,19 +287,22 @@ const LandingPage = () => {
               seguro y emocionante. ¡Tu futuro financiero te está esperando!
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+            <div className="flex flex-col items-center gap-4 pt-8">
               <Button
                 asChild
                 size="lg"
                 className="px-16 py-8 text-3xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-yellow-500 hover:to-orange-600 hover:shadow-yellow-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-125 hover:-translate-y-3 transition-all duration-500 animate-pulse-glow"
                 onClick={handleRegisterClick}
               >
-                <Link to="/register">
+                <Link to="/demo">
                   <Award className="w-8 h-8 mr-4" />
-                  ¡Empezar Ahora!
+                  ¡Probar Ahora!
                   <ArrowRight className="w-8 h-8 ml-4" />
                 </Link>
               </Button>
+              <p className="text-sm text-gray-500 font-medium">
+                No se requiere tarjeta de crédito ni registro
+              </p>
             </div>
 
             <div className="flex items-center justify-center space-x-8 pt-12">

@@ -9,7 +9,8 @@ import {
     TrendingUp,
     Map as MapIcon,
     ChevronLeft,
-    Menu
+    Menu,
+    PinIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,10 @@ interface GamifiedSidebarProps {
 export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSidebarProps) {
     const location = useLocation();
     const currentPath = location.pathname;
-    const navigate = useNavigate();
+    const [isHovered, setIsHovered] = useState(false);
+
+    // Derived state for expansion: Expanded if hovered OR if NOT collapsed (pinned)
+    const isExpanded = isHovered || !collapsed;
 
     const isActive = (path: string) => {
         if (path === "/demo") return currentPath === "/demo";
@@ -56,43 +60,61 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     return (
         <div
             className={cn(
-                "relative flex flex-col h-screen transition-all duration-300 ease-in-out z-20",
-                collapsed ? "w-24" : "w-72",
+                "fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out z-50 flex flex-col",
+                isExpanded ? "w-72" : "w-20 md:w-24", // Increased thickness
                 "bg-[#fdfbf7] border-r-4 border-[#e5e0d8]", // Paper-like background
                 "shadow-[4px_0_24px_rgba(0,0,0,0.05)]",
                 className
             )}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             style={{
                 backgroundImage: `radial-gradient(#e5e0d8 1px, transparent 1px)`,
                 backgroundSize: '20px 20px'
             }}
         >
             {/* Header / Map Title */}
-            <div className="p-6 border-b-2 border-dashed border-[#e5e0d8] flex items-center justify-between bg-white/50 backdrop-blur-sm">
-                {!collapsed && (
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-orange-500 rounded-xl shadow-[0_4px_0_#c2410c] transform transition-transform hover:translate-y-[2px] hover:shadow-[0_2px_0_#c2410c]">
-                            <MapIcon className="w-6 h-6 text-white" />
-                        </div>
-                        <span className="font-black text-xl text-slate-700 tracking-tight">
-                            Littlefounders
-                        </span>
+            <div className="p-6 border-b-2 border-dashed border-[#e5e0d8] flex items-center justify-between bg-white/50 backdrop-blur-sm min-h-[88px]">
+                {isExpanded && (
+                    <div className="flex items-center gap-2 animate-in fade-in duration-300 px-2">
+                        <img
+                            src="/logo-sized.png"
+                            alt="LittleFounders Logo"
+                            className="h-10 w-auto object-contain"
+                        />
                     </div>
                 )}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onToggle}
-                    className="hover:bg-orange-100 text-orange-600 mx-auto"
-                >
-                    {collapsed ? <Menu className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
-                </Button>
+
+                {/* Pin Button: Only visible when expanded. Controls 'collapsed' prop (Pin state) */}
+                {isExpanded ? (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onToggle}
+                        className={cn(
+                            "hover:bg-orange-100 mx-auto transition-colors",
+                            !collapsed ? "text-orange-600 bg-orange-50" : "text-slate-400"
+                        )}
+                        title={!collapsed ? "Desanclar barra" : "Fijar barra"}
+                    >
+                        <PinIcon className={cn("w-5 h-5 transition-transform", !collapsed ? "-rotate-45 fill-current" : "rotate-0")} />
+                    </Button>
+                ) : (
+                    // Collapsed state icon (centering handled by flex parent)
+                    <div className="mx-auto">
+                        <img
+                            src="/logo-sized.png"
+                            alt="LF"
+                            className="w-10 h-10 object-contain"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Path Container */}
             <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-8 custom-scrollbar scroll-smooth">
                 {/* Winding Path SVG Line (Only visible when expanded) */}
-                {!collapsed && (
+                {isExpanded && (
                     <svg className="absolute top-0 left-[2.25rem] w-12 h-full pointer-events-none z-0" style={{ height: `${menuItems.length * 80 + 100}px` }}>
                         <path
                             d={`M 24 20 ${menuItems.map((_, i) => `L 24 ${i * 80 + 60}`).join(' ')}`}
@@ -118,14 +140,14 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                     "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
                                     "hover:translate-x-2",
                                     isActive ? "bg-white shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60",
-                                    collapsed && "justify-center px-1" // Center content when collapsed
+                                    !isExpanded && "justify-center px-1" // Center content when collapsed
                                 )}
                             >
                                 {/* Icon Node */}
                                 <div className={cn(
                                     "relative rounded-2xl flex items-center justify-center transition-all duration-300",
                                     "shadow-[0_4px_0_rgba(0,0,0,0.1)]", // 3D bottom shadow
-                                    collapsed ? "w-16 h-12" : "w-12 h-12", // Wider icons when collapsed
+                                    !isExpanded ? "w-14 h-12" : "w-12 h-12", // Wider icons when collapsed
                                     active
                                         ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white")
                                         : "bg-white border-2 border-slate-100 group-hover:border-orange-200"
@@ -136,7 +158,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                     )} />
 
                                     {/* Connector Dot (only when expanded) */}
-                                    {!collapsed && (
+                                    {isExpanded && (
                                         <div className={cn(
                                             "absolute -left-[22px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white",
                                             active ? "bg-orange-500 scale-125" : "bg-slate-200"
@@ -145,7 +167,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 </div>
 
                                 {/* Label */}
-                                {!collapsed && (
+                                {isExpanded && (
                                     <div className="flex-1">
                                         <span className={cn(
                                             "font-bold text-base block transition-colors",
@@ -172,12 +194,12 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                     variant="ghost"
                     className={cn(
                         "w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-[0_4px_0_#b45309] active:shadow-[0_2px_0_#b45309] active:translate-y-[2px] transition-all rounded-xl",
-                        collapsed ? "h-12 w-12 p-0 rounded-2xl" : "py-6"
+                        !isExpanded ? "h-12 w-12 p-0 rounded-2xl" : "py-6"
                     )}
                     onClick={() => window.dispatchEvent(new Event('restartDemoTour'))}
                     title="Reiniciar Tutorial"
                 >
-                    {!collapsed ? (
+                    {isExpanded ? (
                         <div className="flex items-center gap-2 font-black tracking-wide">
                             <span>REINICIAR TUTORIAL</span>
                             <span className="text-lg">↺</span>

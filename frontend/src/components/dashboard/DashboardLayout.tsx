@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -9,18 +10,31 @@ interface DashboardLayoutProps {
 
 // Layout principal del panel de Littlefounders
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Initialize from localStorage or default to false (expanded/pinned)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    const stored = localStorage.getItem('main_sidebar_collapsed');
+    return stored ? JSON.parse(stored) : false;
+  });
+
+  const handleToggle = () => {
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    localStorage.setItem('main_sidebar_collapsed', JSON.stringify(newState));
+  };
 
   return (
     <div className="h-screen overflow-hidden bg-background">
       <UserTour />
-      <div className="flex h-full">
-        {/* Menú lateral: aquí puedes encontrar todas las secciones divertidas para aprender sobre finanzas */}
+      <div className="flex h-full relative">
+        {/* Menú lateral: Flotante y responsivo */}
         <Sidebar
           collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onToggle={handleToggle}
         />
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <div className={cn(
+          "flex-1 flex flex-col h-full overflow-hidden transition-all duration-300",
+          !sidebarCollapsed ? "ml-72" : "ml-20 md:ml-24"
+        )}>
           {/* Barra superior: ¡Bienvenido a tu panel de aprendizajes y logros! */}
           <TopNav />
           <main className="flex-1 p-6 overflow-y-auto" aria-label="Contenido principal">
