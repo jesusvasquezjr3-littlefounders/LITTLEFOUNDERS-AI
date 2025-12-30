@@ -8,7 +8,7 @@ interface DinoCharacterProps {
     showBubble?: boolean;
     className?: string;
     mood?: DinoMood;
-    bubblePosition?: 'demo' | 'tutorial' | 'standard';
+    bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
 }
 
 export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard' }: DinoCharacterProps) {
@@ -95,6 +95,8 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     bubblePosition === 'demo' && "top-6 left-6 md:left-12 max-w-[260px]",
                     // Tutorial: Bottom-Right corner friendly (anchored right, grows left, floats above)
                     bubblePosition === 'tutorial' && "bottom-[85%] right-0 mb-4",
+                    // Hero: Top-Left relative to head, careful not to go too high
+                    bubblePosition === 'hero' && "top-[10%] -left-[10%] md:-left-[20%]",
                     (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-0 translate-y-4"
                 )}
             >
@@ -106,7 +108,8 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     "absolute -bottom-3 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-gray-800",
                     bubblePosition === 'standard' && "left-1/2 -translate-x-1/2",
                     bubblePosition === 'demo' && "left-[20%] border-r-4 border-b-4",
-                    bubblePosition === 'tutorial' && "right-[20%]"
+                    bubblePosition === 'tutorial' && "right-[20%]",
+                    bubblePosition === 'hero' && "left-[80%] border-r-4 border-b-4"
                 )}></div>
             </div>
 
@@ -114,7 +117,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 id="dino-svg"
                 viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-full max-w-[500px] h-auto cursor-pointer overflow-visible"
+                className="w-full h-auto cursor-pointer overflow-visible"
                 onClick={handleClick}
             >
                 <defs>

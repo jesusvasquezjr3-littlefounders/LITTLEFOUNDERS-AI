@@ -1,353 +1,445 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users,
-  Shield,
   ArrowRight,
-  Sparkles,
-  Star,
-  Gamepad2,
-  PiggyBank,
-  BookOpen,
-  Heart,
+  CheckCircle2,
   ChevronDown,
-  Play,
-  Award,
-  Target,
-  Globe
+  ShieldCheck,
+  Zap,
+  BookOpen,
+  Brain,
+  Menu,
+  X
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePostHog } from "@/hooks/usePostHog";
+import { DinoCharacter } from "../components/demo/DinoCharacter";
+import { DinaCharacter } from "../components/demo/DinaCharacter";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const LandingPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { trackEvent } = usePostHog();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [wordIndex, setWordIndex] = useState(0);
+  const rotatorWords = ["Niños", "Adolescentes", "Adultos"];
+
+  const [ctaWordIndex, setCtaWordIndex] = useState(0);
+  const ctaWords = ["founder", "empresario", "CEO", "líder", "emprendedor"];
+
+  const [dinaExpr, setDinaExpr] = useState<'neutral' | 'wink'>('neutral');
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveSection(prev => (prev + 1) % 4);
-    }, 3000);
+      setWordIndex((prev) => (prev + 1) % rotatorWords.length);
+      setCtaWordIndex((prev) => (prev + 1) % ctaWords.length);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleLoginClick = () => {
-    trackEvent('landing_login_clicked', {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDinaExpr((prev) => (prev === 'neutral' ? 'wink' : 'neutral'));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleTrackClick = (location: string) => {
+    trackEvent(`landing_click_${location}`, {
       timestamp: new Date().toISOString()
     });
   };
-
-  const handleRegisterClick = () => {
-    trackEvent('landing_register_clicked', {
-      timestamp: new Date().toISOString()
-    });
-  };
-
-  const features = [
-    {
-      icon: Gamepad2,
-      title: "Juegos Divertidos",
-      description: "Aprende finanzas jugando con simuladores interactivos y desafíos emocionantes",
-      color: "from-pink-500 to-rose-500"
-    },
-    {
-      icon: PiggyBank,
-      title: "Ahorro Inteligente",
-      description: "Descubre el poder del ahorro con herramientas visuales y metas alcanzables",
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: BookOpen,
-      title: "Lecciones Adaptadas",
-      description: "Contenido educativo diseñado específicamente para cada edad y nivel",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: Shield,
-      title: "100% Seguro",
-      description: "Plataforma protegida y supervisada para la tranquilidad de los padres",
-      color: "from-purple-500 to-violet-500"
-    }
-  ];
-
-  const stats = [
-    { number: "2,847", label: "Pequeños Fundadores", icon: Users },
-    { number: "$20K+", label: "Monedas Ganadas", icon: Star },
-    { number: "100%", label: "Seguro", icon: Shield },
-    { number: "24/7", label: "Ayuda Disponible", icon: Heart }
-  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Sticky Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200'
-        : 'bg-transparent'
+    <div className="min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900">
+
+      {/* --- NAVIGATION --- */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
         }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo & Banner Group */}
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <img
-                  src="/logo-main.png"
-                  alt="Little Founders"
-                  className="h-10 w-auto"
-                />
-              </div>
-              <div className="hidden lg:flex min-w-0">
-                <div className="px-4 py-2 rounded-full transition-all duration-300 bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md">
-                  <p className="font-semibold truncate">
-                    <Sparkles className="w-4 h-4 mr-2 inline-block" />
-                    ¡La educación financiera nunca fue tan divertida!
-                  </p>
-                </div>
-              </div>
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <img src="/logo-sized.png" alt="LittleFounders" className="h-10 w-auto object-contain" />
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
-              <Button asChild variant="ghost" className={`transition-colors ${isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'}`} onClick={handleLoginClick}>
-                <Link to="/login">Iniciar Sesión</Link>
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#problem" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">¿Por qué?</a>
+              <a href="#features" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Lecciones</a>
+              <a href="#faq" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Dudas</a>
+              <Button asChild variant="ghost" onClick={() => handleTrackClick('login_nav')}>
+                <Link to="/login" className="text-gray-700 hover:bg-gray-100">Ingresar</Link>
               </Button>
-              <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-shadow" onClick={handleRegisterClick}>
-                <Link to="/demo">¡Probar Ahora!</Link>
+              <Button asChild onClick={() => handleTrackClick('cta_nav')} className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-full px-6">
+                <Link to="/demo">Probar Gratis</Link>
+              </Button>
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button className="md:hidden text-gray-700" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-xl">
+            <a href="#problem" className="text-lg font-medium text-gray-700 py-2 border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>¿Por qué?</a>
+            <a href="#features" className="text-lg font-medium text-gray-700 py-2 border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>Lecciones</a>
+            <a href="#faq" className="text-lg font-medium text-gray-700 py-2 border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>Preguntas Frecuentes</a>
+            <div className="flex flex-col gap-3 mt-2">
+              <Button asChild variant="outline" className="w-full justify-center" onClick={() => handleTrackClick('login_mobile')}>
+                <Link to="/login">Ingresar</Link>
+              </Button>
+              <Button asChild className="w-full justify-center bg-pink-600 hover:bg-pink-700 text-white" onClick={() => handleTrackClick('cta_mobile')}>
+                <Link to="/demo">¡Comenzar!</Link>
               </Button>
             </div>
           </div>
-        </div>
+        )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-blue-500/20">
-          <div className="absolute inset-0 opacity-30" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+      {/* --- HERO SECTION --- */}
+      {/* Goal: Win the first 5 seconds. Clear Value Prop + Visual Delight */}
+      <header className="relative pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white">
+
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-200/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-pink-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-20 h-20 bg-pink-400/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-32 h-32 bg-purple-400/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-blue-400/20 rounded-full blur-xl animate-pulse delay-2000"></div>
-        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8 pt-16">
-            {/* Main Logo */}
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <img
-                  src="/logo-hero.png"
-                  alt="Little Founders"
-                  className="h-48 md:h-64 lg:h-96 w-auto drop-shadow-2xl"
-                />
+            {/* Copy (Left) */}
+            <div className="flex-1 text-center lg:text-left space-y-8 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-bold animate-fade-in-up">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
+                </span>
+                Nueva Beta Abierta
               </div>
 
-              <p className="text-2xl md:text-3xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
-                La plataforma donde los niños aprenden sobre dinero,
-                <span className="text-pink-600 font-bold"> ahorran</span>,
-                <span className="text-purple-600 font-bold"> invierten</span> y se convierten en
-                <span className="text-blue-600 font-bold"> pequeños empresarios</span>
-              </p>
-            </div>
+              <h1 className="text-5xl lg:text-7xl font-black text-gray-900 leading-[1.1] tracking-tight">
+                El <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">Simulador de Startup</span> para <span className="inline-block relative">
+                  <span key={wordIndex} className="animate-fade-in-up inline-block text-pink-600">
+                    {rotatorWords[wordIndex]}.
+                  </span>
+                </span>
+              </h1>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center sm:items-start pt-8">
-              <div className="flex flex-col items-center gap-2">
-                <Button
-                  asChild
-                  size="lg"
-                  className="px-12 py-6 text-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-cyan-500 hover:to-blue-600 hover:shadow-cyan-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500 animate-pulse-glow"
-                >
+              <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed">
+                Aprende <b>finanzas reales</b> construyendo un negocio virtual. Sin teoría aburrida, solo diversión práctica.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
+                <Button asChild size="lg" className="w-full sm:w-auto px-8 py-7 text-xl rounded-2xl bg-gray-900 hover:bg-gray-800 text-white shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all group" onClick={() => handleTrackClick('cta_hero')}>
                   <Link to="/demo">
-                    🚀 Verlo en acción
+                    Probar Demo
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <p className="text-xs text-gray-500 font-medium">
-                  No se requiere tarjeta de crédito ni registro
-                </p>
+                <p className="text-sm text-gray-500 font-medium">✨ No requiere tarjeta • Acceso inmediato</p>
               </div>
-
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="px-12 py-6 text-2xl border-2 border-purple-300 text-purple-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-green-500/50 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-2 transition-all duration-500"
-                onClick={handleLoginClick}
-              >
-                <Link to="/login">
-                  Ya tengo cuenta
-                </Link>
-              </Button>
             </div>
 
-            {/* Scroll Indicator */}
-            <div className="pt-16 animate-bounce">
-              <ChevronDown className="w-8 h-8 text-gray-400 mx-auto" />
+            {/* Visual (Right) - Characters */}
+            {/* Hidden on mobile to save space, visible on desktop */}
+            <div className="hidden lg:flex flex-1 w-full relative h-[600px] items-center justify-end pointer-events-none">
+              {/* Decorative Circle Background */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-pink-100 to-purple-100 rounded-full scale-125 translate-x-20 opacity-50" style={{ borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' }}></div>
+
+              {/* Dina - BACK (Larger, Z-0) */}
+              <div className="absolute bottom-0 -right-20 w-[650px] h-[650px] z-0 animate-float pointer-events-auto opacity-90" style={{ animationDelay: '1.5s' }}>
+                <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
+              </div>
+
+              {/* Dinosaur (Liruf) - FRONT (Smaller, Z-20) - Grounded */}
+              <div className="absolute bottom-0 right-64 w-[400px] h-[400px] z-20 animate-float pointer-events-auto" style={{ animationDelay: '0s' }}>
+                <DinoCharacter mood="happy" className="drop-shadow-2xl" bubblePosition="hero" showBubble={false} currentText="" />
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce text-gray-400 hidden lg:block">
+          <ChevronDown className="w-8 h-8 opacity-50" />
+        </div>
+      </header>
+
+
+      {/* --- SCAR TISSUE / PROBLEM SECTION --- */}
+      {/* Goal: Problem -> Agitation using a relatable story. "Objection handling". */}
+      <section id="problem" className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-16">
+
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900">
+              La escuela enseña Álgebra... <br />
+              <span className="text-gray-400 decoration-gray-300 line-through decoration-4">pero nadie enseña Dinero.</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Es la historia de siempre: graduarse sabiendo resolver <i>trinomios cuadrados perfectos</i>, pero sin saber cómo funciona una tarjeta de crédito, un presupuesto o una inversión.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            <div className="p-6 bg-red-50 rounded-2xl border border-red-100">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-2xl">📉</div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Desinformación</h3>
+              <p className="text-gray-600">Los niños aprenden sobre dinero de TikTok o amigos, llenándose de mitos peligrosos.</p>
+            </div>
+            <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4 text-2xl">😟</div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Estrés Futuro</h3>
+              <p className="text-gray-600">El dinero es la causa #1 de estrés en adultos. No dejes que sea el de tus hijos.</p>
+            </div>
+            <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-2xl">💤</div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Clases Aburridas</h3>
+              <p className="text-gray-600">Los cursos tradicionales son PDFs aburridos que los niños odian leer.</p>
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-white/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold text-gray-900 mb-6">
-              ¿Por qué elegir <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">Little Founders</span>?
-            </h2>
-            <p className="text-2xl text-gray-600 max-w-3xl mx-auto">
-              Transformamos el aprendizaje financiero en una experiencia mágica y divertida
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card
-                key={index}
-                className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 cursor-pointer ${activeSection === index ? 'ring-4 ring-pink-500/50 scale-105' : ''
-                  }`}
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-                <CardHeader className="text-center relative z-10">
-                  <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-                    <feature.icon className="w-8 h-8" />
-                  </div>
-                  <CardTitle className="text-2xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-purple-600 transition-all duration-300">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <CardDescription className="text-lg text-gray-600 text-center leading-relaxed">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* --- TRANSFORMATION / SOLUTION --- */}
+      <section className="py-24 bg-gray-900 text-white relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#4b5563 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
 
-      {/* Stats Section */}
-      <section className="py-24 bg-gradient-to-r from-pink-500 to-purple-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">
-              Números que nos enorgullecen
-            </h2>
-            <p className="text-2xl text-pink-100">
-              Únete a miles de familias que ya confían en nosotros
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="text-center group"
-              >
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all duration-300">
-                  <stat.icon className="w-10 h-10 text-white" />
-                </div>
-                <div className="text-5xl font-black text-white mb-2 group-hover:scale-110 transition-transform duration-300">
-                  {stat.number}
-                </div>
-                <div className="text-xl text-pink-100 font-medium">
-                  {stat.label}
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="flex-1 space-y-8">
+              <div className="inline-block px-4 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold text-sm tracking-wide uppercase">
+                La Solución LittleFounders
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8">
-            <h2 className="text-6xl font-bold text-gray-900">
-              ¿Listo para comenzar tu
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600"> aventura financiera</span>?
-            </h2>
-
-            <p className="text-2xl text-gray-600 leading-relaxed">
-              Únete a Little Founders hoy y descubre un mundo donde aprender sobre dinero es divertido,
-              seguro y emocionante. ¡Tu futuro financiero te está esperando!
-            </p>
-
-            <div className="flex flex-col items-center gap-4 pt-8">
-              <Button
-                asChild
-                size="lg"
-                className="px-16 py-8 text-3xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-yellow-500 hover:to-orange-600 hover:shadow-yellow-500/50 text-white shadow-2xl hover:shadow-2xl transform hover:scale-125 hover:-translate-y-3 transition-all duration-500 animate-pulse-glow"
-                onClick={handleRegisterClick}
-              >
-                <Link to="/demo">
-                  <Award className="w-8 h-8 mr-4" />
-                  ¡Probar Ahora!
-                  <ArrowRight className="w-8 h-8 ml-4" />
-                </Link>
-              </Button>
-              <p className="text-sm text-gray-500 font-medium">
-                No se requiere tarjeta de crédito ni registro
+              <h2 className="text-4xl lg:text-5xl font-bold leading-tight">
+                No es una clase.<br />
+                Es una <span className="text-blue-400">Aventura</span>.
+              </h2>
+              <p className="text-xl text-gray-400 leading-relaxed">
+                Utilizamos el "Aprendizaje Basado en Simulación". Aprende finanzas jugando con simuladores interactivos y desafíos emocionantes).
               </p>
+              <ul className="space-y-4">
+                {[
+                  "Aprende cometiendo errores virtuales (no reales)",
+                  "Descubre el poder del ahorro con herramientas visuales y metas alcanzables",
+                  "Contenido educativo diseñado específicamente para cada edad y nivel"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-lg">
+                    <CheckCircle2 className="text-green-400 w-6 h-6 flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="flex items-center justify-center space-x-8 pt-12">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Shield className="w-6 h-6 text-green-500" />
-                <span className="text-lg">100% Seguro</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Globe className="w-6 h-6 text-blue-500" />
-                <span className="text-lg">Acceso 24/7</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Target className="w-6 h-6 text-purple-500" />
-                <span className="text-lg">Resultados Garantizados</span>
+            {/* Just a visual representation of "Fun" */}
+            <div className="flex-1 flex justify-center">
+              <div className="relative w-full max-w-md aspect-square bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl rotate-3 flex items-center justify-center shadow-2xl border border-white/10">
+                <div className="absolute -top-6 -left-6 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center text-4xl shadow-xl animate-bounce">
+                  💡
+                </div>
+                <div className="text-center p-8">
+                  <span className="text-8xl mb-4 block">🎮</span>
+                  <p className="text-2xl font-bold">Aprender Jugando</p>
+                  <p className="text-white/60 mt-2">100% Interactivo</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex justify-center items-center space-x-3 mb-6">
-            <img
-              src="/logo-main.png"
-              alt="Little Founders"
-              className="h-12 w-auto"
-            />
-            <span className="text-3xl font-bold">Little Founders</span>
+
+      {/* --- FEATURE SHOWCASE (LECCIONES) --- */}
+      {/* Goal: Show, Don't Just Tell. Use a placeholder for the GIF requested. */}
+      <section id="features" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Mira cómo funciona</h2>
+            <p className="text-xl text-gray-600">Todo el contenido está diseñado para ser visual, intuitivo y digerible en sesiones cortas.</p>
           </div>
-          <p className="text-xl text-gray-400 mb-8">
-            Educando a la próxima generación de emprendedores financieros
+
+          {/* The "Laptop" Frame for the GIF */}
+          <div className="relative mx-auto max-w-5xl">
+            <div className="relative rounded-t-3xl bg-gray-900 p-2 md:p-4 shadow-2xl border-b-0">
+              {/* Fake browser chrome */}
+              <div className="flex items-center gap-2 mb-4 px-4 pt-2">
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="ml-4 bg-gray-800 rounded-full px-4 py-1 text-xs text-gray-400 flex-1 text-center font-mono">
+                  https://littlefounders.ai//lecciones
+                </div>
+              </div>
+
+              {/* SCREEN CONTENT - GIF SHOWCASE */}
+              <div className="bg-white rounded-xl overflow-hidden aspect-video relative flex items-center justify-center group cursor-pointer border-4 border-gray-800">
+                <img
+                  src="/assets/demo-lessons.gif"
+                  alt="Demostración de Lecciones LittleFounders"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback in case user hasn't uploaded the file yet
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      const placeholder = document.createElement('div');
+                      placeholder.className = "absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-gray-400";
+                      placeholder.innerHTML = `
+                        <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <p class="font-medium text-lg">GIF de Navegación de Lecciones</p>
+                        <p class="text-sm">Pon tu archivo en: public/assets/demo-lessons.gif</p>
+                      `;
+                      parent.appendChild(placeholder);
+                    }
+                  }}
+                />
+
+                {/* Optional: Overlay "Play" button feel */}
+                <div className="absolute w-20 h-20 bg-pink-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[20px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
+                </div>
+              </div>
+            </div>
+            {/* Laptop base */}
+            <div className="h-4 md:h-6 bg-gray-800 rounded-b-xl mx-4 md:mx-10 shadow-xl"></div>
+          </div>
+
+          {/* Grid of details below */}
+          <div className="grid md:grid-cols-3 gap-8 mt-16">
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto text-pink-600">
+                <Brain className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl">Sin Palabrería</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Contenido directo. Eliminamos la paja académica para ir a lo que importa.</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto text-blue-600">
+                <BookOpen className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl">A tu Ritmo</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Lecciones de 5 minutos. Perfectas para la atención moderna.</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto text-purple-600">
+                <ShieldCheck className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl">Espacio Seguro</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Entorno cerrado, moderado y diseñado para menores.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+
+      {/* --- FAQ SECTION --- */}
+      {/* Handle Objections directly. */}
+      <section id="faq" className="py-24 bg-pink-50/50">
+        <div className="max-w-2xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-10 text-gray-900">Preguntas Frecuentes</h2>
+
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            <AccordionItem value="item-1" className="bg-white border-none rounded-2xl shadow-sm px-4">
+              <AccordionTrigger className="text-lg font-medium text-gray-800 hover:no-underline hover:text-pink-600">¿Para qué edades es?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Está diseñado principalmente para niños y adolescentes de <strong>5 a 17 años</strong>. Sin embargo, muchos adultos nos han dicho que también aprenden mucho con las bases.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="bg-white border-none rounded-2xl shadow-sm px-4">
+              <AccordionTrigger className="text-lg font-medium text-gray-800 hover:no-underline hover:text-pink-600">¿Es seguro para mis hijos?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Absolutamente. No hay chat abierto con desconocidos, no hay publicidad externa, y todos los datos están encriptados.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="bg-white border-none rounded-2xl shadow-sm px-4">
+              <AccordionTrigger className="text-lg font-medium text-gray-800 hover:no-underline hover:text-pink-600">¿Tiene costo?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Actualmente estamos en una <strong>Beta Abierta Gratuita</strong>. Puedes registrarte y usar todas las funciones sin costo. En el futuro tendremos planes premium, pero siempre habrá una capa gratuita.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="bg-white border-none rounded-2xl shadow-sm px-4">
+              <AccordionTrigger className="text-lg font-medium text-gray-800 hover:no-underline hover:text-pink-600">¿Necesito supervisar a mi hijo mientras juega?</AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                No es necesario, la plataforma es autodidacta. Sin embargo, tenemos un "Panel de Padres" donde puedes ver su progreso y te damos tips para conversar sobre lo que aprendieron.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </section>
+
+
+      {/* --- CTA / FOOTER --- */}
+      <section className="py-24 bg-white text-center">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-8">
+            Tu hijo podría ser el próximo <br />
+            <span className="inline-block relative">
+              <span key={ctaWordIndex} className="animate-fade-in-up inline-block text-pink-600">
+                {ctaWords[ctaWordIndex]}.
+              </span>
+            </span>
+          </h2>
+          <p className="text-xl text-gray-500 mb-10 max-w-xl mx-auto">
+            Dale las herramientas que la escuela no le da. Empieza hoy, es gratis y toma 30 segundos.
           </p>
-          <div className="flex justify-center space-x-8 text-gray-400">
-            <span>© 2025 Little Founders</span>
-            <span>•</span>
-            <span>Privacidad</span>
-            <span>•</span>
-            <span>Términos</span>
-            <span>•</span>
-            <span>Contacto</span>
+          <Button asChild size="lg" className="px-12 py-8 text-2xl rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-2xl hover:shadow-pink-500/25 transition-all transform hover:scale-105" onClick={() => handleTrackClick('cta_bottom')}>
+            <Link to="/demo">
+              Comenzar Aventura Gratis
+            </Link>
+          </Button>
+          <p className="mt-6 text-sm text-gray-400">Sin compromiso. Cancela cuando quieras.</p>
+        </div>
+      </section>
+
+      <footer className="bg-gray-50 border-t border-gray-200 py-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2 opacity-80 grayscale hover:grayscale-0 transition-all">
+            <img src="/logo-sized.png" alt="LittleFounders" className="h-8 w-auto object-contain" />
+          </div>
+          <div className="flex gap-6 text-sm text-gray-500">
+            <Link to="#" className="hover:text-gray-900">Términos</Link>
+            <Link to="#" className="hover:text-gray-900">Privacidad</Link>
+            <Link to="#" className="hover:text-gray-900">Contacto</Link>
+          </div>
+          <div className="text-sm text-gray-400">
+            © 2025 littlefounders.ai
           </div>
         </div>
       </footer>
+
     </div>
   );
 };
