@@ -16,7 +16,7 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
     <div className="min-h-screen bg-background">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-customers/3 to-revenue/3"></div>
-      
+
       <div className="relative flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md space-y-6">
           {/* Header */}
@@ -25,11 +25,11 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
               <Zap className="w-4 h-4 mr-2" />
               LittleFounders AI
             </Badge>
-            
+
             {showBackToWelcome && (
               <div>
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   ← Regresar al Inicio

@@ -23,7 +23,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-background">
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900">
+
       <UserTour />
       <div className="flex h-full relative">
         {/* Menú lateral: Flotante y responsivo */}

@@ -25,6 +25,15 @@ export function DemoLecciones() {
     const [lesson2Completed, setLesson2Completed] = useState(false);
     const [lesson3Completed, setLesson3Completed] = useState(false);
     const [lesson4Completed, setLesson4Completed] = useState(false);
+    const [dinaExpression, setDinaExpression] = useState<'neutral' | 'wink'>('neutral');
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDinaExpression(prev => prev === 'neutral' ? 'wink' : 'neutral');
+        }, 2500); // Changes every 2.5 seconds
+        return () => clearInterval(interval);
+    }, []);
+
 
     useEffect(() => {
         setLesson1Completed(localStorage.getItem('demo_lesson_1_completed') === 'true');
@@ -118,8 +127,8 @@ export function DemoLecciones() {
         <DemoDashboardLayout>
             <div className="space-y-6 mb-20">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Aventura Financiera</h1>
-                    <p className="text-gray-600">Completa la primera lección para ver cómo funciona</p>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Aventura Financiera</h1>
+                    <p className="text-gray-600 dark:text-gray-400">Completa la primera lección para ver cómo funciona</p>
                 </div>
 
                 {/* New Gamified Path Component */}
@@ -219,7 +228,7 @@ export function DemoLecciones() {
 
                     {/* Paywall Card - Layer 20 - Transparent BG */}
                     <div className="relative z-20 px-4 w-full max-w-md">
-                        <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/60 mx-auto">
+                        <div className="bg-white/40 dark:bg-slate-900/60 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 mx-auto">
 
                             <div className="relative w-72 h-64 mx-auto mb-6 flex items-center justify-center">
                                 {/* Effeto de brillo/resplandor detrás */}
@@ -231,10 +240,11 @@ export function DemoLecciones() {
                                 <div className="absolute top-12 left-2 w-3 h-3 rounded-full bg-orange-300/80 animate-pulse" />
 
                                 {/* Dina más grande */}
-                                <DinaCharacter expression="neutral" className="w-full h-full relative z-10 drop-shadow-xl hover:scale-105 transition-transform duration-500" />
+                                <DinaCharacter expression={dinaExpression} className="w-full h-full relative z-10 drop-shadow-xl hover:scale-105 transition-transform duration-500" />
+
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3 drop-shadow-sm">¡Continúa tu Aventura!</h3>
-                            <p className="text-gray-700 mb-8 text-base font-medium drop-shadow-sm max-w-[85%] mx-auto" style={{ textShadow: "0 1px 1px rgba(255,255,255,0.8)" }}>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 drop-shadow-sm">¡Continúa tu Aventura!</h3>
+                            <p className="text-gray-700 dark:text-gray-300 mb-8 text-base font-medium drop-shadow-sm max-w-[85%] mx-auto" style={{ textShadow: "0 1px 1px rgba(255,255,255,0.8)" }}>
                                 Regístrate gratis para desbloquear el resto de las lecciones, minijuegos y recompensas.
                             </p>
 
@@ -244,7 +254,7 @@ export function DemoLecciones() {
                                 </Button>
                             </Link>
 
-                            <p className="text-[10px] text-gray-500 mt-4 font-bold uppercase tracking-wide">
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-4 font-bold uppercase tracking-wide">
                                 No se requiere Tarjeta de Crédito para seguir disfrutando
                             </p>
                         </div>

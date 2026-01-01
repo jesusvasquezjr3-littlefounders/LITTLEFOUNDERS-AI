@@ -96,18 +96,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       className={cn(
         "fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out z-50 flex flex-col",
         isExpanded ? "w-72" : "w-20 md:w-24",
-        "bg-[#fdfbf7] border-r-4 border-[#e5e0d8]", // Paper-like background
+        "bg-background dark:bg-slate-900 border-r-4 border-border dark:border-slate-800", // Theme-aware background
         "shadow-[4px_0_24px_rgba(0,0,0,0.05)]"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{
-        backgroundImage: `radial-gradient(#e5e0d8 1px, transparent 1px)`,
-        backgroundSize: '20px 20px'
-      }}
     >
       {/* Header */}
-      <div className="p-6 border-b-2 border-dashed border-[#e5e0d8] flex items-center justify-between bg-white/50 backdrop-blur-sm min-h-[88px]">
+      <div className="p-6 border-b-2 border-dashed border-border dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm min-h-[88px]">
         {isExpanded && (
           <div className="flex items-center gap-2 animate-in fade-in duration-300 px-2">
             <img
@@ -173,7 +169,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 className={({ isActive }) => cn(
                   "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
                   "hover:translate-x-2",
-                  active ? "bg-white shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60",
+                  active ? "bg-white dark:bg-slate-800 shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60 dark:hover:bg-slate-800/60",
                   !isExpanded && "justify-center px-1"
                 )}
               >
@@ -183,8 +179,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   "shadow-[0_4px_0_rgba(0,0,0,0.1)]",
                   !isExpanded ? "w-14 h-12" : "w-12 h-12",
                   active
-                    ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white")
-                    : "bg-white border-2 border-slate-100 group-hover:border-orange-200"
+                    ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white dark:ring-slate-700")
+                    : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-orange-200 dark:group-hover:border-orange-900"
                 )}>
                   <item.icon className={cn(
                     "w-6 h-6 transition-transform duration-300",
@@ -205,7 +201,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   <div className="flex-1">
                     <span className={cn(
                       "font-bold text-base block transition-colors",
-                      active ? "text-slate-800" : "text-slate-500 group-hover:text-slate-700"
+                      active ? "text-slate-800 dark:text-slate-100" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
                     )}>
                       {item.title}
                     </span>
@@ -234,16 +230,16 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               className={({ isActive }) => cn(
                 "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
                 "hover:translate-x-2",
-                isActive ? "bg-white shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60",
+                isActive ? "bg-white dark:bg-slate-800 shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60 dark:hover:bg-slate-800/60",
                 !isExpanded && "justify-center px-1"
               )}
             >
               <div className={cn(
                 "relative rounded-2xl flex items-center justify-center transition-all duration-300 shadow-[0_4px_0_rgba(0,0,0,0.1)]",
                 !isExpanded ? "w-12 h-10" : "w-12 h-12",
-                isActive(item.url) ? "bg-slate-100 translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white" : "bg-white border-2 border-slate-100 group-hover:border-orange-200"
+                isActive(item.url) ? "bg-slate-100 dark:bg-slate-800 translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white dark:ring-slate-700" : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-orange-200 dark:group-hover:border-orange-900"
               )}>
-                <item.icon className="w-5 h-5 text-slate-500" />
+                <item.icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 {isExpanded && (
                   <div className={cn(
                     "absolute -left-[22px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white",
@@ -251,14 +247,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   )} />
                 )}
               </div>
-              {isExpanded && <span className="font-bold text-base text-slate-500 group-hover:text-slate-700">{item.title}</span>}
+              {isExpanded && <span className="font-bold text-base text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">{item.title}</span>}
             </NavLink>
           ))}
         </div>
       </div>
 
       {/* Footer / Restart Tour */}
-      <div className="p-4 bg-white/50 backdrop-blur-sm border-t-2 border-dashed border-[#e5e0d8]">
+      <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-t-2 border-dashed border-border dark:border-slate-800">
         <Button
           variant="ghost"
           className={cn(

@@ -1,4 +1,6 @@
 import { Search, Bell, User, Settings, LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,19 +65,16 @@ export function TopNav() {
       {/* Right Section */}
       <div className="flex items-center space-x-4">
         {/* Quick Actions */}
-        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-            <span className="text-xs">⌘</span>K
-          </kbd>
-        </Button>
+        <ThemeToggle />
+
 
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
               >
                 3

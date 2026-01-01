@@ -7,9 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  CreditCard, 
-  Lock, 
+import {
+  CreditCard,
+  Lock,
   Unlock,
   Palette,
   Shield,
@@ -63,14 +63,14 @@ const getVirtualCardData = (): VirtualCard => {
   try {
     const user = getCurrentUser();
     let cardKey = 'virtualCard';
-    
+
     // Si es un niño, usar la clave específica del niño
     if (user?.user_type === 'child') {
       // Obtener el ID del niño desde el usuario o usar un ID por defecto
       const childId = user.id || 'child001';
       cardKey = `virtualCard_${childId}`;
     }
-    
+
     const savedCard = localStorage.getItem(cardKey);
     if (savedCard) {
       const cardData = JSON.parse(savedCard);
@@ -98,7 +98,7 @@ const getVirtualCardData = (): VirtualCard => {
   } catch (error) {
     console.error('Error cargando datos de tarjeta virtual:', error);
   }
-  
+
   // Datos por defecto si no hay datos guardados
   return {
     id: "1",
@@ -126,14 +126,14 @@ const saveVirtualCardData = (cardData: VirtualCard) => {
   try {
     const user = getCurrentUser();
     let cardKey = 'virtualCard';
-    
+
     // Si es un niño, usar la clave específica del niño
     if (user?.user_type === 'child') {
       // Obtener el ID del niño desde el usuario o usar un ID por defecto
       const childId = user.id || 'child001';
       cardKey = `virtualCard_${childId}`;
     }
-    
+
     localStorage.setItem(cardKey, JSON.stringify(cardData));
   } catch (error) {
     console.error('Error guardando datos de tarjeta virtual:', error);
@@ -185,7 +185,7 @@ export function VirtualCard() {
     try {
       const user = getCurrentUser();
       if (!user?.id) return;
-      
+
       const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
@@ -217,7 +217,7 @@ export function VirtualCard() {
     };
 
     window.addEventListener('virtualCardActivated', handleVirtualCardActivated);
-    
+
     return () => {
       window.removeEventListener('virtualCardActivated', handleVirtualCardActivated);
     };
@@ -235,7 +235,7 @@ export function VirtualCard() {
 
     // Escuchar cambios en localStorage
     window.addEventListener('storage', updateCardData);
-    
+
     // También podemos usar un intervalo para comprobar cambios regulares
     const interval = setInterval(updateCardData, 1000);
 
@@ -311,7 +311,7 @@ export function VirtualCard() {
     const categories = card.allowedCategories.includes(categoryId)
       ? card.allowedCategories.filter(id => id !== categoryId)
       : [...card.allowedCategories, categoryId];
-    
+
     const updatedCard = { ...card, allowedCategories: categories };
     setCard(updatedCard);
     saveVirtualCardData(updatedCard);
@@ -347,7 +347,7 @@ export function VirtualCard() {
   if (!bankingActivated) {
     const user = getCurrentUser();
     const isChild = user?.user_type === 'child';
-    
+
     return (
       <Card>
         <CardContent className="p-8 text-center">
@@ -355,7 +355,7 @@ export function VirtualCard() {
             <Lock className="h-12 w-12 text-muted-foreground" />
             <h3 className="text-lg font-semibold">Tarjeta Virtual no Disponible</h3>
             <p className="text-muted-foreground text-sm">
-              {isChild 
+              {isChild
                 ? 'Tu tutor o patrocinador debe activar tu tarjeta virtual para que puedas usarla.'
                 : 'Genera tu tarjeta virtual desde la sección de Gestión Familiar para empezar a usarla.'
               }
@@ -407,7 +407,7 @@ export function VirtualCard() {
                   isFrozen={card.isFrozen}
                 />
               </ErrorBoundary>
-              
+
               {/* Card Actions */}
               <div className="flex justify-center mt-4 space-x-2 flex-wrap gap-2">
                 <Button
@@ -418,7 +418,7 @@ export function VirtualCard() {
                   {showCardDetails ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   {showCardDetails ? "Ocultar" : "Mostrar"} Detalles
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -427,7 +427,7 @@ export function VirtualCard() {
                   {isFlipped ? <RotateCcw className="h-4 w-4" /> : <RotateCw className="h-4 w-4" />}
                   {isFlipped ? "Ver Frente" : "Ver Reverso"}
                 </Button>
-                
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -442,14 +442,14 @@ export function VirtualCard() {
                         Cambia el diseño y configuración de tu tarjeta
                       </DialogDescription>
                     </DialogHeader>
-                    
+
                     <Tabs defaultValue="design" className="w-full">
                       <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="design">Diseño</TabsTrigger>
                         <TabsTrigger value="limits">Límites</TabsTrigger>
                         <TabsTrigger value="security">Seguridad</TabsTrigger>
                       </TabsList>
-                      
+
                       <TabsContent value="design" className="space-y-4">
                         <div>
                           <Label>Temas Disponibles</Label>
@@ -457,9 +457,8 @@ export function VirtualCard() {
                             {Object.entries(cardThemes).map(([key, theme]) => (
                               <div
                                 key={key}
-                                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                                  card.theme === key ? 'border-primary' : 'border-muted'
-                                }`}
+                                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${card.theme === key ? 'border-primary' : 'border-muted'
+                                  }`}
                                 onClick={() => updateTheme(key as VirtualCard['theme'])}
                               >
                                 <div className={`h-16 bg-gradient-to-r ${theme.gradient} rounded mb-2`}></div>
@@ -468,7 +467,7 @@ export function VirtualCard() {
                             ))}
                           </div>
                         </div>
-                        
+
                         <div>
                           <Label>Imagen Personalizada</Label>
                           <div className="flex items-center space-x-4 mt-2">
@@ -486,7 +485,7 @@ export function VirtualCard() {
                           </p>
                         </div>
                       </TabsContent>
-                      
+
                       <TabsContent value="limits" className="space-y-4">
                         <div className="space-y-4">
                           <div>
@@ -503,7 +502,7 @@ export function VirtualCard() {
                               </span>
                             </div>
                           </div>
-                          
+
                           <div>
                             <Label>Límite por Transacción</Label>
                             <div className="flex items-center space-x-4 mt-2">
@@ -518,7 +517,7 @@ export function VirtualCard() {
                               </span>
                             </div>
                           </div>
-                          
+
                           <div>
                             <Label>Categorías Permitidas</Label>
                             <div className="grid grid-cols-2 gap-2 mt-2">
@@ -541,7 +540,7 @@ export function VirtualCard() {
                           </div>
                         </div>
                       </TabsContent>
-                      
+
                       <TabsContent value="security" className="space-y-4">
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
@@ -556,7 +555,7 @@ export function VirtualCard() {
                               onCheckedChange={(checked) => updateNotifications('transactions', checked)}
                             />
                           </div>
-                          
+
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="font-medium">Alertas de Límite Diario</div>
@@ -569,10 +568,11 @@ export function VirtualCard() {
                               onCheckedChange={(checked) => updateNotifications('dailyLimit', checked)}
                             />
                           </div>
-                          
+
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="font-medium">Alertas de Saldo Bajo</div>
+                              <div className="font-medium dark:text-white">Alertas de Saldo Bajo</div>
+
                               <div className="text-sm text-muted-foreground">
                                 Avisa cuando el saldo sea menor a $5
                               </div>
@@ -602,7 +602,8 @@ export function VirtualCard() {
                       <div className="text-lg font-bold text-green-600">
                         {formatCurrency(card.balance)}
                       </div>
-                      <div className="text-sm text-muted-foreground">Saldo disponible</div>
+                      <div className="text-sm text-muted-foreground dark:text-gray-400">Saldo disponible</div>
+
                     </div>
                   </div>
                 </CardContent>

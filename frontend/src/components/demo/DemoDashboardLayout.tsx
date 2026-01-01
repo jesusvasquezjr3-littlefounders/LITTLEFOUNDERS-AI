@@ -22,10 +22,9 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
     };
 
     return (
-        <div className="h-screen overflow-hidden bg-[#fdfbf7]" style={{
-            backgroundImage: `radial-gradient(#e5e0d8 1px, transparent 1px)`,
-            backgroundSize: '20px 20px'
-        }}>
+        <div className="h-screen overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900">
+
+
             <div className="flex h-full overflow-hidden relative">
                 {/* Sidebar is now autonomous/floating in its expansion, but occupies 16 (4rem) of space in the grid implicitly or via padding */}
                 <GamifiedSidebar

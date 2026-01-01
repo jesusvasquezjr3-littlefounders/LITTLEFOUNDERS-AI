@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Store,
   ShoppingCart,
   Plus,
@@ -258,7 +258,7 @@ const categories = [
 
 interface VirtualStoreProps {
   virtualCard: VirtualCard;
-  onPurchase: (items: CartItem[], total: number) => Promise<{success: boolean, message: string}>;
+  onPurchase: (items: CartItem[], total: number) => Promise<{ success: boolean, message: string }>;
 }
 
 export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
@@ -267,13 +267,13 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [purchaseResult, setPurchaseResult] = useState<{success: boolean, message: string} | null>(null);
+  const [purchaseResult, setPurchaseResult] = useState<{ success: boolean, message: string } | null>(null);
 
   // Filtrar productos - Mostrar todos los productos sin restricciones de categoría
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
     // Removido el filtro de categorías permitidas para mostrar todos los productos
     return matchesCategory && matchesSearch;
   });
@@ -284,7 +284,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
       const existingItem = prevCart.find(item => item.product.id === product.id);
       if (existingItem) {
         return prevCart.map(item =>
-          item.product.id === product.id 
+          item.product.id === product.id
             ? { ...item, quantity: Math.min(item.quantity + 1, product.inStock) }
             : item
         );
@@ -320,48 +320,48 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
   // Función para procesar compra
   const handlePurchase = async () => {
     const total = getCartTotal();
-    
+
     // Validaciones
     if (cart.length === 0) {
-      setPurchaseResult({success: false, message: "Tu carrito está vacío"});
+      setPurchaseResult({ success: false, message: "Tu carrito está vacío" });
       return;
     }
 
     if (virtualCard.isFrozen) {
-      setPurchaseResult({success: false, message: "Tu tarjeta está bloqueada"});
+      setPurchaseResult({ success: false, message: "Tu tarjeta está bloqueada" });
       return;
     }
 
     // Verificar categorías permitidas
-    const restrictedItems = cart.filter(item => 
+    const restrictedItems = cart.filter(item =>
       !virtualCard.allowedCategories.includes(item.product.category)
     );
-    
+
     if (restrictedItems.length > 0) {
       const restrictedCategories = restrictedItems.map(item => item.product.category).join(', ');
-      setPurchaseResult({success: false, message: `No puedes comprar productos de estas categorías: ${restrictedCategories}. Pídele a tus padres que habiliten estas categorías.`});
+      setPurchaseResult({ success: false, message: `No puedes comprar productos de estas categorías: ${restrictedCategories}. Pídele a tus padres que habiliten estas categorías.` });
       return;
     }
 
     if (total > virtualCard.balance) {
-      setPurchaseResult({success: false, message: "Saldo insuficiente"});
+      setPurchaseResult({ success: false, message: "Saldo insuficiente" });
       return;
     }
 
     if (total > virtualCard.dailyLimit) {
-      setPurchaseResult({success: false, message: "Excede el límite diario"});
+      setPurchaseResult({ success: false, message: "Excede el límite diario" });
       return;
     }
 
     if (total > virtualCard.transactionLimit) {
-      setPurchaseResult({success: false, message: "Excede el límite por transacción"});
+      setPurchaseResult({ success: false, message: "Excede el límite por transacción" });
       return;
     }
 
     // Procesar compra
     const result = await onPurchase(cart, total);
     setPurchaseResult(result);
-    
+
     if (result.success) {
       setCart([]); // Limpiar carrito después de compra exitosa
       setShowCart(false);
@@ -370,8 +370,8 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
 
   // Función para alternar favoritos
   const toggleFavorite = (productId: string) => {
-    setFavorites(prev => 
-      prev.includes(productId) 
+    setFavorites(prev =>
+      prev.includes(productId)
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
@@ -391,7 +391,8 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Store className="h-6 w-6 text-purple-600" />
-            <span>Tiendita Virtual</span>
+            <span className="text-slate-900 dark:text-white">Tiendita Virtual</span>
+
           </CardTitle>
           <CardDescription>
             Compra productos reales usando tu tarjeta virtual
@@ -402,6 +403,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-green-100">
                 Saldo: {formatCurrency(virtualCard.balance)}
+
               </Badge>
               <Badge variant="outline" className="bg-blue-100">
                 Límite diario: {formatCurrency(virtualCard.dailyLimit)}
@@ -468,7 +470,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                 Destacado
               </Badge>
             )}
-            
+
             <CardContent className="p-4">
               <div className="space-y-3">
                 {/* Imagen del producto */}
@@ -503,12 +505,11 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                       onClick={() => toggleFavorite(product.id)}
                       className="p-2"
                     >
-                      <Heart 
-                        className={`h-4 w-4 ${
-                          favorites.includes(product.id) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-gray-400'
-                        }`} 
+                      <Heart
+                        className={`h-4 w-4 ${favorites.includes(product.id)
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-400'
+                          }`}
                       />
                     </Button>
                     <Button
@@ -533,7 +534,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
             <div className="text-4xl mb-4">🛍️</div>
             <h3 className="text-lg font-semibold mb-2">No se encontraron productos</h3>
             <p className="text-gray-600">
-              {selectedCategory !== 'all' 
+              {selectedCategory !== 'all'
                 ? `No hay productos disponibles en la categoría ${categories.find(c => c.id === selectedCategory)?.name}.`
                 : 'No hay productos que coincidan con tu búsqueda.'
               }
@@ -581,7 +582,7 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center space-x-2">
                         <Button
@@ -601,11 +602,11 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
-                      
+
                       <div className="font-bold text-green-600">
                         {formatCurrency(item.product.price * item.quantity)}
                       </div>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -659,10 +660,10 @@ export function VirtualStore({ virtualCard, onPurchase }: VirtualStoreProps) {
                     <Button variant="outline" onClick={() => setShowCart(false)} className="flex-1">
                       Seguir Comprando
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handlePurchase}
                       disabled={
-                        cart.length === 0 || 
+                        cart.length === 0 ||
                         virtualCard.isFrozen ||
                         getCartTotal() > virtualCard.balance ||
                         getCartTotal() > virtualCard.dailyLimit ||

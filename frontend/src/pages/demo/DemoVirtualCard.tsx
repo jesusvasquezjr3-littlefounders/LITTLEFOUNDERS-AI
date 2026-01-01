@@ -361,7 +361,8 @@ export function DemoVirtualCard() {
 
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <div className="font-medium">Alertas de Saldo Bajo</div>
+                                                        <div className="font-medium dark:text-white">Alertas de Saldo Bajo</div>
+
                                                         <div className="text-sm text-muted-foreground">
                                                             Avisa cuando el saldo sea menor a $5
                                                         </div>
@@ -390,7 +391,8 @@ export function DemoVirtualCard() {
                                             <div className="text-lg font-bold text-green-600">
                                                 {formatCurrency(card.balance)}
                                             </div>
-                                            <div className="text-sm text-muted-foreground">Saldo disponible</div>
+                                            <div className="text-sm text-muted-foreground dark:text-gray-400">Saldo disponible</div>
+
                                         </div>
                                     </div>
                                 </CardContent>

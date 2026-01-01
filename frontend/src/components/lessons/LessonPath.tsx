@@ -73,10 +73,10 @@ export const LessonPath: React.FC<LessonPathProps> = ({ modules, onModuleClick }
                                                     "relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center border-b-8 transition-all focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50",
                                                     // State Styles
                                                     module.completed
-                                                        ? "bg-yellow-400 border-yellow-600 active:border-b-0 active:translate-y-2 hover:bg-yellow-300"
+                                                        ? "bg-yellow-400 border-yellow-600 active:border-b-0 active:translate-y-2 hover:bg-yellow-300 dark:bg-yellow-500 dark:border-yellow-700"
                                                         : module.locked
-                                                            ? "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed grayscale"
-                                                            : "bg-indigo-500 border-indigo-700 text-white active:border-b-0 active:translate-y-2 hover:bg-indigo-400 animate-pulse",
+                                                            ? "bg-slate-200 border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-600 cursor-not-allowed grayscale"
+                                                            : "bg-indigo-500 border-indigo-700 text-white active:border-b-0 active:translate-y-2 hover:bg-indigo-400 dark:bg-indigo-600 dark:border-indigo-800 animate-pulse",
                                                     // Current Lesson Extra Pop
                                                     !module.completed && !module.locked && "ring-4 ring-indigo-200 scale-110 shadow-lg"
                                                 )}
@@ -97,7 +97,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({ modules, onModuleClick }
 
                                                 {/* Start Label for Current */}
                                                 {!module.completed && !module.locked && (
-                                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-indigo-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md animate-bounce border border-indigo-100">
+                                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md animate-bounce border border-indigo-100 dark:border-indigo-900">
                                                         ¡Empezar!
                                                     </div>
                                                 )}
@@ -116,9 +116,9 @@ export const LessonPath: React.FC<LessonPathProps> = ({ modules, onModuleClick }
                                 {/* Title Label underneath */}
                                 <div className={cn(
                                     "mt-3 px-4 py-2 rounded-xl text-sm font-bold text-center leading-tight whitespace-normal break-words z-20 shadow-sm border transaction-colors duration-200",
-                                    module.completed ? "bg-yellow-50 text-yellow-800 border-yellow-200" :
-                                        module.locked ? "bg-slate-100 text-slate-500 border-slate-200" :
-                                            "bg-indigo-50 text-indigo-800 border-indigo-200 scale-105"
+                                    module.completed ? "bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-100 dark:border-yellow-800" :
+                                        module.locked ? "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" :
+                                            "bg-indigo-50 text-indigo-800 border-indigo-200 scale-105 dark:bg-indigo-900/40 dark:text-indigo-100 dark:border-indigo-800"
                                 )}>
                                     {module.title}
                                 </div>

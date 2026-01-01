@@ -57,3 +57,4 @@ INSTRUCCIONES_LOCAL.md
 # backend/database.py
 # backend/requirements.txt
 # frontend/src/config/api.ts
+supabase_migration.sql

@@ -82,11 +82,11 @@ const LandingPage = () => {
               <a href="#problem" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">¿Por qué?</a>
               <a href="#features" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Lecciones</a>
               <a href="#faq" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Dudas</a>
-              <Button asChild variant="ghost" onClick={() => handleTrackClick('login_nav')}>
-                <Link to="/login" className="text-gray-700 hover:bg-gray-100">Ingresar</Link>
+              <Button asChild variant="outline" onClick={() => handleTrackClick('login_nav')} className="border-pink-200 text-pink-700 hover:bg-pink-50 hover:text-pink-800 rounded-full px-6">
+                <Link to="/login">Iniciar Sesión</Link>
               </Button>
               <Button asChild onClick={() => handleTrackClick('cta_nav')} className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-full px-6">
-                <Link to="/demo">Probar Gratis</Link>
+                <Link to="/register">Registrate Gratis</Link>
               </Button>
             </div>
 
@@ -104,11 +104,11 @@ const LandingPage = () => {
             <a href="#features" className="text-lg font-medium text-gray-700 py-2 border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>Lecciones</a>
             <a href="#faq" className="text-lg font-medium text-gray-700 py-2 border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>Preguntas Frecuentes</a>
             <div className="flex flex-col gap-3 mt-2">
-              <Button asChild variant="outline" className="w-full justify-center" onClick={() => handleTrackClick('login_mobile')}>
-                <Link to="/login">Ingresar</Link>
+              <Button asChild variant="secondary" className="w-full justify-center border-pink-100 text-pink-700" onClick={() => handleTrackClick('login_mobile')}>
+                <Link to="/login">Iniciar Sesión</Link>
               </Button>
               <Button asChild className="w-full justify-center bg-pink-600 hover:bg-pink-700 text-white" onClick={() => handleTrackClick('cta_mobile')}>
-                <Link to="/demo">¡Comenzar!</Link>
+                <Link to="/register">Registrate Gratis</Link>
               </Button>
             </div>
           </div>
@@ -416,8 +416,8 @@ const LandingPage = () => {
             Dale las herramientas que la escuela no le da. Empieza hoy, es gratis y toma 30 segundos.
           </p>
           <Button asChild size="lg" className="px-12 py-8 text-2xl rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-2xl hover:shadow-pink-500/25 transition-all transform hover:scale-105" onClick={() => handleTrackClick('cta_bottom')}>
-            <Link to="/demo">
-              Comenzar Aventura Gratis
+            <Link to="/register">
+              Registrate Gratis
             </Link>
           </Button>
           <p className="mt-6 text-sm text-gray-400">Sin compromiso. Cancela cuando quieras.</p>

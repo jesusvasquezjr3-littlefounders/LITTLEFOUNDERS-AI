@@ -269,7 +269,8 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
 
       {/* Explore Features Section */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 px-1">Explora las Funcionalidades 🚀</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white px-1">Explora las Funcionalidades 🚀</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Interactive Lessons Card */}
           <Link to="/lecciones" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
