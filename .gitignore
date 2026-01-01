@@ -51,10 +51,8 @@ venv/
 # Docker
 *.pid
 
-
-# NOTA: ARCHIVOS QUE JESUS V. MODIFICÓ PARA TENER EL PROYECTO CORRIENDO FULL STACK EN LA MAC DEL TRABAJO
 INSTRUCCIONES_LOCAL.md
-# backend/database.py
-# backend/requirements.txt
-# frontend/src/config/api.ts
-supabase_migration.sql
+backend/.env
+frontend/.env
+backend/users.txt
+env.example
