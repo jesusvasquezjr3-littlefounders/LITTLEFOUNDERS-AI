@@ -52,6 +52,8 @@ venv/
 *.pid
 
 INSTRUCCIONES_LOCAL.md
+GUIA_DESPLIEGUE_VERCEL.md
+
 backend/.env
 frontend/.env
 backend/users.txt
