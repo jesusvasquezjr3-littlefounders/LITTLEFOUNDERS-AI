@@ -9,7 +9,7 @@ import enum
 class UserType(str, enum.Enum):
     TUTOR = "tutor"
     CHILD = "child"
-    SPONSOR = "sponsor"
+    UNIVERSAL = "universal"
 
 
 class Gender(str, enum.Enum):
@@ -54,9 +54,11 @@ class User(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
-    user_type = Column(Enum(UserType), nullable=False)
+    # Using String here allows us to pass the exact value ('universal') 
+    # instead of SQLAlchemy forcing the Enum member name ('UNIVERSAL')
+    user_type = Column(String, nullable=False)
     birth_date = Column(DateTime)
-    gender = Column(Enum(Gender))
+    gender = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_active = Column(Boolean, default=True)
@@ -64,8 +66,6 @@ class User(Base):
     # Family Relationships - Foreign Keys
     # For CHILD: reference to their tutor
     tutor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    # For SPONSOR: reference to the child they sponsor
-    sponsored_child_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     # SQLAlchemy Relationships
     # Children of this tutor (if user is TUTOR) - ONE tutor has MANY children
@@ -81,21 +81,6 @@ class User(Base):
         foreign_keys=[tutor_id],
         back_populates="children"
         # No remote_side here - this is the "many" side
-    )
-    
-    # Sponsors of this child (if user is CHILD) - ONE child has MANY sponsors
-    sponsors = relationship(
-        "User",
-        foreign_keys=[sponsored_child_id],
-        back_populates="sponsored_child"
-        # No remote_side here - this is the "many" side
-    )
-    # Child that this sponsor supports (if user is SPONSOR) - MANY sponsors have ONE child
-    sponsored_child = relationship(
-        "User",
-        foreign_keys=[sponsored_child_id],
-        back_populates="sponsors",
-        remote_side=[id]  # This is the "one" side
     )
     
     # Child specific fields

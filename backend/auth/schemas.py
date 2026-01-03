@@ -11,26 +11,25 @@ class UserBase(BaseModel):
     gender: Optional[str] = None
 
 
-class UserRegister(UserBase):
+class UserRegister(BaseModel):
+    name: str
+    email: EmailStr
     password: str
 
 
-class TutorRegister(UserRegister):
-    pass
+# Legacy scheamas kept for backward compatibility if needed, 
+# but we are moving to UserRegister for the main flow
+class TutorRegister(UserBase):
+    password: str
 
 
-class ChildRegister(UserRegister):
-    pass
-
-
-class SponsorRegister(UserRegister):
-    pass
+class ChildRegister(UserBase):
+    password: str
 
 
 class FamilyRegistration(BaseModel):
     tutor: TutorRegister
     child: ChildRegister
-    sponsor: Optional[SponsorRegister] = None
 
 
 class UserLogin(BaseModel):

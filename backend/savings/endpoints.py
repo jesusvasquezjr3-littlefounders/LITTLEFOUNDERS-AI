@@ -60,7 +60,7 @@ async def create_savings_goal(goal: SavingsGoalCreate, user_id: int, db: Session
     
     # Determine the owner of the goal
     if goal.assigned_to:
-        # Tutor/Sponsor assigning to a child
+        # Tutor assigning to a child
         target_user = db.query(User).filter(User.id == goal.assigned_to).first()
         if not target_user:
             raise HTTPException(status_code=404, detail="Assigned user not found")
@@ -98,7 +98,6 @@ async def get_savings_goals(user_id: int, requester_id: int, db: Session = Depen
     
     - For CHILD: returns their own goals
     - For TUTOR: returns goals of their children (tutors don't have personal goals)
-    - For SPONSOR: returns goals of their sponsored child
     """
     # Verify family access
     verify_family_access(db, requester_id, user_id, allow_self=True)
@@ -147,19 +146,7 @@ async def get_savings_goals(user_id: int, requester_id: int, db: Session = Depen
                 goal.user_name = child.name
             goals.extend(child_goals)
     
-    # For SPONSOR: get goals of sponsored child
-    elif user.user_type.value == "sponsor":
-        if user.sponsored_child_id:
-            sponsored_child = db.query(User).filter(User.id == user.sponsored_child_id).first()
-            if sponsored_child:
-                sponsored_goals = db.query(SavingsGoal).filter(
-                    SavingsGoal.user_id == user.sponsored_child_id,
-                    SavingsGoal.is_active == True
-                ).all()
-                # Agregar nombre del niño patrocinado a cada meta
-                for goal in sponsored_goals:
-                    goal.user_name = sponsored_child.name
-                goals.extend(sponsored_goals)
+
     
     return goals
 

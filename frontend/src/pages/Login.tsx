@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,20 @@ const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { trackEvent, identifyUser } = usePostHog();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    console.log("Login Check - Token:", token ? "Present" : "Missing");
+    console.log("Login Check - User:", user ? "Present" : "Missing");
+
+    // Check for either token OR user object to align with ProtectedRoute
+    if (token || user) {
+      console.log("Redirecting to dashboard...");
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,30 +57,30 @@ const Login = () => {
       if (response.ok) {
         // Store complete user data including user_type and metrics
         localStorage.setItem('user', JSON.stringify(data.user));
-        
-        const userTypeLabel = data.user.user_type === 'tutor' ? 'Padre o Tutor' : 
-                             data.user.user_type === 'child' ? 'Niño' : 
-                             data.user.user_type === 'sponsor' ? 'Patrocinador' : 'Usuario';
-        
+        localStorage.setItem('token', data.access_token);
+
+        const userTypeLabel = data.user.user_type === 'tutor' ? 'Padre o Tutor' :
+          data.user.user_type === 'child' ? 'Niño' : 'Usuario';
+
         // Track successful login and identify user
         trackEvent('login_success', {
           user_type: data.user.user_type,
           user_id: data.user.id,
           timestamp: new Date().toISOString()
         });
-        
+
         identifyUser(data.user.id.toString(), {
           email: data.user.email,
           name: data.user.name,
           user_type: data.user.user_type,
           birth_date: data.user.birth_date
         });
-        
+
         toast({
           title: `¡Bienvenid@ de vuelta, ${data.user.name}!`,
           description: `Has iniciado sesión como ${userTypeLabel}. ¡Disfruta tu experiencia en LittleFounders!`,
         });
-        
+
         navigate('/dashboard');
       } else {
         // Track failed login
@@ -75,7 +89,7 @@ const Login = () => {
           error: data.detail || "Invalid credentials",
           timestamp: new Date().toISOString()
         });
-        
+
         toast({
           title: "No pudimos iniciar sesión",
           description: data.detail || "Correo o contraseña incorrectos. ¡Intenta de nuevo!",
@@ -89,7 +103,7 @@ const Login = () => {
         error: 'Connection error',
         timestamp: new Date().toISOString()
       });
-      
+
       toast({
         title: "Error de conexión",
         description: "No pudimos conectar con el servidor. Intenta más tarde.",
@@ -154,8 +168,8 @@ const Login = () => {
         </div>
 
         {/* Botón de enviar */}
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full bg-gradient-to-r from-primary to-customers hover:opacity-90"
           disabled={isLoading}
         >
@@ -176,8 +190,8 @@ const Login = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             ¿Todavía no tienes cuenta?{" "}
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="font-medium text-primary hover:underline"
             >
               ¡Crea una ahora!

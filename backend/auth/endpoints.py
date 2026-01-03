@@ -6,7 +6,7 @@ from typing import Optional
 from database import get_db
 from models import User, UserType
 from auth.schemas import (
-    FamilyRegistration,
+    UserRegister,
     UserLogin,
     UserResponse,
     Token
@@ -18,129 +18,55 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/register", response_model=dict)
-async def register_family(registration_data: FamilyRegistration, db: Session = Depends(get_db)):
+async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
     """
-    Register a complete family (tutor, child, and optionally sponsor)
+    Register a new user (Simplified Flow)
+    Creates a 'Universal' user with just name, email, and password.
     """
     try:
-        # Check if tutor email already exists
-        existing_tutor = db.query(User).filter(User.email == registration_data.tutor.email).first()
-        if existing_tutor:
+        # Check if email already exists
+        existing_user = db.query(User).filter(User.email == user_data.email).first()
+        if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Tutor email already registered"
+                detail="Email already registered"
             )
         
-        # Check if child email already exists
-        existing_child = db.query(User).filter(User.email == registration_data.child.email).first()
-        if existing_child:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Child email already registered"
-            )
-        
-        # Create tutor user
-        tutor_birth_date = None
-        if registration_data.tutor.birth_date:
-            try:
-                tutor_birth_date = datetime.fromisoformat(registration_data.tutor.birth_date)
-            except:
-                pass
-        
-        tutor_user = User(
-            name=registration_data.tutor.name,
-            email=registration_data.tutor.email,
-            password_hash=get_password_hash(registration_data.tutor.password),
-            user_type=UserType.TUTOR,
-            birth_date=tutor_birth_date,
-            gender=registration_data.tutor.gender,
+        # Create universal user
+        new_user = User(
+            name=user_data.name,
+            email=user_data.email,
+            password_hash=get_password_hash(user_data.password),
+            user_type=UserType.UNIVERSAL.value,
+            # Demographic fields are now optional and handled later
+            birth_date=None,
+            gender=None,
+            # Initialize default values
+            balance=0.0,
+            points_earned=0
         )
-        db.add(tutor_user)
-        db.flush()  # Get the tutor_user.id
         
-        # Create child user with reference to tutor
-        child_birth_date = None
-        if registration_data.child.birth_date:
-            try:
-                child_birth_date = datetime.fromisoformat(registration_data.child.birth_date)
-            except:
-                pass
-        
-        child_user = User(
-            name=registration_data.child.name,
-            email=registration_data.child.email,
-            password_hash=get_password_hash(registration_data.child.password),
-            user_type=UserType.CHILD,
-            birth_date=child_birth_date,
-            gender=registration_data.child.gender,
-            tutor_id=tutor_user.id,  # Link to tutor via ID
-            lessons_completed=0,
-            minutes_studied=0,
-            points_earned=0,
-            balance=0.0
-        )
-        db.add(child_user)
-        db.flush()  # Get the child_user.id
-        
-        # Create sponsor if provided
-        sponsor_user = None
-        if registration_data.sponsor:
-            existing_sponsor = db.query(User).filter(User.email == registration_data.sponsor.email).first()
-            if existing_sponsor:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Sponsor email already registered"
-                )
-            
-            sponsor_birth_date = None
-            if registration_data.sponsor.birth_date:
-                try:
-                    sponsor_birth_date = datetime.fromisoformat(registration_data.sponsor.birth_date)
-                except:
-                    pass
-            
-            sponsor_user = User(
-                name=registration_data.sponsor.name,
-                email=registration_data.sponsor.email,
-                password_hash=get_password_hash(registration_data.sponsor.password),
-                user_type=UserType.SPONSOR,
-                birth_date=sponsor_birth_date,
-                gender=registration_data.sponsor.gender,
-                sponsored_child_id=child_user.id,  # Link to child via ID
-            )
-            db.add(sponsor_user)
-        
+        db.add(new_user)
         db.commit()
-        db.refresh(tutor_user)
-        db.refresh(child_user)
-        if sponsor_user:
-            db.refresh(sponsor_user)
+        db.refresh(new_user)
         
-        response = {
-            "message": "Family registration successful",
-            "tutor": {
-                "id": tutor_user.id,
-                "name": tutor_user.name,
-                "email": tutor_user.email,
-                "user_type": tutor_user.user_type.value
+        # Create access token for immediate login
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = create_access_token(
+            data={"sub": new_user.email}, expires_delta=access_token_expires
+        )
+        
+        return {
+            "message": "Registration successful",
+            "user": {
+                "id": new_user.id,
+                "name": new_user.name,
+                "email": new_user.email,
+                "user_type": new_user.user_type
             },
-            "child": {
-                "id": child_user.id,
-                "name": child_user.name,
-                "email": child_user.email,
-                "user_type": child_user.user_type.value
-            }
+            "access_token": access_token,
+            "token_type": "bearer"
         }
-        
-        if sponsor_user:
-            response["sponsor"] = {
-                "id": sponsor_user.id,
-                "name": sponsor_user.name,
-                "email": sponsor_user.email,
-                "user_type": sponsor_user.user_type.value
-            }
-        
-        return response
         
     except HTTPException:
         raise
@@ -149,7 +75,7 @@ async def register_family(registration_data: FamilyRegistration, db: Session = D
         print(f"Registration error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to register family"
+            detail="Failed to register user"
         )
 
 
@@ -191,19 +117,19 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "user_type": user.user_type.value,
+        "user_type": user.user_type,
         "created_at": user.created_at.isoformat(),
         "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+        "lessons_completed": user.lessons_completed,
+        "minutes_studied": user.minutes_studied,
+        "points_earned": user.points_earned,
+        "current_streak": user.current_streak,
     }
     
     # Add child-specific fields if user is a child
     if user.user_type == UserType.CHILD:
         user_data.update({
-            "lessons_completed": user.lessons_completed,
-            "minutes_studied": user.minutes_studied,
-            "points_earned": user.points_earned,
             "balance": user.balance,
-            "current_streak": user.current_streak,
             "has_virtual_card": user.has_virtual_card if hasattr(user, 'has_virtual_card') else False
         })
     
@@ -228,7 +154,7 @@ async def get_all_users(db: Session = Depends(get_db)):
             "id": user.id,
             "name": user.name,
             "email": user.email,
-            "user_type": user.user_type.value,
+            "user_type": user.user_type,
             "created_at": user.created_at.isoformat()
         }
         
@@ -269,11 +195,10 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
             "id": user.id,
             "name": user.name,
             "email": user.email,
-            "user_type": user.user_type.value
+            "user_type": user.user_type
         },
         "tutor": None,
-        "children": [],
-        "sponsors": []
+        "children": []
     }
     
     # If user is a CHILD, get their tutor and sponsors
@@ -285,23 +210,8 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
                     "id": tutor.id,
                     "name": tutor.name,
                     "email": tutor.email,
-                    "user_type": tutor.user_type.value
+                    "user_type": tutor.user_type
                 }
-        
-        # Get sponsors
-        sponsors = db.query(User).filter(
-            User.sponsored_child_id == user_id,
-            User.user_type == UserType.SPONSOR
-        ).all()
-        family_data["sponsors"] = [
-            {
-                "id": sponsor.id,
-                "name": sponsor.name,
-                "email": sponsor.email,
-                "user_type": sponsor.user_type.value
-            }
-            for sponsor in sponsors
-        ]
     
     # If user is a TUTOR, get their children
     elif user.user_type == UserType.TUTOR:
@@ -311,36 +221,11 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
                 "id": child.id,
                 "name": child.name,
                 "email": child.email,
-                "user_type": child.user_type.value,
+                "user_type": child.user_type,
                 "balance": child.balance,
                 "points_earned": child.points_earned
             }
             for child in children
         ]
-    
-    # If user is a SPONSOR, get the sponsored child and their tutor
-    elif user.user_type == UserType.SPONSOR:
-        if user.sponsored_child_id:
-            child = db.query(User).filter(User.id == user.sponsored_child_id).first()
-            if child:
-                family_data["children"] = [{
-                    "id": child.id,
-                    "name": child.name,
-                    "email": child.email,
-                    "user_type": child.user_type.value,
-                    "balance": child.balance,
-                    "points_earned": child.points_earned
-                }]
-                
-                # Get the child's tutor
-                if child.tutor_id:
-                    tutor = db.query(User).filter(User.id == child.tutor_id).first()
-                    if tutor:
-                        family_data["tutor"] = {
-                            "id": tutor.id,
-                            "name": tutor.name,
-                            "email": tutor.email,
-                            "user_type": tutor.user_type.value
-                        }
     
     return family_data

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Settings,
   HelpCircle,
@@ -14,10 +14,12 @@ import {
   Map as MapIcon,
   Menu,
   PinIcon,
-  ChevronLeft
+  ChevronLeft,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 // Obtener información del usuario
 const getUser = () => {
@@ -41,6 +43,18 @@ const getMenuItems = () => {
       { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "nav-games" },
       { title: "Banca Digital", url: "/growth", icon: TrendingUp, color: "text-red-500", bg: "bg-red-100", id: "nav-banking" },
       { title: "Tiendita", url: "/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "nav-store" },
+    ];
+  } else if (user.user_type === 'universal') {
+    // Menú para usuarios universales (acceso limitado)
+    return [
+      { title: "Inicio", url: "/dashboard", icon: Home, color: "text-blue-500", bg: "bg-blue-100", id: "nav-home" },
+      { title: "Lecciones", url: "/lecciones", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-100", id: "nav-lessons" },
+      { title: "Emprendimiento", url: "/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "nav-games" },
+      // Bloqueados
+      { title: "Mis Tareas", url: "#", icon: Trophy, color: "text-slate-400", bg: "bg-slate-100", id: "nav-tasks", locked: true },
+      { title: "Mis Ahorros", url: "#", icon: PiggyBank, color: "text-slate-400", bg: "bg-slate-100", id: "nav-savings", locked: true },
+      { title: "Banca Digital", url: "#", icon: TrendingUp, color: "text-slate-400", bg: "bg-slate-100", id: "nav-banking", locked: true },
+      { title: "Tiendita", url: "#", icon: Store, color: "text-slate-400", bg: "bg-slate-100", id: "nav-store", locked: true },
     ];
   } else {
     // Menú para padres (More sober but consistent structure)
@@ -72,11 +86,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const menuItems = getMenuItems();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const { toast } = useToast();
 
   // Derived state for expansion: Expanded if hovered OR if NOT collapsed (pinned)
   const isExpanded = isHovered || !collapsed;
 
   const isActive = (path: string) => {
+    if (path === "#") return false;
     if (path === "/dashboard") return currentPath === "/dashboard";
     return currentPath.startsWith(path);
   };
@@ -90,6 +106,17 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       }
     }
   }, [location.pathname]);
+
+  const handleItemClick = (e: React.MouseEvent, item: any) => {
+    if (item.locked) {
+      e.preventDefault();
+      toast({
+        title: "Función en Desarrollo",
+        description: "Esta funcionalidad estará disponible próximamente o requiere completar tu perfil.",
+        variant: "default",
+      });
+    }
+  };
 
   return (
     <div
@@ -145,7 +172,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
         {/* Menu Items */}
         <div className="space-y-2 px-3 relative z-10">
-          {menuItems.map((item) => {
+          {menuItems.map((item: any) => {
             const active = isActive(item.url);
             return (
               <NavLink
@@ -153,13 +180,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 to={item.url}
                 id={item.id}
                 end={item.url === "/dashboard"}
+                onClick={(e) => handleItemClick(e, item)}
                 className={({ isActive }) => cn(
                   "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
                   "border-2",
-                  isActive
+                  active
                     ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
                     : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800",
-                  !isExpanded && "justify-center px-2"
+                  !isExpanded && "justify-center px-2",
+                  item.locked && "opacity-70 cursor-not-allowed hover:bg-transparent"
                 )}
               >
                 {/* Icon Node */}
@@ -171,6 +200,12 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     "w-7 h-7 transition-transform duration-200",
                     active ? cn(item.color, "scale-110") : "text-slate-400 group-hover:text-slate-600"
                   )} />
+                  {/* Lock overlay if locked */}
+                  {item.locked && (
+                    <div className="absolute -top-1 -right-1 bg-slate-200 rounded-full p-0.5">
+                      <Lock className="w-3 h-3 text-slate-500" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Label */}
@@ -182,6 +217,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     )}>
                       {item.title}
                     </span>
+                    {item.locked && (
+                      <Lock className="w-3 h-3 text-slate-400" />
+                    )}
                   </div>
                 )}
               </NavLink>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ChildDashboard } from "@/components/dashboard/ChildDashboard";
 import { ParentDashboard } from "@/components/dashboard/ParentDashboard";
+import { UniversalDashboard } from "@/components/dashboard/UniversalDashboard";
 
 const Index = () => {
   const [user, setUser] = useState<any>(null);
@@ -22,7 +23,16 @@ const Index = () => {
     );
   }
 
-  // For tutor and sponsor, show the parent dashboard
+  // If user is universal, show the universal dashboard
+  if (user?.user_type === 'universal') {
+    return (
+      <DashboardLayout>
+        <UniversalDashboard user={user} />
+      </DashboardLayout>
+    );
+  }
+
+  // For tutor, show the parent dashboard
   return (
     <DashboardLayout>
       <ParentDashboard user={user} />
