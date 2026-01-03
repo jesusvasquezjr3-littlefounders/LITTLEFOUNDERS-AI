@@ -95,14 +95,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <div
       className={cn(
         "fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out z-50 flex flex-col",
-        isExpanded ? "w-72" : "w-20 md:w-24",
+        isExpanded ? "w-72" : "w-16 md:w-24", // Adjusted for mobile
         "bg-background dark:bg-slate-900 border-r-4 border-border dark:border-slate-800", // Theme-aware background
         "shadow-[4px_0_24px_rgba(0,0,0,0.05)]"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header */}
+      {/* Header / Map Title */}
       <div className="p-6 border-b-2 border-dashed border-border dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm min-h-[88px]">
         {isExpanded && (
           <div className="flex items-center gap-2 animate-in fade-in duration-300 px-2">
@@ -114,7 +114,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </div>
         )}
 
-        {/* Pin Button logic: collapsed = true means UNPINNED */}
+        {/* Pin Button: Only visible when expanded. Controls 'collapsed' prop (Pin state) */}
         {isExpanded ? (
           <Button
             variant="ghost"
@@ -129,7 +129,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <PinIcon className={cn("w-5 h-5 transition-transform", !collapsed ? "-rotate-45 fill-current" : "rotate-0")} />
           </Button>
         ) : (
-          // Collapsed icon
+          // Collapsed state icon (centering handled by flex parent)
           <div className="mx-auto">
             <img
               src="/logo-sized.png"
@@ -141,24 +141,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* Path Container */}
-      <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-8 custom-scrollbar scroll-smooth">
-        {/* Winding Path SVG Line (Only visible when expanded) */}
-        {isExpanded && (
-          <svg className="absolute top-0 left-[2.25rem] w-12 h-full pointer-events-none z-0" style={{ height: `${(menuItems.length + bottomItems.length) * 80 + 100}px` }}>
-            <path
-              d={`M 24 20 ${menuItems.map((_, i) => `L 24 ${i * 80 + 60}`).join(' ')} L 24 ${(menuItems.length) * 80 + 40} ${bottomItems.map((_, i) => `L 24 ${(menuItems.length + i) * 80 + 100}`).join(' ')}`}
-              fill="none"
-              stroke="#e5e0d8"
-              strokeWidth="4"
-              strokeDasharray="8 8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        )}
+      <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-4 custom-scrollbar scroll-smooth">
 
         {/* Menu Items */}
-        <div className="space-y-4 px-4 relative z-10">
+        <div className="space-y-2 px-3 relative z-10">
           {menuItems.map((item) => {
             const active = isActive(item.url);
             return (
@@ -166,50 +152,36 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 key={item.title}
                 to={item.url}
                 id={item.id}
+                end={item.url === "/dashboard"}
                 className={({ isActive }) => cn(
-                  "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
-                  "hover:translate-x-2",
-                  active ? "bg-white dark:bg-slate-800 shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60 dark:hover:bg-slate-800/60",
-                  !isExpanded && "justify-center px-1"
+                  "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                  "border-2",
+                  isActive
+                    ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
+                    : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800",
+                  !isExpanded && "justify-center px-2"
                 )}
               >
                 {/* Icon Node */}
                 <div className={cn(
-                  "relative rounded-2xl flex items-center justify-center transition-all duration-300",
-                  "shadow-[0_4px_0_rgba(0,0,0,0.1)]",
-                  !isExpanded ? "w-14 h-12" : "w-12 h-12",
-                  active
-                    ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white dark:ring-slate-700")
-                    : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-orange-200 dark:group-hover:border-orange-900"
+                  "relative flex items-center justify-center transition-all duration-200",
+                  !isExpanded ? "w-10 h-10" : "w-10 h-10"
                 )}>
                   <item.icon className={cn(
-                    "w-6 h-6 transition-transform duration-300",
-                    active ? item.color : "text-slate-400 group-hover:text-orange-400 group-hover:scale-110"
+                    "w-7 h-7 transition-transform duration-200",
+                    active ? cn(item.color, "scale-110") : "text-slate-400 group-hover:text-slate-600"
                   )} />
-
-                  {/* Connector Dot */}
-                  {isExpanded && (
-                    <div className={cn(
-                      "absolute -left-[22px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white",
-                      active ? "bg-orange-500 scale-125" : "bg-slate-200"
-                    )} />
-                  )}
                 </div>
 
                 {/* Label */}
                 {isExpanded && (
-                  <div className="flex-1">
+                  <div className="flex-1 flex items-center justify-between">
                     <span className={cn(
-                      "font-bold text-base block transition-colors",
-                      active ? "text-slate-800 dark:text-slate-100" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                      "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                      active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
                     )}>
                       {item.title}
                     </span>
-                    {active && (
-                      <span className="text-xs font-medium text-orange-500 animate-pulse">
-                        ¡Estás aquí! 📍
-                      </span>
-                    )}
                   </div>
                 )}
               </NavLink>
@@ -218,38 +190,48 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
 
         {/* Divider */}
-        <div className="my-4 border-t-2 border-dashed border-[#e5e0d8] mx-4" />
+        <div className="my-6 border-t-2 border-dashed border-border dark:border-slate-800 mx-4" />
 
-        {/* Bottom Items */}
-        <div className="space-y-4 px-4 relative z-10">
-          {bottomItems.map((item) => (
-            <NavLink
-              key={item.title}
-              to={item.url}
-              id={item.id}
-              className={({ isActive }) => cn(
-                "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
-                "hover:translate-x-2",
-                isActive ? "bg-white dark:bg-slate-800 shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60 dark:hover:bg-slate-800/60",
-                !isExpanded && "justify-center px-1"
-              )}
-            >
-              <div className={cn(
-                "relative rounded-2xl flex items-center justify-center transition-all duration-300 shadow-[0_4px_0_rgba(0,0,0,0.1)]",
-                !isExpanded ? "w-12 h-10" : "w-12 h-12",
-                isActive(item.url) ? "bg-slate-100 dark:bg-slate-800 translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white dark:ring-slate-700" : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-orange-200 dark:group-hover:border-orange-900"
-              )}>
-                <item.icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                {isExpanded && (
-                  <div className={cn(
-                    "absolute -left-[22px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white",
-                    isActive(item.url) ? "bg-orange-500 scale-125" : "bg-slate-200"
-                  )} />
+        {/* Bottom Items (Settings, Help) - Styled consistent with Gamified items */}
+        <div className="space-y-2 px-3 relative z-10">
+          {bottomItems.map((item) => {
+            const active = isActive(item.url);
+            return (
+              <NavLink
+                key={item.title}
+                to={item.url}
+                id={item.id}
+                className={({ isActive }) => cn(
+                  "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                  "border-2",
+                  isActive
+                    ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
+                    : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800",
+                  !isExpanded && "justify-center px-2"
                 )}
-              </div>
-              {isExpanded && <span className="font-bold text-base text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">{item.title}</span>}
-            </NavLink>
-          ))}
+              >
+                <div className={cn(
+                  "relative flex items-center justify-center transition-all duration-200",
+                  !isExpanded ? "w-10 h-10" : "w-10 h-10"
+                )}>
+                  <item.icon className={cn(
+                    "w-6 h-6 transition-transform duration-200",
+                    active ? "text-slate-600" : "text-slate-400 group-hover:text-slate-600"
+                  )} />
+                </div>
+                {isExpanded && (
+                  <div className="flex-1 flex items-center justify-between">
+                    <span className={cn(
+                      "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                      active ? "text-slate-700 dark:text-slate-300" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
+                    )}>
+                      {item.title}
+                    </span>
+                  </div>
+                )}
+              </NavLink>
+            );
+          })}
         </div>
       </div>
 

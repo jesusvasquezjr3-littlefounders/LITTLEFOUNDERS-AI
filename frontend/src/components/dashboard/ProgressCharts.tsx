@@ -1,11 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -13,10 +13,10 @@ import {
   Pie,
   Cell
 } from "recharts";
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
+import {
+  BookOpen,
+  Clock,
+  Star,
   TrendingUp,
   Calendar,
   Target
@@ -143,50 +143,59 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
   return (
     <div className="space-y-6">
       {/* Gráfico de progreso según el período */}
-      <Card>
+      <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            <span>
+            <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-slate-800 dark:text-slate-100">
               {selectedPeriod === "day" ? "Actividad Diaria" :
-               selectedPeriod === "week" ? "Progreso Semanal" :
-               selectedPeriod === "month" ? "Progreso Mensual" :
-               "Progreso Anual"}
+                selectedPeriod === "week" ? "Progreso Semanal" :
+                  selectedPeriod === "month" ? "Progreso Mensual" :
+                    "Progreso Anual"}
             </span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-slate-500 dark:text-slate-400">
             {selectedPeriod === "day" ? "Actividad por horas del día" :
-             selectedPeriod === "week" ? "Actividad diaria de esta semana" :
-             selectedPeriod === "month" ? "Actividad por días del mes" :
-             "Actividad por meses del año"}
+              selectedPeriod === "week" ? "Actividad diaria de esta semana" :
+                selectedPeriod === "month" ? "Actividad por días del mes" :
+                  "Actividad por meses del año"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey={xAxisKey} />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="lecciones" 
-                stroke="#3b82f6" 
-                strokeWidth={2}
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-20" />
+              <XAxis dataKey={xAxisKey} stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} width={40} />
+              <Tooltip
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                itemStyle={{ color: '#1e293b' }}
+              />
+              <Line
+                type="monotone"
+                dataKey="lecciones"
+                stroke="#3b82f6"
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 6 }}
                 name="Lecciones"
               />
-              <Line 
-                type="monotone" 
-                dataKey="minutos" 
-                stroke="#10b981" 
-                strokeWidth={2}
+              <Line
+                type="monotone"
+                dataKey="minutos"
+                stroke="#10b981"
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 6 }}
                 name="Minutos"
               />
-              <Line 
-                type="monotone" 
-                dataKey="puntos" 
-                stroke="#f59e0b" 
-                strokeWidth={2}
+              <Line
+                type="monotone"
+                dataKey="puntos"
+                stroke="#f59e0b"
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#f59e0b', strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 6 }}
                 name="Puntos"
               />
             </LineChart>
@@ -196,47 +205,53 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
 
       {/* Gráficos de comparación mensual */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BookOpen className="h-5 w-5 text-blue-600" />
-              <span>Lecciones por Mes</span>
+              <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-slate-800 dark:text-slate-100">Lecciones por Mes</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-500 dark:text-slate-400">
               Comparación de lecciones completadas
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="lecciones" fill="#3b82f6" />
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:opacity-20" />
+                <XAxis dataKey="mes" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} width={40} />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                />
+                <Bar dataKey="lecciones" fill="#3b82f6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-green-600" />
-              <span>Minutos de Estudio</span>
+              <Clock className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <span className="text-slate-800 dark:text-slate-100">Minutos de Estudio</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-500 dark:text-slate-400">
               Tiempo dedicado al aprendizaje
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="minutos" fill="#10b981" />
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:opacity-20" />
+                <XAxis dataKey="mes" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} width={40} />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                />
+                <Bar dataKey="minutos" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -245,13 +260,13 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
 
       {/* Gráficos de logros y metas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Star className="h-5 w-5 text-yellow-600" />
-              <span>Distribución de Logros</span>
+              <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              <span className="text-slate-800 dark:text-slate-100">Distribución de Logros</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-500 dark:text-slate-400">
               Logros desbloqueados vs pendientes
             </CardDescription>
           </CardHeader>
@@ -266,6 +281,7 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
                   outerRadius={80}
                   paddingAngle={5}
                   dataKey="value"
+                  stroke="none"
                 >
                   {achievementsData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -277,23 +293,23 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
             <div className="flex justify-center space-x-6 mt-4">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm">Completados: {childData?.achievements_unlocked || 8}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-300">Completados: {childData?.achievements_unlocked || 8}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                <span className="text-sm">Pendientes: {(childData?.total_achievements || 12) - (childData?.achievements_unlocked || 8)}</span>
+                <div className="w-3 h-3 bg-gray-300 dark:bg-slate-700 rounded-full"></div>
+                <span className="text-sm text-slate-600 dark:text-slate-300">Pendientes: {(childData?.total_achievements || 12) - (childData?.achievements_unlocked || 8)}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Target className="h-5 w-5 text-red-600" />
-              <span>Progreso de Metas</span>
+              <Target className="h-5 w-5 text-red-600 dark:text-red-400" />
+              <span className="text-slate-800 dark:text-slate-100">Progreso de Metas</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-slate-500 dark:text-slate-400">
               Estado actual de las metas establecidas
             </CardDescription>
           </CardHeader>
@@ -302,21 +318,21 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
               {goalsData.map((goal, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{goal.meta}</span>
-                    <span className="text-muted-foreground">
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{goal.meta}</span>
+                    <span className="text-slate-500 dark:text-slate-400">
                       {goal.completado} de {goal.total}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
+                    <div
                       className="h-2 rounded-full transition-all duration-300"
-                      style={{ 
+                      style={{
                         width: `${(goal.completado / goal.total) * 100}%`,
                         backgroundColor: goal.color
                       }}
                     ></div>
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
                     {Math.round((goal.completado / goal.total) * 100)}% completado
                   </div>
                 </div>

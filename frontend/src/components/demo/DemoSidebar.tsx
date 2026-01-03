@@ -51,24 +51,31 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
     return (
         <div
             className={cn(
-                "fixed left-0 top-0 h-screen z-50 bg-white border-r border-indigo-100 shadow-2xl transition-all duration-300 ease-in-out flex flex-col",
+                "fixed left-0 top-0 h-screen z-50 flex flex-col transition-all duration-300 ease-in-out",
+                "bg-gradient-to-b from-background to-background/95 dark:from-slate-900 dark:to-slate-950",
+                "border-r-4 border-primary/10 dark:border-primary/20 shadow-xl",
                 isExpanded ? "w-64" : "w-16 md:w-20"
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Encabezado */}
-            <div className="flex items-center justify-between p-4 border-b border-indigo-50 min-h-[70px]">
+            <div className="flex items-center justify-between p-4 border-b-2 border-dashed border-primary/20 dark:border-primary/30 bg-gradient-to-r from-primary/5 to-transparent dark:from-primary/10 dark:to-transparent min-h-[70px]">
                 {isExpanded ? (
                     <div className="flex items-center space-x-2 animate-in fade-in duration-300">
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <span className="font-bold text-white text-xs">LF</span>
-                        </div>
-                        <span className="font-extrabold text-lg text-slate-800 tracking-tight">LittleFounders</span>
+                        <img
+                            src="/logo-sized.png"
+                            alt="LittleFounders Logo"
+                            className="h-10 w-auto object-contain"
+                        />
                     </div>
                 ) : (
-                    <div className="w-8 h-8 mx-auto bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-                        <span className="font-bold text-white text-xs">LF</span>
+                    <div className="mx-auto">
+                        <img
+                            src="/logo-sized.png"
+                            alt="LF"
+                            className="w-10 h-10 object-contain"
+                        />
                     </div>
                 )}
 
@@ -80,13 +87,13 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                             size="icon"
                             onClick={onToggle}
                             className={cn(
-                                "h-8 w-8 rounded-full hover:bg-slate-100 transition-colors",
-                                !collapsed ? "text-indigo-600 bg-indigo-50" : "text-slate-400"
+                                "h-8 w-8 rounded-full hover:bg-warning/20 hover:scale-110 transition-all duration-300",
+                                !collapsed ? "text-warning bg-warning/10 scale-110" : "text-muted-foreground"
                             )}
                             title={collapsed ? "Fijar barra lateral" : "Desanclar barra lateral"}
                         >
                             {/* Pin Icon Logic */}
-                            <PinIcon className={cn("h-4 w-4 transition-transform", !collapsed ? "-rotate-45 fill-current" : "rotate-0")} />
+                            <PinIcon className={cn("h-4 w-4 transition-transform duration-300", !collapsed ? "-rotate-45 fill-current" : "rotate-0")} />
                         </Button>
                     </div>
                 )}
@@ -103,22 +110,25 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                             id={item.id}
                             className={({ isActive: linkActive }) =>
                                 cn(
-                                    "flex items-center gap-4 px-3 py-3 rounded-2xl text-sm font-medium transition-all duration-200 group relative overflow-hidden",
-                                    "hover:bg-slate-50 hover:shadow-sm",
+                                    "flex items-center gap-4 px-3 py-3 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden",
+                                    "hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:scale-105 hover:translate-x-2",
                                     (linkActive || active)
-                                        ? "bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-200"
-                                        : "text-slate-500 hover:text-slate-900"
+                                        ? "bg-white dark:bg-slate-800 shadow-lg scale-105 ring-2 ring-primary/20"
+                                        : "text-muted-foreground hover:text-foreground"
                                 )
                             }
                         >
                             <div className={cn(
-                                "relative z-10 flex items-center justify-center transition-all duration-300",
-                                isExpanded ? "" : "w-full"
+                                "relative z-10 flex items-center justify-center transition-all duration-300 rounded-2xl shadow-button group-hover:shadow-button-hover",
+                                isExpanded ? "w-14 h-14" : "w-full h-14",
+                                active
+                                    ? "bg-primary/10 ring-4 ring-white/50 dark:ring-primary/30 scale-110 translate-y-[2px] shadow-button-active"
+                                    : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-primary/30 dark:group-hover:border-primary/40 group-hover:scale-110"
                             )}>
                                 <item.icon
                                     className={cn(
-                                        "w-6 h-6 transition-all duration-300",
-                                        active ? "fill-indigo-200 text-indigo-600 scale-110" : "text-slate-400 group-hover:text-indigo-500 group-hover:scale-110"
+                                        "w-7 h-7 transition-all duration-300",
+                                        active ? cn(item.color, "scale-110") : "text-slate-400 dark:text-slate-500 group-hover:text-primary group-hover:scale-125"
                                     )}
                                 />
                             </div>
@@ -131,7 +141,7 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
 
                             {/* Active Indicator Line */}
                             {active && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-indigo-500 rounded-r-full" />
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-primary rounded-r-full shadow-lg" />
                             )}
                         </NavLink>
                     );
@@ -139,14 +149,14 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
             </nav>
 
             {/* Demo Badge / Restart Tour */}
-            <div className="p-4 border-t border-indigo-50 bg-slate-50/50">
+            <div className="p-4 border-t-2 border-dashed border-primary/20 dark:border-primary/30 bg-gradient-to-r from-primary/5 to-transparent dark:from-primary/10 dark:to-transparent">
                 <Button
                     variant="ghost"
                     className={cn(
-                        "w-full transition-all duration-200 group relative overflow-hidden ring-1 ring-slate-200",
+                        "w-full transition-all duration-300 group relative overflow-hidden shadow-button hover:shadow-button-hover active:shadow-button-active active:translate-y-1 hover:scale-105",
                         isExpanded
-                            ? "bg-white hover:bg-yellow-50 hover:ring-yellow-300 text-slate-600 px-4 py-6 rounded-2xl shadow-sm"
-                            : "h-10 w-10 rounded-full p-0 bg-yellow-100 text-yellow-700 hover:scale-110"
+                            ? "bg-gradient-to-r from-warning to-team hover:from-warning/90 hover:to-team/90 text-white font-black px-4 py-6 rounded-2xl"
+                            : "h-14 w-14 rounded-2xl p-0 bg-warning/20 text-warning hover:bg-warning/30"
                     )}
                     onClick={() => window.dispatchEvent(new Event('restartDemoTour'))}
                     title="Reiniciar Tutorial"
@@ -154,13 +164,13 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                     {isExpanded ? (
                         <div className="flex items-center justify-between w-full">
                             <div className="flex flex-col items-start gap-1">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tutorial</span>
-                                <span className="text-sm font-bold text-slate-800 group-hover:text-yellow-700">Reiniciar</span>
+                                <span className="text-xs font-bold uppercase tracking-widest">Tutorial</span>
+                                <span className="text-sm font-bold">Reiniciar</span>
                             </div>
-                            <span className="text-xl bg-yellow-100 p-2 rounded-xl group-hover:rotate-180 transition-transform duration-500">↺</span>
+                            <span className="text-xl p-2 rounded-xl group-hover:rotate-180 transition-transform duration-500">↺</span>
                         </div>
                     ) : (
-                        <span className="text-lg font-bold">D</span>
+                        <span className="text-lg font-bold">↺</span>
                     )}
                 </Button>
             </div>

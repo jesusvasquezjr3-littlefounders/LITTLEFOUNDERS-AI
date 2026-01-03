@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Startup Operations Dashboard Design System */
+/* LittleFounders - Duolingo-Inspired Design System */
 
 @layer base {
   :root {
+    /* Base Colors - Light Mode (Duolingo-inspired) */
     --background: 249 100% 99%;
     --foreground: 222.2 84% 4.9%;
 
@@ -15,6 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
+    /* Primary - LittleFounders Purple/Blue */
     --primary: 236 64% 58%;
     --primary-foreground: 210 40% 98%;
 
@@ -34,8 +36,13 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 236 64% 58%;
 
+    /* Duolingo-Style Success Colors */
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 76% 96%;
+
     /* Dashboard specific colors */
-    --revenue: 142 76% 36%;
+    --revenue: 142 76% 45%;
     --revenue-foreground: 0 0% 100%;
     --revenue-light: 142 76% 96%;
 
@@ -51,53 +58,69 @@
     --team-foreground: 0 0% 100%;
     --team-light: 25 95% 96%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(236 72% 66%));
-    --gradient-revenue: linear-gradient(135deg, hsl(var(--revenue)), hsl(142 76% 45%));
-    --gradient-customers: linear-gradient(135deg, hsl(var(--customers)), hsl(217 91% 70%));
-    --gradient-product: linear-gradient(135deg, hsl(var(--product)), hsl(262 83% 68%));
-    --gradient-team: linear-gradient(135deg, hsl(var(--team)), hsl(25 95% 63%));
+    /* Duolingo-Style Warning/Info Colors */
+    --warning: 45 93% 58%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 45 93% 96%;
 
-    /* Shadows */
-    --shadow-soft: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
-    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 199 89% 96%;
 
-    /* Animations */
+    /* Gradients - Duolingo Style */
+    --gradient-primary: linear-gradient(135deg, hsl(236 64% 58%), hsl(236 72% 66%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 45%), hsl(142 76% 55%));
+    --gradient-revenue: linear-gradient(135deg, hsl(142 76% 45%), hsl(142 76% 55%));
+    --gradient-customers: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
+    --gradient-product: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
+    --gradient-team: linear-gradient(135deg, hsl(25 95% 53%), hsl(25 95% 63%));
+    --gradient-warning: linear-gradient(135deg, hsl(45 93% 58%), hsl(45 93% 68%));
+
+    /* Duolingo-Style Shadows (soft, bottom-heavy) */
+    --shadow-soft: 0 2px 4px 0 hsl(0 0% 0% / 0.08);
+    --shadow-medium: 0 4px 8px 0 hsl(0 0% 0% / 0.12);
+    --shadow-large: 0 8px 16px 0 hsl(0 0% 0% / 0.16);
+    --shadow-button: 0 4px 0 0 hsl(0 0% 0% / 0.15);
+    --shadow-button-hover: 0 6px 0 0 hsl(0 0% 0% / 0.15);
+    --shadow-button-active: 0 2px 0 0 hsl(0 0% 0% / 0.15);
+
+    /* Duolingo-Style Border Radius (more rounded) */
+    --radius-sm: 0.75rem;
+    --radius: 1rem;
+    --radius-md: 1.25rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+
+    /* Animations - Duolingo Style (bouncy, playful) */
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --radius: 0.5rem;
-
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
+    /* Base Colors - Dark Mode (Duolingo-inspired) */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    /* Primary - Brighter in dark mode */
+    --primary: 236 72% 66%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -109,19 +132,104 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 236 72% 66%;
+
+    /* Success - Adjusted for dark mode */
+    --success: 142 76% 50%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 76% 20%;
+
+    /* Dashboard colors - Brighter for dark mode */
+    --revenue: 142 76% 50%;
+    --revenue-foreground: 0 0% 100%;
+    --revenue-light: 142 76% 20%;
+
+    --customers: 217 91% 65%;
+    --customers-foreground: 0 0% 100%;
+    --customers-light: 217 91% 20%;
+
+    --product: 262 83% 63%;
+    --product-foreground: 0 0% 100%;
+    --product-light: 262 83% 20%;
+
+    --team: 25 95% 58%;
+    --team-foreground: 0 0% 100%;
+    --team-light: 25 95% 20%;
+
+    /* Warning/Info - Adjusted for dark mode */
+    --warning: 45 93% 63%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 45 93% 20%;
+
+    --info: 199 89% 53%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 199 89% 20%;
+
+    /* Sidebar - Dark mode */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 236 72% 66%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 236 72% 66%;
+  }
+
+  /* Force light theme regardless of .dark class on parent */
+  .light-theme {
+    --background: 249 100% 99%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 236 64% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 249 100% 97%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 249 100% 97%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 236 64% 96%;
+    --accent-foreground: 236 64% 28%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 236 64% 58%;
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 76% 96%;
+    --revenue: 142 76% 45%;
+    --revenue-foreground: 0 0% 100%;
+    --revenue-light: 142 76% 96%;
+    --customers: 217 91% 60%;
+    --customers-foreground: 0 0% 100%;
+    --customers-light: 217 91% 96%;
+    --product: 262 83% 58%;
+    --product-foreground: 0 0% 100%;
+    --product-light: 262 83% 96%;
+    --team: 25 95% 53%;
+    --team-foreground: 0 0% 100%;
+    --team-light: 25 95% 96%;
+    --warning: 45 93% 58%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 45 93% 96%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 199 89% 96%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -134,6 +242,219 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Duolingo-Style Animations */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-3deg);
+  }
+
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-scale {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Success celebration animation */
+@keyframes celebrate {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+
+  50% {
+    transform: scale(1.3) rotate(5deg);
+  }
+
+  75% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Float animation for decorative elements */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Gradient animation */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Utility classes for animations */
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-in-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.4s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s ease-in-out infinite;
+}
+
+.animate-celebrate {
+  animation: celebrate 0.6s ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
 }
 
 /* 3D Card Flip Animation Styles */
@@ -153,79 +474,47 @@
   transform: rotateY(180deg);
 }
 
-/* Landing Page Custom Animations */
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes pulse-glow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
-  }
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-}
-
 /* Sticky Navigation Enhancements */
 .sticky-nav {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Duolingo Style */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted));
+  border-radius: 10px;
 }
 
-
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #ec4899, #8b5cf6);
-  border-radius: 4px;
+  background: linear-gradient(to bottom, hsl(var(--primary)), hsl(236 72% 66%));
+  border-radius: 10px;
+  border: 2px solid hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #db2777, #7c3aed);
+  background: linear-gradient(to bottom, hsl(236 72% 66%), hsl(var(--primary)));
+}
+
+/* Custom scrollbar class for sidebars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }

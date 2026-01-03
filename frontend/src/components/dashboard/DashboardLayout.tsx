@@ -12,6 +12,11 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   // Initialize from localStorage or default to false (expanded/pinned)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Check if running in browser
+    if (typeof window !== 'undefined') {
+      const isMobile = window.innerWidth < 768; // md breakpoint
+      if (isMobile) return true;
+    }
     const stored = localStorage.getItem('main_sidebar_collapsed');
     return stored ? JSON.parse(stored) : false;
   });
@@ -34,7 +39,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         />
         <div className={cn(
           "flex-1 flex flex-col h-full overflow-hidden transition-all duration-300",
-          !sidebarCollapsed ? "ml-72" : "ml-20 md:ml-24"
+          !sidebarCollapsed ? "ml-72" : "ml-16 md:ml-24"
         )}>
           {/* Barra superior: ¡Bienvenido a tu panel de aprendizajes y logros! */}
           <TopNav />

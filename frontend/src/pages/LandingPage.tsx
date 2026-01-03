@@ -65,7 +65,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900">
+    <div className="light-theme min-h-screen bg-white font-sans selection:bg-pink-100 selection:text-pink-900">
 
       {/* --- NAVIGATION --- */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
@@ -435,7 +435,7 @@ const LandingPage = () => {
             <Link to="#" className="hover:text-gray-900">Contacto</Link>
           </div>
           <div className="text-sm text-gray-400">
-            © 2025 littlefounders.ai
+            © 2026 littlefounders.ai
           </div>
         </div>
       </footer>

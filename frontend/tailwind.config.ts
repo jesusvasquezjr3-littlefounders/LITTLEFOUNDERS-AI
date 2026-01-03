@@ -62,6 +62,22 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Duolingo-style success/warning/info
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))',
+					light: 'hsl(var(--success-light))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))',
+					light: 'hsl(var(--warning-light))'
+				},
+				info: {
+					DEFAULT: 'hsl(var(--info))',
+					foreground: 'hsl(var(--info-foreground))',
+					light: 'hsl(var(--info-light))'
+				},
 				revenue: {
 					DEFAULT: 'hsl(var(--revenue))',
 					foreground: 'hsl(var(--revenue-foreground))',
@@ -85,25 +101,34 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-success': 'var(--gradient-success)',
 				'gradient-revenue': 'var(--gradient-revenue)',
 				'gradient-customers': 'var(--gradient-customers)',
 				'gradient-product': 'var(--gradient-product)',
-				'gradient-team': 'var(--gradient-team)'
+				'gradient-team': 'var(--gradient-team)',
+				'gradient-warning': 'var(--gradient-warning)'
 			},
 			boxShadow: {
 				'soft': 'var(--shadow-soft)',
 				'medium': 'var(--shadow-medium)',
-				'large': 'var(--shadow-large)'
+				'large': 'var(--shadow-large)',
+				'button': 'var(--shadow-button)',
+				'button-hover': 'var(--shadow-button-hover)',
+				'button-active': 'var(--shadow-button-active)'
 			},
 			transitionProperty: {
 				'fast': 'var(--transition-fast)',
 				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)',
 				'slow': 'var(--transition-slow)'
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				'sm': 'var(--radius-sm)',
+				'lg': 'var(--radius)',
+				'md': 'var(--radius-md)',
+				'xl': 'var(--radius-lg)',
+				'2xl': 'var(--radius-xl)',
+				'full': 'var(--radius-full)'
 			},
 			keyframes: {
 				'accordion-down': {

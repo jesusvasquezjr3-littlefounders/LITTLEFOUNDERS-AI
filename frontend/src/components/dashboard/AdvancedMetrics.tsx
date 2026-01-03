@@ -1,13 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Target, 
-  Clock, 
-  BookOpen, 
-  Star, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Clock,
+  BookOpen,
+  Star,
   Award,
   Brain,
   Zap,
@@ -67,23 +67,23 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
     <div className="space-y-6">
       {/* Métricas de Rendimiento */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Eficiencia de Aprendizaje</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Eficiencia</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{calculateLearningEfficiency()}</span>
-                <Badge variant="outline" className="text-green-600">
+                <span className="text-3xl font-black text-slate-800 dark:text-white">{calculateLearningEfficiency()}</span>
+                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
                   <ArrowUpRight className="w-3 h-3 mr-1" />
                   +15%
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Puntos por minuto</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Puntos por minuto</p>
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${performanceLevel.bg}`}></div>
-                <span className={`text-xs font-medium ${performanceLevel.color}`}>
+                <span className={`text-xs font-bold ${performanceLevel.color}`}>
                   {performanceLevel.level}
                 </span>
               </div>
@@ -91,40 +91,40 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Puntuación de Consistencia</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Consistencia</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{Math.round(calculateConsistencyScore())}%</span>
-                <Badge variant="outline" className="text-blue-600">
+                <span className="text-3xl font-black text-slate-800 dark:text-white">{Math.round(calculateConsistencyScore())}%</span>
+                <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
                   <Target className="w-3 h-3 mr-1" />
                   Meta
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Cumplimiento de objetivos</p>
-              <Progress value={calculateConsistencyScore()} className="h-2" />
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Cumplimiento</p>
+              <Progress value={calculateConsistencyScore()} className="h-2 bg-slate-100 dark:bg-slate-800" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Tasa de Crecimiento</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Crecimiento</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">+{calculateGrowthRate()}%</span>
-                <Badge variant="outline" className="text-green-600">
+                <span className="text-3xl font-black text-slate-800 dark:text-white">+{calculateGrowthRate()}%</span>
+                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
                   <TrendingUp className="w-3 h-3 mr-1" />
                   Mensual
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Mejora en rendimiento</p>
-              <div className="flex items-center text-xs text-green-600">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Mejora continua</p>
+              <div className="flex items-center text-xs font-bold text-green-600">
                 <ArrowUpRight className="w-3 h-3 mr-1" />
                 +2.3% vs mes anterior
               </div>
@@ -132,25 +132,25 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Análisis de Racha</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Racha</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{childData?.current_streak || 0}</span>
-                <Badge variant="outline" className="text-purple-600">
+                <span className="text-3xl font-black text-slate-800 dark:text-white">{childData?.current_streak || 0}</span>
+                <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-800">
                   <Zap className="w-3 h-3 mr-1" />
                   Días
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Días consecutivos</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Días consecutivos</p>
               <div className="flex items-center space-x-2">
-                <streakAnalysis.icon className={`w-3 h-3 ${streakAnalysis.status === 'excellent' ? 'text-green-600' : 
-                                                   streakAnalysis.status === 'good' ? 'text-blue-600' : 
-                                                   streakAnalysis.status === 'average' ? 'text-yellow-600' : 'text-red-600'}`} />
-                <span className="text-xs font-medium">{streakAnalysis.message}</span>
+                <streakAnalysis.icon className={`w-3 h-3 ${streakAnalysis.status === 'excellent' ? 'text-green-600' :
+                  streakAnalysis.status === 'good' ? 'text-blue-600' :
+                    streakAnalysis.status === 'average' ? 'text-yellow-600' : 'text-red-600'}`} />
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{streakAnalysis.message}</span>
               </div>
             </div>
           </CardContent>
@@ -159,65 +159,65 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
 
       {/* Análisis Comparativo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-              <span>Comparación con Promedio</span>
+              <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-slate-800 dark:text-white">Comparación con Promedio</span>
             </CardTitle>
-            <CardDescription>
-              Rendimiento vs otros estudiantes de la misma edad
+            <CardDescription className="text-slate-500 dark:text-slate-400">
+              Rendimiento vs otros estudiantes
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30">
                 <div className="flex items-center space-x-3">
-                  <BookOpen className="h-4 w-4 text-blue-600" />
+                  <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <div>
-                    <p className="text-sm font-medium">Lecciones Completadas</p>
-                    <p className="text-xs text-muted-foreground">Este mes</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Lecciones</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Este mes</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold">{childData?.monthly_progress || 15}</p>
-                  <div className="flex items-center text-xs text-green-600">
+                  <p className="text-sm font-black text-slate-800 dark:text-white">{childData?.monthly_progress || 15}</p>
+                  <div className="flex items-center text-xs font-bold text-green-600">
                     <ArrowUpRight className="w-3 h-3 mr-1" />
-                    +25% vs promedio
+                    +25%
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
                 <div className="flex items-center space-x-3">
-                  <Clock className="h-4 w-4 text-green-600" />
+                  <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
                   <div>
-                    <p className="text-sm font-medium">Tiempo de Estudio</p>
-                    <p className="text-xs text-muted-foreground">Minutos diarios</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Tiempo</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Minutos diarios</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold">{Math.round((childData?.minutes_studied || 320) / 30)}</p>
-                  <div className="flex items-center text-xs text-green-600">
+                  <p className="text-sm font-black text-slate-800 dark:text-white">{Math.round((childData?.minutes_studied || 320) / 30)}</p>
+                  <div className="flex items-center text-xs font-bold text-green-600">
                     <ArrowUpRight className="w-3 h-3 mr-1" />
-                    +18% vs promedio
+                    +18%
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/10 rounded-2xl border border-yellow-100 dark:border-yellow-900/30">
                 <div className="flex items-center space-x-3">
-                  <Star className="h-4 w-4 text-yellow-600" />
+                  <Star className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                   <div>
-                    <p className="text-sm font-medium">Puntos Ganados</p>
-                    <p className="text-xs text-muted-foreground">Por sesión</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Puntos</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Por sesión</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold">{Math.round((childData?.points_earned || 750) / (childData?.lessons_completed || 15))}</p>
-                  <div className="flex items-center text-xs text-green-600">
+                  <p className="text-sm font-black text-slate-800 dark:text-white">{Math.round((childData?.points_earned || 750) / (childData?.lessons_completed || 15))}</p>
+                  <div className="flex items-center text-xs font-bold text-green-600">
                     <ArrowUpRight className="w-3 h-3 mr-1" />
-                    +32% vs promedio
+                    +32%
                   </div>
                 </div>
               </div>
@@ -225,43 +225,43 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              <span>Insights de Aprendizaje</span>
+              <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <span className="text-slate-800 dark:text-white">Insights de Aprendizaje</span>
             </CardTitle>
-            <CardDescription>
-              Análisis de patrones y recomendaciones
+            <CardDescription className="text-slate-500 dark:text-slate-400">
+              Análisis de patrones
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg">
-                <Lightbulb className="h-4 w-4 text-purple-600 mt-0.5" />
+              <div className="flex items-start space-x-3 p-3 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-100 dark:border-purple-900/30">
+                <Lightbulb className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Mejor Rendimiento en Mañanas</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Mejor Rendimiento en Mañanas</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     El 75% de las lecciones completadas fueron entre 9:00 AM y 11:00 AM
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
-                <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+              <div className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Excelente Comprensión</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Excelente Comprensión</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Promedio de 92% en evaluaciones de comprensión
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                <Target className="h-4 w-4 text-blue-600 mt-0.5" />
+              <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                <Target className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Área de Oportunidad</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Área de Oportunidad</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Considera aumentar el tiempo de estudio los fines de semana
                   </p>
                 </div>
@@ -273,94 +273,94 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
 
       {/* Proyecciones y Metas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              <span>Proyecciones</span>
+              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <span className="text-slate-800 dark:text-white">Proyecciones</span>
             </CardTitle>
-            <CardDescription>
-              Estimaciones basadas en el rendimiento actual
+            <CardDescription className="text-slate-500 dark:text-slate-400">
+              Estimaciones basadas en rendimiento actual
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border border-slate-100 dark:border-slate-800 dark:bg-slate-950/20 rounded-2xl">
                 <div>
-                  <p className="text-sm font-medium">Lecciones para fin de año</p>
-                  <p className="text-xs text-muted-foreground">Proyección anual</p>
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Lecciones (Anual)</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Proyección</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">85</p>
-                  <p className="text-xs text-green-600">+15% vs meta</p>
+                  <p className="text-lg font-black text-slate-800 dark:text-white">85</p>
+                  <p className="text-xs font-bold text-green-600">+15%</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border border-slate-100 dark:border-slate-800 dark:bg-slate-950/20 rounded-2xl">
                 <div>
-                  <p className="text-sm font-medium">Puntos totales proyectados</p>
-                  <p className="text-xs text-muted-foreground">Para diciembre</p>
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Puntos Totales</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Proyección Dic</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">2,450</p>
-                  <p className="text-xs text-green-600">+22% vs meta</p>
+                  <p className="text-lg font-black text-slate-800 dark:text-white">2,450</p>
+                  <p className="text-xs font-bold text-green-600">+22%</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border border-slate-100 dark:border-slate-800 dark:bg-slate-950/20 rounded-2xl">
                 <div>
-                  <p className="text-sm font-medium">Nivel esperado</p>
-                  <p className="text-xs text-muted-foreground">Basado en progreso</p>
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Nivel Esperado</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Basado en progreso</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">Avanzado</p>
-                  <p className="text-xs text-blue-600">2 meses antes</p>
+                  <p className="text-lg font-black text-slate-800 dark:text-white">Avanzado</p>
+                  <p className="text-xs font-bold text-blue-600 dark:text-blue-400">2 meses antes</p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Award className="h-5 w-5 text-yellow-600" />
-              <span>Próximos Logros</span>
+              <Award className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              <span className="text-slate-800 dark:text-white">Próximos Logros</span>
             </CardTitle>
-            <CardDescription>
-              Logros que están cerca de ser desbloqueados
+            <CardDescription className="text-slate-500 dark:text-slate-400">
+              Cerca de desbloquear
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
-                <Trophy className="h-4 w-4 text-yellow-600" />
+              <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/10 rounded-2xl border border-yellow-100 dark:border-yellow-900/30">
+                <Trophy className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Estudiante Avanzado</p>
-                  <p className="text-xs text-muted-foreground">Completar 20 lecciones</p>
-                  <Progress value={75} className="h-1 mt-2" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Estudiante Avanzado</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Completar 20 lecciones</p>
+                  <Progress value={75} className="h-1.5 mt-2 bg-yellow-200 dark:bg-yellow-900/50" />
                 </div>
-                <Badge variant="outline">5 más</Badge>
+                <Badge variant="outline" className="border-yellow-200 text-yellow-700 dark:text-yellow-400">5+</Badge>
               </div>
 
-              <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                <Clock className="h-4 w-4 text-green-600" />
+              <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
+                <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Dedicación Constante</p>
-                  <p className="text-xs text-muted-foreground">10 días consecutivos</p>
-                  <Progress value={70} className="h-1 mt-2" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Dedicación Constante</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">10 días consecutivos</p>
+                  <Progress value={70} className="h-1.5 mt-2 bg-green-200 dark:bg-green-900/50" />
                 </div>
-                <Badge variant="outline">3 más</Badge>
+                <Badge variant="outline" className="border-green-200 text-green-700 dark:text-green-400">3+</Badge>
               </div>
 
-              <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                <Star className="h-4 w-4 text-blue-600" />
+              <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                <Star className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Puntos Dorados</p>
-                  <p className="text-xs text-muted-foreground">Ganar 1000 puntos</p>
-                  <Progress value={75} className="h-1 mt-2" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Puntos Dorados</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Ganar 1000 puntos</p>
+                  <Progress value={75} className="h-1.5 mt-2 bg-blue-200 dark:bg-blue-900/50" />
                 </div>
-                <Badge variant="outline">250 más</Badge>
+                <Badge variant="outline" className="border-blue-200 text-blue-700 dark:text-blue-400">250+</Badge>
               </div>
             </div>
           </CardContent>

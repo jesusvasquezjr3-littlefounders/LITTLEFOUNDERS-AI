@@ -224,7 +224,7 @@ export function DemoLecciones() {
                     </div>
 
                     {/* Gradient Overlay to fade them out at the bottom */}
-                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-50 to-transparent z-10 pointer-events-none"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent z-10 pointer-events-none"></div>
 
                     {/* Paywall Card - Layer 20 - Transparent BG */}
                     <div className="relative z-20 px-4 w-full max-w-md">

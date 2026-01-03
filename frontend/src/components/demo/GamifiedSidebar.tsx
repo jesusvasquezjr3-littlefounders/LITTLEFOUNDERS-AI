@@ -108,23 +108,9 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
             </div>
 
             {/* Path Container */}
-            <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-8 custom-scrollbar scroll-smooth">
-                {/* Winding Path SVG Line (Only visible when expanded) */}
-                {isExpanded && (
-                    <svg className="absolute top-0 left-[2.25rem] w-12 h-full pointer-events-none z-0" style={{ height: `${menuItems.length * 80 + 100}px` }}>
-                        <path
-                            d={`M 24 20 ${menuItems.map((_, i) => `L 24 ${i * 80 + 60}`).join(' ')}`}
-                            fill="none"
-                            stroke="#e5e0d8"
-                            strokeWidth="4"
-                            strokeDasharray="8 8"
-                            strokeLinecap="round"
-                        />
-                    </svg>
-                )}
-
+            <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-4 custom-scrollbar scroll-smooth">
                 {/* Menu Items */}
-                <div className="space-y-4 px-4 relative z-10">
+                <div className="space-y-2 px-3 relative z-10">
                     {menuItems.map((item, index) => {
                         const active = isActive(item.url);
                         return (
@@ -132,50 +118,36 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 key={item.title}
                                 to={item.url}
                                 id={item.id}
+                                end={item.url === "/demo"}
                                 className={({ isActive }) => cn(
-                                    "group flex items-center gap-2 p-3 rounded-2xl transition-all duration-300",
-                                    "hover:translate-x-2",
-                                    isActive ? "bg-white dark:bg-slate-800 shadow-[0_8px_16px_rgba(0,0,0,0.08)] scale-105" : "hover:bg-white/60 dark:hover:bg-slate-800/60",
-                                    !isExpanded && "justify-center px-1" // Center content when collapsed
+                                    "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                                    "border-2",
+                                    isActive
+                                        ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
+                                        : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800",
+                                    !isExpanded && "justify-center px-2"
                                 )}
                             >
                                 {/* Icon Node */}
                                 <div className={cn(
-                                    "relative rounded-2xl flex items-center justify-center transition-all duration-300",
-                                    "shadow-[0_4px_0_rgba(0,0,0,0.1)]", // 3D bottom shadow
-                                    !isExpanded ? "w-14 h-12" : "w-12 h-12", // Wider icons when collapsed
-                                    active
-                                        ? cn(item.bg, "translate-y-[2px] shadow-[0_2px_0_rgba(0,0,0,0.1)] ring-4 ring-white dark:ring-slate-700")
-                                        : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-orange-200 dark:group-hover:border-orange-900"
+                                    "relative flex items-center justify-center transition-all duration-200",
+                                    !isExpanded ? "w-10 h-10" : "w-10 h-10"
                                 )}>
                                     <item.icon className={cn(
-                                        "w-6 h-6 transition-transform duration-300",
-                                        active ? item.color : "text-slate-400 group-hover:text-orange-400 group-hover:scale-110"
+                                        "w-7 h-7 transition-transform duration-200",
+                                        active ? item.color : "text-slate-400 group-hover:text-slate-600"
                                     )} />
-
-                                    {/* Connector Dot (only when expanded) */}
-                                    {isExpanded && (
-                                        <div className={cn(
-                                            "absolute -left-[22px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white",
-                                            active ? "bg-orange-500 scale-125" : "bg-slate-200"
-                                        )} />
-                                    )}
                                 </div>
 
                                 {/* Label */}
                                 {isExpanded && (
-                                    <div className="flex-1">
+                                    <div className="flex-1 flex items-center justify-between">
                                         <span className={cn(
-                                            "font-bold text-base block transition-colors",
-                                            active ? "text-slate-800 dark:text-slate-100" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                                            "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                                            active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
                                         )}>
                                             {item.title}
                                         </span>
-                                        {active && (
-                                            <span className="text-xs font-medium text-orange-500 animate-pulse">
-                                                ¡Estás aquí! 📍
-                                            </span>
-                                        )}
                                     </div>
                                 )}
                             </NavLink>
