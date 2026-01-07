@@ -7,7 +7,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePostHog } from "@/hooks/usePostHog";
+
 import { API_URL } from "@/config/api";
 
 const Login = () => {
@@ -17,7 +17,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { trackEvent, identifyUser } = usePostHog();
+
 
   useEffect(() => {
     // Check if user is already logged in
@@ -38,10 +38,7 @@ const Login = () => {
     setIsLoading(true);
 
     // Track login attempt
-    trackEvent('login_attempt', {
-      email: email,
-      timestamp: new Date().toISOString()
-    });
+
 
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
@@ -63,18 +60,7 @@ const Login = () => {
           data.user.user_type === 'child' ? 'Niño' : 'Usuario';
 
         // Track successful login and identify user
-        trackEvent('login_success', {
-          user_type: data.user.user_type,
-          user_id: data.user.id,
-          timestamp: new Date().toISOString()
-        });
 
-        identifyUser(data.user.id.toString(), {
-          email: data.user.email,
-          name: data.user.name,
-          user_type: data.user.user_type,
-          birth_date: data.user.birth_date
-        });
 
         toast({
           title: `¡Bienvenid@ de vuelta, ${data.user.name}!`,
@@ -84,11 +70,7 @@ const Login = () => {
         navigate('/dashboard');
       } else {
         // Track failed login
-        trackEvent('login_failed', {
-          email: email,
-          error: data.detail || "Invalid credentials",
-          timestamp: new Date().toISOString()
-        });
+
 
         toast({
           title: "No pudimos iniciar sesión",
@@ -98,11 +80,7 @@ const Login = () => {
       }
     } catch (error) {
       // Track connection error
-      trackEvent('login_error', {
-        email: email,
-        error: 'Connection error',
-        timestamp: new Date().toISOString()
-      });
+
 
       toast({
         title: "Error de conexión",

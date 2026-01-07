@@ -6,7 +6,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePostHog } from "@/hooks/usePostHog";
+
 import { API_URL } from "@/config/api";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 
@@ -20,7 +20,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { trackEvent } = usePostHog();
+
 
   useEffect(() => {
     // Check if user is already logged in
@@ -72,9 +72,7 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        trackEvent('registration_success', {
-          timestamp: new Date().toISOString()
-        });
+
 
         toast({
           title: "¡Registro exitoso!",
@@ -108,9 +106,7 @@ const Register = () => {
           errorMessage = JSON.stringify(data.detail);
         }
 
-        trackEvent('registration_failed', {
-          error: errorMessage,
-        });
+
 
         toast({
           title: "Error de registro",
@@ -121,9 +117,7 @@ const Register = () => {
 
     } catch (error) {
       console.error('Registration error:', error);
-      trackEvent('registration_error', {
-        error: 'Connection error',
-      });
+
 
       toast({
         title: "Error de conexión",

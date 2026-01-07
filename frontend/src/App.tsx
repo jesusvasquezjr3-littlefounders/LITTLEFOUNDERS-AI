@@ -6,12 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
-import { PostHogProvider } from "@/components/PostHogProvider";
-import { GoogleAnalyticsProvider } from "@/components/GoogleAnalyticsProvider";
-import { SimpleTimeDemo } from "@/components/analytics/SimpleTimeDemo";
-import { PostHogAnalyticsDemo } from "@/components/analytics/PostHogAnalyticsDemo";
-import { UserAnalyticsDemo } from "@/components/analytics/UserAnalyticsDemo";
-import { PostHogEventsDemo } from "@/components/analytics/PostHogEventsDemo";
+
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import LandingPage from "./pages/LandingPage";
@@ -53,89 +48,80 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <GoogleAnalyticsProvider>
-            <PostHogProvider>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } />
-                <Route path="/welcome" element={<Welcome />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/lecciones" element={
-                  <ProtectedRoute>
-                    <Lecciones />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/tasks" element={
-                  <ChildProtectedRoute>
-                    <Tasks />
-                  </ChildProtectedRoute>
-                } />
-                <Route path="/parent-tasks" element={
-                  <ParentProtectedRoute>
-                    <ParentTasks />
-                  </ParentProtectedRoute>
-                } />
-                <Route path="/growth" element={
-                  <ProtectedRoute>
-                    <DigitalBanking />
-                  </ProtectedRoute>
-                } />
-                <Route path="/savings" element={
-                  <ProtectedRoute>
-                    <Savings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/store" element={
-                  <ProtectedRoute>
-                    <Store />
-                  </ProtectedRoute>
-                } />
-                <Route path="/investment-games" element={
-                  <ProtectedRoute>
-                    <InvestmentGames />
-                  </ProtectedRoute>
-                } />
-                <Route path="/lemonade-stand" element={
-                  <ProtectedRoute>
-                    <LemonadeStand />
-                  </ProtectedRoute>
-                } />
-                {/* Demo Routes */}
-                <Route path="/demo" element={<Demo />} />
-                <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
-                <Route path="/demo/lecciones" element={<DemoLecciones />} />
-                <Route path="/demo/lecciones/1" element={<DemoLesson1 />} />
-                <Route path="/demo/lecciones/2" element={<DemoLesson2 />} />
-                <Route path="/demo/lecciones/3" element={<DemoLesson3 />} />
-                <Route path="/demo/lecciones/4" element={<DemoLesson4 />} />
-                <Route path="/demo/lecciones/5" element={<DemoLesson5 />} />
-                <Route path="/demo/card" element={<DemoVirtualCard />} />
-                <Route path="/demo/growth" element={<DemoDigitalBanking />} />
-                <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
-                <Route path="/demo/savings" element={<DemoSavings />} />
-                <Route path="/demo/store" element={<DemoStore />} />
-                <Route path="/demo/tasks" element={<DemoTasks />} />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/lecciones" element={
+              <ProtectedRoute>
+                <Lecciones />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/tasks" element={
+              <ChildProtectedRoute>
+                <Tasks />
+              </ChildProtectedRoute>
+            } />
+            <Route path="/parent-tasks" element={
+              <ParentProtectedRoute>
+                <ParentTasks />
+              </ParentProtectedRoute>
+            } />
+            <Route path="/growth" element={
+              <ProtectedRoute>
+                <DigitalBanking />
+              </ProtectedRoute>
+            } />
+            <Route path="/savings" element={
+              <ProtectedRoute>
+                <Savings />
+              </ProtectedRoute>
+            } />
+            <Route path="/store" element={
+              <ProtectedRoute>
+                <Store />
+              </ProtectedRoute>
+            } />
+            <Route path="/investment-games" element={
+              <ProtectedRoute>
+                <InvestmentGames />
+              </ProtectedRoute>
+            } />
+            <Route path="/lemonade-stand" element={
+              <ProtectedRoute>
+                <LemonadeStand />
+              </ProtectedRoute>
+            } />
+            {/* Demo Routes */}
+            <Route path="/demo" element={<Demo />} />
+            <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
+            <Route path="/demo/lecciones" element={<DemoLecciones />} />
+            <Route path="/demo/lecciones/1" element={<DemoLesson1 />} />
+            <Route path="/demo/lecciones/2" element={<DemoLesson2 />} />
+            <Route path="/demo/lecciones/3" element={<DemoLesson3 />} />
+            <Route path="/demo/lecciones/4" element={<DemoLesson4 />} />
+            <Route path="/demo/lecciones/5" element={<DemoLesson5 />} />
+            <Route path="/demo/card" element={<DemoVirtualCard />} />
+            <Route path="/demo/growth" element={<DemoDigitalBanking />} />
+            <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
+            <Route path="/demo/savings" element={<DemoSavings />} />
+            <Route path="/demo/store" element={<DemoStore />} />
+            <Route path="/demo/tasks" element={<DemoTasks />} />
 
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              {/* Analytics components hidden */}
-              {/* <SimpleTimeDemo />
-            <PostHogAnalyticsDemo showDemo={import.meta.env.DEV} />
-            <UserAnalyticsDemo showDemo={import.meta.env.DEV} />
-            <PostHogEventsDemo showDemo={import.meta.env.DEV} /> */}
-            </PostHogProvider>
-          </GoogleAnalyticsProvider>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>
