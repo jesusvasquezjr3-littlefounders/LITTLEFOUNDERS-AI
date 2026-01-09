@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -235,7 +236,7 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
         setIsLoading(true);
         
         // Cargar children
-        const childrenResponse = await fetch(`http://localhost:8000/parent-tasks/children/${user.id}`);
+        const childrenResponse = await fetch(`${API_URL}/parent-tasks/children/${user.id}`);
         if (childrenResponse.ok) {
           const childrenData = await childrenResponse.json();
           const formattedChildren = childrenData.children.map((c: any) => ({
@@ -249,7 +250,7 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
           const allTasks: Task[] = [];
           for (const child of formattedChildren) {
             try {
-              const tasksResponse = await fetch(`http://localhost:8000/parent-tasks/child-tasks/${child.id}`);
+              const tasksResponse = await fetch(`${API_URL}/parent-tasks/child-tasks/${child.id}`);
               if (tasksResponse.ok) {
                 const tasksData = await tasksResponse.json();
                 const formattedTasks = tasksData.tasks.map((t: any) => ({
@@ -346,7 +347,7 @@ export function ParentTasksSystem({ user }: ParentTasksSystemProps) {
       };
 
       // Enviar al backend
-      const response = await fetch(`http://localhost:8000/parent-tasks/?parent_id=${user.id}`, {
+      const response = await fetch(`${API_URL}/parent-tasks/?parent_id=${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

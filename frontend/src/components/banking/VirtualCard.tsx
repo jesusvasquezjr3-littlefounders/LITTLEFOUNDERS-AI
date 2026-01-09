@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -186,7 +187,7 @@ export function VirtualCard() {
       const user = getCurrentUser();
       if (!user?.id) return;
 
-      const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
+      const response = await fetch(`${API_URL}/virtual-cards/status/${user.id}?t=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
         setHasVirtualCard(data.has_card || false);

@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { VirtualStore } from "@/components/banking/VirtualStore";
@@ -105,7 +106,7 @@ const Store = () => {
         
         if (parsedUser.user_type === 'child') {
           try {
-            const response = await fetch(`http://localhost:8000/virtual-cards/status/${parsedUser.id}`);
+            const response = await fetch(`${API_URL}/virtual-cards/status/${parsedUser.id}`);
             if (response.ok) {
               const data = await response.json();
               setHasVirtualCard(data.has_card);

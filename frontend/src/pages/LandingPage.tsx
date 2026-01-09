@@ -291,7 +291,7 @@ const LandingPage = () => {
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 <div className="ml-4 bg-gray-800 rounded-full px-4 py-1 text-xs text-gray-400 flex-1 text-center font-mono">
-                  https://littlefounders.ai//lecciones
+                  https://littlefounders.ai/lecciones
                 </div>
               </div>
 

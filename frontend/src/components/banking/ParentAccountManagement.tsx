@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -173,7 +174,7 @@ export function ParentAccountManagement() {
         setCurrentUser(user);
         
         // Cargar estado de tarjetas virtuales
-        const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        const response = await fetch(`${API_URL}/virtual-cards/status/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           if (data.children) {
@@ -469,7 +470,7 @@ export function ParentAccountManagement() {
       
       const user = JSON.parse(userStr);
       
-      const response = await fetch(`http://localhost:8000/virtual-cards/generate/${user.id}`, {
+      const response = await fetch(`${API_URL}/virtual-cards/generate/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -486,7 +487,7 @@ export function ParentAccountManagement() {
         setSelectedChildForCard('');
         
         // Recargar datos
-        const statusResponse = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        const statusResponse = await fetch(`${API_URL}/virtual-cards/status/${user.id}`);
         if (statusResponse.ok) {
           const statusData = await statusResponse.json();
           if (statusData.children) {
@@ -519,7 +520,7 @@ export function ParentAccountManagement() {
       
       const user = JSON.parse(userStr);
       
-      const response = await fetch(`http://localhost:8000/virtual-cards/generate-for-self/${user.id}`, {
+      const response = await fetch(`${API_URL}/virtual-cards/generate-for-self/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -532,7 +533,7 @@ export function ParentAccountManagement() {
         setHasOwnCard(true);
         
         // Recargar datos
-        const statusResponse = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        const statusResponse = await fetch(`${API_URL}/virtual-cards/status/${user.id}`);
         if (statusResponse.ok) {
           const statusData = await statusResponse.json();
           setHasOwnCard(statusData.has_card || false);

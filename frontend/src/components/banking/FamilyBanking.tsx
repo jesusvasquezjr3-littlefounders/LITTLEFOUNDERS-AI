@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ export function FamilyBanking({ onBack }: FamilyBankingProps) {
         setUser(currentUser);
 
         // Cargar hijos desde el backend
-        const response = await fetch(`http://localhost:8000/virtual-cards/status/${currentUser.id}`);
+        const response = await fetch(`${API_URL}/virtual-cards/status/${currentUser.id}`);
         if (response.ok) {
           const data = await response.json();
           setChildren(data.children || []);
@@ -102,7 +103,7 @@ export function FamilyBanking({ onBack }: FamilyBankingProps) {
     try {
       setIsProcessing(true);
       
-      const response = await fetch(`http://localhost:8000/virtual-cards/generate/${user.id}`, {
+      const response = await fetch(`${API_URL}/virtual-cards/generate/${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ child_id: childId })
@@ -112,7 +113,7 @@ export function FamilyBanking({ onBack }: FamilyBankingProps) {
         const data = await response.json();
         
         // Actualizar lista de hijos
-        const statusResponse = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}`);
+        const statusResponse = await fetch(`${API_URL}/virtual-cards/status/${user.id}`);
         if (statusResponse.ok) {
           const statusData = await statusResponse.json();
           setChildren(statusData.children || []);
@@ -143,7 +144,7 @@ export function FamilyBanking({ onBack }: FamilyBankingProps) {
     try {
       setIsProcessing(true);
       
-      const response = await fetch(`http://localhost:8000/virtual-cards/generate-for-self/${user.id}`, {
+      const response = await fetch(`${API_URL}/virtual-cards/generate-for-self/${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });

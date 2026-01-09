@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card } from "@/components/ui/card";
@@ -43,7 +44,7 @@ const DigitalBanking = () => {
       
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`);
+        const response = await fetch(`${API_URL}/virtual-cards/status/${user.id}?t=${Date.now()}`);
         
         if (response.ok) {
           const data = await response.json();
@@ -81,7 +82,7 @@ const DigitalBanking = () => {
   useEffect(() => {
     const handleActivation = () => {
       if (user?.id) {
-        fetch(`http://localhost:8000/virtual-cards/status/${user.id}?t=${Date.now()}`)
+        fetch(`${API_URL}/virtual-cards/status/${user.id}?t=${Date.now()}`)
           .then(res => res.json())
           .then(data => {
             if (user.user_type === 'child') {

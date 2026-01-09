@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,7 +148,7 @@ export function SavingsGoals() {
       // If user is tutor, load children
       if (user.user_type === 'tutor') {
         const childrenResponse = await fetch(
-          `http://localhost:8000/savings/children/${user.id}`
+          `${API_URL}/savings/children/${user.id}`
         );
         if (childrenResponse.ok) {
           const childrenData = await childrenResponse.json();
@@ -156,7 +157,7 @@ export function SavingsGoals() {
       }
       
       const response = await fetch(
-        `http://localhost:8000/savings/goals/${user.id}?requester_id=${user.id}&t=${Date.now()}`
+        `${API_URL}/savings/goals/${user.id}?requester_id=${user.id}&t=${Date.now()}`
       );
       
       if (!response.ok) {
@@ -259,7 +260,7 @@ export function SavingsGoals() {
 
       // Enviar al backend
       const response = await fetch(
-        `http://localhost:8000/savings/goals?user_id=${user.id}`,
+        `${API_URL}/savings/goals?user_id=${user.id}`,
         {
           method: 'POST',
           headers: {

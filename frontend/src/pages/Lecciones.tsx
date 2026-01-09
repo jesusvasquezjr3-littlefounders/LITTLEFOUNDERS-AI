@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import LessonPlayer from "@/components/lessons_framework/LessonPlayer"; // Use the framework player which has the path
+import { API_URL } from "@/config/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -67,7 +68,7 @@ const Lecciones = () => {
         // Cargar progreso del usuario desde el backend
         try {
           const progressResponse = await fetch(
-            `http://localhost:8000/lecciones/progress/${user.id}?requester_id=${user.id}`
+            `${API_URL}/lecciones/progress/${user.id}?requester_id=${user.id}`
           );
 
           if (progressResponse.ok) {
@@ -135,7 +136,7 @@ const Lecciones = () => {
 
       if (progress.completed) {
         const completeResponse = await fetch(
-          `http://localhost:8000/lecciones/complete?user_id=${user.id}`,
+          `${API_URL}/lecciones/complete?user_id=${user.id}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -158,7 +159,7 @@ const Lecciones = () => {
         }
       } else {
         await fetch(
-          `http://localhost:8000/lecciones/progress/update?user_id=${user.id}`,
+          `${API_URL}/lecciones/progress/update?user_id=${user.id}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

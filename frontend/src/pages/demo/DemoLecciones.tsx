@@ -14,7 +14,8 @@ import {
     Package,
     Star,
     Search,
-    Trophy
+    Trophy,
+    GraduationCap
 } from "lucide-react";
 import { DinaCharacter } from "@/components/demo/DinaCharacter";
 
@@ -129,6 +130,27 @@ export function DemoLecciones() {
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Aventura Financiera</h1>
                     <p className="text-gray-600 dark:text-gray-400">Completa la primera lección para ver cómo funciona</p>
+                </div>
+
+                {/* Placement Test Banner */}
+                <div className="max-w-3xl mx-auto mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/50 border border-blue-100 dark:border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-white dark:bg-slate-700 rounded-xl shadow-sm">
+                            <GraduationCap className="w-6 h-6 text-indigo-500" />
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm">¿Buscas el nivel perfecto?</h3>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">Descubre tu nivel ideal con nuestro examen de ubicación gratuito.</p>
+                        </div>
+                    </div>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled
+                        className="whitespace-nowrap bg-gray-200/50 text-gray-400 border border-gray-200/50 cursor-not-allowed hover:bg-gray-200/50 w-full sm:w-auto"
+                    >
+                        Hacer Examen 🔒
+                    </Button>
                 </div>
 
                 {/* New Gamified Path Component */}

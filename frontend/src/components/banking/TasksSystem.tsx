@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -164,7 +165,7 @@ export function TasksSystem() {
         const user = JSON.parse(userStr);
         
         // Cargar tareas desde el backend
-        const response = await fetch(`http://localhost:8000/tasks/available/${user.id}`);
+        const response = await fetch(`${API_URL}/tasks/available/${user.id}`);
         
         if (!response.ok) {
           throw new Error('Error loading tasks');
