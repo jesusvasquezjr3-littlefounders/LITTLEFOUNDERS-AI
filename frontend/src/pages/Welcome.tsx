@@ -1,144 +1,158 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Zap,
-  Users,
-  BarChart3,
-  Shield,
-  ArrowRight,
-  Sparkles
-} from "lucide-react";
-import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "@/config/api";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowRight, Sparkles } from "lucide-react";
 
+export default function Welcome() {
+  const [step, setStep] = useState(0); // 0: Intro, 1: Name Input
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [animateOut, setAnimateOut] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-const Welcome = () => {
-  const handleLoginClick = () => {
-    // Navigate to login
-  };
+  useEffect(() => {
+    // Check authentication
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  const handleRegisterClick = () => {
-    // Navigate to register
+    // Attempt to load existing name if user backs into this page?
+    // Not strictly necessary but good UX.
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      if (user.name && user.name !== "Nuevo Usuario" && user.name !== "Sin Nombre") {
+        // If they already have a real name, maybe skip? 
+        // But the user might want to simple edit it or maybe we force them here just for the flow.
+        // Let's assume we always run this flow on registration.
+      }
+    } catch (e) { }
+
+    // Animation timer for "Hola"
+    const timer1 = setTimeout(() => {
+      setAnimateOut(true); // Fade out "Hola"
+      setTimeout(() => {
+        setStep(1); // Switch to content
+        setAnimateOut(false); // Fade in content
+      }, 500);
+    }, 2000);
+
+    return () => clearTimeout(timer1);
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/auth/me`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: name })
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+
+        // Update local storage
+        // Merge existing to keep token or other client-side props if any?
+        // Usually we just overwrite the user object.
+        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const newUser = { ...currentUser, ...updatedUser };
+        localStorage.setItem("user", JSON.stringify(newUser));
+
+        toast({
+          title: `¡Bienvenido, ${name}!`,
+          description: "Tu espacio está listo.",
+          className: "bg-green-50 border-green-200 text-green-800"
+        });
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 500);
+      } else {
+        throw new Error("Failed to update profile");
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "No pudimos guardar tu nombre. Intenta de nuevo.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-customers/5 to-revenue/5"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground overflow-hidden selection:bg-primary/20">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-customers/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
 
-        <div className="relative flex flex-col items-center justify-center min-h-screen px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            {/* Header */}
-            <div className="space-y-4">
-              <Badge variant="outline" className="px-4 py-2 text-sm">
-                <Sparkles className="w-4 h-4 mr-2" />
-                LittleFounders AI
-              </Badge>
+      <div className={`transition-all duration-500 transform ${animateOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+        {step === 0 ? (
+          <div className="text-center">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter bg-gradient-to-br from-primary via-foreground to-customers bg-clip-text text-transparent animate-in fade-in zoom-in duration-1000">
+              Hola
+            </h1>
+          </div>
+        ) : (
+          <div className="w-full max-w-md px-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
+            <div className="mb-8 text-center space-y-2">
 
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-                Bienvenido a{" "}
-                <span className="bg-gradient-to-r from-primary to-customers bg-clip-text text-transparent">
-                  LittleFounders
-                </span>
-                <br />
-                AI
-              </h1>
-
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Aprende sobre finanzas, ahorra, y gestiona tu propio dinero mientras te diviertes con juegos,
-                retos y actividades pensadas especialmente para niños y niñas como tú.
+              <h2 className="text-3xl font-semibold tracking-tight">
+                ¿Cómo te llamas?
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Para dirigirnos a ti correctamente.
               </p>
             </div>
 
-            {/* Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
-              <Card className="border-0 shadow-medium bg-revenue-light/50">
-                <CardHeader className="text-center">
-                  <div className="w-12 h-12 bg-revenue text-revenue-foreground rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <BarChart3 className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="text-lg">Tu progreso</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-center">
-                    Observa cómo avanzas con estadísticas divertidas y coloridas a medida que completas misiones y aprendes a manejar tu dinero.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-medium bg-customers-light/50">
-                <CardHeader className="text-center">
-                  <div className="w-12 h-12 bg-customers text-customers-foreground rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Users className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="text-lg">Descubre y comparte</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-center">
-                    Aprende junto a otros pequeños fundadores, comparte logros y explora el maravilloso mundo de las finanzas.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-medium bg-product-light/50">
-                <CardHeader className="text-center">
-                  <div className="w-12 h-12 bg-product text-product-foreground rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Shield className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="text-lg">Seguro y fácil</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-center">
-                    Tu seguridad es lo más importante. Aprende en un espacio protegido y amigable, diseñado especialmente para ti.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button asChild size="lg" className="px-8 py-6 text-lg bg-gradient-to-r from-primary to-customers hover:opacity-90">
-                <Link to="/login">
-                  Iniciar Sesión
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-
-              <Button asChild variant="outline" size="lg" className="px-8 py-6 text-lg">
-                <Link to="/register">
-                  ¡Crear mi cuenta!
-                </Link>
-              </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="pt-12">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-revenue">2,847</div>
-                  <div className="text-sm text-muted-foreground">Pequeños fundadores</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-customers">$20K</div>
-                  <div className="text-sm text-muted-foreground">Monedas ganadas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-product">100%</div>
-                  <div className="text-sm text-muted-foreground">Seguro</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-team">24/7</div>
-                  <div className="text-sm text-muted-foreground">Ayuda disponible</div>
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Tu nombre (o apodo)"
+                  className="h-14 text-lg px-4 bg-background/50 border-2 focus:border-primary/50 transition-all rounded-xl shadow-sm text-center"
+                  autoFocus
+                />
               </div>
-            </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full h-14 text-lg rounded-xl bg-gradient-to-r from-primary to-customers hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                disabled={isLoading || !name.trim()}
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    Guardando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Comenzar Aventura <ArrowRight className="w-5 h-5" />
+                  </span>
+                )}
+              </Button>
+            </form>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default Welcome;
+}

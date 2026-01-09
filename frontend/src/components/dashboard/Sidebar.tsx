@@ -182,7 +182,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 end={item.url === "/dashboard"}
                 onClick={(e) => handleItemClick(e, item)}
                 className={({ isActive }) => cn(
-                  "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                  "group flex items-center gap-3 p-2 rounded-xl transition-all duration-200",
                   "border-2",
                   active
                     ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
@@ -191,19 +191,32 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   item.locked && "opacity-70 cursor-not-allowed hover:bg-transparent"
                 )}
               >
-                {/* Icon Node */}
+                {/* Icon Node - Duolingo Style Volumetric */}
                 <div className={cn(
-                  "relative flex items-center justify-center transition-all duration-200",
-                  !isExpanded ? "w-10 h-10" : "w-10 h-10"
+                  "relative flex items-center justify-center transition-all duration-200 rounded-xl",
+                  !isExpanded ? "w-10 h-10" : "w-10 h-10",
+                  // Volumetric background with gradients based on item color
+                  active && item.color === "text-blue-500" && "bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_4px_0_#1e40af] active:shadow-[0_2px_0_#1e40af] active:translate-y-[2px]",
+                  active && item.color === "text-indigo-600" && "bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-[0_4px_0_#4338ca] active:shadow-[0_2px_0_#4338ca] active:translate-y-[2px]",
+                  active && item.color === "text-yellow-600" && "bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-[0_4px_0_#ca8a04] active:shadow-[0_2px_0_#ca8a04] active:translate-y-[2px]",
+                  active && item.color === "text-green-600" && "bg-gradient-to-br from-green-400 to-green-600 shadow-[0_4px_0_#16a34a] active:shadow-[0_2px_0_#16a34a] active:translate-y-[2px]",
+                  active && item.color === "text-orange-500" && "bg-gradient-to-br from-orange-400 to-orange-600 shadow-[0_4px_0_#ea580c] active:shadow-[0_2px_0_#ea580c] active:translate-y-[2px]",
+                  active && item.color === "text-red-500" && "bg-gradient-to-br from-red-400 to-red-600 shadow-[0_4px_0_#dc2626] active:shadow-[0_2px_0_#dc2626] active:translate-y-[2px]",
+                  active && item.color === "text-purple-600" && "bg-gradient-to-br from-purple-400 to-purple-600 shadow-[0_4px_0_#9333ea] active:shadow-[0_2px_0_#9333ea] active:translate-y-[2px]",
+                  active && item.color === "text-primary" && "bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_4px_0_#1e40af] active:shadow-[0_2px_0_#1e40af] active:translate-y-[2px]",
+                  // Inactive state - subtle gray with hover effect
+                  !active && "bg-gradient-to-br from-slate-200 to-slate-300 shadow-[0_3px_0_#94a3b8] group-hover:from-slate-300 group-hover:to-slate-400 group-hover:shadow-[0_4px_0_#64748b]",
+                  // Locked state
+                  item.locked && "opacity-60"
                 )}>
                   <item.icon className={cn(
-                    "w-7 h-7 transition-transform duration-200",
-                    active ? cn(item.color, "scale-110") : "text-slate-400 group-hover:text-slate-600"
+                    "w-5 h-5 transition-transform duration-200",
+                    active ? "text-white scale-110" : "text-slate-600 group-hover:text-slate-700 group-hover:scale-105"
                   )} />
                   {/* Lock overlay if locked */}
                   {item.locked && (
-                    <div className="absolute -top-1 -right-1 bg-slate-200 rounded-full p-0.5">
-                      <Lock className="w-3 h-3 text-slate-500" />
+                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-md border-2 border-slate-300">
+                      <Lock className="w-3 h-3 text-slate-600" />
                     </div>
                   )}
                 </div>
@@ -212,7 +225,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 {isExpanded && (
                   <div className="flex-1 flex items-center justify-between">
                     <span className={cn(
-                      "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                      "font-extrabold text-xs uppercase tracking-wide transition-colors",
                       active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
                     )}>
                       {item.title}
@@ -240,7 +253,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 to={item.url}
                 id={item.id}
                 className={({ isActive }) => cn(
-                  "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                  "group flex items-center gap-3 p-2 rounded-xl transition-all duration-200",
                   "border-2",
                   isActive
                     ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
@@ -249,18 +262,21 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 )}
               >
                 <div className={cn(
-                  "relative flex items-center justify-center transition-all duration-200",
-                  !isExpanded ? "w-10 h-10" : "w-10 h-10"
+                  "relative flex items-center justify-center transition-all duration-200 rounded-xl",
+                  !isExpanded ? "w-10 h-10" : "w-10 h-10",
+                  active
+                    ? "bg-gradient-to-br from-slate-300 to-slate-400 shadow-[0_4px_0_#64748b]"
+                    : "bg-gradient-to-br from-slate-200 to-slate-300 shadow-[0_3px_0_#94a3b8] group-hover:from-slate-300 group-hover:to-slate-400"
                 )}>
                   <item.icon className={cn(
-                    "w-6 h-6 transition-transform duration-200",
-                    active ? "text-slate-600" : "text-slate-400 group-hover:text-slate-600"
+                    "w-5 h-5 transition-transform duration-200",
+                    active ? "text-slate-700 scale-110" : "text-slate-600 group-hover:text-slate-700 group-hover:scale-105"
                   )} />
                 </div>
                 {isExpanded && (
                   <div className="flex-1 flex items-center justify-between">
                     <span className={cn(
-                      "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                      "font-extrabold text-xs uppercase tracking-wide transition-colors",
                       active ? "text-slate-700 dark:text-slate-300" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
                     )}>
                       {item.title}
@@ -273,27 +289,30 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
       </div>
 
-      {/* Footer / Restart Tour */}
-      <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-t-2 border-dashed border-border dark:border-slate-800">
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-[0_4px_0_#b45309] active:shadow-[0_2px_0_#b45309] active:translate-y-[2px] transition-all rounded-xl",
-            !isExpanded ? "h-12 w-12 p-0 rounded-2xl" : "py-6"
-          )}
-          onClick={() => window.dispatchEvent(new Event('restartUserTour'))}
-          title="Ver Tutorial"
-        >
-          {isExpanded ? (
-            <div className="flex items-center gap-2 font-black tracking-wide">
-              <span>VER TUTORIAL</span>
-              <span className="text-lg">↺</span>
-            </div>
-          ) : (
-            <span className="font-black text-lg">↺</span>
-          )}
-        </Button>
-      </div>
-    </div>
+      {/* Footer / Restart Tour - Only for Universal User */}
+      {getUser().user_type === 'universal' && (
+        <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-t-2 border-dashed border-border dark:border-slate-800">
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-[0_4px_0_#b45309] active:shadow-[0_2px_0_#b45309] active:translate-y-[2px] transition-all rounded-xl",
+              !isExpanded ? "h-10 w-10 p-0 rounded-xl" : "py-3"
+            )}
+            onClick={() => window.dispatchEvent(new Event('restartUserTour'))}
+            title="Ver Tutorial"
+          >
+            {isExpanded ? (
+              <div className="flex items-center gap-2 font-black tracking-wide">
+                <span>VER TUTORIAL</span>
+                <span className="text-lg">↺</span>
+              </div>
+            ) : (
+              <span className="font-black text-lg">↺</span>
+            )}
+          </Button>
+        </div>
+      )}
+
+    </div >
   );
 }

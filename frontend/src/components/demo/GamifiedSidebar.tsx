@@ -120,7 +120,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 id={item.id}
                                 end={item.url === "/demo"}
                                 className={({ isActive }) => cn(
-                                    "group flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                                    "group flex items-center gap-3 p-2 rounded-xl transition-all duration-200",
                                     "border-2",
                                     isActive
                                         ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
@@ -128,14 +128,24 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                     !isExpanded && "justify-center px-2"
                                 )}
                             >
-                                {/* Icon Node */}
+                                {/* Icon Node - Duolingo Style Volumetric */}
                                 <div className={cn(
-                                    "relative flex items-center justify-center transition-all duration-200",
-                                    !isExpanded ? "w-10 h-10" : "w-10 h-10"
+                                    "relative flex items-center justify-center transition-all duration-200 rounded-xl",
+                                    !isExpanded ? "w-10 h-10" : "w-10 h-10",
+                                    // Volumetric background with gradients based on item color
+                                    active && item.color === "text-blue-500" && "bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_4px_0_#1e40af] active:shadow-[0_2px_0_#1e40af] active:translate-y-[2px]",
+                                    active && item.color === "text-indigo-600" && "bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-[0_4px_0_#4338ca] active:shadow-[0_2px_0_#4338ca] active:translate-y-[2px]",
+                                    active && item.color === "text-yellow-600" && "bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-[0_4px_0_#ca8a04] active:shadow-[0_2px_0_#ca8a04] active:translate-y-[2px]",
+                                    active && item.color === "text-green-600" && "bg-gradient-to-br from-green-400 to-green-600 shadow-[0_4px_0_#16a34a] active:shadow-[0_2px_0_#16a34a] active:translate-y-[2px]",
+                                    active && item.color === "text-orange-500" && "bg-gradient-to-br from-orange-400 to-orange-600 shadow-[0_4px_0_#ea580c] active:shadow-[0_2px_0_#ea580c] active:translate-y-[2px]",
+                                    active && item.color === "text-red-500" && "bg-gradient-to-br from-red-400 to-red-600 shadow-[0_4px_0_#dc2626] active:shadow-[0_2px_0_#dc2626] active:translate-y-[2px]",
+                                    active && item.color === "text-purple-600" && "bg-gradient-to-br from-purple-400 to-purple-600 shadow-[0_4px_0_#9333ea] active:shadow-[0_2px_0_#9333ea] active:translate-y-[2px]",
+                                    // Inactive state - subtle gray with hover effect
+                                    !active && "bg-gradient-to-br from-slate-200 to-slate-300 shadow-[0_3px_0_#94a3b8] group-hover:from-slate-300 group-hover:to-slate-400 group-hover:shadow-[0_4px_0_#64748b]"
                                 )}>
                                     <item.icon className={cn(
-                                        "w-7 h-7 transition-transform duration-200",
-                                        active ? item.color : "text-slate-400 group-hover:text-slate-600"
+                                        "w-5 h-5 transition-transform duration-200",
+                                        active ? "text-white scale-110" : "text-slate-600 group-hover:text-slate-700 group-hover:scale-105"
                                     )} />
                                 </div>
 
@@ -143,7 +153,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 {isExpanded && (
                                     <div className="flex-1 flex items-center justify-between">
                                         <span className={cn(
-                                            "font-extrabold text-sm uppercase tracking-wide transition-colors",
+                                            "font-extrabold text-xs uppercase tracking-wide transition-colors",
                                             active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
                                         )}>
                                             {item.title}

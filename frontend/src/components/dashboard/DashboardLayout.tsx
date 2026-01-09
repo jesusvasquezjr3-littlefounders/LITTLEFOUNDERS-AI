@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -28,7 +29,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-900/20 dark:to-slate-900">
+      {/* Animated Background */}
+      <AnimatedBackground />
 
       <UserTour />
       <div className="flex h-full relative">

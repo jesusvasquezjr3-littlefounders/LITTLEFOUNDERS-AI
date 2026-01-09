@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
@@ -8,13 +9,29 @@ from models import User, UserType
 from auth.schemas import (
     UserRegister,
     UserLogin,
+    UserUpdate,
     UserResponse,
     Token
 )
-from auth.utils import verify_password, get_password_hash, create_access_token
+from auth.utils import verify_password, get_password_hash, create_access_token, verify_token
 from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+
+async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    email = verify_token(token, credentials_exception)
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 @router.post("/register", response_model=dict)
@@ -34,7 +51,7 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
         
         # Create universal user
         new_user = User(
-            name=user_data.name,
+            name=user_data.name or "Nuevo Usuario",
             email=user_data.email,
             password_hash=get_password_hash(user_data.password),
             user_type=UserType.UNIVERSAL.value,
@@ -172,13 +189,33 @@ async def get_all_users(db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_current_user(db: Session = Depends(get_db)):
+async def get_current_user(current_user: User = Depends(get_current_user_from_token)):
     """
     Get current user information
     """
-    # This would normally use the JWT token to identify the user
-    # For now, it's a placeholder
-    pass
+    return current_user
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_user_profile(
+    user_update: UserUpdate, 
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Update user profile information (name, birth_date, gender)
+    """
+    # specific fields to update
+    if user_update.name is not None:
+        current_user.name = user_update.name
+    if user_update.birth_date is not None:
+        current_user.birth_date = datetime.strptime(user_update.birth_date, "%Y-%m-%d") if user_update.birth_date else None
+    if user_update.gender is not None:
+        current_user.gender = user_update.gender
+        
+    db.commit()
+    db.refresh(current_user)
+    return current_user
 
 
 @router.get("/family/{user_id}")

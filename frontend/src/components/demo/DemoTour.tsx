@@ -18,18 +18,6 @@ const childSteps: TourStep[] = [
         position: "center"
     },
     {
-        targetId: "demo-nav-savings",
-        title: "Tus Ahorros",
-        description: "Aquí verás crecer tu dinero. ¡Define metas como esa bici nueva o el juguete que tanto quieres!",
-        position: "right"
-    },
-    {
-        targetId: "demo-nav-store",
-        title: "La Tiendita",
-        description: "¡Gana monedas cumpliendo tareas y úsalas aquí para comprar cosas geniales para tu avatar!",
-        position: "right"
-    },
-    {
         targetId: "demo-nav-lessons",
         title: "Lecciones Divertidas",
         description: "¡Aprende sobre finanzas y emprendimiento jugando! Lecciones interactivas que te convertirán en un experto.",
@@ -42,6 +30,12 @@ const childSteps: TourStep[] = [
         position: "right"
     },
     {
+        targetId: "demo-nav-savings",
+        title: "Tus Ahorros",
+        description: "Aquí verás crecer tu dinero. ¡Define metas como esa bici nueva o el juguete que tanto quieres!",
+        position: "right"
+    },
+    {
         targetId: "demo-nav-games",
         title: "Aprende Jugando",
         description: "Conviértete en un experto en negocios con juegos divertidos como tu propio puesto de limonada.",
@@ -51,6 +45,12 @@ const childSteps: TourStep[] = [
         targetId: "demo-nav-banking",
         title: "Tu Banco Digital",
         description: "¡Siéntete como un adulto! Aquí tendrás tu propia tarjeta y cuenta bancaria real.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-store",
+        title: "La Tiendita",
+        description: "¡Gana monedas cumpliendo tareas y úsalas aquí para comprar cosas geniales para tu avatar!",
         position: "right"
     },
     {
@@ -67,18 +67,6 @@ const tutorSteps: TourStep[] = [
         position: "center"
     },
     {
-        targetId: "demo-nav-savings",
-        title: "Supervisión de Ahorros",
-        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
-        position: "right"
-    },
-    {
-        targetId: "demo-nav-store",
-        title: "Control de Recompensas",
-        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
-        position: "right"
-    },
-    {
         targetId: "demo-nav-lessons",
         title: "Currículo Educativo",
         description: "Revisa el progreso académico. Las lecciones están diseñadas pedagógicamente para distintas edades.",
@@ -91,6 +79,12 @@ const tutorSteps: TourStep[] = [
         position: "right"
     },
     {
+        targetId: "demo-nav-savings",
+        title: "Supervisión de Ahorros",
+        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
+        position: "right"
+    },
+    {
         targetId: "demo-nav-games",
         title: "Simuladores de Negocios",
         description: "Espacios seguros donde pueden fallar y aprender. Simulaciones de emprendimiento sin riesgo real.",
@@ -100,6 +94,12 @@ const tutorSteps: TourStep[] = [
         targetId: "demo-nav-banking",
         title: "Control Parental Bancario",
         description: "Define límites de gasto, bloquea tarjetas y monitorea transacciones en tiempo real.",
+        position: "right"
+    },
+    {
+        targetId: "demo-nav-store",
+        title: "Control de Recompensas",
+        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
         position: "right"
     },
     {

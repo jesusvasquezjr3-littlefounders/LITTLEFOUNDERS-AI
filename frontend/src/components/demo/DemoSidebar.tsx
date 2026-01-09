@@ -110,7 +110,7 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                             id={item.id}
                             className={({ isActive: linkActive }) =>
                                 cn(
-                                    "flex items-center gap-4 px-3 py-3 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden",
+                                    "flex items-center gap-4 px-2 py-2 rounded-xl text-xs font-bold transition-all duration-300 group relative overflow-hidden",
                                     "hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:scale-105 hover:translate-x-2",
                                     (linkActive || active)
                                         ? "bg-white dark:bg-slate-800 shadow-lg scale-105 ring-2 ring-primary/20"
@@ -118,17 +118,24 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                                 )
                             }
                         >
+                            {/* Icon Node - Duolingo Style Volumetric */}
                             <div className={cn(
-                                "relative z-10 flex items-center justify-center transition-all duration-300 rounded-2xl shadow-button group-hover:shadow-button-hover",
-                                isExpanded ? "w-14 h-14" : "w-full h-14",
-                                active
-                                    ? "bg-primary/10 ring-4 ring-white/50 dark:ring-primary/30 scale-110 translate-y-[2px] shadow-button-active"
-                                    : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 group-hover:border-primary/30 dark:group-hover:border-primary/40 group-hover:scale-110"
+                                "relative flex items-center justify-center transition-all duration-200 rounded-xl",
+                                isExpanded ? "w-10 h-10" : "w-10 h-10",
+                                // Volumetric background with gradients based on item color
+                                active && item.color === "text-primary" && "bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_4px_0_#1e40af] active:shadow-[0_2px_0_#1e40af] active:translate-y-[2px]",
+                                active && item.color === "text-purple-600" && "bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-[0_4px_0_#4338ca] active:shadow-[0_2px_0_#4338ca] active:translate-y-[2px]",
+                                active && item.color === "text-yellow-600" && "bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-[0_4px_0_#ca8a04] active:shadow-[0_2px_0_#ca8a04] active:translate-y-[2px]",
+                                active && item.color === "text-green-600" && "bg-gradient-to-br from-green-400 to-green-600 shadow-[0_4px_0_#16a34a] active:shadow-[0_2px_0_#16a34a] active:translate-y-[2px]",
+                                active && item.color === "text-orange-500" && "bg-gradient-to-br from-orange-400 to-orange-600 shadow-[0_4px_0_#ea580c] active:shadow-[0_2px_0_#ea580c] active:translate-y-[2px]",
+                                active && item.color === "text-product" && "bg-gradient-to-br from-purple-400 to-purple-600 shadow-[0_4px_0_#9333ea] active:shadow-[0_2px_0_#9333ea] active:translate-y-[2px]",
+                                // Inactive state - subtle gray with hover effect
+                                !active && "bg-gradient-to-br from-slate-200 to-slate-300 shadow-[0_3px_0_#94a3b8] group-hover:from-slate-300 group-hover:to-slate-400 group-hover:shadow-[0_4px_0_#64748b]"
                             )}>
                                 <item.icon
                                     className={cn(
-                                        "w-7 h-7 transition-all duration-300",
-                                        active ? cn(item.color, "scale-110") : "text-slate-400 dark:text-slate-500 group-hover:text-primary group-hover:scale-125"
+                                        "w-5 h-5 transition-all duration-300",
+                                        active ? "text-white scale-110" : "text-slate-600 group-hover:text-slate-700 group-hover:scale-105"
                                     )}
                                 />
                             </div>
@@ -155,8 +162,8 @@ export function DemoSidebar({ collapsed, onToggle }: DemoSidebarProps) {
                     className={cn(
                         "w-full transition-all duration-300 group relative overflow-hidden shadow-button hover:shadow-button-hover active:shadow-button-active active:translate-y-1 hover:scale-105",
                         isExpanded
-                            ? "bg-gradient-to-r from-warning to-team hover:from-warning/90 hover:to-team/90 text-white font-black px-4 py-6 rounded-2xl"
-                            : "h-14 w-14 rounded-2xl p-0 bg-warning/20 text-warning hover:bg-warning/30"
+                            ? "bg-gradient-to-r from-warning to-team hover:from-warning/90 hover:to-team/90 text-white font-black px-3 py-4 rounded-xl"
+                            : "h-10 w-10 rounded-xl p-0 bg-warning/20 text-warning hover:bg-warning/30"
                     )}
                     onClick={() => window.dispatchEvent(new Event('restartDemoTour'))}
                     title="Reiniciar Tutorial"

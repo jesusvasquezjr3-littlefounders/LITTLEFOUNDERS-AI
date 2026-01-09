@@ -18,18 +18,6 @@ const childSteps: TourStep[] = [
         position: "center"
     },
     {
-        targetId: "nav-savings",
-        title: "Tus Ahorros",
-        description: "Aquí verás crecer tu dinero. ¡Define metas como esa bici nueva o el juguete que tanto quieres!",
-        position: "right"
-    },
-    {
-        targetId: "nav-store",
-        title: "La Tiendita",
-        description: "¡Gana monedas cumpliendo tareas y úsalas aquí para comprar cosas geniales para tu avatar!",
-        position: "right"
-    },
-    {
         targetId: "nav-lessons",
         title: "Lecciones Divertidas",
         description: "¡Aprende sobre finanzas y emprendimiento jugando! Lecciones interactivas que te convertirán en un experto.",
@@ -39,6 +27,12 @@ const childSteps: TourStep[] = [
         targetId: "nav-tasks",
         title: "Misiones y Tareas",
         description: "Tus papás te dejarán misiones aquí. ¡Complétalas todas para ganar recompensas reales!",
+        position: "right"
+    },
+    {
+        targetId: "nav-savings",
+        title: "Tus Ahorros",
+        description: "Aquí verás crecer tu dinero. ¡Define metas como esa bici nueva o el juguete que tanto quieres!",
         position: "right"
     },
     {
@@ -54,6 +48,12 @@ const childSteps: TourStep[] = [
         position: "right"
     },
     {
+        targetId: "nav-store",
+        title: "La Tiendita",
+        description: "¡Gana monedas cumpliendo tareas y úsalas aquí para comprar cosas geniales para tu avatar!",
+        position: "right"
+    },
+    {
         title: "¡Misión Cumplida! 🎉",
         description: "Ya conoces tu base. Ahora eres libre de explorar todo. Recuerda: ¡Sigue aprendiendo!",
         position: "center"
@@ -62,21 +62,9 @@ const childSteps: TourStep[] = [
 
 const parentSteps: TourStep[] = [
     {
-        title: "Bienvenido a LittleFounders - Modo Tutor 🎓",
+        title: "Bienvenido a LittleFounders",
         description: "Esta plataforma está diseñada para empoderar a los niños en su educación financiera. Aquí te mostramos cómo puedes supervisar y guiar.",
         position: "center"
-    },
-    {
-        targetId: "nav-savings",
-        title: "Supervisión de Ahorros",
-        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
-        position: "right"
-    },
-    {
-        targetId: "nav-store",
-        title: "Control de Recompensas",
-        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
-        position: "right"
     },
     {
         targetId: "nav-lessons",
@@ -91,6 +79,12 @@ const parentSteps: TourStep[] = [
         position: "right"
     },
     {
+        targetId: "nav-savings",
+        title: "Supervisión de Ahorros",
+        description: "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales).",
+        position: "right"
+    },
+    {
         targetId: "nav-games",
         title: "Simuladores de Negocios",
         description: "Monitorea su desempeño en los juegos de emprendimiento y utiliza los reportes para guiar su aprendizaje.",
@@ -100,6 +94,12 @@ const parentSteps: TourStep[] = [
         targetId: "nav-banking",
         title: "Control Parental Bancario",
         description: "Define límites de gasto, bloquea tarjetas y monitorea transacciones en tiempo real.",
+        position: "right"
+    },
+    {
+        targetId: "nav-store",
+        title: "Control de Recompensas",
+        description: "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales.",
         position: "right"
     },
     {
@@ -123,9 +123,8 @@ export function UserTour() {
             if (user && user.id) {
                 setUserKey(`userTourCompleted_${user.id}`);
             }
-            // Simple robust check: if it's explicitly child, use child. Else assume parent/admin/tutor.
-            // Or stricter: if 'child' -> child, else -> parent.
-            if (user.user_type === 'child') {
+            // Logic updated: Universal user gets Child tour
+            if (user.user_type === 'child' || user.user_type === 'universal') {
                 setUserRole('child');
             } else {
                 setUserRole('parent');
@@ -144,9 +143,16 @@ export function UserTour() {
             if (user && user.id) currentKey = `userTourCompleted_${user.id}`;
         } catch (e) { }
 
-        // Auto-start check
+        // Auto-start check - Only for UNIVERSAL users
         const completed = localStorage.getItem(currentKey);
-        if (!completed) {
+
+        let isUniversal = false;
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.user_type === 'universal') isUniversal = true;
+        } catch (e) { }
+
+        if (!completed && isUniversal) {
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }

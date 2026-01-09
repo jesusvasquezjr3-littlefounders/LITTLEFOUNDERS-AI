@@ -12,9 +12,15 @@ class UserBase(BaseModel):
 
 
 class UserRegister(BaseModel):
-    name: str
+    name: Optional[str] = None
     email: EmailStr
     password: str
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    birth_date: Optional[str] = None
+    gender: Optional[str] = None
 
 
 # Legacy scheamas kept for backward compatibility if needed, 

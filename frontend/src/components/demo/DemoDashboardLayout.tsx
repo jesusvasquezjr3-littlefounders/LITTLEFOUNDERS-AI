@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import { GamifiedSidebar } from "./GamifiedSidebar";
 import { DemoTopNav } from "./DemoTopNav";
 import { DemoTour } from "./DemoTour";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
 
 interface DemoDashboardLayoutProps {
@@ -22,8 +23,9 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
     };
 
     return (
-        <div className="h-screen overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900">
-
+        <div className="h-screen overflow-hidden bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-900/20 dark:to-slate-900">
+            {/* Animated Background */}
+            <AnimatedBackground />
 
             <div className="flex h-full overflow-hidden relative">
                 {/* Sidebar is now autonomous/floating in its expansion, but occupies 16 (4rem) of space in the grid implicitly or via padding */}

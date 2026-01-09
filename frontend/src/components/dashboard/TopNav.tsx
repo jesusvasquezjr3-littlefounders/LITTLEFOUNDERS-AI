@@ -29,7 +29,8 @@ export function TopNav() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    navigate('/login');
+    localStorage.removeItem('token');
+    navigate('/');
   };
 
   const getUserTypeLabel = (userType: string) => {
