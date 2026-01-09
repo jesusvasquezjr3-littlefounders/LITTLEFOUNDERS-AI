@@ -28,7 +28,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
-    description=settings.api_description
+    description=settings.api_description,
+    root_path="/api" if os.getenv("VERCEL") else ""
 )
 
 # Configure CORS

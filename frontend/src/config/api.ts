@@ -1,9 +1,10 @@
 // API Configuration
 // Cambia esta URL según tu entorno
 
-// Para desarrollo utilizamos localhost:8000 por defecto si no hay variable de entorno
-// Esto previene que se conecte a producción por error en dev.
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Detect environment automatically
+// In production (Vercel), use relative path '/api' to use the rewrites defined in vercel.json
+// In development, use localhost:8000
+export const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
 export default API_URL;
 
