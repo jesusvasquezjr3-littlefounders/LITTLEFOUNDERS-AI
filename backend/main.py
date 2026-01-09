@@ -73,6 +73,29 @@ async def root():
         "doc_url": "/docs"  # Hint for user
     }
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint to verify backend is running"""
+    try:
+        # Test database connection
+        from database import get_db
+        db = next(get_db())
+        db.execute("SELECT 1")
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    return {
+        "status": "ok",
+        "database": db_status,
+        "environment": "vercel" if os.getenv("VERCEL") else "local",
+        "config": {
+            "db_host": settings.database_hostname,
+            "db_port": settings.database_port,
+            "db_name": settings.database_name
+        }
+    }
+
 # Legacy file-based auth code removed for Vercel/Supabase migration
 
 
