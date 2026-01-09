@@ -28,9 +28,19 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
-    description=settings.api_description,
-    root_path="/api" if os.getenv("VERCEL") else ""
+    description=settings.api_description
 )
+
+# Vercel Middleware to strip /api prefix
+# When using rewrites in vercel.json, the path passed to FastAPI includes /api
+# We need to strip it so authentication routes match (e.g. /api/auth/login -> /auth/login)
+@app.middleware("http")
+async def strip_api_prefix(request, call_next):
+    if request.url.path.startswith("/api"):
+        # Modify the scope directly to strip /api
+        request.scope["path"] = request.url.path[4:]  # Remove first 4 chars (/api)
+    response = await call_next(request)
+    return response
 
 # Configure CORS
 app.add_middleware(
@@ -57,7 +67,8 @@ async def root():
     return {
         "message": "LittleFounders API",
         "version": settings.api_version,
-        "status": "running"
+        "status": "online",
+        "doc_url": "/docs"  # Hint for user
     }
 
 # Legacy file-based auth code removed for Vercel/Supabase migration
