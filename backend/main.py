@@ -23,7 +23,9 @@ from investment_games.endpoints import router as investment_games_router
 from virtual_cards.endpoints import router as virtual_cards_router
 
 # Create database tables
-models.Base.metadata.create_all(bind=engine)
+# DISABLED for Vercel: Tables should already exist in Supabase
+# In serverless environments, this fails because it runs on every cold start
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.api_title,
