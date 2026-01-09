@@ -32,15 +32,7 @@ class Settings(BaseSettings):
     api_description: str = "API para la plataforma educativa financiera LittleFounders"
     
     # CORS configuration
-    cors_origins: list[str] = [
-        "http://localhost:5173",
-        "http://localhost:80",
-        # Producción
-        "https://littlefounders.ai",
-        "https://www.littlefounders.ai",
-        # Backend subdominio (no suele ser necesario, pero no estorba)
-        "https://api.littlefounders.ai",
-    ]
+    cors_origins: list[str] = ["*"]
     cors_allow_credentials: bool = True
     cors_allow_methods: list[str] = ["*"]
     cors_allow_headers: list[str] = ["*"]
