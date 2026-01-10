@@ -40,13 +40,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           collapsed={sidebarCollapsed}
           onToggle={handleToggle}
         />
-        <div className={cn(
-          "flex-1 flex flex-col h-full overflow-hidden transition-all duration-300",
-          !sidebarCollapsed ? "ml-72" : "ml-16 md:ml-24"
-        )}>
-          {/* Barra superior: ¡Bienvenido a tu panel de aprendizajes y logros! */}
+        <div className="flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 pb-24 md:pb-0">
+          {/* Barra superior - spans full width */}
           <TopNav />
-          <main className="flex-1 p-6 overflow-y-auto" aria-label="Contenido principal">
+          <main className={cn(
+            "flex-1 p-6 overflow-y-auto transition-all duration-300",
+            // Desktop: dynamic margin for sidebar
+            !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
+          )} aria-label="Contenido principal">
             {children}
           </main>
         </div>

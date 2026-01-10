@@ -84,33 +84,43 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
 
     return (
         <div className={cn("relative w-full h-full flex justify-center items-center transition-opacity duration-500", className)}>
-            {/* Speech Bubble */}
+            {/* Speech Bubble - Modern pill-shaped design */}
             <div
                 ref={bubbleRef}
                 className={cn(
-                    "absolute bg-white p-5 rounded-[2rem] shadow-xl max-w-[85vw] w-auto md:max-w-[320px] text-center transition-all duration-500 ease-out z-10 pointer-events-none border-4 border-gray-800",
-                    // Standard: Centered above
-                    bubblePosition === 'standard' && "-top-40 md:-top-44 left-1/2 -translate-x-1/2",
-                    // Demo: Inside, Top-Left (Next to Liruf, inside video limits)
-                    bubblePosition === 'demo' && "top-6 left-6 md:left-12 max-w-[260px]",
-                    // Tutorial: Bottom-Right corner friendly (anchored right, grows left, floats above)
-                    bubblePosition === 'tutorial' && "bottom-[85%] right-0 mb-4",
-                    // Hero: Top-Left relative to head, careful not to go too high
-                    bubblePosition === 'hero' && "top-[10%] -left-[10%] md:-left-[20%]",
-                    (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-0 translate-y-4"
+                    "absolute z-20 transition-all duration-300 ease-out",
+                    // Standard: Centered above (closer)
+                    bubblePosition === 'standard' && "-top-10 md:-top-14 left-1/2 -translate-x-1/2",
+                    // Demo: Inside, Top-Center (very close)
+                    bubblePosition === 'demo' && "-top-2 md:-top-4 left-1/2 -translate-x-1/2",
+                    // Tutorial: Top area (closer)
+                    bubblePosition === 'tutorial' && "-top-12 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
+                    // Hero: Top-Left relative to head
+                    bubblePosition === 'hero' && "top-[10%] left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
+                    (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}
             >
-                <p className="text-gray-800 font-bold text-lg leading-tight font-fredoka">
-                    {currentText || randomMsg}
-                </p>
-                {/* Bubble Tail - position varies based on bubble position */}
+                {/* Main Bubble */}
                 <div className={cn(
-                    "absolute -bottom-3 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-gray-800",
-                    bubblePosition === 'standard' && "left-1/2 -translate-x-1/2",
-                    bubblePosition === 'demo' && "left-[20%] border-r-4 border-b-4",
-                    bubblePosition === 'tutorial' && "right-[20%]",
-                    bubblePosition === 'hero' && "left-[80%] border-r-4 border-b-4"
-                )}></div>
+                    "relative bg-white rounded-full shadow-lg px-6 py-3 md:px-8 md:py-4",
+                    "max-w-[85vw] md:max-w-[320px] w-auto text-center"
+                )}>
+                    <p className="text-slate-700 font-bold text-base md:text-lg leading-snug">
+                        {currentText || randomMsg}
+                    </p>
+
+                    {/* Tail/Pointer - Smooth curved SVG pointing down */}
+                    <svg
+                        className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-6 h-3"
+                        viewBox="0 0 24 12"
+                        fill="none"
+                    >
+                        <path
+                            d="M0 0C4 0 8 8 12 12C16 8 20 0 24 0H0Z"
+                            fill="white"
+                        />
+                    </svg>
+                </div>
             </div>
 
             <svg

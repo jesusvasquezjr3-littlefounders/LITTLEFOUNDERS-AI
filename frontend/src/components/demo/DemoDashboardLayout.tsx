@@ -34,22 +34,17 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
                     onToggle={handleToggle}
                 />
 
-                {/* Main Content - Shifts when Pinned (collapsed=false), otherwise 16/20 for icon bar */}
-                <div
-                    className={cn(
-                        "flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300",
-                        !sidebarCollapsed ? "ml-72" : "ml-20 md:ml-24"
-                    )}
-                >
-                    {/* Top Nav with glassmorphism */}
-                    <div className="sticky top-0 z-10 bg-white/40 backdrop-blur-md border-b border-white/20">
-                        <DemoTopNav />
-                    </div>
+                {/* Main Content - TopNav spans full width, main shifts for sidebar */}
+                <div className="flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300 pb-24 md:pb-0">
+                    {/* Top Nav - spans full width */}
+                    <DemoTopNav />
 
-                    <main className="flex-1 p-6 overflow-y-auto custom-scrollbar" aria-label="Contenido principal">
-                        <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {children}
-                        </div>
+                    <main className={cn(
+                        "flex-1 p-6 overflow-y-auto custom-scrollbar transition-all duration-300",
+                        // Desktop: dynamic margin for sidebar
+                        !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
+                    )} aria-label="Contenido principal">
+                        {children}
                     </main>
                 </div>
             </div>

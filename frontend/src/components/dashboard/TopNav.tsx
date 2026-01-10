@@ -51,16 +51,14 @@ export function TopNav() {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-card border-b border-border">
-      {/* Search */}
-      <div className="flex items-center flex-1 max-w-md">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-          <Input
-            placeholder="Busca juegos o lecciones..."
-            className="pl-10 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary"
-          />
-        </div>
+    <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
+      {/* Centered Logo - Hidden on mobile to prevent overlap */}
+      <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+        <img
+          src="/logo-sized.png"
+          alt="LittleFounders"
+          className="h-8 w-auto object-contain"
+        />
       </div>
 
       {/* Right Section */}

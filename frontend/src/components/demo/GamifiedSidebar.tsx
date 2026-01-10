@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
     Home,
     BookOpen,
@@ -7,14 +7,13 @@ import {
     Store,
     Trophy,
     TrendingUp,
-    Map as MapIcon,
-    ChevronLeft,
-    Menu,
-    PinIcon
+    ChevronsLeftRight,
+    Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface GamifiedSidebarProps {
     collapsed: boolean;
@@ -26,92 +25,59 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     const location = useLocation();
     const currentPath = location.pathname;
     const [isHovered, setIsHovered] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
 
-    // Derived state for expansion: Expanded if hovered OR if NOT collapsed (pinned)
     const isExpanded = isHovered || !collapsed;
 
     const isActive = (path: string) => {
+        if (path === "#") return false;
         if (path === "/demo") return currentPath === "/demo";
         return currentPath.startsWith(path);
     };
 
+    const handleItemClick = (e: React.MouseEvent, item: any) => {
+        if (item.locked) {
+            e.preventDefault();
+            toast({
+                title: "Función en Desarrollo",
+                description: "Esta funcionalidad estará disponible próximamente en la versión completa.",
+                variant: "default",
+            });
+        }
+    };
+
     const menuItems = [
-        { title: "Inicio", url: "/demo", icon: Home, color: "text-blue-500", bg: "bg-blue-100", id: "demo-nav-home" },
-        { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-100", id: "demo-nav-lessons" },
-        { title: "Mis Tareas", url: "/demo/tasks", icon: Trophy, color: "text-yellow-600", bg: "bg-yellow-100", id: "demo-nav-tasks" },
-        { title: "Mis Ahorros", url: "/demo/savings", icon: PiggyBank, color: "text-green-600", bg: "bg-green-100", id: "demo-nav-savings" },
-        { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "text-orange-500", bg: "bg-orange-100", id: "demo-nav-games" },
-        { title: "Banca Digital", url: "/demo/growth", icon: TrendingUp, color: "text-red-500", bg: "bg-red-100", id: "demo-nav-banking" },
-        { title: "Tiendita", url: "/demo/store", icon: Store, color: "text-purple-600", bg: "bg-purple-100", id: "demo-nav-store" },
+        { title: "Inicio", url: "/demo", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "demo-nav-home" },
+        { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "demo-nav-lessons" },
+        { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "demo-nav-games" },
+        // Locked Items
+        { title: "Mis Tareas", url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-tasks", locked: true },
+        { title: "Mis Ahorros", url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-savings", locked: true },
+        { title: "Banca Digital", url: "#", icon: TrendingUp, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-banking", locked: true },
+        { title: "Tiendita", url: "#", icon: Store, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-store", locked: true },
     ];
 
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const activeItem = menuItems.find(item => isActive(item.url));
-        if (activeItem && containerRef.current) {
-            const el = document.getElementById(activeItem.id);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-    }, [location.pathname]);
-
     return (
-        <div
-            className={cn(
-                "fixed left-0 top-0 h-screen transition-all duration-300 ease-in-out z-50 flex flex-col",
-                isExpanded ? "w-72" : "w-20 md:w-24", // Increased thickness
-                "bg-background dark:bg-slate-900 border-r-4 border-border dark:border-slate-800", // Theme-aware background
-                "shadow-[4px_0_24px_rgba(0,0,0,0.05)]",
-                className
-            )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {/* Header / Map Title */}
-            <div className="p-6 border-b-2 border-dashed border-border dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm min-h-[88px]">
-                {isExpanded && (
-                    <div className="flex items-center gap-2 animate-in fade-in duration-300 px-2">
-                        <img
-                            src="/logo-sized.png"
-                            alt="LittleFounders Logo"
-                            className="h-10 w-auto object-contain"
-                        />
-                    </div>
+        <>
+            {/* Desktop Sidebar - Left vertical dock */}
+            <div
+                className={cn(
+                    "hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50",
+                    "flex-col items-center gap-1 p-3",
+                    "rounded-3xl backdrop-blur-xl",
+                    "bg-white/70 dark:bg-slate-900/70",
+                    "border border-white/50 dark:border-slate-700/50",
+                    "shadow-2xl shadow-black/10",
+                    "transition-all duration-300 ease-out",
+                    isExpanded ? "w-60" : "w-24",
+                    className
                 )}
-
-                {/* Pin Button: Only visible when expanded. Controls 'collapsed' prop (Pin state) */}
-                {isExpanded ? (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onToggle}
-                        className={cn(
-                            "hover:bg-orange-100 mx-auto transition-colors",
-                            !collapsed ? "text-orange-600 bg-orange-50" : "text-slate-400"
-                        )}
-                        title={!collapsed ? "Desanclar barra" : "Fijar barra"}
-                    >
-                        <PinIcon className={cn("w-5 h-5 transition-transform", !collapsed ? "-rotate-45 fill-current" : "rotate-0")} />
-                    </Button>
-                ) : (
-                    // Collapsed state icon (centering handled by flex parent)
-                    <div className="mx-auto">
-                        <img
-                            src="/logo-sized.png"
-                            alt="LF"
-                            className="w-10 h-10 object-contain"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Path Container */}
-            <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative py-4 custom-scrollbar scroll-smooth">
-                {/* Menu Items */}
-                <div className="space-y-2 px-3 relative z-10">
-                    {menuItems.map((item, index) => {
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div ref={containerRef} className="flex flex-col gap-2 w-full py-2">
+                    {menuItems.map((item) => {
                         const active = isActive(item.url);
                         return (
                             <NavLink
@@ -119,74 +85,93 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                                 to={item.url}
                                 id={item.id}
                                 end={item.url === "/demo"}
-                                className={({ isActive }) => cn(
-                                    "group flex items-center gap-3 p-2 rounded-xl transition-all duration-200",
-                                    "border-2",
-                                    isActive
-                                        ? "bg-blue-50/50 border-blue-200 dark:bg-slate-800 dark:border-blue-900"
-                                        : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800",
-                                    !isExpanded && "justify-center px-2"
+                                onClick={(e) => handleItemClick(e, item)}
+                                className={cn(
+                                    "group flex items-center gap-3 p-2 rounded-2xl transition-all duration-200",
+                                    active
+                                        ? "bg-white/90 dark:bg-slate-800/90 shadow-md"
+                                        : "hover:bg-white/60 dark:hover:bg-slate-800/60",
+                                    !isExpanded && "justify-center",
+                                    item.locked && "opacity-60 cursor-not-allowed hover:bg-transparent"
                                 )}
                             >
-                                {/* Icon Node - Duolingo Style Volumetric */}
                                 <div className={cn(
-                                    "relative flex items-center justify-center transition-all duration-200 rounded-xl",
-                                    !isExpanded ? "w-10 h-10" : "w-10 h-10",
-                                    // Volumetric background with gradients based on item color
-                                    active && item.color === "text-blue-500" && "bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_4px_0_#1e40af] active:shadow-[0_2px_0_#1e40af] active:translate-y-[2px]",
-                                    active && item.color === "text-indigo-600" && "bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-[0_4px_0_#4338ca] active:shadow-[0_2px_0_#4338ca] active:translate-y-[2px]",
-                                    active && item.color === "text-yellow-600" && "bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-[0_4px_0_#ca8a04] active:shadow-[0_2px_0_#ca8a04] active:translate-y-[2px]",
-                                    active && item.color === "text-green-600" && "bg-gradient-to-br from-green-400 to-green-600 shadow-[0_4px_0_#16a34a] active:shadow-[0_2px_0_#16a34a] active:translate-y-[2px]",
-                                    active && item.color === "text-orange-500" && "bg-gradient-to-br from-orange-400 to-orange-600 shadow-[0_4px_0_#ea580c] active:shadow-[0_2px_0_#ea580c] active:translate-y-[2px]",
-                                    active && item.color === "text-red-500" && "bg-gradient-to-br from-red-400 to-red-600 shadow-[0_4px_0_#dc2626] active:shadow-[0_2px_0_#dc2626] active:translate-y-[2px]",
-                                    active && item.color === "text-purple-600" && "bg-gradient-to-br from-purple-400 to-purple-600 shadow-[0_4px_0_#9333ea] active:shadow-[0_2px_0_#9333ea] active:translate-y-[2px]",
-                                    // Inactive state - subtle gray with hover effect
-                                    !active && "bg-gradient-to-br from-slate-200 to-slate-300 shadow-[0_3px_0_#94a3b8] group-hover:from-slate-300 group-hover:to-slate-400 group-hover:shadow-[0_4px_0_#64748b]"
+                                    "relative flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200",
+                                    `bg-gradient-to-br ${item.color}`,
+                                    active ? `shadow-lg ${item.shadow}` : "shadow-md",
+                                    "group-hover:scale-105 group-hover:shadow-lg"
                                 )}>
-                                    <item.icon className={cn(
-                                        "w-5 h-5 transition-transform duration-200",
-                                        active ? "text-white scale-110" : "text-slate-600 group-hover:text-slate-700 group-hover:scale-105"
-                                    )} />
+                                    <item.icon className="w-6 h-6 text-white" />
+                                    {item.locked && (
+                                        <div className="absolute -top-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-1 shadow">
+                                            <Lock className="w-3 h-3 text-slate-500" />
+                                        </div>
+                                    )}
                                 </div>
-
-                                {/* Label */}
                                 {isExpanded && (
-                                    <div className="flex-1 flex items-center justify-between">
-                                        <span className={cn(
-                                            "font-extrabold text-xs uppercase tracking-wide transition-colors",
-                                            active ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700"
-                                        )}>
-                                            {item.title}
-                                        </span>
-                                    </div>
+                                    <span className={cn(
+                                        "text-xs font-bold uppercase tracking-wide truncate transition-colors",
+                                        active ? "text-slate-800 dark:text-white" : "text-slate-600 dark:text-slate-300"
+                                    )}>
+                                        {item.title}
+                                    </span>
                                 )}
                             </NavLink>
                         );
                     })}
                 </div>
-            </div>
 
-            {/* Footer / Restart Tour */}
-            <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-t-2 border-dashed border-border dark:border-slate-800">
                 <Button
                     variant="ghost"
+                    size="sm"
+                    onClick={onToggle}
                     className={cn(
-                        "w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-[0_4px_0_#b45309] active:shadow-[0_2px_0_#b45309] active:translate-y-[2px] transition-all rounded-xl",
-                        !isExpanded ? "h-12 w-12 p-0 rounded-2xl" : "py-6"
+                        "mt-2 p-3 rounded-2xl w-full transition-all duration-200",
+                        "hover:bg-white/60 dark:hover:bg-slate-800/60",
+                        !collapsed && "bg-blue-50/80 dark:bg-blue-900/40"
                     )}
-                    onClick={() => window.dispatchEvent(new Event('restartDemoTour'))}
-                    title="Reiniciar Tutorial"
+                    title={!collapsed ? "Contraer barra" : "Expandir barra"}
                 >
-                    {isExpanded ? (
-                        <div className="flex items-center gap-2 font-black tracking-wide">
-                            <span>REINICIAR TUTORIAL</span>
-                            <span className="text-lg">↺</span>
-                        </div>
-                    ) : (
-                        <span className="font-black text-lg">↺</span>
-                    )}
+                    <ChevronsLeftRight className={cn(
+                        "w-5 h-5 text-slate-500 transition-transform duration-300",
+                        !collapsed && "text-blue-500 rotate-90"
+                    )} />
                 </Button>
             </div>
-        </div>
+
+            {/* Mobile Bottom Dock - Horizontal */}
+            <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-white/50 dark:border-slate-700/50 shadow-2xl overflow-x-auto max-w-[95vw]">
+                {menuItems.map((item) => {
+                    const active = isActive(item.url);
+                    return (
+                        <NavLink
+                            key={item.id}
+                            to={item.url}
+                            id={`mobile-${item.id}`}
+                            end={item.url === "/demo"}
+                            onClick={(e) => handleItemClick(e, item)}
+                            className={cn(
+                                "flex-shrink-0 flex items-center justify-center p-1.5 rounded-xl transition-all duration-200",
+                                active ? "scale-110" : "hover:scale-105",
+                                item.locked && "opacity-60 cursor-not-allowed"
+                            )}
+                        >
+                            <div className={cn(
+                                "relative flex items-center justify-center w-11 h-11 rounded-xl",
+                                `bg-gradient-to-br ${item.color}`,
+                                active ? `shadow-lg ${item.shadow}` : "shadow-md"
+                            )}>
+                                <item.icon className="w-5 h-5 text-white" />
+                                {item.locked && (
+                                    <div className="absolute -top-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-0.5 shadow">
+                                        <Lock className="w-2.5 h-2.5 text-slate-500" />
+                                    </div>
+                                )}
+                            </div>
+                        </NavLink>
+                    );
+                })}
+            </div>
+        </>
     );
 }

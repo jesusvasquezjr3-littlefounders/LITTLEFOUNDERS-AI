@@ -273,12 +273,19 @@ export function DemoLesson3() {
                         "relative transition-all duration-500 flex items-center justify-center min-h-[300px]",
                         interactionActive ? "md:w-1/3 scale-90" : "md:w-1/2 scale-100"
                     )}>
+                        {/* Instruction Bubble - Modern pill design */}
                         <div className={cn(
-                            "absolute z-20 bg-white border-2 border-gray-200 px-6 py-3 rounded-2xl shadow-xl transition-all duration-300 md:-top-12 -top-6",
-                            interactionActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                            "absolute z-20 transition-all duration-300 ease-out md:-top-8 -top-4 left-1/2 -translate-x-1/2",
+                            interactionActive ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                         )}>
-                            <p className="font-bold text-gray-700">{STAGES[currentStage]?.instruction}</p>
-                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-gray-200 rotate-45"></div>
+                            <div className="relative bg-white rounded-full shadow-lg px-6 py-3 md:px-8 md:py-4 text-center">
+                                <p className="font-bold text-slate-700 text-sm md:text-base whitespace-nowrap">
+                                    {STAGES[currentStage]?.instruction}
+                                </p>
+                                <svg className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-6 h-3" viewBox="0 0 24 12" fill="none">
+                                    <path d="M0 0C4 0 8 8 12 12C16 8 20 0 24 0H0Z" fill="white" />
+                                </svg>
+                            </div>
                         </div>
 
                         <DinoCharacter
