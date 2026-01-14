@@ -46,6 +46,98 @@ class LessonDifficulty(str, enum.Enum):
     AVANZADO = "Avanzado"
 
 
+class ExerciseType(str, enum.Enum):
+    INTRO_NARRATIVE = "intro_narrative"
+    MULTIPLE_CHOICE = "multiple_choice"
+    DRAG_DROP = "drag_drop"
+    MATCH_PAIRS = "match_pairs"
+    FILL_BLANK = "fill_blank"
+    LISTEN_RESPOND = "listen_respond"
+    SHOP_SIMULATION = "shop_simulation"
+    SAVINGS_GOAL = "savings_goal"
+
+
+class ExerciseStatus(str, enum.Enum):
+    PENDING = "pending"
+    CORRECT = "correct"
+    INCORRECT = "incorrect"
+    SKIPPED = "skipped"
+
+
+# =====================================================
+# NUEVO MOTOR DE LECCIONES - MODELOS
+# =====================================================
+
+class Adventure(Base):
+    """Aventuras principales del currículum"""
+    __tablename__ = "adventures"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, nullable=False)  # e.g., "archipielago"
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    age_range = Column(String(20))  # e.g., "5-7"
+    order_index = Column(Integer, default=0)
+    theme_color = Column(String(50))  # e.g., "#4dd0e1"
+    background_scene = Column(String(50))  # e.g., "archipelago"
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    sagas = relationship("Saga", back_populates="adventure", cascade="all, delete-orphan")
+
+
+class Saga(Base):
+    """Sagas dentro de una aventura"""
+    __tablename__ = "sagas"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    adventure_id = Column(Integer, ForeignKey("adventures.id"), nullable=False)
+    code = Column(String(50), unique=True, nullable=False)  # e.g., "detectives-tesoro"
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+    order_index = Column(Integer, default=0)
+    icon = Column(String(50))  # e.g., "🔍"
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    adventure = relationship("Adventure", back_populates="sagas")
+    lessons = relationship("Lesson", back_populates="saga")
+
+
+class Character(Base):
+    """Personajes narradores (Liruf, Dina)"""
+    __tablename__ = "characters"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, nullable=False)  # e.g., "liruf"
+    name = Column(String(100), nullable=False)
+    elevenlabs_voice_id = Column(String(100))  # Voice ID de ElevenLabs
+    default_appearance = Column(JSON)  # Configuración visual base
+    description = Column(Text)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    gestures = relationship("CharacterGesture", back_populates="character", cascade="all, delete-orphan")
+    audio_segments = relationship("LessonAudioSegment", back_populates="character")
+
+
+class CharacterGesture(Base):
+    """Gestos disponibles para cada personaje"""
+    __tablename__ = "character_gestures"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    character_id = Column(Integer, ForeignKey("characters.id"), nullable=False)
+    gesture_code = Column(String(50), nullable=False)  # e.g., "wave", "celebrate"
+    animation_data = Column(JSON)  # Datos de animación
+    duration_ms = Column(Integer, default=1000)
+    
+    # Relationships
+    character = relationship("Character", back_populates="gestures")
+
+
 # User Model
 class User(Base):
     __tablename__ = "users"
@@ -106,19 +198,76 @@ class Lesson(Base):
     __tablename__ = "lessons"
     
     id = Column(Integer, primary_key=True, index=True)
-    lesson_id = Column(String(50), unique=True, nullable=False)  # e.g., "1.1", "2.3"
+    lesson_id = Column(String(50), unique=True, nullable=False)  # e.g., "1-1-1"
     title = Column(String(200), nullable=False)
     description = Column(Text)
     content = Column(Text)
-    duration = Column(String(20))  # e.g., "30 min"
-    difficulty = Column(Enum(LessonDifficulty), default=LessonDifficulty.FACIL)
+    duration = Column(String(20))  # e.g., "30 min" (legacy)
+    difficulty = Column(String(50), default='Fácil')  # 'Fácil', 'Intermedio', 'Avanzado'
     age_range = Column(String(20))  # e.g., "8-10"
     level_id = Column(String(50))  # e.g., "nivel-1"
-    activities = Column(JSON)  # List of activities
+    activities = Column(JSON)  # List of activities (legacy)
     points_reward = Column(Integer, default=10)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Nuevos campos para Motor de Lecciones
+    saga_id = Column(Integer, ForeignKey("sagas.id"), nullable=True)
+    xp_reward = Column(Integer, default=25)
+    order_index = Column(Integer, default=0)
+    estimated_duration_seconds = Column(Integer, default=180)
+    meta = Column(JSON)  # Metadatos adicionales
+    
+    # Relationships
+    saga = relationship("Saga", back_populates="lessons")
+    exercises = relationship("Exercise", back_populates="lesson", cascade="all, delete-orphan")
+    audio_segments = relationship("LessonAudioSegment", back_populates="lesson", cascade="all, delete-orphan")
+
+
+class Exercise(Base):
+    """Ejercicios individuales dentro de una lección"""
+    __tablename__ = "exercises"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=False)
+    exercise_type = Column(String(50), nullable=False)  # 'intro_narrative', 'multiple_choice', etc.
+    character_code = Column(String(50), default='liruf')  # 'liruf' o 'dina'
+    order_index = Column(Integer, default=0)
+    start_time_ms = Column(Integer, default=0)  # Cuándo inicia en la timeline
+    pause_at_ms = Column(Integer, nullable=True)  # Cuándo pausar para interacción
+    content = Column(JSON, nullable=False)  # Contenido del ejercicio
+    correct_answer = Column(JSON, nullable=True)  # Respuesta correcta
+    feedback = Column(JSON, nullable=True)  # Feedback de éxito/error
+    points = Column(Integer, default=5)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    lesson = relationship("Lesson", back_populates="exercises")
+    user_progress = relationship("UserExerciseProgress", back_populates="exercise")
+
+
+class LessonAudioSegment(Base):
+    """Audios pre-generados almacenados en Supabase Storage"""
+    __tablename__ = "lesson_audio_segments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=False)
+    exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=True)
+    character_id = Column(Integer, ForeignKey("characters.id"), nullable=True)
+    order_index = Column(Integer, default=0)
+    audio_url = Column(Text, nullable=False)  # URL de Supabase Storage
+    start_time_ms = Column(Integer, default=0)
+    duration_ms = Column(Integer, nullable=True)
+    transcript = Column(Text)  # Texto para subtítulos
+    emotion = Column(String(50), default='neutral')  # 'happy', 'excited', etc.
+    language_code = Column(String(10), default='es')  # 'es', 'en', etc.
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    lesson = relationship("Lesson", back_populates="audio_segments")
+    character = relationship("Character", back_populates="audio_segments")
 
 
 class UserLessonProgress(Base):
@@ -132,6 +281,25 @@ class UserLessonProgress(Base):
     started_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True))
     time_spent = Column(Integer, default=0)  # in minutes
+    # Nuevos campos para SRS
+    strength = Column(Float, default=1.0)  # Para Spaced Repetition
+    attempts = Column(Integer, default=0)
+
+
+class UserExerciseProgress(Base):
+    """Progreso del usuario por ejercicio individual"""
+    __tablename__ = "user_exercise_progress"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
+    status = Column(String(20), default='pending')  # 'pending', 'correct', 'incorrect', 'skipped'
+    attempts = Column(Integer, default=0)
+    last_attempt_at = Column(DateTime(timezone=True), nullable=True)
+    strength = Column(Float, default=1.0)  # Para SRS por ejercicio
+    
+    # Relationships
+    exercise = relationship("Exercise", back_populates="user_progress")
 
 
 # Task Models

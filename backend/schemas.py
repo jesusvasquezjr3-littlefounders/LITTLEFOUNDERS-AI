@@ -275,3 +275,151 @@ class GameSessionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+# =====================================================
+# NUEVO MOTOR DE LECCIONES - SCHEMAS
+# =====================================================
+
+# Adventure Schemas
+class AdventureBase(BaseModel):
+    code: str
+    title: str
+    description: Optional[str] = None
+    age_range: Optional[str] = None
+    order_index: int = 0
+    theme_color: Optional[str] = None
+    background_scene: Optional[str] = None
+
+
+class AdventureResponse(AdventureBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class AdventureWithProgress(AdventureResponse):
+    total_sagas: int = 0
+    completed_sagas: int = 0
+    total_lessons: int = 0
+    completed_lessons: int = 0
+    progress_percent: float = 0.0
+
+
+# Saga Schemas
+class SagaBase(BaseModel):
+    code: str
+    title: str
+    description: Optional[str] = None
+    order_index: int = 0
+    icon: Optional[str] = None
+
+
+class SagaResponse(SagaBase):
+    id: int
+    adventure_id: int
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class SagaWithProgress(SagaResponse):
+    total_lessons: int = 0
+    completed_lessons: int = 0
+    progress_percent: float = 0.0
+
+
+# Character Schemas
+class CharacterResponse(BaseModel):
+    id: int
+    code: str
+    name: str
+    elevenlabs_voice_id: Optional[str] = None
+    description: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+
+class GestureResponse(BaseModel):
+    gesture_code: str
+    duration_ms: int
+    
+    class Config:
+        from_attributes = True
+
+
+# Exercise Schemas
+class ExerciseContent(BaseModel):
+    """Contenido de un ejercicio en el timeline"""
+    question: Optional[str] = None
+    characterCode: Optional[str] = None
+    gesture: Optional[str] = None
+    emotion: Optional[str] = None
+    transcript: Optional[str] = None
+    options: Optional[List] = None
+
+
+class ExerciseInTimeline(BaseModel):
+    id: int
+    type: str
+    order_index: int
+    start_time_ms: int
+    pause_at_ms: Optional[int] = None
+    content: dict
+    correct_answer: Optional[dict] = None
+    feedback: Optional[dict] = None
+    points: int
+    audio: Optional[dict] = None  # Audio segment si existe
+
+
+# Lesson Play Response (para /api/lessons/{code}/play)
+class LessonMeta(BaseModel):
+    estimated_duration_seconds: int
+    points_reward: int
+    xp_reward: int
+
+
+class LessonPlayResponse(BaseModel):
+    """Respuesta completa para reproducir una lección"""
+    lesson: dict
+    meta: LessonMeta
+    timeline: List[ExerciseInTimeline]
+
+
+# Lesson Complete Request
+class LessonCompleteRequest(BaseModel):
+    time_spent_seconds: int
+    exercises_results: Optional[List[dict]] = None  # [{exercise_id, status, attempts}]
+
+
+class LessonCompleteResponse(BaseModel):
+    message: str
+    points_earned: int
+    xp_earned: int
+    total_lessons_completed: int
+    achievements_unlocked: Optional[List[dict]] = None
+
+
+# User Stats for Dashboard
+class AdventureProgress(BaseModel):
+    adventure_id: int
+    adventure_title: str
+    adventure_code: str
+    total_lessons: int
+    completed_lessons: int
+    progress_percent: float
+    current_saga: Optional[str] = None
+
+
+class UserLessonStats(BaseModel):
+    adventure_progress: List[AdventureProgress]
+    total_xp: int
+    current_streak: int
+    lessons_this_week: int
+    average_accuracy: float
+    lessons_needing_review: int

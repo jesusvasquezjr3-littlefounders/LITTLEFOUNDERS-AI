@@ -37,8 +37,11 @@ import { DemoStore } from "./pages/demo/DemoStore";
 import { DemoTasks } from "./pages/demo/DemoTasks";
 import { DemoLesson5 } from "./pages/demo/DemoLesson5";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+// Nuevo Motor de Lecciones
+import { LessonRunner } from "@/components/lessons/engine";
 
 const queryClient = new QueryClient();
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -118,6 +121,9 @@ const App = () => (
             <Route path="/demo/savings" element={<DemoSavings />} />
             <Route path="/demo/store" element={<DemoStore />} />
             <Route path="/demo/tasks" element={<DemoTasks />} />
+
+            {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
+            <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
