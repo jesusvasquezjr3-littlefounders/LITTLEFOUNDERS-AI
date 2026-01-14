@@ -107,7 +107,7 @@ export default function Welcome() {
         {step === 0 ? (
           <div className="text-center">
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter bg-gradient-to-br from-primary via-foreground to-customers bg-clip-text text-transparent animate-in fade-in zoom-in duration-1000">
-              Hola
+              ¡Hola!
             </h1>
           </div>
         ) : (

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
-import { LessonPath } from "@/components/lessons/LessonPath"; // Use the shared LessonPath component
+import { DemoLessonPath } from "@/components/demo/DemoLessonPath";
 import { Button } from "@/components/ui/button";
 import {
     Calendar,
@@ -154,7 +154,7 @@ export function DemoLecciones() {
                 </div>
 
                 {/* New Gamified Path Component */}
-                <LessonPath
+                <DemoLessonPath
                     modules={demoModules}
                     onModuleClick={handleModuleClick}
                 />
