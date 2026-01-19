@@ -1,0 +1,204 @@
+{
+  "lesson": {
+    "code": "1-1-1-L1",
+    "title": "🪙 Monedas Redondas vs Billetes Rectangulares 💵",
+    "description": "Aprende a reconocer monedas circulares y billetes rectangulares por sus formas",
+    "topic_code": "1-1-1",
+    "difficulty": "Fácil",
+    "estimated_duration_seconds": 240,
+    "points_reward": 50,
+    "xp_reward": 25
+  },
+  "exercises": [
+    {
+      "type": "intro_narrative",
+      "order_index": 1,
+      "character_code": "liruf",
+      "content": {
+        "transcript": "¡Hola pequeño detective! 🕵️ Vamos a descubrir formas y colores del dinero 🪙💵"
+      },
+      "feedback": {
+        "success": "¡Genial!"
+      },
+      "points": 2
+    },
+    {
+      "type": "intro_narrative",
+      "order_index": 2,
+      "character_code": "dina",
+      "content": {
+        "transcript": "¡Las monedas son redondas como círculos! 🪙⭕ Los billetes son como rectángulos 💵📄"
+      },
+      "feedback": {
+        "success": "¡Genial!"
+      },
+      "points": 2
+    },
+    {
+      "type": "tap_action",
+      "order_index": 3,
+      "character_code": "liruf",
+      "content": {
+        "instruction": "¡Toca todas las monedas redondas que veas! 🪙",
+        "items": [
+          {
+            "id": "t1",
+            "emoji": "🪙",
+            "isTarget": true
+          },
+          {
+            "id": "t2",
+            "emoji": "💵",
+            "isTarget": false
+          },
+          {
+            "id": "t3",
+            "emoji": "🪙",
+            "isTarget": true
+          },
+          {
+            "id": "t4",
+            "emoji": "💴",
+            "isTarget": false
+          },
+          {
+            "id": "t5",
+            "emoji": "🪙",
+            "isTarget": true
+          },
+          {
+            "id": "t6",
+            "emoji": "💶",
+            "isTarget": false
+          }
+        ]
+      },
+      "feedback": {
+        "success": "¡Excelente! Encontraste todas las monedas redondas ⭕",
+        "error": "Recuerda: las monedas son redonditas como círculos 🪙"
+      },
+      "points": 10
+    },
+    {
+      "type": "multiple_choice",
+      "order_index": 4,
+      "character_code": "dina",
+      "content": {
+        "question": "¿Qué forma tienen las monedas? 🤔",
+        "options": [
+          {
+            "id": "a",
+            "text": "🔴 Redonda como un círculo"
+          },
+          {
+            "id": "b",
+            "text": "🟩 Cuadrada como una caja"
+          },
+          {
+            "id": "c",
+            "text": "🔺 Con picos como estrella"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! Las monedas son redondas ⭕🪙",
+        "error": "¡Casi! Las monedas tienen forma de círculo redondo 🪙"
+      },
+      "points": 10
+    },
+    {
+      "type": "classification",
+      "order_index": 5,
+      "character_code": "liruf",
+      "content": {
+        "instruction": "¡Separa las monedas redondas de los billetes rectangulares! 📊",
+        "categories": [
+          {
+            "id": "cat_a",
+            "label": "Monedas Redondas 🪙"
+          },
+          {
+            "id": "cat_b",
+            "label": "Billetes Rectangulares 💵"
+          }
+        ],
+        "items": [
+          {
+            "id": "c1",
+            "text": "🪙 Moneda dorada"
+          },
+          {
+            "id": "c2",
+            "text": "💵 Billete verde"
+          },
+          {
+            "id": "c3",
+            "text": "🪙 Moneda plateada"
+          },
+          {
+            "id": "c4",
+            "text": "💴 Billete amarillo"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "c1": "cat_a",
+          "c2": "cat_b",
+          "c3": "cat_a",
+          "c4": "cat_b"
+        }
+      },
+      "feedback": {
+        "success": "¡Perfecto! Separaste monedas y billetes correctamente 🎉",
+        "error": "¡Inténtalo otra vez! Monedas redondas 🪙, billetes rectangulares 💵"
+      },
+      "points": 15
+    },
+    {
+      "type": "multiple_choice",
+      "order_index": 6,
+      "character_code": "dina",
+      "content": {
+        "question": "¿Qué forma tienen los billetes? 💵",
+        "options": [
+          {
+            "id": "a",
+            "text": "🔴 Redonda como círculo"
+          },
+          {
+            "id": "b",
+            "text": "🟩 Rectangular como papel"
+          },
+          {
+            "id": "c",
+            "text": "🔺 Triangular con picos"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Súper! Los billetes son rectangulares 📄💵",
+        "error": "¡Casi! Los billetes tienen forma rectangular como papel 💵"
+      },
+      "points": 10
+    },
+    {
+      "type": "intro_narrative",
+      "order_index": 7,
+      "character_code": "liruf",
+      "content": {
+        "transcript": "¡Eres un gran detective! 🕵️ Ya sabes: monedas redondas 🪙, billetes rectangulares 💵"
+      },
+      "feedback": {
+        "success": "¡Genial!"
+      },
+      "points": 2
+    }
+  ]
+}

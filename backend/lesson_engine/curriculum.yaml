@@ -1,0 +1,1202 @@
+# LittleFounders - Curriculum Structure
+# Generated from: "12 - 22 - 2025 Propuesta de Reestructuración de Lecciones"
+# Methodology: Micro-Learning (3-5 min per lesson)
+# Hierarchy: Adventure → Saga → Topic → Lesson
+
+adventures:
+  # ============================================================
+  # ADVENTURE 1: EL ARCHIPIÉLAGO DEL TRUEQUE (5-7 años)
+  # ============================================================
+  - code: "1"
+    name: "El Archipiélago del Trueque"
+    age_range: "5-7"
+    focus: "Sensorial, valores básicos y aritmética simple"
+    background_scene: "archipelago"
+    theme_color: "#4F46E5"
+    
+    sagas:
+      # ----------------------------------------------------------
+      # SAGA 1: Detectives del Tesoro (Reconocimiento)
+      # ----------------------------------------------------------
+      - code: "1-1"
+        name: "Detectives del Tesoro"
+        subtitle: "Reconocimiento"
+        icon: "🔍"
+        topics:
+          - code: "1-1-0"
+            name: "Lecciones Introductorias"
+            description: "DEMO Lecciones"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "tap_action", "multi_select"]
+            
+          - code: "1-1-1"
+            name: "Formas y colores"
+            description: "Círculos brillantes (monedas) vs. Rectángulos de papel (billetes)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "tap_action"]
+            
+          - code: "1-1-2"
+            name: "El sonido del dinero"
+            description: "El clinc de las monedas vs. el silencio del billete"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "audio_identify", "tap_action"]
+            
+          - code: "1-1-3"
+            name: "Toque y siente"
+            description: "Texturas y relieves (para qué sirven)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "tap_action", "multiple_choice"]
+            
+          - code: "1-1-4"
+            name: "Números en el dinero"
+            description: "Identificar el 1, 2, 5, 10"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "number_identify", "multi_select"]
+            
+          - code: "1-1-5"
+            name: "Grande no es más valioso"
+            description: "Por qué una moneda chiquita puede valer más que una grande"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "comparison", "multiple_choice"]
+            
+          - code: "1-1-6"
+            name: "Caras famosas"
+            description: "¿Quiénes son las personas en los billetes?"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "match_pairs", "multiple_choice"]
+            
+          - code: "1-1-7"
+            name: "El símbolo mágico"
+            description: "Qué significa el signo $"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "tap_action", "multiple_choice"]
+            
+          - code: "1-1-8"
+            name: "Dinero de juguete vs. Real"
+            description: "Cómo notar la diferencia"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "comparison"]
+            
+          - code: "1-1-9"
+            name: "Cuidando el tesoro"
+            description: "No rayar, no romper y no comerse el dinero"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "tap_action"]
+            
+          - code: "1-1-10"
+            name: "La casa del dinero"
+            description: "La alcancía, la billetera y el bolsillo"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "tap_action"]
+
+      # ----------------------------------------------------------
+      # SAGA 2: El Origen de las Cosas (Valor y Trabajo)
+      # ----------------------------------------------------------
+      - code: "1-2"
+        name: "El Origen de las Cosas"
+        subtitle: "Valor y Trabajo"
+        icon: "🌱"
+        topics:
+          - code: "1-2-1"
+            name: "Todo tiene un dueño"
+            description: "Respetar lo ajeno"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "scenario"]
+            
+          - code: "1-2-2"
+            name: "Antes de la tienda"
+            description: "El granjero, el constructor y el fabricante"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "sequence_order", "tap_action"]
+            
+          - code: "1-2-3"
+            name: "¿De dónde viene la leche?"
+            description: "Cadena de valor simple (Vaca -> Tienda -> Casa)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "sequence_order", "tap_action"]
+            
+          - code: "1-2-4"
+            name: "El dinero no es mágico"
+            description: "No aparece en los bolsillos de papá/mamá"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "scenario"]
+            
+          - code: "1-2-5"
+            name: "Trabajo visible"
+            description: "El cajero, el policía, la maestra"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "match_pairs"]
+            
+          - code: "1-2-6"
+            name: "Trabajo invisible"
+            description: "El programador, el contador (gente en oficinas)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "scenario"]
+            
+          - code: "1-2-7"
+            name: "El esfuerzo cansa"
+            description: "Por qué los papás llegan cansados del trabajo"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "scenario"]
+            
+          - code: "1-2-8"
+            name: "Tareas de equipo"
+            description: "Ayudar en casa es parte de ser familia (no siempre se paga)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "tap_action"]
+            
+          - code: "1-2-9"
+            name: "Ganar vs. Encontrar"
+            description: "La diferencia entre sueldo y suerte"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "multiple_choice"]
+            
+          - code: "1-2-10"
+            name: "El regalo"
+            description: "Dinero que me dan en cumpleaños (ingreso extraordinario)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "scenario"]
+
+      # ----------------------------------------------------------
+      # SAGA 3: El Mercado de la Selva (Intercambio Básico)
+      # ----------------------------------------------------------
+      - code: "1-3"
+        name: "El Mercado de la Selva"
+        subtitle: "Intercambio Básico"
+        icon: "🌴"
+        topics:
+          - code: "1-3-1"
+            name: "El cuento del Trueque"
+            description: "Cambiar canicas por estampas"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "swap_exchange", "tap_action"]
+            
+          - code: "1-3-2"
+            name: "Cuando el trueque falla"
+            description: "No quiero tus canicas"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "1-3-3"
+            name: "La moneda facilita todo"
+            description: "El invento que solucionó el trueque"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "coin_forge", "tap_action"]
+            
+          - code: "1-3-4"
+            name: "Comprar es elegir"
+            description: "Tomar una cosa y dejar otra"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "comparison", "tap_action"]
+            
+          - code: "1-3-5"
+            name: "La etiqueta de precio"
+            description: "El número que dice cuánto dar"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "number_identify", "tap_action"]
+            
+          - code: "1-3-6"
+            name: "Pagar en caja"
+            description: "Hacer fila y esperar turno"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "sequence_order", "scenario"]
+            
+          - code: "1-3-7"
+            name: "Entregar el dinero"
+            description: "Despedirse de las monedas"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "tap_action", "scenario"]
+            
+          - code: "1-3-8"
+            name: "El ticket"
+            description: "El papel que dice esto ya es mío"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "multiple_choice", "tap_action"]
+            
+          - code: "1-3-9"
+            name: "El cambio (vuelto)"
+            description: "Si doy de más, me regresan un poco"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "calculator_simple", "tap_action"]
+            
+          - code: "1-3-10"
+            name: "Revisar el cambio"
+            description: "Contar antes de guardar"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "count_verify", "tap_action"]
+
+      # ----------------------------------------------------------
+      # SAGA 4: La Balanza de los Deseos (Necesidad vs. Deseo)
+      # ----------------------------------------------------------
+      - code: "1-4"
+        name: "La Balanza de los Deseos"
+        subtitle: "Necesidad vs. Deseo"
+        icon: "⚖️"
+        topics:
+          - code: "1-4-1"
+            name: "El rugido de la panza"
+            description: "Hambre es Necesidad"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "tap_action"]
+            
+          - code: "1-4-2"
+            name: "El antojo dulce"
+            description: "Chocolate es Deseo"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "impulse_meter"]
+            
+          - code: "1-4-3"
+            name: "Tener sed"
+            description: "Agua es Necesidad"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "tap_action"]
+            
+          - code: "1-4-4"
+            name: "Bebidas de colores"
+            description: "Refresco es Deseo"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "comparison"]
+            
+          - code: "1-4-5"
+            name: "Protección"
+            description: "Zapatos para no lastimarse (Necesidad)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "multiple_choice"]
+            
+          - code: "1-4-6"
+            name: "Moda"
+            description: "Zapatos de luces o personajes (Deseo)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "comparison"]
+            
+          - code: "1-4-7"
+            name: "Techo y cama"
+            description: "Dónde dormir (Necesidad)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "multiple_choice"]
+            
+          - code: "1-4-8"
+            name: "Juguetes y pantallas"
+            description: "Diversión (Deseo)"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "impulse_meter"]
+            
+          - code: "1-4-9"
+            name: "Medicina"
+            description: "Curarse es Necesidad"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "classification", "multiple_choice"]
+            
+          - code: "1-4-10"
+            name: "Prioridades"
+            description: "Primero lo necesario, luego lo divertido"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "priority_sort", "comparison"]
+            
+          - code: "1-4-11"
+            name: "¡Se acabó!"
+            description: "Cuando el dinero se termina, ya no hay más"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "1-4-12"
+            name: "La rabieta no paga"
+            description: "Llorar no hace aparecer dinero"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "scenario", "impulse_meter"]
+
+      # ----------------------------------------------------------
+      # SAGA 5: El Cofre del Futuro (Ahorro Inicial)
+      # ----------------------------------------------------------
+      - code: "1-5"
+        name: "El Cofre del Futuro"
+        subtitle: "Ahorro Inicial"
+        icon: "🐷"
+        topics:
+          - code: "1-5-1"
+            name: "¿Qué es ahorrar?"
+            description: "Guardar hoy para usar mañana"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "savings_goal", "tap_action"]
+            
+          - code: "1-5-2"
+            name: "La alcancía transparente"
+            description: "Ver cómo sube el nivel"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "savings_goal", "progress_fill"]
+            
+          - code: "1-5-3"
+            name: "El objetivo"
+            description: "Dibujar lo que quiero comprar"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "goal_setter", "tap_action"]
+            
+          - code: "1-5-4"
+            name: "Paciencia"
+            description: "Esperar es difícil pero vale la pena"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "impulse_meter", "scenario"]
+            
+          - code: "1-5-5"
+            name: "La tentación"
+            description: "Querer gastar lo ahorrado en dulces"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "impulse_meter", "multiple_choice"]
+            
+          - code: "1-5-6"
+            name: "El guardián"
+            description: "Pedir a mamá/papá que guarden mi dinero"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "1-5-7"
+            name: "Sumando monedas"
+            description: "1+1 = 2"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "calculator_simple", "coin_count"]
+            
+          - code: "1-5-8"
+            name: "¡Lo logré!"
+            description: "La alegría de romper el cochinito"
+            lessons_count: 5
+            exercise_types: ["intro_narrative", "celebration", "tap_action"]
+
+  # ============================================================
+  # ADVENTURE 2: EL BOSQUE DE LA ABUNDANCIA (8-9 años)
+  # ============================================================
+  - code: "2"
+    name: "El Bosque de la Abundancia"
+    age_range: "8-9"
+    focus: "Planificación, matemáticas financieras básicas y consumo inteligente"
+    background_scene: "forest"
+    theme_color: "#059669"
+    
+    sagas:
+      # ----------------------------------------------------------
+      # SAGA 6: Matemáticas de Mercader (Aritmética Financiera)
+      # ----------------------------------------------------------
+      - code: "2-1"
+        name: "Matemáticas de Mercader"
+        subtitle: "Aritmética Financiera"
+        icon: "🧮"
+        topics:
+          - code: "2-1-1"
+            name: "Equivalencias"
+            description: "10 monedas de 1 = 1 moneda de 10"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "equivalence", "calculator"]
+            
+          - code: "2-1-2"
+            name: "Cambio de billetes"
+            description: "Un billete grande por varios chicos"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "swap_exchange", "calculator"]
+            
+          - code: "2-1-3"
+            name: "Sumando precios"
+            description: "¿Me alcanza para el jugo y las papas?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "comparison"]
+            
+          - code: "2-1-4"
+            name: "Restando pagos"
+            description: "Tengo 50, gasto 20, ¿cuánto queda?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "multiple_choice"]
+            
+          - code: "2-1-5"
+            name: "Multiplicando"
+            description: "Si un chicle cuesta 2, ¿cuánto cuestan 5?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "multiple_choice"]
+            
+          - code: "2-1-6"
+            name: "Dividiendo"
+            description: "Compartir el costo de una pizza con un amigo"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "scenario"]
+            
+          - code: "2-1-7"
+            name: "Estimación"
+            description: "Más o menos cuánto voy a gastar"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "estimation", "comparison"]
+            
+          - code: "2-1-8"
+            name: "Redondeo"
+            description: "9.90 es casi 10"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "rounding", "multiple_choice"]
+
+      # ----------------------------------------------------------
+      # SAGA 7: El Laboratorio de Metas (Ahorro Nivel 2)
+      # ----------------------------------------------------------
+      - code: "2-2"
+        name: "El Laboratorio de Metas"
+        subtitle: "Ahorro Nivel 2"
+        icon: "🎯"
+        topics:
+          - code: "2-2-1"
+            name: "Metas Cortas"
+            description: "Una semana (un cómic)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "goal_setter", "calendar"]
+            
+          - code: "2-2-2"
+            name: "Metas Medianas"
+            description: "Un mes (un videojuego)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "goal_setter", "progress_fill"]
+            
+          - code: "2-2-3"
+            name: "Metas Largas"
+            description: "Tres meses (una bicicleta)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "goal_setter", "timeline"]
+            
+          - code: "2-2-4"
+            name: "El calendario de ahorro"
+            description: "Marcar los días que guardé dinero"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "calendar", "progress_fill"]
+            
+          - code: "2-2-5"
+            name: "La regla del Primero Ahorro"
+            description: "Guardar antes de gastar"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "priority_sort", "scenario"]
+            
+          - code: "2-2-6"
+            name: "Ahorrar lo inesperado"
+            description: "Si la abuela me da dinero, guardo la mitad"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "calculator", "scenario"]
+            
+          - code: "2-2-7"
+            name: "Diferenciar alcancías"
+            description: "Una para gastar, una para ahorrar"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "classification", "drag_drop"]
+
+      # ----------------------------------------------------------
+      # SAGA 8: Cazadores de Ofertas (Consumidor Inteligente)
+      # ----------------------------------------------------------
+      - code: "2-3"
+        name: "Cazadores de Ofertas"
+        subtitle: "Consumidor Inteligente"
+        icon: "🏷️"
+        topics:
+          - code: "2-3-1"
+            name: "Leer etiquetas"
+            description: "Peso, cantidad y precio"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "label_reader", "comparison"]
+            
+          - code: "2-3-2"
+            name: "Precio por unidad"
+            description: "¿Es más barato el paquete grande?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "comparison"]
+            
+          - code: "2-3-3"
+            name: "La trampa del 2x1"
+            description: "¿Realmente necesito dos?"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "impulse_meter"]
+            
+          - code: "2-3-4"
+            name: "Marcas"
+            description: "¿Pago por la calidad o por el logo?"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "comparison", "quality_test"]
+            
+          - code: "2-3-5"
+            name: "Comparar tiendas"
+            description: "La misma leche, precios diferentes"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "comparison", "calculator"]
+            
+          - code: "2-3-6"
+            name: "Productos de temporada"
+            description: "Las fresas son baratas en primavera"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "calendar", "comparison"]
+            
+          - code: "2-3-7"
+            name: "La lista de compras"
+            description: "El escudo contra los antojos"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "list_builder", "scenario"]
+            
+          - code: "2-3-8"
+            name: "Publicidad en TV"
+            description: "Los comerciales quieren que gaste"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "impulse_meter"]
+            
+          - code: "2-3-9"
+            name: "El Unboxing"
+            description: "No todo es tan genial como se ve en YouTube"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "comparison"]
+
+      # ----------------------------------------------------------
+      # SAGA 9: Pequeños Emprendedores (Negocios I)
+      # ----------------------------------------------------------
+      - code: "2-4"
+        name: "Pequeños Emprendedores"
+        subtitle: "Negocios I"
+        icon: "🍋"
+        topics:
+          - code: "2-4-1"
+            name: "¿Qué es un negocio?"
+            description: "Solucionar problemas a cambio de dinero"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "2-4-2"
+            name: "Lluvia de ideas"
+            description: "¿Qué sé hacer? (Dibujar, limpiar, pasear)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "brainstorm", "classification"]
+            
+          - code: "2-4-3"
+            name: "Mis primeros clientes"
+            description: "Familiares y vecinos"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "2-4-4"
+            name: "Materiales"
+            description: "Lo que necesito comprar para empezar"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "list_builder", "calculator"]
+            
+          - code: "2-4-5"
+            name: "Costo"
+            description: "Cuánto me costaron los limones y el azúcar"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "lemonade_game"]
+            
+          - code: "2-4-6"
+            name: "Precio"
+            description: "Vender más caro de lo que me costó"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "lemonade_game"]
+            
+          - code: "2-4-7"
+            name: "Ganancia"
+            description: "El dinero que me queda libre"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "profit_tracker"]
+            
+          - code: "2-4-8"
+            name: "Reinversión"
+            description: "Comprar más limones para mañana"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "lemonade_game"]
+            
+          - code: "2-4-9"
+            name: "Calidad"
+            description: "Hacerlo bien para que vuelvan"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "quality_test", "scenario"]
+            
+          - code: "2-4-10"
+            name: "Honestidad"
+            description: "Dar lo que prometí"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+
+      # ----------------------------------------------------------
+      # SAGA 10: Valores de Oro (Ética y Sociedad)
+      # ----------------------------------------------------------
+      - code: "2-5"
+        name: "Valores de Oro"
+        subtitle: "Ética y Sociedad"
+        icon: "💛"
+        topics:
+          - code: "2-5-1"
+            name: "Prestar y devolver"
+            description: "La importancia de la palabra"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "2-5-2"
+            name: "Lo prestado no es mío"
+            description: "Cuidar las cosas de otros"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "2-5-3"
+            name: "Generosidad"
+            description: "Compartir con quien tiene menos"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "donation_sim"]
+            
+          - code: "2-5-4"
+            name: "Donación"
+            description: "Regalar juguetes o ropa en buen estado"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "classification", "donation_sim"]
+            
+          - code: "2-5-5"
+            name: "Dinero sucio"
+            description: "Por qué no debemos tomar lo que no es nuestro"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "2-5-6"
+            name: "Gratitud"
+            description: "Dar las gracias cuando alguien me invita"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+
+  # ============================================================
+  # ADVENTURE 3: LA CIUDAD DIGITAL (10-12 años)
+  # ============================================================
+  - code: "3"
+    name: "La Ciudad Digital"
+    age_range: "10-12"
+    focus: "Banca, mundo digital, seguridad y fundamentos económicos"
+    background_scene: "digital_city"
+    theme_color: "#7C3AED"
+    
+    sagas:
+      # ----------------------------------------------------------
+      # SAGA 11: La Bóveda Bancaria (Sistema Financiero)
+      # ----------------------------------------------------------
+      - code: "3-1"
+        name: "La Bóveda Bancaria"
+        subtitle: "Sistema Financiero"
+        icon: "🏦"
+        topics:
+          - code: "3-1-1"
+            name: "¿Qué es un banco?"
+            description: "Más que una caja fuerte"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "3-1-2"
+            name: "Tipos de cuentas"
+            description: "Ahorros (para guardar) vs. Corriente (para usar)"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "classification", "comparison"]
+            
+          - code: "3-1-3"
+            name: "El número de cuenta"
+            description: "Mi dirección bancaria"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "number_identify", "scenario"]
+            
+          - code: "3-1-4"
+            name: "Tarjeta de Débito"
+            description: "La llave de mi dinero"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "card_simulator", "scenario"]
+            
+          - code: "3-1-5"
+            name: "El NIP/PIN"
+            description: "La contraseña de 4 números que nadie debe saber"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "security_quiz", "scenario"]
+            
+          - code: "3-1-6"
+            name: "El Cajero Automático (ATM)"
+            description: "Cómo usarlo con seguridad"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "atm_simulator", "scenario"]
+            
+          - code: "3-1-7"
+            name: "Banca en Línea"
+            description: "El banco en el celular"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "app_simulator", "scenario"]
+            
+          - code: "3-1-8"
+            name: "Estados de Cuenta"
+            description: "El reporte de mis movimientos"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "statement_reader", "calculator"]
+            
+          - code: "3-1-9"
+            name: "Comisiones"
+            description: "El precio que cobra el banco por sus servicios"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "comparison"]
+
+      # ----------------------------------------------------------
+      # SAGA 12: Guardianes de la Red (Ciberseguridad)
+      # ----------------------------------------------------------
+      - code: "3-2"
+        name: "Guardianes de la Red"
+        subtitle: "Ciberseguridad"
+        icon: "🛡️"
+        topics:
+          - code: "3-2-1"
+            name: "Dinero invisible"
+            description: "Transferencias electrónicas"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "transfer_simulator", "scenario"]
+            
+          - code: "3-2-2"
+            name: "Monedas de videojuegos"
+            description: "Robux, V-Bucks y su valor real"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "comparison"]
+            
+          - code: "3-2-3"
+            name: "Compras In-App"
+            description: "El peligro de Comprar con un clic"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "impulse_meter", "scenario"]
+            
+          - code: "3-2-4"
+            name: "Phishing"
+            description: "Correos falsos que piden datos"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "phishing_detector", "scenario"]
+            
+          - code: "3-2-5"
+            name: "Sitios seguros"
+            description: "El candadito en el navegador (HTTPS)"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "security_quiz", "classification"]
+            
+          - code: "3-2-6"
+            name: "Contraseñas fuertes"
+            description: "Más allá de 123456 y mi fecha de cumpleaños"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "password_builder", "scenario"]
+            
+          - code: "3-2-7"
+            name: "Autenticación en dos pasos"
+            description: "Doble llave de seguridad"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "security_quiz", "scenario"]
+            
+          - code: "3-2-8"
+            name: "Wifi público"
+            description: "No entrar al banco en el café"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "classification"]
+            
+          - code: "3-2-9"
+            name: "Privacidad"
+            description: "No presumir dinero en redes sociales"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+
+      # ----------------------------------------------------------
+      # SAGA 13: El Motor del Mundo (Economía Básica)
+      # ----------------------------------------------------------
+      - code: "3-3"
+        name: "El Motor del Mundo"
+        subtitle: "Economía Básica"
+        icon: "⚙️"
+        topics:
+          - code: "3-3-1"
+            name: "Escasez"
+            description: "Por qué no hay infinito de todo"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "3-3-2"
+            name: "Oferta"
+            description: "Cuántos productos hay"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "supply_demand_sim", "graph_reader"]
+            
+          - code: "3-3-3"
+            name: "Demanda"
+            description: "Cuánta gente quiere el producto"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "supply_demand_sim", "graph_reader"]
+            
+          - code: "3-3-4"
+            name: "Equilibrio de precio"
+            description: "Cuando oferta y demanda se encuentran"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "supply_demand_sim", "graph_reader"]
+            
+          - code: "3-3-5"
+            name: "Inflación"
+            description: "El monstruo que come valor (por qué suben los precios)"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "inflation_sim", "comparison"]
+            
+          - code: "3-3-6"
+            name: "Deflación"
+            description: "Cuando los precios bajan (y por qué puede ser malo)"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "3-3-7"
+            name: "Moneda Nacional"
+            description: "El dinero de mi país"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "classification", "match_pairs"]
+            
+          - code: "3-3-8"
+            name: "Divisas"
+            description: "Dólares, Euros y Yenes"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "currency_converter", "match_pairs"]
+            
+          - code: "3-3-9"
+            name: "Tipo de Cambio"
+            description: "Cuántos pesos cuesta un dólar"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "currency_converter", "calculator"]
+            
+          - code: "3-3-10"
+            name: "Importación"
+            description: "Traer cosas de otros países"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "map_interactive"]
+            
+          - code: "3-3-11"
+            name: "Exportación"
+            description: "Vender cosas a otros países"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "scenario", "map_interactive"]
+
+      # ----------------------------------------------------------
+      # SAGA 14: Presupuesto Junior (Administración)
+      # ----------------------------------------------------------
+      - code: "3-4"
+        name: "Presupuesto Junior"
+        subtitle: "Administración"
+        icon: "📊"
+        topics:
+          - code: "3-4-1"
+            name: "Entradas (Ingresos)"
+            description: "Domingo, mesada, regalos, ventas"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "budget_builder", "classification"]
+            
+          - code: "3-4-2"
+            name: "Salidas (Egresos)"
+            description: "Gastos fijos y variables"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "budget_builder", "classification"]
+            
+          - code: "3-4-3"
+            name: "El balance"
+            description: "Entradas menos Salidas"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "budget_builder", "calculator"]
+            
+          - code: "3-4-4"
+            name: "Déficit"
+            description: "Cuando gasto más de lo que tengo (¡Alerta!)"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "budget_builder"]
+            
+          - code: "3-4-5"
+            name: "Superávit"
+            description: "Cuando me sobra dinero (¡Éxito!)"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "budget_builder"]
+            
+          - code: "3-4-6"
+            name: "Fondo de Emergencia Junior"
+            description: "Dinero para cuando se rompe la pantalla del cel"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "savings_goal", "scenario"]
+            
+          - code: "3-4-7"
+            name: "Apps de control"
+            description: "Usar tecnología para anotar gastos"
+            lessons_count: 6
+            exercise_types: ["intro_narrative", "app_simulator", "scenario"]
+            
+          - code: "3-4-8"
+            name: "La regla 50/40/10"
+            description: "Una versión simple de presupuesto"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "pie_chart_builder", "calculator"]
+
+      # ----------------------------------------------------------
+      # SAGA 15: Introducción a la Inversión
+      # ----------------------------------------------------------
+      - code: "3-5"
+        name: "Introducción a la Inversión"
+        subtitle: "Primeros Pasos"
+        icon: "📈"
+        topics:
+          - code: "3-5-1"
+            name: "Ahorro vs. Inversión"
+            description: "Guardar vs. Sembrar"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "comparison", "scenario"]
+            
+          - code: "3-5-2"
+            name: "El Interés"
+            description: "El premio por prestar mi dinero al banco"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "interest_calculator", "graph_reader"]
+            
+          - code: "3-5-3"
+            name: "Interés Simple"
+            description: "Ganar solo sobre lo que puse"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "interest_calculator", "comparison"]
+            
+          - code: "3-5-4"
+            name: "Riesgo"
+            description: "La posibilidad de perder"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "risk_meter", "scenario"]
+            
+          - code: "3-5-5"
+            name: "Rentabilidad"
+            description: "Cuánto puedo ganar"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "calculator", "comparison"]
+            
+          - code: "3-5-6"
+            name: "Relación Riesgo-Retorno"
+            description: "Más riesgo suele pedir más ganancia"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "risk_return_scale", "graph_reader"]
+            
+          - code: "3-5-7"
+            name: "Plazo"
+            description: "Corto, mediano y largo plazo en inversiones"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "timeline", "classification"]
+
+  # ============================================================
+  # ADVENTURE 4: EL VALLE DE LOS INVENTORES (13-14 años)
+  # ============================================================
+  - code: "4"
+    name: "El Valle de los Inventores"
+    age_range: "13-14"
+    focus: "Emprendimiento estructurado, marketing y finanzas intermedias"
+    background_scene: "inventor_valley"
+    theme_color: "#DC2626"
+    
+    sagas:
+      # ----------------------------------------------------------
+      # SAGA 16: El Lienzo del Negocio (Business Model)
+      # ----------------------------------------------------------
+      - code: "4-1"
+        name: "El Lienzo del Negocio"
+        subtitle: "Business Model"
+        icon: "🎨"
+        topics:
+          - code: "4-1-1"
+            name: "El problema"
+            description: "Todo negocio empieza con un dolor ajeno"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "canvas_builder", "scenario"]
+            
+          - code: "4-1-2"
+            name: "La solución"
+            description: "Mi producto o servicio"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "canvas_builder", "brainstorm"]
+            
+          - code: "4-1-3"
+            name: "El cliente ideal (Avatar)"
+            description: "¿Quién es? ¿Qué le gusta? ¿Dónde vive?"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "persona_builder", "scenario"]
+            
+          - code: "4-1-4"
+            name: "Propuesta de Valor"
+            description: "¿Por qué yo y no la competencia?"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "canvas_builder", "comparison"]
+            
+          - code: "4-1-5"
+            name: "Canales de venta"
+            description: "¿Tienda física, Instagram, Web?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "classification", "scenario"]
+            
+          - code: "4-1-6"
+            name: "Relación con el cliente"
+            description: "¿Cómo los enamoro?"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+            
+          - code: "4-1-7"
+            name: "Fuentes de Ingreso"
+            description: "¿Venta directa, suscripción, renta?"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "classification", "calculator"]
+            
+          - code: "4-1-8"
+            name: "Recursos Clave"
+            description: "Lo que necesito sí o sí"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "list_builder", "prioritization"]
+            
+          - code: "4-1-9"
+            name: "Actividades Clave"
+            description: "Lo que debo hacer todos los días"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "list_builder", "calendar"]
+            
+          - code: "4-1-10"
+            name: "Socios Clave"
+            description: "Proveedores y aliados"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "network_builder", "scenario"]
+
+      # Sagas 17-20 continue with same pattern...
+      # (Abbreviated for file size - full version would include all topics)
+
+      - code: "4-2"
+        name: "Marketing para Fundadores"
+        subtitle: "Promoción"
+        icon: "📣"
+        topics:
+          - code: "4-2-1"
+            name: "Identidad de Marca"
+            description: "Nombre, colores y logo"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "brand_builder", "scenario"]
+          # ... remaining topics 145-152
+
+      - code: "4-3"
+        name: "Finanzas Corporativas Junior"
+        subtitle: "Contabilidad Básica"
+        icon: "💼"
+        topics:
+          - code: "4-3-1"
+            name: "Capital Semilla"
+            description: "El dinero para empezar"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "calculator", "scenario"]
+          # ... remaining topics 153-160
+
+      - code: "4-4"
+        name: "Herramientas de Inversión"
+        subtitle: "Productos Financieros"
+        icon: "🔧"
+        topics:
+          - code: "4-4-1"
+            name: "Activos vs. Pasivos"
+            description: "La definición de Kiyosaki"
+            lessons_count: 8
+            exercise_types: ["intro_narrative", "classification", "scenario"]
+          # ... remaining topics 161-168
+
+      - code: "4-5"
+        name: "Habilidades Blandas"
+        subtitle: "Soft Skills"
+        icon: "🧠"
+        topics:
+          - code: "4-5-1"
+            name: "Liderazgo"
+            description: "Inspirar, no mandar"
+            lessons_count: 7
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+          # ... remaining topics 169-174
+
+  # ============================================================
+  # ADVENTURE 5: EL REINO DE LOS TITANES (15-17+ años)
+  # ============================================================
+  - code: "5"
+    name: "El Reino de los Titanes"
+    age_range: "15-17+"
+    focus: "Vida adulta, legalidad, impuestos, crédito avanzado y libertad financiera"
+    background_scene: "titan_kingdom"
+    theme_color: "#0891B2"
+    
+    sagas:
+      - code: "5-1"
+        name: "Maestría del Crédito"
+        subtitle: "Deuda Inteligente"
+        icon: "💳"
+        topics:
+          - code: "5-1-1"
+            name: "Crédito no es dinero extra"
+            description: "Es deuda"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "scenario", "debt_simulator"]
+          # ... topics 175-188
+
+      - code: "5-2"
+        name: "El Lobo de los Mercados"
+        subtitle: "Inversión Avanzada"
+        icon: "🐺"
+        topics:
+          - code: "5-2-1"
+            name: "Perfil de Inversionista"
+            description: "Conservador, Moderado, Agresivo"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "quiz_profile", "comparison"]
+          # ... topics 189-200
+
+      - code: "5-3"
+        name: "Ciudadano Fiscal"
+        subtitle: "Impuestos"
+        icon: "🏛️"
+        topics:
+          - code: "5-3-1"
+            name: "¿Por qué pagamos impuestos?"
+            description: "El contrato social"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "scenario", "multiple_choice"]
+          # ... topics 201-211
+
+      - code: "5-4"
+        name: "Vida Independiente"
+        subtitle: "Adulting 101"
+        icon: "🏠"
+        topics:
+          - code: "5-4-1"
+            name: "Costo de Emancipación"
+            description: "Depósito, renta, mudanza"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "budget_builder", "calculator"]
+          # ... topics 212-221
+
+      - code: "5-5"
+        name: "Protección y Seguros"
+        subtitle: "Gestión de Riesgos"
+        icon: "🛡️"
+        topics:
+          - code: "5-5-1"
+            name: "¿Qué es un seguro?"
+            description: "Transferir el riesgo"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "scenario", "comparison"]
+          # ... topics 222-229
+
+      - code: "5-6"
+        name: "Carrera y Riqueza"
+        subtitle: "Desarrollo Profesional"
+        icon: "🚀"
+        topics:
+          - code: "5-6-1"
+            name: "Curriculum Vitae (CV)"
+            description: "Vender tu perfil"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "cv_builder", "scenario"]
+          # ... topics 230-239
+
+      - code: "5-7"
+        name: "Economía Global y Actualidad"
+        subtitle: "Macroeconomía"
+        icon: "🌎"
+        topics:
+          - code: "5-7-1"
+            name: "Ciclos Económicos"
+            description: "Recesión y expansión"
+            lessons_count: 9
+            exercise_types: ["intro_narrative", "graph_reader", "scenario"]
+          # ... topics 240-246
+
+# ============================================================
+# PROYECTO OMEGA (Pendiente)
+# ============================================================
+# omega:
+#   - code: "omega-1"
+#     name: "Auditoría de Vida"
+#     description: "Tracking de gastos de 90 días con análisis de fugas"
+#   # ... topics 247-254

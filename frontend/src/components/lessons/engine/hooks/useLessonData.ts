@@ -17,7 +17,7 @@ export interface AudioData {
 
 export interface ExerciseData {
     id: number;
-    type: 'intro_narrative' | 'multiple_choice' | 'drag_drop' | 'match_pairs' | 'fill_blank';
+    type: 'intro_narrative' | 'multiple_choice' | 'drag_drop' | 'match_pairs' | 'fill_blank' | 'classification' | 'tap_action' | 'comparison';
     order_index: number;
     character_code?: string; // 'liruf' o 'dina'
     start_time_ms: number;
@@ -28,9 +28,17 @@ export interface ExerciseData {
         gesture?: string;
         emotion?: string;
         transcript?: string;
+        instruction?: string;
         options?: Array<{ id: string; text: string; image?: string | null }>;
+        // Classification specific
+        items?: Array<{ id: string; text: string; emoji?: string; category?: string; isTarget?: boolean; type?: string }>;
+        categories?: Array<{ id: string; label: string }>;
     };
-    correct_answer?: { correctOptionId: string } | null;
+    correct_answer?: {
+        correctOptionId?: string;
+        classifications?: Record<string, string>;
+        targetIds?: string[];
+    } | null;
     feedback?: { success: string; error: string } | null;
     points: number;
     audio?: AudioData | null;

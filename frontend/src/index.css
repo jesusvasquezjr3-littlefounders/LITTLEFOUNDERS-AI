@@ -518,3 +518,198 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
+
+/* ========================================= */
+/* MOBILE-FIRST LESSON LAYOUT               */
+/* Base = mobile, media queries = larger    */
+/* ========================================= */
+
+/* Lesson container */
+.lesson-container {
+  height: calc(100dvh - 60px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Character - prominent size for mobile, larger on desktop */
+.lesson-character {
+  width: 140px;
+  height: 140px;
+}
+
+/* Speech bubble - readable on mobile */
+.lesson-speech {
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  max-width: 90vw;
+  line-height: 1.4;
+}
+
+/* Category header buttons */
+.lesson-category-header {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Classification/exercise cards */
+.lesson-card {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 0.75rem;
+}
+
+/* Category selection buttons in cards */
+.lesson-category-btn {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.7rem;
+  border-radius: 0.5rem;
+}
+
+/* Action buttons (VERIFICAR, CONTINUAR) */
+.lesson-action-btn {
+  height: 3rem;
+  font-size: 1rem;
+  border-radius: 1rem;
+}
+
+/* Tap action grid items - MOBILE FIRST: good size for touch */
+.lesson-tap-item {
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+  border-radius: 1rem;
+}
+
+/* Multiple choice options */
+.lesson-option {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Gap/spacing utilities */
+.lesson-gap-sm {
+  gap: 0.375rem;
+}
+
+.lesson-gap-md {
+  gap: 0.5rem;
+}
+
+.lesson-gap-lg {
+  gap: 0.75rem;
+}
+
+/* Margin utilities */
+.lesson-mb-sm {
+  margin-bottom: 0.375rem;
+}
+
+.lesson-mb-md {
+  margin-bottom: 0.75rem;
+}
+
+.lesson-mb-lg {
+  margin-bottom: 1rem;
+}
+
+/* ========================================= */
+/* TABLET AND DESKTOP - Scale UP            */
+/* ========================================= */
+
+@media (min-width: 640px) {
+  .lesson-character {
+    width: 160px;
+    height: 160px;
+  }
+
+  .lesson-speech {
+    font-size: 1rem;
+    padding: 0.875rem 1.25rem;
+    max-width: 480px;
+  }
+
+  .lesson-category-header {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .lesson-card {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 1rem;
+  }
+
+  .lesson-category-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .lesson-action-btn {
+    height: 3.25rem;
+    font-size: 1.0625rem;
+  }
+
+  .lesson-tap-item {
+    width: 90px;
+    height: 90px;
+    font-size: 2.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .lesson-option {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .lesson-gap-md {
+    gap: 0.625rem;
+  }
+
+  .lesson-gap-lg {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lesson-character {
+    width: 180px;
+    height: 180px;
+  }
+
+  .lesson-speech {
+    font-size: 1.0625rem;
+    padding: 1rem 1.5rem;
+    max-width: 520px;
+  }
+
+  .lesson-category-header {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .lesson-card {
+    padding: 1rem 1.5rem;
+    font-size: 1.0625rem;
+  }
+
+  .lesson-action-btn {
+    height: 3.5rem;
+    font-size: 1.125rem;
+  }
+
+  .lesson-tap-item {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+    border-radius: 1.5rem;
+  }
+
+  .lesson-option {
+    padding: 1rem 1.5rem;
+    font-size: 1.0625rem;
+  }
+}

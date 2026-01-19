@@ -23,7 +23,7 @@ export interface UseLessonStateReturn {
 
     // Actions
     startLesson: () => void;
-    submitAnswer: (answerId: string) => boolean;
+    submitAnswer: (answer: string | Record<string, string> | string[]) => boolean;
     nextExercise: () => void;
     retryExercise: () => void; // Para reintentar después de error
     pauseLesson: () => void;
@@ -53,14 +53,30 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
         setResults([]);
     }, []);
 
-    const submitAnswer = useCallback((answerId: string): boolean => {
+    const submitAnswer = useCallback((answer: string | Record<string, string> | string[]): boolean => {
         if (!currentExercise || state !== 'WAITING_INPUT') return false;
 
         setState('CHECKING');
         setAttempts(prev => prev + 1);
 
-        const correctAnswerId = currentExercise.correct_answer?.correctOptionId;
-        const isCorrect = answerId === correctAnswerId;
+        let isCorrect = false;
+
+        // Check based on exercise type
+        if (currentExercise.type === 'multiple_choice') {
+            isCorrect = answer === currentExercise.correct_answer?.correctOptionId;
+        } else if (currentExercise.type === 'classification') {
+            const correctClassifications = currentExercise.correct_answer?.classifications || {};
+            const userClassifications = answer as Record<string, string>;
+            isCorrect = Object.keys(correctClassifications).every(
+                key => userClassifications[key] === correctClassifications[key]
+            );
+        } else if (currentExercise.type === 'tap_action') {
+            const targetIds = new Set(currentExercise.correct_answer?.targetIds || []);
+            const tappedIds = new Set(answer as string[]);
+            isCorrect =
+                targetIds.size === tappedIds.size &&
+                [...targetIds].every(id => tappedIds.has(id));
+        }
 
         // Agregar resultado
         setResults(prev => [

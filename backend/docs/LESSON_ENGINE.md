@@ -18,7 +18,7 @@
 
 El **Lesson Engine** es el sistema central que permite crear y reproducir lecciones interactivas de educación financiera para niños. Está inspirado en Duolingo y soporta:
 
-- Narrativas con personajes animados (Liruf 🦖 verde, Dina 🦕 naranja)
+- Narrativas con personajes animados (Liruf 🦖 verde, Dina 🦕 naranja, Dr. Rho 👨‍🔬 explorador)
 - Ejercicios de opción múltiple con retroalimentación visual
 - Sistema de vidas y puntos
 - Audio generado por IA (ElevenLabs)
@@ -112,7 +112,7 @@ order_index         INTEGER
 id              INTEGER PRIMARY KEY
 lesson_id       INTEGER FK → lessons.id
 exercise_type   VARCHAR             -- "intro_narrative", "multiple_choice"
-character_code  VARCHAR DEFAULT 'liruf'  -- "liruf" o "dina"
+character_code  VARCHAR DEFAULT 'liruf'  -- "liruf", "dina", o "dr_rho"
 order_index     INTEGER
 start_time_ms   INTEGER DEFAULT 0
 pause_at_ms     INTEGER             -- Para pausar audio
@@ -125,7 +125,7 @@ points          INTEGER DEFAULT 5
 #### `characters` - Personajes
 ```sql
 id                  INTEGER PRIMARY KEY
-code                VARCHAR UNIQUE      -- "liruf" o "dina"
+code                VARCHAR UNIQUE      -- "liruf", "dina", o "dr_rho"
 name                VARCHAR             -- "Liruf" o "Dina"
 elevenlabs_voice_id VARCHAR             -- ID de voz en ElevenLabs
 description         TEXT
@@ -250,7 +250,7 @@ class Exercise(Base):
     id = Column(Integer, primary_key=True)
     lesson_id = Column(Integer, ForeignKey("lessons.id"))
     exercise_type = Column(String(50))
-    character_code = Column(String(50), default='liruf')  # 'liruf' o 'dina'
+    character_code = Column(String(50), default='liruf')  # 'liruf', 'dina', o 'dr_rho'
     order_index = Column(Integer, default=0)
     content = Column(JSON)
     correct_answer = Column(JSON)
@@ -305,7 +305,7 @@ interface ExerciseData {
   id: number;
   type: 'intro_narrative' | 'multiple_choice' | ...;
   order_index: number;
-  character_code?: string;  // 'liruf' o 'dina'
+  character_code?: string;  // 'liruf', 'dina', o 'dr_rho'
   content: {...};
   correct_answer?: {...};
   feedback?: {...};
@@ -439,11 +439,17 @@ VALUES
 - **Expressions**: `neutral`, `happy`, `surprised`, `wink`
 - **Uso**: Personaje secundario, curiosa
 
+### Dr. Rho 👨‍🔬 (Explorador)
+- **Código**: `dr_rho`
+- **Componente**: `DrRhoCharacter.tsx`
+- **Moods**: `neutral`, `wise`, `mysterious`, `explaining`, `surprised`
+- **Uso**: Explorador temporal, sabio y misterioso
+
 ### Cambiar personaje en ejercicio:
 
 ```sql
 UPDATE exercises 
-SET character_code = 'dina' 
+SET character_code = 'dr_rho' 
 WHERE id = 123;
 ```
 
@@ -452,6 +458,8 @@ El `LessonRunner` automáticamente renderiza el personaje correcto:
 ```tsx
 {getCharacterCode() === 'dina' ? (
   <DinaCharacter expression={getDinaExpression()} />
+) : getCharacterCode() === 'dr_rho' ? (
+  <DrRhoCharacter mood={getRhoMood()} />
 ) : (
   <DinoCharacter mood={getMood()} />
 )}
@@ -496,7 +504,7 @@ SUPABASE_SERVICE_KEY=eyJ... (para storage)
 
 ### Error: Personaje no cambia
 - Verificar columna `character_code` en ejercicios
-- Valores válidos: `'liruf'` o `'dina'`
+- Valores válidos: `'liruf'`, `'dina'`, o `'dr_rho'`
 
 ### Error: No puede reintentar después de error
 - Verificar que `retryExercise()` está siendo llamado

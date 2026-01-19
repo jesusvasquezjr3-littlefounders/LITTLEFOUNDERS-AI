@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 
 import { DinoCharacter } from "../components/demo/DinoCharacter";
 import { DinaCharacter } from "../components/demo/DinaCharacter";
+import DrRhoCharacter from "../components/demo/DrRhoCharacter";
+import ZaraVexCharacter from "../components/demo/ZaraVexCharacter";
 import {
   Accordion,
   AccordionContent,
@@ -166,6 +168,16 @@ const LandingPage = () => {
               {/* Dina - BACK (Larger, Z-0) */}
               <div className="absolute bottom-0 -right-20 w-[650px] h-[650px] z-0 animate-float pointer-events-auto opacity-90" style={{ animationDelay: '1.5s' }}>
                 <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
+              </div>
+
+              {/* Dr. Rho - MIDDLE (Next to Dina, Z-10) */}
+              <div className="absolute bottom-32 -right-5 w-[280px] h-[280px] z-10 animate-float pointer-events-auto" style={{ animationDelay: '2s' }}>
+                <DrRhoCharacter mood="wise" className="drop-shadow-2xl" />
+              </div>
+
+              {/* Zara Vex - Al otro lado de Dr. Rho */}
+              <div className="absolute bottom-36 -right-20 w-[140px] h-[300px] z-15 animate-float pointer-events-auto" style={{ animationDelay: '2.5s' }}>
+                <ZaraVexCharacter mood="happy" className="drop-shadow-2xl" />
               </div>
 
               {/* Dinosaur (Liruf) - FRONT (Smaller, Z-20) - Grounded */}

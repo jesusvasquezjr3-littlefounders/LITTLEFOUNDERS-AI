@@ -195,8 +195,17 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     const leftEyeOpen = isBlinking ? false : (config.eyeOpacity === 1);
     const leftEyeClosed = isBlinking ? true : (config.eyeClosedOpacity === 1);
 
+    const handleClick = () => {
+        const svg = document.getElementById('dina-svg');
+        if (svg) {
+            svg.style.transition = "transform 0.1s";
+            svg.style.transform = "scale(1.05)";
+            setTimeout(() => svg.style.transform = "scale(1)", 150);
+        }
+    };
+
     return (
-        <div className={`scene relative flex justify-center items-center ${className}`}>
+        <div className={`scene relative flex justify-center items-center cursor-pointer ${className}`} onClick={handleClick}>
             {/* We can inline the styles or rely on className. 
             The user provided specific keyframes. We inject them here scoped or globally. 
             Using a style tag for the keyframes. */}

@@ -14,8 +14,6 @@ interface DinoCharacterProps {
 export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard' }: DinoCharacterProps) {
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
-    const [randomMsg, setRandomMsg] = useState("¡Hola soy Dino!");
-    const [isInteracting, setIsInteracting] = useState(false);
     const [isBlinking, setIsBlinking] = useState(false);
 
     // Blinking logic
@@ -58,33 +56,18 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     }, []);
 
     const handleClick = () => {
-        // Simple "jump" effect
+        // Simple "jump" effect only - no message bubbles
         const svg = document.getElementById('dino-svg');
         if (svg) {
             svg.style.transition = "transform 0.1s";
             svg.style.transform = "scale(1.05)";
             setTimeout(() => svg.style.transform = "scale(1)", 150);
         }
-
-        // If not controlled externally, show random message
-        if (!showBubble) {
-            const messages = [
-                "¡Hola, soy Liruf!",
-                "¿Jugamos?",
-                "¡Me gusta tu estilo!",
-                "¡Rawr! (Es 'hola' en dino)",
-                "Tengo hambre...",
-                "¿Dónde está mi comida?"
-            ];
-            setRandomMsg(messages[Math.floor(Math.random() * messages.length)]);
-            setIsInteracting(true);
-            setTimeout(() => setIsInteracting(false), 3000);
-        }
     };
 
     return (
         <div className={cn("relative w-full h-full flex justify-center items-center transition-opacity duration-500", className)}>
-            {/* Speech Bubble - Modern pill-shaped design */}
+            {/* Speech Bubble - Modern pill-shaped design (only shown when controlled externally) */}
             <div
                 ref={bubbleRef}
                 className={cn(
@@ -97,7 +80,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     bubblePosition === 'tutorial' && "-top-12 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
                     // Hero: Top-Left relative to head
                     bubblePosition === 'hero' && "top-[10%] left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
-                    (showBubble || isInteracting) ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
+                    showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}
             >
                 {/* Main Bubble */}
@@ -106,7 +89,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     "max-w-[85vw] md:max-w-[320px] w-auto text-center"
                 )}>
                     <p className="text-slate-700 font-bold text-base md:text-lg leading-snug">
-                        {currentText || randomMsg}
+                        {currentText || "¡Hola soy Liruf!"}
                     </p>
 
                     {/* Tail/Pointer - Smooth curved SVG pointing down */}

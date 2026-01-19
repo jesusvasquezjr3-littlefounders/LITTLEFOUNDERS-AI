@@ -1,0 +1,260 @@
+import React from "react";
+import { cn } from "@/lib/utils";
+
+export type ZaraMood = 'neutral' | 'happy' | 'flirty' | 'curious' | 'excited';
+
+interface ZaraVexCharacterProps {
+    className?: string;
+    mood?: ZaraMood;
+    showBubble?: boolean;
+    currentText?: string;
+    bubblePosition?: 'top' | 'right';
+}
+
+// Paleta basada en la referencia (Foto) + Estilo Vectorial
+const COLORS = {
+    skin: "#F5D0B5",
+    skinShadow: "#E8B998",
+    hair: "#2A1B15",
+    hairHighlight: "#4A3228",
+    lips: "#C65E65",
+    eyes: "#4E342E",
+    blush: "#F0A6A6",
+    top: "#8B2E3F",            // Top guinda
+    pants: "#1A1A1A",          // Pantalones negros elegantes
+    shoes: "#000000",
+    necklace: "#E0E0E0",
+    stroke: "#2D1F1D",
+    white: "#FFFFFF",
+};
+
+export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
+    className,
+    mood = 'neutral',
+    showBubble = false,
+    currentText = "",
+    bubblePosition = 'top'
+}) => {
+
+    const moodConfig = {
+        neutral: { eyesType: "normal", mouth: "smile", blush: 0.4 },
+        happy: { eyesType: "happy", mouth: "big", blush: 0.6 },
+        flirty: { eyesType: "wink", mouth: "smirk", blush: 0.7 },
+        curious: { eyesType: "wide", mouth: "o", blush: 0.3 },
+        excited: { eyesType: "sparkle", mouth: "open", blush: 0.6 }
+    };
+
+    const c = moodConfig[mood];
+
+    const handleClick = () => {
+        const svg = document.getElementById('zara-svg');
+        if (svg) {
+            svg.style.transition = "transform 0.1s";
+            svg.style.transform = "scale(1.05)";
+            setTimeout(() => svg.style.transform = "scale(1)", 150);
+        }
+    };
+
+    return (
+        <div className={cn("relative w-full aspect-[1/3] flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
+
+            {/* Burbuja */}
+            <div className={cn(
+                "absolute z-30 transition-all duration-400 ease-out",
+                bubblePosition === 'top' && "-top-4 left-1/2 -translate-x-1/2",
+                bubblePosition === 'right' && "top-10 -right-2",
+                showBubble ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none"
+            )}>
+                <div className="bg-white border-[3px] border-slate-200 rounded-[2rem] px-6 py-4 shadow-lg relative">
+                    <p className="font-black text-slate-600 text-sm leading-snug text-center whitespace-pre-wrap">
+                        {currentText}
+                    </p>
+                    <div className="absolute w-4 h-4 bg-white border-b-[3px] border-r-[3px] border-slate-200 transform rotate-45 left-1/2 -translate-x-1/2 -bottom-2.5"></div>
+                </div>
+            </div>
+
+            {/* SVG - Cuerpo Completo (Delgada y Alta) */}
+            <svg
+                id="zara-svg"
+                viewBox="0 0 140 340"
+                className="w-full h-auto max-h-full"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <defs>
+                    <linearGradient id="hairShine" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor={COLORS.hair} />
+                        <stop offset="20%" stopColor={COLORS.hairHighlight} />
+                        <stop offset="60%" stopColor={COLORS.hair} />
+                    </linearGradient>
+                </defs>
+
+                {/* === CABELLO TRASERO (Más largo, hasta la cintura) === */}
+                <path d="M35 50 
+                         Q 15 100 20 200 
+                         Q 25 240 50 240 
+                         L 90 240 
+                         Q 115 240 120 200
+                         Q 125 100 105 50
+                         Q 70 30 35 50"
+                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2.5" />
+
+                {/* === CUERPO INFERIOR (Pantalones) === */}
+                {/* Pierna Izquierda */}
+                <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} stroke={COLORS.stroke} strokeWidth="2" />
+                {/* Pierna Derecha */}
+                <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} stroke={COLORS.stroke} strokeWidth="2" />
+
+                {/* Zapatos */}
+                <path d="M45 310 L 45 330 Q 56 335 67 330 L 67 310 Z" fill={COLORS.shoes} />
+                <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
+
+                {/* === CUERPO SUPERIOR === */}
+
+                {/* Torso/Top (Guinda) */}
+                <path d="M45 130 
+                         Q 40 160 42 195 L 42 200 L 98 200 L 98 195
+                         Q 100 160 95 130
+                         Q 90 120 70 120
+                         Q 50 120 45 130"
+                    fill={COLORS.top} stroke={COLORS.stroke} strokeWidth="2.5" />
+
+                {/* Brazos (Delgados a los lados) */}
+                <path d="M42 135 
+                         Q 30 160 30 190 
+                         Q 30 200 32 210"
+                    fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
+                <circle cx="32" cy="210" r="4.5" fill={COLORS.skin} />
+
+                <path d="M98 135 
+                         Q 110 160 110 190 
+                         Q 110 200 108 210"
+                    fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
+                <circle cx="108" cy="210" r="4.5" fill={COLORS.skin} />
+
+                {/* Cuello elegante */}
+                <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
+
+                {/* Collar */}
+                <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
+                <path d="M70 126 L 70 130" stroke={COLORS.necklace} strokeWidth="2" />
+                <circle cx="70" cy="132" r="2.5" fill={COLORS.necklace} />
+
+                {/* === CABEZA (Mismo diseño aprobado) === */}
+                <path d="M40 50 
+                         Q 38 80 50 95 
+                         Q 70 110 90 95 
+                         Q 102 80 100 50
+                         Q 100 20 70 20
+                         Q 40 20 40 50"
+                    fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
+
+                {/* Cabello Frontal - CORREGIDO (Suave) */}
+                <path d="M35 45
+                         Q 45 15 70 15
+                         Q 95 15 105 45"
+                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2.5" />
+
+                {/* Mechón Izquierdo */}
+                <path d="M40 38
+                          Q 35 50 40 70
+                          Q 50 50 55 40
+                          Z"
+                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2" />
+
+                {/* Mechón Derecho (Ondulado) */}
+                <path d="M70 22
+                         Q 95 22 108 55
+                         Q 112 80 95 85
+                         Q 98 60 85 45
+                         Q 80 35 70 22"
+                    fill="url(#hairShine)" stroke={COLORS.stroke} strokeWidth="2" />
+
+                {/* Orejas */}
+                <ellipse cx="38" cy="65" rx="4" ry="6" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2" />
+                <ellipse cx="102" cy="65" rx="4" ry="6" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2" />
+
+                {/* Rubor */}
+                <ellipse cx="50" cy="75" rx="6" ry="3" fill={COLORS.blush} opacity={c.blush} />
+                <ellipse cx="90" cy="75" rx="6" ry="3" fill={COLORS.blush} opacity={c.blush} />
+
+                {/* === FACCIONES === */}
+                {/* Cejas */}
+                <path d="M45 52 Q 52 48 60 51" fill="none" stroke={COLORS.hair} strokeWidth="2" strokeLinecap="round" />
+                <path d="M80 51 Q 88 48 95 52" fill="none" stroke={COLORS.hair} strokeWidth="2" strokeLinecap="round" />
+
+                {/* Ojos */}
+                <g transform="translate(0, 2)">
+                    {c.eyesType === 'normal' && (
+                        <g>
+                            <ellipse cx="52" cy="62" rx="7" ry="8" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="53" cy="63" r="3.5" fill={COLORS.eyes} />
+                            <circle cx="55" cy="61" r="1.5" fill={COLORS.white} />
+                            <path d="M45 58 Q 43 55 42 52" stroke={COLORS.stroke} strokeWidth="2" fill="none" />
+
+                            <ellipse cx="88" cy="62" rx="7" ry="8" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="87" cy="63" r="3.5" fill={COLORS.eyes} />
+                            <circle cx="85" cy="61" r="1.5" fill={COLORS.white} />
+                            <path d="M95 58 Q 97 55 98 52" stroke={COLORS.stroke} strokeWidth="2" fill="none" />
+                        </g>
+                    )}
+                    {c.eyesType === 'happy' && (
+                        <g>
+                            <path d="M45 62 Q 52 56 59 62" stroke={COLORS.stroke} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            <path d="M81 62 Q 88 56 95 62" stroke={COLORS.stroke} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        </g>
+                    )}
+                    {c.eyesType === 'wink' && (
+                        <g>
+                            <path d="M45 62 Q 52 56 59 62" stroke={COLORS.stroke} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            <ellipse cx="88" cy="62" rx="7" ry="8" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="87" cy="63" r="3.5" fill={COLORS.eyes} />
+                        </g>
+                    )}
+                    {c.eyesType === 'wide' && (
+                        <g>
+                            <ellipse cx="52" cy="62" rx="8" ry="9" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="52" cy="62" r="3" fill={COLORS.eyes} />
+                            <ellipse cx="88" cy="62" rx="8" ry="9" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="88" cy="62" r="3" fill={COLORS.eyes} />
+                        </g>
+                    )}
+                    {c.eyesType === 'sparkle' && (
+                        <g>
+                            <ellipse cx="52" cy="62" rx="7" ry="8" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="53" cy="63" r="3.5" fill={COLORS.eyes} />
+                            <path d="M43 65 L46 68 L42 67 Z" fill={COLORS.necklace} />
+                            <ellipse cx="88" cy="62" rx="7" ry="8" fill={COLORS.white} stroke={COLORS.stroke} strokeWidth="2" />
+                            <circle cx="87" cy="63" r="3.5" fill={COLORS.eyes} />
+                            <path d="M97 65 L94 68 L98 67 Z" fill={COLORS.necklace} />
+                        </g>
+                    )}
+                </g>
+
+                {/* Nariz */}
+                <path d="M68 75 Q 70 78 72 75" fill="none" stroke={COLORS.skinShadow} strokeWidth="2" strokeLinecap="round" />
+
+                {/* Boca */}
+                <g transform="translate(70, 85)">
+                    {c.mouth === 'smile' && (
+                        <path d="M-6 -2 Q 0 4 6 -2" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
+                    )}
+                    {c.mouth === 'big' && (
+                        <path d="M-8 -2 Q 0 10 8 -2" fill={COLORS.white} stroke={COLORS.lips} strokeWidth="2" />
+                    )}
+                    {c.mouth === 'smirk' && (
+                        <path d="M-6 0 Q 2 -2 6 -4" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
+                    )}
+                    {c.mouth === 'o' && (
+                        <circle cx="0" cy="0" r="3" fill={COLORS.stroke} />
+                    )}
+                    {c.mouth === 'open' && (
+                        <circle cx="0" cy="0" r="5" fill={COLORS.stroke} />
+                    )}
+                </g>
+
+            </svg>
+        </div>
+    );
+};
+
+export default ZaraVexCharacter;
