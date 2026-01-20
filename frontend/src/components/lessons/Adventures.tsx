@@ -2,76 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, ChevronRight } from 'lucide-react';
 import { AdventureCard } from './AdventureCard';
-
-// Datos estáticos de aventuras (mock para frontend, luego vendrá del backend)
-const ADVENTURES = [
-    {
-        id: 1,
-        title: "El Archipiélago del Trueque",
-        ageRange: "5-7 años",
-        description: "Sensorial, valores básicos y aritmética simple",
-        theme: "archipelago",
-        status: "available" as const,
-        progress: 35,
-        totalLessons: 50,
-        completedLessons: 18,
-    },
-    {
-        id: 2,
-        title: "El Bosque de la Abundancia",
-        ageRange: "8-9 años",
-        description: "Planificación, matemáticas financieras y consumo inteligente",
-        theme: "forest",
-        status: "locked" as const,
-        progress: 0,
-        totalLessons: 40,
-        completedLessons: 0,
-    },
-    {
-        id: 3,
-        title: "La Ciudad Digital",
-        ageRange: "10-12 años",
-        description: "Banca, mundo digital, seguridad y economía",
-        theme: "city",
-        status: "locked" as const,
-        progress: 0,
-        totalLessons: 29,
-        completedLessons: 0,
-    },
-    {
-        id: 4,
-        title: "El Valle de los Inventores",
-        ageRange: "13-14 años",
-        description: "Emprendimiento, marketing y finanzas intermedias",
-        theme: "valley",
-        status: "locked" as const,
-        progress: 0,
-        totalLessons: 40,
-        completedLessons: 0,
-    },
-    {
-        id: 5,
-        title: "El Reino de los Titanes",
-        ageRange: "15-17 años",
-        description: "Vida adulta, impuestos, crédito y libertad financiera",
-        theme: "kingdom",
-        status: "locked" as const,
-        progress: 0,
-        totalLessons: 65,
-        completedLessons: 0,
-    },
-    {
-        id: 6,
-        title: "Proyecto Omega",
-        ageRange: "Graduación",
-        description: "El Cosmos: La Tesis del Fundador y Retos Finales",
-        theme: "cosmos" as any, // Cast to any to avoid strict type issues if not imported, or just string. Ideally strictly typed.
-        status: "locked" as const,
-        progress: 0,
-        totalLessons: 8,
-        completedLessons: 0,
-    },
-];
+import { useAdventures, Adventure } from './hooks/useAdventures';
+import { useTranslation } from 'react-i18next';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
@@ -80,8 +12,10 @@ interface AdventuresProps {
 export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => {
     const navigate = useNavigate();
     const [selectedAdventure, setSelectedAdventure] = useState<number | null>(null);
+    const { adventures } = useAdventures();
+    const { t } = useTranslation('adventures');
 
-    const handleAdventureClick = (adventure: typeof ADVENTURES[0]) => {
+    const handleAdventureClick = (adventure: Adventure) => {
         if (adventure.status === 'locked') return;
 
         setSelectedAdventure(adventure.id);
@@ -95,16 +29,16 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => 
             {/* Header */}
             <div className="text-center mb-10">
                 <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">
-                    AVENTURAS
+                    {t('general.title')}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-lg">
-                    Elige tu mundo y comienza a aprender sobre finanzas
+                    {t('general.subtitle')}
                 </p>
             </div>
 
             {/* Lista de Aventuras */}
             <div className="flex flex-col gap-12">
-                {ADVENTURES.map((adventure) => (
+                {adventures.map((adventure) => (
                     <div
                         key={adventure.id}
                         className={`adventure-wrapper relative transition-all duration-300 ${adventure.status === 'locked'
@@ -115,7 +49,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => 
                     >
                         <AdventureCard
                             title={adventure.title}
-                            theme={adventure.theme as any}
+                            theme={adventure.theme}
                             status={adventure.status}
                             progress={adventure.progress}
                             ageRange={adventure.ageRange}
@@ -126,8 +60,8 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => 
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-[32px] backdrop-blur-sm z-[60]">
                                 <div className="flex flex-col items-center text-white">
                                     <Lock size={48} className="mb-2" />
-                                    <span className="font-bold text-lg">Bloqueado</span>
-                                    <span className="text-sm opacity-80">Completa la aventura anterior</span>
+                                    <span className="font-bold text-lg">{t('general.locked')}</span>
+                                    <span className="text-sm opacity-80">{t('general.locked_desc')}</span>
                                 </div>
                             </div>
                         )}
@@ -136,7 +70,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => 
                         {adventure.status === 'available' && (
                             <div className="absolute bottom-6 right-6 z-50">
                                 <button className="flex items-center gap-2 px-6 py-3 bg-white/90 dark:bg-gray-900/90 rounded-full font-bold text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all">
-                                    Continuar
+                                    {t('general.continue')}
                                     <ChevronRight size={20} />
                                 </button>
                             </div>

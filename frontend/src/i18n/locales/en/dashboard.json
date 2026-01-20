@@ -1,0 +1,74 @@
+{
+    "_meta": {
+        "language": "en",
+        "status": "complete"
+    },
+    "welcome": "Hello, {{name}}!",
+    "welcome_subtitle": "Welcome to your Little Founders dashboard!",
+    "default_name": "Founder",
+    "greeting": {
+        "morning": "Good morning!",
+        "afternoon": "Good afternoon!",
+        "evening": "Good evening!"
+    },
+    "stats": {
+        "lessons_completed": "Lessons Completed",
+        "minutes_studied": "Minutes Studied",
+        "points_earned": "Points Earned",
+        "current_streak": "Current Streak",
+        "balance": "Balance",
+        "keep_going": "Keep it up!",
+        "time_well_spent": "Time well spent",
+        "expert": "You're an expert!",
+        "days_in_row": "Days in a row!"
+    },
+    "sections": {
+        "continue_learning": "Continue learning",
+        "your_progress": "Your progress",
+        "recent_activity": "Recent activity",
+        "achievements": "Achievements"
+    },
+    "empty_states": {
+        "no_lessons": "You haven't completed any lessons yet",
+        "no_achievements": "Complete lessons to unlock achievements"
+    },
+    "sidebar": {
+        "home": "Home",
+        "lessons": "Lessons",
+        "my_tasks": "My Tasks",
+        "task_management": "Task Management",
+        "my_savings": "My Savings",
+        "entrepreneurship": "Entrepreneurship",
+        "digital_banking": "Digital Banking",
+        "store": "Store",
+        "settings": "Settings",
+        "help": "Help",
+        "language": "Language",
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar",
+        "locked_title": "Coming Soon",
+        "locked_description": "This feature will be available soon."
+    },
+    "user_types": {
+        "tutor": "Parent or Tutor",
+        "child": "Child",
+        "sponsor": "Sponsor",
+        "user": "User"
+    },
+    "user_menu": {
+        "user": "User",
+        "my_profile": "My profile",
+        "settings": "Settings",
+        "help": "Help",
+        "logout": "Log out"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "goal_achieved": "Goal achieved!",
+        "goal_achieved_desc": "Congratulations! You reached your savings goal.",
+        "reminder": "Reminder",
+        "reminder_desc": "Don't forget to do your finance challenge today.",
+        "new_skill": "New skill",
+        "new_skill_desc": "You unlocked a lesson about budgeting!"
+    }
+}

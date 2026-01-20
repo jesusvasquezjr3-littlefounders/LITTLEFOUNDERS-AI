@@ -1,0 +1,74 @@
+{
+    "_meta": {
+        "language": "en",
+        "status": "complete"
+    },
+    "buttons": {
+        "continue": "Continue",
+        "back": "Back",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "confirm": "Confirm",
+        "retry": "Retry",
+        "close": "Close",
+        "submit": "Submit",
+        "loading": "Loading...",
+        "start_adventure": "Start Adventure",
+        "saving": "Saving..."
+    },
+    "navigation": {
+        "home": "Home",
+        "dashboard": "Dashboard",
+        "lessons": "Lessons",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Log out"
+    },
+    "status": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "empty": "No results"
+    },
+    "time": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "days_ago": "{{count}} days ago",
+        "hours_ago": "{{count}} hours ago",
+        "minutes_ago": "{{count}} minutes ago",
+        "just_now": "Just now"
+    },
+    "validation": {
+        "required": "This field is required",
+        "email_invalid": "Invalid email address",
+        "password_min": "Password must be at least {{min}} characters",
+        "passwords_match": "Passwords don't match"
+    },
+    "accessibility": {
+        "close_menu": "Close menu",
+        "open_menu": "Open menu",
+        "toggle_theme": "Toggle theme"
+    },
+    "welcome_page": {
+        "hello": "Hello!",
+        "whats_your_name": "What's your name?",
+        "name_desc": "So we can address you correctly.",
+        "name_placeholder": "Your name (or nickname)",
+        "welcome_msg": "Welcome, {{name}}!",
+        "space_ready": "Your space is ready.",
+        "error_saving": "We couldn't save your name. Try again."
+    },
+    "notFound": {
+        "title": "Page Not Found",
+        "message": "Oops! Looks like you got lost in space.",
+        "back_home": "Back to Home"
+    },
+    "in_development": {
+        "title": "Under Construction!",
+        "description": "We are working hard to build this amazing feature. Check back soon!",
+        "back_home": "Back to Home",
+        "language_label": "Language"
+    }
+}

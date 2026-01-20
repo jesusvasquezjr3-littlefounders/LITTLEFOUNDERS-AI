@@ -1,7 +1,9 @@
 /**
  * Hook para obtener datos de lección desde el backend
+ * Soporte para internacionalización (i18n)
  */
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -59,6 +61,7 @@ export interface LessonInfo {
     saga_code?: string;
     adventure?: string;
     adventure_code?: string;
+    language?: string; // Idioma de la respuesta
 }
 
 export interface LessonData {
@@ -74,17 +77,28 @@ interface UseLessonDataReturn {
     refetch: () => void;
 }
 
-export function useLessonData(lessonCode: string): UseLessonDataReturn {
+/**
+ * Hook para obtener datos de lección con soporte de idioma
+ * @param lessonCode - Código de la lección (ej: "1-1-0-1")
+ * @param language - Código de idioma opcional (si no se pasa, usa el idioma actual de i18n)
+ */
+export function useLessonData(lessonCode: string, language?: string): UseLessonDataReturn {
+    const { i18n } = useTranslation();
     const [data, setData] = useState<LessonData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Usar idioma pasado o el idioma actual de i18n
+    const currentLanguage = language || i18n.language || 'es';
 
     const fetchLesson = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_BASE}/lesson-engine/lessons/${lessonCode}/play`);
+            // Agregar parámetro de idioma a la URL
+            const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/play?lang=${currentLanguage}`;
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: Lección no encontrada`);
@@ -103,7 +117,7 @@ export function useLessonData(lessonCode: string): UseLessonDataReturn {
         if (lessonCode) {
             fetchLesson();
         }
-    }, [lessonCode]);
+    }, [lessonCode, currentLanguage]); // Re-fetch cuando cambie el idioma
 
     return { data, loading, error, refetch: fetchLesson };
 }

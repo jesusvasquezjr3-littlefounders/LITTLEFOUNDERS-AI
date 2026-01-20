@@ -191,6 +191,9 @@ class User(Base):
     banking_activated = Column(Boolean, default=False)
     banking_activated_at = Column(DateTime(timezone=True), nullable=True)
     banking_activated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    # User preferences
+    preferred_language = Column(String(10), default='es')  # 'es', 'en', etc.
 
 
 # Lesson Models
@@ -223,6 +226,7 @@ class Lesson(Base):
     saga = relationship("Saga", back_populates="lessons")
     exercises = relationship("Exercise", back_populates="lesson", cascade="all, delete-orphan")
     audio_segments = relationship("LessonAudioSegment", back_populates="lesson", cascade="all, delete-orphan")
+    translations = relationship("LessonTranslation", back_populates="lesson", cascade="all, delete-orphan")
 
 
 class Exercise(Base):
@@ -246,6 +250,7 @@ class Exercise(Base):
     # Relationships
     lesson = relationship("Lesson", back_populates="exercises")
     user_progress = relationship("UserExerciseProgress", back_populates="exercise")
+    translations = relationship("ExerciseTranslation", back_populates="exercise", cascade="all, delete-orphan")
 
 
 class LessonAudioSegment(Base):
@@ -268,6 +273,65 @@ class LessonAudioSegment(Base):
     # Relationships
     lesson = relationship("Lesson", back_populates="audio_segments")
     character = relationship("Character", back_populates="audio_segments")
+    translations = relationship("AudioSegmentTranslation", back_populates="audio_segment", cascade="all, delete-orphan")
+
+
+# =====================================================
+# TRANSLATION MODELS (i18n for Lesson Content)
+# =====================================================
+
+class LessonTranslation(Base):
+    """Traducciones de lecciones por idioma"""
+    __tablename__ = "lesson_translations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"), nullable=False)
+    language = Column(String(10), nullable=False)  # 'es', 'en'
+    title = Column(String(300), nullable=False)
+    description = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    lesson = relationship("Lesson", back_populates="translations")
+    
+    # Unique constraint via index
+    __table_args__ = (
+        {'sqlite_autoincrement': True}
+    )
+
+
+class ExerciseTranslation(Base):
+    """Traducciones de ejercicios por idioma"""
+    __tablename__ = "exercise_translations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    exercise_id = Column(Integer, ForeignKey("exercises.id", ondelete="CASCADE"), nullable=False)
+    language = Column(String(10), nullable=False)  # 'es', 'en'
+    content = Column(JSON, nullable=False)  # Textos, opciones, instrucciones
+    correct_answer = Column(JSON)  # Si cambia por idioma
+    feedback = Column(JSON)  # Mensajes de éxito/error traducidos
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    exercise = relationship("Exercise", back_populates="translations")
+
+
+class AudioSegmentTranslation(Base):
+    """Traducciones de audio por idioma (diferentes voces/URLs)"""
+    __tablename__ = "audio_segment_translations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    audio_segment_id = Column(Integer, ForeignKey("lesson_audio_segments.id", ondelete="CASCADE"), nullable=False)
+    language = Column(String(10), nullable=False)  # 'es', 'en'
+    audio_url = Column(Text, nullable=False)
+    transcript = Column(Text)
+    duration_ms = Column(Integer)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    audio_segment = relationship("LessonAudioSegment", back_populates="translations")
 
 
 class UserLessonProgress(Base):

@@ -21,6 +21,8 @@ import ParentTasks from "./pages/ParentTasks";
 import Store from "./pages/Store";
 import LemonadeStand from "./pages/LemonadeStand";
 import InvestmentGames from "./pages/InvestmentGames";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Demo from "./pages/demo/Demo";
 import { DemoLemonadeStand } from "./pages/demo/DemoLemonadeStand";
@@ -39,6 +41,7 @@ import { DemoLesson5 } from "./pages/demo/DemoLesson5";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
 import { LessonRunner } from "@/components/lessons/engine";
+import { LanguageSyncWrapper } from "@/components/auth/LanguageSyncWrapper";
 
 const queryClient = new QueryClient();
 
@@ -51,83 +54,95 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/welcome" element={<Welcome />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/lecciones" element={
-              <ProtectedRoute>
-                <Lecciones />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/tasks" element={
-              <ChildProtectedRoute>
-                <Tasks />
-              </ChildProtectedRoute>
-            } />
-            <Route path="/parent-tasks" element={
-              <ParentProtectedRoute>
-                <ParentTasks />
-              </ParentProtectedRoute>
-            } />
-            <Route path="/growth" element={
-              <ProtectedRoute>
-                <DigitalBanking />
-              </ProtectedRoute>
-            } />
-            <Route path="/savings" element={
-              <ProtectedRoute>
-                <Savings />
-              </ProtectedRoute>
-            } />
-            <Route path="/store" element={
-              <ProtectedRoute>
-                <Store />
-              </ProtectedRoute>
-            } />
-            <Route path="/investment-games" element={
-              <ProtectedRoute>
-                <InvestmentGames />
-              </ProtectedRoute>
-            } />
-            <Route path="/lemonade-stand" element={
-              <ProtectedRoute>
-                <LemonadeStand />
-              </ProtectedRoute>
-            } />
-            {/* Demo Routes */}
-            <Route path="/demo" element={<Demo />} />
-            <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
-            <Route path="/demo/lecciones" element={<DemoLecciones />} />
-            <Route path="/demo/lecciones/1" element={<DemoLesson1 />} />
-            <Route path="/demo/lecciones/2" element={<DemoLesson2 />} />
-            <Route path="/demo/lecciones/3" element={<DemoLesson3 />} />
-            <Route path="/demo/lecciones/4" element={<DemoLesson4 />} />
-            <Route path="/demo/lecciones/5" element={<DemoLesson5 />} />
-            <Route path="/demo/card" element={<DemoVirtualCard />} />
-            <Route path="/demo/growth" element={<DemoDigitalBanking />} />
-            <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
-            <Route path="/demo/savings" element={<DemoSavings />} />
-            <Route path="/demo/store" element={<DemoStore />} />
-            <Route path="/demo/tasks" element={<DemoTasks />} />
+          <LanguageSyncWrapper>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              } />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/lecciones" element={
+                <ProtectedRoute>
+                  <Lecciones />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/tasks" element={
+                <ChildProtectedRoute>
+                  <Tasks />
+                </ChildProtectedRoute>
+              } />
+              <Route path="/parent-tasks" element={
+                <ParentProtectedRoute>
+                  <ParentTasks />
+                </ParentProtectedRoute>
+              } />
+              <Route path="/growth" element={
+                <ProtectedRoute>
+                  <DigitalBanking />
+                </ProtectedRoute>
+              } />
+              <Route path="/savings" element={
+                <ProtectedRoute>
+                  <Savings />
+                </ProtectedRoute>
+              } />
+              <Route path="/store" element={
+                <ProtectedRoute>
+                  <Store />
+                </ProtectedRoute>
+              } />
+              <Route path="/investment-games" element={
+                <ProtectedRoute>
+                  <InvestmentGames />
+                </ProtectedRoute>
+              } />
+              <Route path="/lemonade-stand" element={
+                <ProtectedRoute>
+                  <LemonadeStand />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/help" element={
+                <ProtectedRoute>
+                  <Help />
+                </ProtectedRoute>
+              } />
+              {/* Demo Routes */}
+              <Route path="/demo" element={<Demo />} />
+              <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
+              <Route path="/demo/lecciones" element={<DemoLecciones />} />
+              <Route path="/demo/lecciones/1" element={<DemoLesson1 />} />
+              <Route path="/demo/lecciones/2" element={<DemoLesson2 />} />
+              <Route path="/demo/lecciones/3" element={<DemoLesson3 />} />
+              <Route path="/demo/lecciones/4" element={<DemoLesson4 />} />
+              <Route path="/demo/lecciones/5" element={<DemoLesson5 />} />
+              <Route path="/demo/card" element={<DemoVirtualCard />} />
+              <Route path="/demo/growth" element={<DemoDigitalBanking />} />
+              <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
+              <Route path="/demo/savings" element={<DemoSavings />} />
+              <Route path="/demo/store" element={<DemoStore />} />
+              <Route path="/demo/tasks" element={<DemoTasks />} />
 
-            {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
-            <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
+              {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
+              <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
 
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </LanguageSyncWrapper>
         </BrowserRouter>
       </ThemeProvider>
     </TooltipProvider>

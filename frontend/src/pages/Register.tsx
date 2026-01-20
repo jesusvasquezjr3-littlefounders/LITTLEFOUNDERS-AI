@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,8 +7,10 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Rocket, Star, Zap, Heart
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
+import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
 const Register = () => {
+  const { t } = useTranslation(['auth', 'common']);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,8 +39,8 @@ const Register = () => {
 
     if (!formData.email || !formData.password || !formData.confirmPassword) {
       toast({
-        title: "Datos incompletos",
-        description: "Por favor completa todos los campos.",
+        title: t('auth:validation.incomplete_data'),
+        description: t('auth:validation.complete_all_fields'),
         variant: "destructive",
       });
       return;
@@ -45,8 +48,8 @@ const Register = () => {
 
     if (formData.password.length < 6) {
       toast({
-        title: "Contraseña muy corta",
-        description: "La contraseña debe tener al menos 6 caracteres.",
+        title: t('auth:validation.password_too_short'),
+        description: t('auth:validation.password_min_chars'),
         variant: "destructive",
       });
       return;
@@ -54,8 +57,8 @@ const Register = () => {
 
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Las contraseñas no coinciden",
-        description: "Por favor verifica que las contraseñas sean iguales.",
+        title: t('auth:validation.passwords_dont_match'),
+        description: t('auth:validation.passwords_verify'),
         variant: "destructive",
       });
       return;
@@ -81,8 +84,8 @@ const Register = () => {
 
       if (response.ok) {
         toast({
-          title: "¡Registro exitoso!",
-          description: "Tu cuenta ha sido creada.",
+          title: t('auth:messages.register_success'),
+          description: t('auth:messages.register_success_subtitle'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
 
@@ -99,7 +102,7 @@ const Register = () => {
         }
 
       } else {
-        let errorMessage = "No pudimos completar el registro.";
+        let errorMessage = t('auth:messages.register_error');
         if (typeof data.detail === 'string') {
           errorMessage = data.detail;
         } else if (Array.isArray(data.detail)) {
@@ -109,7 +112,7 @@ const Register = () => {
         }
 
         toast({
-          title: "Error de registro",
+          title: t('auth:validation.registration_error'),
           description: errorMessage,
           variant: "destructive",
         });
@@ -118,8 +121,8 @@ const Register = () => {
     } catch (error) {
       console.error('Registration error:', error);
       toast({
-        title: "Error de conexión",
-        description: "No pudimos conectar con el servidor.",
+        title: t('auth:messages.connection_error'),
+        description: t('auth:messages.connection_error_detail'),
         variant: "destructive",
       });
     } finally {
@@ -147,6 +150,11 @@ const Register = () => {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-purple-400/30 to-pink-400/30 rounded-full blur-3xl"></div>
       </div>
 
+      {/* Language Selector - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageSelector variant="full" />
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4 py-12">
         <div className="w-full max-w-sm">
@@ -154,7 +162,7 @@ const Register = () => {
           <div className="text-center mb-8 space-y-4">
             <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors group">
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
-              Regresar al Inicio
+              {t('auth:register.back_to_home')}
             </Link>
 
             <div className="flex justify-center">
@@ -172,10 +180,10 @@ const Register = () => {
             {/* Header */}
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ¡Únete a la aventura! 🚀
+                {t('auth:register.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-xs">
-                Crea tu cuenta y comienza a aprender sobre finanzas de forma divertida.
+                {t('auth:register.subtitle')}
               </p>
             </div>
 
@@ -184,7 +192,7 @@ const Register = () => {
               {/* Email Field */}
               <div className="space-y-1.5">
                 <label htmlFor="email" className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                  Correo electrónico
+                  {t('auth:fields.email.label')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -193,7 +201,7 @@ const Register = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="nombre@ejemplo.com"
+                      placeholder={t('auth:fields.email.placeholder')}
                       value={formData.email}
                       onChange={(e) => handleChange('email', e.target.value)}
                       className="pl-10 h-10 bg-gray-50 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-cyan-400 dark:focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 dark:focus:ring-cyan-900/30 transition-all text-sm"
@@ -206,7 +214,7 @@ const Register = () => {
               {/* Password Field */}
               <div className="space-y-1.5">
                 <label htmlFor="password" className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                  Contraseña
+                  {t('auth:fields.password.label')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -215,7 +223,7 @@ const Register = () => {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder={t('auth:fields.password.placeholder')}
                       value={formData.password}
                       onChange={(e) => handleChange('password', e.target.value)}
                       className="pl-10 pr-10 h-10 bg-gray-50 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-cyan-400 dark:focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 dark:focus:ring-cyan-900/30 transition-all text-sm"
@@ -242,7 +250,7 @@ const Register = () => {
               {/* Confirm Password Field */}
               <div className="space-y-1.5">
                 <label htmlFor="confirmPassword" className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                  Confirmar Contraseña
+                  {t('auth:fields.confirm_password.label')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -251,7 +259,7 @@ const Register = () => {
                     <Input
                       id="confirmPassword"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Confirma tu contraseña"
+                      placeholder={t('auth:fields.confirm_password.placeholder')}
                       value={formData.confirmPassword}
                       onChange={(e) => handleChange('confirmPassword', e.target.value)}
                       className="pl-10 h-10 bg-gray-50 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-cyan-400 dark:focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 dark:focus:ring-cyan-900/30 transition-all text-sm"
@@ -270,11 +278,11 @@ const Register = () => {
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Registrando...
+                    {t('auth:register.loading')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Continuar
+                    {t('auth:register.button')}
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 )}
@@ -290,14 +298,14 @@ const Register = () => {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05" />
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
-                  <span className="text-xs font-bold text-gray-400">Google</span>
+                  <span className="text-xs font-bold text-gray-400">{t('auth:social.google')}</span>
                 </Button>
                 <Button variant="outline" type="button" disabled className="w-full h-10 gap-2 border-2 bg-white dark:bg-slate-800 opacity-60">
                   {/* Facebook Icon */}
                   <svg className="w-4 h-4 grayscale text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
-                  <span className="text-xs font-bold text-gray-400">Facebook</span>
+                  <span className="text-xs font-bold text-gray-400">{t('auth:social.facebook')}</span>
                 </Button>
               </div>
 
@@ -308,7 +316,7 @@ const Register = () => {
                 </div>
                 <div className="relative flex justify-center">
                   <span className="px-4 bg-white dark:bg-slate-800 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    o
+                    {t('auth:register.or')}
                   </span>
                 </div>
               </div>
@@ -316,12 +324,12 @@ const Register = () => {
               {/* Login Link */}
               <div className="text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  ¿Ya tienes una cuenta?{" "}
+                  {t('auth:register.have_account')}{" "}
                   <Link
                     to="/login"
                     className="font-bold text-transparent bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text hover:from-cyan-700 hover:to-blue-700 transition-all"
                   >
-                    Inicia sesión 🎯
+                    {t('auth:register.login_link')}
                   </Link>
                 </p>
               </div>
@@ -332,7 +340,7 @@ const Register = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4" />
-              Un espacio seguro para aprender sobre finanzas
+              {t('auth:register.footer')}
               <Sparkles className="w-4 h-4" />
             </p>
           </div>

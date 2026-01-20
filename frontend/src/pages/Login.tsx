@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Sparkles, Rocket, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
+import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
 const Login = () => {
+  const { t } = useTranslation(['auth', 'common']);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -43,23 +46,23 @@ const Login = () => {
         localStorage.setItem('token', data.access_token);
 
         toast({
-          title: `¡Bienvenid@ de vuelta, ${data.user.name}!`,
-          description: `¡Disfruta tu experiencia en LittleFounders!`,
+          title: t('auth:messages.login_success', { name: data.user.name }),
+          description: t('auth:messages.login_success_subtitle'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
 
         navigate('/dashboard');
       } else {
         toast({
-          title: "No pudimos iniciar sesión",
-          description: data.detail || "Correo o contraseña incorrectos. ¡Intenta de nuevo!",
+          title: t('auth:messages.login_error'),
+          description: data.detail || t('auth:messages.login_error_detail'),
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Error de conexión",
-        description: "No pudimos conectar con el servidor. Intenta más tarde.",
+        title: t('auth:messages.connection_error'),
+        description: t('auth:messages.connection_error_detail'),
         variant: "destructive",
       });
     } finally {
@@ -86,6 +89,11 @@ const Login = () => {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-400/30 to-cyan-400/30 rounded-full blur-3xl"></div>
       </div>
 
+      {/* Language Selector - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageSelector variant="full" />
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-sm">
@@ -93,7 +101,7 @@ const Login = () => {
           <div className="text-center mb-8 space-y-4">
             <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors group">
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
-              Regresar al Inicio
+              {t('auth:login.back_to_home')}
             </Link>
 
             <div className="flex justify-center">
@@ -111,10 +119,10 @@ const Login = () => {
             {/* Header */}
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                ¡Hola de nuevo! 👋
+                {t('auth:login.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-xs">
-                Inicia sesión y sigue aprendiendo sobre el dinero de una forma divertida.
+                {t('auth:login.subtitle')}
               </p>
             </div>
 
@@ -123,7 +131,7 @@ const Login = () => {
               {/* Email Field */}
               <div className="space-y-1.5">
                 <label htmlFor="email" className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                  Correo electrónico
+                  {t('auth:fields.email.label')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -132,7 +140,7 @@ const Login = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Escribe tu correo"
+                      placeholder={t('auth:fields.email.placeholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 h-10 bg-gray-50 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-purple-400 dark:focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all text-sm"
@@ -145,7 +153,7 @@ const Login = () => {
               {/* Password Field */}
               <div className="space-y-1.5">
                 <label htmlFor="password" className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                  Contraseña
+                  {t('auth:fields.password.label')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity"></div>
@@ -154,7 +162,7 @@ const Login = () => {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Escribe tu contraseña"
+                      placeholder={t('auth:fields.password.placeholder')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10 h-10 bg-gray-50 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-purple-400 dark:focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all text-sm"
@@ -186,11 +194,11 @@ const Login = () => {
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Iniciando...
+                    {t('auth:login.loading')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Iniciar sesión
+                    {t('auth:login.button')}
                     <Rocket className="w-4 h-4" />
                   </span>
                 )}
@@ -206,14 +214,14 @@ const Login = () => {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05" />
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
-                  <span className="text-xs font-bold text-gray-400">Google</span>
+                  <span className="text-xs font-bold text-gray-400">{t('auth:social.google')}</span>
                 </Button>
                 <Button variant="outline" type="button" disabled className="w-full h-10 gap-2 border-2 bg-white dark:bg-slate-800 opacity-60">
                   {/* Facebook Icon */}
                   <svg className="w-4 h-4 grayscale text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
-                  <span className="text-xs font-bold text-gray-400">Facebook</span>
+                  <span className="text-xs font-bold text-gray-400">{t('auth:social.facebook')}</span>
                 </Button>
               </div>
 
@@ -224,7 +232,7 @@ const Login = () => {
                 </div>
                 <div className="relative flex justify-center">
                   <span className="px-4 bg-white dark:bg-slate-800 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    o
+                    {t('auth:login.or')}
                   </span>
                 </div>
               </div>
@@ -232,12 +240,12 @@ const Login = () => {
               {/* Register Link */}
               <div className="text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  ¿Todavía no tienes cuenta?{" "}
+                  {t('auth:login.no_account')}{" "}
                   <Link
                     to="/register"
                     className="font-bold text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text hover:from-purple-700 hover:to-pink-700 transition-all"
                   >
-                    ¡Crea una ahora! 🎉
+                    {t('auth:login.create_account')}
                   </Link>
                 </p>
               </div>
@@ -248,7 +256,7 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4" />
-              Un espacio seguro para aprender sobre finanzas
+              {t('auth:login.footer')}
               <Sparkles className="w-4 h-4" />
             </p>
           </div>

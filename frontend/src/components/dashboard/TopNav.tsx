@@ -1,8 +1,8 @@
-import { Search, Bell, User, Settings, LogOut } from "lucide-react";
+import { useTranslation } from 'react-i18next';
+import { Bell, User, Settings, LogOut, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -16,7 +16,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 
+
 export function TopNav() {
+  const { t } = useTranslation('dashboard');
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -36,13 +38,13 @@ export function TopNav() {
   const getUserTypeLabel = (userType: string) => {
     switch (userType) {
       case 'tutor':
-        return 'Padre o Tutor';
+        return t('user_types.tutor');
       case 'child':
-        return 'Niño';
+        return t('user_types.child');
       case 'sponsor':
-        return 'Patrocinador';
+        return t('user_types.sponsor');
       default:
-        return 'Usuario';
+        return t('user_types.user');
     }
   };
 
@@ -63,9 +65,11 @@ export function TopNav() {
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
-        {/* Quick Actions */}
-        <ThemeToggle />
+        {/* Language Selector */}
 
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
 
         {/* Notifications */}
         <DropdownMenu>
@@ -81,20 +85,20 @@ export function TopNav() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="space-y-2 p-2">
               <div className="p-3 bg-revenue-light rounded-lg">
-                <p className="font-medium text-sm">¡Meta lograda!</p>
-                <p className="text-xs text-muted-foreground">¡Felicitaciones! Alcanzaste tu objetivo de ahorro.</p>
+                <p className="font-medium text-sm">{t('notifications.goal_achieved')}</p>
+                <p className="text-xs text-muted-foreground">{t('notifications.goal_achieved_desc')}</p>
               </div>
               <div className="p-3 bg-customers-light rounded-lg">
-                <p className="font-medium text-sm">Recordatorio</p>
-                <p className="text-xs text-muted-foreground">No olvides hacer tu reto de finanzas hoy.</p>
+                <p className="font-medium text-sm">{t('notifications.reminder')}</p>
+                <p className="text-xs text-muted-foreground">{t('notifications.reminder_desc')}</p>
               </div>
               <div className="p-3 bg-product-light rounded-lg">
-                <p className="font-medium text-sm">Nueva habilidad</p>
-                <p className="text-xs text-muted-foreground">¡Desbloqueaste una lección sobre presupuesto!</p>
+                <p className="font-medium text-sm">{t('notifications.new_skill')}</p>
+                <p className="text-xs text-muted-foreground">{t('notifications.new_skill_desc')}</p>
               </div>
             </div>
           </DropdownMenuContent>
@@ -105,7 +109,7 @@ export function TopNav() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder-avatar.jpg" alt="Usuario" />
+                <AvatarImage src="/placeholder-avatar.jpg" alt={t('user_menu.user')} />
                 <AvatarFallback className="bg-gradient-primary text-primary-foreground">
                   {user ? getInitials(user.name) : "U"}
                 </AvatarFallback>
@@ -116,13 +120,13 @@ export function TopNav() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {user ? user.name : "Usuario"}
+                  {user ? user.name : t('user_menu.user')}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user ? getUserTypeLabel(user.user_type) : "Tipo de usuario"}
+                  {user ? getUserTypeLabel(user.user_type) : t('user_types.user')}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user ? user.email : "email@ejemplo.com"}
+                  {user ? user.email : "email@example.com"}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -130,17 +134,25 @@ export function TopNav() {
             <DropdownMenuItem asChild>
               <Link to="/profile">
                 <User className="mr-2 h-4 w-4" />
-                <span>Mi perfil</span>
+                <span>{t('user_menu.my_profile')}</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Configuración</span>
+            <DropdownMenuItem asChild>
+              <Link to="/settings">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>{t('user_menu.settings')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/help">
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>{t('user_menu.help')}</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Cerrar sesión</span>
+              <span>{t('user_menu.logout')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

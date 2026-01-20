@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface BannerOption {
   id: number;
@@ -24,6 +25,8 @@ export function BannerSelector({
   onBannerSelect,
   disabled = false
 }: BannerSelectorProps) {
+  const { t } = useTranslation('profile');
+
   const getRarityColor = (rarity?: string) => {
     switch (rarity) {
       case "rare": return "border-blue-400";
@@ -34,29 +37,18 @@ export function BannerSelector({
   };
 
   const getRarityLabel = (rarity?: string) => {
-    switch (rarity) {
-      case "rare": return "Raro";
-      case "epic": return "Épico";
-      case "legendary": return "Legendario";
-      default: return "Común";
-    }
+    return t(`rarity.${rarity || 'common'}`);
   };
 
   const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case "nature": return "Naturaleza";
-      case "space": return "Espacio";
-      case "fantasy": return "Fantasía";
-      case "abstract": return "Abstracto";
-      default: return category;
-    }
+    return t(`categories.${category}`, { defaultValue: category });
   };
 
   return (
     <div className="space-y-4">
       {/* Vista previa del banner seleccionado */}
       <div className="text-center space-y-3">
-        <div 
+        <div
           className="h-32 rounded-lg bg-cover bg-center mx-auto w-full max-w-md border-2 border-border"
           style={{ backgroundImage: `url(${selectedBanner.src})` }}
         />
@@ -73,7 +65,7 @@ export function BannerSelector({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Sparkles className="h-5 w-5" />
-            <span>Fondos disponibles</span>
+            <span>{t('sections.available_banners')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -81,16 +73,15 @@ export function BannerSelector({
             {banners.map((banner) => (
               <div
                 key={banner.id}
-                className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
-                  selectedBanner.id === banner.id
+                className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${selectedBanner.id === banner.id
                     ? 'border-primary ring-2 ring-primary/20'
-                    : banner.unlocked 
+                    : banner.unlocked
                       ? getRarityColor(banner.rarity)
                       : 'border-border'
-                } ${!banner.unlocked ? 'opacity-60' : ''} ${disabled ? 'cursor-not-allowed' : ''}`}
+                  } ${!banner.unlocked ? 'opacity-60' : ''} ${disabled ? 'cursor-not-allowed' : ''}`}
                 onClick={() => !disabled && banner.unlocked && onBannerSelect(banner)}
               >
-                <div 
+                <div
                   className="h-24 bg-cover bg-center"
                   style={{ backgroundImage: `url(${banner.src})` }}
                 />
@@ -103,8 +94,8 @@ export function BannerSelector({
                       </p>
                     </div>
                     {banner.rarity && banner.rarity !== "common" && (
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className="text-xs px-1 py-0"
                       >
                         {getRarityLabel(banner.rarity)}
@@ -112,7 +103,7 @@ export function BannerSelector({
                     )}
                   </div>
                 </div>
-                
+
                 {/* Overlay para banners bloqueados */}
                 {!banner.unlocked && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -122,7 +113,7 @@ export function BannerSelector({
                     </div>
                   </div>
                 )}
-                
+
                 {/* Indicador de selección */}
                 {selectedBanner.id === banner.id && (
                   <div className="absolute top-2 right-2">
@@ -143,7 +134,7 @@ export function BannerSelector({
           <div className="text-center space-y-2">
             <h3 className="font-medium">¿Cómo desbloquear más fondos?</h3>
             <p className="text-sm text-muted-foreground">
-              Completa lecciones, alcanza metas de ahorro y participa en actividades 
+              Completa lecciones, alcanza metas de ahorro y participa en actividades
               para desbloquear fondos exclusivos y personalizar tu perfil.
             </p>
           </div>

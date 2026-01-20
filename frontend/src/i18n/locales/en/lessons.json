@@ -1,0 +1,44 @@
+{
+    "_meta": {
+        "language": "en",
+        "status": "placeholder",
+        "notes": "English translations ready."
+    },
+    "loading": "Loading lesson...",
+    "error": "Error loading lesson",
+    "start": {
+        "button": "START",
+        "points": "{{count}} pts",
+        "xp": "{{count}} XP"
+    },
+    "actions": {
+        "verify": "CHECK",
+        "continue": "CONTINUE",
+        "retry": "TRY AGAIN",
+        "next": "NEXT"
+    },
+    "status": {
+        "speaking": "Speaking...",
+        "correct": "Correct!",
+        "incorrect": "Incorrect",
+        "great_job": "Excellent!"
+    },
+    "feedback": {
+        "success": "🎉 CONTINUE",
+        "error": "🔄 RETRY"
+    },
+    "completion": {
+        "title": "Lesson Complete!",
+        "subtitle": "You completed the lesson 🌟",
+        "points_earned": "Points earned",
+        "xp_earned": "XP earned",
+        "next_lesson": "Next lesson",
+        "back_to_lessons": "Back to lessons"
+    },
+    "game_over": {
+        "title": "Out of energy!",
+        "subtitle": "Don't worry, you can try again. You got this!",
+        "retry_button": "Retry",
+        "exit_button": "Exit"
+    }
+}

@@ -5,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/config/api";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Welcome() {
+  const { t } = useTranslation('common');
   const [step, setStep] = useState(0); // 0: Intro, 1: Name Input
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -72,8 +74,8 @@ export default function Welcome() {
         localStorage.setItem("user", JSON.stringify(newUser));
 
         toast({
-          title: `¡Bienvenido, ${name}!`,
-          description: "Tu espacio está listo.",
+          title: t('welcome_page.welcome_msg', { name }),
+          description: t('welcome_page.space_ready'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
 
@@ -86,8 +88,8 @@ export default function Welcome() {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error",
-        description: "No pudimos guardar tu nombre. Intenta de nuevo.",
+        title: t('status.error'),
+        description: t('welcome_page.error_saving'),
         variant: "destructive"
       });
     } finally {
@@ -107,7 +109,7 @@ export default function Welcome() {
         {step === 0 ? (
           <div className="text-center">
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter bg-gradient-to-br from-primary via-foreground to-customers bg-clip-text text-transparent animate-in fade-in zoom-in duration-1000">
-              ¡Hola!
+              {t('welcome_page.hello')}
             </h1>
           </div>
         ) : (
@@ -115,10 +117,10 @@ export default function Welcome() {
             <div className="mb-8 text-center space-y-2">
 
               <h2 className="text-3xl font-semibold tracking-tight">
-                ¿Cómo te llamas?
+                {t('welcome_page.whats_your_name')}
               </h2>
               <p className="text-muted-foreground text-lg">
-                Para dirigirnos a ti correctamente.
+                {t('welcome_page.name_desc')}
               </p>
             </div>
 
@@ -127,7 +129,7 @@ export default function Welcome() {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Tu nombre (o apodo)"
+                  placeholder={t('welcome_page.name_placeholder')}
                   className="h-14 text-lg px-4 bg-background/50 border-2 focus:border-primary/50 transition-all rounded-xl shadow-sm text-center"
                   autoFocus
                 />
@@ -141,11 +143,11 @@ export default function Welcome() {
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
-                    Guardando...
+                    {t('buttons.saving')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Comenzar Aventura <ArrowRight className="w-5 h-5" />
+                    {t('buttons.start_adventure')} <ArrowRight className="w-5 h-5" />
                   </span>
                 )}
               </Button>

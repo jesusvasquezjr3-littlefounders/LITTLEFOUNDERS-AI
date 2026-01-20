@@ -10,6 +10,7 @@
  * - Mobile-first responsive
  */
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
 import { DinaCharacter } from '@/components/demo/DinaCharacter';
@@ -40,6 +41,7 @@ interface LessonRunnerProps {
 }
 
 export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) {
+    const { t } = useTranslation('lessons');
     const params = useParams<{ lessonCode: string }>();
     const navigate = useNavigate();
     const code = propLessonCode || params.lessonCode || '';
@@ -333,7 +335,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return (
             <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-4">
                 <Loader2 className="w-16 h-16 text-primary animate-spin" />
-                <p className="text-lg text-muted-foreground font-medium">Cargando lección...</p>
+                <p className="text-lg text-muted-foreground font-medium">{t('loading')}</p>
             </div>
         );
     }
@@ -344,10 +346,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-4 p-6">
                 <AlertCircle className="w-16 h-16 text-destructive" />
                 <p className="text-lg text-destructive font-medium text-center">
-                    {error || 'Error al cargar la lección'}
+                    {error || t('error')}
                 </p>
                 <Button variant="outline" onClick={handleClose} className="mt-4">
-                    Volver
+                    {t('common:buttons.back')}
                 </Button>
             </div>
         );
@@ -433,7 +435,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         size="lg"
                         className="w-full max-w-sm h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                     >
-                        EMPEZAR
+                        {t('start.button')}
                     </Button>
                 </div>
             </div>
@@ -540,7 +542,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         {isAudioPlaying && (
                             <div className="flex items-center justify-center gap-2 mb-4 text-muted-foreground">
                                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                                <span className="text-sm font-medium">Hablando...</span>
+                                <span className="text-sm font-medium">{t('status.speaking')}</span>
                             </div>
                         )}
 
@@ -549,7 +551,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                             disabled={isAudioPlaying}
                             className="w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                         >
-                            CONTINUAR
+                            {t('actions.continue')}
                         </Button>
                     </div>
                 )}
@@ -641,7 +643,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 disabled={!selectedOption}
                                 className="w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:bg-muted"
                             >
-                                VERIFICAR
+                                {t('actions.verify')}
                             </Button>
                         ) : (
                             <Button
@@ -654,7 +656,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                     "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                                 )}
                             >
-                                {localFeedback === 'success' ? 'CONTINUAR' : 'INTENTAR DE NUEVO'}
+                                {localFeedback === 'success' ? t('actions.continue') : t('actions.retry')}
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </Button>
                         )}
@@ -762,7 +764,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                     "hover:translate-y-[1px] active:translate-y-0.5 active:shadow-none"
                                 )}
                             >
-                                {localFeedback === 'success' ? '🎉 CONTINUAR' : '🔄 REINTENTAR'}
+                                {localFeedback === 'success' ? t('feedback.success') : t('feedback.error')}
                                 <ArrowRight className="ml-1 w-4 h-4" />
                             </Button>
                         )}
@@ -899,10 +901,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         </div>
 
                         <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-1">
-                            ¡Excelente!
+                            {t('status.great_job')}
                         </DialogTitle>
                         <DialogDescription className="text-base sm:text-lg text-muted-foreground mb-4">
-                            Completaste la lección 🌟
+                            {t('completion.subtitle')}
                         </DialogDescription>
 
                         {/* Stats - Responsive grid */}
@@ -930,13 +932,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 onClick={handleClose}
                                 className="w-full h-11 sm:h-12 rounded-xl font-semibold text-base border-2"
                             >
-                                Salir
+                                {t('game_over.exit_button')}
                             </Button>
                             <Button
                                 onClick={() => { setShowSuccess(false); startLesson(); }}
                                 className="w-full h-11 sm:h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
                             >
-                                🎮 Repetir
+                                🎮 {t('actions.retry')}
                             </Button>
                         </div>
                     </div>
@@ -961,10 +963,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         </div>
 
                         <DialogTitle className="text-3xl font-bold text-foreground mb-2">
-                            ¡Se acabó la energía!
+                            {t('game_over.title')}
                         </DialogTitle>
                         <DialogDescription className="text-lg text-muted-foreground mb-6">
-                            No te preocupes, puedes intentarlo de nuevo. ¡Tú puedes! ⚡
+                            {t('game_over.subtitle')} ⚡
                         </DialogDescription>
 
                         <div className="flex gap-3">
@@ -973,7 +975,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 onClick={handleClose}
                                 className="flex-1 h-12 rounded-xl font-semibold"
                             >
-                                Salir
+                                {t('game_over.exit_button')}
                             </Button>
                             <Button
                                 onClick={() => {
@@ -984,7 +986,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 className="flex-1 h-12 rounded-xl font-semibold bg-purple-600 hover:bg-purple-700 text-white"
                             >
                                 <Zap className="w-4 h-4 mr-2 fill-current" />
-                                Reintentar
+                                {t('game_over.retry_button')}
                             </Button>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Upload, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AvatarOption {
   id: number;
@@ -31,6 +32,7 @@ export function AvatarSelector({
   disabled = false,
   nickname = "Usuario"
 }: AvatarSelectorProps) {
+  const { t } = useTranslation('profile');
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -40,13 +42,13 @@ export function AvatarSelector({
 
     // Validar tipo de archivo
     if (!file.type.startsWith('image/')) {
-      setUploadError('Por favor selecciona una imagen válida');
+      setUploadError(t('messages.upload_error_type'));
       return;
     }
 
     // Validar tamaño (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setUploadError('La imagen debe ser menor a 5MB');
+      setUploadError(t('messages.upload_error_size'));
       return;
     }
 
@@ -77,13 +79,7 @@ export function AvatarSelector({
   };
 
   const getRarityLabel = (rarity: string) => {
-    switch (rarity) {
-      case "common": return "Común";
-      case "rare": return "Raro";
-      case "epic": return "Épico";
-      case "legendary": return "Legendario";
-      default: return "Común";
-    }
+    return t(`rarity.${rarity}`);
   };
 
   return (
@@ -91,9 +87,9 @@ export function AvatarSelector({
       {/* Avatar actual */}
       <div className="text-center space-y-3">
         <Avatar className="w-24 h-24 mx-auto border-4 border-primary">
-          <AvatarImage 
-            src={customAvatar || selectedAvatar.src} 
-            alt={selectedAvatar.name} 
+          <AvatarImage
+            src={customAvatar || selectedAvatar.src}
+            alt={selectedAvatar.name}
           />
           <AvatarFallback className="text-2xl">
             {nickname.charAt(0).toUpperCase()}
@@ -102,14 +98,14 @@ export function AvatarSelector({
         <div>
           <p className="font-medium">{selectedAvatar.name}</p>
           {customAvatar && (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={removeCustomAvatar}
               className="mt-2"
             >
               <X className="w-4 h-4 mr-1" />
-              Remover foto personalizada
+              {t('actions.remove_photo')}
             </Button>
           )}
         </div>
@@ -120,12 +116,12 @@ export function AvatarSelector({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Upload className="h-5 w-5" />
-            <span>Subir foto personalizada</span>
+            <span>{t('actions.upload_photo')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="avatar-upload">Seleccionar imagen</Label>
+            <Label htmlFor="avatar-upload">{t('actions.select_image')}</Label>
             <div className="flex items-center space-x-2">
               <Input
                 id="avatar-upload"
@@ -152,18 +148,17 @@ export function AvatarSelector({
       {/* Avatares prediseñados */}
       <Card>
         <CardHeader>
-          <CardTitle>Avatares disponibles</CardTitle>
+          <CardTitle>{t('sections.available_avatars')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-4 gap-3">
             {avatars.map((avatar) => (
               <div
                 key={avatar.id}
-                className={`relative cursor-pointer rounded-lg border-2 p-2 transition-all hover:scale-105 ${
-                  selectedAvatar.id === avatar.id
+                className={`relative cursor-pointer rounded-lg border-2 p-2 transition-all hover:scale-105 ${selectedAvatar.id === avatar.id
                     ? 'border-primary bg-primary/10'
                     : getRarityColor(avatar.rarity)
-                } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+                  } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
                 onClick={() => !disabled && onAvatarSelect(avatar)}
               >
                 <Avatar className="w-12 h-12 mx-auto">
@@ -174,8 +169,8 @@ export function AvatarSelector({
                 </Avatar>
                 <p className="text-xs text-center mt-1 truncate">{avatar.name}</p>
                 {avatar.rarity !== "common" && (
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className="absolute -top-1 -right-1 text-xs px-1 py-0"
                   >
                     {getRarityLabel(avatar.rarity)}

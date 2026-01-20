@@ -266,3 +266,67 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
         ]
     
     return family_data
+
+
+# =====================================================
+# LANGUAGE PREFERENCE ENDPOINTS
+# =====================================================
+
+from pydantic import BaseModel
+
+class LanguagePreference(BaseModel):
+    language: str  # 'es' or 'en'
+
+SUPPORTED_LANGUAGES = ['es', 'en']
+
+
+@router.get("/preferences/language")
+async def get_language_preference(
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Get the current user's language preference.
+    Returns the preferred language code ('es' or 'en').
+    """
+    # Return stored preference or default to 'es'
+    preferred_language = getattr(current_user, 'preferred_language', 'es') or 'es'
+    
+    return {
+        "language": preferred_language,
+        "supported_languages": SUPPORTED_LANGUAGES
+    }
+
+
+@router.put("/preferences/language")
+async def update_language_preference(
+    preference: LanguagePreference,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Update the current user's language preference.
+    Accepts: 'es' (Spanish) or 'en' (English)
+    """
+    # Validate language code
+    if preference.language not in SUPPORTED_LANGUAGES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid language. Supported languages: {', '.join(SUPPORTED_LANGUAGES)}"
+        )
+    
+    try:
+        # Update user's language preference
+        current_user.preferred_language = preference.language
+        db.commit()
+        
+        return {
+            "message": "Language preference updated",
+            "language": preference.language
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update language preference"
+        )

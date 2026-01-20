@@ -1,0 +1,87 @@
+{
+    "nav": {
+        "why": "¿Por qué?",
+        "lessons": "Lecciones",
+        "faq": "Dudas",
+        "login": "Iniciar Sesión",
+        "register": "Registrate Gratis"
+    },
+    "hero": {
+        "badge": "Nueva Beta Abierta",
+        "title_part1": "El",
+        "title_highlight": "Simulador de Startup",
+        "title_part2": "para",
+        "rotating_words": [
+            "Niños",
+            "Adolescentes",
+            "Adultos"
+        ],
+        "subtitle": "Aprende <strong>finanzas reales</strong> construyendo un negocio virtual. Sin teoría aburrida, solo diversión práctica.",
+        "cta_button": "Probar Demo",
+        "cta_subtext": "✨ No requiere tarjeta • Acceso inmediato"
+    },
+    "problem": {
+        "title_part1": "La escuela enseña Álgebra...",
+        "title_part2": "pero nadie enseña Dinero.",
+        "subtitle": "Es la historia de siempre: graduarse sabiendo resolver <i>trinomios cuadrados perfectos</i>, pero sin saber cómo funciona una tarjeta de crédito, un presupuesto o una inversión.",
+        "card1_title": "Desinformación",
+        "card1_text": "Los niños aprenden sobre dinero de TikTok o amigos, llenándose de mitos peligrosos.",
+        "card2_title": "Estrés Futuro",
+        "card2_text": "El dinero es la causa #1 de estrés en adultos. No dejes que sea el de tus hijos.",
+        "card3_title": "Clases Aburridas",
+        "card3_text": "Los cursos tradicionales son PDFs aburridos que los niños odian leer."
+    },
+    "solution": {
+        "badge": "La Solución LittleFounders",
+        "title_part1": "No es una clase.",
+        "title_part2": "Es una",
+        "title_highlight": "Aventura",
+        "subtitle": "Utilizamos el \"Aprendizaje Basado en Simulación\". Aprende finanzas jugando con simuladores interactivos y desafíos emocionantes.",
+        "benefit1": "Aprende cometiendo errores virtuales (no reales)",
+        "benefit2": "Descubre el poder del ahorro con herramientas visuales y metas alcanzables",
+        "benefit3": "Contenido educativo diseñado específicamente para cada edad y nivel",
+        "play_label": "Aprender Jugando",
+        "interactive_label": "100% Interactivo"
+    },
+    "features": {
+        "title": "Mira cómo funciona",
+        "subtitle": "Todo el contenido está diseñado para ser visual, intuitivo y digerible en sesiones cortas.",
+        "browser_url": "https://littlefounders.ai/lecciones",
+        "feature1_title": "Sin Palabrería",
+        "feature1_text": "Contenido directo. Eliminamos la paja académica para ir a lo que importa.",
+        "feature2_title": "A tu Ritmo",
+        "feature2_text": "Lecciones de 5 minutos. Perfectas para la atención moderna.",
+        "feature3_title": "Espacio Seguro",
+        "feature3_text": "Entorno cerrado, moderado y diseñado para menores."
+    },
+    "faq": {
+        "title": "Preguntas Frecuentes",
+        "q1": "¿Para qué edades es?",
+        "a1": "Está diseñado principalmente para niños y adolescentes de <strong>5 a 17 años</strong>. Sin embargo, muchos adultos nos han dicho que también aprenden mucho con las bases.",
+        "q2": "¿Es seguro para mis hijos?",
+        "a2": "Absolutamente. No hay chat abierto con desconocidos, no hay publicidad externa, y todos los datos están encriptados.",
+        "q3": "¿Tiene costo?",
+        "a3": "Actualmente estamos en una <strong>Beta Abierta Gratuita</strong>. Puedes registrarte y usar todas las funciones sin costo. En el futuro tendremos planes premium, pero siempre habrá una capa gratuita.",
+        "q4": "¿Necesito supervisar a mi hijo mientras juega?",
+        "a4": "No es necesario, la plataforma es autodidacta. Sin embargo, tenemos un \"Panel de Padres\" donde puedes ver su progreso y te damos tips para conversar sobre lo que aprendieron."
+    },
+    "cta": {
+        "title_part1": "Tu hijo podría ser el próximo",
+        "rotating_words": [
+            "founder",
+            "empresario",
+            "CEO",
+            "líder",
+            "emprendedor"
+        ],
+        "subtitle": "Dale las herramientas que la escuela no le da. Empieza hoy, es gratis y toma 30 segundos.",
+        "button": "Registrate Gratis",
+        "disclaimer": "Sin compromiso. Cancela cuando quieras."
+    },
+    "footer": {
+        "terms": "Términos",
+        "privacy": "Privacidad",
+        "contact": "Contacto",
+        "copyright": "© 2026 littlefounders.ai"
+    }
+}

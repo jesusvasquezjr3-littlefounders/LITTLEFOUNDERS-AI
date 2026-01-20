@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from "@/components/ui/card";
 
 interface UniversalDashboardProps {
@@ -5,39 +6,40 @@ interface UniversalDashboardProps {
 }
 
 export function UniversalDashboard({ user }: UniversalDashboardProps) {
+    const { t } = useTranslation('dashboard');
 
     const stats = [
         {
-            title: "Lecciones Completadas",
+            title: t('stats.lessons_completed'),
             value: user?.lessons_completed || 0,
             lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
             color: "text-blue-600",
             bgColor: "bg-blue-50",
-            description: "¡Sigue así!"
+            description: t('stats.keep_going')
         },
         {
-            title: "Minutos Estudiados",
+            title: t('stats.minutes_studied'),
             value: user?.minutes_studied || 0,
             lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
             color: "text-green-600",
             bgColor: "bg-green-50",
-            description: "Tiempo bien invertido"
+            description: t('stats.time_well_spent')
         },
         {
-            title: "Puntos Ganados",
+            title: t('stats.points_earned'),
             value: user?.points_earned || 0,
             lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
             color: "text-yellow-600",
             bgColor: "bg-yellow-50",
-            description: "¡Eres un experto!"
+            description: t('stats.expert')
         },
         {
-            title: "Racha Actual",
+            title: t('stats.current_streak'),
             value: user?.current_streak || 0,
             lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
             color: "text-purple-600",
             bgColor: "bg-purple-50",
-            description: "¡Días seguidos!"
+            description: t('stats.days_in_row')
         }
     ];
 
@@ -46,10 +48,10 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
             {/* Welcome Header */}
             <div className="text-center space-y-2 pt-4">
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    ¡Hola, {user?.name?.split(' ')[0] || 'Fundador'}! 👋
+                    {t('welcome', { name: user?.name?.split(' ')[0] || t('default_name') })} 👋
                 </h1>
                 <p className="text-lg text-muted-foreground">
-                    ¡Bienvenido a tu panel de Little Founders!
+                    {t('welcome_subtitle')}
                 </p>
             </div>
 

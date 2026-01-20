@@ -1,0 +1,39 @@
+{
+    "loading": "Cargando lección...",
+    "error": "Error al cargar la lección",
+    "start": {
+        "button": "EMPEZAR",
+        "points": "{{count}} pts",
+        "xp": "{{count}} XP"
+    },
+    "actions": {
+        "verify": "VERIFICAR",
+        "continue": "CONTINUAR",
+        "retry": "INTENTAR DE NUEVO",
+        "next": "SIGUIENTE"
+    },
+    "status": {
+        "speaking": "Hablando...",
+        "correct": "¡Correcto!",
+        "incorrect": "Incorrecto",
+        "great_job": "¡Excelente!"
+    },
+    "feedback": {
+        "success": "🎉 CONTINUAR",
+        "error": "🔄 REINTENTAR"
+    },
+    "completion": {
+        "title": "¡Lección Completada!",
+        "subtitle": "Completaste la lección 🌟",
+        "points_earned": "Puntos ganados",
+        "xp_earned": "XP ganados",
+        "next_lesson": "Siguiente lección",
+        "back_to_lessons": "Volver a lecciones"
+    },
+    "game_over": {
+        "title": "¡Se acabó la energía!",
+        "subtitle": "No te preocupes, puedes intentarlo de nuevo. ¡Tú puedes!",
+        "retry_button": "Reintentar",
+        "exit_button": "Salir"
+    }
+}

@@ -1,0 +1,70 @@
+{
+    "welcome": "¡Hola, {{name}}!",
+    "welcome_subtitle": "¡Bienvenido a tu panel de Little Founders!",
+    "default_name": "Fundador",
+    "greeting": {
+        "morning": "¡Buenos días!",
+        "afternoon": "¡Buenas tardes!",
+        "evening": "¡Buenas noches!"
+    },
+    "stats": {
+        "lessons_completed": "Lecciones Completadas",
+        "minutes_studied": "Minutos Estudiados",
+        "points_earned": "Puntos Ganados",
+        "current_streak": "Racha Actual",
+        "balance": "Balance",
+        "keep_going": "¡Sigue así!",
+        "time_well_spent": "Tiempo bien invertido",
+        "expert": "¡Eres un experto!",
+        "days_in_row": "¡Días seguidos!"
+    },
+    "sections": {
+        "continue_learning": "Continúa aprendiendo",
+        "your_progress": "Tu progreso",
+        "recent_activity": "Actividad reciente",
+        "achievements": "Logros"
+    },
+    "empty_states": {
+        "no_lessons": "Aún no has completado ninguna lección",
+        "no_achievements": "Completa lecciones para desbloquear logros"
+    },
+    "sidebar": {
+        "home": "Inicio",
+        "lessons": "Lecciones",
+        "my_tasks": "Mis Tareas",
+        "task_management": "Gestión de Tareas",
+        "my_savings": "Mis Ahorros",
+        "entrepreneurship": "Emprendimiento",
+        "digital_banking": "Banca Digital",
+        "store": "Tiendita",
+        "settings": "Configuración",
+        "help": "Ayuda",
+        "language": "Idioma",
+        "collapse": "Contraer barra",
+        "expand": "Expandir barra",
+        "locked_title": "Función en Desarrollo",
+        "locked_description": "Esta funcionalidad estará disponible próximamente."
+    },
+    "user_types": {
+        "tutor": "Padre o Tutor",
+        "child": "Niño",
+        "sponsor": "Patrocinador",
+        "user": "Usuario"
+    },
+    "user_menu": {
+        "user": "Usuario",
+        "my_profile": "Mi perfil",
+        "settings": "Configuración",
+        "help": "Ayuda",
+        "logout": "Cerrar sesión"
+    },
+    "notifications": {
+        "title": "Notificaciones",
+        "goal_achieved": "¡Meta lograda!",
+        "goal_achieved_desc": "¡Felicitaciones! Alcanzaste tu objetivo de ahorro.",
+        "reminder": "Recordatorio",
+        "reminder_desc": "No olvides hacer tu reto de finanzas hoy.",
+        "new_skill": "Nueva habilidad",
+        "new_skill_desc": "¡Desbloqueaste una lección sobre presupuesto!"
+    }
+}

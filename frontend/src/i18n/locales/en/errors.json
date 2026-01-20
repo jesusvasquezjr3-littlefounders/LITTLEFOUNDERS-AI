@@ -1,0 +1,36 @@
+{
+    "_meta": {
+        "language": "en",
+        "status": "placeholder",
+        "notes": "English translations pending. Using Spanish fallback."
+    },
+    "network": {
+        "connection_error": "Connection error",
+        "connection_error_detail": "Couldn't connect to the server. Please try later.",
+        "timeout": "Request timed out",
+        "server_error": "Server error"
+    },
+    "auth": {
+        "invalid_credentials": "Incorrect email or password",
+        "email_already_exists": "This email is already registered",
+        "session_expired": "Your session has expired. Please log in again.",
+        "unauthorized": "You don't have permission to access this resource"
+    },
+    "validation": {
+        "required_field": "This field is required",
+        "invalid_email": "Invalid email address",
+        "password_too_short": "Password must be at least {{min}} characters",
+        "passwords_dont_match": "Passwords don't match"
+    },
+    "not_found": {
+        "page": "Page not found",
+        "user": "User not found",
+        "lesson": "Lesson not found",
+        "resource": "Resource not found"
+    },
+    "generic": {
+        "something_went_wrong": "Something went wrong",
+        "try_again": "Please try again",
+        "contact_support": "If the problem persists, contact support"
+    }
+}

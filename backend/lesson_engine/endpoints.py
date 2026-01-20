@@ -12,7 +12,8 @@ from database import get_db
 from models import (
     Adventure, Saga, Lesson, Exercise, LessonAudioSegment,
     Character, CharacterGesture,
-    User, UserLessonProgress, UserExerciseProgress
+    User, UserLessonProgress, UserExerciseProgress,
+    LessonTranslation, ExerciseTranslation, AudioSegmentTranslation
 )
 from schemas import (
     AdventureResponse, AdventureWithProgress,
@@ -157,15 +158,37 @@ async def get_adventure_sagas(
 @router.get("/lessons/{code}/play")
 async def get_lesson_for_play(
     code: str,
+    lang: str = "es",  # Parámetro de idioma con español por defecto
     db: Session = Depends(get_db)
 ):
     """
     Obtener JSON completo de una lección para el LessonRunner.
     Este es el endpoint principal que consume el frontend.
+    
+    Args:
+        code: Código de la lección (ej: "1-1-0-1")
+        lang: Código de idioma ('es' o 'en')
     """
     lesson = db.query(Lesson).filter(Lesson.lesson_id == code).first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    # Obtener traducción de lección (con fallback a español)
+    lesson_translation = db.query(LessonTranslation).filter(
+        LessonTranslation.lesson_id == lesson.id,
+        LessonTranslation.language == lang
+    ).first()
+    
+    if not lesson_translation:
+        # Fallback a español
+        lesson_translation = db.query(LessonTranslation).filter(
+            LessonTranslation.lesson_id == lesson.id,
+            LessonTranslation.language == "es"
+        ).first()
+    
+    # Si no hay traducciones, usar datos legacy de la tabla lesson
+    lesson_title = lesson_translation.title if lesson_translation else lesson.title
+    lesson_description = lesson_translation.description if lesson_translation else lesson.description
     
     # Obtener información de saga y aventura
     saga = db.query(Saga).filter(Saga.id == lesson.saga_id).first() if lesson.saga_id else None
@@ -177,9 +200,27 @@ async def get_lesson_for_play(
         Exercise.is_active == True
     ).order_by(Exercise.order_index).all()
     
-    # Construir timeline con audio segments
+    # Construir timeline con audio segments y traducciones
     timeline = []
     for exercise in exercises:
+        # Buscar traducción del ejercicio
+        exercise_translation = db.query(ExerciseTranslation).filter(
+            ExerciseTranslation.exercise_id == exercise.id,
+            ExerciseTranslation.language == lang
+        ).first()
+        
+        if not exercise_translation:
+            # Fallback a español
+            exercise_translation = db.query(ExerciseTranslation).filter(
+                ExerciseTranslation.exercise_id == exercise.id,
+                ExerciseTranslation.language == "es"
+            ).first()
+        
+        # Usar traducción si existe, sino datos legacy
+        content = exercise_translation.content if exercise_translation else exercise.content
+        correct_answer = exercise_translation.correct_answer if exercise_translation else exercise.correct_answer
+        feedback = exercise_translation.feedback if exercise_translation else exercise.feedback
+        
         # Buscar audio segment asociado
         audio_segment = db.query(LessonAudioSegment).filter(
             LessonAudioSegment.exercise_id == exercise.id
@@ -187,30 +228,48 @@ async def get_lesson_for_play(
         
         audio_data = None
         if audio_segment:
+            # Buscar traducción del audio
+            audio_translation = db.query(AudioSegmentTranslation).filter(
+                AudioSegmentTranslation.audio_segment_id == audio_segment.id,
+                AudioSegmentTranslation.language == lang
+            ).first()
+            
+            if not audio_translation:
+                # Fallback a español
+                audio_translation = db.query(AudioSegmentTranslation).filter(
+                    AudioSegmentTranslation.audio_segment_id == audio_segment.id,
+                    AudioSegmentTranslation.language == "es"
+                ).first()
+            
             character = db.query(Character).filter(
                 Character.id == audio_segment.character_id
             ).first() if audio_segment.character_id else None
             
+            # Usar traducción de audio si existe, sino datos legacy
+            audio_url = audio_translation.audio_url if audio_translation else audio_segment.audio_url
+            audio_transcript = audio_translation.transcript if audio_translation else audio_segment.transcript
+            audio_duration = audio_translation.duration_ms if audio_translation else audio_segment.duration_ms
+            
             audio_data = {
-                "url": audio_segment.audio_url,
+                "url": audio_url,
                 "characterId": audio_segment.character_id,
                 "characterCode": character.code if character else None,
-                "gesture": audio_segment.emotion,  # Usamos emotion como gesto por ahora
+                "gesture": audio_segment.emotion,
                 "emotion": audio_segment.emotion,
-                "transcript": audio_segment.transcript,
-                "duration_ms": audio_segment.duration_ms
+                "transcript": audio_transcript,
+                "duration_ms": audio_duration
             }
         
         timeline.append({
             "id": exercise.id,
             "type": exercise.exercise_type,
             "order_index": exercise.order_index,
-            "character_code": getattr(exercise, 'character_code', 'liruf'),  # Añadido para soportar Dina
+            "character_code": getattr(exercise, 'character_code', 'liruf'),
             "start_time_ms": exercise.start_time_ms,
             "pause_at_ms": exercise.pause_at_ms,
-            "content": exercise.content,
-            "correct_answer": exercise.correct_answer,
-            "feedback": exercise.feedback,
+            "content": content,
+            "correct_answer": correct_answer,
+            "feedback": feedback,
             "points": exercise.points,
             "audio": audio_data
         })
@@ -220,12 +279,13 @@ async def get_lesson_for_play(
         "lesson": {
             "id": lesson.id,
             "code": lesson.lesson_id,
-            "title": lesson.title,
-            "description": lesson.description,
+            "title": lesson_title,
+            "description": lesson_description,
             "saga": saga.title if saga else None,
             "saga_code": saga.code if saga else None,
             "adventure": adventure.title if adventure else None,
-            "adventure_code": adventure.code if adventure else None
+            "adventure_code": adventure.code if adventure else None,
+            "language": lang  # Indicar idioma de la respuesta
         },
         "meta": {
             "estimated_duration_seconds": lesson.estimated_duration_seconds or 180,
