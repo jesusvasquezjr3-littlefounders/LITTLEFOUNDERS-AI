@@ -23,6 +23,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '@/config/api';
 import { changeLanguage, SupportedLanguage, SUPPORTED_LANGUAGES } from '@/i18n';
+import { useToast } from "@/hooks/use-toast";
 
 interface LanguagePreferenceResponse {
     language: string;
@@ -31,6 +32,7 @@ interface LanguagePreferenceResponse {
 
 export function useUserLanguage() {
     const { i18n } = useTranslation();
+    const { toast } = useToast();
 
     /**
      * Get auth token from localStorage
@@ -76,6 +78,17 @@ export function useUserLanguage() {
                 ) {
                     await changeLanguage(data.language as SupportedLanguage);
                 }
+            } else if (response.status === 401) {
+                // Token invalid or expired
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                console.warn('Session expired, clearing token');
+                // Optional: Notify user
+                // toast({
+                //     title: "Sesión expirada",
+                //     description: "Por favor, inicia sesión nuevamente.",
+                //     variant: "destructive",
+                // });
             }
         } catch (error) {
             console.warn('Failed to sync language preference:', error);
@@ -105,6 +118,11 @@ export function useUserLanguage() {
                 },
                 body: JSON.stringify({ language }),
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
 
             return response.ok;
         } catch (error) {

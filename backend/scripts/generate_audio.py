@@ -82,10 +82,31 @@ class LessonAudioGenerator:
         result = self.supabase.table("exercises").select("*").eq("lesson_id", lesson_id).order("order_index").execute()
         return result.data
     
-    def get_characters(self) -> Dict[str, Dict]:
-        """Obtiene los personajes y sus Voice IDs"""
-        result = self.supabase.table("characters").select("*").execute()
-        return {char["code"]: char for char in result.data}
+    def get_characters(self, language: str = "es") -> Dict[str, Dict]:
+        """
+        Obtiene los personajes con sus Voice IDs para el idioma especificado.
+        Usa la tabla character_voices con fallback al campo legacy en characters.
+        """
+        # Obtener personajes
+        characters_result = self.supabase.table("characters").select("*").execute()
+        
+        # Obtener voces por idioma desde character_voices
+        voices_result = self.supabase.table("character_voices").select("*").eq("language", language).execute()
+        
+        # Mapear voces a character_id
+        voices_by_char = {v["character_id"]: v for v in voices_result.data}
+        
+        result = {}
+        for char in characters_result.data:
+            voice = voices_by_char.get(char["id"])
+            # Usar voz de character_voices si existe, sino fallback a campo legacy
+            result[char["code"]] = {
+                **char,
+                "elevenlabs_voice_id": voice["elevenlabs_voice_id"] if voice else char.get("elevenlabs_voice_id"),
+                "voice_name": voice["voice_name"] if voice else None,
+                "voice_language": language
+            }
+        return result
     
     def extract_audio_segments(self, exercises: List[Dict], characters: Dict) -> List[AudioSegment]:
         """Extrae los segmentos de audio a generar de los ejercicios"""
@@ -185,6 +206,7 @@ class LessonAudioGenerator:
         transcript: str,
         emotion: str,
         order_index: int,
+        language: str = "es",
         duration_ms: Optional[int] = None
     ):
         """Guarda el segmento de audio en la base de datos"""
@@ -198,16 +220,22 @@ class LessonAudioGenerator:
             "emotion": emotion,
             "order_index": order_index,
             "duration_ms": duration_ms,
-            "language_code": "es"
+            "language_code": language
         }
         
         self.supabase.table("lesson_audio_segments").insert(data).execute()
     
-    def process_lesson(self, lesson_code: str):
-        """Procesa una lección completa: genera audios, sube y guarda en BD"""
+    def process_lesson(self, lesson_code: str, language: str = "es"):
+        """
+        Procesa una lección completa: genera audios, sube y guarda en BD.
+        
+        Args:
+            lesson_code: Código de la lección (ej: 1-1-1)
+            language: Código de idioma (es, en)
+        """
         
         print(f"\n{'='*60}")
-        print(f"📚 Procesando lección: {lesson_code}")
+        print(f"📚 Procesando lección: {lesson_code} (idioma: {language})")
         print(f"{'='*60}\n")
         
         # Obtener datos
@@ -221,8 +249,8 @@ class LessonAudioGenerator:
         exercises = self.get_exercises(lesson["id"])
         print(f"✅ {len(exercises)} ejercicios encontrados")
         
-        characters = self.get_characters()
-        print(f"✅ Personajes cargados: {list(characters.keys())}")
+        characters = self.get_characters(language)
+        print(f"✅ Personajes cargados para idioma '{language}': {list(characters.keys())}")
         
         # Extraer segmentos
         segments = self.extract_audio_segments(exercises, characters)
@@ -269,7 +297,8 @@ class LessonAudioGenerator:
                     audio_url=audio_url,
                     transcript=seg.text,
                     emotion=seg.emotion,
-                    order_index=seg.order_index
+                    order_index=seg.order_index,
+                    language=language
                 )
                 print(f"    ✓ Guardado en base de datos")
                 
@@ -285,11 +314,12 @@ def main():
     parser = argparse.ArgumentParser(description="Genera audios para lecciones de LittleFounders")
     parser.add_argument("--lesson-code", "-l", required=True, help="Código de la lección (ej: 1-1-1)")
     parser.add_argument("--dry-run", "-d", action="store_true", help="Simular sin generar audios")
+    parser.add_argument("--language", "-L", default="es", help="Idioma para las voces (es, en). Default: es")
     
     args = parser.parse_args()
     
     generator = LessonAudioGenerator(dry_run=args.dry_run)
-    generator.process_lesson(args.lesson_code)
+    generator.process_lesson(args.lesson_code, args.language)
 
 
 if __name__ == "__main__":

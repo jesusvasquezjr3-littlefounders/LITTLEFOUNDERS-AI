@@ -334,11 +334,25 @@ class SagaWithProgress(SagaResponse):
 
 
 # Character Schemas
+class CharacterVoiceResponse(BaseModel):
+    """Voz de personaje por idioma"""
+    id: int
+    character_id: int
+    language: str
+    elevenlabs_voice_id: str
+    voice_name: Optional[str] = None
+    is_primary: bool = False
+    
+    class Config:
+        from_attributes = True
+
+
 class CharacterResponse(BaseModel):
     id: int
     code: str
     name: str
-    elevenlabs_voice_id: Optional[str] = None
+    elevenlabs_voice_id: Optional[str] = None  # Legacy, para retrocompatibilidad
+    voices: Optional[List[CharacterVoiceResponse]] = None  # Voces por idioma
     description: Optional[str] = None
     
     class Config:

@@ -122,6 +122,7 @@ class Character(Base):
     # Relationships
     gestures = relationship("CharacterGesture", back_populates="character", cascade="all, delete-orphan")
     audio_segments = relationship("LessonAudioSegment", back_populates="character")
+    voices = relationship("CharacterVoice", back_populates="character", cascade="all, delete-orphan")
 
 
 class CharacterGesture(Base):
@@ -136,6 +137,22 @@ class CharacterGesture(Base):
     
     # Relationships
     character = relationship("Character", back_populates="gestures")
+
+
+class CharacterVoice(Base):
+    """Voces de personajes por idioma (ElevenLabs)"""
+    __tablename__ = "character_voices"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    character_id = Column(Integer, ForeignKey("characters.id", ondelete="CASCADE"), nullable=False)
+    language = Column(String(10), nullable=False)  # 'es', 'en'
+    elevenlabs_voice_id = Column(String(100), nullable=False)
+    voice_name = Column(String(100))  # Nombre de referencia
+    is_primary = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationship
+    character = relationship("Character", back_populates="voices")
 
 
 # User Model

@@ -53,10 +53,10 @@ export default function Demo() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {stats.map((stat, index) => (
                         <Card key={index} className="border-2 border-transparent hover:border-primary/20 transition-all overflow-hidden relative shadow-sm hover:shadow-md">
-                            <CardContent className="p-6">
+                            <CardContent className="p-4 md:p-6">
                                 <div className="flex flex-col items-center text-center space-y-2 relative z-10">
                                     <div className={`p-2 rounded-full ${stat.bgColor} mb-2`}>
                                         {/* @ts-ignore */}

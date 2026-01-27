@@ -127,9 +127,23 @@ points          INTEGER DEFAULT 5
 id                  INTEGER PRIMARY KEY
 code                VARCHAR UNIQUE      -- "liruf", "dina", o "dr_rho"
 name                VARCHAR             -- "Liruf" o "Dina"
-elevenlabs_voice_id VARCHAR             -- ID de voz en ElevenLabs
+elevenlabs_voice_id VARCHAR             -- ID de voz (legacy, ver character_voices)
 description         TEXT
 ```
+
+#### `character_voices` - Voces por idioma (i18n)
+```sql
+id                  INTEGER PRIMARY KEY
+character_id        INTEGER FK → characters.id
+language            VARCHAR             -- "es", "en", etc.
+elevenlabs_voice_id VARCHAR NOT NULL    -- ID de voz en ElevenLabs
+voice_name          VARCHAR             -- Nombre de referencia
+is_primary          BOOLEAN             -- Voz principal para el idioma
+```
+
+> **Nota**: La tabla `character_voices` permite asignar diferentes voces de ElevenLabs
+> a cada personaje según el idioma. El campo `elevenlabs_voice_id` en `characters`
+> se mantiene por retrocompatibilidad.
 
 ### Formato de Campos JSONB
 
