@@ -1,6 +1,6 @@
 """
 LittleFounders - AI Lesson Generator
-Uses Claude API to generate lesson content from curriculum.yaml
+Uses Google Gemini API to generate lesson content from curriculum.yaml
 
 Usage:
     python generate_lessons.py --saga 1-1 --topic 1-1-1
@@ -16,15 +16,22 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 try:
-    import anthropic
+    import google.generativeai as genai
 except ImportError:
-    print("Error: anthropic package not installed. Run: pip install anthropic")
+    print("Error: google-generativeai package not installed. Run: pip install google-generativeai")
     sys.exit(1)
+
+try:
+    from dotenv import load_dotenv
+    # Load .env from backend directory
+    load_dotenv(Path(__file__).parent.parent / ".env")
+except ImportError:
+    pass  # python-dotenv is optional, can use system env vars
 
 # Configuration
 CURRICULUM_PATH = Path(__file__).parent.parent / "lesson_engine" / "curriculum.yaml"
 OUTPUT_DIR = Path(__file__).parent.parent / "generated_lessons"
-ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
+GEMINI_MODEL = "gemini-2.0-flash"
 
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -67,7 +74,7 @@ def get_saga_topics(curriculum: Dict, saga_code: str) -> List[Dict]:
 
 
 def build_prompt(topic_info: Dict, lesson_number: int) -> str:
-    """Build the Claude prompt for lesson generation."""
+    """Build the Gemini prompt for lesson generation."""
     topic = topic_info['topic']
     saga = topic_info['saga']
     adventure = topic_info['adventure']
@@ -111,7 +118,7 @@ El personaje habla con el niño. No requiere interacción.
   "order_index": <número>,
   "character_code": "liruf" | "dina",
   "content": {{
-    "transcript": "<Texto del diálogo, máximo 100 caracteres, incluye emojis>"
+    "transcript": "<Texto del diálogo, máximo 100 caracteres, emoji solo al final>"
   }},
   "feedback": {{"success": "¡Genial!"}},
   "points": 2
@@ -121,25 +128,26 @@ El personaje habla con el niño. No requiere interacción.
 
 ## 2️⃣ MULTIPLE_CHOICE (Selección múltiple)
 Pregunta con 3 opciones, solo 1 correcta.
+⚠️ IMPORTANTE: Las opciones NO deben tener emojis al inicio, solo texto limpio.
 
 {{
   "type": "multiple_choice",
   "order_index": <número>,
   "character_code": "liruf" | "dina",
   "content": {{
-    "question": "<Pregunta clara y corta>",
+    "question": "<Pregunta clara y corta, emoji al final> 🤔",
     "options": [
-      {{"id": "a", "text": "<Opción A>"}},
-      {{"id": "b", "text": "<Opción B>"}},  
-      {{"id": "c", "text": "<Opción C>"}}
+      {{"id": "a", "text": "Con picos como estrella"}},
+      {{"id": "b", "text": "Redonda como un círculo"}},  
+      {{"id": "c", "text": "Cuadrada como una caja"}}
     ]
   }},
   "correct_answer": {{
     "correctOptionId": "a" | "b" | "c"
   }},
   "feedback": {{
-    "success": "<Mensaje de éxito>",
-    "error": "<Mensaje de error amigable>"
+    "success": "<Mensaje de éxito> ✅",
+    "error": "<Mensaje de error amigable> 💭"
   }},
   "points": 10
 }}
@@ -268,7 +276,8 @@ Antes de responder, verifica:
 ☐ classification tiene correct_answer.classifications como objeto
 ☐ classification items tienen "text" (no "emoji")
 ☐ multiple_choice tiene correct_answer.correctOptionId
-☐ Todos los textos incluyen emojis para engagement
+☐ ⚠️ EMOJIS SOLO AL FINAL de oraciones, NUNCA al inicio
+☐ ⚠️ Opciones de multiple_choice son TEXTO LIMPIO sin emojis
 ☐ Lenguaje apropiado para niños de {adventure['age_range']} años
 
 ¡Genera la lección ahora!
@@ -277,22 +286,24 @@ Antes de responder, verifica:
 
 
 def generate_lesson(topic_info: Dict, lesson_number: int) -> Optional[Dict]:
-    """Generate a single lesson using Claude API."""
-    client = anthropic.Anthropic()
+    """Generate a single lesson using Google Gemini API."""
+    # Configure Gemini API from environment variable
+    api_key = os.environ.get('GEMINI_API_KEY')
+    if not api_key:
+        print("❌ Error: GEMINI_API_KEY not found in environment")
+        print("   Add it to backend/.env or set: export GEMINI_API_KEY='your-key'")
+        return None
+    
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(GEMINI_MODEL)
     
     prompt = build_prompt(topic_info, lesson_number)
     
     try:
-        message = client.messages.create(
-            model=ANTHROPIC_MODEL,
-            max_tokens=4096,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
+        response = model.generate_content(prompt)
         
         # Extract JSON from response
-        response_text = message.content[0].text.strip()
+        response_text = response.text.strip()
         
         # Try to parse JSON (handle markdown code blocks)
         if response_text.startswith('```'):
@@ -385,7 +396,7 @@ def generate_saga_lessons(saga_code: str):
 def main():
     import argparse
     
-    parser = argparse.ArgumentParser(description='Generate lessons using Claude AI')
+    parser = argparse.ArgumentParser(description='Generate lessons using Google Gemini AI')
     parser.add_argument('--topic', type=str, help='Topic code (e.g., 1-1-1)')
     parser.add_argument('--saga', type=str, help='Saga code (e.g., 1-1)')
     parser.add_argument('--lesson', type=int, help='Specific lesson number')
@@ -394,11 +405,9 @@ def main():
     
     args = parser.parse_args()
     
-    # Check for API key
-    if not os.environ.get('ANTHROPIC_API_KEY'):
-        print("❌ Error: ANTHROPIC_API_KEY environment variable not set")
-        print("   Set it with: export ANTHROPIC_API_KEY='your-key-here'")
-        sys.exit(1)
+    # API key is now configured directly in the script
+    # No need to check environment variables
+    print("🔑 Using Gemini API with configured key")
     
     if args.list:
         curriculum = load_curriculum()

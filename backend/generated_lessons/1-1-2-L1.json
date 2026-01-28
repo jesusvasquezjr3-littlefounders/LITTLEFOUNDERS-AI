@@ -1,9 +1,9 @@
 {
   "lesson": {
-    "code": "1-1-1-L1",
-    "title": "💰 ¡Monedas vs. Billetes! 💸",
-    "description": "Aprende sobre las formas y colores del dinero.",
-    "topic_code": "1-1-1",
+    "code": "1-1-2-L1",
+    "title": "💰¡El Sonido del Dinero! 🎶",
+    "description": "Monedas que suenan y billetes silenciosos",
+    "topic_code": "1-1-2",
     "difficulty": "Fácil",
     "estimated_duration_seconds": 240,
     "points_reward": 50,
@@ -15,7 +15,7 @@
       "order_index": 1,
       "character_code": "liruf",
       "content": {
-        "transcript": "¡Hola, pequeños detectives! 🕵️‍♂️ ¡Listos para una nueva aventura! 🗺️"
+        "transcript": "¡Hola, pequeños detectives! 🕵️‍♀️🕵️‍♂️ ¡Soy Liruf! ¡Listos para una nueva aventura?"
       },
       "feedback": {
         "success": "¡Genial!"
@@ -27,7 +27,7 @@
       "order_index": 2,
       "character_code": "dina",
       "content": {
-        "transcript": "¿Monedas y billetes? 🪙 ¡Suena divertido! ¿Qué son y cómo se ven? 🤔"
+        "transcript": "¡Hola! 👋 ¡Soy Dina! ¿Qué vamos a descubrir hoy, Liruf? 🤔"
       },
       "feedback": {
         "success": "¡Genial!"
@@ -39,7 +39,7 @@
       "order_index": 3,
       "character_code": "liruf",
       "content": {
-        "instruction": "¡Toca todas las monedas brillantes! 🪙✨",
+        "instruction": "¡Toca solo las monedas! 🪙",
         "items": [
           {
             "id": "t1",
@@ -74,8 +74,8 @@
         ]
       },
       "feedback": {
-        "success": "¡Excelente! ¡Son redondas y brillantes! 🤩",
-        "error": "¡Intenta de nuevo! ¡Busca las redondas! 🧐"
+        "success": "¡Excelente! ¡Escuchaste el clinc-clinc! 🎶",
+        "error": "¡Casi! ¡Las monedas hacen ruido! 🪙"
       },
       "points": 10
     },
@@ -84,15 +84,15 @@
       "order_index": 4,
       "character_code": "dina",
       "content": {
-        "instruction": "¡Clasifica! ¿Moneda 🪙 o Billete 💵?",
+        "instruction": "¿Suena o no suena? ¡Clasifica! 🗂️",
         "categories": [
           {
             "id": "cat_a",
-            "label": "Monedas 🪙"
+            "label": "¡Suena! 🔔"
           },
           {
             "id": "cat_b",
-            "label": "Billetes 💵"
+            "label": "¡Silencio! 🤫"
           }
         ],
         "items": [
@@ -123,8 +123,8 @@
         }
       },
       "feedback": {
-        "success": "¡Súper! ¡Ya sabes diferenciarlos! 🎉",
-        "error": "¡Casi! ¡Revisa las formas! 👀"
+        "success": "¡Súper! ¡Oídos de detective! 👂",
+        "error": "¡Intenta de nuevo! ¡Piensa en el sonido! 🤔"
       },
       "points": 15
     },
@@ -133,82 +133,37 @@
       "order_index": 5,
       "character_code": "liruf",
       "content": {
-        "question": "¿Qué forma tienen los billetes? 🤔",
+        "question": "¿Qué hace 'clinc'? 🪙",
         "options": [
           {
             "id": "a",
-            "text": "🔴 Círculo"
+            "text": "¡Una moneda!"
           },
           {
             "id": "b",
-            "text": "🟦 Rectángulo"
+            "text": "¡Un billete!"
           },
           {
             "id": "c",
-            "text": "⭐ Estrella"
+            "text": "¡Un papel!"
           }
         ]
       },
       "correct_answer": {
-        "correctOptionId": "b"
+        "correctOptionId": "a"
       },
       "feedback": {
-        "success": "¡Correcto! ¡Son rectángulos! ✅",
-        "error": "¡Intenta otra vez! ¡Piensa en su forma! 💭"
-      },
-      "points": 10
-    },
-    {
-      "type": "tap_action",
-      "order_index": 6,
-      "character_code": "dina",
-      "content": {
-        "instruction": "¡Toca los billetes! ¡Son rectángulos! 📄",
-        "items": [
-          {
-            "id": "t1",
-            "emoji": "🪙",
-            "isTarget": false
-          },
-          {
-            "id": "t2",
-            "emoji": "📄",
-            "isTarget": true
-          },
-          {
-            "id": "t3",
-            "emoji": "🪙",
-            "isTarget": false
-          },
-          {
-            "id": "t4",
-            "emoji": "💵",
-            "isTarget": true
-          },
-          {
-            "id": "t5",
-            "emoji": "🪙",
-            "isTarget": false
-          },
-          {
-            "id": "t6",
-            "emoji": "📜",
-            "isTarget": true
-          }
-        ]
-      },
-      "feedback": {
-        "success": "¡Perfecto! ¡Detectives expertos! 🥳",
-        "error": "¡Cuidado! ¡Solo los rectángulos! 🧐"
+        "success": "¡Exacto! ¡La moneda suena! 🪙",
+        "error": "¡No! ¡Los billetes no suenan! 🤫"
       },
       "points": 10
     },
     {
       "type": "intro_narrative",
-      "order_index": 7,
+      "order_index": 6,
       "character_code": "liruf",
       "content": {
-        "transcript": "¡Increíble! 🎉 ¡Ya conoces monedas y billetes! ¡Buen trabajo! 👍"
+        "transcript": "¡Increíble! 🎉 Ahora conoces el sonido del dinero. ¡Bien hecho! 🥳"
       },
       "feedback": {
         "success": "¡Genial!"

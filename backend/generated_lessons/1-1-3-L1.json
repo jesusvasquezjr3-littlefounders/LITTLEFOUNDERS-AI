@@ -1,9 +1,9 @@
 {
   "lesson": {
-    "code": "1-1-1-L1",
-    "title": "💰 ¡Monedas vs. Billetes! 💸",
-    "description": "Aprende sobre las formas y colores del dinero.",
-    "topic_code": "1-1-1",
+    "code": "1-1-3-L1",
+    "title": "¡Texturas al rescate! 🖐️",
+    "description": "Descubre el mundo con tus manos: ¡texturas y relieves!",
+    "topic_code": "1-1-3",
     "difficulty": "Fácil",
     "estimated_duration_seconds": 240,
     "points_reward": 50,
@@ -15,7 +15,7 @@
       "order_index": 1,
       "character_code": "liruf",
       "content": {
-        "transcript": "¡Hola, pequeños detectives! 🕵️‍♂️ ¡Listos para una nueva aventura! 🗺️"
+        "transcript": "¡Hola, pequeños detectives! ¡Listos para tocar y sentir? 👋"
       },
       "feedback": {
         "success": "¡Genial!"
@@ -27,7 +27,7 @@
       "order_index": 2,
       "character_code": "dina",
       "content": {
-        "transcript": "¿Monedas y billetes? 🪙 ¡Suena divertido! ¿Qué son y cómo se ven? 🤔"
+        "transcript": "¿Tocar? ¿Sentir? ¡Suena divertido, Liruf! ¿Qué vamos a sentir? 🤔"
       },
       "feedback": {
         "success": "¡Genial!"
@@ -39,7 +39,7 @@
       "order_index": 3,
       "character_code": "liruf",
       "content": {
-        "instruction": "¡Toca todas las monedas brillantes! 🪙✨",
+        "instruction": "¡Toca las monedas con borde rugoso! 🪙",
         "items": [
           {
             "id": "t1",
@@ -74,25 +74,55 @@
         ]
       },
       "feedback": {
-        "success": "¡Excelente! ¡Son redondas y brillantes! 🤩",
-        "error": "¡Intenta de nuevo! ¡Busca las redondas! 🧐"
+        "success": "¡Súper! ¡Esos bordes ayudan a reconocerlas!",
+        "error": "¡Intenta tocar solo las monedas rugosas!"
+      },
+      "points": 10
+    },
+    {
+      "type": "multiple_choice",
+      "order_index": 4,
+      "character_code": "dina",
+      "content": {
+        "question": "¿Qué forma tienen algunas monedas? 🤔",
+        "options": [
+          {
+            "id": "a",
+            "text": "Con picos como estrella"
+          },
+          {
+            "id": "b",
+            "text": "Redonda como un círculo"
+          },
+          {
+            "id": "c",
+            "text": "Cuadrada como una caja"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Correcto! ¡Redondas como un círculo! ✅",
+        "error": "¡Piensa en la forma de una moneda! 💭"
       },
       "points": 10
     },
     {
       "type": "classification",
-      "order_index": 4,
-      "character_code": "dina",
+      "order_index": 5,
+      "character_code": "liruf",
       "content": {
-        "instruction": "¡Clasifica! ¿Moneda 🪙 o Billete 💵?",
+        "instruction": "¡Monedas (lisas) o billetes (rugosos)! 💵",
         "categories": [
           {
             "id": "cat_a",
-            "label": "Monedas 🪙"
+            "label": "Monedas 🏷️"
           },
           {
             "id": "cat_b",
-            "label": "Billetes 💵"
+            "label": "Billetes 🏷️"
           }
         ],
         "items": [
@@ -123,47 +153,17 @@
         }
       },
       "feedback": {
-        "success": "¡Súper! ¡Ya sabes diferenciarlos! 🎉",
-        "error": "¡Casi! ¡Revisa las formas! 👀"
+        "success": "¡Excelente! ¡Ya reconoces las texturas!",
+        "error": "¡Fíjate bien en si es liso o rugoso!"
       },
       "points": 15
-    },
-    {
-      "type": "multiple_choice",
-      "order_index": 5,
-      "character_code": "liruf",
-      "content": {
-        "question": "¿Qué forma tienen los billetes? 🤔",
-        "options": [
-          {
-            "id": "a",
-            "text": "🔴 Círculo"
-          },
-          {
-            "id": "b",
-            "text": "🟦 Rectángulo"
-          },
-          {
-            "id": "c",
-            "text": "⭐ Estrella"
-          }
-        ]
-      },
-      "correct_answer": {
-        "correctOptionId": "b"
-      },
-      "feedback": {
-        "success": "¡Correcto! ¡Son rectángulos! ✅",
-        "error": "¡Intenta otra vez! ¡Piensa en su forma! 💭"
-      },
-      "points": 10
     },
     {
       "type": "tap_action",
       "order_index": 6,
       "character_code": "dina",
       "content": {
-        "instruction": "¡Toca los billetes! ¡Son rectángulos! 📄",
+        "instruction": "¡Toca solo los billetes con números en relieve! 💵",
         "items": [
           {
             "id": "t1",
@@ -172,7 +172,7 @@
           },
           {
             "id": "t2",
-            "emoji": "📄",
+            "emoji": "💵",
             "isTarget": true
           },
           {
@@ -192,14 +192,14 @@
           },
           {
             "id": "t6",
-            "emoji": "📜",
+            "emoji": "💵",
             "isTarget": true
           }
         ]
       },
       "feedback": {
-        "success": "¡Perfecto! ¡Detectives expertos! 🥳",
-        "error": "¡Cuidado! ¡Solo los rectángulos! 🧐"
+        "success": "¡Increíble! ¡Los relieves ayudan a identificarlos!",
+        "error": "¡Busca los billetes con números que sobresalen!"
       },
       "points": 10
     },
@@ -208,7 +208,7 @@
       "order_index": 7,
       "character_code": "liruf",
       "content": {
-        "transcript": "¡Increíble! 🎉 ¡Ya conoces monedas y billetes! ¡Buen trabajo! 👍"
+        "transcript": "¡Lo hiciste genial! ¡Ahora eres un experto en texturas! 🎉"
       },
       "feedback": {
         "success": "¡Genial!"
