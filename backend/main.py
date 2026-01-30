@@ -33,10 +33,18 @@ app = FastAPI(
 # We need to strip it so authentication routes match (e.g. /api/auth/login -> /auth/login)
 @app.middleware("http")
 async def strip_api_prefix(request, call_next):
-    if request.url.path.startswith("/api"):
+    original_path = request.url.path
+    method = request.method
+    print(f"[DEBUG] Incoming request: {method} {original_path}")
+    
+    if original_path.startswith("/api"):
         # Modify the scope directly to strip /api
-        request.scope["path"] = request.url.path[4:]  # Remove first 4 chars (/api)
+        new_path = original_path[4:]  # Remove first 4 chars (/api)
+        request.scope["path"] = new_path
+        print(f"[DEBUG] Path stripped: {original_path} -> {new_path}")
+    
     response = await call_next(request)
+    print(f"[DEBUG] Response status: {response.status_code}")
     return response
 
 # Configure CORS
