@@ -27,17 +27,12 @@ import NotFound from "./pages/NotFound";
 import Demo from "./pages/demo/Demo";
 import { DemoLemonadeStand } from "./pages/demo/DemoLemonadeStand";
 import { DemoLecciones } from "./pages/demo/DemoLecciones";
-import { DemoLesson1 } from "./pages/demo/DemoLesson1";
-import { DemoLesson2 } from "./pages/demo/DemoLesson2";
-import { DemoLesson3 } from "./pages/demo/DemoLesson3";
-import { DemoLesson4 } from "./pages/demo/DemoLesson4";
 import { DemoVirtualCard } from "./pages/demo/DemoVirtualCard";
 import { DemoDigitalBanking } from "./pages/demo/DemoDigitalBanking";
 import { DemoInvestmentGames } from "./pages/demo/DemoInvestmentGames";
 import { DemoSavings } from "./pages/demo/DemoSavings";
 import { DemoStore } from "./pages/demo/DemoStore";
 import { DemoTasks } from "./pages/demo/DemoTasks";
-import { DemoLesson5 } from "./pages/demo/DemoLesson5";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
 import { LessonRunner } from "@/components/lessons/engine";
@@ -124,11 +119,6 @@ const App = () => (
               <Route path="/demo" element={<Demo />} />
               <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
               <Route path="/demo/lecciones" element={<DemoLecciones />} />
-              <Route path="/demo/lecciones/1" element={<DemoLesson1 />} />
-              <Route path="/demo/lecciones/2" element={<DemoLesson2 />} />
-              <Route path="/demo/lecciones/3" element={<DemoLesson3 />} />
-              <Route path="/demo/lecciones/4" element={<DemoLesson4 />} />
-              <Route path="/demo/lecciones/5" element={<DemoLesson5 />} />
               <Route path="/demo/card" element={<DemoVirtualCard />} />
               <Route path="/demo/growth" element={<DemoDigitalBanking />} />
               <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
