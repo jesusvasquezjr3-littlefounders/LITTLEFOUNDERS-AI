@@ -11,8 +11,12 @@ from auth.schemas import (
     UserLogin,
     UserUpdate,
     UserResponse,
-    Token
+    Token,
+    GoogleLoginRequest
 )
+import requests
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from auth.utils import verify_password, get_password_hash, create_access_token, verify_token
 from config import settings
 
@@ -149,13 +153,129 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
             "balance": user.balance,
             "has_virtual_card": user.has_virtual_card if hasattr(user, 'has_virtual_card') else False
         })
-    
     return {
         "message": "Login successful",
         "user": user_data,
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+
+@router.post("/google", response_model=dict)
+async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db)):
+    """
+    Login or Register with Google
+    """
+    try:
+        # Verify token using Google UserInfo Endpoint
+        # Since we receive an access_token from frontend (implicit flow),
+        # we validate it by calling Google's API directly.
+        
+        userinfo_url = f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={request.token}"
+        response = requests.get(userinfo_url)
+        
+        if response.status_code != 200:
+            raise ValueError("Invalid access token")
+            
+        id_info = response.json()
+        
+        # Validate that the token is valid (optional extra check: call tokeninfo)
+        # But userinfo is usually enough if it returns data.
+        
+        email = id_info.get('email')
+        if not email:
+            raise ValueError("Email not found in Google account")
+            
+        email_verified = id_info.get('email_verified', False)
+        if not email_verified:
+            # Optionally strict checking
+            pass
+
+        name = id_info.get('name', '')
+        google_id = id_info.get('sub')
+        picture = id_info.get('picture', '')
+        
+        # Check if user exists
+        user = db.query(User).filter(User.email == email).first()
+        
+        if not user:
+            # Create new user - Default to UNIVERSAL
+            user = User(
+                email=email,
+                name=name,
+                password_hash="GOOGLE_AUTH_NO_PASSWORD", # Placeholder
+                user_type=UserType.UNIVERSAL.value,
+                auth_provider="google",
+                google_id=google_id,
+                is_active=True,
+                balance=0.0,
+                points_earned=0
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        else:
+            # Update existing user with google_id if missing
+            if not user.google_id:
+                user.google_id = google_id
+                # Only update provider if it was email before and now they use google
+                if user.auth_provider == 'email':
+                    user.auth_provider = "google" 
+                db.commit()
+        
+        # Create access token
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = create_access_token(
+            data={"sub": user.email}, expires_delta=access_token_expires
+        )
+        
+        # Prepare user response
+        user_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type,
+            "created_at": user.created_at.isoformat(),
+            "picture": picture # Send back picture from Google if available in frontend we can use it?
+        }
+        
+        # Add Common fields
+        if hasattr(user, 'lessons_completed'):
+            user_data["lessons_completed"] = user.lessons_completed
+        if hasattr(user, 'points_earned'):
+            user_data["points_earned"] = user.points_earned
+            
+        # Add child-specific fields if user is a child
+        if user.user_type == UserType.CHILD:
+            user_data.update({
+                "balance": user.balance if hasattr(user, 'balance') else 0.0,
+                "has_virtual_card": user.has_virtual_card if hasattr(user, 'has_virtual_card') else False
+            })
+        elif user.user_type == UserType.UNIVERSAL:
+             user_data.update({
+                "balance": user.balance if hasattr(user, 'balance') else 0.0,
+             })
+
+        
+        return {
+            "message": "Google Login successful",
+            "user": user_data,
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+        
+    except ValueError as e:
+        # Invalid token
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google Token: {str(e)}"
+        )
+    except Exception as e:
+        print(f"Google Auth Error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google Authentication Failed"
+        )
 
 
 @router.get("/users")

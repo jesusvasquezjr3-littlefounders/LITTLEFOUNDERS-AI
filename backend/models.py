@@ -194,6 +194,10 @@ class User(Base):
     
     # User preferences
     preferred_language = Column(String(10), default='es')  # 'es', 'en', etc.
+    
+    # External Auth
+    auth_provider = Column(String(20), default='email')  # 'email', 'google'
+    google_id = Column(String(100), nullable=True, unique=True)
 
 
 # Lesson Models

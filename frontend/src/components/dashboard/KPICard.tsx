@@ -72,10 +72,10 @@ export function KPICard({
     : changeLabel;
 
   return (
-    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-1">
+    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-1 bg-white/10 backdrop-blur-sm border-0">
       {/* Franja de color superior */}
       <div className={cn("absolute top-0 left-0 w-full h-1", config.bgGradient)} />
-    
+
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {translatedTitles[variant] || title}

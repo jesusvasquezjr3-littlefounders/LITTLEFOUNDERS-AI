@@ -2,7 +2,7 @@
     "name": "littlefounders-monorepo",
     "version": "1.0.0",
     "scripts": {
-        "build": "cd frontend && npm install && npm run build"
+        "build": "cd frontend && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist"
     },
     "engines": {
         "node": "24.x"
