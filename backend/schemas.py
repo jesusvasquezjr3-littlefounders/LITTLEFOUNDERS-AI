@@ -334,25 +334,11 @@ class SagaWithProgress(SagaResponse):
 
 
 # Character Schemas
-class CharacterVoiceResponse(BaseModel):
-    """Voz de personaje por idioma"""
-    id: int
-    character_id: int
-    language: str
-    elevenlabs_voice_id: str
-    voice_name: Optional[str] = None
-    is_primary: bool = False
-    
-    class Config:
-        from_attributes = True
-
-
 class CharacterResponse(BaseModel):
+    """Personaje para LF Audio Engine"""
     id: int
-    code: str
+    code: str  # Used by LF Audio Engine: liruf, dina, dr_rho, zara_vex
     name: str
-    elevenlabs_voice_id: Optional[str] = None  # Legacy, para retrocompatibilidad
-    voices: Optional[List[CharacterVoiceResponse]] = None  # Voces por idioma
     description: Optional[str] = None
     
     class Config:

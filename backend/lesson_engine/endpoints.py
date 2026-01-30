@@ -11,7 +11,7 @@ from datetime import datetime
 from database import get_db
 from models import (
     Adventure, Saga, Lesson, Exercise, LessonAudioSegment,
-    Character, CharacterGesture, CharacterVoice,
+    Character, CharacterGesture,
     User, UserLessonProgress, UserExerciseProgress,
     LessonTranslation, ExerciseTranslation, AudioSegmentTranslation
 )
@@ -396,13 +396,13 @@ async def get_characters(db: Session = Depends(get_db)):
 
 
 @router.get("/characters/{code}")
-async def get_character(code: str, lang: str = "es", db: Session = Depends(get_db)):
+async def get_character(code: str, db: Session = Depends(get_db)):
     """
-    Obtener un personaje con sus gestos y voz para el idioma especificado.
+    Obtener un personaje con sus gestos.
+    LF Audio Engine usa el character_code directamente para generar audio.
     
     Args:
-        code: Código del personaje (liruf, dina, dr_rho)
-        lang: Código de idioma (es, en)
+        code: Código del personaje (liruf, dina, dr_rho, zara_vex)
     """
     character = db.query(Character).filter(Character.code == code).first()
     if not character:
@@ -412,30 +412,11 @@ async def get_character(code: str, lang: str = "es", db: Session = Depends(get_d
         CharacterGesture.character_id == character.id
     ).all()
     
-    # Obtener voz para el idioma solicitado
-    voice = db.query(CharacterVoice).filter(
-        CharacterVoice.character_id == character.id,
-        CharacterVoice.language == lang
-    ).first()
-    
-    # Fallback: si no hay voz en character_voices, usar el campo legacy
-    voice_id = voice.elevenlabs_voice_id if voice else character.elevenlabs_voice_id
-    voice_name = voice.voice_name if voice else None
-    
-    # Obtener todas las voces disponibles
-    all_voices = db.query(CharacterVoice).filter(
-        CharacterVoice.character_id == character.id
-    ).all()
-    
     return {
         "id": character.id,
-        "code": character.code,
+        "code": character.code,  # Used by LF Audio Engine
         "name": character.name,
-        "elevenlabs_voice_id": voice_id,
-        "voice_name": voice_name,
-        "language": lang,
         "description": character.description,
-        "available_languages": [v.language for v in all_voices],
         "gestures": [
             {"code": g.gesture_code, "duration_ms": g.duration_ms}
             for g in gestures

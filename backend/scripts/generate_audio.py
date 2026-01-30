@@ -2,11 +2,11 @@
 Pipeline de Generación de Audio para Lecciones - LittleFounders
 ================================================================
 
-Este script genera audios para las lecciones usando ElevenLabs API,
+Este script genera audios para las lecciones usando LF Audio Engine,
 los sube a Supabase Storage, y actualiza la base de datos.
 
 IMPORTANTE: Los audios se generan UNA VEZ y se almacenan para
-reducir costos de la API de ElevenLabs.
+optimizar el rendimiento.
 
 Uso:
     python generate_audio.py --lesson-code 1-1-1
@@ -29,6 +29,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
+# Import LF Audio Client
+from lf_audio_client import LFAudioClient
+
 load_dotenv()
 
 
@@ -37,24 +40,19 @@ class AudioSegment:
     """Representa un segmento de audio a generar"""
     exercise_id: int
     character_code: str
-    voice_id: str
     text: str
     emotion: str
     order_index: int
 
 
 class LessonAudioGenerator:
-    """Generador de audio para lecciones usando ElevenLabs"""
-    
-    ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1"
+    """Generador de audio para lecciones usando LF Audio Engine"""
     
     def __init__(self, dry_run: bool = False):
         self.dry_run = dry_run
         
-        # ElevenLabs API Key
-        self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
-        if not self.elevenlabs_api_key and not dry_run:
-            raise ValueError("ELEVENLABS_API_KEY no está configurada en .env")
+        # LF Audio Engine client
+        self.audio_client = LFAudioClient()
         
         # Supabase client
         supabase_url = os.getenv("SUPABASE_URL")
@@ -82,33 +80,16 @@ class LessonAudioGenerator:
         result = self.supabase.table("exercises").select("*").eq("lesson_id", lesson_id).order("order_index").execute()
         return result.data
     
-    def get_characters(self, language: str = "es") -> Dict[str, Dict]:
-        """
-        Obtiene los personajes con sus Voice IDs para el idioma especificado.
-        Usa la tabla character_voices con fallback al campo legacy en characters.
-        """
-        # Obtener personajes
+    def get_characters(self) -> Dict[str, Dict]:
+        """Obtiene los personajes y sus IDs"""
         characters_result = self.supabase.table("characters").select("*").execute()
-        
-        # Obtener voces por idioma desde character_voices
-        voices_result = self.supabase.table("character_voices").select("*").eq("language", language).execute()
-        
-        # Mapear voces a character_id
-        voices_by_char = {v["character_id"]: v for v in voices_result.data}
         
         result = {}
         for char in characters_result.data:
-            voice = voices_by_char.get(char["id"])
-            # Usar voz de character_voices si existe, sino fallback a campo legacy
-            result[char["code"]] = {
-                **char,
-                "elevenlabs_voice_id": voice["elevenlabs_voice_id"] if voice else char.get("elevenlabs_voice_id"),
-                "voice_name": voice["voice_name"] if voice else None,
-                "voice_language": language
-            }
+            result[char["code"]] = char
         return result
     
-    def extract_audio_segments(self, exercises: List[Dict], characters: Dict) -> List[AudioSegment]:
+    def extract_audio_segments(self, exercises: List[Dict]) -> List[AudioSegment]:
         """Extrae los segmentos de audio a generar de los ejercicios"""
         segments = []
         
@@ -121,17 +102,11 @@ class LessonAudioGenerator:
                 continue
             
             # Obtener personaje
-            character_code = content.get("characterCode", "liruf")
-            character = characters.get(character_code)
-            
-            if not character or not character.get("elevenlabs_voice_id"):
-                print(f"⚠️ Personaje '{character_code}' sin Voice ID, saltando...")
-                continue
+            character_code = exercise.get("character_code", "liruf")
             
             segments.append(AudioSegment(
                 exercise_id=exercise["id"],
                 character_code=character_code,
-                voice_id=character["elevenlabs_voice_id"],
                 text=transcript,
                 emotion=content.get("emotion", "neutral"),
                 order_index=exercise["order_index"]
@@ -139,57 +114,35 @@ class LessonAudioGenerator:
         
         return segments
     
-    def generate_audio_elevenlabs(self, text: str, voice_id: str, emotion: str = "neutral") -> bytes:
-        """Genera audio usando ElevenLabs API"""
+    def generate_audio_lf_engine(self, text: str, character_code: str, emotion: str = "neutral", language_code: str = "es") -> Optional[bytes]:
+        """
+        Genera audio usando LF Audio Engine.
         
-        # Mapear emociones a estilos de ElevenLabs
-        stability = 0.5
-        similarity_boost = 0.75
-        
-        if emotion == "excited":
-            stability = 0.3
-            similarity_boost = 0.8
-        elif emotion == "happy":
-            stability = 0.4
-            similarity_boost = 0.75
-        elif emotion == "thinking":
-            stability = 0.6
-            similarity_boost = 0.7
-        
-        url = f"{self.ELEVENLABS_API_URL}/text-to-speech/{voice_id}"
-        
-        headers = {
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-            "xi-api-key": self.elevenlabs_api_key
-        }
-        
-        payload = {
-            "text": text,
-            "model_id": "eleven_multilingual_v2",  # Mejor para español
-            "voice_settings": {
-                "stability": stability,
-                "similarity_boost": similarity_boost,
-                "style": 0.5,
-                "use_speaker_boost": True
-            }
-        }
-        
-        response = requests.post(url, json=payload, headers=headers)
-        
-        if response.status_code != 200:
-            raise Exception(f"Error de ElevenLabs: {response.status_code} - {response.text}")
-        
-        return response.content
+        Returns:
+            bytes: Datos del audio WAV, o None si falló
+        """
+        return self.audio_client.generate(
+            text=text,
+            character=character_code,
+            emotion=emotion,
+            language_code=language_code,
+            studio_intensity="medium"
+        )
     
     def upload_to_supabase(self, audio_data: bytes, file_path: str) -> str:
         """Sube el audio a Supabase Storage y retorna la URL pública"""
         
-        # Subir archivo
+        # Eliminar archivo existente si ya existe (para updates)
+        try:
+            self.supabase.storage.from_(self.bucket_name).remove([file_path])
+        except:
+            pass  # Ignorar si no existe
+        
+        # Subir archivo (formato WAV desde LF Audio Engine)
         self.supabase.storage.from_(self.bucket_name).upload(
             file_path,
             audio_data,
-            {"content-type": "audio/mpeg"}
+            {"content-type": "audio/wav"}
         )
         
         # Obtener URL pública
@@ -211,6 +164,9 @@ class LessonAudioGenerator:
     ):
         """Guarda el segmento de audio en la base de datos"""
         
+        # Verificar si ya existe un registro para este ejercicio
+        existing = self.supabase.table("lesson_audio_segments").select("id").eq("exercise_id", exercise_id).execute()
+        
         data = {
             "lesson_id": lesson_id,
             "exercise_id": exercise_id,
@@ -223,14 +179,19 @@ class LessonAudioGenerator:
             "language_code": language
         }
         
-        self.supabase.table("lesson_audio_segments").insert(data).execute()
+        if existing.data:
+            # Update existente
+            self.supabase.table("lesson_audio_segments").update(data).eq("exercise_id", exercise_id).execute()
+        else:
+            # Insert nuevo
+            self.supabase.table("lesson_audio_segments").insert(data).execute()
     
     def process_lesson(self, lesson_code: str, language: str = "es"):
         """
         Procesa una lección completa: genera audios, sube y guarda en BD.
         
         Args:
-            lesson_code: Código de la lección (ej: 1-1-1)
+            lesson_code: Código de la lección (ej: 1-1-1-L1)
             language: Código de idioma (es, en)
         """
         
@@ -249,11 +210,11 @@ class LessonAudioGenerator:
         exercises = self.get_exercises(lesson["id"])
         print(f"✅ {len(exercises)} ejercicios encontrados")
         
-        characters = self.get_characters(language)
-        print(f"✅ Personajes cargados para idioma '{language}': {list(characters.keys())}")
+        characters = self.get_characters()
+        print(f"✅ Personajes cargados: {list(characters.keys())}")
         
         # Extraer segmentos
-        segments = self.extract_audio_segments(exercises, characters)
+        segments = self.extract_audio_segments(exercises)
         print(f"\n📝 {len(segments)} segmentos de audio a generar:\n")
         
         for i, seg in enumerate(segments, 1):
@@ -265,54 +226,73 @@ class LessonAudioGenerator:
             return
         
         # Procesar cada segmento
-        print(f"\n🎤 Generando audios con ElevenLabs...\n")
+        print(f"\n🎤 Generando audios con LF Audio Engine...\n")
+        print(f"📡 Conectando a: {self.audio_client.api_url}")
+        print(f"⚠️  Primera solicitud puede tardar mientras el servicio se activa...\n")
+        
+        success_count = 0
+        error_count = 0
         
         for i, seg in enumerate(segments, 1):
-            print(f"  [{i}/{len(segments)}] Generando audio para {seg.character_code}...")
+            print(f"  [{i}/{len(segments)}] Generando audio para {seg.character_code} ({seg.emotion})...")
             
             try:
-                # Generar audio
-                audio_data = self.generate_audio_elevenlabs(seg.text, seg.voice_id, seg.emotion)
+                # Generar audio con LF Audio Engine
+                audio_data = self.generate_audio_lf_engine(seg.text, seg.character_code, seg.emotion, language)
+                
+                if not audio_data:
+                    print(f"    ❌ No se pudo generar audio")
+                    error_count += 1
+                    continue
+                
                 print(f"    ✓ Audio generado ({len(audio_data) / 1024:.1f} KB)")
                 
                 # Guardar localmente
-                local_file = self.output_dir / f"{lesson_code}_{seg.order_index}_{seg.character_code}.mp3"
+                local_file = self.output_dir / f"{lesson_code}_{seg.order_index}_{seg.character_code}.wav"
                 with open(local_file, "wb") as f:
                     f.write(audio_data)
                 print(f"    ✓ Guardado localmente: {local_file.name}")
                 
                 # Subir a Supabase Storage
-                storage_path = f"lessons/{lesson_code}/{seg.order_index}_{seg.character_code}_{seg.emotion}.mp3"
+                storage_path = f"lessons/{lesson_code}/{seg.order_index}_{seg.character_code}_{seg.emotion}.wav"
                 audio_url = self.upload_to_supabase(audio_data, storage_path)
                 print(f"    ✓ Subido a Storage")
                 
                 # Obtener character_id
-                character_id = characters[seg.character_code]["id"]
+                character_id = characters.get(seg.character_code, {}).get("id")
                 
-                # Guardar en BD
-                self.save_audio_segment_to_db(
-                    lesson_id=lesson["id"],
-                    exercise_id=seg.exercise_id,
-                    character_id=character_id,
-                    audio_url=audio_url,
-                    transcript=seg.text,
-                    emotion=seg.emotion,
-                    order_index=seg.order_index,
-                    language=language
-                )
-                print(f"    ✓ Guardado en base de datos")
+                if character_id:
+                    # Guardar en BD
+                    self.save_audio_segment_to_db(
+                        lesson_id=lesson["id"],
+                        exercise_id=seg.exercise_id,
+                        character_id=character_id,
+                        audio_url=audio_url,
+                        transcript=seg.text,
+                        emotion=seg.emotion,
+                        order_index=seg.order_index,
+                        language=language
+                    )
+                    print(f"    ✓ Guardado en base de datos")
+                else:
+                    print(f"    ⚠️ Character ID no encontrado para {seg.character_code}")
+                
+                success_count += 1
                 
             except Exception as e:
                 print(f"    ❌ Error: {e}")
+                error_count += 1
         
         print(f"\n{'='*60}")
-        print(f"✅ Lección {lesson_code} procesada exitosamente")
+        print(f"✅ Lección {lesson_code} procesada")
+        print(f"   - Exitosos: {success_count}")
+        print(f"   - Errores: {error_count}")
         print(f"{'='*60}\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Genera audios para lecciones de LittleFounders")
-    parser.add_argument("--lesson-code", "-l", required=True, help="Código de la lección (ej: 1-1-1)")
+    parser = argparse.ArgumentParser(description="Genera audios para lecciones de LittleFounders usando LF Audio Engine")
+    parser.add_argument("--lesson-code", "-l", required=True, help="Código de la lección (ej: 1-1-1-L1)")
     parser.add_argument("--dry-run", "-d", action="store_true", help="Simular sin generar audios")
     parser.add_argument("--language", "-L", default="es", help="Idioma para las voces (es, en). Default: es")
     
