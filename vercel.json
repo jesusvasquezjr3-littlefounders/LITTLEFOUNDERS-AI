@@ -1,13 +1,17 @@
 {
-    "framework": null,
-    "outputDirectory": "dist",
-    "buildCommand": "cd frontend && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist",
     "build": {
         "env": {
             "PYO3_USE_ABI3_FORWARD_COMPATIBILITY": "1"
         }
     },
     "builds": [
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        },
         {
             "src": "api/index.py",
             "use": "@vercel/python",
@@ -26,7 +30,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/dist/$1"
+            "dest": "/frontend/$1"
         }
     ]
 }
