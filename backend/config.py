@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     
     # Security configuration
     secret_key: str
-    algorithm: str
-    access_token_expire_minutes: int
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
     
     # Email configuration
     mail_username: str
