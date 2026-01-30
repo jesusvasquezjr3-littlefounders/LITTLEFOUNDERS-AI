@@ -1,19 +1,32 @@
 {
     "framework": null,
     "outputDirectory": "dist",
+    "buildCommand": "cd frontend && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist",
     "build": {
         "env": {
             "PYO3_USE_ABI3_FORWARD_COMPATIBILITY": "1"
         }
     },
-    "rewrites": [
+    "builds": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api/index.py"
+            "src": "api/index.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "50mb"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/index.py"
         },
         {
-            "source": "/(.*)",
-            "destination": "/dist/$1"
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/dist/$1"
         }
     ]
 }
