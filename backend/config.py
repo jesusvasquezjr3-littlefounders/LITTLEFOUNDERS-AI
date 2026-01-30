@@ -22,13 +22,13 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
-    # Email configuration
-    mail_username: str
-    mail_password: str
-    mail_from: str
-    mail_port: int
-    mail_server: str
-    mail_from_name: str
+    # Email configuration (optional - email features won't work without these)
+    mail_username: str = ""
+    mail_password: str = ""
+    mail_from: str = ""
+    mail_port: int = 587
+    mail_server: str = "smtp.gmail.com"
+    mail_from_name: str = "LittleFounders"
     
     # API configuration
     api_title: str = "LittleFounders API"
