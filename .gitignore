@@ -51,8 +51,6 @@ venv/
 # Docker
 *.pid
 
-INSTRUCCIONES_LOCAL.md
-GUIA_DESPLIEGUE_VERCEL.md
 GUIA_MIGRACION_DATOS.md
 
 database.sql

@@ -5,6 +5,6 @@
         "build": "cd frontend && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist"
     },
     "engines": {
-        "node": "20.x"
+        "node": "24.x"
     }
 }
