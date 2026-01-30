@@ -64,7 +64,8 @@ backend/
 ## Configuración
 
 1. En `.env` configura las variables de entorno
-2. Instala las dependencias: `pip install -r requirements.txt`
+2. Instala las dependencias: `pip install -r ../requirements.txt`
+   *(Nota: Si vas a generar lecciones con IA localmente, necesitarás instalar manualmente `google-generativeai`)*
 3. Ejecuta la aplicación: `uvicorn main:app --reload`
 
 ## Módulos

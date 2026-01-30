@@ -14,5 +14,3 @@ supabase>=2.0.0
 requests>=2.31.0
 python-dotenv>=1.0.0
 # Lesson Generation (AI)
-google-generativeai>=0.4.0
-pyyaml>=6.0
