@@ -15,8 +15,6 @@ from auth.schemas import (
     GoogleLoginRequest
 )
 import requests
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
 from auth.utils import verify_password, get_password_hash, create_access_token, verify_token
 from config import settings
 
