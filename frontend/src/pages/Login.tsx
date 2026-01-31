@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Sparkles, Rocket, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
+import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
 const Login = () => {
@@ -17,6 +18,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { playSound } = useSound();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,6 +48,7 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('token', data.access_token);
 
+        playSound('auth_success');
         toast({
           title: t('auth:messages.login_success', { name: data.user.name }),
           description: t('auth:messages.login_success_subtitle'),
@@ -54,6 +57,7 @@ const Login = () => {
 
         navigate('/dashboard');
       } else {
+        playSound('auth_error');
         toast({
           title: t('auth:messages.login_error'),
           description: data.detail || t('auth:messages.login_error_detail'),
@@ -186,6 +190,8 @@ const Login = () => {
           localStorage.setItem('user', JSON.stringify(data.user));
           localStorage.setItem('token', data.access_token);
 
+          playSound('auth_success');
+
           toast({
             title: t('auth:messages.login_success', { name: data.user.name }),
             description: t('auth:messages.login_success_subtitle'),
@@ -194,10 +200,12 @@ const Login = () => {
 
           navigate('/dashboard');
         } else {
+          playSound('auth_error');
           throw new Error(data.detail || "Google Auth Failed");
         }
       } catch (error) {
         console.error(error);
+        playSound('auth_error');
         toast({
           title: t('auth:messages.login_error'),
           description: error instanceof Error ? error.message : t('auth:messages.login_error_detail'),

@@ -17,6 +17,7 @@ import { DinaCharacter } from '@/components/demo/DinaCharacter';
 import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
 import { useLessonData, useLessonState } from './hooks';
+import { useSound } from "@/contexts/SoundContext";
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {
@@ -49,7 +50,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Audio ref
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-    const [audioMuted, setAudioMuted] = useState(false);
+    // Use global sound context
+    const { playSound, mute: audioMuted, toggleMute: setAudioMuted, playBGM, stopBGM } = useSound();
+
+    // Start BGM on mount
+    useEffect(() => {
+        playBGM('/sounds/edu/background.mp3', { volume: 0.3 }); // Increased volume to 0.2 as requested
+
+        return () => {
+            stopBGM({ fade: true, fadeDuration: 500 });
+        };
+    }, [playBGM, stopBGM]);
 
     // Fetch lesson data
     const { data, loading, error } = useLessonData(code);
@@ -184,10 +195,14 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Celebration on complete
     useEffect(() => {
         if (state === 'COMPLETED') {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
-            setTimeout(() => setShowSuccess(true), 1000);
+            stopBGM({ fade: true, fadeDuration: 1500 }); // Fade out BGM
+            setTimeout(() => {
+                playSound('edu_complete');
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
+                setShowSuccess(true);
+            }, 1000); // Wait for fade to mostly finish before fanfare
         }
-    }, [state]);
+    }, [state, playSound, stopBGM]);
 
     // Reset states and shuffle items when exercise changes
     useEffect(() => {
@@ -209,6 +224,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Handle option selection
     const handleSelectOption = (optionId: string) => {
         if (isChecked) return;
+        playSound('ui_tap');
         setSelectedOption(optionId);
     };
 
@@ -220,8 +236,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         setLocalFeedback(isCorrect ? 'success' : 'error');
 
         if (isCorrect) {
+            playSound('edu_success');
             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
         } else {
+            playSound('edu_error');
             const newLives = lives - 1;
             setLives(newLives);
             // Check if game over
@@ -234,6 +252,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Handle classification item click
     const handleClassificationClick = (itemId: string, categoryId: string) => {
         if (isChecked) return;
+        playSound('ui_tap');
         setSelectedClassifications(prev => ({
             ...prev,
             [itemId]: categoryId
@@ -256,8 +275,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         submitAnswer(selectedClassifications);
 
         if (isCorrect) {
+            playSound('edu_success');
             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
         } else {
+            playSound('edu_error');
             const newLives = lives - 1;
             setLives(newLives);
             if (newLives <= 0) {
@@ -269,6 +290,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Handle tap item
     const handleTapItem = (itemId: string) => {
         if (isChecked) return;
+        playSound('ui_tap');
         setTappedItems(prev => {
             const newSet = new Set(prev);
             if (newSet.has(itemId)) {
@@ -303,8 +325,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         submitAnswer([...tappedItems]);
 
         if (isCorrect) {
+            playSound('edu_success');
             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
         } else {
+            playSound('edu_error');
             const newLives = lives - 1;
             setLives(newLives);
             if (newLives <= 0) {
@@ -483,7 +507,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
                 {/* Audio Toggle */}
                 <button
-                    onClick={() => setAudioMuted(!audioMuted)}
+                    onClick={() => setAudioMuted()}
                     className="w-9 h-9 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
                 >
                     {audioMuted ? (

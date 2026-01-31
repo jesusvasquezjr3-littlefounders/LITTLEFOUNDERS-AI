@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useSound } from "@/contexts/SoundContext";
 
 const getUser = () => {
   try {
@@ -77,6 +78,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
+  const { playSound } = useSound();
 
   const isExpanded = isHovered || !collapsed;
 
@@ -87,6 +89,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   };
 
   const handleItemClick = (e: React.MouseEvent, item: any) => {
+    playSound('nav_slide');
     if (item.locked) {
       e.preventDefault();
       toast({

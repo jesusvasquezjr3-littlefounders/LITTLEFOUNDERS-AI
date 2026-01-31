@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { useSound } from "@/contexts/SoundContext";
 
 const Register = () => {
   const { t } = useTranslation(['auth', 'common']);
@@ -21,6 +22,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { playSound } = useSound();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -84,6 +86,7 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
+        playSound('auth_success');
         toast({
           title: t('auth:messages.register_success'),
           description: t('auth:messages.register_success_subtitle'),
@@ -103,6 +106,7 @@ const Register = () => {
         }
 
       } else {
+        playSound('auth_error');
         let errorMessage = t('auth:messages.register_error');
         if (typeof data.detail === 'string') {
           errorMessage = data.detail;
@@ -149,6 +153,8 @@ const Register = () => {
           localStorage.setItem('user', JSON.stringify(data.user));
           localStorage.setItem('token', data.access_token);
 
+          playSound('auth_success');
+
           toast({
             title: t('auth:messages.register_success'),
             description: t('auth:messages.register_success_subtitle'),
@@ -160,10 +166,12 @@ const Register = () => {
             navigate('/welcome');
           }, 500);
         } else {
+          playSound('auth_error');
           throw new Error(data.detail || "Google Registration Failed");
         }
       } catch (error) {
         console.error(error);
+        playSound('auth_error');
         toast({
           title: t('auth:validation.registration_error'),
           description: error instanceof Error ? error.message : t('auth:validation.registration_error'),

@@ -44,15 +44,25 @@
         "interactive_label": "100% Interactivo"
     },
     "features": {
-        "title": "Mira cómo funciona",
-        "subtitle": "Todo el contenido está diseñado para ser visual, intuitivo y digerible en sesiones cortas.",
-        "browser_url": "https://littlefounders.ai/lecciones",
-        "feature1_title": "Sin Palabrería",
-        "feature1_text": "Contenido directo. Eliminamos la paja académica para ir a lo que importa.",
-        "feature2_title": "A tu Ritmo",
-        "feature2_text": "Lecciones de 5 minutos. Perfectas para la atención moderna.",
-        "feature3_title": "Espacio Seguro",
-        "feature3_text": "Entorno cerrado, moderado y diseñado para menores."
+        "title": "Funcionalidades",
+        "subtitle": "Descubre todo lo que ofrecemos para el aprendizaje financiero.",
+        "interactive_lessons": {
+            "title": "Lecciones Interactivas",
+            "description": "Explora temas financieros con lecciones visuales y participativas."
+        },
+        "video_games": {
+            "title": "Videojuegos Educativos",
+            "description": "Aprende jugando con misiones y desafíos divertidos."
+        },
+        "ai_functionality": {
+            "title": "Funcionalidad IA",
+            "description": "Tu asistente personal inteligente para resolver dudas.",
+            "badge": "En desarrollo"
+        },
+        "more_stuff": {
+            "title": "Y mucho más...",
+            "description": "Herramientas de ahorro, simuladores y retos semanales."
+        }
     },
     "faq": {
         "title": "Preguntas Frecuentes",

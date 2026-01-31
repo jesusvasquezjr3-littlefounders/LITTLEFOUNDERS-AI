@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useSound } from "@/contexts/SoundContext";
 
 interface GamifiedSidebarProps {
     collapsed: boolean;
@@ -27,6 +28,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
+    const { playSound } = useSound();
 
     const isExpanded = isHovered || !collapsed;
 
@@ -37,6 +39,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     };
 
     const handleItemClick = (e: React.MouseEvent, item: any) => {
+        playSound('nav_slide');
         if (item.locked) {
             e.preventDefault();
             toast({

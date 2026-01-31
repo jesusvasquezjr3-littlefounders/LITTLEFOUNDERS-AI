@@ -12,6 +12,7 @@ import Welcome from "./pages/Welcome";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Bye from "./pages/Bye";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
 import DigitalBanking from "./pages/DigitalBanking";
@@ -37,6 +38,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
 import { LessonRunner } from "@/components/lessons/engine";
 import { LanguageSyncWrapper } from "@/components/auth/LanguageSyncWrapper";
+import { SoundProvider } from "@/contexts/SoundContext";
 
 const queryClient = new QueryClient();
 
@@ -45,95 +47,98 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <SoundProvider>
 
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <LanguageSyncWrapper>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } />
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/lecciones" element={
-                <ProtectedRoute>
-                  <Lecciones />
-                </ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/tasks" element={
-                <ChildProtectedRoute>
-                  <Tasks />
-                </ChildProtectedRoute>
-              } />
-              <Route path="/parent-tasks" element={
-                <ParentProtectedRoute>
-                  <ParentTasks />
-                </ParentProtectedRoute>
-              } />
-              <Route path="/growth" element={
-                <ProtectedRoute>
-                  <DigitalBanking />
-                </ProtectedRoute>
-              } />
-              <Route path="/savings" element={
-                <ProtectedRoute>
-                  <Savings />
-                </ProtectedRoute>
-              } />
-              <Route path="/store" element={
-                <ProtectedRoute>
-                  <Store />
-                </ProtectedRoute>
-              } />
-              <Route path="/investment-games" element={
-                <ProtectedRoute>
-                  <InvestmentGames />
-                </ProtectedRoute>
-              } />
-              <Route path="/lemonade-stand" element={
-                <ProtectedRoute>
-                  <LemonadeStand />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/help" element={
-                <ProtectedRoute>
-                  <Help />
-                </ProtectedRoute>
-              } />
-              {/* Demo Routes */}
-              <Route path="/demo" element={<Demo />} />
-              <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
-              <Route path="/demo/lecciones" element={<DemoLecciones />} />
-              <Route path="/demo/card" element={<DemoVirtualCard />} />
-              <Route path="/demo/growth" element={<DemoDigitalBanking />} />
-              <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
-              <Route path="/demo/savings" element={<DemoSavings />} />
-              <Route path="/demo/store" element={<DemoStore />} />
-              <Route path="/demo/tasks" element={<DemoTasks />} />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <LanguageSyncWrapper>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/welcome" element={<Welcome />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/bye" element={<Bye />} />
+                <Route path="/lecciones" element={
+                  <ProtectedRoute>
+                    <Lecciones />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/tasks" element={
+                  <ChildProtectedRoute>
+                    <Tasks />
+                  </ChildProtectedRoute>
+                } />
+                <Route path="/parent-tasks" element={
+                  <ParentProtectedRoute>
+                    <ParentTasks />
+                  </ParentProtectedRoute>
+                } />
+                <Route path="/growth" element={
+                  <ProtectedRoute>
+                    <DigitalBanking />
+                  </ProtectedRoute>
+                } />
+                <Route path="/savings" element={
+                  <ProtectedRoute>
+                    <Savings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/store" element={
+                  <ProtectedRoute>
+                    <Store />
+                  </ProtectedRoute>
+                } />
+                <Route path="/investment-games" element={
+                  <ProtectedRoute>
+                    <InvestmentGames />
+                  </ProtectedRoute>
+                } />
+                <Route path="/lemonade-stand" element={
+                  <ProtectedRoute>
+                    <LemonadeStand />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/help" element={
+                  <ProtectedRoute>
+                    <Help />
+                  </ProtectedRoute>
+                } />
+                {/* Demo Routes */}
+                <Route path="/demo" element={<Demo />} />
+                <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
+                <Route path="/demo/lecciones" element={<DemoLecciones />} />
+                <Route path="/demo/card" element={<DemoVirtualCard />} />
+                <Route path="/demo/growth" element={<DemoDigitalBanking />} />
+                <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
+                <Route path="/demo/savings" element={<DemoSavings />} />
+                <Route path="/demo/store" element={<DemoStore />} />
+                <Route path="/demo/tasks" element={<DemoTasks />} />
 
-              {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
-              <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
+                {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
+                <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </LanguageSyncWrapper>
-        </BrowserRouter>
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </LanguageSyncWrapper>
+          </BrowserRouter>
+        </SoundProvider>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>

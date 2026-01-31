@@ -15,12 +15,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
+import { useSound } from "@/contexts/SoundContext";
 
 
 export function TopNav() {
   const { t } = useTranslation('dashboard');
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+  const { playSound } = useSound();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -30,9 +32,10 @@ export function TopNav() {
   }, []);
 
   const handleLogout = () => {
+    playSound('auth_bye');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    navigate('/');
+    navigate('/bye');
   };
 
   const getUserTypeLabel = (userType: string) => {

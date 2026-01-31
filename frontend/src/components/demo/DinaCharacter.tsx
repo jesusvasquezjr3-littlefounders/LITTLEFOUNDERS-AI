@@ -317,7 +317,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                                         <path d="M-14 -12 Q-18 -18 -20 -10" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         <path d="M-10 -15 Q-12 -22 -10 -15" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                     </g>
-                                    <circle id="dina-eye-l-white" cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={leftEyeOpen ? 1 : 0} transition-all duration-300 />
+                                    <circle id="dina-eye-l-white" cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={leftEyeOpen ? 1 : 0} className="dina-face-element" />
                                     <g id="dina-pupil-l" ref={pupilLRef} className="dina-face-element" opacity={leftEyeOpen ? 1 : 0}>
                                         <circle cx="2" cy="2" r="11" fill="#1e293b" />
                                         <circle cx="-3" cy="-3" r="5" fill="white" />

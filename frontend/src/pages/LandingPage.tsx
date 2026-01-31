@@ -5,11 +5,12 @@ import {
   ArrowRight,
   CheckCircle2,
   ChevronDown,
-  ShieldCheck,
   BookOpen,
-  Brain,
   Menu,
-  X
+  X,
+  Gamepad2,
+  Bot,
+  Layers
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -302,7 +303,7 @@ const LandingPage = () => {
       </section>
 
 
-      {/* --- FEATURE SHOWCASE (LECCIONES) --- */}
+      {/* --- FEATURE SHOWCASE --- */}
       <section id="features" className="py-24 bg-gray-50 dark:bg-slate-900 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -311,74 +312,54 @@ const LandingPage = () => {
             <p className="text-xl text-gray-600 dark:text-gray-300 transition-colors">{t('features.subtitle')}</p>
           </div>
 
-          {/* The "Laptop" Frame for the GIF */}
-          <div className="relative mx-auto max-w-5xl">
-            <div className="relative rounded-t-3xl bg-gray-900 dark:bg-black p-2 md:p-4 shadow-2xl border-b-0">
-              {/* Fake browser chrome */}
-              <div className="flex items-center gap-2 mb-4 px-4 pt-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <div className="ml-4 bg-gray-800 rounded-full px-4 py-1 text-xs text-gray-400 flex-1 text-center font-mono">
-                  {t('features.browser_url')}
-                </div>
-              </div>
-
-              {/* SCREEN CONTENT - GIF SHOWCASE */}
-              <div className="bg-white rounded-xl overflow-hidden aspect-video relative flex items-center justify-center group cursor-pointer border-4 border-gray-800 dark:border-slate-900">
-                <img
-                  src="/assets/demo-lessons.gif"
-                  alt="Demostración de Lecciones LittleFounders"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      const placeholder = document.createElement('div');
-                      placeholder.className = "absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-gray-400";
-                      placeholder.innerHTML = `
-                        <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <p class="font-medium text-lg">GIF de Navegación de Lecciones</p>
-                        <p class="text-sm">Pon tu archivo en: public/assets/demo-lessons.gif</p>
-                      `;
-                      parent.appendChild(placeholder);
-                    }
-                  }}
-                />
-
-                {/* Optional: Overlay "Play" button feel */}
-                <div className="absolute w-20 h-20 bg-pink-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[20px] border-l-white border-b-[10px] border-b-transparent ml-1"></div>
-                </div>
-              </div>
-            </div>
-            {/* Laptop base */}
-            <div className="h-4 md:h-6 bg-gray-800 dark:bg-black rounded-b-xl mx-4 md:mx-10 shadow-xl transition-colors"></div>
-          </div>
-
-          {/* Grid of details below */}
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="text-center space-y-3">
-              <div className="w-14 h-14 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center mx-auto text-pink-600 dark:text-pink-300 transition-colors">
-                <Brain className="w-7 h-7" />
-              </div>
-              <h3 className="font-bold text-xl dark:text-gray-100">{t('features.feature1_title')}</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{t('features.feature1_text')}</p>
-            </div>
-            <div className="text-center space-y-3">
-              <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto text-blue-600 dark:text-blue-300 transition-colors">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Interactive Lessons */}
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-slate-700 transition-all hover:-translate-y-1 hover:shadow-xl group">
+              <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-6 text-blue-600 dark:text-blue-300 group-hover:scale-110 transition-transform">
                 <BookOpen className="w-7 h-7" />
               </div>
-              <h3 className="font-bold text-xl dark:text-gray-100">{t('features.feature2_title')}</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{t('features.feature2_text')}</p>
+              <h3 className="font-bold text-xl mb-3 text-gray-900 dark:text-white">{t('features.interactive_lessons.title')}</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {t('features.interactive_lessons.description')}
+              </p>
             </div>
-            <div className="text-center space-y-3">
-              <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mx-auto text-purple-600 dark:text-purple-300 transition-colors">
-                <ShieldCheck className="w-7 h-7" />
+
+            {/* Video Games */}
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-slate-700 transition-all hover:-translate-y-1 hover:shadow-xl group">
+              <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-6 text-purple-600 dark:text-purple-300 group-hover:scale-110 transition-transform">
+                <Gamepad2 className="w-7 h-7" />
               </div>
-              <h3 className="font-bold text-xl dark:text-gray-100">{t('features.feature3_title')}</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{t('features.feature3_text')}</p>
+              <h3 className="font-bold text-xl mb-3 text-gray-900 dark:text-white">{t('features.video_games.title')}</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {t('features.video_games.description')}
+              </p>
             </div>
+
+            {/* AI Functionality */}
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-slate-700 transition-all hover:-translate-y-1 hover:shadow-xl group relative overflow-hidden">
+              <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                {t('features.ai_functionality.badge')}
+              </div>
+              <div className="w-14 h-14 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center mb-6 text-pink-600 dark:text-pink-300 group-hover:scale-110 transition-transform">
+                <Bot className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl mb-3 text-gray-900 dark:text-white">{t('features.ai_functionality.title')}</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {t('features.ai_functionality.description')}
+              </p>
+            </div>
+
+            {/* More Stuff */}
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-slate-700 transition-all hover:-translate-y-1 hover:shadow-xl group">
+              <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-6 text-green-600 dark:text-green-300 group-hover:scale-110 transition-transform">
+                <Layers className="w-7 h-7" />
+              </div>
+              <h3 className="font-bold text-xl mb-3 text-gray-900 dark:text-white">{t('features.more_stuff.title')}</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {t('features.more_stuff.description')}
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
