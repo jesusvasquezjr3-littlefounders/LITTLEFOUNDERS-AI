@@ -9,9 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { getTranslatedError } from "@/utils/errorUtils";
 
 const Login = () => {
-  const { t } = useTranslation(['auth', 'common']);
+  const { t } = useTranslation(['auth', 'common', 'errors']);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -60,7 +61,7 @@ const Login = () => {
         playSound('auth_error');
         toast({
           title: t('auth:messages.login_error'),
-          description: data.detail || t('auth:messages.login_error_detail'),
+          description: getTranslatedError(data.detail, t),
           variant: "destructive",
         });
       }
@@ -181,7 +182,7 @@ const Login = () => {
             'Content-Type': 'application/json',
           },
           // We are sending the access_token as 'token'
-          body: JSON.stringify({ token: tokenResponse.access_token }),
+          body: JSON.stringify({ token: tokenResponse.access_token, mode: 'login' }),
         });
 
         const data = await response.json();
@@ -201,7 +202,7 @@ const Login = () => {
           navigate('/dashboard');
         } else {
           playSound('auth_error');
-          throw new Error(data.detail || "Google Auth Failed");
+          throw new Error(getTranslatedError(data.detail, t));
         }
       } catch (error) {
         console.error(error);

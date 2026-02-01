@@ -70,5 +70,6 @@ class TokenData(BaseModel):
 
 class GoogleLoginRequest(BaseModel):
     token: str
+    mode: Optional[str] = "mixed" # 'login', 'register', or 'mixed'
 
 

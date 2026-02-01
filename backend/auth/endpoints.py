@@ -197,6 +197,13 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
         user = db.query(User).filter(User.email == email).first()
         
         if not user:
+            # If mode is 'login', we should NOT create a new user
+            if request.mode == "login":
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found. Please register first."
+                )
+
             # Create new user - Default to UNIVERSAL
             user = User(
                 email=email,
@@ -212,7 +219,16 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
             db.add(user)
             db.commit()
             db.refresh(user)
+            is_new_user = True
         else:
+            # If mode is 'register' (strict), we should NOT allow login if user exists
+            if request.mode == "register":
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="User already registered. Please login."
+                )
+                
+            is_new_user = False
             # Update existing user with google_id if missing
             if not user.google_id:
                 user.google_id = google_id
@@ -259,7 +275,8 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
             "message": "Google Login successful",
             "user": user_data,
             "access_token": access_token,
-            "token_type": "bearer"
+            "token_type": "bearer",
+            "is_new_user": is_new_user
         }
         
     except ValueError as e:
@@ -268,6 +285,8 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid Google Token: {str(e)}"
         )
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Google Auth Error: {e}")
         raise HTTPException(

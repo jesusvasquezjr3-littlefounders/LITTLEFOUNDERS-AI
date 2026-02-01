@@ -10,9 +10,10 @@ import { API_URL } from "@/config/api";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
+import { getTranslatedError } from "@/utils/errorUtils";
 
 const Register = () => {
-  const { t } = useTranslation(['auth', 'common']);
+  const { t } = useTranslation(['auth', 'common', 'errors']);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -107,18 +108,9 @@ const Register = () => {
 
       } else {
         playSound('auth_error');
-        let errorMessage = t('auth:messages.register_error');
-        if (typeof data.detail === 'string') {
-          errorMessage = data.detail;
-        } else if (Array.isArray(data.detail)) {
-          errorMessage = data.detail.map((err: any) => err.msg).join(", ");
-        } else if (typeof data.detail === 'object') {
-          errorMessage = JSON.stringify(data.detail);
-        }
-
         toast({
           title: t('auth:validation.registration_error'),
-          description: errorMessage,
+          description: getTranslatedError(data.detail, t),
           variant: "destructive",
         });
       }
@@ -144,7 +136,7 @@ const Register = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token: tokenResponse.access_token }),
+          body: JSON.stringify({ token: tokenResponse.access_token, mode: 'register' }),
         });
 
         const data = await response.json();
@@ -155,19 +147,20 @@ const Register = () => {
 
           playSound('auth_success');
 
-          toast({
-            title: t('auth:messages.register_success'),
-            description: t('auth:messages.register_success_subtitle'),
-            className: "bg-green-50 border-green-200 text-green-800"
-          });
-
-          // Navigate to welcome or dashboard
-          setTimeout(() => {
-            navigate('/welcome');
-          }, 500);
+          // Navigate to welcome or dashboard based on whether it is a new user
+          if (data.is_new_user) {
+            setTimeout(() => {
+              navigate('/welcome');
+            }, 500);
+          } else {
+            // Existing user (treated as login)
+            setTimeout(() => {
+              navigate('/dashboard');
+            }, 500);
+          }
         } else {
           playSound('auth_error');
-          throw new Error(data.detail || "Google Registration Failed");
+          throw new Error(getTranslatedError(data.detail, t));
         }
       } catch (error) {
         console.error(error);
