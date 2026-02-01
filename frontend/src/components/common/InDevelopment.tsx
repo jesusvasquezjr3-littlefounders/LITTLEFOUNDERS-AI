@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Hammer, ArrowLeft, Construction } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
 export const InDevelopment = () => {
     const { t } = useTranslation('common');
@@ -26,14 +25,7 @@ export const InDevelopment = () => {
                     {t('in_development.description')}
                 </p>
             </div>
-
             <div className="flex flex-col items-center gap-4">
-                {/* Language Selector for testing/utility during dev */}
-                <div className="flex items-center gap-2 p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider pl-2">{t('in_development.language_label')}</span>
-                    <LanguageSelector variant="minimal" />
-                </div>
-
                 <Button
                     onClick={() => navigate('/dashboard')}
                     size="lg"
@@ -43,6 +35,6 @@ export const InDevelopment = () => {
                     {t('in_development.back_home')}
                 </Button>
             </div>
-        </div>
+        </div >
     );
 };

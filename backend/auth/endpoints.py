@@ -13,7 +13,8 @@ from auth.schemas import (
     UserResponse,
     Token,
     GoogleLoginRequest,
-    DiscordLoginRequest
+    DiscordLoginRequest,
+    PasswordChange
 )
 import requests
 from auth.utils import verify_password, get_password_hash, create_access_token, verify_token
@@ -82,7 +83,17 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
                 "id": new_user.id,
                 "name": new_user.name,
                 "email": new_user.email,
-                "user_type": new_user.user_type
+                "user_type": new_user.user_type,
+                "avatar_config": new_user.avatar_config,
+                "username": new_user.username,
+                "preferred_language": new_user.preferred_language,
+                "lessons_completed": new_user.lessons_completed,
+                "minutes_studied": new_user.minutes_studied,
+                "points_earned": new_user.points_earned,
+                "current_streak": new_user.current_streak,
+                "auth_provider": new_user.auth_provider,
+                "birth_date": new_user.birth_date.isoformat() if new_user.birth_date else None,
+                "gender": new_user.gender
             },
             "access_token": access_token,
             "token_type": "bearer"
@@ -144,6 +155,11 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
         "minutes_studied": user.minutes_studied,
         "points_earned": user.points_earned,
         "current_streak": user.current_streak,
+        "avatar_config": user.avatar_config,
+        "username": user.username,
+        "preferred_language": user.preferred_language,
+        "auth_provider": user.auth_provider,
+        "gender": user.gender,
     }
     
     # Add child-specific fields if user is a child
@@ -251,7 +267,13 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
             "email": user.email,
             "user_type": user.user_type,
             "created_at": user.created_at.isoformat(),
-            "picture": picture # Send back picture from Google if available in frontend we can use it?
+            "picture": picture, # Send back picture from Google if available in frontend we can use it?
+            "avatar_config": user.avatar_config,
+            "username": user.username,
+            "preferred_language": user.preferred_language,
+            "auth_provider": user.auth_provider,
+            "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+            "gender": user.gender
         }
         
         # Add Common fields
@@ -411,7 +433,13 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
             "email": user.email,
             "user_type": user.user_type,
             "created_at": user.created_at.isoformat(),
-            "picture": picture
+            "picture": picture,
+            "avatar_config": user.avatar_config,
+            "username": user.username,
+            "preferred_language": user.preferred_language,
+            "auth_provider": user.auth_provider,
+            "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+            "gender": user.gender
         }
         
         # Add Common fields
@@ -492,7 +520,7 @@ async def update_user_profile(
     db: Session = Depends(get_db)
 ):
     """
-    Update user profile information (name, birth_date, gender)
+    Update user profile information (name, birth_date, gender, username, preferred_language)
     """
     # specific fields to update
     if user_update.name is not None:
@@ -501,10 +529,58 @@ async def update_user_profile(
         current_user.birth_date = datetime.strptime(user_update.birth_date, "%Y-%m-%d") if user_update.birth_date else None
     if user_update.gender is not None:
         current_user.gender = user_update.gender
+    if user_update.avatar_config is not None:
+        current_user.avatar_config = user_update.avatar_config
+    if user_update.preferred_language is not None:
+        current_user.preferred_language = user_update.preferred_language
+    
+    # Handle username update with uniqueness check
+    if user_update.username is not None:
+        # Check if username is already taken by another user
+        existing_user = db.query(User).filter(
+            User.username == user_update.username,
+            User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=400, 
+                detail="Este nombre de usuario ya está en uso"
+            )
+        current_user.username = user_update.username
         
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.post("/change-password")
+async def change_password(
+    password_data: PasswordChange,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Change user password (only for email auth users)
+    """
+    # Check if user has password auth
+    if current_user.auth_provider != 'email':
+        raise HTTPException(
+            status_code=400,
+            detail=f"No puedes cambiar la contraseña. Tu cuenta está vinculada a {current_user.auth_provider}"
+        )
+    
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=400,
+            detail="La contraseña actual es incorrecta"
+        )
+    
+    # Update password
+    current_user.password_hash = get_password_hash(password_data.new_password)
+    db.commit()
+    
+    return {"message": "Contraseña actualizada correctamente"}
 
 
 @router.get("/family/{user_id}")

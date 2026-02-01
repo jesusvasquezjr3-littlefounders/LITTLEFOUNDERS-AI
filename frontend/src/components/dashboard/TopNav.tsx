@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { useSound } from "@/contexts/SoundContext";
@@ -54,6 +55,8 @@ export function TopNav() {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+
 
   return (
     <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
@@ -110,13 +113,24 @@ export function TopNav() {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder-avatar.jpg" alt={t('user_menu.user')} />
-                <AvatarFallback className="bg-gradient-primary text-primary-foreground">
-                  {user ? getInitials(user.name) : "U"}
-                </AvatarFallback>
-              </Avatar>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm transition-transform hover:scale-105 ring-2 ring-indigo-500/70 ring-offset-2 dark:ring-offset-slate-900">
+              {user?.avatar_config ? (
+                <AvatarDisplay
+                  config={user.avatar_config}
+                  size={40}
+                  className="w-full h-full scale-125"
+                  showCTA={false}
+                  linkToEdit={false}
+                  includeBorder={false}
+                />
+              ) : (
+                <Avatar className="h-full w-full">
+                  <AvatarImage src="/placeholder-avatar.jpg" className="object-cover" alt={t('user_menu.user')} />
+                  <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
+                    {user ? getInitials(user.name) : "U"}
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>

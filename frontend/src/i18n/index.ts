@@ -28,6 +28,8 @@ import esDashboard from './locales/es/dashboard.json';
 import esProfile from './locales/es/profile.json';
 import esErrors from './locales/es/errors.json';
 import esAdventures from './locales/es/adventures.json';
+import esSettings from './locales/es/settings.json';
+import esAvatar from './locales/es/avatar.json';
 
 import enCommon from './locales/en/common.json';
 import enAuth from './locales/en/auth.json';
@@ -37,6 +39,8 @@ import enDashboard from './locales/en/dashboard.json';
 import enProfile from './locales/en/profile.json';
 import enErrors from './locales/en/errors.json';
 import enAdventures from './locales/en/adventures.json';
+import enSettings from './locales/en/settings.json';
+import enAvatar from './locales/en/avatar.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = ['es', 'en'] as const;
@@ -65,6 +69,8 @@ const resources = {
         profile: esProfile,
         errors: esErrors,
         adventures: esAdventures,
+        settings: esSettings,
+        avatar: esAvatar,
     },
     en: {
         common: enCommon,
@@ -75,6 +81,8 @@ const resources = {
         profile: enProfile,
         errors: enErrors,
         adventures: enAdventures,
+        settings: enSettings,
+        avatar: enAvatar,
     },
 };
 

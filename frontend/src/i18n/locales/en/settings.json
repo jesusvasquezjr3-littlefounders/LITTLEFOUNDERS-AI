@@ -1,0 +1,68 @@
+{
+    "title": "Settings",
+    "identity": {
+        "title": "Your Identity",
+        "name": {
+            "label": "Name",
+            "placeholder": "Your name"
+        },
+        "username": {
+            "label": "Username",
+            "placeholder": "unique_username",
+            "error": "3-30 chars, letters, numbers, - and _"
+        },
+        "birthday": {
+            "label": "Birthday",
+            "select": "Select date",
+            "year": "Year",
+            "month": "Month",
+            "display_format": "MMMM dd, yyyy"
+        },
+        "gender": {
+            "label": "Gender",
+            "placeholder": "Select",
+            "options": {
+                "male": "Male",
+                "female": "Female",
+                "prefer_not_say": "Prefer not to say"
+            }
+        }
+    },
+    "account": {
+        "title": "Account & Security",
+        "email": "Email",
+        "password": {
+            "label": "Password",
+            "change": "Change",
+            "dialog": {
+                "title": "Change Password",
+                "current": "Current password",
+                "current_placeholder": "••••••••",
+                "new": "New password",
+                "new_placeholder": "Minimum 8 characters",
+                "confirm": "Confirm new password",
+                "confirm_placeholder": "••••••••",
+                "submit": "Update Password",
+                "loading": "Updating..."
+            },
+            "success": "Password updated successfully.",
+            "error": {
+                "mismatch": "New passwords do not match",
+                "length": "Password must be at least 8 characters",
+                "required": "All fields are required",
+                "generic": "Could not change password"
+            }
+        },
+        "social": "Social Connection",
+        "language": "App Language"
+    },
+    "actions": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "success_title": "Done!",
+        "success_desc": "Your profile has been updated ✨",
+        "error_title": "Oops...",
+        "error_generic": "Could not save changes.",
+        "error_network": "Connection error. Check your internet."
+    }
+}

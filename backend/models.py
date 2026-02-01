@@ -199,6 +199,12 @@ class User(Base):
     auth_provider = Column(String(20), default='email')  # 'email', 'google', 'discord'
     google_id = Column(String(100), nullable=True, unique=True)
     discord_id = Column(String(100), nullable=True, unique=True)
+    
+    # Avatar configuration (DiceBear options)
+    avatar_config = Column(JSON, nullable=True)
+    
+    # Username for social features (lowercase, unique)
+    username = Column(String(30), nullable=True, unique=True)
 
 
 # Lesson Models

@@ -5,6 +5,10 @@
 /* LittleFounders - Duolingo-Inspired Design System */
 
 @layer base {
+  html {
+    font-size: 14.4px; /* Scaled to 90% (16px * 0.9) to fit design better */
+  }
+
   :root {
     /* Base Colors - Light Mode (Duolingo-inspired) */
     --background: 249 100% 99%;

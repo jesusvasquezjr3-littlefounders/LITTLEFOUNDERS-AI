@@ -26,11 +26,21 @@
         "settings": "Settings",
         "logout": "Log out"
     },
+    "dashboard": {
+        "stats": {
+            "lessons": "Lessons",
+            "minutes": "Minutes",
+            "points": "Points",
+            "streak": "Streak"
+        }
+    },
     "status": {
         "loading": "Loading...",
         "error": "Error",
         "success": "Success",
-        "empty": "No results"
+        "empty": "No results",
+        "not_configured": "Not configured",
+        "saving": "Saving..."
     },
     "time": {
         "today": "Today",
@@ -39,6 +49,10 @@
         "hours_ago": "{{count}} hours ago",
         "minutes_ago": "{{count}} minutes ago",
         "just_now": "Just now"
+    },
+    "languages": {
+        "es": "Spanish",
+        "en": "English"
     },
     "validation": {
         "required": "This field is required",
@@ -70,5 +84,13 @@
         "description": "We are working hard to build this amazing feature. Check back soon!",
         "back_home": "Back to Home",
         "language_label": "Language"
+    },
+    "user_types": {
+        "tutor": "Tutor",
+        "child": "Child",
+        "universal": "Universal"
+    },
+    "roles": {
+        "little_founder": "Little Founder"
     }
 }

@@ -187,7 +187,7 @@ const Register = () => {
       setIsLoading(false);
       toast({
         title: t('auth:validation.registration_error'),
-        description: "Google popup closed or failed.",
+        description: t('auth:messages.google_popup_closed'),
         variant: "destructive",
       });
     }
@@ -375,7 +375,7 @@ const Register = () => {
                   onClick={handleDiscordRegister}
                 >
                   <SiDiscord className="w-4 h-4 text-[#5865F2]" />
-                  <span className="text-xs font-bold text-gray-700 dark:text-gray-200">Discord</span>
+                  <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{t('auth:social.discord')}</span>
                 </Button>
               </div>
 

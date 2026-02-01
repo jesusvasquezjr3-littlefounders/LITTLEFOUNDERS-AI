@@ -1,0 +1,35 @@
+{
+    "title": "Customize Your Avatar",
+    "categories": {
+        "top": "Hair",
+        "hairColor": "Hair Color",
+        "eyes": "Eyes",
+        "eyebrows": "Eyebrows",
+        "mouth": "Mouth",
+        "skinColor": "Skin",
+        "clothing": "Clothes",
+        "clothesColor": "Clothes Color",
+        "clothingGraphic": "Graphic",
+        "accessories": "Accessories",
+        "accessoriesColor": "Glasses Color",
+        "facialHair": "Facial Hair",
+        "facialHairColor": "Facial Hair Color",
+        "hatColor": "Hat Color",
+        "backgroundColor": "Background"
+    },
+    "actions": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "randomize": "Randomize"
+    },
+    "notifications": {
+        "graphic_shirt_title": "Graphic Shirt Activated",
+        "graphic_shirt_desc": "Your clothes have been changed to a shirt to show the graphic.",
+        "session_expired": "Session Expired",
+        "session_expired_desc": "Please log in again.",
+        "saved_title": "Avatar Saved!",
+        "saved_desc": "Your new avatar has been saved successfully.",
+        "save_error_title": "Error",
+        "save_error_desc": "Could not save avatar. Please try again."
+    }
+}

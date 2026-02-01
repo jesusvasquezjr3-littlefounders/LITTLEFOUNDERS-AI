@@ -33,6 +33,7 @@
         "current_avatar": "Current Avatar",
         "available_avatars": "Available Avatars",
         "available_banners": "Available Banners",
+        "my_achievements": "My Achievements",
         "personal_info": "Personal Information",
         "security_info": "Security Information",
         "security_desc": "Sensitive information like email and password can only be modified from account settings.",
@@ -46,7 +47,8 @@
         "suggestions": "Suggestions:",
         "popular_emojis": "Popular emojis:",
         "language": "Language",
-        "language_desc": "Select platform language"
+        "language_desc": "Select platform language",
+        "user_type": "User Type"
     },
     "stats": {
         "earned_badges": "Badges earned",

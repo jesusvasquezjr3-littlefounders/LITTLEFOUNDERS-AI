@@ -47,7 +47,8 @@
         "suggestions": "Sugerencias:",
         "popular_emojis": "Emojis populares:",
         "language": "Idioma",
-        "language_desc": "Selecciona el idioma de la plataforma"
+        "language_desc": "Selecciona el idioma de la plataforma",
+        "user_type": "Tipo de Usuario"
     },
     "stats": {
         "earned_badges": "Badges ganados",

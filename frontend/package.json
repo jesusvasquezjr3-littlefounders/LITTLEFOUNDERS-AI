@@ -13,6 +13,9 @@
     "start:all": "concurrently \"npm run dev\" \"npm run backend\""
   },
   "dependencies": {
+    "@dicebear/avataaars": "^9.3.1",
+    "@dicebear/collection": "^9.3.1",
+    "@dicebear/core": "^9.3.1",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",

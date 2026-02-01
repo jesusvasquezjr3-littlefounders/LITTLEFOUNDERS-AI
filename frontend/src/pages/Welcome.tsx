@@ -143,7 +143,7 @@ export default function Welcome() {
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
-                    {t('buttons.saving')}
+                    {t('common:status.saving')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">

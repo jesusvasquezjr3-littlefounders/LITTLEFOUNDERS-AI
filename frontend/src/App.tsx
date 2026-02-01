@@ -16,6 +16,7 @@ import Bye from "./pages/Bye";
 import DiscordCallback from "./pages/DiscordCallback";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
+import AvatarEditor from "./pages/AvatarEditor";
 import DigitalBanking from "./pages/DigitalBanking";
 import Savings from "./pages/Savings";
 import Tasks from "./pages/Tasks";
@@ -74,6 +75,11 @@ const App = () => (
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/avatar/edit" element={
+                  <ProtectedRoute>
+                    <AvatarEditor />
                   </ProtectedRoute>
                 } />
                 <Route path="/tasks" element={
