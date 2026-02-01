@@ -45,10 +45,10 @@ const Bye = () => {
 
                 <div className="space-y-4">
                     <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
-                        ¡Esperamos verte pronto!
+                        {t('common:bye_page.title')}
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-300 font-medium max-w-md mx-auto leading-relaxed">
-                        Vuelve pronto para seguir aprendiendo y construyendo el futuro.
+                        {t('common:bye_page.subtitle')}
                     </p>
                 </div>
 
@@ -57,7 +57,7 @@ const Bye = () => {
                         onClick={() => navigate('/')}
                         className="bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-purple-600 dark:text-purple-400 font-bold px-8 py-6 rounded-full shadow-lg border-2 border-purple-200 dark:border-purple-500/50 transition-all hover:scale-105"
                     >
-                        Volver al Inicio
+                        {t('common:bye_page.back_home')}
                     </Button>
                 </div>
             </div>

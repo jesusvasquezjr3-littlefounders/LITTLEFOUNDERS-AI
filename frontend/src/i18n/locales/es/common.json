@@ -89,5 +89,10 @@
     },
     "roles": {
         "little_founder": "Little Founder"
+    },
+    "bye_page": {
+        "title": "¡Esperamos verte pronto!",
+        "subtitle": "Vuelve pronto para seguir aprendiendo y construyendo el futuro.",
+        "back_home": "Volver al Inicio"
     }
 }

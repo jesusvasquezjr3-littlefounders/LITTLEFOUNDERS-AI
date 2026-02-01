@@ -8,7 +8,7 @@ const NotFound = () => {
 
   useEffect(() => {
     console.error(
-      t('not_found.console_error'),
+      t('common:notFound.console_error'),
       location.pathname
     );
   }, [location.pathname, t]);
@@ -16,10 +16,10 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">{t('not_found.title')}</h1>
-        <p className="text-xl text-gray-600 mb-4">{t('not_found.message')}</p>
+        <h1 className="text-4xl font-bold mb-4">{t('common:notFound.title')}</h1>
+        <p className="text-xl text-gray-600 mb-4">{t('common:notFound.message')}</p>
         <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          {t('not_found.return_home')}
+          {t('common:notFound.back_home')}
         </a>
       </div>
     </div>
