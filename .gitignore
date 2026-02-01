@@ -54,5 +54,4 @@ venv/
 GUIA_MIGRACION_DATOS.md
 
 database.sql
-security_fixes.sql
 migrations/

@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
+    # Social Auth Configuration
+    discord_client_id: str = ""
+    discord_client_secret: str = ""
+    discord_redirect_uri: str = ""
+    
     # Email configuration (optional - email features won't work without these)
     mail_username: str = ""
     mail_password: str = ""

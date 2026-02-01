@@ -73,3 +73,8 @@ class GoogleLoginRequest(BaseModel):
     mode: Optional[str] = "mixed" # 'login', 'register', or 'mixed'
 
 
+class DiscordLoginRequest(BaseModel):
+    code: str
+    mode: Optional[str] = "mixed" # 'login', 'register', or 'mixed'
+
+

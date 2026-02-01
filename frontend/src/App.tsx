@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bye from "./pages/Bye";
+import DiscordCallback from "./pages/DiscordCallback";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
 import DigitalBanking from "./pages/DigitalBanking";
@@ -64,6 +65,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/bye" element={<Bye />} />
+                <Route path="/auth/discord/callback" element={<DiscordCallback />} />
                 <Route path="/lecciones" element={
                   <ProtectedRoute>
                     <Lecciones />

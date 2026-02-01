@@ -12,7 +12,8 @@ from auth.schemas import (
     UserUpdate,
     UserResponse,
     Token,
-    GoogleLoginRequest
+    GoogleLoginRequest,
+    DiscordLoginRequest
 )
 import requests
 from auth.utils import verify_password, get_password_hash, create_access_token, verify_token
@@ -295,7 +296,158 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
         )
 
 
-@router.get("/users")
+@router.post("/discord", response_model=dict)
+async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_db)):
+    """
+    Login or Register with Discord
+    Exchanges code for access_token and then fetches user info.
+    """
+    try:
+        # 1. Exchange code for access token
+        # Strip whitespace to prevent copy-paste errors
+        client_id = settings.discord_client_id.strip()
+        client_secret = settings.discord_client_secret.strip()
+        redirect_uri = settings.discord_redirect_uri.strip()
+
+        data = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'grant_type': 'authorization_code',
+            'code': request.code,
+            'redirect_uri': redirect_uri
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        
+        print(f"DEBUG: Discord Exchange Data:")
+        print(f"  - client_id: {repr(data['client_id'])}")
+        print(f"  - redirect_uri: {repr(data['redirect_uri'])}")
+        print(f"  - client_secret length: {len(data['client_secret'])}")
+        print(f"  - code: {repr(request.code)}")
+
+        token_response = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
+        
+        if token_response.status_code != 200:
+             print(f"DEBUG: Token Exchange Failed. Status: {token_response.status_code}")
+             print(f"DEBUG: Body: {token_response.text}")
+             raise ValueError(f"Failed to exchange code: {token_response.text}")
+             
+        token_data = token_response.json()
+        access_token = token_data.get('access_token')
+        
+        # 2. Fetch User Info
+        user_response = requests.get('https://discord.com/api/users/@me', headers={
+            'Authorization': f'Bearer {access_token}'
+        })
+        
+        if user_response.status_code != 200:
+            raise ValueError(f"Failed to fetch user info: {user_response.text}")
+            
+        discord_user = user_response.json()
+        
+        email = discord_user.get('email')
+        if not email:
+            raise ValueError("Email not provided by Discord. Please verify your email on Discord.")
+            
+        discord_id = discord_user.get('id')
+        name = discord_user.get('global_name') or discord_user.get('username')
+        picture = f"https://cdn.discordapp.com/avatars/{discord_id}/{discord_user.get('avatar')}.png" if discord_user.get('avatar') else ""
+        
+        # 3. Check if user exists (by email OR discord_id)
+        user = db.query(User).filter((User.email == email) | (User.discord_id == discord_id)).first()
+        
+        if not user:
+            # If mode is 'login', we should NOT create a new user
+            if request.mode == "login":
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found. Please register first."
+                )
+
+            # Create new user - Default to UNIVERSAL
+            user = User(
+                email=email,
+                name=name,
+                password_hash="DISCORD_AUTH_NO_PASSWORD", 
+                user_type=UserType.UNIVERSAL.value,
+                auth_provider="discord",
+                discord_id=discord_id,
+                is_active=True,
+                balance=0.0,
+                points_earned=0
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            is_new_user = True
+        else:
+            # If mode is 'register' (strict), we should NOT allow login if user exists
+            if request.mode == "register":
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="User already registered. Please login."
+                )
+                
+            is_new_user = False
+            # Update existing user with discord_id if missing
+            if not user.discord_id:
+                user.discord_id = discord_id
+                # Update provider if needed (though email is primary identifier usually)
+                if user.auth_provider == 'email':
+                    user.auth_provider = "discord"
+                db.commit()
+        
+        # 4. Create internal access token
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        internal_access_token = create_access_token(
+            data={"sub": user.email}, expires_delta=access_token_expires
+        )
+        
+         # Prepare user response
+        user_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type,
+            "created_at": user.created_at.isoformat(),
+            "picture": picture
+        }
+        
+        # Add Common fields
+        if hasattr(user, 'lessons_completed'):
+            user_data["lessons_completed"] = user.lessons_completed
+        if hasattr(user, 'points_earned'):
+            user_data["points_earned"] = user.points_earned
+            
+        # Add child-specific fields if user is a child
+        if user.user_type == UserType.CHILD:
+            user_data.update({
+                "balance": user.balance if hasattr(user, 'balance') else 0.0,
+                "has_virtual_card": user.has_virtual_card if hasattr(user, 'has_virtual_card') else False
+            })
+        elif user.user_type == UserType.UNIVERSAL:
+             user_data.update({
+                "balance": user.balance if hasattr(user, 'balance') else 0.0,
+             })
+
+        return {
+            "message": "Discord Login successful",
+            "user": user_data,
+            "access_token": internal_access_token, # Send OUR token, not Discord's
+            "token_type": "bearer",
+            "is_new_user": is_new_user
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Discord Auth Error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Discord Authentication Failed"
+        )
+
 async def get_all_users(db: Session = Depends(get_db)):
     """
     Get all users (for development/debugging - should be removed in production)
