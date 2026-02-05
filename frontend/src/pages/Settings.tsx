@@ -22,8 +22,7 @@ import {
     ChevronRight,
     Shield,
     CreditCard,
-    LogOut,
-    Camera
+    LogOut
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { API_URL } from "@/config/api";
@@ -266,19 +265,23 @@ const Settings = () => {
                 {/* Header Profile */}
                 <div className="flex flex-col items-center gap-4 py-4">
                     <div className="relative group">
-                        <div className="w-28 h-28 rounded-full ring-4 ring-white dark:ring-slate-800 shadow-xl overflow-hidden bg-indigo-100 flex items-center justify-center">
-                            {user.avatar_config ? (
-                                <AvatarDisplay config={user.avatar_config} className="w-full h-full" />
-                            ) : (
-                                <span className="text-4xl">👤</span>
-                            )}
+                        <div
+                            className="absolute -inset-1 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"
+                            style={{
+                                background: user.avatar_config?.backgroundColor?.[0] && user.avatar_config.backgroundColor[0] !== 'none'
+                                    ? `#${user.avatar_config.backgroundColor[0]}`
+                                    : 'linear-gradient(to right, #ec4899, #9333ea)'
+                            }}
+                        />
+                        <div className="relative">
+                            <AvatarDisplay
+                                config={user.avatar_config}
+                                size={128}
+                                showCTA={false}
+                                linkToEdit={true}
+                                className="z-10"
+                            />
                         </div>
-                        <button
-                            onClick={() => navigate('/avatar/edit')}
-                            className="absolute bottom-1 right-1 w-8 h-8 bg-black/80 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer"
-                        >
-                            <Camera className="w-4 h-4" />
-                        </button>
                     </div>
                     <div className="text-center">
                         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">

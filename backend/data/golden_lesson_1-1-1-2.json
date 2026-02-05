@@ -1,0 +1,408 @@
+{
+    "lesson_code": "1-1-1-2",
+    "title_es": "Aventuras Financieras: Nuevos Desafíos",
+    "title_en": "Financial Adventures: New Challenges",
+    "description_es": "Aprende sobre precios inteligentes, seguridad digital, impacto social, economía y diversificación",
+    "description_en": "Learn about smart pricing, digital security, social impact, economics and diversification",
+    "adventure_level": 1,
+    "saga_level": 1,
+    "topic_level": 1,
+    "lesson_number": 2,
+    "duration": 300,
+    "age_rate": "6-12",
+    "points_reward": 500,
+    "content_es": [
+        {
+            "type": "intro_narrative",
+            "character_code": "dina",
+            "content": {
+                "transcript": "¡Hola! Soy Dina y hoy vamos a aprender habilidades financieras avanzadas. ¿Estás listo para convertirte en un experto del dinero?"
+            }
+        },
+        {
+            "type": "price_detective",
+            "character_code": "dina",
+            "content": {
+                "transcript": "¿Cuál es la mejor oferta? ¡Usa tu lupa de detective para descubrirlo!",
+                "instruction": "Compara los precios por unidad y elige la mejor oferta",
+                "products": [
+                    {
+                        "id": "single",
+                        "name": "Manzana Individual",
+                        "price": 1.50,
+                        "quantity": 1,
+                        "unit": "manzana",
+                        "icon": "🍎"
+                    },
+                    {
+                        "id": "pack",
+                        "name": "Paquete de 6 Manzanas",
+                        "price": 6.00,
+                        "quantity": 6,
+                        "unit": "manzanas",
+                        "icon": "🍎"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "correctOptionId": "pack"
+            },
+            "feedback": {
+                "success": "¡Correcto! El paquete cuesta $1.00 por manzana, ¡es mejor que $1.50!",
+                "error": "Intenta calcular el precio por unidad de cada opción"
+            }
+        },
+        {
+            "type": "spot_trap",
+            "character_code": "drrho",
+            "content": {
+                "transcript": "¡Cuidado! Hay estafadores en internet. ¿Puedes identificar los mensajes sospechosos?",
+                "instruction": "Marca todos los mensajes que sean TRAMPAS",
+                "messages": [
+                    {
+                        "id": "msg1",
+                        "text": "¡GANASTE UN iPHONE GRATIS! Haz clic aquí ahora!!!",
+                        "sender": "desconocido@spam.com",
+                        "isTrap": true,
+                        "hints": [
+                            "Demasiado bueno para ser cierto",
+                            "Muchos signos de exclamación"
+                        ]
+                    },
+                    {
+                        "id": "msg2",
+                        "text": "10% de descuento en libros esta semana - Librería Oficial",
+                        "sender": "libreria@oficial.com",
+                        "isTrap": false
+                    },
+                    {
+                        "id": "msg3",
+                        "text": "Tu cuenta será cerrada. Envía tu contraseña URGENTE.",
+                        "sender": "banco-falso@xyz.net",
+                        "isTrap": true,
+                        "hints": [
+                            "Pide contraseña",
+                            "Urgencia sospechosa"
+                        ]
+                    }
+                ]
+            },
+            "correct_answer": {
+                "trapIds": [
+                    "msg1",
+                    "msg3"
+                ]
+            },
+            "feedback": {
+                "success": "¡Excelente! Identificaste todas las estafas correctamente",
+                "error": "Revisa los mensajes que piden información personal o prometen cosas gratis"
+            }
+        },
+        {
+            "type": "impact_meter",
+            "character_code": "dina",
+            "content": {
+                "transcript": "Has ganado $100. ¿A qué causa te gustaría donar?",
+                "instruction": "Elige una causa para tu donación",
+                "budget": 100,
+                "causes": [
+                    {
+                        "id": "animals",
+                        "name": "Refugio de Animales",
+                        "icon": "🐶",
+                        "impact": "Alimentar 20 perros por una semana"
+                    },
+                    {
+                        "id": "trees",
+                        "name": "Plantar Árboles",
+                        "icon": "🌳",
+                        "impact": "Plantar 50 árboles en tu comunidad"
+                    },
+                    {
+                        "id": "food",
+                        "name": "Banco de Alimentos",
+                        "icon": "🍞",
+                        "impact": "Proveer 100 comidas a familias necesitadas"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "acceptAny": true
+            },
+            "feedback": {
+                "success": "¡Qué generoso! Tu donación hará una gran diferencia",
+                "error": ""
+            }
+        },
+        {
+            "type": "market_reaction",
+            "character_code": "zaravex",
+            "content": {
+                "transcript": "Las noticias afectan los precios. ¿Puedes predecir qué pasará?",
+                "instruction": "Lee la noticia y predice el efecto en el mercado",
+                "headline": "¡Tormentas destruyen granjas de fresas!",
+                "question": "¿Qué pasará con el precio de la mermelada de fresa?",
+                "explanation": "Cuando hay menos fresas disponibles (menor oferta), el precio de productos hechos con fresas sube. ¡Es oferta y demanda!",
+                "options": [
+                    {
+                        "id": "up",
+                        "text": "Los precios SUBEN ⬆️",
+                        "icon": "📈"
+                    },
+                    {
+                        "id": "down",
+                        "text": "Los precios BAJAN ⬇️",
+                        "icon": "📉"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "correctOptionId": "up"
+            },
+            "feedback": {
+                "success": "¡Correcto! Menos oferta = precios más altos",
+                "error": "Piensa: si hay menos fresas, ¿la mermelada será más cara o más barata?"
+            }
+        },
+        {
+            "type": "mystery_investment",
+            "character_code": "drrho",
+            "content": {
+                "transcript": "Tienes 10 monedas para invertir. ¿Cómo las dividirás para minimizar el riesgo?",
+                "instruction": "Divide tus monedas entre diferentes cajas. ¡No pongas todo en un solo lugar!",
+                "totalCoins": 10,
+                "boxes": [
+                    {
+                        "id": "gold",
+                        "name": "Caja de Oro",
+                        "type": "safe",
+                        "minReturn": 1,
+                        "maxReturn": 2,
+                        "description": "Siempre devuelve algo, pero poco"
+                    },
+                    {
+                        "id": "mystery",
+                        "name": "Caja Misteriosa",
+                        "type": "risky",
+                        "minReturn": 0,
+                        "maxReturn": 5,
+                        "description": "Alto riesgo, alta recompensa"
+                    },
+                    {
+                        "id": "friend",
+                        "name": "Caja Amigo",
+                        "type": "shared",
+                        "minReturn": 1,
+                        "maxReturn": 3,
+                        "description": "Inversión compartida, riesgo medio"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "strategy": "diversified",
+                "minBoxes": 2
+            },
+            "feedback": {
+                "success": "¡Excelente! Diversificaste tu inversión para reducir el riesgo",
+                "error": "Intenta invertir en al menos 2 cajas diferentes para no perderlo todo"
+            }
+        }
+    ],
+    "content_en": [
+        {
+            "type": "intro_narrative",
+            "character_code": "dina",
+            "content": {
+                "transcript": "Hello! I'm Dina and today we're going to learn advanced financial skills. Are you ready to become a money expert?"
+            }
+        },
+        {
+            "type": "price_detective",
+            "character_code": "dina",
+            "content": {
+                "transcript": "Which is the best deal? Use your detective magnifying glass to find out!",
+                "instruction": "Compare unit prices and choose the best deal",
+                "products": [
+                    {
+                        "id": "single",
+                        "name": "Single Apple",
+                        "price": 1.50,
+                        "quantity": 1,
+                        "unit": "apple",
+                        "icon": "🍎"
+                    },
+                    {
+                        "id": "pack",
+                        "name": "6-Pack Apples",
+                        "price": 6.00,
+                        "quantity": 6,
+                        "unit": "apples",
+                        "icon": "🍎"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "correctOptionId": "pack"
+            },
+            "feedback": {
+                "success": "Correct! The pack costs $1.00 per apple, better than $1.50!",
+                "error": "Try calculating the price per unit for each option"
+            }
+        },
+        {
+            "type": "spot_trap",
+            "character_code": "drrho",
+            "content": {
+                "transcript": "Watch out! There are scammers on the internet. Can you identify the suspicious messages?",
+                "instruction": "Mark all messages that are TRAPS",
+                "messages": [
+                    {
+                        "id": "msg1",
+                        "text": "YOU WON A FREE iPHONE! Click here now!!!",
+                        "sender": "unknown@spam.com",
+                        "isTrap": true,
+                        "hints": [
+                            "Too good to be true",
+                            "Too many exclamation marks"
+                        ]
+                    },
+                    {
+                        "id": "msg2",
+                        "text": "10% off books this week - Official Bookstore",
+                        "sender": "bookstore@official.com",
+                        "isTrap": false
+                    },
+                    {
+                        "id": "msg3",
+                        "text": "Your account will be closed. Send your password URGENT.",
+                        "sender": "fake-bank@xyz.net",
+                        "isTrap": true,
+                        "hints": [
+                            "Asks for password",
+                            "Suspicious urgency"
+                        ]
+                    }
+                ]
+            },
+            "correct_answer": {
+                "trapIds": [
+                    "msg1",
+                    "msg3"
+                ]
+            },
+            "feedback": {
+                "success": "Excellent! You identified all the scams correctly",
+                "error": "Review messages that ask for personal information or promise free things"
+            }
+        },
+        {
+            "type": "impact_meter",
+            "character_code": "dina",
+            "content": {
+                "transcript": "You've earned $100. Which cause would you like to donate to?",
+                "instruction": "Choose a cause for your donation",
+                "budget": 100,
+                "causes": [
+                    {
+                        "id": "animals",
+                        "name": "Animal Shelter",
+                        "icon": "🐶",
+                        "impact": "Feed 20 dogs for a week"
+                    },
+                    {
+                        "id": "trees",
+                        "name": "Plant Trees",
+                        "icon": "🌳",
+                        "impact": "Plant 50 trees in your community"
+                    },
+                    {
+                        "id": "food",
+                        "name": "Food Bank",
+                        "icon": "🍞",
+                        "impact": "Provide 100 meals to families in need"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "acceptAny": true
+            },
+            "feedback": {
+                "success": "How generous! Your donation will make a big difference",
+                "error": ""
+            }
+        },
+        {
+            "type": "market_reaction",
+            "character_code": "zaravex",
+            "content": {
+                "transcript": "News affects prices. Can you predict what will happen?",
+                "instruction": "Read the news and predict the market effect",
+                "headline": "Storms destroy strawberry farms!",
+                "question": "What will happen to the price of strawberry jam?",
+                "explanation": "When there are fewer strawberries available (lower supply), the price of products made with strawberries goes up. It's supply and demand!",
+                "options": [
+                    {
+                        "id": "up",
+                        "text": "Prices GO UP ⬆️",
+                        "icon": "📈"
+                    },
+                    {
+                        "id": "down",
+                        "text": "Prices GO DOWN ⬇️",
+                        "icon": "📉"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "correctOptionId": "up"
+            },
+            "feedback": {
+                "success": "Correct! Less supply = higher prices",
+                "error": "Think: if there are fewer strawberries, will jam be more or less expensive?"
+            }
+        },
+        {
+            "type": "mystery_investment",
+            "character_code": "drrho",
+            "content": {
+                "transcript": "You have 10 coins to invest. How will you divide them to minimize risk?",
+                "instruction": "Divide your coins among different boxes. Don't put everything in one place!",
+                "totalCoins": 10,
+                "boxes": [
+                    {
+                        "id": "gold",
+                        "name": "Gold Box",
+                        "type": "safe",
+                        "minReturn": 1,
+                        "maxReturn": 2,
+                        "description": "Always returns something, but little"
+                    },
+                    {
+                        "id": "mystery",
+                        "name": "Mystery Box",
+                        "type": "risky",
+                        "minReturn": 0,
+                        "maxReturn": 5,
+                        "description": "High risk, high reward"
+                    },
+                    {
+                        "id": "friend",
+                        "name": "Friend Box",
+                        "type": "shared",
+                        "minReturn": 1,
+                        "maxReturn": 3,
+                        "description": "Shared investment, medium risk"
+                    }
+                ]
+            },
+            "correct_answer": {
+                "strategy": "diversified",
+                "minBoxes": 2
+            },
+            "feedback": {
+                "success": "Excellent! You diversified your investment to reduce risk",
+                "error": "Try investing in at least 2 different boxes so you don't lose everything"
+            }
+        }
+    ]
+}

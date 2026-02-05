@@ -97,5 +97,7 @@
         "title": "We hope to see you soon!",
         "subtitle": "Come back soon to continue learning and building the future.",
         "back_home": "Back to Home"
-    }
+    },
+    "true": "True",
+    "false": "False"
 }

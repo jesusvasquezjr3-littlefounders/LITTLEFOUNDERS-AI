@@ -1,39 +1,274 @@
 {
-    "loading": "Cargando lección...",
-    "error": "Error al cargar la lección",
-    "start": {
-        "button": "EMPEZAR",
-        "points": "{{count}} pts",
-        "xp": "{{count}} XP"
-    },
-    "actions": {
-        "verify": "VERIFICAR",
-        "continue": "CONTINUAR",
-        "retry": "INTENTAR DE NUEVO",
-        "next": "SIGUIENTE"
-    },
-    "status": {
-        "speaking": "Hablando...",
-        "correct": "¡Correcto!",
-        "incorrect": "Incorrecto",
-        "great_job": "¡Excelente!"
-    },
-    "feedback": {
-        "success": "🎉 CONTINUAR",
-        "error": "🔄 REINTENTAR"
-    },
-    "completion": {
-        "title": "¡Lección Completada!",
-        "subtitle": "Completaste la lección 🌟",
-        "points_earned": "Puntos ganados",
-        "xp_earned": "XP ganados",
-        "next_lesson": "Siguiente lección",
-        "back_to_lessons": "Volver a lecciones"
-    },
-    "game_over": {
-        "title": "¡Se acabó la energía!",
-        "subtitle": "No te preocupes, puedes intentarlo de nuevo. ¡Tú puedes!",
-        "retry_button": "Reintentar",
-        "exit_button": "Salir"
-    }
+  "loading": "Cargando lección...",
+  "error": "Error al cargar la lección",
+  "start": {
+    "button": "EMPEZAR",
+    "points": "{{count}} pts",
+    "xp": "{{count}} XP"
+  },
+  "actions": {
+    "verify": "VERIFICAR",
+    "continue": "CONTINUAR",
+    "retry": "INTENTAR DE NUEVO",
+    "next": "SIGUIENTE",
+    "buy": "COMPRAR",
+    "calculate": "CALCULAR",
+    "pay_exact": "PAGAR CANTIDAD EXACTA",
+    "split_bill": "DIVIDIR CUENTA",
+    "select_offer": "SELECCIONAR OFERTA",
+    "build_portfolio": "CONSTRUIR PORTAFOLIO",
+    "analyze": "ANALIZAR",
+    "create_roadmap": "CREAR HOJA DE RUTA",
+    "build_income": "CONSTRUIR INGRESO",
+    "finish_quiz": "TERMINAR QUIZ"
+  },
+  "economy": {
+    "budget": "PRESUPUESTO",
+    "spent": "GASTADO"
+  },
+  "status": {
+    "speaking": "Hablando...",
+    "correct": "¡Correcto!",
+    "incorrect": "Incorrecto",
+    "great_job": "¡Excelente!",
+    "found": "Encontrado:",
+    "chat_header": "Chat Financiero"
+  },
+  "feedback": {
+    "success": "🎉 CONTINUAR",
+    "error": "🔄 REINTENTAR",
+    "exact": "¡Exacto!",
+    "lower": "Más bajo",
+    "higher": "Más alto"
+  },
+  "completion": {
+    "title": "¡Lección Completada!",
+    "subtitle": "Completaste la lección 🌟",
+    "points_earned": "Puntos ganados",
+    "xp_earned": "XP ganados",
+    "next_lesson": "Siguiente lección",
+    "back_to_lessons": "Volver a lecciones"
+  },
+  "game_over": {
+    "title": "¡Se acabó la energía!",
+    "subtitle": "No te preocupes, puedes intentarlo de nuevo. ¡Tú puedes!",
+    "retry_button": "Reintentar",
+    "exit_button": "Salir"
+  },
+  "instructions": {
+    "drag_coins_here": "Arrastra monedas aquí"
+  },
+  "price_detective": {
+    "investigate": "🔍 INVESTIGAR PRECIOS",
+    "total_price": "Precio Total",
+    "unit_price": "Precio por Unidad"
+  },
+  "spot_trap": {
+    "warning": "¡Cuidado con las Estafas!",
+    "trap": "TRAMPA",
+    "safe": "SEGURO"
+  },
+  "impact_meter": {
+    "your_donation": "Tu Donación",
+    "impact": "Impacto",
+    "donate": "DONAR",
+    "thank_you": "¡Gracias por tu Generosidad!"
+  },
+  "market_reaction": {
+    "breaking_news": "Noticias de Última Hora",
+    "why": "¿Por qué?"
+  },
+  "mystery_investment": {
+    "your_coins": "Tus Monedas",
+    "remaining": "Restantes",
+    "return_range": "Retorno Esperado",
+    "invested": "Invertido",
+    "returned": "Retorno",
+    "total_return": "Retorno Total",
+    "profit": "¡Ganaste!",
+    "loss": "Perdiste algo",
+    "invest": "INVERTIR",
+    "complete": "¡Inversión Completa!"
+  },
+  "budget_builder": {
+    "total_budget": "Presupuesto Total",
+    "spent": "Gastado",
+    "drag_items": "Arrastra los artículos a las categorías",
+    "needs": "Necesidades",
+    "wants": "Deseos",
+    "drop_here": "Suelta aquí"
+  },
+  "savings_race": {
+    "goal": "Meta de Ahorro",
+    "speed": "Velocidad",
+    "start_race": "INICIAR CARRERA",
+    "racing": "Ahorrando...",
+    "goal_reached": "¡Meta Alcanzada!"
+  },
+  "expense_timeline": {
+    "instruction": "Ordena los gastos por prioridad",
+    "drag_to_timeline": "Arrastra a la línea de tiempo",
+    "drop_here": "Suelta aquí",
+    "urgent": "Urgente",
+    "important": "Importante",
+    "can_wait": "Puede Esperar"
+  },
+  "interest_calculator": {
+    "simple_title": "Calculadora de Interés Simple",
+    "compound_title": "Calculadora de Interés Compuesto",
+    "principal": "Capital Inicial",
+    "rate": "Tasa de Interés",
+    "time": "Tiempo",
+    "years": "años",
+    "initial": "Inicial",
+    "interest_earned": "Interés Ganado",
+    "total": "Total",
+    "calculate": "CALCULAR",
+    "calculated": "¡Calculado!"
+  },
+  "tax_puzzle": {
+    "title": "Rompecabezas de Impuestos",
+    "gross_income": "Ingreso Bruto",
+    "deductions": "Deducciones",
+    "taxable_income": "Ingreso Gravable",
+    "tax_rate": "Tasa de Impuesto",
+    "tax_owed": "Impuesto a Pagar"
+  },
+  "negotiation": {
+    "confidence": "Confianza en Negociación",
+    "other_party": "Otra Parte",
+    "success": "¡Negociación Exitosa!",
+    "failed": "Negociación Fallida",
+    "success_message": "Lograste un buen trato",
+    "failed_message": "Intenta ser más estratégico"
+  },
+  "subscription": {
+    "monthly_cost": "Costo Mensual",
+    "annual_savings": "Ahorro Anual",
+    "per_month": "por mes",
+    "if_cancelled": "si cancelas",
+    "optimize": "OPTIMIZAR SUSCRIPCIONES",
+    "optimized": "¡Suscripciones Optimizadas!"
+  },
+  "inflation": {
+    "base_price": "Precio Base",
+    "start_year": "Año Inicial",
+    "end_year": "Año Final",
+    "price_increase": "Aumento de Precio",
+    "compare": "COMPARAR",
+    "compared": "¡Comparación Completa!"
+  },
+  "credit_score": {
+    "your_score": "Tu Puntaje",
+    "excellent": "Excelente",
+    "good": "Bueno",
+    "fair": "Regular",
+    "poor": "Malo",
+    "scenario": "Escenario",
+    "great_job": "¡Excelente Trabajo!",
+    "needs_work": "Necesita Mejorar",
+    "success_message": "Alcanzaste un buen puntaje",
+    "error_message": "Intenta tomar mejores decisiones"
+  },
+  "emergency_fund": {
+    "balance": "Fondo de Emergencia",
+    "emergency": "Emergencia",
+    "survived": "¡Sobreviviste!",
+    "depleted": "Fondo Agotado",
+    "success_message": "Manejaste bien las emergencias",
+    "error_message": "Necesitas un fondo más grande"
+  },
+  "compound_visualizer": {
+    "seed_money": "Dinero Semilla",
+    "years": "Años",
+    "years_label": "años",
+    "planted": "Plantado",
+    "growth": "Crecimiento",
+    "harvest": "Cosecha",
+    "plant": "PLANTAR",
+    "growing": "Creciendo...",
+    "grown": "¡Árbol Crecido!"
+  },
+  "bill_splitter": {
+    "equitable": "Equitativo",
+    "proportional": "Proporcional",
+    "assign_items": "Asignar Items",
+    "tip": "Propina",
+    "total": "Total",
+    "feedback_equitable": "💡 ¡Perfecto! División equitativa: todos pagan lo mismo. Simple y justo cuando todos consumieron similar.",
+    "feedback_proportional": "💡 ¡Excelente! División proporcional: cada quien paga lo que consumió. Muy preciso y justo."
+  },
+  "salary_comparison": {
+    "salary": "Salario",
+    "benefits": "Beneficios",
+    "location": "Ubicación",
+    "growth": "Crecimiento",
+    "score": "Puntaje"
+  },
+  "debt_strategy": {
+    "snowball": "Bola de Nieve",
+    "avalanche": "Avalancha",
+    "months": "Meses",
+    "interest": "Interés Total",
+    "simulate": "SIMULAR",
+    "simulating": "Simulando...",
+    "intro_title": "💡 ¿Qué estrategia usar para pagar deudas?",
+    "intro_text": "Tienes ${{debt}} en deudas. Con ${{payment}}/mes, ¿cuál estrategia te conviene más?",
+    "snowball_desc": "Paga primero las deudas más pequeñas. Te da victorias rápidas y motivación.",
+    "avalanche_desc": "Paga primero las deudas con mayor interés. Ahorras más dinero a largo plazo.",
+    "result_title": "💡 Resultado:",
+    "result_avalanche_win": "¡Avalancha te ahorra ${{savings}} en intereses! Pero Bola de Nieve te da victorias rápidas para mantenerte motivado. Elige según tu personalidad.",
+    "result_tie": "Ambas estrategias funcionan bien. Lo importante es ser consistente y no crear nuevas deudas."
+  },
+  "portfolio_builder": {
+    "allocated": "Asignado",
+    "risk": "Riesgo",
+    "risk_level": "Nivel de Riesgo",
+    "low": "Bajo",
+    "medium": "Medio",
+    "high": "Alto"
+  },
+  "opportunity_cost": {
+    "benefits": "Beneficios",
+    "sacrificed": "Sacrificado",
+    "analysis": "Análisis de Costo de Oportunidad",
+    "you_gain": "Ganas",
+    "you_lose": "Pierdes"
+  },
+  "goal_roadmap": {
+    "available_goals": "Metas Disponibles",
+    "your_roadmap": "Tu Hoja de Ruta",
+    "empty_roadmap": "Arrastra metas aquí para crear tu hoja de ruta",
+    "remove": "Remover",
+    "complete": "¡Hoja de Ruta Completa!",
+    "feedback_order": "💡 Orden recomendado: 1️⃣ Fondo de emergencia (seguridad), 2️⃣ Pagar deudas (evitar intereses), 3️⃣ Invertir (hacer crecer tu dinero), 4️⃣ Compras grandes (metas a largo plazo). ¡Pero tu orden también puede funcionar según tus prioridades!"
+  },
+  "mindset_comparison": {
+    "scenario": "Escenario",
+    "scarcity": "Mentalidad de Escasez",
+    "abundance": "Mentalidad de Abundancia",
+    "response": "Respuesta",
+    "consequences": "Consecuencias",
+    "feedback_abundance": "💡 ¡Exacto! La mentalidad de abundancia ve problemas como oportunidades. Esto te lleva a actuar y encontrar soluciones.",
+    "feedback_scarcity": "💡 Nota cómo la mentalidad de escasez te paraliza. El miedo y estrés te impiden ver las soluciones que tienes enfrente."
+  },
+  "passive_income": {
+    "target": "Meta de Ingreso Pasivo",
+    "monthly": "Mensual",
+    "your_streams": "Tus Fuentes de Ingreso",
+    "target_met": "¡Meta Alcanzada!",
+    "keep_adding": "Sigue agregando fuentes",
+    "not_enough": "No alcanzaste la meta",
+    "intro_title": "�� Ingreso Pasivo:",
+    "intro_desc": "Dinero que ganas sin trabajar activamente (¡mientras duermes!).",
+    "intro_goal": "Tu meta es construir suficientes fuentes de ingreso para cubrir tus gastos mensuales de ${{amount}}."
+  },
+  "quiz_battle": {
+    "question": "Pregunta",
+    "final_score": "Puntaje Final",
+    "excellent": "¡Excelente!",
+    "good": "¡Buen trabajo!",
+    "keep_practicing": "Sigue practicando",
+    "complete": "¡Lección Completada!"
+  }
 }

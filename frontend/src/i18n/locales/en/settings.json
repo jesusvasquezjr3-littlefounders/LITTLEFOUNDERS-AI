@@ -53,7 +53,7 @@
                 "generic": "Could not change password"
             }
         },
-        "social": "Social Connection",
+        "social": "Auth Provider",
         "language": "App Language"
     },
     "actions": {

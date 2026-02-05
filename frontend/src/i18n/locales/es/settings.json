@@ -53,7 +53,7 @@
                 "generic": "No se pudo cambiar la contraseña"
             }
         },
-        "social": "Conexión Social",
+        "social": "Proveedor de autenticación",
         "language": "Idioma App"
     },
     "actions": {

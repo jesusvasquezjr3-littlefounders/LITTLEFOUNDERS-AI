@@ -19,7 +19,7 @@ export interface AudioData {
 
 export interface ExerciseData {
     id: number;
-    type: 'intro_narrative' | 'multiple_choice' | 'drag_drop' | 'match_pairs' | 'fill_blank' | 'classification' | 'tap_action' | 'comparison';
+    type: 'intro_narrative' | 'multiple_choice' | 'drag_drop' | 'match_pairs' | 'matching_pairs' | 'fill_blank' | 'classification' | 'tap_action' | 'comparison' | 'story_mode' | 'sequencing' | 'sorting_buckets' | 'true_false' | 'math_challenge' | 'roleplay_chat' | 'word_scramble' | 'estimation_slider' | 'image_hotspot' | 'shop_sim' | 'coin_counter' | 'concept_builder' | 'risk_reward' | 'balance_scale' | 'price_detective' | 'spot_trap' | 'impact_meter' | 'market_reaction' | 'mystery_investment' | 'budget_builder' | 'savings_race' | 'expense_timeline' | 'interest_calculator' | 'tax_puzzle' | 'subscription_tracker' | 'inflation_simulator' | 'credit_score' | 'emergency_fund' | 'bill_splitter' | 'salary_comparison' | 'debt_strategy' | 'portfolio_builder' | 'opportunity_cost' | 'goal_roadmap' | 'mindset_comparison' | 'passive_income' | 'quiz_battle';
     order_index: number;
     character_code?: string; // 'liruf' o 'dina'
     start_time_ms: number;
@@ -35,11 +35,76 @@ export interface ExerciseData {
         // Classification specific
         items?: Array<{ id: string; text: string; emoji?: string; category?: string; isTarget?: boolean; type?: string }>;
         categories?: Array<{ id: string; label: string }>;
+        // Story Mode specific
+        pages?: Array<{ id: string; text: string; image?: string; character_mood?: string; choices?: Array<{ id: string; text: string; next_page?: string }> }>;
+        // Batch 1: Matching and FillBlank
+        pairs?: Array<{ id: string; left: string; right: string }>;
+        segments?: Array<{ type: 'text' | 'blank'; text?: string }>;
+        statement?: string; // TrueFalse
+        blank_ids?: Record<string, string>; // Correct answers for fill blank
+        // Batch 2: Math, Roleplay, WordScramble
+        word?: string; // WordScramble target
+        hint?: string;
+        dialogue?: Array<{ id: string; sender: 'system' | 'hero' | 'npc' | 'user'; text: string; name?: string }>; // Roleplay history
+        context?: string; // Roleplay context
+        choices?: Array<{ id: string; text: string; next_page?: string }>; // General choices (Roleplay, Story)
+        // Batch 3: Slider, RiskReward, Hotspot
+        min?: number;
+        max?: number;
+        step?: number;
+        unit?: string;
+        imageUrl?: string; // Hotspot
+        hotspots?: Array<{ id: string; x: number; y: number; radius?: number; label?: string }>;
+        risk_options?: Array<{ id: string; type: 'safe' | 'risk'; text: string; reward: string; risk?: string }>;
+        // Batch 4: Shop, Coin, Concept
+        products?: Array<{ id: string; name: string; price: number; image?: string }>;
+        budget?: number;
+        targetAmount?: number;
+        coins_available?: Array<{ value: number; image?: string }>;
+        concepts?: Array<{ id: string; label: string; type: 'node' | 'connector' }>;
+        condition?: 'balanced' | 'left_heavy' | 'right_heavy';
+        // New Activities (Batch 1)
+        initialScore?: number;
+        scenarios?: Array<any>;
+        initialFund?: number;
+        events?: Array<any>;
+        // New Activities (Batch 2: 12-20)
+        people?: Array<any>; // BillSplitter
+        offers?: Array<any>; // SalaryComparison
+        factors?: string[]; // SalaryComparison
+        debts?: Array<any>; // DebtStrategy
+        monthlyPayment?: number; // DebtStrategy
+        assets?: Array<any>; // PortfolioBuilder
+        goals?: Array<any>; // GoalRoadmap
+        scenario?: any; // MindsetComparison
+        scarcity?: any; // MindsetComparison
+        abundance?: any; // MindsetComparison
+        streams?: Array<any>; // PassiveIncome
+        targetIncome?: number; // PassiveIncome
+        questions?: Array<any>; // QuizBattle
     };
     correct_answer?: {
         correctOptionId?: string;
         classifications?: Record<string, string>;
         targetIds?: string[];
+        sequence?: string[];
+        blank_ids?: Record<string, string>;
+        isTrue?: boolean;
+        // Batch 3+ Correct Answers
+        correctValue?: number;
+        tolerance?: number; // For slider
+        hotspotIds?: string[];
+        shopItems?: string[]; // IDs to buy
+        // New activity types (Batch 1)
+        trapIds?: string[]; // For spot_trap
+        acceptAny?: boolean; // For impact_meter
+        minBoxes?: number; // For mystery_investment
+        allocation?: Record<string, string>; // For budget_builder
+        order?: string[]; // For expense_timeline, goal_roadmap
+        minScore?: number; // For credit_score, quiz_battle
+        // New activity types (Batch 2: 12-20)
+        splits?: Record<string, number>; // For bill_splitter
+        bestOffer?: string; // For salary_comparison
     } | null;
     feedback?: { success: string; error: string } | null;
     points: number;
