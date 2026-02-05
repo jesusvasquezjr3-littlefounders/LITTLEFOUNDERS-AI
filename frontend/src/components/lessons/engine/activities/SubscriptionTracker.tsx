@@ -20,9 +20,9 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
     const [feedback, setFeedback] = useState<'none' | 'success'>('none');
 
     useEffect(() => {
-        const initial = new Set((exercise.content.subscriptions || [])
+        const initial = new Set<string>((exercise.content.subscriptions || [])
             .filter((sub: any) => sub.initiallyActive)
-            .map((sub: any) => sub.id));
+            .map((sub: any) => String(sub.id)));
         setActiveSubscriptions(initial);
         setFeedback('none');
     }, [exercise]);
