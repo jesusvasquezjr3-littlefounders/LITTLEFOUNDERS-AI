@@ -70,7 +70,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
         <div className="w-full max-w-4xl animate-slide-in-bottom">
 
             <h3 className="text-2xl font-bold text-center mb-10 text-slate-800 dark:text-slate-100">
-                {exercise.content.question || "¿Qué camino tomarás?"}
+                {exercise.content.question || t('instructions.risk_reward')}
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-stretch mb-10">

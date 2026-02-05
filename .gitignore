@@ -52,6 +52,7 @@ venv/
 *.pid
 
 GUIA_MIGRACION_DATOS.md
+AUDITORIA_LESSON_ENGINE.md
 
 database.sql
 migrations/

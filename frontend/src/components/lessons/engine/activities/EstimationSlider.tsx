@@ -78,7 +78,7 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
             {/* Question Card */}
             <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg border-2 border-slate-100 dark:border-slate-800 mb-10 w-full text-center">
                 <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
-                    {exercise.content.question || "¿Cuánto estimas?"}
+                    {exercise.content.question || t('instructions.estimation_slider')}
                 </h3>
                 <div className="text-5xl font-black text-purple-600 dark:text-purple-400">
                     {value[0]}<span className="text-2xl ml-1 text-slate-400 font-medium">{unit}</span>

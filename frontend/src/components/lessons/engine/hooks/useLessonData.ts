@@ -148,7 +148,7 @@ interface UseLessonDataReturn {
  * @param language - Código de idioma opcional (si no se pasa, usa el idioma actual de i18n)
  */
 export function useLessonData(lessonCode: string, language?: string): UseLessonDataReturn {
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation('errors');
     const [data, setData] = useState<LessonData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -166,13 +166,13 @@ export function useLessonData(lessonCode: string, language?: string): UseLessonD
             const response = await fetch(url);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: Lección no encontrada`);
+                throw new Error(t('lesson.not_found_error', { status: response.status }));
             }
 
             const lessonData = await response.json();
             setData(lessonData);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error al cargar la lección');
+            setError(err instanceof Error ? err.message : t('lesson.load_error'));
         } finally {
             setLoading(false);
         }

@@ -25,11 +25,13 @@
     "analyze": "ANALYZE",
     "create_roadmap": "CREATE ROADMAP",
     "build_income": "BUILD INCOME",
-    "finish_quiz": "FINISH QUIZ"
+    "finish_quiz": "FINISH QUIZ",
+    "compare": "COMPARE"
   },
   "economy": {
     "budget": "BUDGET",
-    "spent": "SPENT"
+    "spent": "SPENT",
+    "total": "Total"
   },
   "status": {
     "speaking": "Speaking...",
@@ -61,7 +63,24 @@
     "exit_button": "Exit"
   },
   "instructions": {
-    "drag_coins_here": "Drag coins here"
+    "drag_coins_here": "Drag coins here",
+    "fill_blank": "Complete the sentence.",
+    "classification": "Classify the items.",
+    "matching_pairs": "Match the pairs.",
+    "sequencing": "Order the steps.",
+    "sorting_buckets": "Organize each item.",
+    "true_false": "True or False?",
+    "multiple_choice": "Choose the correct option.",
+    "tap_action": "Tap the indicated items.",
+    "math_challenge": "Solve the problem.",
+    "word_scramble": "Unscramble the letters.",
+    "estimation_slider": "Estimate the value.",
+    "risk_reward": "Choose your strategy.",
+    "roleplay_chat": "Select your response.",
+    "shop_sim": "Buy what you need.",
+    "coin_counter": "Count the money.",
+    "concept_builder": "Build the concept.",
+    "default": "Complete the activity."
   },
   "price_detective": {
     "investigate": "🔍 INVESTIGATE PRICES",
@@ -275,5 +294,9 @@
     "good": "Good job!",
     "keep_practicing": "Keep practicing",
     "complete": "Lesson Completed!"
+  },
+  "roleplay_chat": {
+    "excellent_decision": "Excellent decision!",
+    "not_best_choice": "Hmm, maybe that's not the best choice..."
   }
 }

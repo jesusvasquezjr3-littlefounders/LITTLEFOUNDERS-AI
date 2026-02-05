@@ -83,7 +83,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom flex flex-col items-center">
 
-            <h3 className="text-xl font-bold mb-8 text-center">{exercise.content.question || "Construye el concepto:"}</h3>
+            <h3 className="text-xl font-bold mb-8 text-center">{exercise.content.question || t('instructions.concept_builder')}</h3>
 
             {/* Blocks Row */}
             <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-2 mb-10 w-full">

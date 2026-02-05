@@ -28,6 +28,10 @@
         "lesson": "Lesson not found",
         "resource": "Resource not found"
     },
+    "lesson": {
+        "load_error": "Error loading lesson",
+        "not_found_error": "Error {{status}}: Lesson not found"
+    },
     "generic": {
         "something_went_wrong": "Something went wrong",
         "try_again": "Please try again",

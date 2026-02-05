@@ -25,6 +25,10 @@
         "lesson": "Lección no encontrada",
         "resource": "Recurso no encontrado"
     },
+    "lesson": {
+        "load_error": "Error al cargar la lección",
+        "not_found_error": "Error {{status}}: Lección no encontrada"
+    },
     "generic": {
         "something_went_wrong": "Algo salió mal",
         "try_again": "Por favor, intenta de nuevo",

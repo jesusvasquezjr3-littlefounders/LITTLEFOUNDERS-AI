@@ -146,7 +146,7 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
 
             {/* Hint / Question */}
             <div className="mb-8 text-center">
-                <p className="text-muted-foreground font-medium mb-2">{exercise.content.question || "Ordena las letras:"}</p>
+                <p className="text-muted-foreground font-medium mb-2">{exercise.content.question || t('instructions.word_scramble')}</p>
                 {exercise.content.hint && (
                     <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-4 py-2 rounded-full text-sm inline-block">
                         💡 {exercise.content.hint}

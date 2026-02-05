@@ -123,7 +123,7 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
 
             {/* Current Total Indicator */}
             <div className={cn("text-2xl font-bold mb-6 transition-colors", currentAmount > targetAmount ? "text-red-500" : "text-slate-500")}>
-                Total: {currentAmount}
+                {t('economy.total')}: {currentAmount}
             </div>
 
             {/* Actions */}

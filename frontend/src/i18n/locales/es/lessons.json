@@ -20,11 +20,13 @@
     "analyze": "ANALIZAR",
     "create_roadmap": "CREAR HOJA DE RUTA",
     "build_income": "CONSTRUIR INGRESO",
-    "finish_quiz": "TERMINAR QUIZ"
+    "finish_quiz": "TERMINAR QUIZ",
+    "compare": "COMPARAR"
   },
   "economy": {
     "budget": "PRESUPUESTO",
-    "spent": "GASTADO"
+    "spent": "GASTADO",
+    "total": "Total"
   },
   "status": {
     "speaking": "Hablando...",
@@ -56,7 +58,24 @@
     "exit_button": "Salir"
   },
   "instructions": {
-    "drag_coins_here": "Arrastra monedas aquí"
+    "drag_coins_here": "Arrastra monedas aquí",
+    "fill_blank": "Completa la frase.",
+    "classification": "Clasifica los elementos.",
+    "matching_pairs": "Une los pares.",
+    "sequencing": "Ordena los pasos.",
+    "sorting_buckets": "Organiza cada elemento.",
+    "true_false": "¿Verdadero o Falso?",
+    "multiple_choice": "Elige la opción correcta.",
+    "tap_action": "Toca los elementos indicados.",
+    "math_challenge": "Resuelve el problema.",
+    "word_scramble": "Ordena las letras.",
+    "estimation_slider": "Estima el valor.",
+    "risk_reward": "Elige tu estrategia.",
+    "roleplay_chat": "Selecciona qué responder.",
+    "shop_sim": "Compra lo que necesitas.",
+    "coin_counter": "Cuenta el dinero.",
+    "concept_builder": "Construye el concepto.",
+    "default": "Completa la actividad."
   },
   "price_detective": {
     "investigate": "🔍 INVESTIGAR PRECIOS",
@@ -270,5 +289,9 @@
     "good": "¡Buen trabajo!",
     "keep_practicing": "Sigue practicando",
     "complete": "¡Lección Completada!"
+  },
+  "roleplay_chat": {
+    "excellent_decision": "¡Excelente decisión!",
+    "not_best_choice": "Mmm, tal vez no sea lo mejor..."
   }
 }

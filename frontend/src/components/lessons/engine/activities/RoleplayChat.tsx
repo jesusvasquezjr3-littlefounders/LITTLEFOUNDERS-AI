@@ -72,8 +72,8 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
             setIsTyping(false);
 
             const npcResponseText = isCorrect
-                ? (exercise.feedback?.success || "¡Excelente decisión!")
-                : (exercise.feedback?.error || "Mmm, tal vez no sea lo mejor...");
+                ? (exercise.feedback?.success || t('roleplay_chat.excellent_decision'))
+                : (exercise.feedback?.error || t('roleplay_chat.not_best_choice'));
 
             const npcMsg: ChatMessage = {
                 id: `npc-${Date.now()}`,

@@ -201,24 +201,24 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             return content.instruction || content.question || content.statement || content.transcript || content.context || content.hint;
         }
 
-        // Type-based fallbacks (i18n hardcoded for now or use translation keys later)
+        // Type-based fallbacks using i18n translation keys
         switch (currentExercise.type) {
-            case 'fill_blank': return "Completa la frase.";
-            case 'classification': return "Clasifica los elementos.";
-            case 'matching_pairs': return "Une los pares.";
-            case 'sequencing': return "Ordena los pasos.";
-            case 'sorting_buckets': return "Organiza cada elemento.";
-            case 'true_false': return "¿Verdadero o Falso?";
-            case 'multiple_choice': return "Elige la opción correcta.";
-            case 'tap_action': return "Toca los elementos indicados.";
-            case 'math_challenge': return "Resuelve el problema.";
-            case 'word_scramble': return "Ordena las letras.";
-            case 'estimation_slider': return "Estima el valor.";
-            case 'risk_reward': return "Elige tu estrategia.";
-            case 'roleplay_chat': return "Selecciona qué responder.";
-            case 'shop_sim': return "Compra lo que necesitas.";
-            case 'coin_counter': return "Cuenta el dinero.";
-            default: return "Completa la actividad.";
+            case 'fill_blank': return t('instructions.fill_blank');
+            case 'classification': return t('instructions.classification');
+            case 'matching_pairs': return t('instructions.matching_pairs');
+            case 'sequencing': return t('instructions.sequencing');
+            case 'sorting_buckets': return t('instructions.sorting_buckets');
+            case 'true_false': return t('instructions.true_false');
+            case 'multiple_choice': return t('instructions.multiple_choice');
+            case 'tap_action': return t('instructions.tap_action');
+            case 'math_challenge': return t('instructions.math_challenge');
+            case 'word_scramble': return t('instructions.word_scramble');
+            case 'estimation_slider': return t('instructions.estimation_slider');
+            case 'risk_reward': return t('instructions.risk_reward');
+            case 'roleplay_chat': return t('instructions.roleplay_chat');
+            case 'shop_sim': return t('instructions.shop_sim');
+            case 'coin_counter': return t('instructions.coin_counter');
+            default: return t('instructions.default');
         }
     };
 
@@ -1821,7 +1821,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 <p className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-400">
                                     +{data.meta.points_reward}
                                 </p>
-                                <p className="text-xs text-muted-foreground">puntos</p>
+                                <p className="text-xs text-muted-foreground">{t('common:dashboard.stats.points')}</p>
                             </div>
                             <div className="bg-gradient-to-br from-purple-400/20 to-pink-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
                                 <Trophy className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500 mx-auto mb-1" />
