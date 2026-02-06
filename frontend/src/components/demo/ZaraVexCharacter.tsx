@@ -56,7 +56,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     };
 
     return (
-        <div className={cn("relative w-full aspect-[1/3] flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
+        <div className={cn("relative w-full max-w-[280px] h-[350px] mx-auto flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
 
             {/* Burbuja */}
             <div className={cn(
@@ -77,7 +77,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             <svg
                 id="zara-svg"
                 viewBox="0 0 140 340"
-                className="w-full h-auto max-h-full"
+                className="w-full h-full object-contain"
                 xmlns="http://www.w3.org/2000/svg"
             >
                 <defs>

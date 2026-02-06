@@ -15,9 +15,12 @@ dist
 dist-ssr
 *.local
 
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.cursor/
+.cursorrules
 .idea
 .DS_Store
 *.suo
@@ -55,4 +58,7 @@ GUIA_MIGRACION_DATOS.md
 AUDITORIA_LESSON_ENGINE.md
 
 database.sql
-migrations/
+
+# Componentes para generar las lecciones mediante automatización
+# Nota: Agente usado para generar las lecciones: Kimi's Computer (K2.5 Agent) (https://www.kimi.com/)
+littlefounders_lessons/

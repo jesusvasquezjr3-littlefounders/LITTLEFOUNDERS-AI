@@ -14,7 +14,7 @@ import models
 # Import routers
 from auth.endpoints import router as auth_router
 from dashboard.endpoints import router as dashboard_router
-from lecciones.endpoints import router as lecciones_router
+
 from lesson_engine.endpoints import router as lesson_engine_router
 
 # Create database tables
@@ -59,7 +59,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth_router)
 app.include_router(dashboard_router)
-app.include_router(lecciones_router)
+
 app.include_router(lesson_engine_router)
 
 @app.get("/")

@@ -126,6 +126,8 @@ export interface LessonInfo {
     saga_code?: string;
     adventure?: string;
     adventure_code?: string;
+    topic?: string;
+    topic_code?: string;
     language?: string; // Idioma de la respuesta
 }
 

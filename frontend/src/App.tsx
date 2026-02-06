@@ -29,7 +29,7 @@ import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Demo from "./pages/demo/Demo";
 import { DemoLemonadeStand } from "./pages/demo/DemoLemonadeStand";
-import { DemoLecciones } from "./pages/demo/DemoLecciones";
+
 import { DemoVirtualCard } from "./pages/demo/DemoVirtualCard";
 import { DemoDigitalBanking } from "./pages/demo/DemoDigitalBanking";
 import { DemoInvestmentGames } from "./pages/demo/DemoInvestmentGames";
@@ -130,7 +130,7 @@ const App = () => (
                 {/* Demo Routes */}
                 <Route path="/demo" element={<Demo />} />
                 <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
-                <Route path="/demo/lecciones" element={<DemoLecciones />} />
+
                 <Route path="/demo/card" element={<DemoVirtualCard />} />
                 <Route path="/demo/growth" element={<DemoDigitalBanking />} />
                 <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />

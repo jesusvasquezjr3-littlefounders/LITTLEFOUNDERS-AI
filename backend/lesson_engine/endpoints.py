@@ -21,6 +21,27 @@ from schemas import (
     AdventureProgress, UserLessonStats
 )
 
+# Character code normalization map
+CHARACTER_CODE_MAP = {
+    'liruf': 'liruf',
+    'dina': 'dina',
+    'dr_rho': 'dr_rho',
+    'zara_vex': 'zara_vex',
+    'drrho': 'dr_rho',
+    'zaravex': 'zara_vex',
+    'DrRho': 'dr_rho',
+    'ZaraVex': 'zara_vex',
+    'dr rho': 'dr_rho',
+    'zara vex': 'zara_vex'
+}
+
+def normalize_character_code(code: str) -> str:
+    """Normalize character code to canonical format."""
+    if not code:
+        return 'liruf'
+    # Try lowercase first, then original
+    return CHARACTER_CODE_MAP.get(code.lower().strip(), CHARACTER_CODE_MAP.get(code, 'liruf'))
+
 router = APIRouter(prefix="/lesson-engine", tags=["Lesson Engine"])
 
 # HARDCODED ADVENTURE DATA (Since tables were dropped for flattening)
@@ -50,6 +71,19 @@ SAGAS_DATA = {
     1: [ # For Adventure 1
          {"id": 1, "code": "detectives", "title": "Detectives del Tesoro", "icon": "🔍"},
          {"id": 2, "code": "mercaderes", "title": "Mercaderes Mágicos", "icon": "🛒"}
+    ]
+}
+
+# HARDCODED TOPICS DATA (Temas por Adventure y Saga)
+TOPICS_DATA = {
+    (1, 1): [  # Adventure 1, Saga 1
+        {"id": 1, "code": "intro_ahorro", "title": "Introducción al Ahorro"},
+        {"id": 2, "code": "monedas", "title": "Conociendo las Monedas"},
+        {"id": 3, "code": "necesidades", "title": "Necesidades vs Deseos"}
+    ],
+    (1, 2): [  # Adventure 1, Saga 2
+        {"id": 1, "code": "compras", "title": "Compras Inteligentes"},
+        {"id": 2, "code": "comparar", "title": "Comparar Precios"}
     ]
 }
 
@@ -192,11 +226,15 @@ async def get_lesson_for_play(
     timeline = []
     if content_array and isinstance(content_array, list):
         for idx, ex in enumerate(content_array):
+            # Normalize character code
+            raw_char_code = ex.get('character_code')
+            normalized_char_code = normalize_character_code(raw_char_code) if raw_char_code else None
+
             # Inject ID and Order if missing
             ex_data = {
                 "id": idx + 1, # Fake ID for frontend key
                 "type": ex.get('type', 'unknown'),
-                "character_code": ex.get('character_code'),  # Pass explicit character if defined (e.g. dina)
+                "character_code": normalized_char_code,  # Pass normalized character code
                 "order_index": idx,
                 "start_time_ms": 0, # Flat timeline
                 "pause_at_ms": None,
@@ -207,27 +245,40 @@ async def get_lesson_for_play(
                 "audio": None # Generated lessons don't define audio segments yet
             }
             # Add audio placeholder if structure exists in content (custom logic)
-            # content.audioUrl ? 
-            
+            # content.audioUrl ?
+
             timeline.append(ex_data)
             
     # Mock Saga/Adventure Info for display
     # We could look this up in ADVENTURES_DATA
     adv = next((a for a in ADVENTURES_DATA if a['id'] == lesson.adventure_level), {})
-    
+
+    # Get saga name
+    saga_list = SAGAS_DATA.get(lesson.adventure_level, [])
+    saga = next((s for s in saga_list if s['id'] == lesson.saga_level), {})
+    saga_title = saga.get('title', f'Saga {lesson.saga_level}')
+
+    # Get topic/theme name
+    topic_list = TOPICS_DATA.get((lesson.adventure_level, lesson.saga_level), [])
+    topic = next((t for t in topic_list if t['id'] == lesson.topic_level), {})
+    topic_title = topic.get('title', f'Tema {lesson.topic_level}')
+
     return {
         "lesson": {
             "id": lesson.id,
             "code": lesson.lesson_code,
             "title": title,
             "description": description,
-            "saga": "Saga " + str(lesson.saga_level),
+            "saga": saga_title,
+            "saga_code": saga.get('code', 'detectives'),
             "adventure": adv.get('title', 'Aventura'),
             "adventure_code": adv.get('code', 'archipielago'),
+            "topic": topic_title,
+            "topic_code": topic.get('code', 'intro'),
             "language": lang
         },
         "meta": {
-            "estimated_duration_seconds": lesson.duration * 60 if lesson.duration else 180,
+            "estimated_duration_seconds": lesson.duration or 180,  # duration already in seconds
             "points_reward": lesson.points_reward or 10,
             "xp_reward": 25
         },

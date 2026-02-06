@@ -179,46 +179,117 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return 'happy';
     };
 
-    // Get current character code from exercise
+    // Character code mapping - normalize all variations to canonical codes
+    const CHARACTER_CODE_MAP: Record<string, string> = {
+        // Canonical codes
+        'liruf': 'liruf',
+        'dina': 'dina',
+        'dr_rho': 'dr_rho',
+        'zara_vex': 'zara_vex',
+
+        // Variations without underscores (from DB)
+        'drrho': 'dr_rho',
+        'zaravex': 'zara_vex',
+
+        // Camel case variations
+        'DrRho': 'dr_rho',
+        'ZaraVex': 'zara_vex',
+
+        // Lowercase variations
+        'dr rho': 'dr_rho',
+        'zara vex': 'zara_vex'
+    };
+
+    // Get current character code from exercise with normalization
     const getCharacterCode = (): string => {
-        return currentExercise?.character_code || 'liruf';
+        const rawCode = currentExercise?.character_code || 'liruf';
+        // Normalize the code using the mapping dictionary
+        return CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
     };
 
     // Get current text to display
+    // Prioridad de contenido:
+    // 1. Mensajes de feedback (success/error) cuando aplica
+    // 2. Contenido específico del ejercicio (question, instruction, statement, etc.)
+    // 3. Fallback por tipo de ejercicio con traducciones
     const getCurrentText = (): string => {
         if (!currentExercise) return '';
+
+        // Mostrar feedback si está disponible
         if (localFeedback === 'success' && currentExercise.feedback?.success) {
             return currentExercise.feedback.success;
         }
         if (localFeedback === 'error' && currentExercise.feedback?.error) {
             return currentExercise.feedback.error;
         }
+
         // Support different content types: question, instruction, transcript
         const content = currentExercise.content as any;
 
-        // Content fallbacks
-        if (content.instruction || content.question || content.statement || content.transcript || content.context || content.hint) {
-            return content.instruction || content.question || content.statement || content.transcript || content.context || content.hint;
+        // CRITICAL: Check ALL possible text fields in order of priority
+        // Based on actual JSON structure from lesson files
+        if (content) {
+            // Primary fields (most common)
+            if (content.question) return content.question;
+            if (content.statement) return content.statement;
+            if (content.instruction) return content.instruction;
+
+            // Secondary fields (narrative/context)
+            if (content.transcript) return content.transcript;
+            if (content.context) return content.context;
+            if (content.prompt) return content.prompt;
+
+            // Tertiary fields (descriptive)
+            if (content.description) return content.description;
+            if (content.text) return content.text;
+            if (content.hint) return content.hint;
+            if (content.scenario) return content.scenario;
+            if (content.challenge) return content.challenge;
         }
 
         // Type-based fallbacks using i18n translation keys
         switch (currentExercise.type) {
-            case 'fill_blank': return t('instructions.fill_blank');
-            case 'classification': return t('instructions.classification');
-            case 'matching_pairs': return t('instructions.matching_pairs');
-            case 'sequencing': return t('instructions.sequencing');
-            case 'sorting_buckets': return t('instructions.sorting_buckets');
-            case 'true_false': return t('instructions.true_false');
-            case 'multiple_choice': return t('instructions.multiple_choice');
-            case 'tap_action': return t('instructions.tap_action');
-            case 'math_challenge': return t('instructions.math_challenge');
-            case 'word_scramble': return t('instructions.word_scramble');
-            case 'estimation_slider': return t('instructions.estimation_slider');
-            case 'risk_reward': return t('instructions.risk_reward');
-            case 'roleplay_chat': return t('instructions.roleplay_chat');
-            case 'shop_sim': return t('instructions.shop_sim');
-            case 'coin_counter': return t('instructions.coin_counter');
-            default: return t('instructions.default');
+            case 'fill_blank': return t('instructions.fill_blank', { defaultValue: 'Completa los espacios en blanco' });
+            case 'classification': return t('instructions.classification', { defaultValue: 'Clasifica cada elemento' });
+            case 'matching_pairs':
+            case 'match_pairs': return t('instructions.matching_pairs', { defaultValue: 'Conecta las parejas' });
+            case 'sequencing': return t('instructions.sequencing', { defaultValue: 'Ordena los elementos' });
+            case 'sorting_buckets': return t('instructions.sorting_buckets', { defaultValue: 'Arrastra a la categoría correcta' });
+            case 'true_false': return t('instructions.true_false', { defaultValue: '¿Es verdadero o falso?' });
+            case 'multiple_choice': return t('instructions.multiple_choice', { defaultValue: 'Selecciona la respuesta correcta' });
+            case 'tap_action': return t('instructions.tap_action', { defaultValue: 'Toca los elementos correctos' });
+            case 'math_challenge': return t('instructions.math_challenge', { defaultValue: 'Resuelve el problema' });
+            case 'word_scramble': return t('instructions.word_scramble', { defaultValue: 'Ordena las letras' });
+            case 'estimation_slider': return t('instructions.estimation_slider', { defaultValue: 'Ajusta el valor' });
+            case 'risk_reward': return t('instructions.risk_reward', { defaultValue: 'Elige la mejor opción' });
+            case 'roleplay_chat': return t('instructions.roleplay_chat', { defaultValue: 'Elige tu respuesta' });
+            case 'shop_sim': return t('instructions.shop_sim', { defaultValue: 'Compra lo que necesitas' });
+            case 'coin_counter': return t('instructions.coin_counter', { defaultValue: 'Cuenta las monedas' });
+            case 'concept_builder': return t('instructions.concept_builder', { defaultValue: 'Construye el concepto' });
+            case 'price_detective': return t('instructions.price_detective', { defaultValue: 'Encuentra el mejor precio' });
+            case 'spot_trap': return t('instructions.spot_trap', { defaultValue: 'Identifica las trampas' });
+            case 'impact_meter': return t('instructions.impact_meter', { defaultValue: 'Evalúa el impacto' });
+            case 'market_reaction': return t('instructions.market_reaction', { defaultValue: 'Predice la reacción' });
+            case 'mystery_investment': return t('instructions.mystery_investment', { defaultValue: 'Descubre la inversión' });
+            case 'budget_builder': return t('instructions.budget_builder', { defaultValue: 'Crea tu presupuesto' });
+            case 'savings_race': return t('instructions.savings_race', { defaultValue: 'Ahorra más rápido' });
+            case 'expense_timeline': return t('instructions.expense_timeline', { defaultValue: 'Ordena los gastos' });
+            case 'interest_calculator': return t('instructions.interest_calculator', { defaultValue: 'Calcula el interés' });
+            case 'tax_puzzle': return t('instructions.tax_puzzle', { defaultValue: 'Resuelve el puzzle de impuestos' });
+            case 'subscription_tracker': return t('instructions.subscription_tracker', { defaultValue: 'Gestiona las suscripciones' });
+            case 'inflation_simulator': return t('instructions.inflation_simulator', { defaultValue: 'Simula la inflación' });
+            case 'credit_score': return t('instructions.credit_score', { defaultValue: 'Mejora tu puntaje' });
+            case 'emergency_fund': return t('instructions.emergency_fund', { defaultValue: 'Crea tu fondo de emergencia' });
+            case 'bill_splitter': return t('instructions.bill_splitter', { defaultValue: 'Divide la cuenta' });
+            case 'salary_comparison': return t('instructions.salary_comparison', { defaultValue: 'Compara los salarios' });
+            case 'debt_strategy': return t('instructions.debt_strategy', { defaultValue: 'Planea pagar deudas' });
+            case 'portfolio_builder': return t('instructions.portfolio_builder', { defaultValue: 'Construye tu portafolio' });
+            case 'opportunity_cost': return t('instructions.opportunity_cost', { defaultValue: 'Evalúa el costo de oportunidad' });
+            case 'goal_roadmap': return t('instructions.goal_roadmap', { defaultValue: 'Planea tus metas' });
+            case 'mindset_comparison': return t('instructions.mindset_comparison', { defaultValue: 'Compara mentalidades' });
+            case 'passive_income': return t('instructions.passive_income', { defaultValue: 'Genera ingresos pasivos' });
+            case 'quiz_battle': return t('instructions.quiz_battle', { defaultValue: 'Responde correctamente' });
+            default: return t('instructions.default', { defaultValue: '¿Qué harías?' });
         }
     };
 
@@ -448,46 +519,25 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             <div className="fixed inset-0 bg-gradient-to-b from-primary/10 via-background to-background flex flex-col">
                 <audio ref={audioRef} preload="auto" />
 
-                {/* Header */}
-                <div className="flex items-center justify-between p-4">
-                    <button
-                        onClick={handleClose}
-                        className="w-10 h-10 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
-                    >
-                        <X className="w-5 h-5 text-muted-foreground" />
-                    </button>
-                    <span className="text-sm font-medium text-muted-foreground">
-                        {data.lesson.saga}
-                    </span>
-                    <div className="w-10" /> {/* Spacer */}
-                </div>
-
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
                     {/* Character - Use first exercise's character_code */}
                     <div className="mb-8 animate-bounce-in">
-                        {data.timeline[0]?.character_code === 'dina' ? (
-                            <DinaCharacter
-                                className="w-full max-w-[280px]"
-                                expression="happy"
-                            />
-                        ) : data.timeline[0]?.character_code === 'dr_rho' ? (
-                            <DrRhoCharacter
-                                className="w-full max-w-[280px]"
-                                mood="wise"
-                            />
-                        ) : data.timeline[0]?.character_code === 'zara_vex' ? (
-                            <ZaraVexCharacter
-                                className="w-full max-w-[280px]"
-                                mood="happy"
-                            />
-                        ) : (
-                            <DinoCharacter
-                                className="w-full max-w-[280px]"
-                                showBubble={false}
-                                mood="excited"
-                            />
-                        )}
+                        {(() => {
+                            const rawCode = data.timeline[0]?.character_code || 'liruf';
+                            const normalizedCode = CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
+
+                            switch (normalizedCode) {
+                                case 'dina':
+                                    return <DinaCharacter className="w-full max-w-[280px]" expression="happy" />;
+                                case 'dr_rho':
+                                    return <DrRhoCharacter className="w-full max-w-[280px]" mood="wise" />;
+                                case 'zara_vex':
+                                    return <ZaraVexCharacter className="w-full max-w-[280px]" mood="happy" />;
+                                default:
+                                    return <DinoCharacter className="w-full max-w-[280px]" showBubble={false} mood="excited" />;
+                            }
+                        })()}
                     </div>
 
                     {/* Lesson Info */}
@@ -507,10 +557,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 bg-purple-500/10 dark:bg-purple-500/20 px-4 py-2 rounded-full">
-                                <Trophy className="w-5 h-5 text-purple-500" />
-                                <span className="font-bold text-purple-600 dark:text-purple-400">
-                                    {data.meta.xp_reward} XP
+                            <div className="flex items-center gap-2 bg-blue-500/10 dark:bg-blue-500/20 px-4 py-2 rounded-full">
+                                <Zap className="w-5 h-5 text-blue-500" />
+                                <span className="font-bold text-blue-600 dark:text-blue-400">
+                                    {data.meta.estimated_duration_seconds}s
                                 </span>
                             </div>
                         </div>
@@ -584,8 +634,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             {/* ===== MAIN CONTENT ===== */}
             <div className="flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch">
 
-                {/* Hide default Bubble/Character for StoryMode as it has its own */}
-                {currentExercise?.type !== 'story_mode' && (
+                {/* Hide default Bubble/Character for StoryMode and IntroNarrative as they have their own */}
+                {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
                         {/* Speech Bubble - ADAPTIVE */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0">
@@ -645,6 +695,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== INTRO NARRATIVE ===== */}
                 {currentExercise?.type === 'intro_narrative' && (
                     <IntroNarrative
+                        exercise={currentExercise}
                         onNext={() => {
                             // Narrative is just consumption, always "correct"
                             submitAnswer(true);
@@ -737,7 +788,18 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <Classification
                         exercise={currentExercise}
                         onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
+                            // Validate classification locally (don't trust submitAnswer for complex types)
+                            const correctClassifications = currentExercise.correct_answer?.classifications || {};
+                            const allItems = currentExercise.content.items || [];
+
+                            const isCorrect = allItems.every((item: any) =>
+                                answer[item.id] === correctClassifications[item.id]
+                            );
+
+                            // Submit the answer for tracking
+                            submitAnswer(answer);
+
+                            // Handle feedback based on our validation
                             if (isCorrect) {
                                 playSound('edu_success');
                                 confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
@@ -751,6 +813,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1823,12 +1887,12 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 </p>
                                 <p className="text-xs text-muted-foreground">{t('common:dashboard.stats.points')}</p>
                             </div>
-                            <div className="bg-gradient-to-br from-purple-400/20 to-pink-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
-                                <Trophy className="w-6 h-6 sm:w-7 sm:h-7 text-purple-500 mx-auto mb-1" />
-                                <p className="text-lg sm:text-xl font-bold text-purple-600 dark:text-purple-400">
-                                    +{data.meta.xp_reward}
+                            <div className="bg-gradient-to-br from-blue-400/20 to-cyan-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
+                                <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 mx-auto mb-1" />
+                                <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
+                                    {data.meta.estimated_duration_seconds}s
                                 </p>
-                                <p className="text-xs text-muted-foreground">XP</p>
+                                <p className="text-xs text-muted-foreground">Tiempo</p>
                             </div>
                         </div>
 

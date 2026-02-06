@@ -55,7 +55,14 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
 
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(selectedClassifications);
+
+        // Pass the result to parent and get confirmation
+        const result = onSubmit(selectedClassifications);
+
+        // If onSubmit returns a boolean, use that; otherwise use our calculation
+        if (typeof result === 'boolean') {
+            setFeedback(result ? 'success' : 'error');
+        }
     };
 
     const handleContinue = () => {
@@ -140,10 +147,10 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                                                 onClick={() => handleClassificationClick(item.id, cat.id)}
                                                 disabled={isChecked}
                                                 className={cn(
-                                                    "px-4 py-2 rounded-lg font-bold transition-all border-2",
+                                                    "px-4 py-2 rounded-lg font-bold transition-all duration-200",
                                                     isSelected
-                                                        ? `${color.active} text-white border-transparent shadow-md scale-105`
-                                                        : `${color.inactive} border-transparent hover:scale-105`
+                                                        ? `${color.active} text-white shadow-lg scale-105 ring-4 ring-white/50 border-2 border-white/30`
+                                                        : `${color.inactive} hover:scale-105 border-2 border-transparent`
                                                 )}
                                             >
                                                 {cat.label}

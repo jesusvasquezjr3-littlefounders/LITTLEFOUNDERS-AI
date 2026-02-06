@@ -115,12 +115,12 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                             onClick={() => handleTapItem(item.id)}
                             disabled={isChecked}
                             className={cn(
-                                "w-24 h-24 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center transition-all duration-200 transform text-white font-bold text-2xl relative",
+                                "min-w-24 min-h-24 sm:min-w-28 sm:min-h-28 max-w-32 sm:max-w-36 rounded-2xl flex items-center justify-center transition-all duration-200 transform text-white font-bold relative p-3",
                                 // Default
                                 !isTapped && !showResult && `${color.bg} ${color.hover} ${color.shadow} active:translate-y-[2px] active:shadow-none`,
 
                                 // Selected
-                                !showResult && isTapped && `${color.bg} translate-y-[4px] shadow-none ring-4 ring-white/40 scale-95`,
+                                !showResult && isTapped && `${color.bg} translate-y-[4px] shadow-none ring-4 ring-white/60 scale-95 brightness-110`,
 
                                 // Success Result
                                 showResult && feedback === 'success' && isTapped && itemIsTarget && "bg-green-500 shadow-none ring-4 ring-white scale-105 z-10",
@@ -132,7 +132,7 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                                 showResult && feedback === 'error' && !isTapped && "opacity-50 grayscale" // Ignored
                             )}
                         >
-                            <span className="relative z-10 drop-shadow-md">{content}</span>
+                            <span className="relative z-10 drop-shadow-md text-center break-words leading-tight text-xs sm:text-sm">{content}</span>
 
                             {/* Indicators */}
                             {showResult && feedback === 'success' && isTapped && itemIsTarget && (
