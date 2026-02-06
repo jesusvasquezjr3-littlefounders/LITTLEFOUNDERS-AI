@@ -16,7 +16,7 @@ import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
 import { DinaCharacter } from '@/components/demo/DinaCharacter';
 import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
-import { useLessonData, useLessonState } from './hooks';
+import { useLessonData, useLessonState, completeLesson, getNextLessonCode } from './hooks';
 import { useSound } from "@/contexts/SoundContext";
 import { MultipleChoice } from './activities/MultipleChoice';
 import { TapAction } from './activities/TapAction';
@@ -64,6 +64,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/compone
 import {
     X,
     Zap,
+    Clock,
     Trophy,
     Star,
     Loader2,
@@ -125,6 +126,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
     // UI states
     const [showSuccess, setShowSuccess] = useState(false);
+    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number } | null>(null);
+    const [isCompletingLesson, setIsCompletingLesson] = useState(false);
     const [showGameOver, setShowGameOver] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isChecked, setIsChecked] = useState(false);
@@ -326,17 +329,39 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return () => audio.removeEventListener('ended', handleEnded);
     }, [currentExercise, nextExercise]);
 
-    // Celebration on complete
+    // Celebration on complete + API call
     useEffect(() => {
-        if (state === 'COMPLETED') {
+        if (state === 'COMPLETED' && !isCompletingLesson) {
+            setIsCompletingLesson(true);
             stopBGM({ fade: true, fadeDuration: 1500 }); // Fade out BGM
+
+            // Call backend to mark lesson as completed
+            const markComplete = async () => {
+                try {
+                    const userStr = localStorage.getItem('user');
+                    const user = userStr ? JSON.parse(userStr) : null;
+                    const userId = user?.id;
+
+                    if (userId && code) {
+                        const result = await completeLesson(code, userId, 100, 180);
+                        if (result) {
+                            setCompletionResult(result);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error completing lesson:', err);
+                }
+            };
+
+            markComplete();
+
             setTimeout(() => {
                 playSound('edu_complete');
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
                 setShowSuccess(true);
             }, 1000); // Wait for fade to mostly finish before fanfare
         }
-    }, [state, playSound, stopBGM]);
+    }, [state, playSound, stopBGM, isCompletingLesson, code]);
 
     // Reset states and shuffle items when exercise changes
     useEffect(() => {
@@ -1883,34 +1908,59 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                             <div className="bg-gradient-to-br from-yellow-400/20 to-orange-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
                                 <Star className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-500 fill-yellow-500 mx-auto mb-1" />
                                 <p className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-400">
-                                    +{data.meta.points_reward}
+                                    +{completionResult?.points_earned || data.meta.points_reward}
                                 </p>
                                 <p className="text-xs text-muted-foreground">{t('common:dashboard.stats.points')}</p>
                             </div>
-                            <div className="bg-gradient-to-br from-blue-400/20 to-cyan-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
-                                <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 mx-auto mb-1" />
-                                <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
-                                    {data.meta.estimated_duration_seconds}s
-                                </p>
-                                <p className="text-xs text-muted-foreground">Tiempo</p>
-                            </div>
+                            {completionResult?.new_streak ? (
+                                <div className="bg-gradient-to-br from-orange-400/20 to-red-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
+                                    <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-orange-500 mx-auto mb-1" />
+                                    <p className="text-lg sm:text-xl font-bold text-orange-600 dark:text-orange-400">
+                                        🔥 {completionResult.new_streak}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">Racha</p>
+                                </div>
+                            ) : (
+                                <div className="bg-gradient-to-br from-blue-400/20 to-cyan-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
+                                    <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 mx-auto mb-1" />
+                                    <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
+                                        {data.meta.estimated_duration_seconds}s
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">Tiempo</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Action Buttons - Full width, stacked on small mobile */}
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full">
+                        <div className="flex flex-col gap-2 w-full">
                             <Button
-                                variant="outline"
-                                onClick={handleClose}
-                                className="w-full h-11 sm:h-12 rounded-xl font-semibold text-base border-2"
+                                onClick={() => {
+                                    const nextCode = getNextLessonCode(code);
+                                    setShowSuccess(false);
+                                    setIsCompletingLesson(false);
+                                    navigate(`/lesson/${nextCode}`);
+                                }}
+                                className="w-full h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
                             >
-                                {t('game_over.exit_button')}
+                                <ArrowRight className="w-5 h-5 mr-2" />
+                                {t('actions.next_lesson', { defaultValue: 'Siguiente Lección' })}
                             </Button>
-                            <Button
-                                onClick={() => { setShowSuccess(false); startLesson(); }}
-                                className="w-full h-11 sm:h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
-                            >
-                                🎮 {t('actions.retry')}
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleClose}
+                                    className="flex-1 h-11 rounded-xl font-semibold text-sm border-2"
+                                >
+                                    {t('game_over.exit_button')}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => { setShowSuccess(false); setIsCompletingLesson(false); startLesson(); }}
+                                    className="flex-1 h-11 rounded-xl font-semibold text-sm border-2"
+                                >
+                                    🎮 {t('actions.retry')}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </DialogContent>

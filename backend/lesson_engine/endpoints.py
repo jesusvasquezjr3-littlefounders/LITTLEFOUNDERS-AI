@@ -3,7 +3,7 @@ Enduntos del Nuevo Motor de Lecciones (v2 - Flat i18n)
 LittleFounders - 2026
 """
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, defer
 from sqlalchemy import func
 from typing import List, Optional, Dict
 from datetime import datetime
@@ -44,46 +44,131 @@ def normalize_character_code(code: str) -> str:
 
 router = APIRouter(prefix="/lesson-engine", tags=["Lesson Engine"])
 
-# HARDCODED ADVENTURE DATA (Since tables were dropped for flattening)
+# HARDCODED ADVENTURE DATA - All 6 adventures aligned with frontend themes
 ADVENTURES_DATA = [
     {
         "id": 1,
-        "code": "archipielago",
-        "title": "El Archipiélago de los Ahorros",
-        "description": "Una aventura mágica para aprender a guardar tesoros.",
-        "age_range": "5-8",
+        "code": "archipelago",
+        "title_key": "list.1.title",
+        "description_key": "list.1.description", 
+        "age_range": "5-7",
         "theme_color": "#4dd0e1",
-        "background_scene": "archipelago"
+        "background_scene": "archipelago",
+        "theme": "archipelago"
     },
     {
         "id": 2,
+        "code": "forest",
+        "title_key": "list.2.title",
+        "description_key": "list.2.description",
+        "age_range": "8-9",
+        "theme_color": "#4caf50",
+        "background_scene": "forest",
+        "theme": "forest"
+    },
+    {
+        "id": 3,
+        "code": "city",
+        "title_key": "list.3.title",
+        "description_key": "list.3.description",
+        "age_range": "10-12",
+        "theme_color": "#ff7043",
+        "background_scene": "city",
+        "theme": "city"
+    },
+    {
+        "id": 4,
+        "code": "valley",
+        "title_key": "list.4.title",
+        "description_key": "list.4.description",
+        "age_range": "13-14",
+        "theme_color": "#ab47bc",
+        "background_scene": "valley",
+        "theme": "valley"
+    },
+    {
+        "id": 5,
+        "code": "kingdom",
+        "title_key": "list.5.title",
+        "description_key": "list.5.description",
+        "age_range": "15-17",
+        "theme_color": "#ffd54f",
+        "background_scene": "kingdom",
+        "theme": "kingdom"
+    },
+    {
+        "id": 6,
         "code": "cosmos",
-        "title": "Cosmos Financiero",
-        "description": "Explora el universo del dinero.",
-        "age_range": "8-10",
+        "title_key": "list.6.title",
+        "description_key": "list.6.description",
+        "age_range": "18+",
         "theme_color": "#7e57c2",
-        "background_scene": "cosmos"
+        "background_scene": "cosmos",
+        "theme": "cosmos"
     }
 ]
 
-# HARDCODED SAGA DATA (Example mapping)
+# i18n Fallback titles (Spanish defaults)
+ADVENTURES_TITLES = {
+    1: {"es": "El Archipiélago del Trueque", "en": "The Barter Archipelago"},
+    2: {"es": "El Bosque de la Abundancia", "en": "The Forest of Abundance"},
+    3: {"es": "La Ciudad Digital", "en": "The Digital City"},
+    4: {"es": "El Valle de los Inventores", "en": "The Valley of Inventors"},
+    5: {"es": "El Reino de los Titanes", "en": "The Realm of Titans"},
+    6: {"es": "Cosmos Financiero", "en": "Financial Cosmos"}
+}
+
+# HARDCODED SAGA DATA per Adventure
 SAGAS_DATA = {
-    1: [ # For Adventure 1
-         {"id": 1, "code": "detectives", "title": "Detectives del Tesoro", "icon": "🔍"},
-         {"id": 2, "code": "mercaderes", "title": "Mercaderes Mágicos", "icon": "🛒"}
+    1: [
+        {"id": 1, "code": "savings", "title_es": "Detectives del Tesoro", "title_en": "Treasure Detectives", "icon": "🔍"},
+        {"id": 2, "code": "exchange", "title_es": "Mercaderes Mágicos", "title_en": "Magic Merchants", "icon": "🛒"},
+        {"id": 3, "code": "money_forms", "title_es": "Formas del Dinero", "title_en": "Forms of Money", "icon": "💰"},
+        {"id": 4, "code": "needs_wants", "title_es": "Necesidades y Deseos", "title_en": "Needs and Wants", "icon": "🎯"},
+        {"id": 5, "code": "first_savings", "title_es": "Mi Primer Ahorro", "title_en": "My First Savings", "icon": "🏦"}
+    ],
+    2: [
+        {"id": 1, "code": "growth", "title_es": "Crecimiento Natural", "title_en": "Natural Growth", "icon": "🌱"},
+        {"id": 2, "code": "patience", "title_es": "El Arte de la Paciencia", "title_en": "The Art of Patience", "icon": "⏳"},
+        {"id": 3, "code": "compound", "title_es": "Interés Compuesto", "title_en": "Compound Interest", "icon": "📈"},
+        {"id": 4, "code": "goals", "title_es": "Metas de Ahorro", "title_en": "Savings Goals", "icon": "🎯"},
+        {"id": 5, "code": "budget", "title_es": "Mi Primer Presupuesto", "title_en": "My First Budget", "icon": "📊"}
+    ],
+    3: [
+        {"id": 1, "code": "digital_money", "title_es": "Dinero Digital", "title_en": "Digital Money", "icon": "💳"},
+        {"id": 2, "code": "online_safety", "title_es": "Seguridad Online", "title_en": "Online Safety", "icon": "🔐"},
+        {"id": 3, "code": "smart_shopping", "title_es": "Compras Inteligentes", "title_en": "Smart Shopping", "icon": "🛍️"},
+        {"id": 4, "code": "entrepreneurship", "title_es": "Emprendimiento", "title_en": "Entrepreneurship", "icon": "💡"}
+    ],
+    4: [
+        {"id": 1, "code": "investing", "title_es": "Introducción a Inversiones", "title_en": "Intro to Investing", "icon": "📊"},
+        {"id": 2, "code": "risk", "title_es": "Riesgo y Recompensa", "title_en": "Risk and Reward", "icon": "⚖️"},
+        {"id": 3, "code": "stocks", "title_es": "El Mercado de Valores", "title_en": "The Stock Market", "icon": "📈"},
+        {"id": 4, "code": "diversification", "title_es": "Diversificación", "title_en": "Diversification", "icon": "🎨"}
+    ],
+    5: [
+        {"id": 1, "code": "credit", "title_es": "Crédito y Deuda", "title_en": "Credit and Debt", "icon": "💳"},
+        {"id": 2, "code": "taxes", "title_es": "Impuestos Básicos", "title_en": "Basic Taxes", "icon": "📝"},
+        {"id": 3, "code": "insurance", "title_es": "Seguros", "title_en": "Insurance", "icon": "🛡️"},
+        {"id": 4, "code": "retirement", "title_es": "Planificación para el Futuro", "title_en": "Planning for the Future", "icon": "🏠"}
+    ],
+    6: [
+        {"id": 1, "code": "wealth", "title_es": "Construcción de Patrimonio", "title_en": "Building Wealth", "icon": "🏛️"},
+        {"id": 2, "code": "passive", "title_es": "Ingresos Pasivos", "title_en": "Passive Income", "icon": "💰"},
+        {"id": 3, "code": "legacy", "title_es": "Legado Financiero", "title_en": "Financial Legacy", "icon": "🌟"},
+        {"id": 4, "code": "global", "title_es": "Finanzas Globales", "title_en": "Global Finance", "icon": "🌍"}
     ]
 }
 
-# HARDCODED TOPICS DATA (Temas por Adventure y Saga)
+# Topics Data (Adventure, Saga) -> List of Topics
 TOPICS_DATA = {
-    (1, 1): [  # Adventure 1, Saga 1
-        {"id": 1, "code": "intro_ahorro", "title": "Introducción al Ahorro"},
-        {"id": 2, "code": "monedas", "title": "Conociendo las Monedas"},
-        {"id": 3, "code": "necesidades", "title": "Necesidades vs Deseos"}
+    (1, 1): [
+        {"id": 1, "code": "basics", "title_es": "Conceptos Básicos", "title_en": "Basic Concepts"},
+        {"id": 2, "code": "quiz", "title_es": "Prueba de Conocimiento", "title_en": "Knowledge Quiz"}
     ],
-    (1, 2): [  # Adventure 1, Saga 2
-        {"id": 1, "code": "compras", "title": "Compras Inteligentes"},
-        {"id": 2, "code": "comparar", "title": "Comparar Precios"}
+    (1, 2): [
+        {"id": 1, "code": "market", "title_es": "El Mercado", "title_en": "The Market"},
+        {"id": 2, "code": "trade", "title_es": "Intercambio", "title_en": "Trading"}
     ]
 }
 
@@ -94,6 +179,7 @@ TOPICS_DATA = {
 @router.get("/adventures", response_model=List[AdventureWithProgress])
 async def get_adventures(
     user_id: Optional[int] = None,
+    lang: str = "es",
     db: Session = Depends(get_db)
 ):
     """
@@ -103,14 +189,13 @@ async def get_adventures(
     
     for adv in ADVENTURES_DATA:
         # Count lessons for this adventure level (using level as ID)
-        adv_lessons = db.query(Lesson).filter(Lesson.adventure_level == adv['id']).all()
-        total_lessons = len(adv_lessons)
+        # OPTIMIZATION: Only fetch IDs, don't load full objects
+        lesson_ids_result = db.query(Lesson.id).filter(Lesson.adventure_level == adv['id']).all()
+        lesson_ids = [row[0] for row in lesson_ids_result]
+        total_lessons = len(lesson_ids)
         
         completed_lessons = 0
         if user_id:
-            # Efficient query? Maybe.
-            # Get IDs of lessons in this adventure
-            lesson_ids = [l.id for l in adv_lessons]
             if lesson_ids:
                 completed_count = db.query(UserLessonProgress).filter(
                     UserLessonProgress.user_id == user_id,
@@ -121,13 +206,19 @@ async def get_adventures(
         
         progress_percent = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
         
+        # Get title from ADVENTURES_TITLES with i18n support
+        titles = ADVENTURES_TITLES.get(adv['id'], {})
+        title = titles.get(lang, titles.get('es', f"Adventure {adv['id']}"))
+        description = f"Age {adv['age_range']}"  # Descriptions come from frontend i18n
+        
         result.append(AdventureWithProgress(
             id=adv['id'],
             code=adv['code'],
-            title=adv['title'],
-            description=adv['description'],
+            title=title,
+            description=description,
             age_range=adv['age_range'],
             order_index=adv['id'],
+            theme=adv['code'],  # Frontend uses code as theme (archipelago, forest, etc.)
             theme_color=adv['theme_color'],
             background_scene=adv['background_scene'],
             is_active=True,
@@ -292,7 +383,10 @@ async def complete_lesson(
     request: LessonCompleteRequest,
     db: Session = Depends(get_db)
 ):
-    """Marcar lección completada en nueva tabla user_lesson_progress"""
+    """Marcar lección completada y actualizar racha"""
+    from models import UserLearningStreak
+    from datetime import date, timedelta
+    
     lesson = db.query(Lesson).filter(Lesson.lesson_code == code).first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
@@ -308,40 +402,102 @@ async def complete_lesson(
     ).first()
     
     first_time = not progress or not progress.completed
+    points_earned = 0
+    xp_earned = 0
     
     if not progress:
         progress = UserLessonProgress(
             user_id=user_id,
             lesson_id=lesson.id,
-            completed=True,
-            progress=100,
-            score=lesson.points_reward,
-            completed_at=datetime.now()
+            started_at=datetime.now(),
+            completed=False
         )
         db.add(progress)
-    else:
-        progress.completed = True
-        progress.progress = 100
-        progress.completed_at = datetime.now()
         
-    # Award Points (Only once? Or every time? Rules say once usually)
-    points_earned = 0
-    xp_earned = 0
+    # Update progress
+    progress.progress = 100
+    progress.completed = True
+    progress.completed_at = datetime.now()
+    progress.score = max(progress.score or 0, request.score)
+    
+    # Calculate rewards (mock logic)
     if first_time:
         points_earned = lesson.points_reward or 10
         xp_earned = 25
-        user.lessons_completed += 1
-        user.minutes_studied += request.time_spent_seconds // 60
-        user.points_earned += points_earned
+        # Update user balance/xp if those fields exist (User model doesn't have XP yet, but has balance?)
+        # user.balance += points_earned
+        progress.points_earned = points_earned
         
+    # Update time spent
+    progress.time_spent_seconds = (progress.time_spent_seconds or 0) + (request.time_spent_seconds or 0)
+    
+    # ---------------------------------------------------------
+    # STREAK LOGIC
+    # ---------------------------------------------------------
+    today = date.today()
+    
+    # 1. Record activity for today
+    streak_entry = db.query(UserLearningStreak).filter(
+        UserLearningStreak.user_id == user_id,
+        func.date(UserLearningStreak.date) == today
+    ).first()
+    
+    if not streak_entry:
+        streak_entry = UserLearningStreak(
+            user_id=user_id,
+            date=datetime.combine(today, datetime.min.time()),
+            lessons_completed=1,
+            minutes_studied=request.time_spent_seconds // 60 if request.time_spent_seconds else 3,
+            points_earned=points_earned
+        )
+        db.add(streak_entry)
+    else:
+        # Update existing entry
+        streak_entry.lessons_completed += 1
+        streak_entry.minutes_studied += request.time_spent_seconds // 60 if request.time_spent_seconds else 3
+        streak_entry.points_earned += points_earned
+    
+    # 2. Calculate Streak
+    # Get all distinct activity dates
+    activity_dates = db.query(func.date(UserLearningStreak.date)).filter(
+        UserLearningStreak.user_id == user_id
+    ).distinct().order_by(func.date(UserLearningStreak.date).desc()).all()
+    
+    activity_dates = [d[0] for d in activity_dates] # Convert tuples to dates
+    
+    current_streak = 0
+    if activity_dates:
+        # Check if studied today
+        if today in activity_dates:
+            current_streak = 1
+            check_date = today - timedelta(days=1)
+            
+            # Count backwards
+            while check_date in activity_dates:
+                current_streak += 1
+                check_date -= timedelta(days=1)
+        else:
+            # Check if studied yesterday
+            yesterday = today - timedelta(days=1)
+            if yesterday in activity_dates:
+                current_streak = 1
+                check_date = yesterday - timedelta(days=1)
+                while check_date in activity_dates:
+                    current_streak += 1
+                    check_date -= timedelta(days=1)
+                    
+    # Update user streak
+    user.current_streak = current_streak
+    user.max_streak = max(user.max_streak, current_streak)
+    
     db.commit()
     
     return {
-        "message": "Lesson Completed",
+        "success": True,
         "points_earned": points_earned,
         "xp_earned": xp_earned,
-        "total_lessons_completed": user.lessons_completed,
-        "achievements_unlocked": []
+        "new_streak": current_streak,
+        "streak_extended": first_time # Simple approximation
     }
 
 # =====================================================
@@ -378,12 +534,12 @@ async def get_character(code: str, db: Session = Depends(get_db)):
 # USER STATS (Dashboard)
 # =====================================================
 @router.get("/users/{user_id}/stats")
-async def get_user_lesson_stats(user_id: int, db: Session = Depends(get_db)):
+async def get_user_lesson_stats(user_id: int, lang: str = "es", db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
         
-    # Mock adventure progress
+    # Adventure progress with i18n
     adventure_progress = []
     for adv in ADVENTURES_DATA:
         # Count lessons
@@ -399,21 +555,150 @@ async def get_user_lesson_stats(user_id: int, db: Session = Depends(get_db)):
             ).count()
         
         pct = (comp / total * 100) if total > 0 else 0
+        title = ADVENTURES_TITLES.get(adv['id'], {}).get(lang, ADVENTURES_TITLES.get(adv['id'], {}).get('es', 'Adventure'))
+        
         adventure_progress.append({
             "adventure_id": adv['id'],
-            "adventure_title": adv['title'],
+            "adventure_title": title,
             "adventure_code": adv['code'],
             "total_lessons": total,
             "completed_lessons": comp,
             "progress_percent": round(pct, 1),
-            "current_saga": "In Progress"
+            "theme": adv.get('theme', 'archipelago'),
+            "current_saga": "In Progress" if comp > 0 and comp < total else ("Completed" if comp == total else "Not Started")
         })
 
     return {
         "adventure_progress": adventure_progress,
-        "total_xp": user.points_earned,
-        "current_streak": user.current_streak,
-        "lessons_this_week": 0,
+        "total_xp": user.points_earned or 0,
+        "current_streak": user.current_streak or 0,
+        "max_streak": user.max_streak or 0,
+        "lessons_completed": user.lessons_completed or 0,
+        "minutes_studied": user.minutes_studied or 0,
+        "lessons_this_week": 0,  # TODO: Calculate from streaks table
         "average_accuracy": 0.0,
         "lessons_needing_review": 0
+    }
+
+# =====================================================
+# USER STREAK ENDPOINT
+# =====================================================
+@router.get("/users/{user_id}/streak")
+async def get_user_streak(user_id: int, db: Session = Depends(get_db)):
+    """Get user's streak information"""
+    from models import UserLearningStreak
+    from datetime import date, timedelta
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    today = date.today()
+    
+    # Get last 7 days of activity
+    week_ago = today - timedelta(days=6)
+    recent_activity = db.query(UserLearningStreak).filter(
+        UserLearningStreak.user_id == user_id,
+        func.date(UserLearningStreak.date) >= week_ago
+    ).order_by(UserLearningStreak.date.desc()).all()
+    
+    # Build activity calendar
+    activity_days = []
+    for i in range(7):
+        check_date = today - timedelta(days=6-i)
+        day_record = next((r for r in recent_activity if r.date.date() == check_date), None)
+        activity_days.append({
+            "date": check_date.isoformat(),
+            "lessons": day_record.lessons_completed if day_record else 0,
+            "minutes": day_record.minutes_studied if day_record else 0,
+            "active": day_record is not None
+        })
+    
+    # Check if user studied today
+    studied_today = any(r.date.date() == today for r in recent_activity)
+    
+    return {
+        "current_streak": user.current_streak or 0,
+        "max_streak": user.max_streak or 0,
+        "studied_today": studied_today,
+        "week_activity": activity_days,
+        "total_days_studied": len([d for d in activity_days if d["active"]])
+    }
+
+# =====================================================
+# LESSONS BY TOPIC (For catalog navigation)
+# =====================================================
+@router.get("/lessons/by-adventure/{adventure_id}")
+async def get_lessons_by_adventure(
+    adventure_id: int,
+    saga_id: Optional[int] = None,
+    topic_id: Optional[int] = None,
+    user_id: Optional[int] = None,
+    lang: str = "es",
+    db: Session = Depends(get_db)
+):
+    """Get lessons filtered by adventure/saga/topic with progress"""
+    query = db.query(Lesson).filter(Lesson.adventure_level == adventure_id)
+    
+    if saga_id:
+        query = query.filter(Lesson.saga_level == saga_id)
+    if topic_id:
+        query = query.filter(Lesson.topic_level == topic_id)
+    
+    # OPTIMIZATION: Defer loading heavy content columns
+    lessons = query.options(
+        defer(Lesson.content_es), 
+        defer(Lesson.content_en)
+    ).order_by(
+        Lesson.saga_level, 
+        Lesson.topic_level, 
+        Lesson.lesson_number
+    ).all()
+    
+    # Get progress if user_id provided
+    progress_map = {}
+    if user_id:
+        lesson_ids = [l.id for l in lessons]
+        if lesson_ids:
+            progress_records = db.query(UserLessonProgress).filter(
+                UserLessonProgress.user_id == user_id,
+                UserLessonProgress.lesson_id.in_(lesson_ids)
+            ).all()
+            progress_map = {p.lesson_id: p for p in progress_records}
+    
+    result = []
+    for lesson in lessons:
+        prog = progress_map.get(lesson.id)
+        
+        # Resolve Topic Title
+        topic_list = TOPICS_DATA.get((lesson.adventure_level, lesson.saga_level), [])
+        topic = next((t for t in topic_list if t['id'] == lesson.topic_level), {})
+        # Map fields based on language
+        if lang == 'en':
+            topic_title = topic.get('title_en', f"Topic {lesson.topic_level}")
+        else:
+            topic_title = topic.get('title_es', f"Tema {lesson.topic_level}")
+        
+        result.append({
+            "id": lesson.id,
+            "code": lesson.lesson_code,
+            "title": lesson.title_en if lang == "en" else lesson.title_es,
+            "description": lesson.description_en if lang == "en" else lesson.description_es,
+            "adventure_level": lesson.adventure_level,
+            "saga_level": lesson.saga_level,
+            "topic_level": lesson.topic_level,
+            "topic_title": topic_title,
+            "lesson_number": lesson.lesson_number,
+            "duration": lesson.duration,
+            "points_reward": lesson.points_reward,
+            "completed": prog.completed if prog else False,
+            "progress": prog.progress if prog else 0,
+            "score": prog.score if prog else 0
+        })
+    
+    return {
+        "adventure_id": adventure_id,
+        "total_lessons": len(result),
+        "completed_lessons": sum(1 for l in result if l["completed"]),
+        "lessons": result
     }

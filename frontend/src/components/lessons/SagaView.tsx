@@ -162,9 +162,10 @@ const NextAdventurePreview: React.FC<NextAdventurePreviewProps> = ({
 interface SagaViewProps {
     adventureId?: number;
     onBack?: () => void;
+    onSelectSaga?: (sagaId: number, sagaTitle: string) => void;
 }
 
-export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack }) => {
+export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onSelectSaga }) => {
     const { adventure1Sagas, adventure6Sagas } = useSagaData();
     const { t } = useTranslation('adventures');
 
@@ -185,9 +186,13 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack }) =
                     </h1>
                 </div>
                 {sagas.map((saga) => (
-                    <div key={saga.id} className="mb-8">
+                    <div
+                        key={saga.id}
+                        className={`mb-8 ${onSelectSaga ? 'cursor-pointer' : ''}`}
+                        onClick={() => onSelectSaga?.(saga.id, saga.title)}
+                    >
                         <SagaHeader saga={saga} />
-                        <SagaMap saga={saga} startTopicIndex={0} />
+                        {!onSelectSaga && <SagaMap saga={saga} startTopicIndex={0} />}
                     </div>
                 ))}
 

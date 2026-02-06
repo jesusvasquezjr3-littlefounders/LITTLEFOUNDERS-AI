@@ -120,6 +120,8 @@ class UserLessonProgress(Base):
     completed = Column(Boolean, default=False)
     progress = Column(Integer, default=0)  # 0-100
     score = Column(Integer, default=0)
+    points_earned = Column(Integer, default=0)  # Points earned from this lesson
+    time_spent_seconds = Column(Integer, default=0)  # Time spent in seconds
     
     started_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True))
@@ -214,6 +216,26 @@ class User(Base):
     
     avatar_config = Column(JSON, nullable=True)
     username = Column(String(30), nullable=True, unique=True)
+    max_streak = Column(Integer, default=0)  # Historical max streak
+    
+    # Relationships
+    learning_streaks = relationship("UserLearningStreak", back_populates="user", cascade="all, delete-orphan")
+
+
+class UserLearningStreak(Base):
+    """Daily learning activity tracking for streak calculation"""
+    __tablename__ = "user_learning_streaks"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    date = Column(DateTime, nullable=False)  # Date of activity (stored as DATE)
+    lessons_completed = Column(Integer, default=0)
+    minutes_studied = Column(Integer, default=0)
+    points_earned = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="learning_streaks")
 
 
 class UserExerciseProgress(Base):

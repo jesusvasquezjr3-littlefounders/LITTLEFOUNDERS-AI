@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, ChevronRight } from 'lucide-react';
 import { AdventureCard } from './AdventureCard';
-import { useAdventures, Adventure } from './hooks/useAdventures';
+import { useAdventuresAPI, Adventure } from './hooks/useAdventures';
 import { useTranslation } from 'react-i18next';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
+    userId?: number;
 }
 
-export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure }) => {
+export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userId }) => {
     const navigate = useNavigate();
     const [selectedAdventure, setSelectedAdventure] = useState<number | null>(null);
-    const { adventures } = useAdventures();
+    const { adventures, isLoading } = useAdventuresAPI(userId);
     const { t } = useTranslation('adventures');
 
     const handleAdventureClick = (adventure: Adventure) => {

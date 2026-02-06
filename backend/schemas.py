@@ -301,6 +301,7 @@ class AdventureResponse(AdventureBase):
 
 
 class AdventureWithProgress(AdventureResponse):
+    theme: str = ""  # Frontend theme name (archipelago, forest, etc.)
     total_sagas: int = 0
     completed_sagas: int = 0
     total_lessons: int = 0
@@ -393,7 +394,8 @@ class LessonPlayResponse(BaseModel):
 
 # Lesson Complete Request
 class LessonCompleteRequest(BaseModel):
-    time_spent_seconds: int
+    score: int = 100  # User's score (0-100)
+    time_spent_seconds: int = 180  # Time spent on lesson
     exercises_results: Optional[List[dict]] = None  # [{exercise_id, status, attempts}]
 
 

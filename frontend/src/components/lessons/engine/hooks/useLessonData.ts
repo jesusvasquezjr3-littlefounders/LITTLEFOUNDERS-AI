@@ -188,3 +188,56 @@ export function useLessonData(lessonCode: string, language?: string): UseLessonD
 
     return { data, loading, error, refetch: fetchLesson };
 }
+
+/**
+ * Calcula el código de la siguiente lección basado en el código actual
+ * Formato: adventure-saga-topic-lesson (ej: "1-1-1-1" -> "1-1-1-2")
+ */
+export function getNextLessonCode(currentCode: string): string {
+    const parts = currentCode.split('-').map(Number);
+    if (parts.length !== 4) return currentCode;
+
+    // Incrementar el número de lección
+    parts[3] += 1;
+    return parts.join('-');
+}
+
+/**
+ * Marca una lección como completada en el backend
+ */
+export async function completeLesson(
+    lessonCode: string,
+    userId: number,
+    score: number = 100,
+    timeSpentSeconds: number = 180
+): Promise<{
+    success: boolean;
+    points_earned: number;
+    xp_earned: number;
+    new_streak: number;
+    streak_extended: boolean;
+} | null> {
+    try {
+        const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/complete?user_id=${userId}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                score,
+                time_spent_seconds: timeSpentSeconds
+            })
+        });
+
+        if (!response.ok) {
+            console.error('Failed to complete lesson:', response.status);
+            return null;
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error('Error completing lesson:', err);
+        return null;
+    }
+}
