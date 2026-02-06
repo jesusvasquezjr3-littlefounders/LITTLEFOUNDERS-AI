@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
 export interface LessonItem {
     id: number;
