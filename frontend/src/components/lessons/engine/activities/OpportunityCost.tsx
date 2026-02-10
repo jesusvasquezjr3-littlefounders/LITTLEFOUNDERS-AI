@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface OpportunityCostProps {
     exercise: any;
-    onSubmit: (choice: string) => void;
+    onSubmit: (choice: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -18,7 +18,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
 
     const [selected, setSelected] = useState<string | null>(null);
     const [showAnalysis, setShowAnalysis] = useState(false);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     const options = exercise.content.options || [];
 
@@ -37,9 +37,8 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
     const handleSubmit = () => {
         if (!selected) return;
 
-        onSubmit(selected);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(selected);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     const selectedOption = options.find((opt: any) => opt.id === selected);

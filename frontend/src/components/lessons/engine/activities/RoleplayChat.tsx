@@ -16,7 +16,7 @@ interface ChatMessage {
 
 interface RoleplayChatProps {
     exercise: any;
-    onSubmit: (choiceId: string) => void;
+    onSubmit: (choiceId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -58,16 +58,16 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
             id: `user-${Date.now()}`,
             sender: 'user',
             text: choice.text,
-            avatar: '👤' // Or user avatar from context
+            avatar: '👤'
         };
         setMessages(prev => [...prev, userMsg]);
         setIsTyping(true);
 
-        // Validate
-        const correctId = exercise.correct_answer?.correctOptionId;
-        const isCorrect = choice.id === correctId;
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        // We call onSubmit immediately to get the result, but show it after delay
+        const isCorrect = onSubmit(choice.id);
 
-        // Determine NPC response
+        // Determine NPC response with delay for chat effect
         setTimeout(() => {
             setIsTyping(false);
 
@@ -80,15 +80,10 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                 sender: 'npc',
                 name: 'NPC',
                 text: npcResponseText,
-                avatar: '🤖' // Contextual avatar ideally
+                avatar: '🤖'
             };
             setMessages(prev => [...prev, npcMsg]);
-
             setFeedback(isCorrect ? 'success' : 'error');
-            onSubmit(choice.id);
-
-            if (isCorrect) playSound('edu_success');
-            else playSound('edu_error');
 
         }, 1500);
     };

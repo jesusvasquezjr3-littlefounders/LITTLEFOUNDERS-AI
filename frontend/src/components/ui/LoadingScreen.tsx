@@ -8,10 +8,10 @@ interface LoadingScreenProps {
   className?: string;
 }
 
-export function LoadingScreen({ 
-  title, 
-  description, 
-  loadingMessage, 
+export function LoadingScreen({
+  title,
+  description,
+  loadingMessage,
   icon,
   className = ""
 }: LoadingScreenProps) {
@@ -28,7 +28,12 @@ export function LoadingScreen({
         <CardContent>
           <div className="flex flex-col items-center space-y-4">
             {icon || (
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+              <dotlottie-wc
+                src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
+                style={{ width: '300px', height: '300px' }}
+                autoplay
+                loop
+              />
             )}
             <h2 className="text-2xl font-bold">{loadingMessage}</h2>
             <p className="text-muted-foreground max-w-md">

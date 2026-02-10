@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MindsetComparisonProps {
     exercise: any;
-    onSubmit: (mindset: string) => void;
+    onSubmit: (mindset: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -17,7 +17,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     const { playSound } = useSound();
 
     const [selectedMindset, setSelectedMindset] = useState<'scarcity' | 'abundance' | null>(null);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     const scenario = exercise.content.scenario || {};
     const scarcityResponse = exercise.content.scarcity || {};
@@ -36,9 +36,8 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     const handleSubmit = () => {
         if (!selectedMindset) return;
 
-        onSubmit(selectedMindset);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(selectedMindset);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     return (

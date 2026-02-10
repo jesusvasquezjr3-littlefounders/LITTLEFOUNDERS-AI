@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface PortfolioBuilderProps {
     exercise: any;
-    onSubmit: (allocation: Record<string, number>) => void;
+    onSubmit: (allocation: Record<string, number>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -60,14 +60,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
     const riskLevel = getRiskLevel();
 
     const handleSubmit = () => {
-        if (allocatedTotal !== totalAmount) {
-            playSound('edu_error');
-            return;
-        }
+        if (allocatedTotal !== totalAmount) return;
 
-        onSubmit(allocation);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(allocation);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     return (

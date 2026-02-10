@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface ExpenseTimelineProps {
     exercise: any;
-    onSubmit: (order: string[]) => void;
+    onSubmit: (order: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -52,14 +52,8 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
     };
 
     const handleCheck = () => {
-        const correctOrder = exercise.correct_answer?.order || [];
-        const isCorrect = JSON.stringify(orderedExpenses) === JSON.stringify(correctOrder);
-
+        const isCorrect = onSubmit(orderedExpenses);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(orderedExpenses);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

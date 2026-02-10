@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MathChallengeProps {
     exercise: any;
-    onSubmit: (answer: string) => void;
+    onSubmit: (answer: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -40,17 +40,9 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
     };
 
     const handleCheck = () => {
-        // Support both correctValue (number) and correctOptionId (string)
-        const val = exercise.correct_answer?.correctValue ?? exercise.correct_answer?.correctOptionId;
-
-        // Convert both to string for strict comparison
-        const isCorrect = String(input) === String(val);
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(input);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(input);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

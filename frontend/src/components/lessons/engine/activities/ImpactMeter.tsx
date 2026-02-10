@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface ImpactMeterProps {
     exercise: any;
-    onSubmit: (causeId: string) => void;
+    onSubmit: (causeId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -18,7 +18,7 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
 
     const [selectedCause, setSelectedCause] = useState<string | null>(null);
     const [showImpact, setShowImpact] = useState(false);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         setSelectedCause(null);
@@ -38,12 +38,11 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
     const handleDonate = () => {
         if (!selectedCause) return;
 
-        playSound('edu_success');
         setShowImpact(true);
 
         setTimeout(() => {
-            setFeedback('success');
-            onSubmit(selectedCause);
+            const isCorrect = onSubmit(selectedCause);
+            setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);
     };
 

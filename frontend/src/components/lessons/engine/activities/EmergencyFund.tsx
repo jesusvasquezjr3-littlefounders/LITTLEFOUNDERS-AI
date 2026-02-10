@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface EmergencyFundProps {
     exercise: any;
-    onSubmit: (decisions: Record<string, string>) => void;
+    onSubmit: (decisions: Record<string, string>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -48,11 +48,8 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             setTimeout(() => setCurrentEvent(currentEvent + 1), 1000);
         } else {
             setTimeout(() => {
-                const isSuccess = newBalance >= 0;
-                setFeedback(isSuccess ? 'success' : 'error');
-                onSubmit(newDecisions);
-                if (isSuccess) playSound('edu_success');
-                else playSound('edu_error');
+                const isCorrect = onSubmit(newDecisions);
+                setFeedback(isCorrect ? 'success' : 'error');
             }, 1000);
         }
     };

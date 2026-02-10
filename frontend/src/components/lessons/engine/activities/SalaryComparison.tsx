@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface SalaryComparisonProps {
     exercise: any;
-    onSubmit: (selectedId: string) => void;
+    onSubmit: (selectedId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -44,9 +44,8 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
     const handleSubmit = () => {
         if (!selected) return;
 
-        onSubmit(selected);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(selected);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     return (

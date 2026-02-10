@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface ClassificationProps {
     exercise: any;
-    onSubmit: (classifications: Record<string, string>) => void;
+    onSubmit: (classifications: Record<string, string>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -46,23 +46,10 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
     };
 
     const handleCheck = () => {
-        const correctClassifications = exercise.correct_answer?.classifications || {};
-        const allItems = exercise.content.items || [];
-
-        const isCorrect = allItems.every((item: any) =>
-            selectedClassifications[item.id] === correctClassifications[item.id]
-        );
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(selectedClassifications);
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
-
-        // Pass the result to parent and get confirmation
-        const result = onSubmit(selectedClassifications);
-
-        // If onSubmit returns a boolean, use that; otherwise use our calculation
-        if (typeof result === 'boolean') {
-            setFeedback(result ? 'success' : 'error');
-        }
     };
 
     const handleContinue = () => {

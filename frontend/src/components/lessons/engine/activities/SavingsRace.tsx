@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface SavingsRaceProps {
     exercise: any;
-    onSubmit: (strategy: string) => void;
+    onSubmit: (strategy: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -19,7 +19,7 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
     const [selectedStrategy, setSelectedStrategy] = useState<string | null>(null);
     const [progress, setProgress] = useState(0);
     const [isRacing, setIsRacing] = useState(false);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         setSelectedStrategy(null);
@@ -60,9 +60,8 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
             if (currentProgress >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
-                    setFeedback('success');
-                    playSound('edu_success');
-                    onSubmit(selectedStrategy);
+                    const isCorrect = onSubmit(selectedStrategy);
+                    setFeedback(isCorrect ? 'success' : 'error');
                 }, 500);
             }
         }, stepDuration);

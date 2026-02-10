@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface GoalRoadmapProps {
     exercise: any;
-    onSubmit: (order: string[]) => void;
+    onSubmit: (order: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -47,14 +47,10 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
     };
 
     const handleSubmit = () => {
-        if (orderedGoals.length !== goals.length) {
-            playSound('edu_error');
-            return;
-        }
+        if (orderedGoals.length !== goals.length) return;
 
-        onSubmit(orderedGoals);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(orderedGoals);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     return (

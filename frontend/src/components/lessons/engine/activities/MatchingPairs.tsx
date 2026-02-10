@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MatchingPairsProps {
     exercise: any;
-    onSubmit: (matchedPairs: string[][]) => void;
+    onSubmit: (matchedPairs: string[][] | boolean) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -59,7 +59,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
 
             if (card1.pairId === card2.pairId) {
                 // Match!
-                playSound('edu_success');
+                playSound('ui_tap');
                 setTimeout(() => {
                     setMatchedIndices(prev => new Set([...prev, newSelected[0], newSelected[1]]));
                     setSelectedCards([]);
@@ -67,14 +67,13 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
 
                     // Check if all matched
                     if (matchedIndices.size + 2 === cards.length) {
-                        setFeedback('success');
-                        playSound('edu_success'); // Final fanfare handled by global?
-                        onSubmit([]);
+                        const isCorrect = onSubmit(true);
+                        setFeedback(isCorrect ? 'success' : 'error');
                     }
                 }, 500);
             } else {
                 // No match
-                playSound('edu_error');
+                playSound('ui_tap');
                 setTimeout(() => {
                     setSelectedCards([]);
                     setIsChecking(false);
@@ -115,12 +114,29 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                 })}
             </div>
 
-            {feedback === 'success' && (
+            {(feedback === 'success' || feedback === 'error') && (
                 <Button
-                    onClick={onNext}
-                    className="w-full h-14 text-lg font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                    onClick={() => {
+                        if (feedback === 'success') {
+                            onNext();
+                        } else {
+                            setMatchedIndices(new Set());
+                            setSelectedCards([]);
+                            setIsChecking(false);
+                            setFeedback('none');
+                            onRetry();
+                        }
+                    }}
+                    className={cn(
+                        "w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        feedback === 'success'
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
+                        "hover:translate-y-[2px] active:shadow-none active:translate-y-1"
+                    )}
                 >
-                    {t('actions.continue')} <ArrowRight className="ml-2 w-5 h-5" />
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
             )}
         </div>

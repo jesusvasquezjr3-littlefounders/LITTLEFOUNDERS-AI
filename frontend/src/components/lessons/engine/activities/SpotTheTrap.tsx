@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface SpotTheTrapProps {
     exercise: any;
-    onSubmit: (selectedIds: string[]) => void;
+    onSubmit: (selectedIds: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -44,19 +44,12 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
     };
 
     const handleCheck = () => {
-        const correctTraps = new Set(exercise.correct_answer?.trapIds || []);
         const selectedArray = Array.from(selectedTraps);
-
-        // Check if sets are equal
-        const isCorrect = selectedTraps.size === correctTraps.size &&
-            selectedArray.every(id => correctTraps.has(id));
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(selectedArray);
 
         setFeedback(isCorrect ? 'success' : 'error');
         setRevealedMessages(new Set(messages.map((m: any) => m.id)));
-        onSubmit(selectedArray);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

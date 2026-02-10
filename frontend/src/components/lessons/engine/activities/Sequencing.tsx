@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface SequencingProps {
     exercise: any;
-    onSubmit: (sequence: string[]) => void;
+    onSubmit: (sequence: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -49,17 +49,11 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
     };
 
     const handleCheck = () => {
-        const correctSequence = exercise.correct_answer?.sequence || [];
-        // Check if current order matches correct sequence IDs
         const currentIds = items.map(i => i.id);
-
-        const isCorrect =
-            currentIds.length === correctSequence.length &&
-            currentIds.every((id, idx) => id === correctSequence[idx]);
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(currentIds);
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(currentIds);
     };
 
     const handleContinue = () => {

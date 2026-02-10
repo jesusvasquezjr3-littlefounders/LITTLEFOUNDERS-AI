@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface TapActionProps {
     exercise: any;
-    onSubmit: (items: string[]) => void;
+    onSubmit: (items: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -50,21 +50,10 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
     const handleCheck = () => {
         if (tappedItems.size === 0) return;
 
-        // Logic to determine correctness
-        const items = exercise.content.items || [];
-        const targetIds = new Set(items.filter((item: any) => item.isTarget === true).map((item: any) => item.id));
-
-        // Legacy support
-        const legacyTargetIds = exercise.correct_answer?.targetIds;
-        if (legacyTargetIds) legacyTargetIds.forEach((id: string) => targetIds.add(id));
-
-        const isCorrect =
-            tappedItems.size === targetIds.size &&
-            [...tappedItems].every(id => targetIds.has(id));
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit([...tappedItems]);
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit([...tappedItems]);
     };
 
     const handleContinue = () => {

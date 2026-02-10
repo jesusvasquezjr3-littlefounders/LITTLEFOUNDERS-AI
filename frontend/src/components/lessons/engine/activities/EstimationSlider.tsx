@@ -8,7 +8,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface EstimationSliderProps {
     exercise: any;
-    onSubmit: (value: number) => void;
+    onSubmit: (value: number) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -40,26 +40,25 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
     };
 
     const handleCheck = () => {
-        const correctVal = exercise.correct_answer?.correctValue || 0;
-        const tolerance = exercise.correct_answer?.tolerance || 0; // Absolute tolerance
-
+        const correctVal = exercise.correct_answer?.correctValue ?? exercise.content?.correctValue ?? 0;
+        const tolerance = exercise.correct_answer?.tolerance ?? exercise.content?.tolerance ?? 10;
         const userVal = value[0];
         const diff = userVal - correctVal;
 
         setDifference(diff);
 
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(userVal);
+
+        // Show 'close' hint if within 2x tolerance but not within tolerance
         let result: 'success' | 'close' | 'error' = 'error';
-        if (Math.abs(diff) <= tolerance) {
+        if (isCorrect) {
             result = 'success';
-        } else if (Math.abs(diff) <= (tolerance * 2)) { // Example logic for "close"
+        } else if (Math.abs(diff) <= (tolerance * 2)) {
             result = 'close';
         }
 
         setFeedback(result);
-        onSubmit(userVal);
-
-        if (result === 'success') playSound('edu_success');
-        else playSound('edu_error'); // Or 'edu_warning' for close?
     };
 
     const handleContinue = () => {

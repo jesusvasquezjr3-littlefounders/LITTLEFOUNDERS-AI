@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface TaxPuzzleProps {
     exercise: any;
-    onSubmit: (pieces: Record<string, number>) => void;
+    onSubmit: (pieces: Record<string, number>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -46,15 +46,8 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
     };
 
     const handleCheck = () => {
-        const correctTax = exercise.correct_answer?.taxOwed || 0;
-        const tolerance = 0.01; // Allow small rounding differences
-        const isCorrect = Math.abs(taxOwed - correctTax) < tolerance;
-
+        const isCorrect = onSubmit(pieces);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(pieces);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

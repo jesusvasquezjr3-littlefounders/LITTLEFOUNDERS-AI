@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface FillBlankProps {
     exercise: any;
-    onSubmit: (answer: any) => void;
+    onSubmit: (answer: any) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -66,23 +66,20 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     };
 
     const handleCheck = () => {
-        const correctAnswers = exercise.correct_answer?.blank_ids || {}; // index -> wordId
-        // Validate
-        let isCorrect = true;
-        Object.keys(correctAnswers).forEach(key => { // key is "b1"
-            // Find the segment index that has this ID
-            const segmentIndex = segments.findIndex((s: any) => s.id === key);
-            if (segmentIndex !== -1) {
-                if (selectedWords[segmentIndex] !== correctAnswers[key]) isCorrect = false;
-            } else {
-                // Fallback for legacy numeric keys if any
-                if (selectedWords[parseInt(key)] !== correctAnswers[key]) isCorrect = false;
+        // Build answer map using segment IDs as keys (matching correct_answer.blank_ids format)
+        const answerMap: Record<string, string> = {};
+        segments.forEach((seg: any, idx: number) => {
+            if (seg.type === 'blank' && selectedWords[idx]) {
+                // Use segment.id as key if available, otherwise use index
+                const key = seg.id || String(idx);
+                answerMap[key] = selectedWords[idx];
             }
         });
 
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(answerMap);
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(selectedWords);
     };
 
     const handleContinue = () => {

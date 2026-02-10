@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface CoinCounterProps {
     exercise: any;
-    onSubmit: (value: number) => void;
+    onSubmit: (value: number) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -54,12 +54,8 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
     };
 
     const handleCheck = () => {
-        const isCorrect = currentAmount === targetAmount;
+        const isCorrect = onSubmit(currentAmount);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(currentAmount);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface InterestCalculatorProps {
     exercise: any;
-    onSubmit: (values: { principal: number; rate: number; time: number }) => void;
+    onSubmit: (values: { principal: number; rate: number; time: number }) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -19,7 +19,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     const [principal, setPrincipal] = useState(1000);
     const [rate, setRate] = useState(5);
     const [time, setTime] = useState(1);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         setPrincipal(exercise.content.defaultPrincipal || 1000);
@@ -41,9 +41,8 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     const interest = calculateInterest();
 
     const handleSubmit = () => {
-        playSound('edu_success');
-        setFeedback('success');
-        onSubmit({ principal, rate, time });
+        const isCorrect = onSubmit({ principal, rate, time });
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     const handleContinue = () => {

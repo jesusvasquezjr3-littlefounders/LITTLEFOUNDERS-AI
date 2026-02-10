@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface QuizBattleProps {
     exercise: any;
-    onSubmit: (score: number) => void;
+    onSubmit: (score: number) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -22,6 +22,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
     const [timeLeft, setTimeLeft] = useState(15);
     const [isAnswered, setIsAnswered] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'complete'>('none');
+    const [quizPassed, setQuizPassed] = useState(false);
 
     const questions = exercise.content.questions || [];
     const question = questions[currentQuestion];
@@ -89,8 +90,11 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
             setTimeLeft(15);
             setIsAnswered(false);
         } else {
+            // Delegate validation to useLessonState via onSubmit (single source of truth)
+            const isCorrect = onSubmit(score);
             setFeedback('complete');
-            onSubmit(score);
+            // Store whether quiz was passed for continue/retry logic
+            setQuizPassed(isCorrect);
         }
     };
 
@@ -178,22 +182,48 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                     </div>
                 </>
             ) : (
-                /* Success Feedback */
+                /* Quiz Complete Feedback */
                 <div className="flex flex-col items-center w-full animate-slide-in-bottom">
                     <div className="mb-6 p-6 text-center">
-                        <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-3xl">🎉</span>
+                        <div className={cn(
+                            "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4",
+                            quizPassed ? "bg-green-100 dark:bg-green-900" : "bg-orange-100 dark:bg-orange-900"
+                        )}>
+                            <span className="text-3xl">{quizPassed ? '🎉' : '📊'}</span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">
-                            {t('quiz_battle.complete')}
+                            {quizPassed ? t('quiz_battle.complete') : t('quiz_battle.try_again', { defaultValue: 'Necesitas más puntos' })}
                         </h3>
+                        <p className="text-lg font-black text-yellow-600 mb-2">
+                            {t('quiz_battle.final_score', { defaultValue: 'Puntaje' })}: {score}
+                        </p>
                     </div>
 
                     <Button
-                        onClick={onNext}
-                        className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        onClick={() => {
+                            if (quizPassed) {
+                                onNext();
+                            } else {
+                                // Reset quiz for retry
+                                setCurrentQuestion(0);
+                                setSelectedAnswer(null);
+                                setScore(0);
+                                setTimeLeft(15);
+                                setIsAnswered(false);
+                                setFeedback('none');
+                                setQuizPassed(false);
+                                onRetry();
+                            }
+                        }}
+                        className={cn(
+                            "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            quizPassed
+                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
+                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
+                            "hover:shadow-[0_2px_0] hover:translate-y-[2px] active:shadow-none active:translate-y-1"
+                        )}
                     >
-                        {t('actions.continue')}
+                        {quizPassed ? t('actions.continue') : t('actions.retry')}
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                 </div>

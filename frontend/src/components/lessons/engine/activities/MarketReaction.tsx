@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MarketReactionProps {
     exercise: any;
-    onSubmit: (prediction: string) => void;
+    onSubmit: (prediction: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -36,15 +36,9 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
 
     const handleCheck = () => {
         if (!selectedOption) return;
-
-        const correctId = exercise.correct_answer?.correctOptionId;
-        const isCorrect = selectedOption === correctId;
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(selectedOption);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(selectedOption);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

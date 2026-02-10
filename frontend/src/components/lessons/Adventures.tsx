@@ -4,6 +4,7 @@ import { Lock, ChevronRight } from 'lucide-react';
 import { AdventureCard } from './AdventureCard';
 import { useAdventuresAPI, Adventure } from './hooks/useAdventures';
 import { useTranslation } from 'react-i18next';
+import { LessonsLoadingScreen } from '../ui/LoadingScreen';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
@@ -24,6 +25,10 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userI
             onSelectAdventure(adventure.id);
         }
     };
+
+    if (isLoading) {
+        return <LessonsLoadingScreen />;
+    }
 
     return (
         <div className="adventures-container w-full max-w-6xl mx-auto px-4 py-8">

@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface CreditScoreBuilderProps {
     exercise: any;
-    onSubmit: (decisions: string[]) => void;
+    onSubmit: (decisions: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -48,11 +48,8 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             setTimeout(() => setCurrentScenario(currentScenario + 1), 800);
         } else {
             setTimeout(() => {
-                const isSuccess = newScore >= (exercise.correct_answer?.minScore || 700);
-                setFeedback(isSuccess ? 'success' : 'error');
-                onSubmit(newDecisions);
-                if (isSuccess) playSound('edu_success');
-                else playSound('edu_error');
+                const isCorrect = onSubmit(newDecisions);
+                setFeedback(isCorrect ? 'success' : 'error');
             }, 800);
         }
     };

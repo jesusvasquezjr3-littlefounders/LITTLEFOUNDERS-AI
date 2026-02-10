@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface WordScrambleProps {
     exercise: any;
-    onSubmit: (word: string) => void;
+    onSubmit: (word: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -117,13 +117,9 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
     const handleCheck = () => {
         // Construct word from slots
         const currentWord = slots.map(id => id ? id.split('-')[1] : '').join('');
-        const isCorrect = currentWord === targetWord;
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(currentWord);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(currentWord);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

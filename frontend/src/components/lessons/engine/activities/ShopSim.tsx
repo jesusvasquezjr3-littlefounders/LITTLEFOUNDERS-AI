@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface ShopSimProps {
     exercise: any;
-    onSubmit: (cartIds: string[]) => void;
+    onSubmit: (cartIds: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -52,25 +52,9 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
     };
 
     const handleCheck = () => {
-        // Validate correctness based on specific targets OR just budget constraint?
-        // If there are specific correct items:
-        const correctItems = exercise.correct_answer?.shopItems;
-
-        let isCorrect = true;
-        if (correctItems && correctItems.length > 0) {
-            // Must match exactly specific items
-            const isMatch = correctItems.length === cart.length && correctItems.every((id: string) => cart.includes(id));
-            if (!isMatch) isCorrect = false;
-        } else {
-            // Generic Budget Goal: Spend > 0 and <= Budget
-            if (totalSpent > budget || totalSpent === 0) isCorrect = false;
-        }
-
+        // Delegar validación a useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(cart);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(cart);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

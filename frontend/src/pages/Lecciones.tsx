@@ -7,6 +7,7 @@ import { useLessonsList } from "@/components/lessons/hooks/useLessonsList";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
 
 // Navigation states
 type ViewState =
@@ -81,6 +82,14 @@ const Lecciones = () => {
       setViewState({ type: 'adventures' });
     }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <LessonsLoadingScreen />
+      </DashboardLayout>
+    );
+  }
 
   // Lessons View (deepest level)
   if (viewState.type === 'lessons') {

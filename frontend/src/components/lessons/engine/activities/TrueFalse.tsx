@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface TrueFalseProps {
     exercise: any;
-    onSubmit: (isTrue: boolean) => void;
+    onSubmit: (isTrue: boolean) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -29,12 +29,9 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
         playSound('ui_tap');
         setAnswered(choice);
 
-        const isCorrect = choice === exercise.correct_answer?.isTrue;
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(choice);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(choice);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

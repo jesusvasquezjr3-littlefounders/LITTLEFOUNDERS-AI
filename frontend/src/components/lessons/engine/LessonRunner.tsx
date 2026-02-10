@@ -65,11 +65,9 @@ import {
     X,
     Zap,
     Clock,
-    Trophy,
     Star,
     Loader2,
     AlertCircle,
-    Check,
     ArrowRight,
     PartyPopper,
     Volume2,
@@ -129,29 +127,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number } | null>(null);
     const [isCompletingLesson, setIsCompletingLesson] = useState(false);
     const [showGameOver, setShowGameOver] = useState(false);
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    const [isChecked, setIsChecked] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
-
-    // Classification exercise state
-    const [selectedClassifications, setSelectedClassifications] = useState<Record<string, string>>({});
-
-    // Tap action exercise state
-    const [tappedItems, setTappedItems] = useState<Set<string>>(new Set());
-
-    // Shuffle utility function (Fisher-Yates algorithm)
-    const shuffleArray = <T,>(array: T[]): T[] => {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    };
-
-    // Shuffled items for current exercise (memoized per exercise)
-    const [shuffledItems, setShuffledItems] = useState<unknown[]>([]);
-    const [shuffledOptions, setShuffledOptions] = useState<unknown[]>([]);
 
 
     // Get mood based on state (for Liruf)
@@ -363,152 +339,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         }
     }, [state, playSound, stopBGM, isCompletingLesson, code]);
 
-    // Reset states and shuffle items when exercise changes
+    // Reset local feedback when exercise changes
     useEffect(() => {
-        setSelectedOption(null);
-        setIsChecked(false);
         setLocalFeedback('none');
-        setSelectedClassifications({});
-        setTappedItems(new Set());
-
-        // Shuffle items for current exercise to prevent predictable patterns
-        if (currentExercise) {
-            const items = currentExercise.content?.items || [];
-            const options = currentExercise.content?.options || [];
-            setShuffledItems(shuffleArray(items));
-            setShuffledOptions(shuffleArray(options));
-        }
-    }, [currentExerciseIndex, currentExercise]);
-
-    // Handle option selection
-    const handleSelectOption = (optionId: string) => {
-        if (isChecked) return;
-        playSound('ui_tap');
-        setSelectedOption(optionId);
-    };
-
-    // Handle check answer
-    const handleCheckAnswer = () => {
-        if (!selectedOption || !currentExercise) return;
-        const isCorrect = submitAnswer(selectedOption);
-        setIsChecked(true);
-        setLocalFeedback(isCorrect ? 'success' : 'error');
-
-        if (isCorrect) {
-            playSound('edu_success');
-            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-        } else {
-            playSound('edu_error');
-            const newLives = lives - 1;
-            setLives(newLives);
-            // Check if game over
-            if (newLives <= 0) {
-                setTimeout(() => setShowGameOver(true), 1000);
-            }
-        }
-    };
-
-    // Handle classification item click
-    const handleClassificationClick = (itemId: string, categoryId: string) => {
-        if (isChecked) return;
-        playSound('ui_tap');
-        setSelectedClassifications(prev => ({
-            ...prev,
-            [itemId]: categoryId
-        }));
-    };
-
-    // Handle check classification answer
-    const handleCheckClassification = () => {
-        if (!currentExercise) return;
-        const correctClassifications = currentExercise.correct_answer?.classifications || {};
-        const allItems = currentExercise.content.items || [];
-
-        // Check if all items are classified correctly
-        const isCorrect = allItems.every((item: { id: string }) =>
-            selectedClassifications[item.id] === correctClassifications[item.id]
-        );
-
-        setIsChecked(true);
-        setLocalFeedback(isCorrect ? 'success' : 'error');
-        submitAnswer(selectedClassifications);
-
-        if (isCorrect) {
-            playSound('edu_success');
-            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-        } else {
-            playSound('edu_error');
-            const newLives = lives - 1;
-            setLives(newLives);
-            if (newLives <= 0) {
-                setTimeout(() => setShowGameOver(true), 1000);
-            }
-        }
-    };
-
-    // Handle tap item
-    const handleTapItem = (itemId: string) => {
-        if (isChecked) return;
-        playSound('ui_tap');
-        setTappedItems(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(itemId)) {
-                newSet.delete(itemId);
-            } else {
-                newSet.add(itemId);
-            }
-            return newSet;
-        });
-    };
-
-    // Handle check tap answer
-    const handleCheckTapAnswer = () => {
-        if (!currentExercise) return;
-
-        // Get target IDs from items array (items with isTarget: true)
-        const items = (currentExercise.content as { items?: Array<{ id: string; isTarget?: boolean }> }).items || [];
-        const targetIds = new Set(items.filter(item => item.isTarget === true).map(item => item.id));
-
-        // Also support legacy correct_answer.targetIds format
-        const legacyTargetIds = currentExercise.correct_answer?.targetIds as string[] | undefined;
-        if (legacyTargetIds && legacyTargetIds.length > 0) {
-            legacyTargetIds.forEach(id => targetIds.add(id));
-        }
-
-        const isCorrect =
-            tappedItems.size === targetIds.size &&
-            [...tappedItems].every(id => targetIds.has(id));
-
-        setIsChecked(true);
-        setLocalFeedback(isCorrect ? 'success' : 'error');
-        submitAnswer([...tappedItems]);
-
-        if (isCorrect) {
-            playSound('edu_success');
-            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-        } else {
-            playSound('edu_error');
-            const newLives = lives - 1;
-            setLives(newLives);
-            if (newLives <= 0) {
-                setTimeout(() => setShowGameOver(true), 1000);
-            }
-        }
-    };
-
-    // Handle continue after answer
-    const handleContinue = () => {
-        if (localFeedback === 'error') {
-            // Reset para reintentar
-            setSelectedOption(null);
-            setIsChecked(false);
-            setLocalFeedback('none');
-            retryExercise(); // Resetear estado del hook también
-        } else if (localFeedback === 'success') {
-            // Avanzar al siguiente ejercicio
-            nextExercise();
-        }
-    };
+    }, [currentExerciseIndex]);
 
     // Close lesson
     const handleClose = () => navigate(-1);
@@ -517,7 +351,12 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     if (loading) {
         return (
             <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-16 h-16 text-primary animate-spin" />
+                <dotlottie-wc
+                    src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
+                    style={{ width: '300px', height: '300px' }}
+                    autoplay
+                    loop
+                />
                 <p className="text-lg text-muted-foreground font-medium">{t('loading')}</p>
             </div>
         );
@@ -708,9 +547,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <StoryMode
                         exercise={currentExercise}
                         onNext={() => {
-                            submitAnswer(true); // Verify/Save progress
-                            // Small delay to ensure state update? Or just next.
-                            // Since story mode is self-contained "Success", we just move on.
+                            // Story mode es contenido de consumo, no necesita validación.
+                            // Solo avanzar al siguiente ejercicio.
                             nextExercise();
                         }}
                     />
@@ -722,8 +560,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <IntroNarrative
                         exercise={currentExercise}
                         onNext={() => {
-                            // Narrative is just consumption, always "correct"
-                            submitAnswer(true);
+                            // Narrative es contenido de consumo, no necesita validación.
+                            // Solo avanzar al siguiente ejercicio.
                             nextExercise();
                         }}
                         isAudioPlaying={isAudioPlaying}
@@ -763,7 +601,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 )}
 
                 {/* GLOBAL INSTRUCTION FOOTER */}
-                {!isChecked && currentExercise?.content?.instruction && (
+                {localFeedback === 'none' && currentExercise?.content?.instruction && (
                     <div className="w-full max-w-md mx-auto mt-4 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-500">
                         <div className="bg-muted/50 dark:bg-muted/30 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 flex items-center justify-center gap-2">
                             <span className="text-xs font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider">
@@ -796,6 +634,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -813,18 +652,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <Classification
                         exercise={currentExercise}
                         onSubmit={(answer) => {
-                            // Validate classification locally (don't trust submitAnswer for complex types)
-                            const correctClassifications = currentExercise.correct_answer?.classifications || {};
-                            const allItems = currentExercise.content.items || [];
-
-                            const isCorrect = allItems.every((item: any) =>
-                                answer[item.id] === correctClassifications[item.id]
-                            );
-
-                            // Submit the answer for tracking
-                            submitAnswer(answer);
-
-                            // Handle feedback based on our validation
+                            const isCorrect = submitAnswer(answer);
                             if (isCorrect) {
                                 playSound('edu_success');
                                 confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
@@ -838,7 +666,6 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
-
                             return isCorrect;
                         }}
                         onNext={() => {
@@ -859,11 +686,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <MatchingPairs
                         exercise={currentExercise}
                         onSubmit={(answer) => {
-                            // Logic handled inside component mostly, but good to have
-                            submitAnswer(answer);
-                            // Feedback handled inside for now or we can do it here
-                            playSound('edu_success');
-                            setLocalFeedback('success');
+                            const isCorrect = submitAnswer(answer);
+                            if (isCorrect) {
+                                playSound('edu_success');
+                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
+                                setLocalFeedback('success');
+                            }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -895,6 +724,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -912,11 +742,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <TrueFalse
                         exercise={currentExercise}
                         onSubmit={(isTrue) => {
-                            const isCorrect = isTrue === currentExercise.correct_answer?.isTrue;
-                            submitAnswer(isTrue);
-
+                            const isCorrect = submitAnswer(isTrue);
                             if (isCorrect) {
-                                // Component plays its own sound but we can reinforce or do confetti
                                 confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                                 setLocalFeedback('success');
                             } else {
@@ -927,6 +754,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -958,6 +786,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -990,6 +819,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1021,6 +851,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1052,6 +883,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1085,6 +917,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1116,6 +949,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1147,6 +981,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1178,6 +1013,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1198,21 +1034,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <TapAction
                         exercise={currentExercise}
                         onSubmit={(answer) => {
-                            // Calculate corectness (logic duplicated in component for UI, but here for global state)
-                            // Ideally component passes isCorrect?
-                            // TapAction component determines correctness internally to show feedback. 
-                            // It passes the answer items to us. We need to validate to update lives/Global state.
-                            // To avoid logic duplication, strict separation would be better, but for now duplicate validation:
-                            const items = currentExercise.content.items || [];
-                            const targetIds = new Set(items.filter((item: any) => item.isTarget === true).map((item: any) => item.id));
-                            if (currentExercise.correct_answer?.targetIds) {
-                                (currentExercise.correct_answer.targetIds as string[]).forEach(id => targetIds.add(id));
-                            }
-
-                            const isCorrect = answer.length === targetIds.size && answer.every(id => targetIds.has(id));
-
-                            submitAnswer(answer);
-
+                            const isCorrect = submitAnswer(answer);
                             if (isCorrect) {
                                 playSound('edu_success');
                                 confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
@@ -1226,6 +1048,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1257,6 +1080,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1288,6 +1112,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1305,10 +1130,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <ImpactMeter
                         exercise={currentExercise}
                         onSubmit={(causeId) => {
-                            submitAnswer(causeId);
+                            const isCorrect = submitAnswer(causeId);
                             playSound('edu_success');
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1340,6 +1166,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1357,10 +1184,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <MysteryInvestment
                         exercise={currentExercise}
                         onSubmit={(allocation) => {
-                            submitAnswer(allocation);
+                            const isCorrect = submitAnswer(allocation);
                             playSound('edu_success');
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1392,6 +1220,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1410,10 +1239,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <SavingsRace
                         exercise={currentExercise}
                         onSubmit={(strategy) => {
-                            submitAnswer(strategy);
+                            const isCorrect = submitAnswer(strategy);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1445,6 +1275,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1463,10 +1294,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <InterestCalculator
                         exercise={currentExercise}
                         onSubmit={(values) => {
-                            submitAnswer(values);
+                            const isCorrect = submitAnswer(values);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1498,6 +1330,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1518,10 +1351,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <SubscriptionTracker
                         exercise={currentExercise}
                         onSubmit={(active) => {
-                            submitAnswer(active);
+                            const isCorrect = submitAnswer(active);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1540,10 +1374,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <InflationSimulator
                         exercise={currentExercise}
                         onSubmit={(comparison) => {
-                            submitAnswer(comparison);
+                            const isCorrect = submitAnswer(comparison);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1575,6 +1410,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1606,6 +1442,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1637,6 +1474,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1668,6 +1506,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1686,10 +1525,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <DebtStrategy
                         exercise={currentExercise}
                         onSubmit={(strategy) => {
-                            submitAnswer(strategy);
+                            const isCorrect = submitAnswer(strategy);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1721,6 +1561,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1739,10 +1580,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <OpportunityCost
                         exercise={currentExercise}
                         onSubmit={(choice) => {
-                            submitAnswer(choice);
+                            const isCorrect = submitAnswer(choice);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1774,6 +1616,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1792,10 +1635,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <MindsetComparison
                         exercise={currentExercise}
                         onSubmit={(mindset) => {
-                            submitAnswer(mindset);
+                            const isCorrect = submitAnswer(mindset);
                             playSound('edu_success');
                             confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
                             setLocalFeedback('success');
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1827,6 +1671,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');
@@ -1858,6 +1703,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 });
                                 setLocalFeedback('error');
                             }
+                            return isCorrect;
                         }}
                         onNext={() => {
                             setLocalFeedback('none');

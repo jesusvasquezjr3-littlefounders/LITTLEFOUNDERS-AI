@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface PassiveIncomeProps {
     exercise: any;
-    onSubmit: (selected: string[]) => void;
+    onSubmit: (selected: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -50,15 +50,8 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
     const isTargetMet = totalIncome >= targetIncome;
 
     const handleSubmit = () => {
-        if (!isTargetMet) {
-            playSound('edu_error');
-            setFeedback('error');
-            return;
-        }
-
-        onSubmit(selectedStreams);
-        playSound('edu_success');
-        setFeedback('success');
+        const isCorrect = onSubmit(selectedStreams);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     return (

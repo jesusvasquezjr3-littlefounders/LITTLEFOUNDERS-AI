@@ -12,7 +12,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface ConceptBuilderProps {
     exercise: any;
-    onSubmit: (sequence: string[]) => void;
+    onSubmit: (sequence: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -51,17 +51,10 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
     };
 
     const handleCheck = () => {
-        // Correct sequence logic
-        const correctSequence = exercise.correct_answer?.sequence || [];
         const currentIds = blocks.map(b => b.id);
-
-        const isCorrect = currentIds.length === correctSequence.length && currentIds.every((id, idx) => id === correctSequence[idx]);
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(currentIds);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(currentIds);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

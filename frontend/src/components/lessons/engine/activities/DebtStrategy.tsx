@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface DebtStrategyProps {
     exercise: any;
-    onSubmit: (strategy: string) => void;
+    onSubmit: (strategy: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -18,7 +18,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 
     const [selectedStrategy, setSelectedStrategy] = useState<'snowball' | 'avalanche'>('snowball');
     const [isSimulating, setIsSimulating] = useState(false);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     const debts = exercise.content.debts || [];
     const monthlyPayment = exercise.content.monthlyPayment || 500;
@@ -79,9 +79,8 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         playSound('ui_tap');
 
         setTimeout(() => {
-            playSound('edu_success');
-            setFeedback('success');
-            onSubmit(selectedStrategy);
+            const isCorrect = onSubmit(selectedStrategy);
+            setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);
     };
 

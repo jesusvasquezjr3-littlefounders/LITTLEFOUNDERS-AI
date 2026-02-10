@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface InflationSimulatorProps {
     exercise: any;
-    onSubmit: (comparison: { yearStart: number; yearEnd: number }) => void;
+    onSubmit: (comparison: { yearStart: number; yearEnd: number }) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -18,7 +18,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
 
     const [yearStart, setYearStart] = useState(2000);
     const [yearEnd, setYearEnd] = useState(2024);
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         setYearStart(exercise.content.defaultYearStart || 2000);
@@ -41,9 +41,8 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
     const percentageChange = ((priceEnd - priceStart) / priceStart) * 100;
 
     const handleSubmit = () => {
-        playSound('edu_success');
-        setFeedback('success');
-        onSubmit({ yearStart, yearEnd });
+        const isCorrect = onSubmit({ yearStart, yearEnd });
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     const handleContinue = () => {

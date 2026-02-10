@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MysteryInvestmentProps {
     exercise: any;
-    onSubmit: (allocation: Record<string, number>) => void;
+    onSubmit: (allocation: Record<string, number>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -22,7 +22,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
     const [allocation, setAllocation] = useState<Record<string, number>>({});
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<Record<string, number>>({});
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         // Initialize allocation
@@ -73,15 +73,10 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
 
         setResults(newResults);
         setShowResults(true);
-        playSound('edu_success');
-
-        // Check if diversified (invested in at least 2 boxes)
-        const boxesUsed = Object.values(allocation).filter(v => v > 0).length;
-        const minBoxes = exercise.correct_answer?.minBoxes || 2;
 
         setTimeout(() => {
-            setFeedback('success');
-            onSubmit(allocation);
+            const isCorrect = onSubmit(allocation);
+            setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);
     };
 

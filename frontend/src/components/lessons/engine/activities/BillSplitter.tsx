@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface BillSplitterProps {
     exercise: any;
-    onSubmit: (splits: Record<string, number>) => void;
+    onSubmit: (splits: Record<string, number>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -83,7 +83,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
         if (mode === 'proportional') {
             // Check if all items are assigned
             const allAssigned = items.every((item: any) =>
-                Object.values(assignments).some((items: any) => items.includes(item.id))
+                Object.values(assignments).some((itemIds: any) => itemIds.includes(item.id))
             );
 
             if (!allAssigned) {
@@ -92,9 +92,9 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
             }
         }
 
-        onSubmit(splits);
-        playSound('edu_success');
-        setFeedback('success');
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(splits);
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     const handleContinue = () => {

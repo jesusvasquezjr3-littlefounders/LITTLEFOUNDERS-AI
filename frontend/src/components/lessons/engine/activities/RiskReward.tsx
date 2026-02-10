@@ -7,7 +7,7 @@ import { ArrowRight, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface RiskRewardProps {
     exercise: any;
-    onSubmit: (choiceId: string) => void;
+    onSubmit: (choiceId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -31,28 +31,12 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
         playSound('ui_tap');
         setSelectedId(option.id);
 
-        // Determine outcome
-        // Ideally define outcome in data, but for now simulate probability if risk?
-        // Let's assume content defines if it's correct/preferred.
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(option.id);
 
-        const correctId = exercise.correct_answer?.correctOptionId;
-        const isOptimal = option.id === correctId; // "Correct" = Optimal choice
-
-        // If it's a RISKY option, maybe we roll a die?
-        // Or simplified: Just check if it matches correct answer.
-
-        // Let's do a reveal animation
+        // Reveal animation with delay
         setTimeout(() => {
-            if (isOptimal) {
-                setFeedback('success');
-                playSound('edu_success');
-            } else {
-                // Even if not optimal, is it "Wrong" or just "Safe but low reward"?
-                // Let's use standard error for now.
-                setFeedback('error');
-                playSound('edu_error');
-            }
-            onSubmit(option.id);
+            setFeedback(isCorrect ? 'success' : 'error');
         }, 1000);
     };
 

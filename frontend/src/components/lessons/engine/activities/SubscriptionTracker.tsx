@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface SubscriptionTrackerProps {
     exercise: any;
-    onSubmit: (active: string[]) => void;
+    onSubmit: (active: string[]) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -17,7 +17,7 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
     const { playSound } = useSound();
 
     const [activeSubscriptions, setActiveSubscriptions] = useState<Set<string>>(new Set());
-    const [feedback, setFeedback] = useState<'none' | 'success'>('none');
+    const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         const initial = new Set<string>((exercise.content.subscriptions || [])
@@ -53,9 +53,8 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
         .reduce((sum: number, sub: any) => sum + (sub.monthlyCost || 0) * 12, 0);
 
     const handleSubmit = () => {
-        playSound('edu_success');
-        setFeedback('success');
-        onSubmit(Array.from(activeSubscriptions));
+        const isCorrect = onSubmit(Array.from(activeSubscriptions));
+        setFeedback(isCorrect ? 'success' : 'error');
     };
 
     const handleContinue = () => {

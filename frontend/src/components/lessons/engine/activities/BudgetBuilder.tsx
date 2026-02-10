@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface BudgetBuilderProps {
     exercise: any;
-    onSubmit: (allocation: Record<string, string>) => void;
+    onSubmit: (allocation: Record<string, string>) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -51,8 +51,6 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
     };
 
     const handleCheck = () => {
-        const correctAllocation = exercise.correct_answer?.allocation || {};
-
         // Check if all items are allocated
         const allAllocated = items.every((item: any) => allocation[item.id]);
         if (!allAllocated) {
@@ -60,16 +58,9 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
             return;
         }
 
-        // Validate allocation
-        const isCorrect = items.every((item: any) =>
-            allocation[item.id] === correctAllocation[item.id]
-        );
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(allocation);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(allocation);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {

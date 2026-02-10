@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface PriceDetectiveProps {
     exercise: any;
-    onSubmit: (choiceId: string) => void;
+    onSubmit: (choiceId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -46,15 +46,9 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
 
     const handleCheck = () => {
         if (!selectedId) return;
-
-        const correctId = exercise.correct_answer?.correctOptionId;
-        const isCorrect = selectedId === correctId;
-
+        // Delegate validation to useLessonState via onSubmit (single source of truth)
+        const isCorrect = onSubmit(selectedId);
         setFeedback(isCorrect ? 'success' : 'error');
-        onSubmit(selectedId);
-
-        if (isCorrect) playSound('edu_success');
-        else playSound('edu_error');
     };
 
     const handleContinue = () => {
