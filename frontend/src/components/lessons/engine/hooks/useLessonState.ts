@@ -192,7 +192,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── SHOP SIM ───
         // Component sends string[] (cart item IDs)
         case 'shop_sim': {
-            const correctItems = new Set(correctAnswer?.shopItems || []);
+            const correctItems = new Set<string>(correctAnswer?.shopItems || []);
             const userItems = new Set(answer as string[]);
             // If specific correct items are defined, enforce them
             if (correctItems.size > 0) {
