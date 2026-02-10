@@ -87,7 +87,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
             );
 
             if (!allAssigned) {
-                playSound('edu_error');
+                playSound('ui_tap');
                 return;
             }
         }
@@ -98,7 +98,19 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setAssignments(() => {
+                const init: Record<string, string[]> = {};
+                people.forEach((person: any) => {
+                    init[person.id] = [];
+                });
+                return init;
+            });
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     return (
@@ -244,9 +256,15 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
 
                         <Button
                             onClick={handleContinue}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className={cn(
+                                "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                feedback === 'success'
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
+                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            )}
                         >
-                            {t('actions.continue')}
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </Button>
                     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, Clock, Trophy } from 'lucide-react';
@@ -19,6 +19,8 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [score, setScore] = useState(0);
+    // Ref para tener siempre el score actualizado dentro de closures (setTimeout/setInterval)
+    const scoreRef = useRef(0);
     const [timeLeft, setTimeLeft] = useState(15);
     const [isAnswered, setIsAnswered] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'complete'>('none');
@@ -31,6 +33,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         setCurrentQuestion(0);
         setSelectedAnswer(null);
         setScore(0);
+        scoreRef.current = 0;
         setTimeLeft(15);
         setIsAnswered(false);
         setFeedback('none');
@@ -67,12 +70,15 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         setSelectedAnswer(answerId);
         setIsAnswered(true);
 
-        const isCorrect = answerId === question.correctAnswer;
+        // CORREGIDO: El JSON usa 'correctId', no 'correctAnswer'
+        const isCorrect = answerId === question.correctId;
 
         if (isCorrect) {
             const timeBonus = Math.floor(timeLeft / 3);
             const points = 100 + timeBonus * 10;
-            setScore(prev => prev + points);
+            // Actualizar tanto el state como el ref para evitar stale closures en setTimeout
+            scoreRef.current += points;
+            setScore(scoreRef.current);
             playSound('edu_success');
         } else {
             playSound('edu_error');
@@ -90,10 +96,9 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
             setTimeLeft(15);
             setIsAnswered(false);
         } else {
-            // Delegate validation to useLessonState via onSubmit (single source of truth)
-            const isCorrect = onSubmit(score);
+            // Usar scoreRef.current para tener el score actualizado (evita stale closure)
+            const isCorrect = onSubmit(scoreRef.current);
             setFeedback('complete');
-            // Store whether quiz was passed for continue/retry logic
             setQuizPassed(isCorrect);
         }
     };
@@ -149,7 +154,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                     <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         {question?.options.map((option: any) => {
                             const isSelected = selectedAnswer === option.id;
-                            const isCorrect = option.id === question.correctAnswer;
+                            const isCorrect = option.id === question.correctId;
                             const showResult = isAnswered;
 
                             return (
@@ -208,6 +213,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                                 setCurrentQuestion(0);
                                 setSelectedAnswer(null);
                                 setScore(0);
+                                scoreRef.current = 0;
                                 setTimeLeft(15);
                                 setIsAnswered(false);
                                 setFeedback('none');

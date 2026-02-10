@@ -370,8 +370,14 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
     const submitAnswer = useCallback((answer: string | Record<string, string> | string[] | boolean | any): boolean => {
         // Permitir submission desde PLAYING (primer ejercicio) y WAITING_INPUT (subsiguientes)
         // Bloquear durante CHECKING, FEEDBACK, COMPLETED para evitar doble submission
-        if (!currentExercise) return false;
-        if (state !== 'WAITING_INPUT' && state !== 'PLAYING') return false;
+        if (!currentExercise) {
+            console.warn('[LessonEngine] submitAnswer blocked: no currentExercise');
+            return false;
+        }
+        if (state !== 'WAITING_INPUT' && state !== 'PLAYING') {
+            console.warn(`[LessonEngine] submitAnswer blocked: state is '${state}', expected WAITING_INPUT or PLAYING. Exercise type: ${currentExercise.type}`);
+            return false;
+        }
 
         setState('CHECKING');
         setAttempts(prev => prev + 1);
@@ -409,8 +415,9 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
             setAttempts(0);
 
             // Determinar estado inicial del siguiente ejercicio
+            // Tipos de consumo (narrativas) inician en PLAYING, el resto en WAITING_INPUT
             const nextExercise = timeline[nextIndex];
-            if (nextExercise?.type === 'intro_narrative') {
+            if (nextExercise?.type === 'intro_narrative' || nextExercise?.type === 'story_mode') {
                 setState('PLAYING');
             } else {
                 setState('WAITING_INPUT');

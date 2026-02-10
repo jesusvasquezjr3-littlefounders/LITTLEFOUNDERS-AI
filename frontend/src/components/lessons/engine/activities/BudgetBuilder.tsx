@@ -54,7 +54,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
         // Check if all items are allocated
         const allAllocated = items.every((item: any) => allocation[item.id]);
         if (!allAllocated) {
-            playSound('edu_error');
+            playSound('ui_tap');
             return;
         }
 
