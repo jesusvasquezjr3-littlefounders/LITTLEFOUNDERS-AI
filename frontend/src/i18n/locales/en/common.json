@@ -16,7 +16,10 @@
         "submit": "Submit",
         "loading": "Loading...",
         "start_adventure": "Start Adventure",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "uploading": "Uploading...",
+        "generating": "Generating...",
+        "deleting": "Deleting..."
     },
     "navigation": {
         "home": "Home",
@@ -42,6 +45,28 @@
         "not_configured": "Not configured",
         "saving": "Saving..."
     },
+    "filters": "Filters",
+    "optional": "Optional",
+    "clear": "Clear",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "id": "ID",
+    "actions": "Actions",
+    "action": "Action",
+    "date": "Date",
+    "created": "Created",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "uploading": "Uploading...",
+    "generating": "Generating...",
+    "rollingBack": "Rolling back...",
+    "fromDate": "From Date",
+    "toDate": "To Date",
     "time": {
         "today": "Today",
         "yesterday": "Yesterday",
@@ -52,7 +77,13 @@
     },
     "languages": {
         "es": "Spanish",
-        "en": "English"
+        "en": "English",
+        "pt": "Portuguese",
+        "fr": "French",
+        "spanish": "Spanish",
+        "english": "English",
+        "portuguese": "Portuguese",
+        "french": "French"
     },
     "validation": {
         "required": "This field is required",

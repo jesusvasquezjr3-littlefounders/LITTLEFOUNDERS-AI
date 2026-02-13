@@ -62,3 +62,7 @@ database.sql
 # Componentes para generar las lecciones mediante automatización
 # Nota: Agente usado para generar las lecciones: Kimi's Computer (K2.5 Agent) (https://www.kimi.com/)
 littlefounders_lessons/
+
+*.backup
+
+ADMIN_PANEL_IMPLEMENTACION.md

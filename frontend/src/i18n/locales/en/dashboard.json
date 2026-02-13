@@ -70,5 +70,92 @@
         "reminder_desc": "Don't forget to do your finance challenge today.",
         "new_skill": "New skill",
         "new_skill_desc": "You unlocked a lesson about budgeting!"
+    },
+    "weekly_goal": {
+        "title": "Weekly Goal",
+        "description": "{{progress}} of {{goal}} lessons completed this week",
+        "progress_label": "Progress"
+    },
+    "achievements": {
+        "title": "Achievements",
+        "subtitle": "Unlock special achievements as you learn!",
+        "first_lesson": "First Lesson",
+        "first_lesson_desc": "Completed your first lesson",
+        "dedicated_student": "Dedicated Student",
+        "dedicated_student_desc": "Studied 60 minutes",
+        "golden_points": "Golden Points",
+        "golden_points_desc": "Earned 100 points",
+        "streak_7_days": "7-Day Streak",
+        "streak_7_days_desc": "7 consecutive days studying",
+        "unlocked": "Unlocked!"
+    },
+    "next_lessons": {
+        "title": "Next Lessons",
+        "subtitle": "Continue your learning with these exciting lessons!",
+        "start": "Start",
+        "view_all": "View All Lessons",
+        "difficulty": {
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard"
+        }
+    },
+    "explore": {
+        "title": "Explore Features",
+        "learn": "Learn",
+        "learn_desc": "Interactive Lessons",
+        "entrepreneurship": "Entrepreneurship",
+        "entrepreneurship_desc": "Investment Games",
+        "virtual_card": "Virtual Card",
+        "virtual_card_desc": "Digital Banking"
+    },
+    "sample_lessons": {
+        "what_is_money": "What is Money?",
+        "saving_is_fun": "Saving is Fun",
+        "needs_vs_wants": "Needs vs Wants"
+    },
+    "parent": {
+        "greeting": "Hello, Tutor 👋",
+        "viewing_progress": "Viewing progress of:",
+        "last_activity": "Last Activity",
+        "full_report": "Full Report",
+        "lessons": "Lessons",
+        "completed": "Completed",
+        "points_xp": "Points XP",
+        "total_accumulated": "Total accumulated",
+        "streak": "Streak",
+        "days_in_row": "Days in a row",
+        "detailed_activity": "Detailed Activity",
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year",
+        "daily_goal_completed": "Daily goal completed",
+        "lessons_of_goal": "{{count}} of 5 lesson goal",
+        "lessons_completed": "{{count}} lessons completed",
+        "minutes_label": "Minutes",
+        "total_study_time": "Total study time",
+        "points_label": "Points",
+        "xp_earned_period": "XP earned in this period",
+        "explore_children_see": "Explore what your children see 🚀",
+        "learn": "Learn",
+        "entrepreneurship": "Entrepreneurship",
+        "banking": "Banking",
+        "goals": "Goals",
+        "monthly": "Monthly",
+        "achievements_label": "Achievements",
+        "view_all_goals": "View all goals",
+        "student_profile": "Student Profile",
+        "favorite_subject": "Favorite Subject",
+        "pace": "Pace",
+        "celebrate_title": "Celebrate their achievements!",
+        "celebrate_desc": "{{name}} had an excellent week. Why not send them a reward?",
+        "send_reward": "Send Reward",
+        "no_info_found": "No information found",
+        "verify_account": "Verify that your account is correctly linked to a student.",
+        "streak_excellent": "On fire! 🔥",
+        "streak_good": "Good pace! 👍",
+        "streak_needs_improvement": "Time to practice! 📚",
+        "no_data": "No data"
     }
 }

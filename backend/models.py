@@ -10,6 +10,7 @@ class UserType(str, enum.Enum):
     TUTOR = "tutor"
     CHILD = "child"
     UNIVERSAL = "universal"
+    ADMIN = "admin"
 
 
 class Gender(str, enum.Enum):
@@ -401,3 +402,51 @@ class GameSession(Base):
     is_active = Column(Boolean, default=True)
     started_at = Column(DateTime(timezone=True), server_default=func.now())
     ended_at = Column(DateTime(timezone=True))
+
+
+# =====================================================
+# ADMIN PANEL - MODELOS
+# =====================================================
+
+class ContentEditHistory(Base):
+    """Historial de ediciones del panel de administración"""
+    __tablename__ = "content_edit_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    editor_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    entity_type = Column(String(50), nullable=False)    # lesson, character, gesture, audio
+    entity_id = Column(Integer, nullable=False)
+    action = Column(String(20), nullable=False)          # create, update, delete, reorder, rollback
+    field_changed = Column(String(100), nullable=True)
+    previous_value = Column(JSON, nullable=True)
+    new_value = Column(JSON, nullable=True)
+    edit_metadata = Column("metadata", JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    editor = relationship("User", foreign_keys=[editor_user_id])
+
+
+class LessonAudioSegment(Base):
+    """Segmentos de audio para lecciones"""
+    __tablename__ = "lesson_audio_segments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=True)
+    exercise_id = Column(Integer, nullable=True)
+    character_id = Column(Integer, ForeignKey("characters.id"), nullable=True)
+    audio_url = Column(String(500), nullable=True)
+    transcript = Column(Text, nullable=True)
+    emotion = Column(String(30), default='neutral')
+    order_index = Column(Integer, default=0)
+    duration_ms = Column(Integer, nullable=True)
+    language_code = Column(String(10), default='es')
+    # Campos extendidos para Admin Panel
+    tags = Column(JSON, default=[])
+    uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    source = Column(String(20), default='generated')  # 'generated' (TTS) o 'uploaded'
+    is_active = Column(Boolean, default=True)
+
+    # Relationships
+    lesson = relationship("Lesson", foreign_keys=[lesson_id])
+    character = relationship("Character", foreign_keys=[character_id])

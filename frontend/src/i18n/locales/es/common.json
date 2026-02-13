@@ -12,7 +12,10 @@
         "submit": "Enviar",
         "loading": "Cargando...",
         "start_adventure": "Comenzar Aventura",
-        "saving": "Guardando..."
+        "saving": "Guardando...",
+        "uploading": "Subiendo...",
+        "generating": "Generando...",
+        "deleting": "Eliminando..."
     },
     "navigation": {
         "home": "Inicio",
@@ -38,6 +41,28 @@
         "not_configured": "No configurado",
         "saving": "Guardando..."
     },
+    "filters": "Filtros",
+    "optional": "Opcional",
+    "clear": "Limpiar",
+    "showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "id": "ID",
+    "actions": "Acciones",
+    "action": "Acción",
+    "date": "Fecha",
+    "created": "Creado",
+    "page": "Página",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "uploading": "Subiendo...",
+    "generating": "Generando...",
+    "rollingBack": "Restaurando...",
+    "fromDate": "Desde Fecha",
+    "toDate": "Hasta Fecha",
     "time": {
         "today": "Hoy",
         "yesterday": "Ayer",
@@ -48,7 +73,13 @@
     },
     "languages": {
         "es": "Español",
-        "en": "English"
+        "en": "English",
+        "pt": "Portugués",
+        "fr": "Francés",
+        "spanish": "Español",
+        "english": "Inglés",
+        "portuguese": "Portugués",
+        "french": "Francés"
     },
     "validation": {
         "required": "Este campo es requerido",

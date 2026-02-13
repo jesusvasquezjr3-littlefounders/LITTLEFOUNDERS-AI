@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,74 +25,75 @@ interface ChildDashboardProps {
 }
 
 export function ChildDashboard({ user }: ChildDashboardProps) {
+  const { t } = useTranslation('dashboard');
   const [currentStreak, setCurrentStreak] = useState(5);
   const [weeklyGoal, setWeeklyGoal] = useState(3);
   const [weeklyProgress, setWeeklyProgress] = useState(2);
 
   const stats = [
     {
-      title: "Lecciones Completadas",
+      title: t('stats.lessons_completed'),
       value: user?.lessons_completed || 0,
       lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
       color: "text-blue-600",
       bgColor: "",
-      description: "¡Sigue así!",
+      description: t('stats.keep_going'),
       size: "150px"
     },
     {
-      title: "Minutos Estudiados",
+      title: t('stats.minutes_studied'),
       value: user?.minutes_studied || 0,
       lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
       color: "text-green-600",
       bgColor: "",
-      description: "Tiempo bien invertido",
+      description: t('stats.time_well_spent'),
       size: "150px"
     },
     {
-      title: "Puntos Ganados",
+      title: t('stats.points_earned'),
       value: user?.points_earned || 0,
       lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
       color: "text-yellow-600",
       bgColor: "",
-      description: "¡Eres un experto!",
+      description: t('stats.expert'),
       size: "150px"
     },
     {
-      title: "Racha Actual",
+      title: t('stats.current_streak'),
       value: currentStreak,
       lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
       color: "text-purple-600",
       bgColor: "",
-      description: "¡Días seguidos!",
+      description: t('stats.days_in_row'),
       size: "100px"
     }
   ];
 
   const achievements = [
     {
-      title: "Primera Lección",
-      description: "Completaste tu primera lección",
+      title: t('achievements.first_lesson'),
+      description: t('achievements.first_lesson_desc'),
       icon: Trophy,
       unlocked: user?.lessons_completed >= 1,
       color: "text-yellow-600"
     },
     {
-      title: "Estudiante Dedicado",
-      description: "Estudiaste 60 minutos",
+      title: t('achievements.dedicated_student'),
+      description: t('achievements.dedicated_student_desc'),
       icon: Clock,
       unlocked: user?.minutes_studied >= 60,
       color: "text-blue-600"
     },
     {
-      title: "Puntos Dorados",
-      description: "Ganaste 100 puntos",
+      title: t('achievements.golden_points'),
+      description: t('achievements.golden_points_desc'),
       icon: Star,
       unlocked: user?.points_earned >= 100,
       color: "text-yellow-600"
     },
     {
-      title: "Racha de 7 Días",
-      description: "7 días seguidos estudiando",
+      title: t('achievements.streak_7_days'),
+      description: t('achievements.streak_7_days_desc'),
       icon: Zap,
       unlocked: currentStreak >= 7,
       color: "text-purple-600"
@@ -100,22 +102,22 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
 
   const nextLessons = [
     {
-      title: "¿Qué es el Dinero?",
-      difficulty: "Fácil",
+      title: t('sample_lessons.what_is_money'),
+      difficulty: t('next_lessons.difficulty.easy'),
       duration: "15 min",
       points: 50,
       completed: false
     },
     {
-      title: "Ahorrar es Divertido",
-      difficulty: "Fácil",
+      title: t('sample_lessons.saving_is_fun'),
+      difficulty: t('next_lessons.difficulty.easy'),
       duration: "20 min",
       points: 75,
       completed: false
     },
     {
-      title: "Necesidades vs Deseos",
-      difficulty: "Medio",
+      title: t('sample_lessons.needs_vs_wants'),
+      difficulty: t('next_lessons.difficulty.medium'),
       duration: "25 min",
       points: 100,
       completed: false
@@ -127,10 +129,10 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
       {/* Welcome Header */}
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          ¡Hola, {user?.name}! 👋
+          {t('welcome', { name: user?.name })} 👋
         </h1>
         <p className="text-lg text-muted-foreground">
-          ¡Prepárate para una nueva aventura de aprendizaje!
+          {t('welcome_subtitle')}
         </p>
       </div>
 
@@ -166,17 +168,17 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-blue-800">
             <Target className="h-5 w-5" />
-            <span>Meta Semanal</span>
+            <span>{t('weekly_goal.title')}</span>
           </CardTitle>
           <CardDescription>
-            {weeklyProgress} de {weeklyGoal} lecciones completadas esta semana
+            {t('weekly_goal.description', { progress: weeklyProgress, goal: weeklyGoal })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <Progress value={(weeklyProgress / weeklyGoal) * 100} className="h-3" />
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Progreso</span>
+              <span className="text-muted-foreground">{t('weekly_goal.progress_label')}</span>
               <span className="font-medium">{Math.round((weeklyProgress / weeklyGoal) * 100)}%</span>
             </div>
           </div>
@@ -190,10 +192,10 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Play className="h-5 w-5 text-green-600" />
-              <span>Próximas Lecciones</span>
+              <span>{t('next_lessons.title')}</span>
             </CardTitle>
             <CardDescription>
-              ¡Continúa tu aprendizaje con estas lecciones emocionantes!
+              {t('next_lessons.subtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -217,13 +219,13 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 </div>
                 <Button size="sm" className="bg-gradient-to-r from-green-500 to-blue-500 hover:opacity-90">
                   <Play className="h-4 w-4 mr-1" />
-                  Empezar
+                  {t('next_lessons.start')}
                 </Button>
               </div>
             ))}
             <Button asChild className="w-full mt-4 bg-gradient-to-r from-primary to-purple-600">
               <Link to="/lecciones">
-                Ver Todas las Lecciones
+                {t('next_lessons.view_all')}
               </Link>
             </Button>
           </CardContent>
@@ -234,10 +236,10 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Award className="h-5 w-5 text-yellow-600" />
-              <span>Logros</span>
+              <span>{t('achievements.title')}</span>
             </CardTitle>
             <CardDescription>
-              ¡Desbloquea logros especiales mientras aprendes!
+              {t('achievements.subtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -263,7 +265,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 </div>
                 {achievement.unlocked && (
                   <Badge className="bg-green-100 text-green-800 border-green-200">
-                    ¡Logrado!
+                    {t('achievements.unlocked')}
                   </Badge>
                 )}
               </div>
@@ -274,7 +276,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
 
       {/* Explore Features Section */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white px-1">Explora las Funcionalidades 🚀</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white px-1">{t('explore.title')} 🚀</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Interactive Lessons Card */}
@@ -285,8 +287,8 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 <BookOpen className="h-10 w-10 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white mb-1">Aprender</h3>
-                <p className="text-blue-100 font-medium text-sm">Lecciones Interactivas</p>
+                <h3 className="text-2xl font-bold text-white mb-1">{t('explore.learn')}</h3>
+                <p className="text-blue-100 font-medium text-sm">{t('explore.learn_desc')}</p>
               </div>
             </div>
           </Link>
@@ -299,8 +301,8 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 <Lightbulb className="h-10 w-10 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white mb-1">Emprender</h3>
-                <p className="text-orange-100 font-medium text-sm">Juegos de Inversión</p>
+                <h3 className="text-2xl font-bold text-white mb-1">{t('explore.entrepreneurship')}</h3>
+                <p className="text-orange-100 font-medium text-sm">{t('explore.entrepreneurship_desc')}</p>
               </div>
             </div>
           </Link>
@@ -313,8 +315,8 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 <CreditCard className="h-10 w-10 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white mb-1">Tarjeta Virtual</h3>
-                <p className="text-green-100 font-medium text-sm">Banca Digital</p>
+                <h3 className="text-2xl font-bold text-white mb-1">{t('explore.virtual_card')}</h3>
+                <p className="text-green-100 font-medium text-sm">{t('explore.virtual_card_desc')}</p>
               </div>
             </div>
           </Link>

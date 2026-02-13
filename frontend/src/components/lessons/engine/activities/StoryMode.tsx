@@ -5,12 +5,10 @@ import { ArrowRight, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
-// Import other characters if needed, but maybe dynamic import or prop is better? 
-// For now, hardcode or reuse LessonRunner logic if possible? 
-// Actually, `StoryMode` might need to be passed the Character component or render it itself.
 import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
 import { DinaCharacter } from '@/components/demo/DinaCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
+import { normalizeGesture } from '@/utils/gestureMapper';
 
 interface StoryPage {
     id: string;
@@ -93,16 +91,22 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
 
     // Determine Character
     const characterCode = exercise.character_code || 'dr_rho';
-    const mood = currentPage.character_mood || 'neutral';
+    const rawMood = currentPage.character_mood || 'neutral';
+
+    // Normalize character code
+    const normalizedCharCode = characterCode.toLowerCase().trim();
+
+    // Normalize mood/expression using gesture mapper for backward compatibility
+    const normalizedMood = normalizeGesture(normalizedCharCode, rawMood);
 
     const renderCharacter = () => {
         const className = "w-[200px] sm:w-[280px] mx-auto filter drop-shadow-xl transition-all duration-500 hover:scale-105";
 
-        // This duplication of logic from LessonRunner is acceptable for isolation
-        if (characterCode === 'dina') return <DinaCharacter className={className} expression={mood as any} />;
-        if (characterCode === 'dr_rho') return <DrRhoCharacter className={className} mood={mood as any} />;
-        if (characterCode === 'zara_vex') return <ZaraVexCharacter className={className} mood={mood as any} />;
-        return <DinoCharacter className={className} mood={mood as any} showBubble={false} />;
+        // Render character with normalized mood/expression
+        if (normalizedCharCode === 'dina') return <DinaCharacter className={className} expression={normalizedMood as any} />;
+        if (normalizedCharCode === 'dr_rho' || normalizedCharCode === 'drrho') return <DrRhoCharacter className={className} mood={normalizedMood as any} />;
+        if (normalizedCharCode === 'zara_vex' || normalizedCharCode === 'zaravex') return <ZaraVexCharacter className={className} mood={normalizedMood as any} />;
+        return <DinoCharacter className={className} mood={normalizedMood as any} showBubble={false} />;
     };
 
     return (

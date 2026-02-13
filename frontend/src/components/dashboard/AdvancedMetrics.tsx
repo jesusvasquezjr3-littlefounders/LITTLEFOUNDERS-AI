@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useTranslation } from "react-i18next";
 import {
   TrendingUp,
   TrendingDown,
@@ -27,6 +28,7 @@ interface AdvancedMetricsProps {
 }
 
 export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
+  const { t } = useTranslation('dashboard');
   // Calcular métricas avanzadas
   const calculateLearningEfficiency = () => {
     const pointsPerMinute = childData?.points_earned / childData?.minutes_studied || 0;
@@ -46,18 +48,18 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
 
   const getPerformanceLevel = () => {
     const efficiency = parseFloat(calculateLearningEfficiency());
-    if (efficiency >= 3.0) return { level: "Excelente", color: "text-green-600", bg: "bg-green-100" };
-    if (efficiency >= 2.0) return { level: "Bueno", color: "text-blue-600", bg: "bg-blue-100" };
-    if (efficiency >= 1.0) return { level: "Promedio", color: "text-yellow-600", bg: "bg-yellow-100" };
-    return { level: "Necesita Mejora", color: "text-red-600", bg: "bg-red-100" };
+    if (efficiency >= 3.0) return { level: t('metrics.excellent'), color: "text-green-600", bg: "bg-green-100" };
+    if (efficiency >= 2.0) return { level: t('metrics.good'), color: "text-blue-600", bg: "bg-blue-100" };
+    if (efficiency >= 1.0) return { level: t('metrics.average'), color: "text-yellow-600", bg: "bg-yellow-100" };
+    return { level: t('metrics.needs_improvement'), color: "text-red-600", bg: "bg-red-100" };
   };
 
   const getStreakAnalysis = () => {
     const streak = childData?.current_streak || 0;
-    if (streak >= 7) return { status: "excellent", message: "¡Racha excepcional!", icon: Trophy };
-    if (streak >= 3) return { status: "good", message: "¡Buen hábito de estudio!", icon: CheckCircle };
-    if (streak >= 1) return { status: "average", message: "¡Sigue así!", icon: Lightbulb };
-    return { status: "needs_improvement", message: "Necesita más constancia", icon: AlertTriangle };
+    if (streak >= 7) return { status: "excellent", message: t('metrics.streak_exceptional'), icon: Trophy };
+    if (streak >= 3) return { status: "good", message: t('metrics.streak_good_habit'), icon: CheckCircle };
+    if (streak >= 1) return { status: "average", message: t('metrics.streak_keep_going'), icon: Lightbulb };
+    return { status: "needs_improvement", message: t('metrics.streak_needs_consistency'), icon: AlertTriangle };
   };
 
   const performanceLevel = getPerformanceLevel();
@@ -69,7 +71,7 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Eficiencia</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('metrics.efficiency')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -80,7 +82,7 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
                   +15%
                 </Badge>
               </div>
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Puntos por minuto</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{t('metrics.points_per_minute')}</p>
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${performanceLevel.bg}`}></div>
                 <span className={`text-xs font-bold ${performanceLevel.color}`}>
@@ -93,7 +95,7 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
 
         <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Consistencia</CardTitle>
+            <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('metrics.consistency')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -101,10 +103,10 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
                 <span className="text-3xl font-black text-slate-800 dark:text-white">{Math.round(calculateConsistencyScore())}%</span>
                 <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
                   <Target className="w-3 h-3 mr-1" />
-                  Meta
+                  {t('metrics.goal')}
                 </Badge>
               </div>
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Cumplimiento</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{t('metrics.compliance')}</p>
               <Progress value={calculateConsistencyScore()} className="h-2 bg-slate-100 dark:bg-slate-800" />
             </div>
           </CardContent>

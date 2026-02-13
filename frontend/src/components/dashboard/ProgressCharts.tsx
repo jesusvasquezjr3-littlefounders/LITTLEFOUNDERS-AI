@@ -21,6 +21,7 @@ import {
   Calendar,
   Target
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ProgressChartsProps {
   childData: any;
@@ -28,6 +29,7 @@ interface ProgressChartsProps {
 }
 
 export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProps) {
+  const { t } = useTranslation('dashboard');
   // Datos para el gráfico de línea según el período seleccionado
   const getChartData = () => {
     switch (selectedPeriod) {
@@ -51,13 +53,13 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
       case "week":
         // Datos por días de la semana (mantener el actual)
         return [
-          { day: 'Lun', lecciones: 2, minutos: 45, puntos: 75 },
-          { day: 'Mar', lecciones: 1, minutos: 30, puntos: 50 },
-          { day: 'Mié', lecciones: 3, minutos: 60, puntos: 100 },
-          { day: 'Jue', lecciones: 0, minutos: 0, puntos: 0 },
-          { day: 'Vie', lecciones: 2, minutos: 40, puntos: 65 },
-          { day: 'Sáb', lecciones: 1, minutos: 25, puntos: 40 },
-          { day: 'Dom', lecciones: 2, minutos: 35, puntos: 55 }
+          { day: t('charts.days.mon'), lecciones: 2, minutos: 45, puntos: 75 },
+          { day: t('charts.days.tue'), lecciones: 1, minutos: 30, puntos: 50 },
+          { day: t('charts.days.wed'), lecciones: 3, minutos: 60, puntos: 100 },
+          { day: t('charts.days.thu'), lecciones: 0, minutos: 0, puntos: 0 },
+          { day: t('charts.days.fri'), lecciones: 2, minutos: 40, puntos: 65 },
+          { day: t('charts.days.sat'), lecciones: 1, minutos: 25, puntos: 40 },
+          { day: t('charts.days.sun'), lecciones: 2, minutos: 35, puntos: 55 }
         ];
       case "month":
         // Datos por días del mes (números)

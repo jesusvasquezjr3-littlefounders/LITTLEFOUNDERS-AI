@@ -16,6 +16,7 @@ from auth.endpoints import router as auth_router
 from dashboard.endpoints import router as dashboard_router
 
 from lesson_engine.endpoints import router as lesson_engine_router
+from admin.endpoints import router as admin_router
 
 # Create database tables
 # DISABLED for Vercel: Tables should already exist in Supabase
@@ -61,6 +62,7 @@ app.include_router(auth_router)
 app.include_router(dashboard_router)
 
 app.include_router(lesson_engine_router)
+app.include_router(admin_router)
 
 @app.get("/")
 async def root():

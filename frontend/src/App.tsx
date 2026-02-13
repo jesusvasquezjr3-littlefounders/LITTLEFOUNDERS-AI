@@ -42,6 +42,16 @@ import { LessonRunner } from "@/components/lessons/engine";
 import { LanguageSyncWrapper } from "@/components/auth/LanguageSyncWrapper";
 import { SoundProvider } from "@/contexts/SoundContext";
 
+// Admin Panel
+import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminLessons from "@/pages/admin/AdminLessons";
+import AdminLessonEditor from "@/pages/admin/AdminLessonEditor";
+import AdminCharacters from "@/pages/admin/AdminCharacters";
+import AdminAudio from "@/pages/admin/AdminAudio";
+import AdminHistory from "@/pages/admin/AdminHistory";
+import AdminUsers from "@/pages/admin/AdminUsers";
+
 const queryClient = new QueryClient();
 
 
@@ -137,6 +147,48 @@ const App = () => (
                 <Route path="/demo/savings" element={<DemoSavings />} />
                 <Route path="/demo/store" element={<DemoStore />} />
                 <Route path="/demo/tasks" element={<DemoTasks />} />
+
+                {/* Admin Panel Routes */}
+                <Route path="/admin" element={
+                  <AdminProtectedRoute>
+                    <AdminDashboard />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/lessons" element={
+                  <AdminProtectedRoute>
+                    <AdminLessons />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/lessons/new" element={
+                  <AdminProtectedRoute>
+                    <AdminLessonEditor />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/lessons/:id/edit" element={
+                  <AdminProtectedRoute>
+                    <AdminLessonEditor />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/characters" element={
+                  <AdminProtectedRoute>
+                    <AdminCharacters />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/audio" element={
+                  <AdminProtectedRoute>
+                    <AdminAudio />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/history" element={
+                  <AdminProtectedRoute>
+                    <AdminHistory />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/users" element={
+                  <AdminProtectedRoute>
+                    <AdminUsers />
+                  </AdminProtectedRoute>
+                } />
 
                 {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
                 <Route path="/lesson/:lessonCode" element={<LessonRunner />} />

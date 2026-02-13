@@ -66,5 +66,92 @@
         "reminder_desc": "No olvides hacer tu reto de finanzas hoy.",
         "new_skill": "Nueva habilidad",
         "new_skill_desc": "¡Desbloqueaste una lección sobre presupuesto!"
+    },
+    "weekly_goal": {
+        "title": "Meta Semanal",
+        "description": "{{progress}} de {{goal}} lecciones completadas esta semana",
+        "progress_label": "Progreso"
+    },
+    "achievements": {
+        "title": "Logros",
+        "subtitle": "¡Desbloquea logros especiales mientras aprendes!",
+        "first_lesson": "Primera Lección",
+        "first_lesson_desc": "Completaste tu primera lección",
+        "dedicated_student": "Estudiante Dedicado",
+        "dedicated_student_desc": "Estudiaste 60 minutos",
+        "golden_points": "Puntos Dorados",
+        "golden_points_desc": "Ganaste 100 puntos",
+        "streak_7_days": "Racha de 7 Días",
+        "streak_7_days_desc": "7 días seguidos estudiando",
+        "unlocked": "¡Logrado!"
+    },
+    "next_lessons": {
+        "title": "Próximas Lecciones",
+        "subtitle": "¡Continúa tu aprendizaje con estas lecciones emocionantes!",
+        "start": "Empezar",
+        "view_all": "Ver Todas las Lecciones",
+        "difficulty": {
+            "easy": "Fácil",
+            "medium": "Medio",
+            "hard": "Difícil"
+        }
+    },
+    "explore": {
+        "title": "Explora las Funcionalidades",
+        "learn": "Aprender",
+        "learn_desc": "Lecciones Interactivas",
+        "entrepreneurship": "Emprender",
+        "entrepreneurship_desc": "Juegos de Inversión",
+        "virtual_card": "Tarjeta Virtual",
+        "virtual_card_desc": "Banca Digital"
+    },
+    "sample_lessons": {
+        "what_is_money": "¿Qué es el Dinero?",
+        "saving_is_fun": "Ahorrar es Divertido",
+        "needs_vs_wants": "Necesidades vs Deseos"
+    },
+    "parent": {
+        "greeting": "Hola, Tutor 👋",
+        "viewing_progress": "Viendo progreso de:",
+        "last_activity": "Última actividad",
+        "full_report": "Reporte Completo",
+        "lessons": "Lecciones",
+        "completed": "Completadas",
+        "points_xp": "Puntos XP",
+        "total_accumulated": "Total acumulado",
+        "streak": "Racha",
+        "days_in_row": "Días seguidos",
+        "detailed_activity": "Actividad Detallada",
+        "day": "Día",
+        "week": "Semana",
+        "month": "Mes",
+        "year": "Año",
+        "daily_goal_completed": "Meta diaria completada",
+        "lessons_of_goal": "{{count}} de 5 lecciones meta",
+        "lessons_completed": "{{count}} lecciones completadas",
+        "minutes_label": "Minutos",
+        "total_study_time": "Tiempo total de estudio",
+        "points_label": "Puntos",
+        "xp_earned_period": "XP ganado en este periodo",
+        "explore_children_see": "Explora lo que ven tus hijos 🚀",
+        "learn": "Aprender",
+        "entrepreneurship": "Emprender",
+        "banking": "Banca",
+        "goals": "Metas",
+        "monthly": "Mensual",
+        "achievements_label": "Logros",
+        "view_all_goals": "Ver todas las metas",
+        "student_profile": "Perfil de Estudiante",
+        "favorite_subject": "Materia Favorita",
+        "pace": "Ritmo",
+        "celebrate_title": "¡Celebra sus logros!",
+        "celebrate_desc": "{{name}} ha tenido una excelente semana. ¿Por qué no enviarle una recompensa?",
+        "send_reward": "Enviar Recompensa",
+        "no_info_found": "No se encontró información",
+        "verify_account": "Verifica que tu cuenta esté vinculada correctamente a un estudiante.",
+        "streak_excellent": "¡Racha incendiaria! 🔥",
+        "streak_good": "¡Buen ritmo! 👍",
+        "streak_needs_improvement": "¡A practicar! 📚",
+        "no_data": "Sin datos"
     }
 }

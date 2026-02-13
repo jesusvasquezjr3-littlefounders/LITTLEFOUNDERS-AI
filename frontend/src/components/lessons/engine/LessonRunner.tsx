@@ -76,6 +76,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
+import { normalizeGesture } from '@/utils/gestureMapper';
+
 
 interface LessonRunnerProps {
     lessonCode?: string;
@@ -131,31 +133,35 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
 
     // Get mood based on state (for Liruf)
+    // Always returns valid DinoMood values
     const getMood = (): DinoMood => {
         if (localFeedback === 'success') return 'excited';
         if (localFeedback === 'error') return 'thinking';
-        return 'happy';
+        return 'happy'; // Friendly default
     };
 
     // Get expression based on state (for Dina)
+    // Always returns valid expression values
     const getDinaExpression = (): 'neutral' | 'happy' | 'surprised' | 'wink' => {
         if (localFeedback === 'success') return 'happy';
         if (localFeedback === 'error') return 'surprised';
-        return 'neutral';
+        return 'happy'; // Friendly default (changed from 'neutral')
     };
 
     // Get mood based on state (for Dr. Rho)
+    // Always returns valid RhoMood values
     const getRhoMood = (): RhoMood => {
         if (localFeedback === 'success') return 'wise';
         if (localFeedback === 'error') return 'surprised';
-        return 'neutral';
+        return 'wise'; // Friendly default (changed from 'neutral')
     };
 
     // Get mood based on state (for Zara Vex)
+    // Always returns valid ZaraMood values
     const getZaraMood = (): ZaraMood => {
         if (localFeedback === 'success') return 'excited';
         if (localFeedback === 'error') return 'curious';
-        return 'happy';
+        return 'happy'; // Friendly default
     };
 
     // Character code mapping - normalize all variations to canonical codes
@@ -228,47 +234,47 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
         // Type-based fallbacks using i18n translation keys
         switch (currentExercise.type) {
-            case 'fill_blank': return t('instructions.fill_blank', { defaultValue: 'Completa los espacios en blanco' });
-            case 'classification': return t('instructions.classification', { defaultValue: 'Clasifica cada elemento' });
+            case 'fill_blank': return t('instructions.fill_blank');
+            case 'classification': return t('instructions.classification');
             case 'matching_pairs':
-            case 'match_pairs': return t('instructions.matching_pairs', { defaultValue: 'Conecta las parejas' });
-            case 'sequencing': return t('instructions.sequencing', { defaultValue: 'Ordena los elementos' });
-            case 'sorting_buckets': return t('instructions.sorting_buckets', { defaultValue: 'Arrastra a la categoría correcta' });
-            case 'true_false': return t('instructions.true_false', { defaultValue: '¿Es verdadero o falso?' });
-            case 'multiple_choice': return t('instructions.multiple_choice', { defaultValue: 'Selecciona la respuesta correcta' });
-            case 'tap_action': return t('instructions.tap_action', { defaultValue: 'Toca los elementos correctos' });
-            case 'math_challenge': return t('instructions.math_challenge', { defaultValue: 'Resuelve el problema' });
-            case 'word_scramble': return t('instructions.word_scramble', { defaultValue: 'Ordena las letras' });
-            case 'estimation_slider': return t('instructions.estimation_slider', { defaultValue: 'Ajusta el valor' });
-            case 'risk_reward': return t('instructions.risk_reward', { defaultValue: 'Elige la mejor opción' });
-            case 'roleplay_chat': return t('instructions.roleplay_chat', { defaultValue: 'Elige tu respuesta' });
-            case 'shop_sim': return t('instructions.shop_sim', { defaultValue: 'Compra lo que necesitas' });
-            case 'coin_counter': return t('instructions.coin_counter', { defaultValue: 'Cuenta las monedas' });
-            case 'concept_builder': return t('instructions.concept_builder', { defaultValue: 'Construye el concepto' });
-            case 'price_detective': return t('instructions.price_detective', { defaultValue: 'Encuentra el mejor precio' });
-            case 'spot_trap': return t('instructions.spot_trap', { defaultValue: 'Identifica las trampas' });
-            case 'impact_meter': return t('instructions.impact_meter', { defaultValue: 'Evalúa el impacto' });
-            case 'market_reaction': return t('instructions.market_reaction', { defaultValue: 'Predice la reacción' });
-            case 'mystery_investment': return t('instructions.mystery_investment', { defaultValue: 'Descubre la inversión' });
-            case 'budget_builder': return t('instructions.budget_builder', { defaultValue: 'Crea tu presupuesto' });
-            case 'savings_race': return t('instructions.savings_race', { defaultValue: 'Ahorra más rápido' });
-            case 'expense_timeline': return t('instructions.expense_timeline', { defaultValue: 'Ordena los gastos' });
-            case 'interest_calculator': return t('instructions.interest_calculator', { defaultValue: 'Calcula el interés' });
-            case 'tax_puzzle': return t('instructions.tax_puzzle', { defaultValue: 'Resuelve el puzzle de impuestos' });
-            case 'subscription_tracker': return t('instructions.subscription_tracker', { defaultValue: 'Gestiona las suscripciones' });
-            case 'inflation_simulator': return t('instructions.inflation_simulator', { defaultValue: 'Simula la inflación' });
-            case 'credit_score': return t('instructions.credit_score', { defaultValue: 'Mejora tu puntaje' });
-            case 'emergency_fund': return t('instructions.emergency_fund', { defaultValue: 'Crea tu fondo de emergencia' });
-            case 'bill_splitter': return t('instructions.bill_splitter', { defaultValue: 'Divide la cuenta' });
-            case 'salary_comparison': return t('instructions.salary_comparison', { defaultValue: 'Compara los salarios' });
-            case 'debt_strategy': return t('instructions.debt_strategy', { defaultValue: 'Planea pagar deudas' });
-            case 'portfolio_builder': return t('instructions.portfolio_builder', { defaultValue: 'Construye tu portafolio' });
-            case 'opportunity_cost': return t('instructions.opportunity_cost', { defaultValue: 'Evalúa el costo de oportunidad' });
-            case 'goal_roadmap': return t('instructions.goal_roadmap', { defaultValue: 'Planea tus metas' });
-            case 'mindset_comparison': return t('instructions.mindset_comparison', { defaultValue: 'Compara mentalidades' });
-            case 'passive_income': return t('instructions.passive_income', { defaultValue: 'Genera ingresos pasivos' });
-            case 'quiz_battle': return t('instructions.quiz_battle', { defaultValue: 'Responde correctamente' });
-            default: return t('instructions.default', { defaultValue: '¿Qué harías?' });
+            case 'match_pairs': return t('instructions.matching_pairs');
+            case 'sequencing': return t('instructions.sequencing');
+            case 'sorting_buckets': return t('instructions.sorting_buckets');
+            case 'true_false': return t('instructions.true_false');
+            case 'multiple_choice': return t('instructions.multiple_choice');
+            case 'tap_action': return t('instructions.tap_action');
+            case 'math_challenge': return t('instructions.math_challenge');
+            case 'word_scramble': return t('instructions.word_scramble');
+            case 'estimation_slider': return t('instructions.estimation_slider');
+            case 'risk_reward': return t('instructions.risk_reward');
+            case 'roleplay_chat': return t('instructions.roleplay_chat');
+            case 'shop_sim': return t('instructions.shop_sim');
+            case 'coin_counter': return t('instructions.coin_counter');
+            case 'concept_builder': return t('instructions.concept_builder');
+            case 'price_detective': return t('instructions.price_detective');
+            case 'spot_trap': return t('instructions.spot_trap');
+            case 'impact_meter': return t('instructions.impact_meter');
+            case 'market_reaction': return t('instructions.market_reaction');
+            case 'mystery_investment': return t('instructions.mystery_investment');
+            case 'budget_builder': return t('instructions.budget_builder');
+            case 'savings_race': return t('instructions.savings_race');
+            case 'expense_timeline': return t('instructions.expense_timeline');
+            case 'interest_calculator': return t('instructions.interest_calculator');
+            case 'tax_puzzle': return t('instructions.tax_puzzle');
+            case 'subscription_tracker': return t('instructions.subscription_tracker');
+            case 'inflation_simulator': return t('instructions.inflation_simulator');
+            case 'credit_score': return t('instructions.credit_score');
+            case 'emergency_fund': return t('instructions.emergency_fund');
+            case 'bill_splitter': return t('instructions.bill_splitter');
+            case 'salary_comparison': return t('instructions.salary_comparison');
+            case 'debt_strategy': return t('instructions.debt_strategy');
+            case 'portfolio_builder': return t('instructions.portfolio_builder');
+            case 'opportunity_cost': return t('instructions.opportunity_cost');
+            case 'goal_roadmap': return t('instructions.goal_roadmap');
+            case 'mindset_comparison': return t('instructions.mindset_comparison');
+            case 'passive_income': return t('instructions.passive_income');
+            case 'quiz_battle': return t('instructions.quiz_battle');
+            default: return t('instructions.default');
         }
     };
 
@@ -605,7 +611,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <div className="w-full max-w-md mx-auto mt-4 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-500">
                         <div className="bg-muted/50 dark:bg-muted/30 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 flex items-center justify-center gap-2">
                             <span className="text-xs font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                {t('common:tip', { defaultValue: 'TIP' })}
+                                {t('tip')}
                             </span>
                             <p className="text-sm font-medium text-muted-foreground text-center">
                                 {currentExercise.content.instruction}
@@ -1789,7 +1795,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 className="w-full h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
                             >
                                 <ArrowRight className="w-5 h-5 mr-2" />
-                                {t('actions.next_lesson', { defaultValue: 'Siguiente Lección' })}
+                                {t('completion.next_lesson')}
                             </Button>
                             <div className="flex gap-2">
                                 <Button

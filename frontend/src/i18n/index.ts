@@ -30,6 +30,7 @@ import esErrors from './locales/es/errors.json';
 import esAdventures from './locales/es/adventures.json';
 import esSettings from './locales/es/settings.json';
 import esAvatar from './locales/es/avatar.json';
+import esAdmin from './locales/es/admin.json';
 
 import enCommon from './locales/en/common.json';
 import enAuth from './locales/en/auth.json';
@@ -41,6 +42,7 @@ import enErrors from './locales/en/errors.json';
 import enAdventures from './locales/en/adventures.json';
 import enSettings from './locales/en/settings.json';
 import enAvatar from './locales/en/avatar.json';
+import enAdmin from './locales/en/admin.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = ['es', 'en'] as const;
@@ -71,6 +73,7 @@ const resources = {
         adventures: esAdventures,
         settings: esSettings,
         avatar: esAvatar,
+        admin: esAdmin,
     },
     en: {
         common: enCommon,
@@ -83,6 +86,7 @@ const resources = {
         adventures: enAdventures,
         settings: enSettings,
         avatar: enAvatar,
+        admin: enAdmin,
     },
 };
 

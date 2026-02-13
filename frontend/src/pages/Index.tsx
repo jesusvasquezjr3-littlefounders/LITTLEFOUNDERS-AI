@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ChildDashboard } from "@/components/dashboard/ChildDashboard";
 import { ParentDashboard } from "@/components/dashboard/ParentDashboard";
@@ -13,6 +14,11 @@ const Index = () => {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  // Admin users get redirected to their own panel
+  if (user?.user_type === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
 
   // If user is a child, show the child dashboard
   if (user?.user_type === 'child') {
