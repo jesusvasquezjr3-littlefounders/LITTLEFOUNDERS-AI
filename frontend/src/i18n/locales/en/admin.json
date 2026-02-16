@@ -460,5 +460,22 @@
       "impact_meter": "Impact Meter",
       "mindset_comparison": "Mindset Comparison"
     }
+  },
+  "validation": {
+    "exercise": {
+      "missing_type": "Missing 'type' field in exercise",
+      "invalid_type": "Invalid exercise type: {{type}}",
+      "missing_content": "Missing 'content' field in exercise",
+      "invalid_content_format": "The 'content' field must be an object",
+      "missing_required_field": "Missing required field: {{field}}",
+      "invalid_options_count": "Options must have at least 2 elements",
+      "invalid_option_format": "Each option must have 'id' and 'text'",
+      "invalid_categories_count": "Categories must have at least 2 elements",
+      "invalid_items_count": "Items must have at least 2 elements",
+      "missing_correct_answer": "Missing correct answer",
+      "invalid_statement": "True/false statement is invalid",
+      "validation_errors_found": "Found {{count}} validation errors",
+      "fix_errors_before_saving": "Please fix errors before saving"
+    }
   }
 }

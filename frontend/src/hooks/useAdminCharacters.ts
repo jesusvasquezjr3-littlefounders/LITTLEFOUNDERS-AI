@@ -12,7 +12,7 @@ import { API_URL } from '@/config/api';
 export interface Gesture {
   id: string;
   gesture_code: string;
-  animation_data: string;
+  animation_data: any;  // JSON field - can be object or null
   duration_ms: number;
 }
 
@@ -22,7 +22,7 @@ export interface Character {
   code: string;
   name: string;
   description: string;
-  default_appearance: string;
+  default_appearance: any;  // JSON field - can be object or null
   is_active: boolean;
   created_at: string;
   gestures: Gesture[];

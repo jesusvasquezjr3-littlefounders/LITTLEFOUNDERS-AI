@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
@@ -29,6 +31,16 @@ app = FastAPI(
     description=settings.api_description
 )
 
+# Custom exception handler for validation errors
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Log validation errors for debugging
+    print(f"[VALIDATION ERROR] {request.method} {request.url.path}: {len(exc.errors())} error(s)")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()}
+    )
+
 # Vercel Middleware to strip /api prefix
 # When using rewrites in vercel.json, the path passed to FastAPI includes /api
 # We need to strip it so authentication routes match (e.g. /api/auth/login -> /auth/login)
@@ -56,6 +68,23 @@ app.add_middleware(
     allow_methods=settings.cors_allow_methods,
     allow_headers=settings.cors_allow_headers,
 )
+
+# Security headers middleware for OAuth flows
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+
+    # OAuth routes need popup support - use unsafe-none for development
+    # In production, this should be same-origin-allow-popups
+    if request.url.path.startswith("/auth/") or request.url.path.startswith("/api/auth/"):
+        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+    else:
+        # For non-auth routes, keep it permissive during development
+        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+
+    # Don't enforce COEP for now as it can break OAuth flows
+    # response.headers["Cross-Origin-Embedder-Policy"] = settings.coep_policy
+    return response
 
 # Include routers
 app.include_router(auth_router)

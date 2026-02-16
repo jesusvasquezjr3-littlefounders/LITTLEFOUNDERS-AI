@@ -66,7 +66,7 @@ interface LessonFormData {
   description_es: string;
   description_en: string;
   duration: number;
-  age_rate: number;
+  age_rate: string;
   points_reward: number;
   adventure_level: number;
   saga_level: number;
@@ -103,7 +103,7 @@ export const AdminLessonEditor: React.FC = () => {
   const [lessonData, setLessonData] = useState<LessonFormData>({
     lesson_code: '', title_es: '', title_en: '',
     description_es: '', description_en: '',
-    duration: 180, age_rate: 4, points_reward: 100,
+    duration: 180, age_rate: "4-6", points_reward: 100,
     adventure_level: 1, saga_level: 1, topic_level: 1, lesson_number: 1,
     content_es: [], content_en: [],
   });
@@ -230,8 +230,9 @@ export const AdminLessonEditor: React.FC = () => {
     try {
       const apiData = {
         ...lessonData,
-        content_es: JSON.stringify(lessonData.content_es),
-        content_en: JSON.stringify(lessonData.content_en),
+        // Don't stringify - backend expects arrays, not strings
+        content_es: lessonData.content_es,
+        content_en: lessonData.content_en,
       };
       if (isNew) {
         const result = await createLesson.mutateAsync(apiData as unknown as Omit<Lesson, 'id' | 'created_at' | 'updated_at'>);
@@ -411,10 +412,18 @@ export const AdminLessonEditor: React.FC = () => {
             </div>
             <div>
               <Label className="dark:text-slate-300 text-xs">{t('editor.ageRate')}</Label>
-              <Input type="number" value={lessonData.age_rate}
-                onChange={(e) => handleField('age_rate', parseInt(e.target.value))}
-                disabled={!isEditing} min={1} max={18}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+              <Select value={lessonData.age_rate}
+                onValueChange={(v) => handleField('age_rate', v)} disabled={!isEditing}>
+                <SelectTrigger className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="dark:bg-slate-700 dark:border-slate-600">
+                  <SelectItem value="4-6" className="dark:text-slate-50">4-6</SelectItem>
+                  <SelectItem value="7-9" className="dark:text-slate-50">7-9</SelectItem>
+                  <SelectItem value="10-12" className="dark:text-slate-50">10-12</SelectItem>
+                  <SelectItem value="13+" className="dark:text-slate-50">13+</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="dark:text-slate-300 text-xs">{t('editor.points')}</Label>

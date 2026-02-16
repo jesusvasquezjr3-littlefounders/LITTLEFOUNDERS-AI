@@ -46,5 +46,10 @@ class Settings(BaseSettings):
     cors_allow_methods: list[str] = ["*"]
     cors_allow_headers: list[str] = ["*"]
 
+    # Security headers configuration
+    coop_policy: str = "same-origin"
+    coop_auth_override: str = "same-origin-allow-popups"
+    coep_policy: str = "require-corp"
+
 
 settings = Settings()

@@ -28,6 +28,11 @@ from admin.schemas import (
 )
 from admin.services import record_edit, rollback_edit
 from admin.validators import validate_exercises, VALID_EXERCISE_TYPES
+from admin.error_messages import (
+    format_validation_error_response,
+    translate_errors_to_english,
+    format_validation_error_detail
+)
 
 router = APIRouter(prefix="/admin", tags=["Admin Panel"])
 
@@ -212,14 +217,21 @@ async def create_lesson(
         raise HTTPException(400, f"Ya existe una lección con código '{data.lesson_code}'")
 
     # Validar ejercicios si se proporcionan
-    if data.content_es:
-        errors = validate_exercises(data.content_es, "es")
-        if errors:
-            raise HTTPException(422, {"errors": errors, "language": "es"})
-    if data.content_en:
-        errors = validate_exercises(data.content_en, "en")
-        if errors:
-            raise HTTPException(422, {"errors": errors, "language": "en"})
+    # Solo validar si content tiene elementos (no validar listas vacías)
+    errors_es = []
+    errors_en = []
+
+    if data.content_es and len(data.content_es) > 0:
+        errors_es = validate_exercises(data.content_es, "es")
+
+    if data.content_en and len(data.content_en) > 0:
+        errors_en = validate_exercises(data.content_en, "en")
+
+    if errors_es or errors_en:
+        errors_en_translated = translate_errors_to_english(errors_es) if not errors_en else errors_en
+        detail_msg = format_validation_error_detail(errors_es, errors_en_translated)
+        error_body = format_validation_error_response(errors_es, errors_en_translated)
+        raise HTTPException(status_code=422, detail=detail_msg, headers={"X-Validation-Errors": json.dumps(error_body)})
 
     lesson = Lesson(
         lesson_code=data.lesson_code,
@@ -274,14 +286,21 @@ async def update_lesson(
         raise HTTPException(404, "Lección no encontrada")
 
     # Validar ejercicios si se proporcionan
-    if data.content_es is not None:
-        errors = validate_exercises(data.content_es, "es")
-        if errors:
-            raise HTTPException(422, {"errors": errors, "language": "es"})
-    if data.content_en is not None:
-        errors = validate_exercises(data.content_en, "en")
-        if errors:
-            raise HTTPException(422, {"errors": errors, "language": "en"})
+    # Solo validar si content tiene elementos (no validar listas vacías)
+    errors_es = []
+    errors_en = []
+
+    if data.content_es is not None and len(data.content_es) > 0:
+        errors_es = validate_exercises(data.content_es, "es")
+
+    if data.content_en is not None and len(data.content_en) > 0:
+        errors_en = validate_exercises(data.content_en, "en")
+
+    if errors_es or errors_en:
+        errors_en_translated = translate_errors_to_english(errors_es) if not errors_en else errors_en
+        detail_msg = format_validation_error_detail(errors_es, errors_en_translated)
+        error_body = format_validation_error_response(errors_es, errors_en_translated)
+        raise HTTPException(status_code=422, detail=detail_msg, headers={"X-Validation-Errors": json.dumps(error_body)})
 
     # Capturar estado anterior
     previous = {}
@@ -672,13 +691,21 @@ async def update_all_exercises(
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
-    # Validar
-    errors_es = validate_exercises(content_es, "es")
-    if errors_es:
-        raise HTTPException(422, {"errors": errors_es, "language": "es"})
-    errors_en = validate_exercises(content_en, "en")
-    if errors_en:
-        raise HTTPException(422, {"errors": errors_en, "language": "en"})
+    # Validar - Solo si hay ejercicios para validar
+    errors_es = []
+    errors_en = []
+
+    if content_es and len(content_es) > 0:
+        errors_es = validate_exercises(content_es, "es")
+
+    if content_en and len(content_en) > 0:
+        errors_en = validate_exercises(content_en, "en")
+
+    if errors_es or errors_en:
+        errors_en_translated = translate_errors_to_english(errors_es) if not errors_en else errors_en
+        detail_msg = format_validation_error_detail(errors_es, errors_en_translated)
+        error_body = format_validation_error_response(errors_es, errors_en_translated)
+        raise HTTPException(status_code=422, detail=detail_msg, headers={"X-Validation-Errors": json.dumps(error_body)})
 
     prev = {"content_es": lesson.content_es, "content_en": lesson.content_en}
     lesson.content_es = content_es

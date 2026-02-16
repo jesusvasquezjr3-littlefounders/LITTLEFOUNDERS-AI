@@ -46,14 +46,14 @@ export interface Lesson {
   description_es: string;
   description_en: string;
   duration: number;
-  age_rate: number;
+  age_rate: string;
   points_reward: number;
   adventure_level: number;
   saga_level: number;
   topic_level: number;
   lesson_number: number;
-  content_es: string;
-  content_en: string;
+  content_es: any;
+  content_en: any;
   created_at: string;
   updated_at: string;
 }

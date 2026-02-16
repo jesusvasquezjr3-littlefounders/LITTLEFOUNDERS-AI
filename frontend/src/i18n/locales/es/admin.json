@@ -456,5 +456,22 @@
       "impact_meter": "Medidor de Impacto",
       "mindset_comparison": "Comparación de Mentalidad"
     }
+  },
+  "validation": {
+    "exercise": {
+      "missing_type": "Falta el campo 'type' en el ejercicio",
+      "invalid_type": "Tipo de ejercicio no válido: {{type}}",
+      "missing_content": "Falta el campo 'content' en el ejercicio",
+      "invalid_content_format": "El campo 'content' debe ser un objeto",
+      "missing_required_field": "Falta campo requerido: {{field}}",
+      "invalid_options_count": "Las opciones deben tener al menos 2 elementos",
+      "invalid_option_format": "Cada opción debe tener 'id' y 'text'",
+      "invalid_categories_count": "Las categorías deben tener al menos 2 elementos",
+      "invalid_items_count": "Los elementos deben tener al menos 2 items",
+      "missing_correct_answer": "Falta la respuesta correcta",
+      "invalid_statement": "El enunciado verdadero/falso no es válido",
+      "validation_errors_found": "Se encontraron {{count}} errores de validación",
+      "fix_errors_before_saving": "Por favor corrige los errores antes de guardar"
+    }
   }
 }
