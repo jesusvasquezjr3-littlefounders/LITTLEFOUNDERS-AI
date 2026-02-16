@@ -41,7 +41,22 @@
     "editor": "Editor",
     "entityType": "Tipo de Entidad",
     "entityId": "ID de Entidad",
-    "action": "Acción"
+    "action": "Acción",
+    "activityGraph": {
+      "title": "Actividad de Administradores",
+      "subtitle": "Contribuciones durante el último año",
+      "less": "Menos",
+      "more": "Más",
+      "contributions": "contribuciones",
+      "on": "el"
+    },
+    "activityChart": {
+      "title": "Tendencias de Actividad",
+      "subtitle": "Ediciones a lo largo del tiempo",
+      "week": "Semana",
+      "month": "Mes",
+      "year": "Año"
+    }
   },
   "lessons": {
     "title": "Gestión de Lecciones",

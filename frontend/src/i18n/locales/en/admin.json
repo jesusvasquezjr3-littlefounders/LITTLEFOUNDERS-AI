@@ -41,7 +41,22 @@
     "editor": "Editor",
     "entityType": "Entity Type",
     "entityId": "Entity ID",
-    "action": "Action"
+    "action": "Action",
+    "activityGraph": {
+      "title": "Admin Activity",
+      "subtitle": "Contributions over the last year",
+      "less": "Less",
+      "more": "More",
+      "contributions": "contributions",
+      "on": "on"
+    },
+    "activityChart": {
+      "title": "Activity Trends",
+      "subtitle": "Edits made over time",
+      "week": "Week",
+      "month": "Month",
+      "year": "Year"
+    }
   },
   "lessons": {
     "title": "Lesson Management",

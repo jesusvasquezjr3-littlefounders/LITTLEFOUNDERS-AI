@@ -29,6 +29,7 @@ export interface AdminStats {
   total_audio_segments: number;
   recent_edits: RecentEdit[];
   lessons_by_adventure: Record<number, number>;
+  daily_activity: any[];
 }
 
 // User from /admin/users endpoint (returned as array directly)

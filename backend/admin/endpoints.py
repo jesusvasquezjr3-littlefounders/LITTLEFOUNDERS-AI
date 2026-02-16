@@ -4,9 +4,9 @@ Todos los endpoints del admin panel, protegidos por require_admin.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, asc
+from sqlalchemy import func, desc, asc, Date, cast
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import time
 import os
@@ -86,6 +86,43 @@ async def get_admin_stats(
             "metadata": entry.edit_metadata,
         })
 
+    # Actividad diaria por usuario (últimos 365 días)
+    one_year_ago = datetime.utcnow() - timedelta(days=365)
+    
+    daily_query = db.query(
+        cast(ContentEditHistory.created_at, Date).label('date'),
+        ContentEditHistory.editor_user_id,
+        func.count(ContentEditHistory.id).label('count')
+    ).filter(
+        ContentEditHistory.created_at >= one_year_ago
+    ).group_by(
+        cast(ContentEditHistory.created_at, Date),
+        ContentEditHistory.editor_user_id
+    ).all()
+
+    # Get admin names map
+    admin_users = db.query(User.id, User.name).filter(User.user_type == 'admin').all()
+    user_names = {u.id: u.name for u in admin_users}
+
+    # Transform to [{date: "YYYY-MM-DD", "Alice": 5, "Bob": 2}, ...]
+    activity_map = {}
+    for date_val, user_id, count in daily_query:
+        date_str = str(date_val)
+        if date_str not in activity_map:
+            activity_map[date_str] = {"date": date_str}
+        
+        user_name = user_names.get(user_id, f"User {user_id}")
+        # Key must be unique per user. Using name.
+        # If collisions, append ID? For now assume names distinct enough or acceptable overlap.
+        activity_map[date_str][user_name] = count
+
+    # Fill generic structure for existing users if convenient, but sparse is fine for Recharts if we map keys.
+    # Actually, for "Github style", we might just want total count per day for the heatmap, 
+    # and maybe a breakdown for tooltips.
+    # But user asked for "contributions by admin user".
+    # I'll return the array sorted by date.
+    daily_activity = sorted(list(activity_map.values()), key=lambda x: x['date'])
+
     return {
         "total_lessons": total_lessons,
         "total_exercises": total_exercises,
@@ -93,6 +130,7 @@ async def get_admin_stats(
         "total_audio_segments": total_audio,
         "recent_edits": recent_edits,
         "lessons_by_adventure": lessons_by_adventure,
+        "daily_activity": daily_activity,
     }
 
 

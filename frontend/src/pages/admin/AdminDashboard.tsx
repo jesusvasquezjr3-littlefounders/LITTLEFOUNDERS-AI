@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BookOpen, Zap, Users, Volume2, TrendingUp, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AdminContributionGraph } from '@/components/admin/AdminContributionGraph';
+import { AdminActivityChart } from '@/components/admin/AdminActivityChart';
 
 interface RecentEdit {
   id: string;
@@ -28,6 +30,7 @@ interface DashboardStats {
   total_audio_segments: number;
   lessons_by_adventure: Record<number, number>;
   recent_edits: RecentEdit[];
+  daily_activity: any[];
 }
 
 export const AdminDashboard: React.FC = () => {
@@ -158,6 +161,16 @@ export const AdminDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+
+
+      {/* Activity Charts */}
+      {typedStats?.daily_activity && (
+        <div className="space-y-6">
+          <AdminActivityChart data={typedStats.daily_activity} />
+          <AdminContributionGraph data={typedStats.daily_activity} />
+        </div>
+      )}
 
       {/* Lessons by Adventure Level */}
       <Card>
