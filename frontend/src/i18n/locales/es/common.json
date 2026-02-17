@@ -127,5 +127,13 @@
         "back_home": "Volver al Inicio"
     },
     "true": "Verdadero",
-    "false": "Falso"
+    "false": "Falso",
+    "loading": {
+        "please_wait": "Por favor espera un momento mientras cargamos tu información...",
+        "lessons": "Cargando Lecciones",
+        "banking": "Verificando Acceso",
+        "savings": "Cargando Metas de Ahorro",
+        "verification_banking": "Verificando estado de activación...",
+        "verification_savings": "Cargando tus metas de ahorro..."
+    }
 }

@@ -1,0 +1,125 @@
+{
+  "listing": {
+    "title": "Misiones y Juegos",
+    "subtitle": "Domina las finanzas y el emprendimiento superando retos interactivos.",
+    "playButton": "¡Jugar!",
+    "comingSoon": "Nuevos juegos en camino",
+    "availableChallenges": "Desafíos Disponibles"
+  },
+  "namVsYum": {
+    "title": "Ñam vs. Yum",
+    "subtitle": "El Festín de los Gastos",
+    "startScreen": {
+      "playButton": "¡JUGAR!",
+      "highScore": "Mejor Puntuación: {{score}}",
+      "howToPlay": "¿Cómo Jugar?",
+      "description": "¡Arrastra cada objeto al monstruo correcto!"
+    },
+    "tutorial": {
+      "step1Title": "Conoce a los Monstruos",
+      "step1Desc": "Vitalio come NECESIDADES. Capricho come CAPRICHOS.",
+      "step2Title": "Arrastra los Objetos",
+      "step2Desc": "Desliza cada objeto que cae hacia el monstruo correcto.",
+      "step3Title": "¡No Pierdas Vidas!",
+      "step3Desc": "Si te equivocas o se te cae un objeto, pierdes un corazón. ¡3 errores y Game Over!",
+      "gotIt": "¡Entendido!",
+      "skip": "Saltar Tutorial",
+      "next": "Siguiente",
+      "vitalioLabel": "Vitalio",
+      "vitalioDesc": "Monstruo verde — Come necesidades",
+      "caprichoLabel": "Capricho",
+      "caprichoDesc": "Monstruo morado — Come caprichos",
+      "dragInstruction": "ARRASTRA LO VITAL AL VERDE.\nLO DIVERTIDO AL MORADO."
+    },
+    "hud": {
+      "score": "Ahorro",
+      "combo": "Racha",
+      "comboMultiplier": "x{{multiplier}}",
+      "level": "Nivel {{level}}",
+      "pause": "Pausa",
+      "resume": "Continuar",
+      "lives": "Salud Financiera",
+      "savingsStreak": "¡Racha de Ahorro!"
+    },
+    "monsters": {
+      "vitalio": "Vitalio",
+      "capricho": "Capricho",
+      "vitalioEats": "NECESIDADES",
+      "caprichoEats": "CAPRICHOS"
+    },
+    "items": {
+      "water": "Agua",
+      "food": "Comida",
+      "medicine": "Medicina",
+      "house": "Casa",
+      "school": "Escuela",
+      "clothing": "Ropa",
+      "electricity": "Electricidad",
+      "toothbrush": "Cepillo de dientes",
+      "toy": "Osito de Peluche",
+      "candy": "Dulces",
+      "videogame": "Videojuego",
+      "iceCream": "Helado Gigante",
+      "skateboard": "Patineta",
+      "doll": "Muñeca",
+      "stickers": "Calcomanías",
+      "soda": "Refresco",
+      "sunglasses": "Lentes de Sol",
+      "perfume": "Perfume",
+      "robot": "Robot de Juguete",
+      "balloon": "Globo"
+    },
+    "feedback": {
+      "correct": "¡Correcto!",
+      "incorrect": "¡Ups! Eso no va ahí.",
+      "comboStart": "¡Racha x{{count}}!",
+      "comboBreak": "¡Racha perdida!",
+      "perfectStreak": "¡Racha Perfecta!",
+      "moneyWasted": "¡Dinero desperdiciado!"
+    },
+    "mentor": {
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "¡Ojo! Una necesidad es algo indispensable para vivir, como el agua. Un deseo es algo que nos gusta pero podemos esperar.",
+        "tip2": "El agua, la comida y un techo son necesidades básicas. ¡Sin ellas no podemos vivir!",
+        "tip3": "Piensa: ¿puedo vivir sin esto? Si la respuesta es sí, es un capricho."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "¡Excelente presupuesto! Al identificar bien tus gastos, tu capacidad de ahorro crece.",
+        "tip2": "Los caprichos están bien de vez en cuando, ¡pero primero lo necesario!",
+        "tip3": "Ser inteligente con tu dinero es un superpoder. ¡Tú puedes!"
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "¡Casi lo logras! Yo también compré demasiados juguetes antes de comer. ¡Vamos otra vez!",
+        "tip2": "¡Wow, vas genial! ¡Sigue arrastrando al monstruo correcto!",
+        "tip3": "¡Los monstruos tienen hambre! ¡Dales de comer correctamente!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "¿Te quedaste sin monedas? ¡No pasa nada! Intenta de nuevo y recuerda: primero lo vital, luego la diversión.",
+        "tip2": "Cada decisión cuenta. ¡Las necesidades mantienen tu cuerpo y mente saludables!",
+        "tip3": "Los caprichos son divertidos, pero no son esenciales. ¡Prioriza!"
+      }
+    },
+    "gameOver": {
+      "title": "¡Fin del Juego!",
+      "finalScore": "Puntuación Final",
+      "itemsSorted": "Objetos clasificados: {{count}}",
+      "maxCombo": "Racha máxima: x{{combo}}",
+      "levelReached": "Nivel alcanzado: {{level}}",
+      "retry": "¡Jugar de Nuevo!",
+      "exit": "Salir",
+      "newHighScore": "¡Nuevo Récord!"
+    },
+    "pause": {
+      "title": "Pausa",
+      "resume": "Continuar",
+      "restart": "Reiniciar",
+      "quit": "Salir",
+      "soundOn": "Sonido: Activado",
+      "soundOff": "Sonido: Desactivado"
+    }
+  }
+}

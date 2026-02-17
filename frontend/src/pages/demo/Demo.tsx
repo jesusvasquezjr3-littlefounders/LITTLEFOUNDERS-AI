@@ -47,14 +47,18 @@ export default function Demo() {
     return (
         <DemoDashboardLayout>
             <div className="space-y-6 animate-in fade-in duration-500">
-                {/* Welcome Header */}
-                <div className="text-center space-y-2 pt-4">
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        {t('welcome.title')}
-                    </h1>
-                    <p className="text-lg text-muted-foreground">
-                        {t('welcome.subtitle')}
-                    </p>
+                {/* Premium Welcome Header */}
+                <div className="relative mb-8 p-6 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+                    <div className="flex flex-col md:flex-row items-center gap-5 relative z-10">
+                        <div className="text-center md:text-left">
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-1">
+                                {t('welcome.title')} 👋
+                            </h1>
+                            <p className="text-base text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed">
+                                {t('welcome.subtitle')}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Stats Grid */}

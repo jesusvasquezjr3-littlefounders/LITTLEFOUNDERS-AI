@@ -31,6 +31,10 @@ import { LessonRunner } from "@/components/lessons/engine";
 import { LanguageSyncWrapper } from "@/components/auth/LanguageSyncWrapper";
 import { SoundProvider } from "@/contexts/SoundContext";
 
+// Games
+import GamesPage from "./pages/GamesPage";
+import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
+
 // Admin Panel
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -72,6 +76,11 @@ const App = () => (
                     <Lecciones />
                   </ProtectedRoute>
                 } />
+                <Route path="/ai" element={
+                  <ProtectedRoute>
+                    <PageUnderConstruction />
+                  </ProtectedRoute>
+                } />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
@@ -109,10 +118,15 @@ const App = () => (
                 } />
                 <Route path="/investment-games" element={
                   <ProtectedRoute>
-                    <PageUnderConstruction />
+                    <GamesPage />
                   </ProtectedRoute>
                 } />
-                {/* Lemonade Stand route removed as per request to clean up games */}
+                {/* Games */}
+                <Route path="/games/nam-vs-yum" element={
+                  <ProtectedRoute>
+                    <NamVsYumPage />
+                  </ProtectedRoute>
+                } />
 
                 <Route path="/settings" element={
                   <ProtectedRoute>

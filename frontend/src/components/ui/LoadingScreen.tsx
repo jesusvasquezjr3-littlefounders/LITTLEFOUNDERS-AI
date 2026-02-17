@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 interface LoadingScreenProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   loadingMessage: string;
   icon?: React.ReactNode;
   className?: string;
@@ -15,14 +16,18 @@ export function LoadingScreen({
   icon,
   className = ""
 }: LoadingScreenProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className={`space-y-6 ${className}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="text-muted-foreground">{description}</p>
+      {(title || description) && (
+        <div className="flex items-center justify-between">
+          <div>
+            {title && <h1 className="text-3xl font-bold">{title}</h1>}
+            {description && <p className="text-muted-foreground">{description}</p>}
+          </div>
         </div>
-      </div>
+      )}
 
       <Card className="p-8 text-center">
         <CardContent>
@@ -37,7 +42,7 @@ export function LoadingScreen({
             )}
             <h2 className="text-2xl font-bold">{loadingMessage}</h2>
             <p className="text-muted-foreground max-w-md">
-              Por favor espera un momento mientras cargamos tu información...
+              {t('loading.please_wait')}
             </p>
           </div>
         </CardContent>
@@ -48,33 +53,34 @@ export function LoadingScreen({
 
 // Componente específico para banca digital
 export function BankingLoadingScreen() {
+  const { t } = useTranslation(['common', 'dashboard']);
   return (
     <LoadingScreen
-      title="Banca Digital"
-      description="Verificando estado de activación..."
-      loadingMessage="Verificando Acceso"
+      title={t('dashboard:sidebar.digital_banking')}
+      description={t('common:loading.verification_banking')}
+      loadingMessage={t('common:loading.banking')}
     />
   );
 }
 
 // Componente específico para metas de ahorro
 export function SavingsLoadingScreen() {
+  const { t } = useTranslation(['common', 'dashboard']);
   return (
     <LoadingScreen
-      title="Mis Metas de Ahorro"
-      description="Cargando tus metas de ahorro..."
-      loadingMessage="Cargando Metas de Ahorro"
+      title={t('dashboard:sidebar.my_savings')}
+      description={t('common:loading.verification_savings')}
+      loadingMessage={t('common:loading.savings')}
     />
   );
 }
 
 // Componente específico para lecciones
 export function LessonsLoadingScreen() {
+  const { t } = useTranslation('common');
   return (
     <LoadingScreen
-      title="Educación Financiera LittleFounders"
-      description="Cargando lecciones y progreso..."
-      loadingMessage="Cargando Lecciones"
+      loadingMessage={t('loading.lessons')}
     />
   );
 }

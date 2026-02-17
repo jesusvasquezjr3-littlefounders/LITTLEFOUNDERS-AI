@@ -1,0 +1,125 @@
+{
+  "listing": {
+    "title": "Missions & Games",
+    "subtitle": "Master finance and entrepreneurship while overcoming interactive challenges.",
+    "playButton": "Play!",
+    "comingSoon": "New games coming soon",
+    "availableChallenges": "Available Challenges"
+  },
+  "namVsYum": {
+    "title": "Ñam vs. Yum",
+    "subtitle": "The Expense Feast",
+    "startScreen": {
+      "playButton": "PLAY!",
+      "highScore": "High Score: {{score}}",
+      "howToPlay": "How to Play?",
+      "description": "Drag each item to the correct monster!"
+    },
+    "tutorial": {
+      "step1Title": "Meet the Monsters",
+      "step1Desc": "Vitalio eats NEEDS. Capricho eats WANTS.",
+      "step2Title": "Drag the Items",
+      "step2Desc": "Swipe each falling item toward the correct monster.",
+      "step3Title": "Don't Lose Lives!",
+      "step3Desc": "If you make a mistake or drop an item, you lose a heart. 3 mistakes and it's Game Over!",
+      "gotIt": "Got It!",
+      "skip": "Skip Tutorial",
+      "next": "Next",
+      "vitalioLabel": "Vitalio",
+      "vitalioDesc": "Green monster — Eats needs",
+      "caprichoLabel": "Capricho",
+      "caprichoDesc": "Purple monster — Eats wants",
+      "dragInstruction": "DRAG ESSENTIALS TO GREEN.\nFUN STUFF TO PURPLE."
+    },
+    "hud": {
+      "score": "Savings",
+      "combo": "Streak",
+      "comboMultiplier": "x{{multiplier}}",
+      "level": "Level {{level}}",
+      "pause": "Pause",
+      "resume": "Resume",
+      "lives": "Financial Health",
+      "savingsStreak": "Savings Streak!"
+    },
+    "monsters": {
+      "vitalio": "Vitalio",
+      "capricho": "Capricho",
+      "vitalioEats": "NEEDS",
+      "caprichoEats": "WANTS"
+    },
+    "items": {
+      "water": "Water",
+      "food": "Food",
+      "medicine": "Medicine",
+      "house": "House",
+      "school": "School",
+      "clothing": "Clothing",
+      "electricity": "Electricity",
+      "toothbrush": "Toothbrush",
+      "toy": "Teddy Bear",
+      "candy": "Candy",
+      "videogame": "Video Game",
+      "iceCream": "Giant Ice Cream",
+      "skateboard": "Skateboard",
+      "doll": "Doll",
+      "stickers": "Stickers",
+      "soda": "Soda",
+      "sunglasses": "Sunglasses",
+      "perfume": "Perfume",
+      "robot": "Toy Robot",
+      "balloon": "Balloon"
+    },
+    "feedback": {
+      "correct": "Correct!",
+      "incorrect": "Oops! That doesn't go there.",
+      "comboStart": "Streak x{{count}}!",
+      "comboBreak": "Streak lost!",
+      "perfectStreak": "Perfect Streak!",
+      "moneyWasted": "Money wasted!"
+    },
+    "mentor": {
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "Watch out! A need is something essential to live, like water. A want is something we like but can wait for.",
+        "tip2": "Water, food, and shelter are basic needs. We can't live without them!",
+        "tip3": "Think: can I live without this? If the answer is yes, it's a want."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "Excellent budgeting! By identifying your expenses well, your savings grow.",
+        "tip2": "Wants are okay sometimes, but needs come first!",
+        "tip3": "Being smart with your money is a superpower. You can do it!"
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "Almost got it! I also bought too many toys before eating. Let's try again!",
+        "tip2": "Wow, you're doing great! Keep dragging to the right monster!",
+        "tip3": "The monsters are hungry! Feed them correctly!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "Ran out of coins? No worries! Try again and remember: essentials first, fun later.",
+        "tip2": "Every decision counts. Needs keep your body and mind healthy!",
+        "tip3": "Wants are fun, but they're not essential. Prioritize!"
+      }
+    },
+    "gameOver": {
+      "title": "Game Over!",
+      "finalScore": "Final Score",
+      "itemsSorted": "Items sorted: {{count}}",
+      "maxCombo": "Max streak: x{{combo}}",
+      "levelReached": "Level reached: {{level}}",
+      "retry": "Play Again!",
+      "exit": "Exit",
+      "newHighScore": "New High Score!"
+    },
+    "pause": {
+      "title": "Paused",
+      "resume": "Resume",
+      "restart": "Restart",
+      "quit": "Quit",
+      "soundOn": "Sound: On",
+      "soundOff": "Sound: Off"
+    }
+  }
+}

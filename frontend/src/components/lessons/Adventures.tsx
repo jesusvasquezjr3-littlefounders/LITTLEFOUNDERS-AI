@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, ChevronRight } from 'lucide-react';
+import { Lock, ChevronRight, BookOpen } from 'lucide-react';
 import { AdventureCard } from './AdventureCard';
 import { useAdventuresAPI, Adventure } from './hooks/useAdventures';
 import { useTranslation } from 'react-i18next';
@@ -32,14 +32,35 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userI
 
     return (
         <div className="adventures-container w-full max-w-6xl mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="text-center mb-10">
-                <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">
-                    {t('general.title')}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">
-                    {t('general.subtitle')}
-                </p>
+            {/* Header Section */}
+            <div className="relative mb-10 p-5 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/10 via-purple-500/5 to-blue-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+                {/* Decorative Background Icon */}
+                <div className="absolute -right-6 -bottom-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+                    <BookOpen className="w-32 h-32 rotate-12 text-indigo-500" />
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-5 relative z-10">
+                    <div className="p-3 bg-gradient-to-br from-indigo-400 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/30 transform -rotate-3 transition-transform duration-300">
+                        <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-center md:text-left">
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-1">
+                            {t('general.title')}
+                        </h1>
+                        <p className="text-base text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed">
+                            {t('general.subtitle')}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Separator Decorative Line */}
+            <div className="flex items-center gap-4 mb-10">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                    {t('general.explorer_label')}
+                </span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
             </div>
 
             {/* Lista de Aventuras */}

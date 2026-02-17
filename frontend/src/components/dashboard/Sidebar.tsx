@@ -10,10 +10,11 @@ import {
   ClipboardList,
   PiggyBank,
   Store,
-  Lightbulb,
   TrendingUp,
   ChevronsLeftRight,
-  Lock
+  Lock,
+  Gamepad2,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,10 @@ const getMenuItems = (t: (key: string) => string) => {
     return [
       { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
       { title: t('dashboard:sidebar.lessons'), url: "/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Sparkles, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
       { title: t('dashboard:sidebar.my_tasks'), url: "/tasks", icon: Trophy, color: "from-yellow-400 to-orange-500", shadow: "shadow-yellow-500/40", id: "nav-tasks" },
       { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, color: "from-green-400 to-emerald-600", shadow: "shadow-green-500/40", id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
       { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, color: "from-pink-400 to-rose-600", shadow: "shadow-pink-500/40", id: "nav-banking" },
       { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, color: "from-purple-400 to-violet-600", shadow: "shadow-purple-500/40", id: "nav-store" },
     ];
@@ -46,7 +48,8 @@ const getMenuItems = (t: (key: string) => string) => {
     return [
       { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
       { title: t('dashboard:sidebar.lessons'), url: "/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Sparkles, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
       { title: t('dashboard:sidebar.my_tasks'), url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-tasks", locked: true },
       { title: t('dashboard:sidebar.my_savings'), url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-savings", locked: true },
       { title: t('dashboard:sidebar.digital_banking'), url: "#", icon: TrendingUp, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-banking", locked: true },
@@ -56,9 +59,10 @@ const getMenuItems = (t: (key: string) => string) => {
     return [
       { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
       { title: t('dashboard:sidebar.lessons'), url: "/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Sparkles, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
       { title: t('dashboard:sidebar.task_management'), url: "/parent-tasks", icon: ClipboardList, color: "from-yellow-400 to-orange-500", shadow: "shadow-yellow-500/40", id: "nav-tasks" },
       { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, color: "from-green-400 to-emerald-600", shadow: "shadow-green-500/40", id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
       { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, color: "from-pink-400 to-rose-600", shadow: "shadow-pink-500/40", id: "nav-banking" },
       { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, color: "from-purple-400 to-violet-600", shadow: "shadow-purple-500/40", id: "nav-store" },
     ];

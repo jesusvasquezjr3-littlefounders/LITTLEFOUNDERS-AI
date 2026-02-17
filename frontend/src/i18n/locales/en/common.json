@@ -130,5 +130,13 @@
         "back_home": "Back to Home"
     },
     "true": "True",
-    "false": "False"
+    "false": "False",
+    "loading": {
+        "please_wait": "Please wait a moment while we load your information...",
+        "lessons": "Loading Lessons",
+        "banking": "Verifying Access",
+        "savings": "Loading Saving Goals",
+        "verification_banking": "Verifying activation status...",
+        "verification_savings": "Loading your saving goals..."
+    }
 }
