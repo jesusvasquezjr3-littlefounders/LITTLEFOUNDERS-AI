@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Rocket, ChevronRight, X, CheckCircle2, Sparkles, User, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { useTranslation } from "react-i18next";
 interface TourStep {
     targetId?: string;
     title: string;
@@ -110,6 +110,7 @@ const tutorSteps: TourStep[] = [
 ];
 
 export function DemoTour() {
+    const { t } = useTranslation('demo');
     const [currentStep, setCurrentStep] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [role, setRole] = useState<'child' | 'tutor' | null>(null);
@@ -136,7 +137,105 @@ export function DemoTour() {
         return () => window.removeEventListener('restartDemoTour', handleRestart);
     }, []);
 
-    const activeSteps = role === 'tutor' ? tutorSteps : childSteps;
+    const getChildSteps = (): TourStep[] => [
+        {
+            title: t('tour.child.step1.title'),
+            description: t('tour.child.step1.desc'),
+            position: "center"
+        },
+        {
+            targetId: "demo-nav-lessons",
+            title: t('tour.child.step2.title'),
+            description: t('tour.child.step2.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-tasks",
+            title: t('tour.child.step3.title'),
+            description: t('tour.child.step3.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-savings",
+            title: t('tour.child.step4.title'),
+            description: t('tour.child.step4.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-games",
+            title: t('tour.child.step5.title'),
+            description: t('tour.child.step5.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-banking",
+            title: t('tour.child.step6.title'),
+            description: t('tour.child.step6.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-store",
+            title: t('tour.child.step7.title'),
+            description: t('tour.child.step7.desc'),
+            position: "right"
+        },
+        {
+            title: t('tour.child.step8.title'),
+            description: t('tour.child.step8.desc'),
+            position: "center"
+        }
+    ];
+
+    const getTutorSteps = (): TourStep[] => [
+        {
+            title: t('tour.tutor.step1.title'),
+            description: t('tour.tutor.step1.desc'),
+            position: "center"
+        },
+        {
+            targetId: "demo-nav-lessons",
+            title: t('tour.tutor.step2.title'),
+            description: t('tour.tutor.step2.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-tasks",
+            title: t('tour.tutor.step3.title'),
+            description: t('tour.tutor.step3.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-savings",
+            title: t('tour.tutor.step4.title'),
+            description: t('tour.tutor.step4.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-games",
+            title: t('tour.tutor.step5.title'),
+            description: t('tour.tutor.step5.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-banking",
+            title: t('tour.tutor.step6.title'),
+            description: t('tour.tutor.step6.desc'),
+            position: "right"
+        },
+        {
+            targetId: "demo-nav-store",
+            title: t('tour.tutor.step7.title'),
+            description: t('tour.tutor.step7.desc'),
+            position: "right"
+        },
+        {
+            title: t('tour.tutor.step8.title'),
+            description: t('tour.tutor.step8.desc'),
+            position: "center"
+        }
+    ];
+
+    const activeSteps = role === 'tutor' ? getTutorSteps() : getChildSteps();
 
     useEffect(() => {
         if (!isOpen || !role) return;
@@ -204,10 +303,10 @@ export function DemoTour() {
                 <Card className="w-[400px] p-8 shadow-2xl border-2 border-white/50 bg-white/95 relative overflow-hidden text-center space-y-6">
                     <div className="space-y-2">
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            ¡Hola! ¿Quién eres?
+                            {t('tour.role_selection.title')}
                         </h2>
                         <p className="text-muted-foreground">
-                            Selecciona tu perfil para personalizar tu experiencia
+                            {t('tour.role_selection.subtitle')}
                         </p>
                     </div>
 
@@ -219,8 +318,8 @@ export function DemoTour() {
                             <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                                 <Rocket className="w-8 h-8 text-blue-600" />
                             </div>
-                            <span className="font-bold text-blue-900">Soy niño</span>
-                            <span className="text-xs text-blue-600 mt-1">¡Quiero jugar!</span>
+                            <span className="font-bold text-blue-900">{t('tour.role_selection.child_btn')}</span>
+                            <span className="text-xs text-blue-600 mt-1">{t('tour.role_selection.child_desc')}</span>
                         </button>
 
                         <button
@@ -230,8 +329,8 @@ export function DemoTour() {
                             <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                                 <GraduationCap className="w-8 h-8 text-orange-600" />
                             </div>
-                            <span className="font-bold text-orange-900">Soy Tutor</span>
-                            <span className="text-xs text-orange-600 mt-1">Quiero supervisar</span>
+                            <span className="font-bold text-orange-900">{t('tour.role_selection.tutor_btn')}</span>
+                            <span className="text-xs text-orange-600 mt-1">{t('tour.role_selection.tutor_desc')}</span>
                         </button>
                     </div>
 
@@ -241,7 +340,7 @@ export function DemoTour() {
                         onClick={handleClose}
                         className="text-muted-foreground hover:text-foreground"
                     >
-                        Saltar introducción
+                        {t('tour.role_selection.skip')}
                     </Button>
                 </Card>
             </div>

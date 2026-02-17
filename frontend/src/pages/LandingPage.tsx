@@ -221,7 +221,7 @@ const LandingPage = () => {
 
       {/* --- SCAR TISSUE / PROBLEM SECTION --- */}
       <section id="problem" className="py-24 bg-white dark:bg-slate-950 transition-colors duration-500">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-16">
 
           <div className="space-y-6">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white transition-colors">
@@ -235,7 +235,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 text-left">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
             <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/30 transition-colors hover:shadow-lg dark:hover:shadow-red-900/10">
               <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center mb-4 text-2xl">📉</div>
               <h3 className="font-bold text-lg text-gray-900 dark:text-red-100 mb-2">{t('problem.card1_title')}</h3>
@@ -250,6 +250,11 @@ const LandingPage = () => {
               <div className="w-12 h-12 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-2xl">💤</div>
               <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2">{t('problem.card3_title')}</h3>
               <p className="text-gray-600 dark:text-gray-400">{t('problem.card3_text')}</p>
+            </div>
+            <div className="p-6 bg-purple-50 dark:bg-purple-950/20 rounded-2xl border border-purple-100 dark:border-purple-900/30 transition-colors hover:shadow-lg dark:hover:shadow-purple-900/10">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center mb-4 text-2xl">💸</div>
+              <h3 className="font-bold text-lg text-gray-900 dark:text-purple-100 mb-2">{t('problem.card4_title')}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{t('problem.card4_text')}</p>
             </div>
           </div>
 

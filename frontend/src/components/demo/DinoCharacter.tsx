@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 export type DinoMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
 
@@ -15,6 +16,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
+    const { t } = useTranslation('demo');
 
     // Blinking logic
     useEffect(() => {
@@ -89,7 +91,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     "max-w-[85vw] md:max-w-[320px] w-auto text-center"
                 )}>
                     <p className="text-slate-700 font-bold text-base md:text-lg leading-snug">
-                        {currentText || "¡Hola soy Liruf!"}
+                        {currentText || t('characters.dino.default_greeting')}
                     </p>
 
                     {/* Tail/Pointer - Smooth curved SVG pointing down */}

@@ -1,0 +1,140 @@
+{
+    "welcome": {
+        "title": "¡Hola, Pequeño Fundador! 👋",
+        "subtitle": "¡Bienvenido a tu panel de Little Founders!"
+    },
+    "stats": {
+        "completed_lessons": {
+            "title": "Lecciones Completadas",
+            "desc": "¡Sigue así!"
+        },
+        "minutes_studied": {
+            "title": "Minutos Estudiados",
+            "desc": "Tiempo bien invertido"
+        },
+        "points_earned": {
+            "title": "Puntos Ganados",
+            "desc": "¡Eres un experto!"
+        },
+        "current_streak": {
+            "title": "Racha Actual",
+            "desc": "¡Días seguidos!"
+        }
+    },
+    "sidebar": {
+        "home": "Inicio",
+        "lessons": "Aprende",
+        "tasks": "Mis Tareas",
+        "savings": "Mis Ahorros",
+        "entrepreneurship": "Juegos",
+        "banking": "Banca Digital",
+        "store": "Tiendita",
+        "locked_title": "Función en Desarrollo",
+        "locked_desc": "Esta funcionalidad estará disponible próximamente en la versión completa.",
+        "collapse": "Contraer barra",
+        "expand": "Expandir barra",
+        "restart_tour": "Reiniciar Tutorial",
+        "tour": "Tutorial",
+        "restart": "Reiniciar"
+    },
+    "nav": {
+        "login": "Iniciar Sesión",
+        "register": "¡Registrate Gratis!"
+    },
+    "tour": {
+        "role_selection": {
+            "title": "¡Hola! ¿Quién eres?",
+            "subtitle": "Selecciona tu perfil para personalizar tu experiencia",
+            "child_btn": "Soy niño",
+            "child_desc": "¡Quiero jugar!",
+            "tutor_btn": "Soy Tutor",
+            "tutor_desc": "Quiero supervisar",
+            "skip": "Saltar introducción"
+        },
+        "buttons": {
+            "start": "¡Empezar!",
+            "next": "Siguiente"
+        },
+        "child": {
+            "step1": {
+                "title": "¡Bienvenido a LittleFounders! 🚀",
+                "desc": "Estás a punto de iniciar una misión especial. Vamos a explorar tu nuevo centro de comando financiero."
+            },
+            "step2": {
+                "title": "Lecciones Divertidas",
+                "desc": "¡Aprende sobre finanzas y emprendimiento jugando! Lecciones interactivas que te convertirán en un experto."
+            },
+            "step3": {
+                "title": "Misiones y Tareas",
+                "desc": "Tus papás te dejarán misiones aquí. ¡Complétalas todas para ganar recompensas reales!"
+            },
+            "step4": {
+                "title": "Tus Ahorros",
+                "desc": "Aquí verás crecer tu dinero. ¡Define metas como esa bici nueva o el juguete que tanto quieres!"
+            },
+            "step5": {
+                "title": "Aprende Jugando",
+                "desc": "Conviértete en un experto en negocios con juegos divertidos como tu propio puesto de limonada."
+            },
+            "step6": {
+                "title": "Tu Banco Digital",
+                "desc": "¡Siéntete como un adulto! Aquí tendrás tu propia tarjeta y cuenta bancaria real."
+            },
+            "step7": {
+                "title": "La Tiendita",
+                "desc": "¡Gana monedas cumpliendo tareas y úsalas aquí para comprar cosas geniales para tu avatar!"
+            },
+            "step8": {
+                "title": "¡Misión Cumplida! 🎉",
+                "desc": "Ya conoces tu base. Ahora eres libre de explorar todo. Recuerda: ¡Regístrate para guardar tu progreso!"
+            }
+        },
+        "tutor": {
+            "step1": {
+                "title": "Bienvenido a LittleFounders - Modo Tutor 🎓",
+                "desc": "Esta plataforma está diseñada para empoderar a los niños en su educación financiera. Aquí te mostramos cómo puedes supervisar y guiar."
+            },
+            "step2": {
+                "title": "Currículo Educativo",
+                "desc": "Revisa el progreso académico. Las lecciones están diseñadas pedagógicamente para distintas edades."
+            },
+            "step3": {
+                "title": "Asignación de Tareas",
+                "desc": "La herramienta principal para enseñar el valor del trabajo. Asigna tareas domésticas o retos con recompensas reales o virtuales."
+            },
+            "step4": {
+                "title": "Supervisión de Ahorros",
+                "desc": "Monitorea las metas de ahorro de tus hijos. Puedes incentivar el ahorro con aportaciones extras (intereses parentales)."
+            },
+            "step5": {
+                "title": "Simuladores de Negocios",
+                "desc": "Espacios seguros donde pueden fallar y aprender. Simulaciones de emprendimiento sin riesgo real."
+            },
+            "step6": {
+                "title": "Control Parental Bancario",
+                "desc": "Define límites de gasto, bloquea tarjetas y monitorea transacciones en tiempo real."
+            },
+            "step7": {
+                "title": "Control de Recompensas",
+                "desc": "Configura qué pueden 'comprar' con sus puntos. Desde tiempo en pantalla hasta salidas especiales."
+            },
+            "step8": {
+                "title": "Todo Listo 🌟",
+                "desc": "Ha recorrido las funciones clave. Explore libremente la plataforma para ver el potencial educativo."
+            }
+        }
+    },
+    "layout": {
+        "main_content": "Contenido principal"
+    },
+    "construction": {
+        "title": "¡Página en Construcción!",
+        "description": "Estamos trabajando duro para traerte esta increíble funcionalidad. ¡Vuelve pronto para ver las novedades!",
+        "button": "Volver atrás"
+    },
+    "characters": {
+        "dino": {
+            "default_greeting": "¡Hola soy Liruf!"
+        }
+    }
+}

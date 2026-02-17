@@ -4,12 +4,14 @@ import { DemoTopNav } from "./DemoTopNav";
 import { DemoTour } from "./DemoTour";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface DemoDashboardLayoutProps {
     children: ReactNode;
 }
 
 export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
+    const { t } = useTranslation('demo');
     // Initialize from localStorage or default to false (expanded/pinned)
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
         const stored = localStorage.getItem('demo_sidebar_collapsed');
@@ -43,7 +45,7 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
                         "flex-1 p-6 overflow-y-auto custom-scrollbar transition-all duration-300",
                         // Desktop: dynamic margin for sidebar
                         !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
-                    )} aria-label="Contenido principal">
+                    )} aria-label={t('layout.main_content')}>
                         {children}
                     </main>
                 </div>

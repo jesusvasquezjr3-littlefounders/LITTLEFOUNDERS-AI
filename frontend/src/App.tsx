@@ -17,25 +17,14 @@ import DiscordCallback from "./pages/DiscordCallback";
 import Lecciones from "./pages/Lecciones";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";
-import DigitalBanking from "./pages/DigitalBanking";
-import Savings from "./pages/Savings";
-import Tasks from "./pages/Tasks";
-import ParentTasks from "./pages/ParentTasks";
-import Store from "./pages/Store";
-import LemonadeStand from "./pages/LemonadeStand";
-import InvestmentGames from "./pages/InvestmentGames";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
-import Demo from "./pages/demo/Demo";
-import { DemoLemonadeStand } from "./pages/demo/DemoLemonadeStand";
+import PageUnderConstruction from "./pages/PageUnderConstruction";
 
-import { DemoVirtualCard } from "./pages/demo/DemoVirtualCard";
-import { DemoDigitalBanking } from "./pages/demo/DemoDigitalBanking";
-import { DemoInvestmentGames } from "./pages/demo/DemoInvestmentGames";
-import { DemoSavings } from "./pages/demo/DemoSavings";
-import { DemoStore } from "./pages/demo/DemoStore";
-import { DemoTasks } from "./pages/demo/DemoTasks";
+import Demo from "./pages/demo/Demo";
+import DemoPageUnderConstruction from "./pages/demo/DemoPageUnderConstruction";
+
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
 import { LessonRunner } from "@/components/lessons/engine";
@@ -95,39 +84,36 @@ const App = () => (
                 } />
                 <Route path="/tasks" element={
                   <ChildProtectedRoute>
-                    <Tasks />
+                    <PageUnderConstruction />
                   </ChildProtectedRoute>
                 } />
                 <Route path="/parent-tasks" element={
                   <ParentProtectedRoute>
-                    <ParentTasks />
+                    <PageUnderConstruction />
                   </ParentProtectedRoute>
                 } />
                 <Route path="/growth" element={
                   <ProtectedRoute>
-                    <DigitalBanking />
+                    <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
                 <Route path="/savings" element={
                   <ProtectedRoute>
-                    <Savings />
+                    <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
                 <Route path="/store" element={
                   <ProtectedRoute>
-                    <Store />
+                    <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
                 <Route path="/investment-games" element={
                   <ProtectedRoute>
-                    <InvestmentGames />
+                    <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
-                <Route path="/lemonade-stand" element={
-                  <ProtectedRoute>
-                    <LemonadeStand />
-                  </ProtectedRoute>
-                } />
+                {/* Lemonade Stand route removed as per request to clean up games */}
+
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <Settings />
@@ -140,14 +126,12 @@ const App = () => (
                 } />
                 {/* Demo Routes */}
                 <Route path="/demo" element={<Demo />} />
-                <Route path="/demo/lemonade-stand" element={<DemoLemonadeStand />} />
+                <Route path="/demo/lecciones" element={<DemoPageUnderConstruction />} />
+                <Route path="/demo/investment-games" element={<DemoPageUnderConstruction />} />
 
-                <Route path="/demo/card" element={<DemoVirtualCard />} />
-                <Route path="/demo/growth" element={<DemoDigitalBanking />} />
-                <Route path="/demo/investment-games" element={<DemoInvestmentGames />} />
-                <Route path="/demo/savings" element={<DemoSavings />} />
-                <Route path="/demo/store" element={<DemoStore />} />
-                <Route path="/demo/tasks" element={<DemoTasks />} />
+                {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
+                    though Sidebar has them locked with '#' */}
+
 
                 {/* Admin Panel Routes */}
                 <Route path="/admin" element={

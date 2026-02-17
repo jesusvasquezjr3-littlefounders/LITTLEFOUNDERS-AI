@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from "@/contexts/SoundContext";
 
@@ -29,6 +30,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     const containerRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
     const { playSound } = useSound();
+    const { t } = useTranslation('demo');
 
     const isExpanded = isHovered || !collapsed;
 
@@ -43,22 +45,22 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
         if (item.locked) {
             e.preventDefault();
             toast({
-                title: "Función en Desarrollo",
-                description: "Esta funcionalidad estará disponible próximamente en la versión completa.",
+                title: t('sidebar.locked_title'),
+                description: t('sidebar.locked_desc'),
                 variant: "default",
             });
         }
     };
 
     const menuItems = [
-        { title: "Inicio", url: "/demo", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "demo-nav-home" },
-        { title: "Lecciones", url: "/demo/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "demo-nav-lessons" },
-        { title: "Emprendimiento", url: "/demo/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "demo-nav-games" },
+        { title: t('sidebar.home'), url: "/demo", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "demo-nav-home" },
+        { title: t('sidebar.lessons'), url: "/demo/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "demo-nav-lessons" },
+        { title: t('sidebar.entrepreneurship'), url: "/demo/investment-games", icon: Lightbulb, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "demo-nav-games" },
         // Locked Items
-        { title: "Mis Tareas", url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-tasks", locked: true },
-        { title: "Mis Ahorros", url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-savings", locked: true },
-        { title: "Banca Digital", url: "#", icon: TrendingUp, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-banking", locked: true },
-        { title: "Tiendita", url: "#", icon: Store, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-store", locked: true },
+        { title: t('sidebar.tasks'), url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-tasks", locked: true },
+        { title: t('sidebar.savings'), url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-savings", locked: true },
+        { title: t('sidebar.banking'), url: "#", icon: TrendingUp, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-banking", locked: true },
+        { title: t('sidebar.store'), url: "#", icon: Store, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-store", locked: true },
     ];
 
     return (
