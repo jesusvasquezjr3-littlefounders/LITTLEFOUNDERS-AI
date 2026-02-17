@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Search, ShieldPlus, ShieldMinus } from 'lucide-react';
+import { Search, ShieldPlus, ShieldMinus, TriangleAlert, Lock } from 'lucide-react';
 
 interface User {
   id: string;
@@ -38,6 +38,9 @@ export const AdminUsers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [promoteConfirmId, setPromoteConfirmId] = useState<string | null>(null);
   const [demoteConfirmId, setDemoteConfirmId] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [unlockInput, setUnlockInput] = useState('');
+  const [showUnlockDialog, setShowUnlockDialog] = useState(false);
 
   const { data: usersData, isLoading } = useAdminUsers();
   const promoteUser = usePromoteUser();
@@ -363,41 +366,113 @@ export const AdminUsers: React.FC = () => {
       </Card>
 
       {/* Other Users Section */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+      <Card className="bg-white dark:bg-slate-800 border-yellow-400 dark:border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
         <CardHeader>
           <CardTitle className="text-slate-900 dark:text-white">
             {t('users.otherUsersTitle')} ({filteredOthers.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <div className="space-y-2">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full bg-slate-200 dark:bg-slate-700" />
-              ))}
+          <div className="mb-6 rounded-lg border border-red-500 bg-red-50 dark:bg-red-950/30 p-4 shadow-[0_0_15px_rgba(239,68,68,0.2)] dark:shadow-[0_0_20px_rgba(239,68,68,0.15)] ring-1 ring-red-500/50">
+            <div className="flex items-start gap-4">
+              <div className="rounded-full bg-red-100 dark:bg-red-900/50 p-2">
+                <TriangleAlert className="h-6 w-6 text-red-600 dark:text-red-500 animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-bold uppercase tracking-wider text-red-700 dark:text-red-400 flex items-center gap-2">
+                  {t('users.dangerZone')}
+                </h4>
+                <p className="text-sm font-medium text-red-600/90 dark:text-red-400/90">
+                  {t('users.dangerZoneDescription')}
+                </p>
+              </div>
             </div>
-          ) : filteredOthers.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-slate-200 dark:border-slate-700">
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.nameEmail')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.type')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.created')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOthers.map((user) => (
-                    <UserRow key={user.id} user={user} showPromoteButton={true} />
-                  ))}
-                </TableBody>
-              </Table>
+          </div>
+
+          {!isUnlocked ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">
+              <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-4">
+                <Lock className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+              </div>
+              <div className="max-w-md space-y-2 px-4">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  {t('users.securityLock.title')}
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {t('users.securityLock.description')}
+                </p>
+              </div>
+
+              <Dialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="mt-4">
+                    {t('users.securityLock.unlockButton')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('users.securityLock.unlockTitle')}</DialogTitle>
+                    <DialogDescription>
+                      {t('users.securityLock.unlockDescription')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Input
+                        placeholder={t('users.securityLock.placeholder', { phrase: t('users.securityLock.unlockPhrase') })}
+                        value={unlockInput}
+                        onChange={(e) => setUnlockInput(e.target.value.toUpperCase())}
+                        className="text-center font-mono uppercase tracking-wider"
+                      />
+                      <p className="text-xs text-center text-muted-foreground">
+                        {t('users.securityLock.unlockPhrase')}: <span className="font-bold select-all">{t('users.securityLock.unlockPhrase')}</span>
+                      </p>
+                    </div>
+                    <Button
+                      className="w-full"
+                      disabled={unlockInput !== t('users.securityLock.unlockPhrase')}
+                      onClick={() => {
+                        setIsUnlocked(true);
+                        setShowUnlockDialog(false);
+                        setUnlockInput('');
+                      }}
+                    >
+                      {t('common.confirm')}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
-            <p className="text-center text-slate-500 dark:text-slate-400 py-8">
-              {t('users.noOtherUsersFound')}
-            </p>
+            isLoading ? (
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-12 w-full bg-slate-200 dark:bg-slate-700" />
+                ))}
+              </div>
+            ) : filteredOthers.length > 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-slate-200 dark:border-slate-700">
+                      <TableHead className="text-slate-900 dark:text-white">{t('users.nameEmail')}</TableHead>
+                      <TableHead className="text-slate-900 dark:text-white">{t('users.type')}</TableHead>
+                      <TableHead className="text-slate-900 dark:text-white">{t('users.created')}</TableHead>
+                      <TableHead className="text-slate-900 dark:text-white">{t('users.actions')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOthers.map((user) => (
+                      <UserRow key={user.id} user={user} showPromoteButton={true} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <p className="text-center text-slate-500 dark:text-slate-400 py-8">
+                {t('users.noOtherUsersFound')}
+              </p>
+            )
           )}
         </CardContent>
       </Card>

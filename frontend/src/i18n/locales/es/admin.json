@@ -7,6 +7,7 @@
     "audio": "Audio",
     "history": "Historial",
     "users": "Usuarios",
+    "help": "Preguntas",
     "logout": "Cerrar Sesión"
   },
   "layout": {
@@ -275,7 +276,19 @@
     "adminDescription": "Acceso completo al panel de administración. Puede crear, editar, eliminar contenido y gestionar usuarios.",
     "tutorDescription": "Puede acceder al dashboard de tutor y monitorear el progreso de los niños.",
     "universalDescription": "Cuenta con acceso universal a la plataforma de aprendizaje.",
-    "childDescription": "Cuenta de niño/estudiante con acceso a lecciones y actividades."
+    "childDescription": "Cuenta de niño/estudiante con acceso a lecciones y actividades.",
+    "dangerZone": "ZONA DE PELIGRO",
+    "dangerZoneTitle": "Área de Acceso Restringido",
+    "dangerZoneDescription": "Alto Riesgo: Acceder a este panel permite otorgar permisos confidenciales a otros usuarios. Asegúrese de comprender las implicaciones de seguridad.",
+    "securityLock": {
+      "title": "Acceso Restringido",
+      "description": "Esta área está bloqueada para prevenir cambios no autorizados accidentales.",
+      "unlockButton": "Desbloquear Área Restringida",
+      "unlockTitle": "Verificación de Seguridad",
+      "unlockDescription": "Para acceder a este área confidencial, por favor escriba la frase de confirmación abajo.",
+      "placeholder": "Escriba '{{phrase}}' para confirmar",
+      "unlockPhrase": "CONFIRMAR"
+    }
   },
   "common": {
     "loading": "Cargando...",
@@ -487,6 +500,455 @@
       "invalid_statement": "El enunciado verdadero/falso no es válido",
       "validation_errors_found": "Se encontraron {{count}} errores de validación",
       "fix_errors_before_saving": "Por favor corrige los errores antes de guardar"
+    }
+  },
+  "help": {
+    "title": "Centro de Ayuda",
+    "subtitle": "Documentación, tutoriales y soporte para administradores",
+    "welcome": {
+      "title": "¡Bienvenido al Panel de Administración de LittleFounders!",
+      "message": "Como administrador, tienes acceso a todas las herramientas necesarias para gestionar el contenido educativo y garantizar una experiencia de aprendizaje excepcional para nuestros estudiantes.",
+      "responsibility": "Tu trabajo es de gran valor. Cada lección, cada personaje y cada decisión que tomes impacta directamente en la educación financiera de miles de niños. ¡Gracias por tu dedicación!"
+    },
+    "tabs": {
+      "documentation": "Documentación",
+      "faq": "Preguntas Frecuentes",
+      "tutorials": "Tutoriales",
+      "steps": "Paso a Paso",
+      "troubleshooting": "Solución de Problemas"
+    },
+    "docs": {
+      "quickStart": {
+        "title": "Guía de Inicio Rápido",
+        "description": "Comienza a usar el panel de administración en 5 pasos simples",
+        "step1": "Explora el Dashboard para ver las métricas globales del contenido: total de lecciones, ejercicios, personajes y segmentos de audio. Este será tu punto de partida cada día.",
+        "step2": "Visita la sección de Lecciones para familiarizarte con el contenido existente. Usa los filtros para navegar por aventuras, sagas y temas. Prueba el editor abriendo una lección existente.",
+        "step3": "Revisa el Historial de Ediciones para entender cómo se rastrea cada cambio en el sistema. Cada modificación queda registrada con el editor, fecha, y valores anteriores/nuevos.",
+        "step4": "Consulta la sección de Ayuda (donde estás ahora) siempre que tengas dudas. Aquí encontrarás documentación detallada, tutoriales paso a paso y respuestas a preguntas frecuentes.",
+        "step5": "Cuando estés listo para crear contenido, comienza con una lección sencilla. Usa el botón 'Duplicar' en lecciones existentes como plantilla, modifica el contenido, valida y guarda. ¡Así de simple!"
+      },
+      "overview": {
+        "title": "Vista General del Sistema",
+        "description": "Conoce las funcionalidades principales del panel de administración"
+      },
+      "modules": {
+        "lessons": {
+          "title": "Gestión de Lecciones",
+          "description": "Crea, edita y organiza lecciones educativas con ejercicios interactivos en español e inglés.",
+          "details": "El módulo de lecciones es el corazón del sistema. Aquí puedes crear nuevas lecciones desde cero, editar lecciones existentes, duplicarlas como plantillas, y eliminarlas cuando sea necesario. Cada lección contiene metadatos (código, títulos bilingües, descripciones, duración, rango de edad) y una colección de ejercicios interactivos de más de 30 tipos diferentes. El sistema valida automáticamente que el contenido esté completo en ambos idiomas antes de guardarlo."
+        },
+        "characters": {
+          "title": "Personajes Narradores",
+          "description": "Gestiona los personajes (Liruf, Dina, Dr. Rho, Zara Vex) y sus gestos animados.",
+          "details": "Los personajes son los narradores que guían a los estudiantes a través de las lecciones. Cada personaje tiene múltiples gestos (feliz, pensativo, sorprendido, etc.) que se pueden usar para expresar emociones durante la narración. En este módulo puedes visualizar todos los personajes, probar sus animaciones, y verificar que los gestos funcionen correctamente antes de usarlos en las lecciones."
+        },
+        "audio": {
+          "title": "Biblioteca de Audio",
+          "description": "Sube y genera audio para las lecciones con voces de personajes.",
+          "details": "El sistema de audio permite dos formas de crear contenido: subir archivos de audio pregrabados o generar audio automáticamente desde texto usando text-to-speech. Cada segmento de audio está vinculado a una lección específica, un personaje narrador, y una emoción. Puedes filtrar, reproducir, y gestionar todos los segmentos de audio desde esta interfaz centralizada."
+        },
+        "users": {
+          "title": "Administración de Usuarios",
+          "description": "Gestiona permisos y promociona usuarios a administradores.",
+          "details": "El sistema tiene cuatro tipos de usuarios: Admin (acceso completo al panel), Tutor (monitoreo de niños), Universal (acceso general), y Child (estudiantes). En este módulo puedes ver todos los usuarios registrados, filtrarlos por tipo, y modificar permisos. Las acciones de 'Promover a Admin' y 'Revocar Admin' están protegidas con un sistema de seguridad para prevenir cambios accidentales."
+        }
+      },
+      "bestPractices": {
+        "title": "Mejores Prácticas",
+        "subtitle": "Recomendaciones clave para administrar contenido de alta calidad",
+        "practice1": {
+          "title": "Valida Antes de Guardar",
+          "description": "Siempre usa el botón 'Validar' antes de guardar una lección. El sistema verificará que todos los ejercicios tengan los campos requeridos y que el contenido esté en el formato correcto, evitando errores en producción que afecten a los estudiantes."
+        },
+        "practice2": {
+          "title": "Usa el Historial de Forma Estratégica",
+          "description": "El historial es tu red de seguridad. Revisa cambios recientes antes de hacer modificaciones importantes y usa el rollback cuando sea necesario. Cada cambio queda registrado con fecha, editor y valores anteriores, permitiéndote revertir errores con un click."
+        },
+        "practice3": {
+          "title": "Mantén Consistencia Bilingüe",
+          "description": "El contenido debe ser igualmente valioso en español e inglés. No traduzcas literalmente; adapta los ejemplos, expresiones y contextos culturales para que ambos idiomas ofrezcan la misma calidad educativa. Los estudiantes merecen la mejor experiencia sin importar su idioma."
+        },
+        "practice4": {
+          "title": "Prueba en Preview Antes de Publicar",
+          "description": "Usa la vista previa para experimentar la lección desde la perspectiva del estudiante. Verifica que las instrucciones sean claras, que los ejercicios fluyan naturalmente, y que las respuestas correctas/incorrectas tengan el feedback apropiado."
+        },
+        "practice5": {
+          "title": "Documenta Cambios Importantes",
+          "description": "Cuando hagas modificaciones significativas, añade notas en los campos de descripción explicando qué cambiaste y por qué. Esto ayuda a otros administradores (y a tu yo futuro) a entender el contexto de las decisiones."
+        },
+        "practice6": {
+          "title": "Duplica Antes de Experimentar",
+          "description": "Si quieres probar cambios radicales en una lección existente, primero duplícala. Esto te permite experimentar libremente sin riesgo de perder el contenido original. Una vez que la nueva versión esté lista, puedes decidir si reemplazar o mantener ambas."
+        },
+        "practice7": {
+          "title": "Organiza con Códigos Consistentes",
+          "description": "Usa el sistema de códigos de lección (aventura-saga-tema-lección) de forma consistente. Por ejemplo, 1-2-3-4 significa Aventura 1, Saga 2, Tema 3, Lección 4. Esto facilita encontrar y organizar el contenido cuando el catálogo crezca."
+        },
+        "practice8": {
+          "title": "Equilibra Dificultad y Age Rate",
+          "description": "Respeta los rangos de edad al diseñar ejercicios. Una lección para 4-6 años debe tener instrucciones simples, imágenes claras y pocas opciones. Para 10-12 años puedes introducir conceptos más complejos y ejercicios que requieran pensamiento crítico."
+        }
+      },
+      "tips": {
+        "title": "Consejos y Trucos",
+        "tip1": {
+          "title": "Atajos de teclado",
+          "description": "Usa Ctrl+S (Cmd+S en Mac) para guardar rápidamente mientras editas lecciones. Ctrl+Z deshace cambios en los campos de texto."
+        },
+        "tip2": {
+          "title": "Filtros múltiples",
+          "description": "Combina filtros de aventura, saga y tema para encontrar lecciones específicas rápidamente. Los filtros se aplican en tiempo real sin necesidad de hacer click en 'Buscar'."
+        },
+        "tip3": {
+          "title": "Reordenamiento rápido",
+          "description": "En el editor de lecciones, puedes arrastrar ejercicios para reordenarlos en lugar de usar las flechas arriba/abajo. Esto es mucho más rápido cuando tienes muchos ejercicios."
+        },
+        "tip4": {
+          "title": "Búsqueda en historial",
+          "description": "Usa el buscador del historial para encontrar quién hizo un cambio específico o cuándo se modificó una lección. Puedes buscar por editor, ID de entidad, o tipo de acción."
+        },
+        "tip5": {
+          "title": "Vista bilingüe lado a lado",
+          "description": "Activa la vista bilingüe en el editor para ver y editar el contenido en español e inglés simultáneamente. Esto ayuda a mantener la consistencia entre idiomas y detectar traducciones faltantes."
+        }
+      },
+      "glossary": {
+        "title": "Glosario de Términos",
+        "subtitle": "Definiciones de conceptos clave del sistema",
+        "term1": {
+          "name": "Lección",
+          "definition": "Unidad educativa completa que incluye metadatos y una secuencia de ejercicios interactivos. Cada lección pertenece a una aventura, saga y tema específicos."
+        },
+        "term2": {
+          "name": "Ejercicio",
+          "definition": "Actividad interactiva individual dentro de una lección. Hay más de 30 tipos diferentes: multiple choice, verdadero/falso, clasificación, simuladores, etc."
+        },
+        "term3": {
+          "name": "Age Rate",
+          "definition": "Rango de edad recomendado para una lección. Opciones: 4-6 años (Preescolar), 7-9 (Primaria temprana), 10-12 (Primaria avanzada), 13+ (Adolescentes)."
+        },
+        "term4": {
+          "name": "Código de Lección",
+          "definition": "Identificador único en formato aventura-saga-tema-lección (ej: 1-2-3-4). Facilita la organización y búsqueda de contenido en el sistema."
+        },
+        "term5": {
+          "name": "Personaje Narrador",
+          "definition": "Avatar animado que guía al estudiante a través de las lecciones. Liruf (líder optimista), Dina (analítica), Dr. Rho (mentor sabio), Zara Vex (innovadora)."
+        },
+        "term6": {
+          "name": "Gesto",
+          "definition": "Expresión facial o corporal de un personaje (feliz, pensativo, sorprendido, etc.) usada para transmitir emociones durante la narración."
+        },
+        "term7": {
+          "name": "Historial de Ediciones",
+          "definition": "Registro automático de todos los cambios realizados en el sistema. Incluye quién hizo el cambio, cuándo, qué modificó, y los valores anteriores/nuevos."
+        },
+        "term8": {
+          "name": "Rollback",
+          "definition": "Acción de revertir un cambio usando el historial. Restaura automáticamente el valor anterior de un campo o entidad, deshaciendo modificaciones no deseadas."
+        },
+        "term9": {
+          "name": "Validación",
+          "definition": "Proceso de verificación automática que asegura que una lección cumple todos los requisitos antes de guardarse (campos requeridos completos, formato correcto, etc.)."
+        },
+        "term10": {
+          "name": "Contenido Bilingüe",
+          "definition": "Texto o audio disponible tanto en español como en inglés. LittleFounders requiere que todo el contenido educativo sea bilingüe para servir a una audiencia diversa."
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "subtitle": "Respuestas a las dudas más comunes",
+      "categories": {
+        "lessons": "Gestión de Lecciones",
+        "technical": "Problemas Técnicos",
+        "general": "Preguntas Generales"
+      },
+      "lessons": {
+        "q1": {
+          "question": "¿Cómo crear una lección nueva desde cero?",
+          "answer": "Ve a Lecciones > Crear Nueva Lección. Completa los metadatos (código de lección, títulos en ES/EN, descripciones, duración, age_rate, puntos) y agrega ejercicios usando el botón '+'. Selecciona el tipo de ejercicio y completa el contenido en ambos idiomas. No olvides validar antes de guardar.",
+          "example": "Ejemplo de código: 1-1-1-1 (Aventura 1, Saga 1, Tema 1, Lección 1)"
+        },
+        "q2": {
+          "question": "¿Qué es el age_rate y cómo elegir el correcto?",
+          "answer": "El age_rate es el rango de edad mínimo recomendado para la lección. Elige basándote en la complejidad del contenido: 4-6 años (conceptos muy básicos, imágenes grandes, instrucciones simples), 7-9 años (introducción de lectura, operaciones simples), 10-12 años (pensamiento crítico, problemas multi-paso), 13+ años (conceptos abstractos, finanzas avanzadas).",
+          "example": ""
+        },
+        "q3": {
+          "question": "¿Puedo recuperar una lección eliminada?",
+          "answer": "No directamente desde el sistema. Una vez eliminada, la lección se borra de la base de datos. Por eso recomendamos: 1) Usar 'Duplicar' antes de hacer cambios drásticos, 2) Revisar el historial previo a la eliminación para recrear el contenido si es absolutamente necesario, 3) Tener mucho cuidado con el botón de eliminar.",
+          "example": ""
+        },
+        "q4": {
+          "question": "¿Cuántos ejercicios debe tener una lección?",
+          "answer": "No hay un límite técnico, pero la recomendación pedagógica es: 5-8 ejercicios para lecciones de 4-6 años (mantener atención corta), 8-12 ejercicios para 7-9 años, 10-15 ejercicios para 10-12 años, y hasta 20 ejercicios para 13+ años. La duración total debe alinearse con el age_rate y el campo 'duration'.",
+          "example": "Lección para 7-9 años, duración 15 minutos = ~10 ejercicios variados"
+        },
+        "q5": {
+          "question": "¿Cómo sé qué tipo de ejercicio usar?",
+          "answer": "Elige según el objetivo de aprendizaje: Multiple Choice (conceptos básicos, recordar información), True/False (verificar comprensión), Classification (categorizar conceptos), Sequencing (orden lógico), Shop Sim (práctica de compras), Budget Builder (planificación financiera). Varía los tipos dentro de una lección para mantener el interés del estudiante.",
+          "example": "Para enseñar 'tipos de monedas': usa intro_narrative + tap_action + coin_counter"
+        }
+      },
+      "technical": {
+        "q1": {
+          "question": "¿Por qué obtengo un error 422 al guardar una lección?",
+          "answer": "Error 422 significa problemas de validación en el backend. El sistema te mostrará exactamente qué falta o está incorrecto. Causas comunes: campos requeridos vacíos (code, title_es, title_en), ejercicios sin 'type' o 'content', formato JSON inválido en el contenido de ejercicios, o arrays de opciones vacíos en multiple choice.",
+          "example": ""
+        },
+        "q2": {
+          "question": "¿Cómo funciona exactamente el sistema de historial?",
+          "answer": "Cada vez que guardas cambios en una lección, personaje o usuario, el sistema crea automáticamente un registro en la tabla 'admin_history'. Este registro captura: 1) Tu email (editor), 2) Timestamp exacto, 3) Tipo de entidad modificada (lesson/character/user), 4) ID de la entidad, 5) Acción (create/update/delete), 6) Campo modificado, 7) Valor anterior y nuevo. Puedes ver y filtrar este historial completo en la sección Historial.",
+          "example": ""
+        },
+        "q3": {
+          "question": "¿Qué hacer si el editor no guarda mis cambios?",
+          "answer": "Pasos de diagnóstico: 1) Verifica que tu sesión no haya expirado (cierra y vuelve a entrar), 2) Asegúrate de que todos los campos requeridos estén completos (se marcan en rojo), 3) Revisa la consola del navegador (F12) para ver errores de JavaScript, 4) Si editaste JSON manualmente, valida el formato, 5) Intenta guardar sin el campo problemático para identificar qué causa el error. Si persiste, contacta al equipo técnico.",
+          "example": ""
+        },
+        "q4": {
+          "question": "¿Puedo editar el JSON de ejercicios directamente?",
+          "answer": "Sí, el editor muestra el JSON completo del ejercicio para usuarios avanzados. PRECAUCIÓN: Editar JSON requiere conocimientos técnicos. Un error de sintaxis (coma faltante, comilla sin cerrar) impedirá guardar. Recomendamos: 1) Copiar el JSON a un editor externo antes de modificar, 2) Validar el JSON en jsonlint.com antes de guardar, 3) Hacer cambios pequeños incrementales, 4) Usar la interfaz visual cuando sea posible.",
+          "example": ""
+        },
+        "q5": {
+          "question": "¿Cómo puedo hacer un backup de mis lecciones?",
+          "answer": "Actualmente no hay función automática de backup, pero puedes: 1) Usar 'Duplicar' para crear copias de lecciones importantes, 2) Exportar el contenido copiando el JSON del editor a un archivo local, 3) El sistema mantiene el historial de cambios que sirve como backup parcial. Se planea añadir exportación/importación masiva de lecciones en futuras versiones.",
+          "example": ""
+        }
+      },
+      "general": {
+        "q1": {
+          "question": "¿Cuál es la diferencia entre Aventura, Saga y Tema?",
+          "answer": "Son niveles jerárquicos de organización del contenido. AVENTURA es el nivel más alto (ej: 'Fundamentos del Dinero'), contiene múltiples SAGAS (ej: 'Historia del Dinero', 'Formas de Pago'). Cada saga contiene TEMAS (ej: 'Monedas y Billetes', 'Tarjetas de Crédito'). Finalmente, cada tema contiene LECCIONES individuales. Esta estructura ayuda a organizar cientos de lecciones de forma lógica.",
+          "example": ""
+        },
+        "q2": {
+          "question": "¿Puedo ver qué están haciendo otros administradores?",
+          "answer": "Sí, en el Dashboard hay un gráfico de actividad de administradores que muestra las contribuciones de todos durante el último año (similar a GitHub contributions). También en el Historial puedes filtrar por nombre de editor para ver todos los cambios hechos por una persona específica. Esto fomenta la transparencia y colaboración en el equipo.",
+          "example": ""
+        },
+        "q3": {
+          "question": "¿Qué pasa si dos admins editan la misma lección simultáneamente?",
+          "answer": "El sistema usa la regla 'último en guardar gana' (last-write-wins). Si dos admins abren la misma lección, ambos pueden editarla, pero quien guarde primero escribe sus cambios, y quien guarde después sobrescribirá esos cambios. Por eso es importante: 1) Coordinar con el equipo antes de editar lecciones populares, 2) Revisar el historial reciente antes de hacer cambios, 3) Guardar frecuentemente para no perder trabajo. Se planea añadir notificaciones de 'alguien más está editando esto' en el futuro.",
+          "example": ""
+        }
+      }
+    },
+    "tutorials": {
+      "difficulty": {
+        "beginner": "Básico",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzado"
+      },
+      "createLesson": {
+        "title": "Tutorial: Crear una Lección Completa",
+        "description": "Guía paso a paso para crear lecciones interactivas desde cero",
+        "step1": {
+          "title": "Acceder al Editor de Lecciones",
+          "description": "Desde el menú lateral, haz clic en 'Lecciones', luego en el botón verde 'Crear Nueva Lección' en la esquina superior derecha. Se abrirá el editor vacío listo para empezar."
+        },
+        "step2": {
+          "title": "Completar Metadatos Básicos",
+          "description": "Llena el código de lección (formato: aventura-saga-tema-lección, ej: 1-1-1-1), títulos en español e inglés, y descripciones breves de qué trata la lección. Estos campos son obligatorios y aparecerán en rojo si quedan vacíos."
+        },
+        "step3": {
+          "title": "Configurar Parámetros Educativos",
+          "description": "Establece la duración estimada en segundos (ej: 900 = 15 minutos), selecciona el age_rate apropiado (4-6, 7-9, 10-12, o 13+), y asigna puntos de recompensa (típicamente 50-200 según dificultad)."
+        },
+        "step4": {
+          "title": "Definir Ubicación en la Jerarquía",
+          "description": "Especifica los números de aventura, saga, tema, y lección. Esto determina dónde aparecerá la lección en la estructura curricular. Asegúrate de que estos números coincidan con el código de lección del paso 2."
+        },
+        "step5": {
+          "title": "Agregar el Primer Ejercicio",
+          "description": "Haz clic en el botón '+' en la línea de tiempo de ejercicios. Selecciona 'intro_narrative' como primer ejercicio (recomendado) para introducir el tema. Aparecerá en la lista lateral para editarlo."
+        },
+        "step6": {
+          "title": "Configurar Contenido del Ejercicio",
+          "description": "Selecciona el ejercicio recién creado en la lista lateral. Completa todos los campos requeridos: transcript (narración), character (personaje narrador), gesture (emoción), en español e inglés. Usa la vista bilingüe para trabajar ambos idiomas simultáneamente."
+        },
+        "step7": {
+          "title": "Agregar Ejercicios Interactivos",
+          "description": "Continúa agregando ejercicios con el botón '+'. Varía los tipos: multiple_choice, true_false, tap_action, etc. Cada tipo tiene campos específicos que se mostrarán en el editor. Procura una secuencia lógica: introducción → concepto → práctica → evaluación."
+        },
+        "step8": {
+          "title": "Revisar y Reordenar Ejercicios",
+          "description": "Arrastra los ejercicios en la línea de tiempo para cambiar su orden. La secuencia debe fluir naturalmente: primero contexto/historia, luego conceptos nuevos, después práctica, y finalmente refuerzo o evaluación."
+        },
+        "step9": {
+          "title": "Validar la Lección",
+          "description": "Haz clic en 'Validar' para verificar que todos los ejercicios cumplan los requisitos. El sistema te mostrará errores específicos si algo falta o está mal formateado. Corrige los errores hasta que la validación pase."
+        },
+        "step10": {
+          "title": "Guardar y Verificar",
+          "description": "Haz clic en 'Guardar Cambios'. Verás una confirmación de éxito. Verifica que la lección aparezca en la lista de Lecciones y que el historial registre la creación. ¡Listo! Tu primera lección está creada."
+        },
+        "tip": {
+          "title": "Consejo Profesional",
+          "description": "Para crear lecciones similares más rápido, usa el botón 'Duplicar' en una lección existente. Esto copia toda la estructura y contenido, permitiéndote solo modificar lo que sea diferente en lugar de empezar desde cero."
+        }
+      },
+      "editLesson": {
+        "title": "Tutorial: Editar Lección Existente",
+        "description": "Guía para modificar lecciones ya creadas de forma segura",
+        "step1": "Busca la lección en la lista usando los filtros de aventura, saga, tema, o el buscador de texto. Los filtros se aplican en tiempo real para encontrar rápidamente la lección correcta.",
+        "step2": "Revisa el historial reciente de la lección antes de editarla. Ve a 'Historial' y filtra por el ID de la lección para ver si alguien más la modificó recientemente. Esto evita sobrescribir cambios de otros admins.",
+        "step3": "Haz clic en el botón 'Editar' (ícono de lápiz) en la fila de la lección. Se abrirá el editor cargado con todos los datos actuales de la lección.",
+        "step4": "Realiza los cambios necesarios en metadatos (títulos, descripciones, duración, age_rate) o edita/agrega/elimina ejercicios. Los cambios se reflejan en el editor pero no se guardan hasta que hagas click en 'Guardar'.",
+        "step5": "Si modificaste ejercicios, usa 'Validar' para verificar que todo siga correcto. Esto es especialmente importante si editaste el JSON directamente.",
+        "step6": "Usa la vista previa para probar cómo se verá la lección modificada desde la perspectiva del estudiante. Verifica que las instrucciones sigan siendo claras y que las respuestas correctas sean las esperadas.",
+        "step7": "Haz clic en 'Guardar Cambios'. El sistema actualizará la lección y creará automáticamente un registro en el historial mostrando qué cambió, quién lo cambió, y cuándo.",
+        "step8": "Verifica en la lista de Lecciones que los cambios se reflejen correctamente. Si algo salió mal, puedes usar el historial para hacer rollback al estado anterior."
+      },
+      "manageUsers": {
+        "title": "Tutorial: Gestionar Usuarios y Permisos",
+        "description": "Guía para administrar permisos y roles de usuarios de forma segura",
+        "step1": "Accede a la sección 'Usuarios' desde el menú lateral. La página está protegida con un sistema de seguridad para prevenir cambios accidentales. Verás una pantalla de bloqueo.",
+        "step2": "Desbloquea el área restringida haciendo clic en 'Desbloquear Área Restringida'. Se te pedirá escribir la frase 'CONFIRMAR' exactamente. Esta medida de seguridad previene clics accidentales.",
+        "step3": "Una vez desbloqueado, verás dos secciones: 'Administradores' (usuarios con acceso completo al panel) y 'Otros Usuarios' (tutores, universales, niños). Usa el buscador para encontrar usuarios específicos por nombre, email o ID.",
+        "step4": "Para promover un usuario a administrador, busca el usuario en 'Otros Usuarios' y haz clic en 'Promover a Admin'. Aparecerá un diálogo de confirmación explicando que el usuario tendrá acceso completo.",
+        "step5": "Para revocar permisos de administrador, busca el usuario en 'Administradores' y haz clic en 'Revocar Admin'. El usuario volverá a su tipo anterior (tutor, universal, o niño) y perderá acceso al panel de administración.",
+        "step6": "Todos los cambios de permisos quedan registrados en el Historial con tu nombre como editor. Esto crea un registro de auditoría de quién dio/quitó permisos a quién y cuándo, manteniendo la responsabilidad y transparencia.",
+        "warning": {
+          "title": "⚠️ ADVERTENCIA IMPORTANTE",
+          "description": "Cambiar permisos de usuarios es una acción de seguridad crítica. Solo promueve a admin a personas que: 1) Tienen conocimientos técnicos del sistema, 2) Han sido autorizadas por el equipo de liderazgo, 3) Entienden la responsabilidad de tener acceso completo. Los administradores pueden crear, modificar y eliminar TODO el contenido educativo, así como promocionar a otros usuarios. Usa este poder con sabiduría."
+        }
+      },
+      "rollback": {
+        "title": "Tutorial: Revertir Cambios con Historial",
+        "description": "Guía para usar el historial y deshacer modificaciones no deseadas",
+        "step1": "Accede a la sección 'Historial' desde el menú lateral. Verás una lista cronológica de todos los cambios hechos en el sistema, con los más recientes primero.",
+        "step2": "Usa los filtros para encontrar el cambio específico que deseas revertir. Puedes filtrar por: tipo de entidad (lesson/character/user), acción (create/update/delete), nombre del editor, o rango de fechas.",
+        "step3": "Encuentra la entrada del cambio problemático y expande los detalles haciendo clic en la fila. Verás: quién hizo el cambio, cuándo, qué campo modificó, el valor anterior (old value), y el valor nuevo (new value).",
+        "step4": "Revisa cuidadosamente que este es el cambio que quieres revertir. Fíjate especialmente en el 'valor anterior' para confirmar que es el estado al que deseas volver.",
+        "step5": "Haz clic en el botón 'Restaurar' (ícono de reloj). Aparecerá un diálogo de confirmación mostrando el cambio que se revertirá.",
+        "step6": "Confirma la acción. El sistema automáticamente restaurará el campo al valor anterior. Si había múltiples campos modificados en esa entrada, solo se revertirá el campo específico de esa fila.",
+        "step7": "Verifica que el rollback funcionó correctamente. El sistema creará una NUEVA entrada en el historial registrando que hiciste un rollback. Puedes ir a la entidad afectada (lección, personaje, usuario) para confirmar que el valor se restauró correctamente."
+      }
+    },
+    "steps": {
+      "title": "Flujo de Trabajo Recomendado",
+      "subtitle": "Sigue estos pasos para un flujo eficiente",
+      "workflow": {
+        "step1": {
+          "title": "Planificación y Diseño Pedagógico",
+          "description": "Define objetivos de aprendizaje claros (¿qué conceptos financieros aprenderá el estudiante?), establece el rango de edad objetivo, y planifica la secuencia de ejercicios. Revisa lecciones similares en el sistema para mantener consistencia en estructura, complejidad y estilo narrativo. Prepara los recursos necesarios: textos en ambos idiomas, imágenes si son necesarias, y ejemplos concretos.",
+          "actionLabel": "Acción clave:",
+          "action": "Documenta tus objetivos de aprendizaje antes de crear la lección. Pregúntate: '¿Qué debe poder hacer o explicar un niño después de completar esta lección?'"
+        },
+        "step2": {
+          "title": "Creación de Contenido Bilingüe",
+          "description": "Crea la lección en el editor completando primero los metadatos (código, títulos, descripciones en ES/EN, duración, age_rate). Luego agrega ejercicios uno por uno, empezando con intro_narrative para contextualizar el tema. Varía los tipos de ejercicios para mantener el interés: alterna entre narrativa, preguntas, y actividades interactivas. Asegúrate de que el contenido en español e inglés sea equivalente en calidad y valor educativo, no solo traducciones literales.",
+          "actionLabel": "Acción clave:",
+          "action": "Usa la vista bilingüe del editor para trabajar ambos idiomas simultáneamente. Esto ayuda a mantener la paridad de contenido y detectar omisiones."
+        },
+        "step3": {
+          "title": "Validación Técnica y Pedagógica",
+          "description": "Usa el botón 'Validar' para verificar que todos los ejercicios cumplan los requisitos técnicos (campos requeridos completos, formato correcto, opciones con al menos 2 elementos, etc.). Después, realiza una validación pedagógica manual: lee cada ejercicio desde la perspectiva del estudiante, verifica que las instrucciones sean claras, que las preguntas sean apropiadas para el age_rate, y que el feedback (correcto/incorrecto) sea constructivo y educativo.",
+          "actionLabel": "Acción clave:",
+          "action": "Prueba la lección en modo preview simulando ser un estudiante de la edad objetivo. Si algo te confunde o no tiene sentido, el estudiante también se confundirá."
+        },
+        "step4": {
+          "title": "Publicación y Verificación",
+          "description": "Una vez que la lección pase la validación técnica y estés satisfecho con la calidad pedagógica, haz clic en 'Guardar Cambios'. El sistema la publicará inmediatamente (disponible para estudiantes). Después de guardar, verifica que: 1) La lección aparezca correctamente en la lista de Lecciones, 2) El historial registre la creación con tu nombre, 3) Los filtros de aventura/saga/tema funcionen para encontrarla. Si detectas errores post-publicación, edítala inmediatamente.",
+          "actionLabel": "Acción clave:",
+          "action": "Haz una prueba rápida en la plataforma del estudiante para confirmar que todo se vea y funcione como esperabas antes de considerar la publicación completa."
+        },
+        "step5": {
+          "title": "Monitoreo, Feedback y Mejora Continua",
+          "description": "Después de publicar, monitorea el uso de la lección: ¿los estudiantes la completan? ¿se quedan atascados en algún ejercicio específico? Recopila feedback de tutores y estudiantes. Usa el historial para hacer ajustes incrementales: si un ejercicio confunde a muchos estudiantes, mejora las instrucciones; si la lección es muy corta o muy larga, ajusta la duración y cantidad de ejercicios. La mejora continua basada en datos reales es clave para contenido educativo de alta calidad.",
+          "actionLabel": "Acción clave:",
+          "action": "Establece un calendario de revisión trimestral para tus lecciones más usadas. Actualiza contenido desactualizado, mejora ejercicios problemáticos, y añade nuevos conceptos cuando sea relevante."
+        }
+      }
+    },
+    "troubleshooting": {
+      "title": "Solución de Problemas Comunes",
+      "subtitle": "Diagnóstico y solución de issues técnicos frecuentes",
+      "issue1": {
+        "problem": "La lección no se guarda y no veo ningún mensaje de error",
+        "solution": {
+          "title": "Solución:",
+          "description": "Este problema usualmente ocurre por un problema de conexión o sesión expirada. Sigue estos pasos:",
+          "step1": "Abre la consola del navegador (F12 o Cmd+Option+I en Mac) y ve a la pestaña 'Network'. Intenta guardar de nuevo y verifica si hay errores HTTP 401, 403, o 500.",
+          "step2": "Si ves un error 401 (no autorizado), tu sesión expiró. Cierra sesión y vuelve a entrar con tus credenciales.",
+          "step3": "Si ves un error de red o 'Failed to fetch', verifica tu conexión a internet. Espera a que la conexión se estabilice antes de intentar guardar.",
+          "step4": "Si el problema persiste, copia todo el contenido de la lección (JSON de ejercicios y metadatos) a un archivo local para no perder tu trabajo.",
+          "step5": "Recarga la página (Ctrl+R o Cmd+R) y vuelve a entrar. Pega el contenido guardado y prueba guardar nuevamente."
+        }
+      },
+      "issue2": {
+        "problem": "Los ejercicios se muestran en el orden incorrecto después de guardar",
+        "solution": {
+          "title": "Solución:",
+          "description": "El orden de los ejercicios se determina por su posición en el array de exercises. Si el orden cambia inesperadamente:",
+          "step1": "Verifica que no hayas arrastrado ejercicios accidentalmente antes de guardar. El sistema guarda el orden exacto que ves en la línea de tiempo.",
+          "step2": "Si guardaste y el orden está mal, edita la lección nuevamente, reordena los ejercicios arrastrándolos a la posición correcta, y guarda.",
+          "step3": "Usa el historial para verificar si alguien más editó la lección entre tu edición y cuando notaste el problema.",
+          "step4": "Si el problema se repite, reporta el bug al equipo técnico con detalles: qué navegador usas, qué ejercicios reordenaste, y cuál era el orden esperado vs. el orden resultante.",
+          "step5": ""
+        }
+      },
+      "issue3": {
+        "problem": "El audio de un personaje no se reproduce o da error 404",
+        "solution": {
+          "title": "Solución:",
+          "description": "Problemas de audio usualmente se deben a archivos faltantes o rutas incorrectas:",
+          "step1": "Verifica en la sección Audio que el segmento de audio existe y está asociado al lesson_id y character_id correctos.",
+          "step2": "Haz clic en 'Reproducir' en la biblioteca de audio para verificar que el archivo en sí funcione. Si da error, el archivo puede estar corrupto o eliminado.",
+          "step3": "Si el audio fue generado por text-to-speech, verifica que el texto de entrada fuera válido (sin caracteres especiales extraños o demasiado largo).",
+          "step4": "Si subiste un archivo manualmente, asegúrate de que: 1) El formato sea MP3 o WAV, 2) El tamaño no exceda 10MB, 3) El archivo no esté corrupto.",
+          "step5": "Como último recurso, elimina el segmento de audio problemático y créalo nuevamente desde cero."
+        }
+      },
+      "issue4": {
+        "problem": "Al hacer rollback, otros cambios también se revierten",
+        "solution": {
+          "title": "Solución:",
+          "description": "El rollback es por campo individual, NO por lección completa. Entender esto es clave:",
+          "step1": "Cuando haces rollback de una entrada del historial, solo se revierte el campo específico de esa fila (ej: title_es, duration, etc.).",
+          "step2": "Si una lección tuvo múltiples campos cambiados en diferentes momentos, debes hacer rollback de cada campo individualmente si quieres revertirlos todos.",
+          "step3": "Usa los filtros del historial por lesson_id para ver TODOS los cambios de esa lección en orden cronológico. Así puedes decidir qué campos revertir.",
+          "step4": "Si necesitas revertir una lección completa a un estado anterior específico, es más eficiente usar 'Duplicar' en una versión anterior (si existe) o editar manualmente todos los campos.",
+          "step5": "Reporta al equipo técnico si necesitas funcionalidad de 'revertir lección completa a timestamp X' para futuras versiones del sistema."
+        }
+      },
+      "issue5": {
+        "problem": "No puedo promover un usuario a admin, el botón no funciona",
+        "solution": {
+          "title": "Solución:",
+          "description": "La gestión de usuarios tiene medidas de seguridad que pueden causar confusión:",
+          "step1": "Verifica que hayas desbloqueado el área restringida escribiendo 'CONFIRMAR' en el diálogo. Sin desbloquear, los botones de promover/degradar no funcionarán.",
+          "step2": "Asegúrate de que el usuario esté en la sección 'Otros Usuarios'. No puedes promover a alguien que ya es admin.",
+          "step3": "Verifica que tu propia sesión de admin esté activa. Si tu sesión expiró, no tendrás permisos para modificar otros usuarios.",
+          "step4": "Revisa la consola del navegador (F12) para ver si hay errores JavaScript o de API bloqueando la acción.",
+          "step5": "Si todo lo anterior está correcto y sigue sin funcionar, contacta al equipo técnico. Puede haber un problema de permisos a nivel de base de datos."
+        }
+      },
+      "issue6": {
+        "problem": "Los filtros de lecciones no muestran resultados que sé que existen",
+        "solution": {
+          "title": "Solución:",
+          "description": "Problemas de filtrado pueden deberse a datos inconsistentes o bugs de interfaz:",
+          "step1": "Haz clic en 'Limpiar Filtros' para resetear todos los filtros y ver todas las lecciones. Luego aplica filtros uno por uno para identificar cuál causa el problema.",
+          "step2": "Verifica que los valores de aventura/saga/tema de la lección que buscas coincidan exactamente con los filtros. Un error de tipeo en los metadatos causará que no aparezca.",
+          "step3": "Usa el buscador de texto en lugar de los dropdowns. Busca por código de lección (ej: 1-1-1-1) o por título.",
+          "step4": "Recarga la página para refrescar los datos. A veces los filtros se dessincronizan con el estado del servidor.",
+          "step5": "Si una lección específica nunca aparece sin importar qué filtros uses, verifica en el historial si fue eliminada accidentalmente o si tiene valores nulos en los campos de jerarquía."
+        }
+      }
+    },
+    "support": {
+      "title": "Valores del Equipo Admin",
+      "message": "Como parte del equipo de administración de LittleFounders, tu trabajo contribuye directamente a la educación financiera de la próxima generación. Cada decisión cuenta.",
+      "responsibility": "Responsabilidad",
+      "quality": "Calidad",
+      "innovation": "Innovación",
+      "impact": "Impacto",
+      "thankyou": "¡Gracias por tu dedicación y compromiso con la educación financiera de miles de niños! Tu trabajo como administrador tiene un impacto real y duradero en sus vidas."
     }
   }
 }

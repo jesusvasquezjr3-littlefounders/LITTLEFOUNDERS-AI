@@ -170,7 +170,10 @@ export function useRollback() {
       queryClient.invalidateQueries({ queryKey: ['admin-entity-history'] });
       // Also invalidate related admin data that might have been affected
       queryClient.invalidateQueries({ queryKey: ['admin-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-lesson'] });
       queryClient.invalidateQueries({ queryKey: ['admin-characters'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-character'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     },
   });
 }

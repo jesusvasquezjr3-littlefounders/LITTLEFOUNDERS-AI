@@ -74,12 +74,16 @@ def rollback_edit(db: Session, history_entry_id: int, admin_user_id: int):
             current_value[key] = getattr(entity, key, None)
 
     # Aplicar restauración
-    if entry.field_changed and entry.field_changed in entry.previous_value:
-        setattr(entity, entry.field_changed, entry.previous_value[entry.field_changed])
-    else:
-        for key, val in entry.previous_value.items():
-            if hasattr(entity, key):
-                setattr(entity, key, val)
+    if isinstance(entry.previous_value, dict):
+        if entry.field_changed and entry.field_changed in entry.previous_value:
+            setattr(entity, entry.field_changed, entry.previous_value[entry.field_changed])
+        else:
+            for key, val in entry.previous_value.items():
+                if hasattr(entity, key):
+                    setattr(entity, key, val)
+    elif entry.field_changed:
+        # Si previous_value no es dict, asumimos que es el valor directo del campo
+        setattr(entity, entry.field_changed, entry.previous_value)
 
     # Registrar rollback en historial
     record_edit(

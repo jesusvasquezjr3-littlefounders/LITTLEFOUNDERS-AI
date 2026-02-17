@@ -51,6 +51,7 @@ import AdminCharacters from "@/pages/admin/AdminCharacters";
 import AdminAudio from "@/pages/admin/AdminAudio";
 import AdminHistory from "@/pages/admin/AdminHistory";
 import AdminUsers from "@/pages/admin/AdminUsers";
+import { AdminHelp } from "@/pages/admin/AdminHelp";
 
 const queryClient = new QueryClient();
 
@@ -187,6 +188,11 @@ const App = () => (
                 <Route path="/admin/users" element={
                   <AdminProtectedRoute>
                     <AdminUsers />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/help" element={
+                  <AdminProtectedRoute>
+                    <AdminHelp />
                   </AdminProtectedRoute>
                 } />
 

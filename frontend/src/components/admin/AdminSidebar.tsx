@@ -8,6 +8,7 @@ import {
   Headphones,
   History,
   Zap,
+  HelpCircle,
   Menu,
   X,
   LogOut,
@@ -58,6 +59,12 @@ const adminMenuItems = [
     icon: Zap,
     id: "nav-users",
   },
+  {
+    title: "Preguntas",
+    url: "/admin/help",
+    icon: HelpCircle,
+    id: "nav-help",
+  },
 ];
 
 export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
@@ -74,6 +81,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
     { ...adminMenuItems[3], title: t('sidebar.audio') },
     { ...adminMenuItems[4], title: t('sidebar.history') },
     { ...adminMenuItems[5], title: t('sidebar.users') },
+    { ...adminMenuItems[6], title: t('sidebar.help') },
   ];
 
   const handleLogout = () => {

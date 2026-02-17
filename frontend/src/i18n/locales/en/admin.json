@@ -7,6 +7,7 @@
     "audio": "Audio",
     "history": "History",
     "users": "Users",
+    "help": "Help",
     "logout": "Log Out"
   },
   "layout": {
@@ -274,7 +275,19 @@
     "noOtherUsersFound": "No other users found",
     "adminDescription": "Full access to the admin panel. Can create, edit, delete content and manage users.",
     "tutorDescription": "Can access the tutor dashboard and monitor children's progress.",
-    "universalDescription": "Account with universal access to the learning platform."
+    "universalDescription": "Account with universal access to the learning platform.",
+    "dangerZone": "DANGER ZONE",
+    "dangerZoneTitle": "Restricted Access Area",
+    "dangerZoneDescription": "High Risk: Accessing this panel allows granting sensitive permissions to other users. Ensure you understand the security implications.",
+    "securityLock": {
+      "title": "Restricted Access",
+      "description": "This area is locked to prevent accidental unauthorized changes.",
+      "unlockButton": "Unlock Restricted Area",
+      "unlockTitle": "Security Verification",
+      "unlockDescription": "To access this confidential area, please type the confirmation phrase below.",
+      "placeholder": "Type '{{phrase}}' to confirm",
+      "unlockPhrase": "CONFIRM"
+    }
   },
   "common": {
     "loading": "Loading...",
@@ -491,6 +504,455 @@
       "invalid_statement": "True/false statement is invalid",
       "validation_errors_found": "Found {{count}} validation errors",
       "fix_errors_before_saving": "Please fix errors before saving"
+    }
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Documentation, tutorials and support for administrators",
+    "welcome": {
+      "title": "Welcome to LittleFounders Admin Panel!",
+      "message": "As an administrator, you have access to all the necessary tools to manage educational content and ensure an exceptional learning experience for our students.",
+      "responsibility": "Your work is of great value. Every lesson, every character and every decision you make directly impacts the financial education of thousands of children. Thank you for your dedication!"
+    },
+    "tabs": {
+      "documentation": "Documentation",
+      "faq": "FAQ",
+      "tutorials": "Tutorials",
+      "steps": "Step by Step",
+      "troubleshooting": "Troubleshooting"
+    },
+    "docs": {
+      "quickStart": {
+        "title": "Quick Start Guide",
+        "description": "Get started with the admin panel in 5 simple steps",
+        "step1": "Explore the Dashboard to see global content metrics: total lessons, exercises, characters, and audio segments. This will be your starting point each day.",
+        "step2": "Visit the Lessons section to familiarize yourself with existing content. Use filters to navigate through adventures, sagas, and topics. Try the editor by opening an existing lesson.",
+        "step3": "Review the Edit History to understand how every change is tracked in the system. Each modification is recorded with the editor, date, and previous/new values.",
+        "step4": "Check the Help section (where you are now) whenever you have questions. Here you'll find detailed documentation, step-by-step tutorials, and answers to frequently asked questions.",
+        "step5": "When you're ready to create content, start with a simple lesson. Use the 'Duplicate' button on existing lessons as a template, modify the content, validate, and save. It's that simple!"
+      },
+      "overview": {
+        "title": "System Overview",
+        "description": "Learn about the main features of the admin panel"
+      },
+      "modules": {
+        "lessons": {
+          "title": "Lesson Management",
+          "description": "Create, edit and organize educational lessons with interactive exercises in Spanish and English.",
+          "details": "The lessons module is the heart of the system. Here you can create new lessons from scratch, edit existing lessons, duplicate them as templates, and delete them when necessary. Each lesson contains metadata (code, bilingual titles, descriptions, duration, age range) and a collection of interactive exercises from over 30 different types. The system automatically validates that content is complete in both languages before saving."
+        },
+        "characters": {
+          "title": "Narrator Characters",
+          "description": "Manage characters (Liruf, Dina, Dr. Rho, Zara Vex) and their animated gestures.",
+          "details": "Characters are the narrators who guide students through lessons. Each character has multiple gestures (happy, thoughtful, surprised, etc.) that can be used to express emotions during narration. In this module you can visualize all characters, test their animations, and verify that gestures work correctly before using them in lessons."
+        },
+        "audio": {
+          "title": "Audio Library",
+          "description": "Upload and generate audio for lessons with character voices.",
+          "details": "The audio system allows two ways to create content: upload pre-recorded audio files or automatically generate audio from text using text-to-speech. Each audio segment is linked to a specific lesson, narrator character, and emotion. You can filter, play, and manage all audio segments from this centralized interface."
+        },
+        "users": {
+          "title": "User Administration",
+          "description": "Manage permissions and promote users to administrators.",
+          "details": "The system has four user types: Admin (full panel access), Tutor (child monitoring), Universal (general access), and Child (students). In this module you can see all registered users, filter them by type, and modify permissions. The 'Promote to Admin' and 'Revoke Admin' actions are protected with a security system to prevent accidental changes."
+        }
+      },
+      "bestPractices": {
+        "title": "Best Practices",
+        "subtitle": "Key recommendations for managing high-quality content",
+        "practice1": {
+          "title": "Validate Before Saving",
+          "description": "Always use the 'Validate' button before saving a lesson. The system will verify that all exercises have required fields and that content is in the correct format, avoiding production errors that affect students."
+        },
+        "practice2": {
+          "title": "Use History Strategically",
+          "description": "History is your safety net. Review recent changes before making important modifications and use rollback when necessary. Each change is recorded with date, editor, and previous values, allowing you to revert errors with one click."
+        },
+        "practice3": {
+          "title": "Maintain Bilingual Consistency",
+          "description": "Content should be equally valuable in Spanish and English. Don't translate literally; adapt examples, expressions, and cultural contexts so both languages offer the same educational quality. Students deserve the best experience regardless of their language."
+        },
+        "practice4": {
+          "title": "Test in Preview Before Publishing",
+          "description": "Use preview to experience the lesson from the student's perspective. Verify that instructions are clear, exercises flow naturally, and correct/incorrect answers have appropriate feedback."
+        },
+        "practice5": {
+          "title": "Document Important Changes",
+          "description": "When making significant modifications, add notes in description fields explaining what you changed and why. This helps other administrators (and your future self) understand the context of decisions."
+        },
+        "practice6": {
+          "title": "Duplicate Before Experimenting",
+          "description": "If you want to try radical changes to an existing lesson, duplicate it first. This allows you to experiment freely without risk of losing the original content. Once the new version is ready, you can decide whether to replace or keep both."
+        },
+        "practice7": {
+          "title": "Organize with Consistent Codes",
+          "description": "Use the lesson code system (adventure-saga-topic-lesson) consistently. For example, 1-2-3-4 means Adventure 1, Saga 2, Topic 3, Lesson 4. This makes it easy to find and organize content as the catalog grows."
+        },
+        "practice8": {
+          "title": "Balance Difficulty and Age Rate",
+          "description": "Respect age ranges when designing exercises. A lesson for 4-6 years should have simple instructions, clear images, and few options. For 10-12 years you can introduce more complex concepts and exercises requiring critical thinking."
+        }
+      },
+      "tips": {
+        "title": "Tips & Tricks",
+        "tip1": {
+          "title": "Keyboard shortcuts",
+          "description": "Use Ctrl+S (Cmd+S on Mac) to save quickly while editing lessons. Ctrl+Z undoes changes in text fields."
+        },
+        "tip2": {
+          "title": "Multiple filters",
+          "description": "Combine adventure, saga, and topic filters to find specific lessons quickly. Filters apply in real-time without needing to click 'Search'."
+        },
+        "tip3": {
+          "title": "Quick reordering",
+          "description": "In the lesson editor, you can drag exercises to reorder them instead of using up/down arrows. This is much faster when you have many exercises."
+        },
+        "tip4": {
+          "title": "History search",
+          "description": "Use the history search to find who made a specific change or when a lesson was modified. You can search by editor, entity ID, or action type."
+        },
+        "tip5": {
+          "title": "Side-by-side bilingual view",
+          "description": "Activate bilingual view in the editor to see and edit content in Spanish and English simultaneously. This helps maintain consistency between languages and detect missing translations."
+        }
+      },
+      "glossary": {
+        "title": "Glossary of Terms",
+        "subtitle": "Definitions of key system concepts",
+        "term1": {
+          "name": "Lesson",
+          "definition": "Complete educational unit that includes metadata and a sequence of interactive exercises. Each lesson belongs to a specific adventure, saga, and topic."
+        },
+        "term2": {
+          "name": "Exercise",
+          "definition": "Individual interactive activity within a lesson. There are over 30 different types: multiple choice, true/false, classification, simulators, etc."
+        },
+        "term3": {
+          "name": "Age Rate",
+          "definition": "Recommended age range for a lesson. Options: 4-6 years (Preschool), 7-9 (Early Elementary), 10-12 (Advanced Elementary), 13+ (Teens)."
+        },
+        "term4": {
+          "name": "Lesson Code",
+          "definition": "Unique identifier in adventure-saga-topic-lesson format (e.g., 1-2-3-4). Facilitates organization and search of content in the system."
+        },
+        "term5": {
+          "name": "Narrator Character",
+          "definition": "Animated avatar that guides the student through lessons. Liruf (optimistic leader), Dina (analytical), Dr. Rho (wise mentor), Zara Vex (innovator)."
+        },
+        "term6": {
+          "name": "Gesture",
+          "definition": "Facial or body expression of a character (happy, thoughtful, surprised, etc.) used to convey emotions during narration."
+        },
+        "term7": {
+          "name": "Edit History",
+          "definition": "Automatic log of all changes made in the system. Includes who made the change, when, what was modified, and previous/new values."
+        },
+        "term8": {
+          "name": "Rollback",
+          "definition": "Action to revert a change using history. Automatically restores the previous value of a field or entity, undoing unwanted modifications."
+        },
+        "term9": {
+          "name": "Validation",
+          "definition": "Automatic verification process that ensures a lesson meets all requirements before saving (required fields complete, correct format, etc.)."
+        },
+        "term10": {
+          "name": "Bilingual Content",
+          "definition": "Text or audio available in both Spanish and English. LittleFounders requires all educational content to be bilingual to serve a diverse audience."
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Answers to the most common questions",
+      "categories": {
+        "lessons": "Lesson Management",
+        "technical": "Technical Issues",
+        "general": "General Questions"
+      },
+      "lessons": {
+        "q1": {
+          "question": "How to create a new lesson from scratch?",
+          "answer": "Go to Lessons > Create New Lesson. Fill in the metadata (lesson code, ES/EN titles, descriptions, duration, age_rate, points) and add exercises using the '+' button. Select the exercise type and complete content in both languages. Don't forget to validate before saving.",
+          "example": "Example code: 1-1-1-1 (Adventure 1, Saga 1, Topic 1, Lesson 1)"
+        },
+        "q2": {
+          "question": "What is age_rate and how to choose the correct one?",
+          "answer": "Age_rate is the minimum recommended age range for the lesson. Choose based on content complexity: 4-6 years (very basic concepts, large images, simple instructions), 7-9 years (reading introduction, simple operations), 10-12 years (critical thinking, multi-step problems), 13+ years (abstract concepts, advanced finance).",
+          "example": ""
+        },
+        "q3": {
+          "question": "Can I recover a deleted lesson?",
+          "answer": "Not directly from the system. Once deleted, the lesson is removed from the database. That's why we recommend: 1) Use 'Duplicate' before making drastic changes, 2) Review history prior to deletion to recreate content if absolutely necessary, 3) Be very careful with the delete button.",
+          "example": ""
+        },
+        "q4": {
+          "question": "How many exercises should a lesson have?",
+          "answer": "There's no technical limit, but pedagogical recommendation is: 5-8 exercises for 4-6 year lessons (maintain short attention), 8-12 exercises for 7-9 years, 10-15 exercises for 10-12 years, and up to 20 exercises for 13+ years. Total duration should align with age_rate and 'duration' field.",
+          "example": "Lesson for 7-9 years, 15 minute duration = ~10 varied exercises"
+        },
+        "q5": {
+          "question": "How do I know which exercise type to use?",
+          "answer": "Choose according to learning objective: Multiple Choice (basic concepts, recall information), True/False (verify understanding), Classification (categorize concepts), Sequencing (logical order), Shop Sim (shopping practice), Budget Builder (financial planning). Vary types within a lesson to maintain student interest.",
+          "example": "To teach 'coin types': use intro_narrative + tap_action + coin_counter"
+        }
+      },
+      "technical": {
+        "q1": {
+          "question": "Why do I get a 422 error when saving a lesson?",
+          "answer": "Error 422 means backend validation issues. The system will show exactly what's missing or incorrect. Common causes: empty required fields (code, title_es, title_en), exercises without 'type' or 'content', invalid JSON format in exercise content, or empty options arrays in multiple choice.",
+          "example": ""
+        },
+        "q2": {
+          "question": "How does the history system work exactly?",
+          "answer": "Every time you save changes to a lesson, character, or user, the system automatically creates a record in the 'admin_history' table. This record captures: 1) Your email (editor), 2) Exact timestamp, 3) Type of modified entity (lesson/character/user), 4) Entity ID, 5) Action (create/update/delete), 6) Modified field, 7) Previous and new value. You can view and filter this complete history in the History section.",
+          "example": ""
+        },
+        "q3": {
+          "question": "What to do if the editor doesn't save my changes?",
+          "answer": "Diagnostic steps: 1) Verify your session hasn't expired (log out and back in), 2) Ensure all required fields are complete (marked in red), 3) Check browser console (F12) for JavaScript errors, 4) If you edited JSON manually, validate the format, 5) Try saving without the problematic field to identify what causes the error. If it persists, contact the technical team.",
+          "example": ""
+        },
+        "q4": {
+          "question": "Can I edit exercise JSON directly?",
+          "answer": "Yes, the editor shows the complete exercise JSON for advanced users. CAUTION: Editing JSON requires technical knowledge. A syntax error (missing comma, unclosed quote) will prevent saving. We recommend: 1) Copy JSON to external editor before modifying, 2) Validate JSON at jsonlint.com before saving, 3) Make small incremental changes, 4) Use visual interface when possible.",
+          "example": ""
+        },
+        "q5": {
+          "question": "How can I backup my lessons?",
+          "answer": "Currently there's no automatic backup function, but you can: 1) Use 'Duplicate' to create copies of important lessons, 2) Export content by copying the editor's JSON to a local file, 3) The system maintains change history that serves as partial backup. Mass lesson export/import is planned for future versions.",
+          "example": ""
+        }
+      },
+      "general": {
+        "q1": {
+          "question": "What's the difference between Adventure, Saga, and Topic?",
+          "answer": "They are hierarchical levels of content organization. ADVENTURE is the highest level (e.g., 'Money Fundamentals'), contains multiple SAGAS (e.g., 'History of Money', 'Payment Forms'). Each saga contains TOPICS (e.g., 'Coins and Bills', 'Credit Cards'). Finally, each topic contains individual LESSONS. This structure helps organize hundreds of lessons logically.",
+          "example": ""
+        },
+        "q2": {
+          "question": "Can I see what other administrators are doing?",
+          "answer": "Yes, the Dashboard has an admin activity graph showing all contributions over the last year (similar to GitHub contributions). Also in History you can filter by editor name to see all changes made by a specific person. This fosters transparency and team collaboration.",
+          "example": ""
+        },
+        "q3": {
+          "question": "What happens if two admins edit the same lesson simultaneously?",
+          "answer": "The system uses 'last-write-wins' rule. If two admins open the same lesson, both can edit it, but whoever saves first writes their changes, and whoever saves second will overwrite those changes. That's why it's important to: 1) Coordinate with team before editing popular lessons, 2) Review recent history before making changes, 3) Save frequently to not lose work. 'Someone else is editing this' notifications are planned for the future.",
+          "example": ""
+        }
+      }
+    },
+    "tutorials": {
+      "difficulty": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "createLesson": {
+        "title": "Tutorial: Create a Complete Lesson",
+        "description": "Step-by-step guide to create interactive lessons from scratch",
+        "step1": {
+          "title": "Access the Lesson Editor",
+          "description": "From the sidebar menu, click 'Lessons', then the green 'Create New Lesson' button in the top right corner. The empty editor will open ready to start."
+        },
+        "step2": {
+          "title": "Complete Basic Metadata",
+          "description": "Fill in the lesson code (format: adventure-saga-topic-lesson, e.g., 1-1-1-1), titles in Spanish and English, and brief descriptions of what the lesson is about. These fields are required and will appear in red if left empty."
+        },
+        "step3": {
+          "title": "Configure Educational Parameters",
+          "description": "Set estimated duration in seconds (e.g., 900 = 15 minutes), select appropriate age_rate (4-6, 7-9, 10-12, or 13+), and assign reward points (typically 50-200 based on difficulty)."
+        },
+        "step4": {
+          "title": "Define Position in Hierarchy",
+          "description": "Specify the adventure, saga, topic, and lesson numbers. This determines where the lesson will appear in the curricular structure. Ensure these numbers match the lesson code from step 2."
+        },
+        "step5": {
+          "title": "Add the First Exercise",
+          "description": "Click the '+' button on the exercise timeline. Select 'intro_narrative' as the first exercise (recommended) to introduce the topic. It will appear in the sidebar list for editing."
+        },
+        "step6": {
+          "title": "Configure Exercise Content",
+          "description": "Select the newly created exercise in the sidebar list. Complete all required fields: transcript (narration), character (narrator), gesture (emotion), in Spanish and English. Use bilingual view to work both languages simultaneously."
+        },
+        "step7": {
+          "title": "Add Interactive Exercises",
+          "description": "Continue adding exercises with the '+' button. Vary types: multiple_choice, true_false, tap_action, etc. Each type has specific fields that will show in the editor. Aim for a logical sequence: introduction → concept → practice → evaluation."
+        },
+        "step8": {
+          "title": "Review and Reorder Exercises",
+          "description": "Drag exercises on the timeline to change their order. The sequence should flow naturally: first context/story, then new concepts, then practice, and finally reinforcement or evaluation."
+        },
+        "step9": {
+          "title": "Validate the Lesson",
+          "description": "Click 'Validate' to verify all exercises meet requirements. The system will show specific errors if something is missing or poorly formatted. Fix errors until validation passes."
+        },
+        "step10": {
+          "title": "Save and Verify",
+          "description": "Click 'Save Changes'. You'll see a success confirmation. Verify the lesson appears in the Lessons list and history records the creation. Done! Your first lesson is created."
+        },
+        "tip": {
+          "title": "Pro Tip",
+          "description": "To create similar lessons faster, use the 'Duplicate' button on an existing lesson. This copies the entire structure and content, letting you only modify what's different instead of starting from scratch."
+        }
+      },
+      "editLesson": {
+        "title": "Tutorial: Edit Existing Lesson",
+        "description": "Guide to safely modify already created lessons",
+        "step1": "Find the lesson in the list using adventure, saga, topic filters, or the text search. Filters apply in real-time to quickly find the correct lesson.",
+        "step2": "Review the lesson's recent history before editing. Go to 'History' and filter by the lesson ID to see if someone else modified it recently. This prevents overwriting other admins' changes.",
+        "step3": "Click the 'Edit' button (pencil icon) in the lesson row. The editor will open loaded with all the lesson's current data.",
+        "step4": "Make necessary changes to metadata (titles, descriptions, duration, age_rate) or edit/add/delete exercises. Changes are reflected in the editor but not saved until you click 'Save'.",
+        "step5": "If you modified exercises, use 'Validate' to verify everything is still correct. This is especially important if you edited JSON directly.",
+        "step6": "Use preview to test how the modified lesson will look from the student's perspective. Verify instructions are still clear and correct answers are as expected.",
+        "step7": "Click 'Save Changes'. The system will update the lesson and automatically create a history record showing what changed, who changed it, and when.",
+        "step8": "Verify in the Lessons list that changes are correctly reflected. If something went wrong, you can use history to rollback to the previous state."
+      },
+      "manageUsers": {
+        "title": "Tutorial: Manage Users and Permissions",
+        "description": "Guide to safely administer user permissions and roles",
+        "step1": "Access the 'Users' section from the sidebar menu. The page is protected with a security system to prevent accidental changes. You'll see a lock screen.",
+        "step2": "Unlock the restricted area by clicking 'Unlock Restricted Area'. You'll be asked to type the phrase 'CONFIRMAR' exactly. This security measure prevents accidental clicks.",
+        "step3": "Once unlocked, you'll see two sections: 'Administrators' (users with full panel access) and 'Other Users' (tutors, universal, children). Use search to find specific users by name, email, or ID.",
+        "step4": "To promote a user to administrator, find the user in 'Other Users' and click 'Promote to Admin'. A confirmation dialog will appear explaining the user will have full access.",
+        "step5": "To revoke administrator permissions, find the user in 'Administrators' and click 'Revoke Admin'. The user will return to their previous type (tutor, universal, or child) and lose admin panel access.",
+        "step6": "All permission changes are recorded in History with your name as editor. This creates an audit trail of who granted/revoked permissions to whom and when, maintaining accountability and transparency.",
+        "warning": {
+          "title": "⚠️ IMPORTANT WARNING",
+          "description": "Changing user permissions is a critical security action. Only promote to admin people who: 1) Have technical knowledge of the system, 2) Have been authorized by the leadership team, 3) Understand the responsibility of having full access. Administrators can create, modify, and delete ALL educational content, as well as promote other users. Use this power wisely."
+        }
+      },
+      "rollback": {
+        "title": "Tutorial: Revert Changes with History",
+        "description": "Guide to use history and undo unwanted modifications",
+        "step1": "Access the 'History' section from the sidebar menu. You'll see a chronological list of all changes made in the system, with most recent first.",
+        "step2": "Use filters to find the specific change you want to revert. You can filter by: entity type (lesson/character/user), action (create/update/delete), editor name, or date range.",
+        "step3": "Find the problematic change entry and expand details by clicking the row. You'll see: who made the change, when, which field was modified, old value, and new value.",
+        "step4": "Carefully review that this is the change you want to revert. Pay special attention to the 'old value' to confirm it's the state you want to return to.",
+        "step5": "Click the 'Restore' button (clock icon). A confirmation dialog will appear showing the change that will be reverted.",
+        "step6": "Confirm the action. The system will automatically restore the field to its previous value. If multiple fields were modified in that entry, only the specific field in that row will be reverted.",
+        "step7": "Verify the rollback worked correctly. The system will create a NEW entry in history recording that you performed a rollback. You can go to the affected entity (lesson, character, user) to confirm the value was correctly restored."
+      }
+    },
+    "steps": {
+      "title": "Recommended Workflow",
+      "subtitle": "Follow these steps for efficient workflow",
+      "workflow": {
+        "step1": {
+          "title": "Planning and Pedagogical Design",
+          "description": "Define clear learning objectives (what financial concepts will the student learn?), establish target age range, and plan exercise sequence. Review similar lessons in the system to maintain consistency in structure, complexity, and narrative style. Prepare necessary resources: texts in both languages, images if needed, and concrete examples.",
+          "actionLabel": "Key action:",
+          "action": "Document your learning objectives before creating the lesson. Ask yourself: 'What should a child be able to do or explain after completing this lesson?'"
+        },
+        "step2": {
+          "title": "Bilingual Content Creation",
+          "description": "Create the lesson in the editor by first completing metadata (code, titles, ES/EN descriptions, duration, age_rate). Then add exercises one by one, starting with intro_narrative to contextualize the topic. Vary exercise types to maintain interest: alternate between narrative, questions, and interactive activities. Ensure Spanish and English content are equivalent in quality and educational value, not just literal translations.",
+          "actionLabel": "Key action:",
+          "action": "Use the editor's bilingual view to work both languages simultaneously. This helps maintain content parity and detect omissions."
+        },
+        "step3": {
+          "title": "Technical and Pedagogical Validation",
+          "description": "Use the 'Validate' button to verify all exercises meet technical requirements (required fields complete, correct format, options with at least 2 elements, etc.). Then perform manual pedagogical validation: read each exercise from the student's perspective, verify instructions are clear, questions are appropriate for age_rate, and feedback (correct/incorrect) is constructive and educational.",
+          "actionLabel": "Key action:",
+          "action": "Test the lesson in preview mode simulating being a student of the target age. If something confuses you or doesn't make sense, the student will also be confused."
+        },
+        "step4": {
+          "title": "Publishing and Verification",
+          "description": "Once the lesson passes technical validation and you're satisfied with pedagogical quality, click 'Save Changes'. The system will publish it immediately (available to students). After saving, verify that: 1) The lesson appears correctly in the Lessons list, 2) History records the creation with your name, 3) Adventure/saga/topic filters work to find it. If you detect post-publication errors, edit it immediately.",
+          "actionLabel": "Key action:",
+          "action": "Do a quick test on the student platform to confirm everything looks and works as expected before considering publication complete."
+        },
+        "step5": {
+          "title": "Monitoring, Feedback, and Continuous Improvement",
+          "description": "After publishing, monitor lesson usage: do students complete it? Do they get stuck on a specific exercise? Gather feedback from tutors and students. Use history to make incremental adjustments: if an exercise confuses many students, improve instructions; if the lesson is too short or too long, adjust duration and number of exercises. Continuous improvement based on real data is key to high-quality educational content.",
+          "actionLabel": "Key action:",
+          "action": "Establish a quarterly review schedule for your most-used lessons. Update outdated content, improve problematic exercises, and add new concepts when relevant."
+        }
+      }
+    },
+    "troubleshooting": {
+      "title": "Common Problem Solving",
+      "subtitle": "Diagnosis and solution of frequent technical issues",
+      "issue1": {
+        "problem": "The lesson won't save and I don't see any error message",
+        "solution": {
+          "title": "Solution:",
+          "description": "This problem usually occurs due to a connection issue or expired session. Follow these steps:",
+          "step1": "Open browser console (F12 or Cmd+Option+I on Mac) and go to 'Network' tab. Try saving again and check for HTTP errors 401, 403, or 500.",
+          "step2": "If you see a 401 error (unauthorized), your session expired. Log out and back in with your credentials.",
+          "step3": "If you see a network error or 'Failed to fetch', check your internet connection. Wait for connection to stabilize before trying to save.",
+          "step4": "If the problem persists, copy all lesson content (exercise JSON and metadata) to a local file to not lose your work.",
+          "step5": "Reload the page (Ctrl+R or Cmd+R) and log back in. Paste the saved content and try saving again."
+        }
+      },
+      "issue2": {
+        "problem": "Exercises show in the wrong order after saving",
+        "solution": {
+          "title": "Solution:",
+          "description": "Exercise order is determined by their position in the exercises array. If order changes unexpectedly:",
+          "step1": "Verify you didn't accidentally drag exercises before saving. The system saves the exact order you see on the timeline.",
+          "step2": "If you saved and the order is wrong, edit the lesson again, reorder exercises by dragging them to the correct position, and save.",
+          "step3": "Use history to verify if someone else edited the lesson between your edit and when you noticed the problem.",
+          "step4": "If the problem repeats, report the bug to the technical team with details: what browser you use, which exercises you reordered, and what was the expected vs. resulting order.",
+          "step5": ""
+        }
+      },
+      "issue3": {
+        "problem": "Character audio won't play or gives 404 error",
+        "solution": {
+          "title": "Solution:",
+          "description": "Audio problems are usually due to missing files or incorrect paths:",
+          "step1": "Verify in the Audio section that the audio segment exists and is associated with the correct lesson_id and character_id.",
+          "step2": "Click 'Play' in the audio library to verify the file itself works. If it errors, the file may be corrupted or deleted.",
+          "step3": "If audio was generated by text-to-speech, verify the input text was valid (no strange special characters or too long).",
+          "step4": "If you uploaded a file manually, ensure: 1) Format is MP3 or WAV, 2) Size doesn't exceed 10MB, 3) File isn't corrupted.",
+          "step5": "As a last resort, delete the problematic audio segment and create it again from scratch."
+        }
+      },
+      "issue4": {
+        "problem": "When I rollback, other changes also revert",
+        "solution": {
+          "title": "Solution:",
+          "description": "Rollback is per individual field, NOT per complete lesson. Understanding this is key:",
+          "step1": "When you rollback a history entry, only the specific field in that row reverts (e.g., title_es, duration, etc.).",
+          "step2": "If a lesson had multiple fields changed at different times, you must rollback each field individually if you want to revert them all.",
+          "step3": "Use history filters by lesson_id to see ALL changes to that lesson in chronological order. This way you can decide which fields to revert.",
+          "step4": "If you need to revert a complete lesson to a specific previous state, it's more efficient to use 'Duplicate' on a previous version (if exists) or manually edit all fields.",
+          "step5": "Report to technical team if you need 'revert complete lesson to timestamp X' functionality for future system versions."
+        }
+      },
+      "issue5": {
+        "problem": "I can't promote a user to admin, the button doesn't work",
+        "solution": {
+          "title": "Solution:",
+          "description": "User management has security measures that may cause confusion:",
+          "step1": "Verify you've unlocked the restricted area by typing 'CONFIRMAR' in the dialog. Without unlocking, promote/demote buttons won't work.",
+          "step2": "Ensure the user is in the 'Other Users' section. You can't promote someone who's already an admin.",
+          "step3": "Verify your own admin session is active. If your session expired, you won't have permissions to modify other users.",
+          "step4": "Check browser console (F12) for JavaScript or API errors blocking the action.",
+          "step5": "If everything above is correct and still doesn't work, contact technical team. There may be a database-level permissions issue."
+        }
+      },
+      "issue6": {
+        "problem": "Lesson filters don't show results I know exist",
+        "solution": {
+          "title": "Solution:",
+          "description": "Filtering problems may be due to inconsistent data or interface bugs:",
+          "step1": "Click 'Clear Filters' to reset all filters and see all lessons. Then apply filters one by one to identify which causes the problem.",
+          "step2": "Verify the adventure/saga/topic values of the lesson you're looking for match exactly with filters. A typo in metadata will cause it not to appear.",
+          "step3": "Use text search instead of dropdowns. Search by lesson code (e.g., 1-1-1-1) or by title.",
+          "step4": "Reload the page to refresh data. Sometimes filters get out of sync with server state.",
+          "step5": "If a specific lesson never appears regardless of filters used, check in history if it was accidentally deleted or has null values in hierarchy fields."
+        }
+      }
+    },
+    "support": {
+      "title": "Admin Team Values",
+      "message": "As part of LittleFounders' administration team, your work directly contributes to the financial education of the next generation. Every decision counts.",
+      "responsibility": "Responsibility",
+      "quality": "Quality",
+      "innovation": "Innovation",
+      "impact": "Impact",
+      "thankyou": "Thank you for your dedication and commitment to the financial education of thousands of children! Your work as an administrator has a real and lasting impact on their lives."
     }
   }
 }
