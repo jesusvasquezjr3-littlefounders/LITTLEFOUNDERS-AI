@@ -8,8 +8,8 @@ interface MentorPopupProps {
 }
 
 const MENTOR_EMOJIS: Record<string, string> = {
-  drRho: '🧔',
-  zara: '👧',
+  drRho: '👨🏻‍💼',
+  zara: '👩🏻‍💼',
   liruf: '🦖',
   dina: '🦕',
 };

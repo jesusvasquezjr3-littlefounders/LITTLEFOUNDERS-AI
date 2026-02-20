@@ -17,6 +17,10 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
   const [imgError, setImgError] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
+  // Track dragging state locally with a ref so pointer events work
+  // immediately without waiting for React re-render (stale closure fix).
+  const isDraggingRef = useRef(false);
+
   const size = window.innerWidth < 640 ? GAME_CONFIG.itemSizeMobilePx : GAME_CONFIG.itemSizePx;
   const itemName = t(`namVsYum.items.${definition.key}`);
 
@@ -39,6 +43,8 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
       const offsetX = rect ? e.clientX - rect.left - rect.width / 2 : 0;
       const offsetY = rect ? e.clientY - rect.top - rect.height / 2 : 0;
 
+      // Set local ref synchronously so subsequent pointer events work instantly
+      isDraggingRef.current = true;
       onDragStart(item.id, offsetX, offsetY);
     },
     [item.id, item.isConsumed, onDragStart],
@@ -46,17 +52,22 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!item.isDragging) return;
+      // Use the synchronous ref — not the async prop from state
+      if (!isDraggingRef.current) return;
       e.preventDefault();
+      e.stopPropagation();
       onDragMove(item.id, e.clientX, e.clientY);
     },
-    [item.id, item.isDragging, onDragMove],
+    [item.id, onDragMove],
   );
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
-      if (!item.isDragging) return;
+      if (!isDraggingRef.current) return;
       e.preventDefault();
+      e.stopPropagation();
+
+      isDraggingRef.current = false;
 
       const el = elementRef.current;
       if (el) {
@@ -69,16 +80,22 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
 
       onDragEnd(item.id);
     },
-    [item.id, item.isDragging, onDragEnd],
+    [item.id, onDragEnd],
   );
 
   const handlePointerCancel = useCallback(
-    (e: React.PointerEvent) => {
-      if (!item.isDragging) return;
+    () => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
       onDragEnd(item.id);
     },
-    [item.id, item.isDragging, onDragEnd],
+    [item.id, onDragEnd],
   );
+
+  // Sync ref when item gets consumed or drag ends externally (e.g. from reducer)
+  if (!item.isDragging && isDraggingRef.current) {
+    isDraggingRef.current = false;
+  }
 
   return (
     <div

@@ -18,8 +18,8 @@ function getDifficulty(level: number) {
   const extraLevels = level - DIFFICULTY_LEVELS.length;
   return {
     ...base,
-    baseSpeed: base.baseSpeed + extraLevels * 10,
-    spawnIntervalMs: Math.max(800, base.spawnIntervalMs - extraLevels * 100),
+    baseSpeed: base.baseSpeed + extraLevels * 20,
+    spawnIntervalMs: Math.max(600, base.spawnIntervalMs - extraLevels * 80),
   };
 }
 

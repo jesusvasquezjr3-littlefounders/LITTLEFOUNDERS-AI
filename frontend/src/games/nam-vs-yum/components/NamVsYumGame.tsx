@@ -36,6 +36,10 @@ export function NamVsYumGame() {
   const [highlightedMonster, setHighlightedMonster] = useState<MonsterType | null>(null);
   const [bgError, setBgError] = useState(false);
 
+  // Track the last known drag position (local-coords) so dragEnd doesn't
+  // depend on state — which may be stale due to RAF UPDATE_ITEMS dispatches.
+  const lastDragPosRef = useRef<{ x: number; y: number } | null>(null);
+
   // Game engine — reads dimensions directly from the DOM ref each RAF frame
   const { handleDrop } = useGameEngine(state, dispatch, gameAreaRef);
 
@@ -100,6 +104,9 @@ export function NamVsYumGame() {
       const rect = area.getBoundingClientRect();
       const x = clientX - rect.left;
       const y = clientY - rect.top;
+
+      // Store position in ref so dragEnd can use it immediately
+      lastDragPosRef.current = { x, y };
       dispatch({ type: 'MOVE_DRAG', id, x, y });
 
       const monsterZoneTop = rect.height * (1 - GAME_CONFIG.monsterZoneHeightPercent / 100);
@@ -115,26 +122,21 @@ export function NamVsYumGame() {
   const handleItemDragEnd = useCallback(
     (id: string) => {
       const area = gameAreaRef.current;
-      const st = stateRef.current;
+      const pos = lastDragPosRef.current;
 
-      if (!area) {
+      if (!area || !pos) {
         dispatch({ type: 'END_DRAG', id });
         setHighlightedMonster(null);
-        return;
-      }
-
-      const item = st.fallingItems.find((i) => i.id === id);
-      if (!item) {
-        dispatch({ type: 'END_DRAG', id });
-        setHighlightedMonster(null);
+        lastDragPosRef.current = null;
         return;
       }
 
       const rect = area.getBoundingClientRect();
       const monsterZoneTop = rect.height * (1 - GAME_CONFIG.monsterZoneHeightPercent / 100);
 
-      if (item.y > monsterZoneTop) {
-        const targetMonster: MonsterType = item.x < rect.width / 2 ? 'vitalio' : 'capricho';
+      // Use the ref position (always fresh) instead of reading from state
+      if (pos.y > monsterZoneTop) {
+        const targetMonster: MonsterType = pos.x < rect.width / 2 ? 'vitalio' : 'capricho';
         const isCorrect = handleDrop(id, targetMonster);
 
         if (isCorrect) {
@@ -150,6 +152,7 @@ export function NamVsYumGame() {
         dispatch({ type: 'END_DRAG', id });
       }
       setHighlightedMonster(null);
+      lastDragPosRef.current = null;
     },
     [handleDrop, playFile],
   );

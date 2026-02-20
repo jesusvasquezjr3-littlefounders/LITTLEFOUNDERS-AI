@@ -60,7 +60,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
 
     case 'UPDATE_ITEMS':
-      return { ...state, fallingItems: action.items };
+      // Merge: use RAF-updated positions for non-dragging items,
+      // but preserve the CURRENT state of any item being dragged
+      // (so we don't overwrite positions set by MOVE_DRAG).
+      return {
+        ...state,
+        fallingItems: action.items.map((incoming) => {
+          const current = state.fallingItems.find((c) => c.id === incoming.id);
+          // If the item is currently being dragged in state, keep its live position
+          if (current && current.isDragging) return current;
+          return incoming;
+        }),
+      };
 
     case 'REMOVE_ITEM':
       return {

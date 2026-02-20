@@ -57,13 +57,14 @@ export const ITEMS: GameItemDefinition[] = [
 ];
 
 export const DIFFICULTY_LEVELS: DifficultyLevel[] = [
-  { level: 1, spawnIntervalMs: 2500, baseSpeed: 55, speedVariance: 10, maxSimultaneous: 1, includesTier: [1], mentorTipChance: 0.3, pointsPerCorrect: 10 },
-  { level: 2, spawnIntervalMs: 2200, baseSpeed: 70, speedVariance: 15, maxSimultaneous: 2, includesTier: [1], mentorTipChance: 0.25, pointsPerCorrect: 10 },
-  { level: 3, spawnIntervalMs: 2000, baseSpeed: 85, speedVariance: 20, maxSimultaneous: 2, includesTier: [1, 2], mentorTipChance: 0.2, pointsPerCorrect: 15 },
-  { level: 4, spawnIntervalMs: 1800, baseSpeed: 95, speedVariance: 25, maxSimultaneous: 3, includesTier: [1, 2], mentorTipChance: 0.15, pointsPerCorrect: 15 },
-  { level: 5, spawnIntervalMs: 1600, baseSpeed: 110, speedVariance: 30, maxSimultaneous: 3, includesTier: [1, 2], mentorTipChance: 0.1, pointsPerCorrect: 20 },
-  { level: 6, spawnIntervalMs: 1400, baseSpeed: 125, speedVariance: 35, maxSimultaneous: 4, includesTier: [1, 2, 3], mentorTipChance: 0.1, pointsPerCorrect: 20 },
-  { level: 7, spawnIntervalMs: 1200, baseSpeed: 140, speedVariance: 40, maxSimultaneous: 5, includesTier: [1, 2, 3], mentorTipChance: 0.08, pointsPerCorrect: 25 },
+  //                                  speed  var  max  tiers
+  { level: 1, spawnIntervalMs: 2800, baseSpeed:  60, speedVariance: 10, maxSimultaneous: 1, includesTier: [1],       mentorTipChance: 0.3,  pointsPerCorrect: 10 },
+  { level: 2, spawnIntervalMs: 2400, baseSpeed:  85, speedVariance: 15, maxSimultaneous: 2, includesTier: [1],       mentorTipChance: 0.25, pointsPerCorrect: 10 },
+  { level: 3, spawnIntervalMs: 2000, baseSpeed: 115, speedVariance: 20, maxSimultaneous: 2, includesTier: [1, 2],    mentorTipChance: 0.2,  pointsPerCorrect: 15 },
+  { level: 4, spawnIntervalMs: 1700, baseSpeed: 145, speedVariance: 25, maxSimultaneous: 3, includesTier: [1, 2],    mentorTipChance: 0.15, pointsPerCorrect: 15 },
+  { level: 5, spawnIntervalMs: 1400, baseSpeed: 180, speedVariance: 30, maxSimultaneous: 3, includesTier: [1, 2],    mentorTipChance: 0.1,  pointsPerCorrect: 20 },
+  { level: 6, spawnIntervalMs: 1200, baseSpeed: 215, speedVariance: 35, maxSimultaneous: 4, includesTier: [1, 2, 3], mentorTipChance: 0.1,  pointsPerCorrect: 20 },
+  { level: 7, spawnIntervalMs: 1000, baseSpeed: 255, speedVariance: 40, maxSimultaneous: 5, includesTier: [1, 2, 3], mentorTipChance: 0.08, pointsPerCorrect: 25 },
 ];
 
 export const COMBO_THRESHOLD = 5;

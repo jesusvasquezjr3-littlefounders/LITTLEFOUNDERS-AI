@@ -9,7 +9,7 @@ import {
     ChevronsLeftRight,
     Lock,
     Gamepad2,
-    Sparkles
+    Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,7 +56,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
     const menuItems = [
         { title: t('sidebar.home'), url: "/demo", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "demo-nav-home" },
         { title: t('sidebar.lessons'), url: "/demo/lecciones", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "demo-nav-lessons" },
-        { title: t('sidebar.ai'), url: "/ai", icon: Sparkles, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "demo-nav-ai" },
+        { title: t('sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "demo-nav-ai" },
         { title: t('sidebar.entrepreneurship'), url: "/demo/investment-games", icon: Gamepad2, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "demo-nav-games" },
         // Locked Items
         { title: t('sidebar.tasks'), url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "demo-nav-tasks", locked: true },
