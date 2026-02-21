@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, field_serializer
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 import re
 
 
@@ -63,7 +64,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    public_id: str
+    public_id: UUID  # SQLAlchemy returns uuid.UUID object — Pydantic v2 accepts it natively
     name: str
     email: str
     user_type: str
@@ -79,6 +80,10 @@ class UserResponse(BaseModel):
     auth_provider: Optional[str] = 'email'
     birth_date: Optional[datetime] = None
     gender: Optional[str] = None
+    
+    @field_serializer('public_id')
+    def serialize_public_id(self, v: UUID) -> str:
+        return str(v)  # Always output as string to frontend
     
     class Config:
         from_attributes = True

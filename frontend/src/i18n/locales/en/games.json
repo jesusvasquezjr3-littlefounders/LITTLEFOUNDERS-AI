@@ -121,5 +121,148 @@
       "soundOn": "Sound: On",
       "soundOff": "Sound: Off"
     }
+  },
+  "nectar": {
+    "title": "Nectar of Shadows",
+    "subtitle": "The Small Entrepreneur",
+    "startScreen": {
+      "playButton": "PLAY!",
+      "highScore": "High Score: {{score}}",
+      "bestDay": "Best Day: {{day}}",
+      "howToPlay": "How to Play?"
+    },
+    "tutorial": {
+      "step1Title": "Collect Ingredients",
+      "step1Desc": "Run and jump to collect Glowing Lemons and Sugar Crystals. Avoid the obstacles in your path!",
+      "step1bTitle": "Runner Controls",
+      "step1bDesc": "↑ / Space — Jump (hold for higher jump)\n↓ — Duck and dodge\n→ — Run faster ⚡\n← — Slow down 🐢\n(Mobile: tap the screen to jump)",
+      "step2Title": "Prepare the Recipe",
+      "step2Desc": "Check the cavern weather and place ingredients to create the perfect nectar mix.",
+      "step3Title": "Watch the Sales",
+      "step3Desc": "Kingdom inhabitants will pass by your stand. If the recipe matches the weather, they'll buy happily!",
+      "step4Title": "Grow Your Business",
+      "step4Desc": "Use your profits to buy upgrades, save in the vault, and survive more days.",
+      "gotIt": "Got It!",
+      "skip": "Skip",
+      "next": "Next"
+    },
+    "runner": {
+      "day": "Day {{day}}",
+      "controlHint": "↑ Jump · ↓ Duck · → Faster · ← Slower",
+      "speedBoost": "Turbo!",
+      "speedSlow": "Slow",
+      "ducking": "Ducking!"
+    },
+    "stand": {
+      "recipeTitle": "Prepare Your Nectar",
+      "lemons": "Glowing Lemons",
+      "sugar": "Sugar Crystals",
+      "cost": "Ingredient cost",
+      "sellButton": "SELL!",
+      "tapToAdd": "Tap ingredients to add them",
+      "satisfaction": "Satisfaction",
+      "satPerfect": "Perfect!",
+      "satGood": "Good",
+      "satOk": "Okay",
+      "satBad": "Bad",
+      "idealHint": "Ideal recipe: {{lemons}} lemons, {{sugar}} sugar",
+      "weather": {
+        "hot": "Hot Cavern",
+        "cold": "Cold Cavern"
+      },
+      "weatherHint": {
+        "hot": "It's hot... customers crave freshness. More lemons!",
+        "cold": "It's cold... customers seek comfort. More sugar!"
+      }
+    },
+    "market": {
+      "watching": "Watching the sales..."
+    },
+    "summary": {
+      "title": "Day {{day}} Results",
+      "totalSales": "Total Sales",
+      "ingredientCost": "Ingredient Cost",
+      "netProfit": "Net Profit",
+      "customersBought": "{{bought}}/{{total}} customers bought",
+      "totalBalance": "Total balance: {{coins}} coins",
+      "goodDay": "Look, Liruf! Our net profit is what we can really take to the piggy bank.",
+      "badDay": "Don't worry, Liruf. Some days are tough. We'll adjust the recipe tomorrow!",
+      "continue": "Continue"
+    },
+    "shop": {
+      "title": "Upgrade Shop",
+      "balance": "Coins: {{coins}}",
+      "owned": "Owned",
+      "nextDay": "Next Day",
+      "upgrades": {
+        "squeezer": {
+          "name": "Fast Squeezer",
+          "desc": "Collect ingredients faster"
+        },
+        "awning": {
+          "name": "Protective Awning",
+          "desc": "Protects sales on cold days"
+        },
+        "sign": {
+          "name": "Bright Sign",
+          "desc": "Attracts more customers"
+        },
+        "vault": {
+          "name": "Savings Vault",
+          "desc": "Unlock emergency fund"
+        }
+      },
+      "vault": {
+        "title": "Savings Vault",
+        "saved": "Saved: {{amount}} coins",
+        "save": "Save"
+      }
+    },
+    "mentor": {
+      "tapToDismiss": "Tap to dismiss",
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "Remember: if making a cup costs 2 coins and you sell it for 5, your REAL profit is 3 coins. Don't eat the cost!",
+        "tip2": "Revenue is not the same as profit. Always subtract production costs first.",
+        "tip3": "A good entrepreneur always knows how much it costs to produce each unit."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "The weather dictates customer desire. Watch the environment before squeezing the lemon.",
+        "tip2": "A good merchant always has a fund for stormy days.",
+        "tip3": "Investing in your business is as important as selling! Upgrades pay for themselves."
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "I want to spend all my coins on a new sign right now!",
+        "tip2": "Let's run faster! I want to collect every lemon on the path!",
+        "tip3": "What if we add lots and lots of sugar? Everyone likes sweet things!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "Liruf, if you spend everything today and it rains tomorrow, we won't have money to buy more lemons. We need to save some!",
+        "tip2": "Watch the weather before deciding the recipe. Patience is the best investment.",
+        "tip3": "Look how much we've saved in the vault! That protects us on difficult days."
+      }
+    },
+    "gameOver": {
+      "title": "Game Over!",
+      "daysReached": "Days reached",
+      "totalEarned": "Total earned",
+      "bestRecord": "Best record",
+      "bestDayRecord": "Best day",
+      "newHighScore": "New High Score!",
+      "encouragement": "Each attempt makes you a better entrepreneur. Try again!",
+      "retry": "Play Again!",
+      "exit": "Exit"
+    },
+    "pause": {
+      "title": "Paused",
+      "resume": "Resume",
+      "restart": "Restart",
+      "quit": "Quit",
+      "soundOn": "Sound: On",
+      "soundOff": "Sound: Off"
+    }
   }
 }

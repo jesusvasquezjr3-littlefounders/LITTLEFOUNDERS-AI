@@ -34,6 +34,7 @@ import { SoundProvider } from "@/contexts/SoundContext";
 // Games
 import GamesPage from "./pages/GamesPage";
 import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
+import NectarDeLasSombrasPage from "@/games/nectar-de-las-sombras/NectarDeLasSombrasPage";
 
 // Admin Panel
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
@@ -125,6 +126,11 @@ const App = () => (
                 <Route path="/games/nam-vs-yum" element={
                   <ProtectedRoute>
                     <NamVsYumPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/games/nectar-de-las-sombras" element={
+                  <ProtectedRoute>
+                    <NectarDeLasSombrasPage />
                   </ProtectedRoute>
                 } />
 

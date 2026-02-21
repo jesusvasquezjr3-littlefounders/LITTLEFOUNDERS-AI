@@ -8,21 +8,20 @@ interface ChildProtectedRouteProps {
 export function ChildProtectedRoute({ children }: ChildProtectedRouteProps) {
   // Obtener información del usuario desde localStorage
   const userStr = localStorage.getItem('user');
-  
+
   if (!userStr) {
     return <Navigate to="/login" replace />;
   }
 
   try {
     const user = JSON.parse(userStr);
-    
+
     // Verificar que el usuario sea un niño
     if (user.user_type !== 'child') {
-      // Si es padre/tutor o patrocinador, redirigir a la página de gestión de tareas
-      if (user.user_type === 'tutor' || user.user_type === 'sponsor') {
-        return <Navigate to="/parent-tasks" replace />;
-      }
-      // Para otros tipos de usuario, redirigir al dashboard
+      // Si es padre/tutor, redirigir a la página de gestión de tareas
+      if (user.user_type === 'tutor') {
+        return <Navigate to="/admin/dashboard" replace />;
+      }// Para otros tipos de usuario, redirigir al dashboard
       return <Navigate to="/dashboard" replace />;
     }
 

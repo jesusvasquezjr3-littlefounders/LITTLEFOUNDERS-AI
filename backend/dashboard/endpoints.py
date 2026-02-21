@@ -69,7 +69,7 @@ async def get_pending_tasks(public_id: str, requester_public_id: str, db: Sessio
     
     verify_family_access(db, requester.id, user.id, allow_self=True)
     
-    # Get authorized creators (tutor and sponsors)
+    # Get authorized creators (tutor)
     authorized_creators = get_authorized_parents(db, user.id)
     
     # Only show tasks from authorized creators

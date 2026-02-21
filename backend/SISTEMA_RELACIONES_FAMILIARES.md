@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Este sistema implementa relaciones jerárquicas entre usuarios (Tutor, Child, Sponsor) utilizando Foreign Keys de SQLAlchemy, garantizando integridad referencial y control de acceso adecuado.
+Este sistema implementa relaciones jerárquicas entre usuarios (Tutor, Child) utilizando Foreign Keys de SQLAlchemy, garantizando integridad referencial y control de acceso adecuado.
 
 ## Estructura de Relaciones
 
@@ -16,9 +16,7 @@ Este sistema implementa relaciones jerárquicas entre usuarios (Tutor, Child, Sp
    - Se vincula automáticamente con el tutor mediante `tutor_id`
    - Solo puede tener un tutor
 
-3. **Opcionalmente se registra el SPONSOR**
-   - Se vincula con el niño mediante `sponsored_child_id`
-   - Puede patrocinar a un niño específico
+
 
 ### Modelo de Base de Datos
 
@@ -28,13 +26,9 @@ class User(Base):
     
     # Foreign Keys
     tutor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    sponsored_child_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
     # Relationships
     children = relationship("User", foreign_keys=[tutor_id], back_populates="tutor")
     tutor = relationship("User", foreign_keys=[tutor_id], back_populates="children")
-    sponsors = relationship("User", foreign_keys=[sponsored_child_id], back_populates="sponsored_child")
-    sponsored_child = relationship("User", foreign_keys=[sponsored_child_id], back_populates="sponsors")
 ```
 
 ### Diagrama de Relaciones
@@ -43,8 +37,7 @@ class User(Base):
 TUTOR (id: 1)
     ↓ tutor_id
 CHILD (id: 2, tutor_id: 1)
-    ↑ sponsored_child_id
-SPONSOR (id: 3, sponsored_child_id: 2)
+
 ```
 
 ## Endpoints Principales
@@ -53,7 +46,7 @@ SPONSOR (id: 3, sponsored_child_id: 2)
 
 **POST** `/auth/register`
 
-Registra una familia completa (tutor + child + sponsor opcional) en una sola operación.
+Registra una familia completa (tutor + child) en una sola operación.
 
 ```json
 {
@@ -71,12 +64,6 @@ Registra una familia completa (tutor + child + sponsor opcional) en una sola ope
     "birth_date": "2010-03-20",
     "gender": "femenino"
   },
-  "sponsor": {
-    "name": "Ana Sponsor",
-    "email": "ana@example.com",
-    "password": "password123",
-    "birth_date": "1975-08-10",
-    "gender": "femenino"
   }
 }
 ```
@@ -84,7 +71,7 @@ Registra una familia completa (tutor + child + sponsor opcional) en una sola ope
 **Proceso interno:**
 1. Crea el tutor y obtiene su ID
 2. Crea el child vinculándolo con `tutor_id`
-3. Si hay sponsor, lo crea vinculándolo con `sponsored_child_id`
+
 
 ### 2. Obtener Familia
 
@@ -94,21 +81,19 @@ Obtiene toda la información familiar relacionada con un usuario.
 
 **Respuesta según tipo de usuario:**
 
-- **CHILD**: Devuelve su tutor y sponsors
+- **CHILD**: Devuelve su tutor
 - **TUTOR**: Devuelve todos sus children
-- **SPONSOR**: Devuelve el child patrocinado y el tutor del child
 
 ### 3. Crear Tarea para Child
 
 **POST** `/parent-tasks/`
 
-Permite a tutores y sponsors crear tareas para sus children.
+Permite a tutores crear tareas para sus children.
 
 **Validaciones de seguridad:**
-- Verifica que el parent sea TUTOR o SPONSOR
+- Verifica que el parent sea TUTOR
 - Verifica que el child esté relacionado con ese parent:
   - Si es TUTOR: verifica `child.tutor_id == parent_id`
-  - Si es SPONSOR: verifica `parent.sponsored_child_id == child.id`
 
 ### 4. Ver Tareas Disponibles (Child)
 
@@ -117,7 +102,7 @@ Permite a tutores y sponsors crear tareas para sus children.
 Lista todas las tareas asignadas a un niño.
 
 **Validaciones de seguridad:**
-- Solo muestra tareas creadas por el tutor o sponsors autorizados
+- Solo muestra tareas creadas por el tutor autorizado
 - Filtra por `created_by` usando la lista de authorized_creators
 - Incluye información del creador (nombre y tipo)
 
@@ -129,7 +114,6 @@ Lista todos los children relacionados con un parent.
 
 **Lógica:**
 - Si es TUTOR: busca todos los users con `tutor_id == parent_id`
-- Si es SPONSOR: busca el user con `id == sponsored_child_id`
 
 ## Reglas de Negocio
 
@@ -140,13 +124,8 @@ Lista todos los children relacionados con un parent.
    - Crear tareas solo para sus children
    - Aprobar/rechazar tareas de sus children
 
-2. **Sponsors pueden:**
-   - Ver el child que patrocinan
-   - Crear tareas solo para ese child
-   - No pueden aprobar tareas (solo el tutor)
-
-3. **Children pueden:**
-   - Ver solo las tareas creadas por su tutor o sponsors
+2. **Children pueden:**
+   - Ver solo las tareas creadas por su tutor
    - Completar tareas con evidencia
    - Ver su información familiar
 
@@ -154,7 +133,7 @@ Lista todos los children relacionados con un parent.
 
 - Las relaciones usan Foreign Keys, garantizando:
   - No se puede asignar un tutor_id inexistente
-  - No se puede asignar un sponsored_child_id inexistente
+
   - Al eliminar un usuario, se deben manejar las relaciones (CASCADE o SET NULL)
 
 ### Validaciones
@@ -174,7 +153,7 @@ python migrate_user_relations.py
 ```
 
 Este script:
-1. Crea las nuevas columnas `tutor_id` y `sponsored_child_id`
+1. Crea la nueva columna `tutor_id`
 2. Migra los datos de `tutor_email` y `child_email`
 3. Agrega Foreign Keys (según la base de datos)
 4. Opcionalmente elimina las columnas antiguas
@@ -195,8 +174,7 @@ Este script:
 # POST /auth/register
 family_data = {
     "tutor": {...},
-    "child": {...},
-    "sponsor": {...}  # opcional
+    "child": {...}
 }
 # Resultado: Familia registrada con relaciones correctas
 ```
@@ -219,16 +197,15 @@ task_data = {
 # GET /tasks/available/2
 # Resultado: Solo tareas creadas por:
 #   - Su tutor (id: 1)
-#   - Sus sponsors (si los tiene)
 ```
 
 ## Próximas Mejoras
 
 1. **Múltiples Tutores**: Permitir que un child tenga más de un tutor
-2. **Múltiples Sponsors**: Ya soportado en el modelo actual
+
 3. **Roles y Permisos**: Sistema más granular de permisos
 4. **Historial de Relaciones**: Auditoría de cambios en relaciones
-5. **Invitaciones**: Sistema de invitación para sponsors
+
 
 ## Notas Técnicas
 

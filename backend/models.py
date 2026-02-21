@@ -266,7 +266,7 @@ class SavingsGoal(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Owner of the goal
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Who created the goal (tutor/child/sponsor)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Who created the goal (tutor/child)
     assigned_to = Column(Integer, ForeignKey("users.id"))  # For tutors assigning goals to children
     title = Column(String(200), nullable=False)
     description = Column(Text)

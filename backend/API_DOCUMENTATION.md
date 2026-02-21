@@ -14,7 +14,7 @@ Se han implementado **todos los módulos** del backend basados en el análisis p
 ### Modelos Implementados
 
 #### Usuarios y Autenticación
-- `User`: Usuarios (tutor, child, sponsor)
+- `User`: Usuarios (tutor, child)
 - Campos: name, email, password_hash, user_type, birth_date, gender, balance, lessons_completed, minutes_studied, points_earned, current_streak
 
 #### Lecciones
@@ -47,7 +47,7 @@ Se han implementado **todos los módulos** del backend basados en el análisis p
 ### 1. **Auth** (`/auth`)
 
 #### `POST /auth/register`
-Registrar una familia completa (tutor + child + sponsor opcional)
+Registrar una familia completa (tutor + child)
 ```json
 {
   "tutor": {
@@ -63,8 +63,7 @@ Registrar una familia completa (tutor + child + sponsor opcional)
     "password": "password123",
     "birth_date": "2015-07-22",
     "gender": "masculino"
-  },
-  "sponsor": null
+  }
 }
 ```
 
@@ -316,7 +315,7 @@ Obtener historial de juegos
 - Registro familiar completo
 - Login con JWT tokens
 - Hash de contraseñas con bcrypt
-- Soporte para 3 tipos de usuario (tutor, child, sponsor)
+- Soporte para 2 tipos de usuario (tutor, child)
 
 ### ✅ Sistema de Tareas
 - Creación y asignación de tareas

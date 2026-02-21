@@ -40,15 +40,20 @@ export function TopNav() {
   };
 
   const getUserTypeLabel = (userType: string) => {
-    switch (userType) {
+    if (!userType) return t('user_types.user');
+
+    switch (userType.toLowerCase()) {
       case 'tutor':
         return t('user_types.tutor');
       case 'child':
         return t('user_types.child');
-      case 'sponsor':
-        return t('user_types.sponsor');
+      case 'universal':
+        return t('user_types.universal');
+      case 'admin':
+        return t('user_types.admin');
       default:
-        return t('user_types.user');
+        // Fallback gracefully without assuming all unrecognized users should literally be just labeled "Usuario"
+        return userType.charAt(0).toUpperCase() + userType.slice(1);
     }
   };
 
@@ -133,43 +138,88 @@ export function TopNav() {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {user ? user.name : t('user_menu.user')}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user ? getUserTypeLabel(user.user_type) : t('user_types.user')}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user ? user.email : "email@example.com"}
-                </p>
+          <DropdownMenuContent
+            className="w-72 p-2 rounded-2xl border border-indigo-100/50 dark:border-slate-800/50 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl"
+            align="end"
+            forceMount
+          >
+            <DropdownMenuLabel className="font-normal p-0 mb-2">
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl">
+                <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm bg-white dark:bg-slate-800 shrink-0">
+                  {user?.avatar_config ? (
+                    <AvatarDisplay
+                      config={user.avatar_config}
+                      size={48}
+                      className="w-full h-full scale-125"
+                      showCTA={false}
+                      linkToEdit={false}
+                      includeBorder={false}
+                    />
+                  ) : (
+                    <Avatar className="h-full w-full">
+                      <AvatarImage src="/placeholder-avatar.jpg" className="object-cover" alt={t('user_menu.user')} />
+                      <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
+                        {user ? getInitials(user.name) : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+                <div className="flex flex-col space-y-1 overflow-hidden min-w-0 flex-1">
+                  <p className="text-base font-semibold leading-none text-slate-900 dark:text-slate-100 truncate">
+                    {user ? user.name : t('user_menu.user')}
+                  </p>
+                  {user?.username && (
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+                      @{user.username}
+                    </p>
+                  )}
+                  <div className="pt-1">
+                    <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 border-none px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider w-fit">
+                      {user ? getUserTypeLabel(user.user_type) : t('user_types.user')}
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/profile">
-                <User className="mr-2 h-4 w-4" />
-                <span>{t('user_menu.my_profile')}</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>{t('user_menu.settings')}</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/help">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                <span>{t('user_menu.help')}</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>{t('user_menu.logout')}</span>
+
+            <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800 my-2" />
+
+            <div className="space-y-1">
+              <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
+                <Link to="/profile" className="flex items-center w-full">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mr-3">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.my_profile')}</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
+                <Link to="/settings" className="flex items-center w-full">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mr-3">
+                    <Settings className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.settings')}</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
+                <Link to="/help" className="flex items-center w-full">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 mr-3">
+                    <HelpCircle className="h-4 w-4" />
+                  </div>
+                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.help')}</span>
+                </Link>
+              </DropdownMenuItem>
+            </div>
+
+            <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800 my-2" />
+
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus:bg-red-50 dark:focus:bg-red-900/20 text-red-600 dark:text-red-400 outline-none">
+              <div className="flex items-center w-full">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/40 mr-3">
+                  <LogOut className="h-4 w-4" />
+                </div>
+                <span className="font-medium">{t('user_menu.logout')}</span>
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

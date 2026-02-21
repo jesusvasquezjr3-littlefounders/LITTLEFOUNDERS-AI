@@ -21,7 +21,6 @@ def verify_family_access(
     
     Rules:
     - TUTOR can access their children's data
-    - SPONSOR can access their sponsored child's data
     - CHILD can only access their own data
     - Users can always access their own data (if allow_self=True)
     
@@ -55,11 +54,6 @@ def verify_family_access(
         if target_user.tutor_id == requester_id:
             return True
     
-    # SPONSOR can access their sponsored child's data
-    elif requester.user_type == UserType.SPONSOR:
-        if requester.sponsored_child_id == target_user_id:
-            return True
-    
     # CHILD can only access their own data (already handled above)
     elif requester.user_type == UserType.CHILD:
         pass
@@ -77,7 +71,7 @@ def get_authorized_children(db: Session, user_id: int) -> list[int]:
     
     Args:
         db: Database session
-        user_id: ID of the user (tutor, sponsor, or child)
+        user_id: ID of the user (tutor or child)
     
     Returns:
         list[int]: List of child user IDs that the user can access
@@ -93,11 +87,6 @@ def get_authorized_children(db: Session, user_id: int) -> list[int]:
         children = db.query(User).filter(User.tutor_id == user_id).all()
         authorized_children = [child.id for child in children]
     
-    # If user is SPONSOR, get their sponsored child
-    elif user.user_type == UserType.SPONSOR:
-        if user.sponsored_child_id:
-            authorized_children = [user.sponsored_child_id]
-    
     # If user is CHILD, only themselves
     elif user.user_type == UserType.CHILD:
         authorized_children = [user_id]
@@ -107,14 +96,14 @@ def get_authorized_children(db: Session, user_id: int) -> list[int]:
 
 def get_authorized_parents(db: Session, child_id: int) -> list[int]:
     """
-    Get list of parent (tutor + sponsor) IDs that can manage a child
+    Get list of parent (tutor) IDs that can manage a child
     
     Args:
         db: Database session
         child_id: ID of the child user
     
     Returns:
-        list[int]: List of parent user IDs (tutors and sponsors)
+        list[int]: List of parent user IDs (tutors)
     """
     child = db.query(User).filter(User.id == child_id).first()
     if not child or child.user_type != UserType.CHILD:
@@ -125,13 +114,6 @@ def get_authorized_parents(db: Session, child_id: int) -> list[int]:
     # Add tutor
     if child.tutor_id:
         authorized_parents.append(child.tutor_id)
-    
-    # Add sponsors
-    sponsors = db.query(User).filter(
-        User.sponsored_child_id == child_id,
-        User.user_type == UserType.SPONSOR
-    ).all()
-    authorized_parents.extend([sponsor.id for sponsor in sponsors])
     
     return authorized_parents
 
@@ -168,7 +150,7 @@ def verify_ownership(
 
 def get_family_member_ids(db: Session, user_id: int) -> list[int]:
     """
-    Get all family member IDs for a user (includes self, tutor, children, sponsors)
+    Get all family member IDs for a user (includes self, tutor, children)
     
     Args:
         db: Database session
@@ -187,36 +169,11 @@ def get_family_member_ids(db: Session, user_id: int) -> list[int]:
         # Add tutor
         if user.tutor_id:
             family_ids.append(user.tutor_id)
-        
-        # Add sponsors
-        sponsors = db.query(User).filter(
-            User.sponsored_child_id == user_id,
-            User.user_type == UserType.SPONSOR
-        ).all()
-        family_ids.extend([sponsor.id for sponsor in sponsors])
     
     elif user.user_type == UserType.TUTOR:
         # Add children
         children = db.query(User).filter(User.tutor_id == user_id).all()
         family_ids.extend([child.id for child in children])
-        
-        # Add sponsors of children
-        for child in children:
-            sponsors = db.query(User).filter(
-                User.sponsored_child_id == child.id,
-                User.user_type == UserType.SPONSOR
-            ).all()
-            family_ids.extend([sponsor.id for sponsor in sponsors])
-    
-    elif user.user_type == UserType.SPONSOR:
-        # Add sponsored child
-        if user.sponsored_child_id:
-            family_ids.append(user.sponsored_child_id)
-            
-            # Add child's tutor
-            child = db.query(User).filter(User.id == user.sponsored_child_id).first()
-            if child and child.tutor_id:
-                family_ids.append(child.tutor_id)
     
     return list(set(family_ids))  # Remove duplicates
 

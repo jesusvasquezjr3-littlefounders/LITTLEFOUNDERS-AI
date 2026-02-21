@@ -514,35 +514,42 @@ async def update_user_profile(
     """
     Update user profile information (name, birth_date, gender, username, preferred_language)
     """
-    # specific fields to update
-    if user_update.name is not None:
-        current_user.name = user_update.name
-    if user_update.birth_date is not None:
-        current_user.birth_date = datetime.strptime(user_update.birth_date, "%Y-%m-%d") if user_update.birth_date else None
-    if user_update.gender is not None:
-        current_user.gender = user_update.gender
-    if user_update.avatar_config is not None:
-        current_user.avatar_config = user_update.avatar_config
-    if user_update.preferred_language is not None:
-        current_user.preferred_language = user_update.preferred_language
-    
-    # Handle username update with uniqueness check
-    if user_update.username is not None:
-        # Check if username is already taken by another user
-        existing_user = db.query(User).filter(
-            User.username == user_update.username,
-            User.id != current_user.id
-        ).first()
-        if existing_user:
-            raise HTTPException(
-                status_code=400, 
-                detail="Este nombre de usuario ya está en uso"
-            )
-        current_user.username = user_update.username
+    try:
+        # specific fields to update
+        if user_update.name is not None:
+            current_user.name = user_update.name
+        if user_update.birth_date is not None:
+            current_user.birth_date = datetime.strptime(user_update.birth_date, "%Y-%m-%d") if user_update.birth_date else None
+        if user_update.gender is not None:
+            current_user.gender = user_update.gender
+        if user_update.avatar_config is not None:
+            current_user.avatar_config = user_update.avatar_config
+        if user_update.preferred_language is not None:
+            current_user.preferred_language = user_update.preferred_language
         
-    db.commit()
-    db.refresh(current_user)
-    return current_user
+        # Handle username update with uniqueness check
+        if user_update.username is not None:
+            # Check if username is already taken by another user
+            existing_user = db.query(User).filter(
+                User.username == user_update.username,
+                User.id != current_user.id
+            ).first()
+            if existing_user:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Este nombre de usuario ya está en uso"
+                )
+            current_user.username = user_update.username
+            
+        db.commit()
+        db.refresh(current_user)
+        return current_user
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"[ERROR] PATCH /auth/me failed: {type(e).__name__}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al actualizar perfil: {str(e)}")
 
 
 @router.post("/change-password")
@@ -579,7 +586,7 @@ async def change_password(
 @router.get("/family/{public_id}")
 async def get_user_family(public_id: str, db: Session = Depends(get_db)):
     """
-    Get complete family information for a user (tutor, child, sponsors)
+    Get complete family information for a user (tutor, child)
     """
     user = resolve_user_by_public_id(db, public_id)
     
@@ -595,7 +602,7 @@ async def get_user_family(public_id: str, db: Session = Depends(get_db)):
         "children": []
     }
     
-    # If user is a CHILD, get their tutor and sponsors
+    # If user is a CHILD, get their tutor
     if user.user_type == UserType.CHILD:
         if user.tutor_id:
             tutor = db.query(User).filter(User.id == user.tutor_id).first()

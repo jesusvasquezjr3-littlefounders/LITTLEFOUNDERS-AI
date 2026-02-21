@@ -49,7 +49,8 @@
     "user_types": {
         "tutor": "Padre o Tutor",
         "child": "Niño",
-        "sponsor": "Patrocinador",
+        "universal": "Universal",
+        "admin": "Administrador",
         "user": "Usuario"
     },
     "user_menu": {

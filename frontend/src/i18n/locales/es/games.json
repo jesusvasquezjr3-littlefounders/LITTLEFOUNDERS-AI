@@ -121,5 +121,148 @@
       "soundOn": "Sonido: Activado",
       "soundOff": "Sonido: Desactivado"
     }
+  },
+  "nectar": {
+    "title": "Néctar de las Sombras",
+    "subtitle": "El Pequeño Emprendedor",
+    "startScreen": {
+      "playButton": "¡JUGAR!",
+      "highScore": "Mejor Puntuación: {{score}}",
+      "bestDay": "Mejor Día: {{day}}",
+      "howToPlay": "¿Cómo Jugar?"
+    },
+    "tutorial": {
+      "step1Title": "Recolecta Ingredientes",
+      "step1Desc": "¡Corre y salta para recoger Limones Luminosos y Cristales de Azúcar. Evita los obstáculos en tu camino!",
+      "step1bTitle": "Controles del Corredor",
+      "step1bDesc": "↑ / Espacio — Saltar (mantén para saltar más alto)\n↓ — Agacharse y esquivar\n→ — Correr más rápido ⚡\n← — Ir más despacio 🐢\n(En móvil: toca la pantalla para saltar)",
+      "step2Title": "Prepara la Receta",
+      "step2Desc": "Observa el clima de la caverna y coloca los ingredientes para crear la mezcla perfecta de néctar.",
+      "step3Title": "Observa las Ventas",
+      "step3Desc": "Los habitantes del reino pasarán por tu puesto. Si la receta coincide con el clima, ¡comprarán felices!",
+      "step4Title": "Crece tu Negocio",
+      "step4Desc": "Usa tus ganancias para comprar mejoras, ahorrar en la bóveda y sobrevivir más días.",
+      "gotIt": "¡Entendido!",
+      "skip": "Saltar",
+      "next": "Siguiente"
+    },
+    "runner": {
+      "day": "Día {{day}}",
+      "controlHint": "↑ Saltar · ↓ Agachar · → Rápido · ← Lento",
+      "speedBoost": "¡Turbo!",
+      "speedSlow": "Lento",
+      "ducking": "¡Agachado!"
+    },
+    "stand": {
+      "recipeTitle": "Prepara tu Néctar",
+      "lemons": "Limones Luminosos",
+      "sugar": "Cristales de Azúcar",
+      "cost": "Costo de ingredientes",
+      "sellButton": "¡VENDER!",
+      "tapToAdd": "Toca los ingredientes para agregarlos",
+      "satisfaction": "Satisfacción",
+      "satPerfect": "¡Perfecto!",
+      "satGood": "Bueno",
+      "satOk": "Regular",
+      "satBad": "Malo",
+      "idealHint": "Receta ideal: {{lemons}} limones, {{sugar}} azúcar",
+      "weather": {
+        "hot": "Caverna Calurosa",
+        "cold": "Caverna Fría"
+      },
+      "weatherHint": {
+        "hot": "Hace calor... los clientes buscan frescura. ¡Más limón!",
+        "cold": "Hace frío... los clientes buscan confort. ¡Más azúcar!"
+      }
+    },
+    "market": {
+      "watching": "Observando las ventas..."
+    },
+    "summary": {
+      "title": "Cierre del Día {{day}}",
+      "totalSales": "Ventas Totales",
+      "ingredientCost": "Costo de Ingredientes",
+      "netProfit": "Ganancia Neta",
+      "customersBought": "{{bought}}/{{total}} clientes compraron",
+      "totalBalance": "Balance total: {{coins}} monedas",
+      "goodDay": "¡Mira, Liruf! Nuestra ganancia neta es lo que realmente podemos llevar a la alcancía.",
+      "badDay": "No te preocupes, Liruf. A veces los días son difíciles. ¡Mañana ajustaremos la receta!",
+      "continue": "Continuar"
+    },
+    "shop": {
+      "title": "Tienda de Mejoras",
+      "balance": "Monedas: {{coins}}",
+      "owned": "Comprado",
+      "nextDay": "Siguiente Día",
+      "upgrades": {
+        "squeezer": {
+          "name": "Exprimidor Rápido",
+          "desc": "Recolecta ingredientes más rápido"
+        },
+        "awning": {
+          "name": "Toldo Protector",
+          "desc": "Protege ventas en días fríos"
+        },
+        "sign": {
+          "name": "Letrero Brillante",
+          "desc": "Atrae más clientes al puesto"
+        },
+        "vault": {
+          "name": "Bóveda de Ahorro",
+          "desc": "Desbloquea fondo de emergencia"
+        }
+      },
+      "vault": {
+        "title": "Bóveda de Ahorro",
+        "saved": "Ahorrado: {{amount}} monedas",
+        "save": "Guardar"
+      }
+    },
+    "mentor": {
+      "tapToDismiss": "Toca para cerrar",
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "Recuerden: si hacer un vaso cuesta 2 monedas y lo venden a 5, su GANANCIA real es 3 monedas. ¡No se coman el costo!",
+        "tip2": "Los ingresos no son lo mismo que las ganancias. Primero resta los costos de producción.",
+        "tip3": "Un buen emprendedor siempre sabe cuánto le cuesta producir cada unidad."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "El clima dicta el deseo del cliente. Observa el ambiente antes de exprimir el limón.",
+        "tip2": "Un buen comerciante siempre tiene un fondo para los días de tormenta.",
+        "tip3": "¡Invertir en tu negocio es tan importante como vender! Las mejoras se pagan solas."
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "¡Quiero gastar todas mis monedas en un letrero nuevo ya mismo!",
+        "tip2": "¡Corramos más rápido! ¡Quiero recoger todos los limones del camino!",
+        "tip3": "¿Y si le ponemos muuuucho azúcar? ¡A todos les gusta lo dulce!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "Liruf, si gastas todo hoy y mañana llueve, no tendremos dinero para comprar más limones. ¡Hay que guardar una parte!",
+        "tip2": "Observa el clima antes de decidir la receta. La paciencia es la mejor inversión.",
+        "tip3": "¡Mira cuánto hemos ahorrado en la bóveda! Eso nos protege en los días difíciles."
+      }
+    },
+    "gameOver": {
+      "title": "¡Fin del Juego!",
+      "daysReached": "Días alcanzados",
+      "totalEarned": "Total ganado",
+      "bestRecord": "Mejor récord",
+      "bestDayRecord": "Mejor día",
+      "newHighScore": "¡Nuevo Récord!",
+      "encouragement": "Cada intento te hace mejor emprendedor. ¡Inténtalo de nuevo!",
+      "retry": "¡Jugar de Nuevo!",
+      "exit": "Salir"
+    },
+    "pause": {
+      "title": "Pausa",
+      "resume": "Continuar",
+      "restart": "Reiniciar",
+      "quit": "Salir",
+      "soundOn": "Sonido: Activado",
+      "soundOff": "Sonido: Desactivado"
+    }
   }
 }

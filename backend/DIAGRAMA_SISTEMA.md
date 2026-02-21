@@ -6,11 +6,11 @@
 ┌─────────────────────────────────────────────────────────┐
 │                    FRONTEND (React)                      │
 │                                                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │  Tutor   │  │  Child   │  │ Sponsor  │              │
-│  │   View   │  │   View   │  │   View   │              │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘              │
-└───────┼─────────────┼─────────────┼────────────────────┘
+│  ┌──────────┐  ┌──────────┐                            │
+│  │  Tutor   │  │  Child   │                            │
+│  │   View   │  │   View   │                            │
+│  └────┬─────┘  └────┬─────┘                            │
+└───────┼─────────────┼──────────────────────────────────┘
         │             │             │
         ▼             ▼             ▼
 ┌─────────────────────────────────────────────────────────┐
@@ -32,7 +32,6 @@
 │  │  Tabla: users                                    │   │
 │  │  ├─ id (PK)                                      │   │
 │  │  ├─ tutor_id (FK → users.id)                    │   │
-│  │  ├─ sponsored_child_id (FK → users.id)          │   │
 │  │  └─ ... otros campos                             │   │
 │  └─────────────────────────────────────────────────┘   │
 │                                                          │
@@ -62,20 +61,7 @@
         │   CHILD     │  user_type: "child"
         │  (María)    │  tutor_id: 1
         └──────▲──────┘
-               │
-               │ sponsored_child_id
-               │
-        ┌──────┴──────┐
-        │  SPONSOR    │  user_type: "sponsor"
-        │  (Ana)      │  sponsored_child_id: 2
-        └─────────────┘
-```
-
-**Explicación:**
-- El **CHILD** tiene un `tutor_id` que apunta al **TUTOR**
-- El **SPONSOR** tiene un `sponsored_child_id` que apunta al **CHILD**
 - Esta estructura permite relaciones 1:N (un tutor puede tener múltiples children)
-- También permite N:1 (múltiples sponsors pueden patrocinar al mismo child)
 
 ---
 
@@ -87,9 +73,7 @@
 │                                                        │
 │  POST /auth/register                                   │
 │  {                                                     │
-│    tutor: {...},                                       │
-│    child: {...},                                       │
-│    sponsor: {...}  ← opcional                          │
+│    child: {...}                                        │
 │  }                                                     │
 └───────────────────┬────────────────────────────────────┘
                     │
@@ -110,14 +94,6 @@
 │  │    )                          │                     │
 │  │    → Obtener child.id = 2    │                     │
 │  └──────────────────────────────┘                     │
-│                ↓                                       │
-│  ┌──────────────────────────────┐                     │
-│  │ c) Crear SPONSOR (opcional)  │                     │
-│  │    INSERT INTO users (       │                     │
-│  │      sponsored_child_id = 2  │ ← Vincula con child │
-│  │    )                          │                     │
-│  │    → Obtener sponsor.id = 3  │                     │
-│  └──────────────────────────────┘                     │
 │                                                        │
 │  ✅ COMMIT TRANSACTION                                 │
 └───────────────────┬────────────────────────────────────┘
@@ -128,9 +104,7 @@
 │                                                        │
 │  {                                                     │
 │    message: "Family registration successful",          │
-│    tutor: { id: 1, ... },                              │
-│    child: { id: 2, tutor_id: 1, ... },                 │
-│    sponsor: { id: 3, sponsored_child_id: 2, ... }      │
+│    child: { id: 2, tutor_id: 1, ... }                  │
 │  }                                                     │
 └────────────────────────────────────────────────────────┘
 ```
@@ -165,8 +139,8 @@
 │  └──────────────────────────────────────┘             │
 │                ↓                                       │
 │  ┌──────────────────────────────────────┐             │
-│  │ 2. ¿Es TUTOR o SPONSOR?              │             │
-│  │    parent.user_type IN [tutor, ...]  │             │
+│  │ 2. ¿Es TUTOR?                        │             │
+│  │    parent.user_type == tutor         │             │
 │  │    ✅ Sí es tutor                     │             │
 │  └──────────────────────────────────────┘             │
 │                ↓                                       │
@@ -243,16 +217,8 @@
 │  │    if child.tutor_id:                │             │
 │  │      authorized_creators.add(1)      │             │
 │  └──────────────────────────────────────┘             │
-│                ↓                                       │
-│  ┌──────────────────────────────────────┐             │
-│  │ 3. Obtener SPONSORS                  │             │
-│  │    sponsors = SELECT * FROM users    │             │
-│  │               WHERE sponsored_child = 2│            │
-│  │    for sponsor in sponsors:          │             │
-│  │      authorized_creators.add(3)      │             │
-│  └──────────────────────────────────────┘             │
 │                                                        │
-│  authorized_creators = [1, 3]                          │
+│  authorized_creators = [1]                             │
 └───────────────────┬────────────────────────────────────┘
                     │
                     ▼
@@ -261,7 +227,7 @@
 │                                                        │
 │  SELECT * FROM tasks                                   │
 │  WHERE assigned_to = 2                                 │
-│    AND created_by IN (1, 3)  ← Solo creadores autorizados│
+│    AND created_by = 1  ← Solo creadores autorizados    │
 │    AND is_active = true                                │
 │                                                        │
 │  Resultado:                                            │
@@ -269,11 +235,6 @@
 │  │ Task 100: "Lavar los platos"      │               │
 │  │   created_by: 1 (Tutor)           │               │
 │  │   reward: 50.0                     │               │
-│  └────────────────────────────────────┘               │
-│  ┌────────────────────────────────────┐               │
-│  │ Task 101: "Estudiar matemáticas"  │               │
-│  │   created_by: 3 (Sponsor)         │               │
-│  │   reward: 100.0                    │               │
 │  └────────────────────────────────────┘               │
 └───────────────────┬────────────────────────────────────┘
                     │
@@ -288,14 +249,6 @@
 │        title: "Lavar los platos",                      │
 │        created_by: "Juan Pérez",                       │
 │        created_by_type: "tutor",                       │
-│        reward: 50.0                                    │
-│      },                                                │
-│      {                                                 │
-│        id: 101,                                        │
-│        title: "Estudiar matemáticas",                  │
-│        created_by: "Ana López",                        │
-│        created_by_type: "sponsor",                     │
-│        reward: 100.0                                   │
 │      }                                                 │
 │    ]                                                   │
 │  }                                                     │
@@ -307,32 +260,29 @@
 ## 🛡️ Matriz de Permisos
 
 ```
-┌─────────────┬──────────────┬──────────────┬──────────────┐
-│   Acción    │    TUTOR     │    CHILD     │   SPONSOR    │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Ver sus     │      ✅      │      ✅      │      ✅      │
-│ children    │   Múltiples  │     N/A      │    Solo 1    │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Ver su      │      ❌      │      ✅      │      ✅      │
-│ tutor       │     N/A      │    Solo 1    │  Via child   │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Ver sus     │      ❌      │      ✅      │      ❌      │
-│ sponsors    │     N/A      │   Múltiples  │     N/A      │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Crear       │      ✅      │      ❌      │      ✅      │
-│ tareas      │ Para sus     │     N/A      │  Para su     │
-│             │ children     │              │   child      │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Ver         │      ✅      │      ✅      │      ✅      │
-│ tareas      │De sus        │Solo las      │De su         │
-│             │children      │de su familia │child         │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Aprobar     │      ✅      │      ❌      │      🔸      │
-│ tareas      │Las que creó  │     N/A      │  Limitado    │
-├─────────────┼──────────────┼──────────────┼──────────────┤
-│ Completar   │      ❌      │      ✅      │      ❌      │
-│ tareas      │     N/A      │  Sus tareas  │     N/A      │
-└─────────────┴──────────────┴──────────────┴──────────────┘
+┌─────────────┬──────────────┬──────────────┐
+│   Acción    │    TUTOR     │    CHILD     │
+├─────────────┼──────────────┼──────────────┤
+│ Ver sus     │      ✅      │      ✅      │
+│ children    │   Múltiples  │     N/A      │
+├─────────────┼──────────────┼──────────────┤
+│ Ver su      │      ❌      │      ✅      │
+│ tutor       │     N/A      │    Solo 1    │
+├─────────────┼──────────────┼──────────────┤
+│ Crear       │      ✅      │      ❌      │
+│ tareas      │ Para sus     │     N/A      │
+│             │ children     │              │
+├─────────────┼──────────────┼──────────────┤
+│ Ver         │      ✅      │      ✅      │
+│ tareas      │De sus        │Solo las      │
+│             │children      │de su familia │
+├─────────────┼──────────────┼──────────────┤
+│ Aprobar     │      ✅      │      ❌      │
+│ tareas      │Las que creó  │     N/A      │
+├─────────────┼──────────────┼──────────────┤
+│ Completar   │      ❌      │      ✅      │
+│ tareas      │     N/A      │  Sus tareas  │
+└─────────────┴──────────────┴──────────────┘
 
 Leyenda:
   ✅ = Permitido
@@ -350,15 +300,13 @@ CREATE TABLE users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    user_type ENUM('tutor', 'child', 'sponsor') NOT NULL,
+    user_type ENUM('tutor', 'child') NOT NULL,
     
     -- Relaciones
     tutor_id INTEGER,
-    sponsored_child_id INTEGER,
     
     -- Foreign Keys
     FOREIGN KEY (tutor_id) REFERENCES users(id),
-    FOREIGN KEY (sponsored_child_id) REFERENCES users(id),
     
     -- Campos específicos de child
     lessons_completed INTEGER DEFAULT 0,
@@ -409,8 +357,7 @@ El sistema está diseñado para escalar fácilmente:
 ```
 ACTUAL:
   Tutor (1) → Children (N)
-  Sponsor (1) → Child (1)
-  Child (1) ← Sponsors (N)
+
 
 FUTURO POSIBLE:
   ┌─────────────────────────────────┐
@@ -423,10 +370,7 @@ FUTURO POSIBLE:
   │ (Tabla de roles y permisos)     │
   └─────────────────────────────────┘
   
-  ┌─────────────────────────────────┐
-  │ Invitaciones de Sponsors        │
-  │ (Tabla de invitaciones)         │
-  └─────────────────────────────────┘
+
 ```
 
 ---

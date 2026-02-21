@@ -29,7 +29,6 @@ interface ExecutiveSummaryProps {
 }
 
 export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps) {
-  const isSponsor = userType === 'sponsor';
 
   // Calcular métricas clave para el resumen ejecutivo
   const calculateOverallProgress = () => {
@@ -68,7 +67,7 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-black text-slate-800 dark:text-white">
-              {isSponsor ? 'Resumen Ejecutivo - Patrocinador' : 'Resumen Ejecutivo - Padre/Tutor'}
+              Resumen Ejecutivo - Padre/Tutor
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mt-1 font-medium">
               Resumen de alto nivel del progreso de {childData?.name}
@@ -286,52 +285,6 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
           </CardContent>
         </Card>
       </div>
-
-      {/* Sección específica para patrocinadores */}
-      {isSponsor && (
-        <Card className="rounded-3xl border-2 border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-900/30 shadow-sm transition-all hover:shadow-md">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-green-800 dark:text-green-300">
-              <DollarSign className="h-5 w-5" />
-              <span>Análisis de Inversión Educativa</span>
-            </CardTitle>
-            <CardDescription className="text-green-700 dark:text-green-400">
-              ROI y valor de la inversión
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-                <div className="text-2xl font-black text-green-600 dark:text-green-400">{roi}%</div>
-                <div className="text-sm font-bold text-green-700 dark:text-green-500">ROI Educativo</div>
-                <div className="text-xs font-medium text-green-600 dark:text-green-600 mt-1">Retorno real</div>
-              </div>
-
-              <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-                <div className="text-2xl font-black text-blue-600 dark:text-blue-400">$2,450</div>
-                <div className="text-sm font-bold text-blue-700 dark:text-blue-500">Valor Futuro</div>
-                <div className="text-xs font-medium text-blue-600 dark:text-blue-600 mt-1">Proyección</div>
-              </div>
-
-              <div className="text-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-                <div className="text-2xl font-black text-purple-600 dark:text-purple-400">85%</div>
-                <div className="text-sm font-bold text-purple-700 dark:text-purple-500">Eficiencia</div>
-                <div className="text-xs font-medium text-purple-600 dark:text-purple-600 mt-1">Aprovechamiento</div>
-              </div>
-            </div>
-
-            <div className="mt-4 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-green-100 dark:border-green-900/30">
-              <h4 className="font-bold text-green-800 dark:text-green-300 mb-2">Beneficios de la Inversión</h4>
-              <ul className="text-sm font-medium text-green-700 dark:text-green-400 space-y-1">
-                <li>• Desarrollo de habilidades financieras desde temprana edad</li>
-                <li>• Formación de hábitos de ahorro e inversión</li>
-                <li>• Preparación para independencia financiera futura</li>
-                <li>• Reducción del riesgo de problemas financieros en la adultez</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Recomendaciones */}
       <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
