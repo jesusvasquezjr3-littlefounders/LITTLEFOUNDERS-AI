@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
@@ -21,6 +21,11 @@ from auth.utils import verify_password, get_password_hash, create_access_token, 
 from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+# Import rate limiter (lazy to avoid circular import)
+def _get_limiter():
+    from main import limiter
+    return limiter
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -46,10 +51,11 @@ async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: S
 
 
 @router.post("/register", response_model=dict)
-async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
+async def register_user(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
     """
     Register a new user (Simplified Flow)
     Creates a 'Universal' user with just name, email, and password.
+    Rate limited: 5 requests per minute per IP.
     """
     try:
         # Check if email already exists
@@ -119,7 +125,7 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=dict)
-async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
+async def login_user(request: Request, credentials: UserLogin, db: Session = Depends(get_db)):
     """
     Login a user and return user data with access token
     """
@@ -186,7 +192,7 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.post("/google", response_model=dict)
-async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db)):
+async def google_login(request: Request, google_data: GoogleLoginRequest, db: Session = Depends(get_db)):
     """
     Login or Register with Google
     """
@@ -195,7 +201,7 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
         # Since we receive an access_token from frontend (implicit flow),
         # we validate it by calling Google's API directly.
         
-        userinfo_url = f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={request.token}"
+        userinfo_url = f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={google_data.token}"
         response = requests.get(userinfo_url)
         
         if response.status_code != 200:
@@ -224,7 +230,7 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
         
         if not user:
             # If mode is 'login', we should NOT create a new user
-            if request.mode == "login":
+            if google_data.mode == "login":
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="User not found. Please register first."
@@ -248,7 +254,7 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
             is_new_user = True
         else:
             # If mode is 'register' (strict), we should NOT allow login if user exists
-            if request.mode == "register":
+            if google_data.mode == "register":
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="User already registered. Please login."
@@ -329,7 +335,7 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
 
 
 @router.post("/discord", response_model=dict)
-async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_db)):
+async def discord_login(request: Request, discord_data: DiscordLoginRequest, db: Session = Depends(get_db)):
     """
     Login or Register with Discord
     Exchanges code for access_token and then fetches user info.
@@ -345,7 +351,7 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
             'client_id': client_id,
             'client_secret': client_secret,
             'grant_type': 'authorization_code',
-            'code': request.code,
+            'code': discord_data.code,
             'redirect_uri': redirect_uri
         }
         headers = {
@@ -356,7 +362,7 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
         print(f"  - client_id: {repr(data['client_id'])}")
         print(f"  - redirect_uri: {repr(data['redirect_uri'])}")
         print(f"  - client_secret length: {len(data['client_secret'])}")
-        print(f"  - code: {repr(request.code)}")
+        print(f"  - code: {repr(discord_data.code)}")
 
         token_response = requests.post('https://discord.com/api/oauth2/token', data=data, headers=headers)
         
@@ -391,7 +397,7 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
         
         if not user:
             # If mode is 'login', we should NOT create a new user
-            if request.mode == "login":
+            if discord_data.mode == "login":
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="User not found. Please register first."
@@ -415,7 +421,7 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
             is_new_user = True
         else:
             # If mode is 'register' (strict), we should NOT allow login if user exists
-            if request.mode == "register":
+            if discord_data.mode == "register":
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="User already registered. Please login."
@@ -567,6 +573,7 @@ async def update_user_profile(
 
 @router.post("/change-password")
 async def change_password(
+    request: Request,
     password_data: PasswordChange,
     current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)

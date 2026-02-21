@@ -5,6 +5,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import hashlib
 import json
 import os
@@ -25,11 +28,16 @@ from admin.endpoints import router as admin_router
 # In serverless environments, this fails because it runs on every cold start
 # models.Base.metadata.create_all(bind=engine)
 
+# Rate limiter
+limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
+
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
     description=settings.api_description
 )
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Custom exception handler for validation errors
 @app.exception_handler(RequestValidationError)
