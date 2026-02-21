@@ -20,6 +20,15 @@ from schemas import (
     LessonPlayResponse, LessonCompleteRequest,
     AdventureProgress, UserLessonStats
 )
+from fastapi import HTTPException as _HTTPException
+
+
+def _resolve_user(db, public_id: str):
+    """Resolve a public UUID to internal user ID"""
+    user = db.query(User).filter(User.public_id == public_id).first()
+    if not user:
+        raise _HTTPException(status_code=404, detail="User not found")
+    return user
 
 # Character code normalization map
 CHARACTER_CODE_MAP = {
@@ -178,13 +187,17 @@ TOPICS_DATA = {
 
 @router.get("/adventures", response_model=List[AdventureWithProgress])
 async def get_adventures(
-    user_id: Optional[int] = None,
+    user_public_id: Optional[str] = None,
     lang: str = "es",
     db: Session = Depends(get_db)
 ):
     """
     Obtener aventuras (Datos estáticos + Progreso real de lecciones).
     """
+    user_id = None
+    if user_public_id:
+        user_id = _resolve_user(db, user_public_id).id
+    
     result = []
     
     for adv in ADVENTURES_DATA:
@@ -235,10 +248,14 @@ async def get_adventures(
 @router.get("/adventures/{code}/sagas", response_model=List[SagaWithProgress])
 async def get_adventure_sagas(
     code: str,
-    user_id: Optional[int] = None,
+    user_public_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """Sagas Mocked but with real lesson progress"""
+    user_id = None
+    if user_public_id:
+        user_id = _resolve_user(db, user_public_id).id
+    
     # Find adventure ID
     adv = next((a for a in ADVENTURES_DATA if a['code'] == code), None)
     if not adv:
@@ -379,7 +396,7 @@ async def get_lesson_for_play(
 @router.post("/lessons/{code}/complete")
 async def complete_lesson(
     code: str,
-    user_id: int,
+    user_public_id: str,
     request: LessonCompleteRequest,
     db: Session = Depends(get_db)
 ):
@@ -387,13 +404,12 @@ async def complete_lesson(
     from models import UserLearningStreak
     from datetime import date, timedelta
     
+    user = _resolve_user(db, user_public_id)
+    user_id = user.id
+    
     lesson = db.query(Lesson).filter(Lesson.lesson_code == code).first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
-        
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
         
     # Check progress
     progress = db.query(UserLessonProgress).filter(
@@ -533,11 +549,10 @@ async def get_character(code: str, db: Session = Depends(get_db)):
 # =====================================================
 # USER STATS (Dashboard)
 # =====================================================
-@router.get("/users/{user_id}/stats")
-async def get_user_lesson_stats(user_id: int, lang: str = "es", db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+@router.get("/users/{public_id}/stats")
+async def get_user_lesson_stats(public_id: str, lang: str = "es", db: Session = Depends(get_db)):
+    user = _resolve_user(db, public_id)
+    user_id = user.id
         
     # Adventure progress with i18n
     adventure_progress = []
@@ -583,15 +598,14 @@ async def get_user_lesson_stats(user_id: int, lang: str = "es", db: Session = De
 # =====================================================
 # USER STREAK ENDPOINT
 # =====================================================
-@router.get("/users/{user_id}/streak")
-async def get_user_streak(user_id: int, db: Session = Depends(get_db)):
+@router.get("/users/{public_id}/streak")
+async def get_user_streak(public_id: str, db: Session = Depends(get_db)):
     """Get user's streak information"""
     from models import UserLearningStreak
     from datetime import date, timedelta
     
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    user = _resolve_user(db, public_id)
+    user_id = user.id
     
     today = date.today()
     
@@ -633,11 +647,14 @@ async def get_lessons_by_adventure(
     adventure_id: int,
     saga_id: Optional[int] = None,
     topic_id: Optional[int] = None,
-    user_id: Optional[int] = None,
+    user_public_id: Optional[str] = None,
     lang: str = "es",
     db: Session = Depends(get_db)
 ):
     """Get lessons filtered by adventure/saga/topic with progress"""
+    user_id = None
+    if user_public_id:
+        user_id = _resolve_user(db, user_public_id).id
     query = db.query(Lesson).filter(Lesson.adventure_level == adventure_id)
     
     if saga_id:

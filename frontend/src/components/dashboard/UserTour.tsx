@@ -120,8 +120,8 @@ export function UserTour() {
     useEffect(() => {
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user && user.id) {
-                setUserKey(`userTourCompleted_${user.id}`);
+            if (user && (user.public_id || user.id)) {
+                setUserKey(`userTourCompleted_${user.public_id || user.id}`);
             }
             // Logic updated: Universal user gets Child tour
             if (user.user_type === 'child' || user.user_type === 'universal') {
@@ -140,7 +140,7 @@ export function UserTour() {
         let currentKey = "userTourCompleted";
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user && user.id) currentKey = `userTourCompleted_${user.id}`;
+            if (user && (user.public_id || user.id)) currentKey = `userTourCompleted_${user.public_id || user.id}`;
         } catch (e) { }
 
         // Auto-start check - Only for UNIVERSAL users

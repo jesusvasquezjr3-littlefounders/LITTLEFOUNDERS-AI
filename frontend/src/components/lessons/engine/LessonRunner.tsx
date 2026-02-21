@@ -322,7 +322,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 try {
                     const userStr = localStorage.getItem('user');
                     const user = userStr ? JSON.parse(userStr) : null;
-                    const userId = user?.id;
+                    const userId = user?.public_id || user?.id;
 
                     if (userId && code) {
                         const result = await completeLesson(code, userId, 100, 180);

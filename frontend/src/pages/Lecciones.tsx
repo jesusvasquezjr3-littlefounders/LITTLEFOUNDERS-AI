@@ -17,7 +17,7 @@ type ViewState =
 
 const Lecciones = () => {
   const { t } = useTranslation('lessons');
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewState, setViewState] = useState<ViewState>({ type: 'adventures' });
 
@@ -48,7 +48,7 @@ const Lecciones = () => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const user = JSON.parse(userStr);
-          setUserId(user.id);
+          setUserId(user.public_id || user.id);
         }
       } catch (error) {
         console.error('Error loading user data:', error);

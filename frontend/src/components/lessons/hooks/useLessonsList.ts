@@ -36,7 +36,7 @@ export function useLessonsList(
     adventureId: number,
     sagaId?: number,
     topicId?: number,
-    userId?: number
+    userId?: string
 ): UseLessonsListReturn {
     const { i18n } = useTranslation();
     const [lessons, setLessons] = useState<LessonItem[]>([]);
@@ -53,7 +53,7 @@ export function useLessonsList(
             const params = new URLSearchParams();
             if (sagaId) params.append('saga_id', sagaId.toString());
             if (topicId) params.append('topic_id', topicId.toString());
-            if (userId) params.append('user_id', userId.toString());
+            if (userId) params.append('user_public_id', userId);
             params.append('lang', i18n.language || 'es');
 
             const url = `${API_BASE}/lesson-engine/lessons/by-adventure/${adventureId}?${params}`;

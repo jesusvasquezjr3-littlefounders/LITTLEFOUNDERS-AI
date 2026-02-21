@@ -9,15 +9,22 @@ from auth.permissions import verify_family_access, get_authorized_parents
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
-@router.get("/stats/{user_id}", response_model=DashboardStats)
-async def get_user_stats(user_id: int, requester_id: int, db: Session = Depends(get_db)):
-    """Get dashboard statistics for a user (with family access control)"""
-    # Verify family access
-    verify_family_access(db, requester_id, user_id, allow_self=True)
-    
-    user = db.query(User).filter(User.id == user_id).first()
+def _resolve(db: Session, public_id: str) -> User:
+    """Resolve a public UUID to a User object"""
+    user = db.query(User).filter(User.public_id == public_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+@router.get("/stats/{public_id}", response_model=DashboardStats)
+async def get_user_stats(public_id: str, requester_public_id: str, db: Session = Depends(get_db)):
+    """Get dashboard statistics for a user (with family access control)"""
+    user = _resolve(db, public_id)
+    requester = _resolve(db, requester_public_id)
+    
+    # Verify family access using internal IDs
+    verify_family_access(db, requester.id, user.id, allow_self=True)
     
     return DashboardStats(
         lessons_completed=user.lessons_completed or 0,
@@ -28,14 +35,16 @@ async def get_user_stats(user_id: int, requester_id: int, db: Session = Depends(
     )
 
 
-@router.get("/recent-activity/{user_id}")
-async def get_recent_activity(user_id: int, requester_id: int, limit: int = 10, db: Session = Depends(get_db)):
+@router.get("/recent-activity/{public_id}")
+async def get_recent_activity(public_id: str, requester_public_id: str, limit: int = 10, db: Session = Depends(get_db)):
     """Get recent activity for a user (with family access control)"""
-    # Verify family access
-    verify_family_access(db, requester_id, user_id, allow_self=True)
+    user = _resolve(db, public_id)
+    requester = _resolve(db, requester_public_id)
+    
+    verify_family_access(db, requester.id, user.id, allow_self=True)
     
     transactions = db.query(Transaction).filter(
-        Transaction.user_id == user_id
+        Transaction.user_id == user.id
     ).order_by(Transaction.created_at.desc()).limit(limit).all()
     
     return {
@@ -52,18 +61,20 @@ async def get_recent_activity(user_id: int, requester_id: int, limit: int = 10, 
     }
 
 
-@router.get("/pending-tasks/{user_id}")
-async def get_pending_tasks(user_id: int, requester_id: int, db: Session = Depends(get_db)):
+@router.get("/pending-tasks/{public_id}")
+async def get_pending_tasks(public_id: str, requester_public_id: str, db: Session = Depends(get_db)):
     """Get pending tasks for a user (with family access control)"""
-    # Verify family access
-    verify_family_access(db, requester_id, user_id, allow_self=True)
+    user = _resolve(db, public_id)
+    requester = _resolve(db, requester_public_id)
+    
+    verify_family_access(db, requester.id, user.id, allow_self=True)
     
     # Get authorized creators (tutor and sponsors)
-    authorized_creators = get_authorized_parents(db, user_id)
+    authorized_creators = get_authorized_parents(db, user.id)
     
     # Only show tasks from authorized creators
     pending_tasks = db.query(Task, UserTask).join(UserTask).filter(
-        UserTask.user_id == user_id,
+        UserTask.user_id == user.id,
         UserTask.is_completed == False,
         Task.created_by.in_(authorized_creators) if authorized_creators else True
     ).all()

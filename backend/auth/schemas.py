@@ -63,6 +63,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
+    public_id: str
     name: str
     email: str
     user_type: str

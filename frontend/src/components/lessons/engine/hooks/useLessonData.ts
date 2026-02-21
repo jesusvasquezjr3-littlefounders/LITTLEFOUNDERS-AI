@@ -207,7 +207,7 @@ export function getNextLessonCode(currentCode: string): string {
  */
 export async function completeLesson(
     lessonCode: string,
-    userId: number,
+    userId: string,
     score: number = 100,
     timeSpentSeconds: number = 180
 ): Promise<{
@@ -218,7 +218,7 @@ export async function completeLesson(
     streak_extended: boolean;
 } | null> {
     try {
-        const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/complete?user_id=${userId}`;
+        const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/complete?user_public_id=${userId}`;
         const response = await fetch(url, {
             method: 'POST',
             headers: {

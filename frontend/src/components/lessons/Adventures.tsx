@@ -8,7 +8,7 @@ import { LessonsLoadingScreen } from '../ui/LoadingScreen';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
-    userId?: number;
+    userId?: string;
 }
 
 export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userId }) => {

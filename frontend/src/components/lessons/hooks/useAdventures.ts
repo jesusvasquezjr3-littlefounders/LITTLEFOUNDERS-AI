@@ -60,7 +60,7 @@ function getAdventureStatus(
     return 'locked';
 }
 
-export function useAdventuresAPI(userId?: number): UseAdventuresReturn {
+export function useAdventuresAPI(userId?: string): UseAdventuresReturn {
     const { t, i18n } = useTranslation('adventures');
     const [data, setData] = useState<APIAdventure[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +72,7 @@ export function useAdventuresAPI(userId?: number): UseAdventuresReturn {
             setError(null);
 
             const params = new URLSearchParams();
-            if (userId) params.append('user_id', userId.toString());
+            if (userId) params.append('user_public_id', userId);
             params.append('lang', i18n.language || 'es');
 
             const url = `${API_BASE}/lesson-engine/adventures?${params}`;

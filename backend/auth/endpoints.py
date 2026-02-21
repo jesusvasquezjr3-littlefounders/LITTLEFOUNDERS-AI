@@ -25,6 +25,13 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
+def resolve_user_by_public_id(db: Session, public_id: str):
+    """Resolve a public UUID to a User object"""
+    user = db.query(User).filter(User.public_id == public_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -81,6 +88,7 @@ async def register_user(user_data: UserRegister, db: Session = Depends(get_db)):
             "message": "Registration successful",
             "user": {
                 "id": new_user.id,
+                "public_id": str(new_user.public_id),
                 "name": new_user.name,
                 "email": new_user.email,
                 "user_type": new_user.user_type,
@@ -146,6 +154,7 @@ async def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     # Prepare user response
     user_data = {
         "id": user.id,
+        "public_id": str(user.public_id),
         "name": user.name,
         "email": user.email,
         "user_type": user.user_type,
@@ -263,6 +272,7 @@ async def google_login(request: GoogleLoginRequest, db: Session = Depends(get_db
         # Prepare user response
         user_data = {
             "id": user.id,
+            "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
             "user_type": user.user_type,
@@ -429,6 +439,7 @@ async def discord_login(request: DiscordLoginRequest, db: Session = Depends(get_
          # Prepare user response
         user_data = {
             "id": user.id,
+            "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
             "user_type": user.user_type,
@@ -486,6 +497,7 @@ async def get_all_users(db: Session = Depends(get_db)):
     for user in users:
         safe_user = {
             "id": user.id,
+            "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
             "user_type": user.user_type,
@@ -583,18 +595,17 @@ async def change_password(
     return {"message": "Contraseña actualizada correctamente"}
 
 
-@router.get("/family/{user_id}")
-async def get_user_family(user_id: int, db: Session = Depends(get_db)):
+@router.get("/family/{public_id}")
+async def get_user_family(public_id: str, db: Session = Depends(get_db)):
     """
     Get complete family information for a user (tutor, child, sponsors)
     """
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    user = resolve_user_by_public_id(db, public_id)
     
     family_data = {
         "user": {
             "id": user.id,
+            "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
             "user_type": user.user_type
@@ -610,6 +621,7 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
             if tutor:
                 family_data["tutor"] = {
                     "id": tutor.id,
+                    "public_id": str(tutor.public_id),
                     "name": tutor.name,
                     "email": tutor.email,
                     "user_type": tutor.user_type
@@ -617,10 +629,11 @@ async def get_user_family(user_id: int, db: Session = Depends(get_db)):
     
     # If user is a TUTOR, get their children
     elif user.user_type == UserType.TUTOR:
-        children = db.query(User).filter(User.tutor_id == user_id).all()
+        children = db.query(User).filter(User.tutor_id == user.id).all()
         family_data["children"] = [
             {
                 "id": child.id,
+                "public_id": str(child.public_id),
                 "name": child.name,
                 "email": child.email,
                 "user_type": child.user_type,
