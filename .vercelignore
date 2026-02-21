@@ -1,0 +1,12 @@
+# Documentación interna (No requerida para producción)
+*.md
+
+# Archivos de base de datos locales
+*.sql
+
+# Archivos de sistema (macOS)
+*.DS_Store
+.DS_Store
+
+# Scripts de mantenimiento del backend (solo uso local)
+backend/scripts/
