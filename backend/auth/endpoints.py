@@ -229,12 +229,6 @@ async def google_login(request: Request, google_data: GoogleLoginRequest, db: Se
         user = db.query(User).filter(User.email == email).first()
         
         if not user:
-            # If mode is 'login', we should NOT create a new user
-            if google_data.mode == "login":
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="User not found. Please register first."
-                )
 
             # Create new user - Default to UNIVERSAL
             user = User(
@@ -253,13 +247,6 @@ async def google_login(request: Request, google_data: GoogleLoginRequest, db: Se
             db.refresh(user)
             is_new_user = True
         else:
-            # If mode is 'register' (strict), we should NOT allow login if user exists
-            if google_data.mode == "register":
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="User already registered. Please login."
-                )
-                
             is_new_user = False
             # Update existing user with google_id if missing
             if not user.google_id:
@@ -396,12 +383,6 @@ async def discord_login(request: Request, discord_data: DiscordLoginRequest, db:
         user = db.query(User).filter((User.email == email) | (User.discord_id == discord_id)).first()
         
         if not user:
-            # If mode is 'login', we should NOT create a new user
-            if discord_data.mode == "login":
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="User not found. Please register first."
-                )
 
             # Create new user - Default to UNIVERSAL
             user = User(
@@ -420,13 +401,6 @@ async def discord_login(request: Request, discord_data: DiscordLoginRequest, db:
             db.refresh(user)
             is_new_user = True
         else:
-            # If mode is 'register' (strict), we should NOT allow login if user exists
-            if discord_data.mode == "register":
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="User already registered. Please login."
-                )
-                
             is_new_user = False
             # Update existing user with discord_id if missing
             if not user.discord_id:
