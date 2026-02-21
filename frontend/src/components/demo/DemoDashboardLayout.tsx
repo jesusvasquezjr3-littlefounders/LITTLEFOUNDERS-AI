@@ -12,10 +12,10 @@ interface DemoDashboardLayoutProps {
 
 export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
     const { t } = useTranslation('demo');
-    // Initialize from localStorage or default to false (expanded/pinned)
+    // Initialize from localStorage or default to true (collapsed by default)
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
         const stored = localStorage.getItem('demo_sidebar_collapsed');
-        return stored ? JSON.parse(stored) : false;
+        return stored ? JSON.parse(stored) : true; // Default: collapsed
     });
 
     const handleToggle = () => {

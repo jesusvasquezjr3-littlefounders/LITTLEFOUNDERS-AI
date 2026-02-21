@@ -11,7 +11,7 @@ interface DashboardLayoutProps {
 
 // Layout principal del panel de Littlefounders
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  // Initialize from localStorage or default to false (expanded/pinned)
+  // Initialize from localStorage or default to true (collapsed by default)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Check if running in browser
     if (typeof window !== 'undefined') {
@@ -19,7 +19,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       if (isMobile) return true;
     }
     const stored = localStorage.getItem('main_sidebar_collapsed');
-    return stored ? JSON.parse(stored) : false;
+    return stored ? JSON.parse(stored) : true; // Default: collapsed
   });
 
   const handleToggle = () => {
