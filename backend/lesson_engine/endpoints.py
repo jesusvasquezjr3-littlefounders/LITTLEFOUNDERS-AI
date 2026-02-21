@@ -11,7 +11,7 @@ from datetime import datetime
 from database import get_db
 from models import (
     Lesson, Character, CharacterGesture,
-    User, UserLessonProgress, UserExerciseProgress
+    User, UserLessonProgress
 )
 from schemas import (
     AdventureResponse, AdventureWithProgress,

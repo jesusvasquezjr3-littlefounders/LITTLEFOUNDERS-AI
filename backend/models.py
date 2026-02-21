@@ -21,6 +21,10 @@ class Gender(str, enum.Enum):
     OTRO = "otro"
 
 
+
+
+
+
 class TaskCategory(str, enum.Enum):
     CHORES = "chores"
     EDUCATION = "education"
@@ -43,31 +47,8 @@ class TransactionType(str, enum.Enum):
     PURCHASE = "purchase"
 
 
-class LessonDifficulty(str, enum.Enum):
-    FACIL = "Fácil"
-    INTERMEDIO = "Intermedio"
-    AVANZADO = "Avanzado"
-
-
-class ExerciseType(str, enum.Enum):
-    INTRO_NARRATIVE = "intro_narrative"
-    MULTIPLE_CHOICE = "multiple_choice"
-    DRAG_DROP = "drag_drop"
-    MATCH_PAIRS = "match_pairs"
-    FILL_BLANK = "fill_blank"
-    LISTEN_RESPOND = "listen_respond"
-    SHOP_SIMULATION = "shop_simulation"
-    SAVINGS_GOAL = "savings_goal"
-
-
-class ExerciseStatus(str, enum.Enum):
-    PENDING = "pending"
-    CORRECT = "correct"
-    INCORRECT = "incorrect"
-    SKIPPED = "skipped"
-
-
 # =====================================================
+
 # NUEVO MOTOR DE LECCIONES - MODELOS (REDISEÑADO)
 # =====================================================
 
@@ -241,21 +222,6 @@ class UserLearningStreak(Base):
     # Relationships
     user = relationship("User", back_populates="learning_streaks")
 
-
-class UserExerciseProgress(Base):
-    """Progreso del usuario por ejercicio individual (Logical ID)"""
-    __tablename__ = "user_exercise_progress"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    exercise_id = Column(Integer, nullable=False) # Logical ID within the lesson (1, 2, 3...)
-    # We could also double link to lesson_id if we want uniqueness globally
-    # but for now let's just keep it simple to satisfy import
-    
-    status = Column(String(20), default='pending')
-    attempts = Column(Integer, default=0)
-    last_attempt_at = Column(DateTime(timezone=True), nullable=True)
-    strength = Column(Float, default=1.0)
 
 
 
