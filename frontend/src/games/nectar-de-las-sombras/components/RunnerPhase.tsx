@@ -26,8 +26,8 @@ const uid = () => `r_${nextId++}`;
  */
 const PLAYER_W = 100;
 const PLAYER_H = 120;
-const ITEM_W   = 70;
-const ITEM_H   = 70;
+const ITEM_W = 70;
+const ITEM_H = 70;
 const OBSTACLE_W = 70;
 const OBSTACLE_H = 70;
 
@@ -45,29 +45,29 @@ const OBSTACLE_H = 70;
  */
 
 /* ── Physics constants (in pixels at 60 fps) ──────────────── */
-const GRAVITY          = 0.85;   // px/frame² — lighter than before for floatier arc
-const JUMP_FORCE       = -22;    // px/frame  — much stronger initial kick
-const MIN_JUMP_VY      = -6;     // short-hop cutoff when releasing early
+const GRAVITY = 0.85;   // px/frame² — lighter than before for floatier arc
+const JUMP_FORCE = -22;    // px/frame  — much stronger initial kick
+const MIN_JUMP_VY = -6;     // short-hop cutoff when releasing early
 const MAX_JUMP_HOLD_MS = 420;    // ms – max extra upward impulse while holding
-const HOLD_IMPULSE     = 0.40;   // px/frame² extra upward force while holding
+const HOLD_IMPULSE = 0.40;   // px/frame² extra upward force while holding
 
 /* Duck constants */
-const DUCK_H_RATIO  = 0.55;      // ducked player is 55 % of full height
-const DUCK_INSET_X  = 0.12;      // extra side inset while ducking
+const DUCK_H_RATIO = 0.55;      // ducked player is 55 % of full height
+const DUCK_INSET_X = 0.12;      // extra side inset while ducking
 
 /* Speed modifier multipliers */
-const BOOST_FACTOR  = 1.55;      // right arrow: 55 % faster
-const SLOW_FACTOR   = 0.65;      // left  arrow: 35 % slower
+const BOOST_FACTOR = 1.55;      // right arrow: 55 % faster
+const SLOW_FACTOR = 0.65;      // left  arrow: 35 % slower
 
 export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = false }: Props) {
   const { t } = useTranslation('games');
   const containerRef = useRef<HTMLDivElement>(null);
-  const rafRef       = useRef<number>(0);
+  const rafRef = useRef<number>(0);
   const startTimeRef = useRef(0);
-  const finishedRef  = useRef(false);
-  const pausedRef    = useRef(paused);
-  pausedRef.current  = paused;
-  const pauseStartRef  = useRef(0);
+  const finishedRef = useRef(false);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  const pauseStartRef = useRef(0);
   const totalPausedRef = useRef(0);
 
   // ── Player state — y is in PIXELS (feet position)
@@ -91,38 +91,38 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
   });
 
   // Collections
-  const collectiblesRef      = useRef<RunnerCollectible[]>([]);
-  const obstaclesRef         = useRef<RunnerObstacle[]>([]);
-  const lemonsRef            = useRef(0);
-  const sugarRef             = useRef(0);
-  const lastCollectSpawnRef  = useRef(0);
+  const collectiblesRef = useRef<RunnerCollectible[]>([]);
+  const obstaclesRef = useRef<RunnerObstacle[]>([]);
+  const lemonsRef = useRef(0);
+  const sugarRef = useRef(0);
+  const lastCollectSpawnRef = useRef(0);
   const lastObstacleSpawnRef = useRef(0);
-  const hitCooldownRef       = useRef(false);
-  const timeoutsRef          = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const hitCooldownRef = useRef(false);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Global animation clock for spinning/bobbing collectibles
   const animClockRef = useRef(0);
 
   // State for React re-renders (HUD + visual refresh)
-  const [lemons,   setLemons]   = useState(0);
-  const [sugar,    setSugar]    = useState(0);
+  const [lemons, setLemons] = useState(0);
+  const [sugar, setSugar] = useState(0);
   const [timeLeft, setTimeLeft] = useState(100);
   const [hitFlash, setHitFlash] = useState(false);
   const [isDucking, setIsDucking] = useState(false);
   const [isBoosting, setIsBoosting] = useState(false);
-  const [isSlowing,  setIsSlowing]  = useState(false);
+  const [isSlowing, setIsSlowing] = useState(false);
   const [, setTick] = useState(0);
 
   const speedMultiplier = hasSqueezer ? 1.3 : 1;
-  const duration        = GAME_CONFIG.runnerDurationMs;
+  const duration = GAME_CONFIG.runnerDurationMs;
 
   /* ── Jump handler (variable height) ────────────────────── */
   const handleJump = useCallback(() => {
     const p = playerRef.current;
     if (p.isJumping || p.ducking) return;
-    p.vy           = JUMP_FORCE;
-    p.isJumping    = true;
-    p.jumpHolding  = true;
+    p.vy = JUMP_FORCE;
+    p.isJumping = true;
+    p.jumpHolding = true;
     p.jumpHoldStart = performance.now();
     playSound('jump');
   }, [playSound]);
@@ -205,10 +205,10 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
     };
 
     window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup',   onKeyUp);
+    window.addEventListener('keyup', onKeyUp);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup',   onKeyUp);
+      window.removeEventListener('keyup', onKeyUp);
     };
   }, [handleJump, handleJumpRelease]);
 
@@ -242,7 +242,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
       }
 
       const elapsed = now - startTimeRef.current - totalPausedRef.current;
-      const dt      = Math.min((now - prevTime) / 16.67, 3);
+      const dt = Math.min((now - prevTime) / 16.67, 3);
       prevTime = now;
 
       // Animation clock for spinning / bobbing effects
@@ -266,7 +266,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
 
       const containerW = container.clientWidth;
       const containerH = container.clientHeight;
-      const groundY    = containerH * (GAME_CONFIG.runnerGroundY / 100);
+      const groundY = containerH * (GAME_CONFIG.runnerGroundY / 100);
 
       // ── Speed: base + difficulty + squeezer + arrow-key modifier
       const keys = keysRef.current;
@@ -306,20 +306,20 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
 
       // ── Physics (pixels)
       p.vy += GRAVITY * dt;
-      p.y  += p.vy * dt;
+      p.y += p.vy * dt;
 
       // Ceiling clamp (can't go above 8 % of container)
       const ceilPx = containerH * 0.08 + PLAYER_H;
       if (p.y < ceilPx) {
-        p.y  = ceilPx;
+        p.y = ceilPx;
         if (p.vy < 0) p.vy = 0;
         p.jumpHolding = false;
       }
 
       // Ground landing
       if (p.y >= groundY) {
-        p.y         = groundY;
-        p.vy        = 0;
+        p.y = groundY;
+        p.vy = 0;
         p.isJumping = false;
         p.jumpHolding = false;
       }
@@ -357,23 +357,39 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
           width: ITEM_W,
           height: ITEM_H,
           collected: false,
-          rotation:  Math.random() * 360,
-          scale:     0.85 + Math.random() * 0.3,
+          rotation: Math.random() * 360,
+          scale: 0.85 + Math.random() * 0.3,
           bobOffset: Math.random() * Math.PI * 2,
           spinSpeed: spinBase > 0 ? (0.5 + Math.random() * spinBase) : 0,
         });
       }
 
       // ── Spawn obstacles
-      if (now - lastObstacleSpawnRef.current > GAME_CONFIG.obstacleSpawnIntervalMs / (1 + day * 0.05)) {
+      // Base interval from config, scaling a bit with day
+      const baseObstacleInterval = GAME_CONFIG.obstacleSpawnIntervalMs / (1 + day * 0.08);
+      // Introduce heavy randomness: ± 40% of the base interval for unpredictable spawning
+      const minInterval = baseObstacleInterval * 0.6;
+      const maxInterval = baseObstacleInterval * 1.4;
+
+      // Store the target interval to hit for the NEXT obstacle (we calculate it randomly each time we spawn one)
+      if (!lastObstacleSpawnRef.current) {
         lastObstacleSpawnRef.current = now;
+        // Temporary variable using the object ref to store the random target locally (TypeScript hack: just use another ref normally, but we'll attach it to the ref obj for speed)
+        (lastObstacleSpawnRef as any).targetInterval = minInterval + Math.random() * (maxInterval - minInterval);
+      }
+
+      if (now - lastObstacleSpawnRef.current > ((lastObstacleSpawnRef as any).targetInterval || baseObstacleInterval)) {
+        lastObstacleSpawnRef.current = now;
+        // Generate the NEXT interval
+        (lastObstacleSpawnRef as any).targetInterval = minInterval + Math.random() * (maxInterval - minInterval);
+
         const obstacleType = Math.random() > 0.5 ? 'rock' : 'mushroom';
-        const scale        = 0.9 + Math.random() * 0.25;
+        const scale = 0.9 + Math.random() * 0.25;
         obstaclesRef.current.push({
           id: uid(),
           x: containerW + 20,
           y: groundY - OBSTACLE_H * scale,
-          width:  OBSTACLE_W,
+          width: OBSTACLE_W,
           height: OBSTACLE_H,
           obstacleType,
           scale,
@@ -384,19 +400,19 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
       // ── Move items left (scroll speed × 2.5 for items)
       const moveSpeed = scrollSpeed * 2.5;
       collectiblesRef.current = collectiblesRef.current
-        .map((c)  => ({ ...c, x: c.x - moveSpeed }))
+        .map((c) => ({ ...c, x: c.x - moveSpeed }))
         .filter((c) => c.x > -ITEM_W - 10);
 
       obstaclesRef.current = obstaclesRef.current
-        .map((o)  => ({ ...o, x: o.x - moveSpeed }))
+        .map((o) => ({ ...o, x: o.x - moveSpeed }))
         .filter((o) => o.x > -OBSTACLE_W - 10);
 
       // ── Player hitbox — tight to match visible sprite
-      const playerX    = containerW * 0.15;
-      const duckH      = p.ducking ? PLAYER_H * DUCK_H_RATIO : PLAYER_H;
+      const playerX = containerW * 0.15;
+      const duckH = p.ducking ? PLAYER_H * DUCK_H_RATIO : PLAYER_H;
       // When ducking, feet stay at groundY; top rises
       const playerTopPx = p.y - duckH;
-      const hbInsetX   = PLAYER_W * (p.ducking ? 0.28 + DUCK_INSET_X : 0.28);
+      const hbInsetX = PLAYER_W * (p.ducking ? 0.28 + DUCK_INSET_X : 0.28);
       const hbInsetTop = duckH * 0.15;
       const hbInsetBot = duckH * 0.05;
       const px1 = playerX + hbInsetX;
@@ -409,14 +425,14 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
       collectiblesRef.current.forEach((c) => {
         if (c.collected) return;
         const inset = c.width * 0.15;
-        const cx1   = c.x + inset;
-        const cx2   = c.x + c.width  - inset;
-        const cy1   = c.y + inset;
-        const cy2   = c.y + c.height - inset;
+        const cx1 = c.x + inset;
+        const cx2 = c.x + c.width - inset;
+        const cy1 = c.y + inset;
+        const cy2 = c.y + c.height - inset;
 
         if (px1 < cx2 && px2 > cx1 && py1 < cy2 && py2 > cy1) {
           c.collected = true;
-          collected   = true;
+          collected = true;
           if (c.type === 'lemon') {
             lemonsRef.current++;
             setLemons(lemonsRef.current);
@@ -434,11 +450,11 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
       // ── Obstacle collision — tight hitbox to prevent phantom hits
       if (!hitCooldownRef.current) {
         obstaclesRef.current.forEach((o) => {
-          const visualW  = o.width  * o.scale;
-          const visualH  = o.height * o.scale;
-          const insetX   = visualW  * 0.30;
-          const insetTop = visualH  * 0.25;
-          const insetBot = visualH  * 0.10;
+          const visualW = o.width * o.scale;
+          const visualH = o.height * o.scale;
+          const insetX = visualW * 0.30;
+          const insetTop = visualH * 0.25;
+          const insetBot = visualH * 0.10;
           const ox1 = o.x + insetX;
           const ox2 = o.x + visualW - insetX;
           const oy1 = o.y + insetTop;
@@ -447,7 +463,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
           if (px1 < ox2 && px2 > ox1 && py1 < oy2 && py2 > oy1) {
             hitCooldownRef.current = true;
             lemonsRef.current = Math.max(0, lemonsRef.current - 1);
-            sugarRef.current  = Math.max(0, sugarRef.current  - 1);
+            sugarRef.current = Math.max(0, sugarRef.current - 1);
             setLemons(lemonsRef.current);
             setSugar(sugarRef.current);
             playSound('hit');
@@ -475,7 +491,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
   const p = playerRef.current;
   const containerH_render = containerRef.current?.clientHeight ?? 600;
   const groundYPx = containerH_render * (GAME_CONFIG.runnerGroundY / 100);
-  const isInAir   = p.isJumping || (p.initialised && p.y < groundYPx - 2);
+  const isInAir = p.isJumping || (p.initialised && p.y < groundYPx - 2);
 
   let playerSrc: string;
   if (isInAir) {
@@ -485,7 +501,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
   }
 
   /* ── Compute player top for render ─────────────────────── */
-  const duckH_render   = p.ducking ? PLAYER_H * DUCK_H_RATIO : PLAYER_H;
+  const duckH_render = p.ducking ? PLAYER_H * DUCK_H_RATIO : PLAYER_H;
   const playerTopRender = (p.initialised ? p.y : groundYPx) - duckH_render;
 
   /* ── Animation clock for render transforms ─────────────── */
@@ -544,12 +560,12 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
       <div
         className={`nectar-runner-player${p.ducking ? ' nectar-runner-player-duck' : ''}`}
         style={{
-          left:     '15%',
-          top:      playerTopRender,
-          width:    PLAYER_W,
-          height:   duckH_render,
+          left: '15%',
+          top: playerTopRender,
+          width: PLAYER_W,
+          height: duckH_render,
           position: 'absolute',
-          zIndex:   10,
+          zIndex: 10,
           transition: 'none',
         }}
       >
@@ -558,8 +574,8 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
 
       {/* Collectibles — with random visual variety */}
       {collectiblesRef.current.map((c) => {
-        const spin      = c.spinSpeed > 0 ? (c.rotation + clock * c.spinSpeed * 8) % 360 : c.rotation;
-        const bob       = Math.sin(clock * 0.08 + c.bobOffset) * 5;
+        const spin = c.spinSpeed > 0 ? (c.rotation + clock * c.spinSpeed * 8) % 360 : c.rotation;
+        const bob = Math.sin(clock * 0.08 + c.bobOffset) * 5;
         const transform = `rotate(${spin}deg) scale(${c.scale})`;
 
         return (
@@ -567,14 +583,14 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
             key={c.id}
             className={`nectar-runner-collectible nectar-runner-collectible-${c.type}`}
             style={{
-              position:        'absolute',
-              left:            c.x,
-              top:             c.y + bob,
-              width:           ITEM_W,
-              height:          ITEM_H,
+              position: 'absolute',
+              left: c.x,
+              top: c.y + bob,
+              width: ITEM_W,
+              height: ITEM_H,
               transform,
               transformOrigin: 'center center',
-              willChange:      'transform',
+              willChange: 'transform',
             }}
           >
             <img
@@ -592,12 +608,12 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
           key={o.id}
           className="nectar-runner-obstacle"
           style={{
-            position:        'absolute',
-            left:            o.x,
-            top:             o.y,
-            width:           OBSTACLE_W * o.scale,
-            height:          OBSTACLE_H * o.scale,
-            transform:       `rotate(${o.rotation}deg)`,
+            position: 'absolute',
+            left: o.x,
+            top: o.y,
+            width: OBSTACLE_W * o.scale,
+            height: OBSTACLE_H * o.scale,
+            transform: `rotate(${o.rotation}deg)`,
             transformOrigin: 'center bottom',
           }}
         >

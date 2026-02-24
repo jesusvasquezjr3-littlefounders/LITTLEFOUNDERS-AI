@@ -65,11 +65,11 @@ export const PICTURES = {
 /* ── Game configuration ───────────────────────────────────── */
 export const GAME_CONFIG = {
   // Runner (physics constants are defined locally in RunnerPhase.tsx)
-  runnerDurationMs: 18000,          // 18 s per day (up from 12 s)
+  runnerDurationMs: 54000,          // 54 s per day (tripled from 18 s)
   runnerSpeedBase: 3.5,
   runnerGroundY: 75,                // percent from top
-  collectibleSpawnIntervalMs: 700,  // slightly more frequent spawns
-  obstacleSpawnIntervalMs: 2200,    // a touch more breathing room
+  collectibleSpawnIntervalMs: 800,  // slightly more frequent spawns
+  obstacleSpawnIntervalMs: 2500,    // Base obstacle spawn interval
 
   // Stand
   ingredientCostPerUnit: 2,
