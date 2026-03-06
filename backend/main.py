@@ -49,29 +49,20 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": exc.errors()}
     )
 
-# Vercel Middleware to strip /api prefix
-# When using rewrites in vercel.json, the path passed to FastAPI includes /api
-# We need to strip it so authentication routes match (e.g. /api/auth/login -> /auth/login)
+# Request logging middleware
 @app.middleware("http")
-async def strip_api_prefix(request, call_next):
-    original_path = request.url.path
+async def log_requests(request, call_next):
     method = request.method
-    print(f"[DEBUG] Incoming request: {method} {original_path}")
-    
-    if original_path.startswith("/api"):
-        # Modify the scope directly to strip /api
-        new_path = original_path[4:]  # Remove first 4 chars (/api)
-        request.scope["path"] = new_path
-        print(f"[DEBUG] Path stripped: {original_path} -> {new_path}")
-    
+    path = request.url.path
+    print(f"[REQUEST] {method} {path}")
     response = await call_next(request)
-    print(f"[DEBUG] Response status: {response.status_code}")
+    print(f"[RESPONSE] {response.status_code}")
     return response
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.allowed_origins,
     allow_credentials=settings.cors_allow_credentials,
     allow_methods=settings.cors_allow_methods,
     allow_headers=settings.cors_allow_headers,
@@ -123,10 +114,11 @@ async def health_check():
     except Exception as e:
         db_status = f"error: {str(e)}"
     
+    env = "render" if os.getenv("RENDER") else "local"
     return {
         "status": "ok",
         "database": db_status,
-        "environment": "vercel" if os.getenv("VERCEL") else "local",
+        "environment": env,
         "config": {
             "db_host": settings.database_hostname,
             "db_port": settings.database_port,
@@ -139,4 +131,5 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
