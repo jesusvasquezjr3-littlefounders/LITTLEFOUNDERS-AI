@@ -4,33 +4,14 @@
             "PYO3_USE_ABI3_FORWARD_COMPATIBILITY": "1"
         }
     },
-    "builds": [
+    "rewrites": [
         {
-            "src": "frontend/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
+            "source": "/api/(.*)",
+            "destination": "/api/index.py"
         },
         {
-            "src": "api/index.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "50mb"
-            }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/index.py"
-        },
-        {
-            "handle": "filesystem"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
+            "source": "/((?!api/).*)",
+            "destination": "/index.html"
         }
     ]
 }
