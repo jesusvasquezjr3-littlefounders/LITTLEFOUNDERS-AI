@@ -64,5 +64,6 @@ database.sql
 littlefounders_lessons/
 
 *.backup
+.claude/
 
 ADMIN_PANEL_IMPLEMENTACION.md

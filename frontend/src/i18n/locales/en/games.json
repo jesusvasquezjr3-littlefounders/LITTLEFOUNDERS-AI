@@ -122,6 +122,123 @@
       "soundOff": "Sound: Off"
     }
   },
+  "paperDetective": {
+    "title": "Paper Detective",
+    "subtitle": "Piggy Bank Mission",
+    "startScreen": {
+      "playButton": "PLAY!",
+      "highScore": "Best Score: {{score}}",
+      "howToPlay": "How to Play?",
+      "totalPoints": "Accumulated Points: {{points}}"
+    },
+    "tutorial": {
+      "step1Title": "Inspection Phase",
+      "step1Desc": "Look at the price tag and click the coin that matches the value shown!",
+      "step2Title": "Identify Real Coins",
+      "step2Desc": "Watch out — some options are fakes (poker chips, buttons, bottle caps). Only click a real coin that matches the price!",
+      "step3Title": "Piggy Bank Phase",
+      "step3Desc": "Drag or tap coins from the drawer into the piggy bank slot to reach the exact target amount.",
+      "step4Title": "The Fuse!",
+      "step4Desc": "Your energy fuse burns down constantly! Each correct answer adds time. Wrong answers cost time. Don't let it burn out!",
+      "gotIt": "Got It!",
+      "skip": "Skip",
+      "next": "Next"
+    },
+    "hud": {
+      "score": "Score",
+      "combo": "Streak",
+      "comboMultiplier": "x{{multiplier}}",
+      "day": "Day {{day}}",
+      "pause": "Pause",
+      "timeLabel": "Fuse"
+    },
+    "phase1": {
+      "instruction": "Find the coin that matches the price!",
+      "priceLabel": "${{price}}"
+    },
+    "phase2": {
+      "instruction": "Fill the piggy bank exactly!",
+      "targetLabel": "Target: ${{target}}",
+      "currentLabel": "${{current}}",
+      "vaultLabel": "In the vault (tap to remove):",
+      "drawerLabel": "Coin drawer (tap or drag to vault):",
+      "clearButton": "Clear Vault",
+      "removeLabel": "Remove",
+      "noCoins": "No more coins!",
+      "overshoot": "Too much! Coin ejected!",
+      "success": "Exact! Great job!"
+    },
+    "feedback": {
+      "correct": "Correct! +Time",
+      "incorrect": "Oops! -Time",
+      "combo": "Streak x{{count}}!",
+      "newDay": "Day {{day}} — Speed up!"
+    },
+    "pause": {
+      "title": "Paused",
+      "resume": "Resume",
+      "restart": "Restart",
+      "quit": "Quit",
+      "soundOn": "Sound: On",
+      "soundOff": "Sound: Off"
+    },
+    "gameOver": {
+      "title": "Game Over!",
+      "finalScore": "Final Score",
+      "highScore": "Best Record: {{score}}",
+      "newHighScore": "New Record!",
+      "daysReached": "Day reached: {{day}}",
+      "pointsEarned": "Points earned this round: {{points}}",
+      "retry": "Play Again!",
+      "wardrobe": "Detective's Wardrobe",
+      "exit": "Exit"
+    },
+    "wardrobe": {
+      "title": "Detective's Wardrobe",
+      "all": "All",
+      "points": "Available points: {{points}}",
+      "unlock": "Unlock",
+      "confirm": "Confirm purchase",
+      "equip": "Equip",
+      "unequip": "Remove",
+      "locked": "Locked",
+      "back": "Back",
+      "playAgain": "Play Again!",
+      "categories": {
+        "hat": "Hats",
+        "glasses": "Glasses",
+        "mustache": "Mustaches"
+      }
+    },
+    "coins": {
+      "coin1": "$1 Coin",
+      "coin2": "$2 Coin",
+      "coin5": "$5 Coin",
+      "coin10": "$10 Coin",
+      "pokerChip": "Poker Chip",
+      "button": "Shirt Button",
+      "bottleCap": "Bottle Cap",
+      "pirateCoin": "Pirate Coin",
+      "carrot": "Carrot Slice"
+    },
+    "items": {
+      "candy": "Candy",
+      "apple": "Apple",
+      "donut": "Donut",
+      "magnifier": "Magnifying Glass",
+      "hat": "Hat",
+      "pencil": "Pencil",
+      "notebook": "Notebook",
+      "lollipop": "Lollipop",
+      "iceCream": "Ice Cream"
+    },
+    "cosmetics": {
+      "topHat": "Top Hat",
+      "detectiveHat": "Detective Hat",
+      "sunglasses": "Sunglasses",
+      "mustache": "Fake Mustache"
+    }
+  },
   "nectar": {
     "title": "Nectar of Shadows",
     "subtitle": "The Small Entrepreneur",

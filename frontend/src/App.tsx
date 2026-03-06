@@ -35,6 +35,7 @@ import { SoundProvider } from "@/contexts/SoundContext";
 import GamesPage from "./pages/GamesPage";
 import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
 import NectarDeLasSombrasPage from "@/games/nectar-de-las-sombras/NectarDeLasSombrasPage";
+import PaperDetectivePage from "@/games/paper-detective/PaperDetectivePage";
 
 // Admin Panel
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
@@ -131,6 +132,11 @@ const App = () => (
                 <Route path="/games/nectar-de-las-sombras" element={
                   <ProtectedRoute>
                     <NectarDeLasSombrasPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/games/paper-detective" element={
+                  <ProtectedRoute>
+                    <PaperDetectivePage />
                   </ProtectedRoute>
                 } />
 

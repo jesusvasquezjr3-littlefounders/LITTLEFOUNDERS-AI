@@ -122,6 +122,123 @@
       "soundOff": "Sonido: Desactivado"
     }
   },
+  "paperDetective": {
+    "title": "Detective de Papel",
+    "subtitle": "Misión Alcancía",
+    "startScreen": {
+      "playButton": "¡JUGAR!",
+      "highScore": "Mejor Puntuación: {{score}}",
+      "howToPlay": "¿Cómo Jugar?",
+      "totalPoints": "Puntos Acumulados: {{points}}"
+    },
+    "tutorial": {
+      "step1Title": "Fase de Inspección",
+      "step1Desc": "¡Mira la etiqueta de precio y haz clic en la moneda que tenga ese valor!",
+      "step2Title": "Identifica Monedas Reales",
+      "step2Desc": "Cuidado — algunas opciones son falsas (fichas de póker, botones, tapas). ¡Solo haz clic en una moneda real que coincida con el precio!",
+      "step3Title": "Fase de la Alcancía",
+      "step3Desc": "Arrastra o toca monedas del cajón hacia la ranura de la alcancía para alcanzar exactamente el monto indicado.",
+      "step4Title": "¡La Mecha!",
+      "step4Desc": "¡Tu mecha de energía se consume constantemente! Cada respuesta correcta agrega tiempo. Los errores cuestan tiempo. ¡No dejes que se queme!",
+      "gotIt": "¡Entendido!",
+      "skip": "Saltar",
+      "next": "Siguiente"
+    },
+    "hud": {
+      "score": "Puntos",
+      "combo": "Racha",
+      "comboMultiplier": "x{{multiplier}}",
+      "day": "Día {{day}}",
+      "pause": "Pausa",
+      "timeLabel": "Mecha"
+    },
+    "phase1": {
+      "instruction": "¡Encuentra la moneda que coincide con el precio!",
+      "priceLabel": "${{price}}"
+    },
+    "phase2": {
+      "instruction": "¡Llena la alcancía exactamente!",
+      "targetLabel": "Meta: ${{target}}",
+      "currentLabel": "${{current}}",
+      "vaultLabel": "En la alcancía (toca para quitar):",
+      "drawerLabel": "Cajón de monedas (toca o arrastra a la alcancía):",
+      "clearButton": "Vaciar Alcancía",
+      "removeLabel": "Quitar",
+      "noCoins": "¡No quedan monedas!",
+      "overshoot": "¡Demasiado! Moneda rechazada.",
+      "success": "¡Exacto! ¡Muy bien!"
+    },
+    "feedback": {
+      "correct": "¡Correcto! +Tiempo",
+      "incorrect": "¡Ups! -Tiempo",
+      "combo": "¡Racha x{{count}}!",
+      "newDay": "Día {{day}} — ¡Más rápido!"
+    },
+    "pause": {
+      "title": "Pausa",
+      "resume": "Continuar",
+      "restart": "Reiniciar",
+      "quit": "Salir",
+      "soundOn": "Sonido: Activado",
+      "soundOff": "Sonido: Desactivado"
+    },
+    "gameOver": {
+      "title": "¡Fin del Juego!",
+      "finalScore": "Puntuación Final",
+      "highScore": "Mejor Récord: {{score}}",
+      "newHighScore": "¡Nuevo Récord!",
+      "daysReached": "Día alcanzado: {{day}}",
+      "pointsEarned": "Puntos ganados esta ronda: {{points}}",
+      "retry": "¡Jugar de Nuevo!",
+      "wardrobe": "Vestidor del Detective",
+      "exit": "Salir"
+    },
+    "wardrobe": {
+      "title": "Vestidor del Detective",
+      "all": "Todos",
+      "points": "Puntos disponibles: {{points}}",
+      "unlock": "Desbloquear",
+      "confirm": "Confirmar compra",
+      "equip": "Equipar",
+      "unequip": "Quitar",
+      "locked": "Bloqueado",
+      "back": "Volver",
+      "playAgain": "¡Jugar de Nuevo!",
+      "categories": {
+        "hat": "Sombreros",
+        "glasses": "Gafas",
+        "mustache": "Bigotes"
+      }
+    },
+    "coins": {
+      "coin1": "Moneda de $1",
+      "coin2": "Moneda de $2",
+      "coin5": "Moneda de $5",
+      "coin10": "Moneda de $10",
+      "pokerChip": "Ficha de Póker",
+      "button": "Botón de Camisa",
+      "bottleCap": "Tapa de Botella",
+      "pirateCoin": "Moneda Pirata",
+      "carrot": "Rodaja de Zanahoria"
+    },
+    "items": {
+      "candy": "Caramelo",
+      "apple": "Manzana",
+      "donut": "Dona",
+      "magnifier": "Lupa",
+      "hat": "Sombrero",
+      "pencil": "Lápiz",
+      "notebook": "Cuaderno",
+      "lollipop": "Paleta",
+      "iceCream": "Helado"
+    },
+    "cosmetics": {
+      "topHat": "Sombrero de Copa",
+      "detectiveHat": "Sombrero de Detective",
+      "sunglasses": "Gafas de Sol",
+      "mustache": "Bigote Postizo"
+    }
+  },
   "nectar": {
     "title": "Néctar de las Sombras",
     "subtitle": "El Pequeño Emprendedor",

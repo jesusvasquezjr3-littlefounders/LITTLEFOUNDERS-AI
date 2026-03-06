@@ -8,12 +8,14 @@ import { cn } from "@/lib/utils";
 const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/2-nam-vs-yum-game';
 const NAM_VS_YUM_GIF = `${ASSET_BASE}/pictures/2-nam-vs-yum-game.gif`;
 const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
+const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
 
 export default function GamesPage() {
   const { t } = useTranslation(['games', 'common']);
   const navigate = useNavigate();
   const [gifError, setGifError] = useState(false);
   const [nectarGifError, setNectarGifError] = useState(false);
+  const [detectiveGifError, setDetectiveGifError] = useState(false);
 
   return (
     <DashboardLayout>
@@ -169,6 +171,68 @@ export default function GamesPage() {
                 </h3>
                 <p className="text-xs text-white/70 line-clamp-1">
                   {t('games:nectar.subtitle')}
+                </p>
+              </div>
+            </div>
+          </button>
+
+          {/* Paper Detective Card */}
+          <button
+            onClick={() => navigate('/games/paper-detective')}
+            className={cn(
+              "group relative overflow-hidden rounded-3xl",
+              "bg-card border border-border/50",
+              "transition-all duration-300",
+              "hover:scale-[1.03] hover:shadow-xl hover:shadow-amber-500/10",
+              "active:scale-[0.98]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+              "text-left w-full h-full flex flex-col",
+            )}
+          >
+            {/* Square Preview */}
+            <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
+              {!detectiveGifError ? (
+                <img
+                  src={PAPER_DETECTIVE_GIF}
+                  alt={t('games:paperDetective.title')}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={() => setDetectiveGifError(true)}
+                  draggable={false}
+                  loading="eager"
+                />
+              ) : (
+                /* Fallback if GIF fails to load */
+                <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-amber-900/60 via-slate-900 to-amber-900/60">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">🔍</span>
+                    <span className="text-2xl font-bold text-white/60">&</span>
+                    <span className="text-4xl">💰</span>
+                  </div>
+                  <p className="text-white/40 text-xs font-medium px-4 text-center">
+                    {t('games:paperDetective.title')}
+                  </p>
+                </div>
+              )}
+
+              {/* Play overlay on hover */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
+                <div className={cn(
+                  "w-14 h-14 rounded-full flex items-center justify-center",
+                  "bg-amber-500 shadow-lg shadow-amber-500/40",
+                  "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
+                  "transition-all duration-300",
+                )}>
+                  <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
+                </div>
+              </div>
+
+              {/* Title Overlay for 1:1 look */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <h3 className="font-bold text-lg text-white leading-tight">
+                  {t('games:paperDetective.title')}
+                </h3>
+                <p className="text-xs text-white/70 line-clamp-1">
+                  {t('games:paperDetective.subtitle')}
                 </p>
               </div>
             </div>
