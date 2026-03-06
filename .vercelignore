@@ -10,3 +10,8 @@
 
 # Scripts de mantenimiento del backend (solo uso local)
 backend/scripts/
+
+# Ignorar todo el código del backend en Vercel
+# (El backend ahora se despliega exclusivamente en Render)
+backend/
+api/
