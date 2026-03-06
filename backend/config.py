@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     
     # CORS configuration - SECURITY: whitelist only allowed origins
     # Can be overridden via CORS_ORIGINS env var (comma-separated list) in Render dashboard
-    cors_origins: list[str] = [
+    _default_cors_origins: list[str] = [
         "https://littlefounders.ai",
         "https://www.littlefounders.ai",
         "https://littlefounders-ai.vercel.app",
@@ -65,13 +65,13 @@ class Settings(BaseSettings):
     def allowed_origins(self) -> list[str]:
         """
         Returns CORS origins from CORS_ORIGINS env var (comma-separated) if set,
-        otherwise falls back to the cors_origins list above.
+        otherwise falls back to the default list above.
         Set this in Render's Environment Variables after you know your Vercel URL.
         """
         env_origins = os.getenv("CORS_ORIGINS", "")
         if env_origins:
             return [o.strip() for o in env_origins.split(",") if o.strip()]
-        return self.cors_origins
+        return self._default_cors_origins
 
 
 settings = Settings()
