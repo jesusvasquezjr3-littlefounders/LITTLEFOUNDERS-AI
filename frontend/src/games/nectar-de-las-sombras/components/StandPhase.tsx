@@ -218,9 +218,11 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
         <button
           className="nectar-btn nectar-btn-sell nectar-btn-glow"
           onClick={handleSell}
-          disabled={lemons === 0 && sugarAmount === 0}
+          disabled={lemons === 0 && sugarAmount === 0 && (lemonsAvailable > 0 || sugarAvailable > 0)}
         >
-          {t('nectar.stand.sellButton')}
+          {lemonsAvailable === 0 && sugarAvailable === 0 && lemons === 0 && sugarAmount === 0
+            ? t('nectar.stand.skipDay', 'Avanzar sin producto')
+            : t('nectar.stand.sellButton')}
         </button>
       </div>
 

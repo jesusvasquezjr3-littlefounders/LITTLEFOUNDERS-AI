@@ -120,21 +120,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             src: [path],
             loop: true,
             volume: options?.volume || 0.1,
-            html5: true, // Use HTML5 Audio for streaming large files
             onloaderror: (id, err) => console.error('BGM Load Error:', err),
-            onplayerror: (id, err) => {
-                console.warn('BGM Auto-play blocked. Waiting for interaction...');
-                // If blocked, we listen for a one-time interaction to resume
-                const unlock = () => {
-                    bgm.play();
-                    document.removeEventListener('click', unlock);
-                    document.removeEventListener('touchstart', unlock);
-                    document.removeEventListener('keydown', unlock);
-                };
-                document.addEventListener('click', unlock);
-                document.addEventListener('touchstart', unlock);
-                document.addEventListener('keydown', unlock);
-            },
         });
 
         bgmRef.current = bgm;

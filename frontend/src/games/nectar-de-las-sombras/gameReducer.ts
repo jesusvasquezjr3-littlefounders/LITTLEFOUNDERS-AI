@@ -84,13 +84,31 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case 'FINISH_RUNNER':
+    case 'FINISH_RUNNER': {
+      // If the player completely fails to collect any ingredients, the business cannot operate.
+      // Trigger a Game Over per the designed failure state.
+      if (action.lemons === 0 && action.sugar === 0) {
+        const finalHighScore = Math.max(state.highScore, state.totalCoinsEarned);
+        const finalBestDay = Math.max(state.bestDay, state.day);
+        saveNumber(GAME_CONFIG.highScoreKey, finalHighScore);
+        saveNumber(GAME_CONFIG.bestDayKey, finalBestDay);
+        return {
+          ...state,
+          phase: 'GAME_OVER',
+          lemonsCollected: 0,
+          sugarCollected: 0,
+          highScore: finalHighScore,
+          bestDay: finalBestDay,
+        };
+      }
+
       return {
         ...state,
         phase: 'STAND_PREP',
         lemonsCollected: action.lemons,
         sugarCollected: action.sugar,
       };
+    }
 
     case 'SET_RECIPE':
       return {
@@ -128,7 +146,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         newVault -= withdrawal;
       }
 
-      const isGameOver = newCoins < 0;
+      const isGameOver = newCoins < 0 || (newCoins <= 0 && newVault <= 0);
 
       const newHighScore = Math.max(state.highScore, newTotal);
       const newBestDay = Math.max(state.bestDay, state.day);

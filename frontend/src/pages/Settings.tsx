@@ -485,12 +485,12 @@ const Settings = () => {
                     </SettingItem>
                 </Section>
 
-                {/* Save Button Floating or Fixed at bottom */}
-                <div className="fixed bottom-6 left-0 right-0 px-4 md:static md:px-0">
+                {/* Save Button */}
+                <div className="flex justify-center pt-4">
                     <Button
                         onClick={handleSaveProfile}
                         disabled={isSaving || !!usernameError}
-                        className="w-full max-w-xl mx-auto h-12 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 shadow-lg shadow-slate-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-auto px-12 md:px-16 mx-auto h-12 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 shadow-lg shadow-slate-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                         {isSaving ? (
                             <>
@@ -504,8 +504,6 @@ const Settings = () => {
                         )}
                     </Button>
                 </div>
-
-                <div className="h-12 md:hidden" /> {/* Spacer for floating button */}
 
             </div>
         </DashboardLayout>

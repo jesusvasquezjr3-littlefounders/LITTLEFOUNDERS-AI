@@ -47,7 +47,7 @@ export function NectarGame() {
 
   /* ── Phase handlers ─────────────────────────────────────── */
   const handlePlay = useCallback(() => {
-    playBGM(AUDIO.bgm, { volume: 0.08 });
+    playBGM(AUDIO.bgm, { volume: 0.4 });
     dispatch({ type: 'START_DAY' });
   }, [playBGM]);
 
@@ -56,7 +56,7 @@ export function NectarGame() {
   }, []);
 
   const handleTutorialComplete = useCallback(() => {
-    playBGM(AUDIO.bgm, { volume: 0.08 });
+    playBGM(AUDIO.bgm, { volume: 0.4 });
     dispatch({ type: 'START_DAY' });
   }, [playBGM]);
 
@@ -136,7 +136,7 @@ export function NectarGame() {
 
   const handleRetry = useCallback(() => {
     dispatch({ type: 'RESET' });
-    playBGM(AUDIO.bgm, { volume: 0.08 });
+    playBGM(AUDIO.bgm, { volume: 0.4 });
     dispatch({ type: 'START_DAY' });
   }, [playBGM]);
 
