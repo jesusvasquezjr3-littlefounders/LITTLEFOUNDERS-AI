@@ -96,13 +96,13 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                          Q 115 240 120 200
                          Q 125 100 105 50
                          Q 70 30 35 50"
-                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    fill={COLORS.hair} />
 
                 {/* === CUERPO INFERIOR (Pantalones) === */}
                 {/* Pierna Izquierda */}
-                <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} stroke={COLORS.stroke} strokeWidth="2" />
+                <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
                 {/* Pierna Derecha */}
-                <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} stroke={COLORS.stroke} strokeWidth="2" />
+                <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
 
                 {/* Zapatos */}
                 <path d="M45 310 L 45 330 Q 56 335 67 330 L 67 310 Z" fill={COLORS.shoes} />
@@ -116,7 +116,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                          Q 100 160 95 130
                          Q 90 120 70 120
                          Q 50 120 45 130"
-                    fill={COLORS.top} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    fill={COLORS.top} />
 
                 {/* Brazos (Delgados a los lados) */}
                 <path d="M42 135 
@@ -152,14 +152,14 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 <path d="M35 45
                          Q 45 15 70 15
                          Q 95 15 105 45"
-                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    fill={COLORS.hair} />
 
                 {/* Mechón Izquierdo */}
                 <path d="M40 38
                           Q 35 50 40 70
                           Q 50 50 55 40
                           Z"
-                    fill={COLORS.hair} stroke={COLORS.stroke} strokeWidth="2" />
+                    fill={COLORS.hair} />
 
                 {/* Mechón Derecho (Ondulado) */}
                 <path d="M70 22
@@ -167,7 +167,12 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                          Q 112 80 95 85
                          Q 98 60 85 45
                          Q 80 35 70 22"
-                    fill="url(#hairShine)" stroke={COLORS.stroke} strokeWidth="2" />
+                    fill="url(#hairShine)" />
+
+                {/* Floresita (Emoji) 🌸 */}
+                <text x="45" y="40" fontSize="26" dominantBaseline="middle" textAnchor="middle" style={{ userSelect: 'none' }}>
+                    🌸
+                </text>
 
                 {/* Orejas */}
                 <ellipse cx="38" cy="65" rx="4" ry="6" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2" />
