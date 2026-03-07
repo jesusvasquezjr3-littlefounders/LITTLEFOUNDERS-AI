@@ -16,7 +16,6 @@
  */
 
 import { useState } from 'react';
-import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -67,10 +66,9 @@ export function LanguageSelector({
                     )}
                 >
                     {variant === 'minimal' ? (
-                        <Languages className="h-4 w-4" />
+                        <span className="text-base leading-none">{currentLanguageInfo.flag}</span>
                     ) : variant === 'pill' ? (
                         <>
-                            <Languages className="h-4 w-4 text-pink-500" />
                             <span className="text-base leading-none">{currentLanguageInfo.flag}</span>
                             <span className="text-xs font-bold uppercase tracking-wider">
                                 {currentLanguageInfo.code}

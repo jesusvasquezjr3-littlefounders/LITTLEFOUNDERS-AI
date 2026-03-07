@@ -17,7 +17,6 @@ import {
     Calendar,
     Users,
     Globe,
-    Languages,
     Save,
     Loader2,
     ChevronRight,
@@ -473,7 +472,7 @@ const Settings = () => {
                         </SettingItem>
                     )}
 
-                    <SettingItem icon={Languages} label={t('settings:account.language')}>
+                    <SettingItem icon={Globe} label={t('settings:account.language')}>
                         <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
                             <SelectTrigger className="border-0 bg-transparent shadow-none focus:ring-0 p-0 h-auto justify-end gap-2 text-right">
                                 <SelectValue placeholder={t('settings:account.language')} />
