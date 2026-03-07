@@ -18,6 +18,7 @@ import { DinoCharacter } from "../components/demo/DinoCharacter";
 import { DinaCharacter } from "../components/demo/DinaCharacter";
 import DrRhoCharacter from "../components/demo/DrRhoCharacter";
 import ZaraVexCharacter from "../components/demo/ZaraVexCharacter";
+import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
 import {
   Accordion,
   AccordionContent,
@@ -263,50 +264,8 @@ const LandingPage = () => {
       </section>
 
 
-      {/* --- TRANSFORMATION / SOLUTION --- */}
-      <section className="py-24 bg-gray-900 dark:bg-black text-white relative overflow-hidden transition-colors duration-500">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#4b5563 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 space-y-8">
-              <div className="inline-block px-4 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold text-sm tracking-wide uppercase">
-                {t('solution.badge')}
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold leading-tight">
-                {t('solution.title_part1')}<br />
-                {t('solution.title_part2')} <span className="text-blue-400">{t('solution.title_highlight')}</span>.
-              </h2>
-              <p className="text-xl text-gray-400 leading-relaxed">
-                {t('solution.subtitle')}
-              </p>
-              <ul className="space-y-4">
-                {benefits.map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-lg">
-                    <CheckCircle2 className="text-green-400 w-6 h-6 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Just a visual representation of "Fun" */}
-            <div className="flex-1 flex justify-center">
-              <div className="relative w-full max-w-md aspect-square bg-gradient-to-tr from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-900 rounded-3xl rotate-3 flex items-center justify-center shadow-2xl border border-white/10 dark:border-white/5">
-                <div className="absolute -top-6 -left-6 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center text-4xl shadow-xl animate-bounce">
-                  💡
-                </div>
-                <div className="text-center p-8">
-                  <span className="text-8xl mb-4 block">🎮</span>
-                  <p className="text-2xl font-bold">{t('solution.play_label')}</p>
-                  <p className="text-white/60 mt-2">{t('solution.interactive_label')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* --- TRANSFORMATION / SOLUTION (Remotion Animation) --- */}
+      <GamifiedLearningSection />
 
 
       {/* --- FEATURE SHOWCASE --- */}

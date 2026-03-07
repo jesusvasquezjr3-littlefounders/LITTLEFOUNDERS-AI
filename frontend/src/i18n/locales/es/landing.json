@@ -43,7 +43,25 @@
         "benefit2": "Descubre el poder del ahorro con herramientas visuales y metas alcanzables",
         "benefit3": "Contenido educativo diseñado específicamente para cada edad y nivel",
         "play_label": "Aprender Jugando",
-        "interactive_label": "100% Interactivo"
+        "interactive_label": "100% Interactivo",
+        "animation": {
+            "step1_label": "Lección Interactiva",
+            "step2_label": "¡Respuesta correcta!",
+            "step3_label": "+50 monedas",
+            "step4_label": "¡Subiste de nivel!",
+            "step5_label": "Misión completada",
+            "challenge": "Si gano $500 y gasto $350, ¿cuánto ahorro?",
+            "option_a": "$150",
+            "option_b": "$200",
+            "option_c": "$100",
+            "xp_label": "XP",
+            "level_label": "Nivel",
+            "coins_label": "Monedas",
+            "games_title": "Videojuegos",
+            "sim_title": "Emprende Ahora",
+            "ai_title": "Tutor con IA",
+            "bank_title": "Banca Digital"
+        }
     },
     "features": {
         "title": "Funcionalidades",

@@ -48,7 +48,25 @@
         "benefit2": "Discover the power of saving with visual tools and achievable goals",
         "benefit3": "Educational content designed specifically for each age and level",
         "play_label": "Learn by Playing",
-        "interactive_label": "100% Interactive"
+        "interactive_label": "100% Interactive",
+        "animation": {
+            "step1_label": "Interactive Lesson",
+            "step2_label": "Correct answer!",
+            "step3_label": "+50 coins",
+            "step4_label": "Level Up!",
+            "step5_label": "Mission complete",
+            "challenge": "If I earn $500 and spend $350, how much do I save?",
+            "option_a": "$150",
+            "option_b": "$200",
+            "option_c": "$100",
+            "xp_label": "XP",
+            "level_label": "Level",
+            "coins_label": "Coins",
+            "games_title": "Video Games",
+            "sim_title": "Launch Startup",
+            "ai_title": "AI Tutor",
+            "bank_title": "Digital Banking"
+        }
     },
     "features": {
         "title": "Features",
