@@ -16,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import { Globe } from 'lucide-react';
+import { Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -33,9 +33,10 @@ interface LanguageSelectorProps {
     /**
      * Display variant
      * - "full": Shows flag + language name
-     * - "minimal": Shows only flag icon
+     * - "minimal": Shows only indicator icon
+     * - "pill": Shows flag + short code, stylized as a pill
      */
-    variant?: 'full' | 'minimal';
+    variant?: 'full' | 'minimal' | 'pill';
     className?: string;
 }
 
@@ -57,15 +58,24 @@ export function LanguageSelector({
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
                 <Button
-                    variant="ghost"
+                    variant={variant === 'pill' ? "outline" : "ghost"}
                     size={variant === 'minimal' ? 'icon' : 'sm'}
                     className={cn(
                         'gap-2 text-muted-foreground hover:text-foreground',
+                        variant === 'pill' && 'rounded-full border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-4 shadow-sm font-bold hover:bg-white dark:hover:bg-slate-700 hover:text-pink-600',
                         className
                     )}
                 >
                     {variant === 'minimal' ? (
-                        <Globe className="h-4 w-4" />
+                        <Languages className="h-4 w-4" />
+                    ) : variant === 'pill' ? (
+                        <>
+                            <Languages className="h-4 w-4 text-pink-500" />
+                            <span className="text-base leading-none">{currentLanguageInfo.flag}</span>
+                            <span className="text-xs font-bold uppercase tracking-wider">
+                                {currentLanguageInfo.code}
+                            </span>
+                        </>
                     ) : (
                         <>
                             <span className="text-lg">{currentLanguageInfo.flag}</span>

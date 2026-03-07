@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
-import { Settings, User, Trophy, Flame, Star, Mail, Calendar, Shield, Palette, Check, Loader2, BookOpen, Clock, Globe, AtSign, UserCircle } from "lucide-react";
+import { Settings, User, Trophy, Flame, Star, Mail, Calendar, Shield, Palette, Check, Loader2, BookOpen, Clock, Languages, AtSign, UserCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -286,7 +286,7 @@ const Profile = () => {
               {/* Preferred Language */}
               <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center flex-shrink-0">
-                  <Globe className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                  <Languages className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 </div>
                 <div className="overflow-hidden">
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('profile:fields.language')}</p>

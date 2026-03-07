@@ -91,10 +91,11 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.lessons')}</a>
               <a href="#faq" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.faq')}</a>
 
-              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-6">
-                <LanguageSelector variant="minimal" />
+              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-6 pr-2">
                 <ThemeToggle />
               </div>
+
+              <LanguageSelector variant="pill" />
 
               <Button asChild variant="outline" className="border-pink-200 text-pink-700 hover:bg-pink-50 hover:text-pink-800 dark:border-pink-800 dark:text-pink-300 dark:hover:bg-pink-900/30 dark:hover:text-pink-200 rounded-full px-6 bg-transparent">
                 <Link to="/login">{t('nav.login')}</Link>
@@ -119,7 +120,7 @@ const LandingPage = () => {
             <a href="#faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('faq.title')}</a>
 
             <div className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-slate-800">
-              <LanguageSelector variant="full" />
+              <LanguageSelector variant="pill" />
               <ThemeToggle />
             </div>
 
@@ -443,7 +444,7 @@ const LandingPage = () => {
             <img src="/logo-sized.png" alt="LittleFounders" className="h-8 w-auto object-contain dark:invert dark:brightness-200" />
           </div>
           <div className="flex items-center gap-6">
-            <LanguageSelector variant="minimal" />
+            <LanguageSelector variant="pill" />
             <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
               <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.terms')}</Link>
               <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.privacy')}</Link>
