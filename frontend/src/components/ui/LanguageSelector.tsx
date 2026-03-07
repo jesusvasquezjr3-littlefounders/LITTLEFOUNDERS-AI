@@ -58,10 +58,10 @@ export function LanguageSelector({
             <DropdownMenuTrigger asChild>
                 <Button
                     variant={variant === 'pill' ? "outline" : "ghost"}
-                    size={variant === 'minimal' ? 'icon' : 'sm'}
+                    size={variant === 'minimal' ? 'icon' : variant === 'pill' ? 'default' : 'sm'}
                     className={cn(
-                        'gap-2 text-muted-foreground hover:text-foreground',
-                        variant === 'pill' && 'rounded-full border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-4 shadow-sm font-bold hover:bg-white dark:hover:bg-slate-700 hover:text-pink-600',
+                        'gap-2 text-muted-foreground hover:text-foreground transition-all duration-200',
+                        variant === 'pill' && 'rounded-full border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-6 shadow-sm font-bold hover:bg-white dark:hover:bg-slate-700 hover:text-pink-600 h-10',
                         className
                     )}
                 >
