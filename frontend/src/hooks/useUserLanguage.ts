@@ -100,36 +100,38 @@ export function useUserLanguage() {
      * Save user's language preference to backend
      */
     const saveLanguagePreference = useCallback(async (language: SupportedLanguage): Promise<boolean> => {
-        // Always update locally first
+        const token = getToken();
+        let backendSuccess = true;
+
+        if (token) {
+            try {
+                const response = await fetch(`${API_URL}/auth/preferences/language`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ language }),
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+
+                backendSuccess = response.ok;
+            } catch (error) {
+                console.warn('Failed to save language preference to backend:', error);
+                // Continue with local change even if backend fails
+                backendSuccess = false;
+            }
+        }
+
+        // Apply local change (which may trigger a subdomain redirect)
+        // We do this AFTER the backend save, so the redirect doesn't abort the fetch
         await changeLanguage(language);
 
-        const token = getToken();
-        if (!token) {
-            // Not authenticated, local change is enough
-            return true;
-        }
-
-        try {
-            const response = await fetch(`${API_URL}/auth/preferences/language`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ language }),
-            });
-
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-            }
-
-            return response.ok;
-        } catch (error) {
-            console.warn('Failed to save language preference to backend:', error);
-            // Local change was already applied, so return true
-            return true;
-        }
+        return backendSuccess;
     }, [getToken]);
 
     return {
