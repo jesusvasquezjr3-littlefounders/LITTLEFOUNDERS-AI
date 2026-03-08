@@ -29,6 +29,7 @@ export interface GamifiedLearningProps {
     ui_timeline: string;
     ui_preview: string;
     ui_engine: string;
+    isDarkMode: boolean;
 }
 
 const LF = {
@@ -64,7 +65,8 @@ const Panel3D: React.FC<{
     delay?: number;
     delayY?: number;
     accent?: string;
-}> = ({ children, width, height, zOffset = 0, rx = 0, ry = 0, rz = 0, style, delay = 0, delayY = 0, accent }) => {
+    isDarkMode: boolean;
+}> = ({ children, width, height, zOffset = 0, rx = 0, ry = 0, rz = 0, style, delay = 0, delayY = 0, accent, isDarkMode }) => {
     const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
 
@@ -83,21 +85,20 @@ const Panel3D: React.FC<{
                 height,
                 transformStyle: "preserve-3d",
                 transform: `
-                    translateZ(${zOffset + float}px) 
-                    rotateX(${rx}deg) 
-                    rotateY(${ry}deg) 
-                    rotateZ(${rz}deg)
-                    scale(${scale})
-                `,
+                translateZ(${zOffset + float}px) 
+                rotateX(${rx}deg) 
+                rotateY(${ry}deg) 
+                rotateZ(${rz}deg)
+                scale(${scale})
+            `,
                 opacity,
-                background: "rgba(30, 35, 51, 0.85)", // Glassy
+                background: isDarkMode ? "rgba(30, 35, 51, 0.85)" : "rgba(255, 255, 255, 0.85)", // Glassy Light/Dark
                 backdropFilter: "blur(12px)",
-                border: `1px solid ${LF.border}`,
+                border: `1px solid ${isDarkMode ? LF.border : "rgba(0,0,0,0.1)"}`,
                 borderRadius: LF.radius,
-                boxShadow: `
-                    -20px 30px 40px rgba(0,0,0,0.5),
-                    inset 0 1px 1px rgba(255,255,255,0.1)
-                `,
+                boxShadow: isDarkMode
+                    ? `-20px 30px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)`
+                    : `-20px 30px 40px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6)`,
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
@@ -131,13 +132,21 @@ const EditorWindow: React.FC<{ props: GamifiedLearningProps }> = ({ props }) => 
         },
         {
             icon: "🚀", title: props.sim_title, color: LF.gold,
-            content: <div style={{ padding: 24, width: "100%", height: "100%", display: "flex", alignItems: "flex-end", gap: 8 }}>
-                {[40, 60, 30, 80, 50, 90, 100].map((h, i) => <div key={i} style={{ flex: 1, height: `${h}%`, background: `linear-gradient(0deg, ${LF.gold}, transparent)`, borderRadius: "4px 4px 0 0" }} />)}
+            content: <div style={{ padding: 24, fontSize: 18, fontWeight: 600, color: props.isDarkMode ? LF.textPrimary : "#111827", display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>{props.challenge}</div>
+                <div style={{ display: "flex", gap: 16 }}>
+                    <div style={{ flex: 1, padding: 12, borderRadius: 8, background: props.isDarkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", border: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.1)"}` }}>
+                        <div style={{ fontSize: 12, color: LF.green, marginBottom: 8, fontWeight: "bold" }}>{props.option_a}</div>
+                        <div style={{ height: 6, background: props.isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: "75%", height: "100%", background: LF.green }} />
+                        </div>
+                    </div>
+                </div>
             </div>
         },
         {
             icon: "🏦", title: props.bank_title, color: LF.purple,
-            content: <div style={{ padding: 24, fontSize: 42, fontWeight: 900, color: LF.textPrimary, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
+            content: <div style={{ padding: 24, fontSize: 42, fontWeight: 900, color: props.isDarkMode ? LF.textPrimary : "#111827", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
                 $3,240.50
                 <span style={{ fontSize: 16, color: LF.green, marginTop: 10 }}>+12.5% {props.xp_label}</span>
             </div>
@@ -155,26 +164,27 @@ const EditorWindow: React.FC<{ props: GamifiedLearningProps }> = ({ props }) => 
             width={520} height={320} zOffset={60} delay={10} delayY={0}
             style={{ left: "50%", top: "40%", marginLeft: -260, marginTop: -160 }}
             accent={`linear-gradient(90deg, ${current.color}, ${LF.pink})`}
+            isDarkMode={props.isDarkMode}
         >
             {/* Window header */}
-            <div style={{ height: 36, borderBottom: `1px solid ${LF.border}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 8, background: "rgba(0,0,0,0.2)" }}>
+            <div style={{ height: 36, borderBottom: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.08)"}`, display: "flex", alignItems: "center", padding: "0 16px", gap: 8, background: props.isDarkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.03)" }}>
                 <div style={{ width: 12, height: 12, borderRadius: "50%", background: LF.danger }} />
                 <div style={{ width: 12, height: 12, borderRadius: "50%", background: LF.gold }} />
                 <div style={{ width: 12, height: 12, borderRadius: "50%", background: LF.green }} />
-                <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: "bold", color: LF.textMuted }}>{props.ui_engine}</div>
+                <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: "bold", color: props.isDarkMode ? LF.textMuted : "rgba(0,0,0,0.4)" }}>{props.ui_engine}</div>
             </div>
 
             {/* Header / Title */}
             <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ fontSize: 32 }}>{current.icon}</div>
                 <div>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: LF.textPrimary, letterSpacing: 0.5 }}>{current.title}</div>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: props.isDarkMode ? LF.textPrimary : "#111827", letterSpacing: 0.5 }}>{current.title}</div>
                     <div style={{ fontSize: 12, color: current.color, fontWeight: "bold", marginTop: 4 }}>{props.level_label} 2 · {props.coins_label}: 150</div>
                 </div>
             </div>
 
             {/* Content area */}
-            <div style={{ flex: 1, background: "rgba(0,0,0,0.25)", margin: "0 24px 24px", borderRadius: 12, border: `1px solid ${LF.border}`, overflow: "hidden", position: "relative" }}>
+            <div style={{ flex: 1, background: props.isDarkMode ? "rgba(0,0,0,0.25)" : "rgba(0,0,0,0.02)", margin: "0 24px 24px", borderRadius: 12, border: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.05)"}`, overflow: "hidden", position: "relative" }}>
                 <div style={{ opacity: contentOpacity, width: "100%", height: "100%" }}>
                     {current.content}
                 </div>
@@ -182,8 +192,8 @@ const EditorWindow: React.FC<{ props: GamifiedLearningProps }> = ({ props }) => 
                 {/* Simulated playhead sweep over the inner content */}
                 <div style={{
                     position: "absolute",
-                    top: 0, bottom: 0, width: 2, background: "rgba(255,255,255,0.5)",
-                    boxShadow: `0 0 15px rgba(255,255,255,0.8)`,
+                    top: 0, bottom: 0, width: 2, background: props.isDarkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)",
+                    boxShadow: props.isDarkMode ? `0 0 15px rgba(255,255,255,0.8)` : `0 0 15px rgba(0,0,0,0.3)`,
                     left: `${(viewFrame / (900 / 4)) * 100}%`
                 }} />
             </div>
@@ -205,8 +215,9 @@ const TimelinePanel: React.FC<{ props: GamifiedLearningProps }> = ({ props }) =>
         <Panel3D
             width={640} height={180} zOffset={30} delay={25} delayY={15}
             style={{ left: "50%", top: "85%", marginLeft: -320, marginTop: -90 }}
+            isDarkMode={props.isDarkMode}
         >
-            <div style={{ padding: "12px 20px", borderBottom: `1px solid ${LF.border}`, fontSize: 13, fontWeight: 800, color: LF.textMuted, display: "flex", justifyContent: "space-between", background: "rgba(0,0,0,0.3)" }}>
+            <div style={{ padding: "12px 20px", borderBottom: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.08)"}`, fontSize: 13, fontWeight: 800, color: props.isDarkMode ? LF.textMuted : "rgba(0,0,0,0.5)", display: "flex", justifyContent: "space-between", background: props.isDarkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.03)" }}>
                 <span style={{ display: "flex", gap: 8, alignItems: "center" }}><span style={{ fontSize: 16 }}>⏱</span> {props.ui_timeline}</span>
                 <span style={{ color: LF.primary, fontFamily: "monospace", fontSize: 14 }}>00:{(Math.floor(frame / 30)).toString().padStart(2, '0')}:{(Math.floor((frame % 30) * 3.33)).toString().padStart(2, '0')}</span>
             </div>
@@ -223,8 +234,8 @@ const TimelinePanel: React.FC<{ props: GamifiedLearningProps }> = ({ props }) =>
 
                 {tracks.map((t, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        <div style={{ width: 90, fontSize: 11, fontWeight: "bold", color: LF.textMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.label}</div>
-                        <div style={{ flex: 1, height: 16, background: "rgba(255,255,255,0.03)", borderRadius: 8, position: "relative", border: `1px solid rgba(255,255,255,0.05)` }}>
+                        <div style={{ width: 90, fontSize: 11, fontWeight: "bold", color: props.isDarkMode ? LF.textMuted : "rgba(0,0,0,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.label}</div>
+                        <div style={{ flex: 1, height: 16, background: props.isDarkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", borderRadius: 8, position: "relative", border: `1px solid ${props.isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}` }}>
                             {/* Keyframes/Clips */}
                             <div style={{
                                 position: "absolute",
@@ -243,7 +254,7 @@ const TimelinePanel: React.FC<{ props: GamifiedLearningProps }> = ({ props }) =>
 };
 
 // ─── Floating Toolbar (Left) ──────────────────────────────────────────────
-const Toolbar: React.FC = () => {
+const Toolbar: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     const frame = useCurrentFrame();
     const icons = ["✨", "🎨", "🎬", "🎵", "⚙️"];
 
@@ -251,6 +262,7 @@ const Toolbar: React.FC = () => {
         <Panel3D
             width={70} height={300} zOffset={90} delay={40} delayY={30}
             style={{ left: "15%", top: "45%", marginTop: -150, marginLeft: -35 }}
+            isDarkMode={isDarkMode}
         >
             <div style={{ display: "flex", flexDirection: "column", gap: 18, alignItems: "center", justifyContent: "center", height: "100%", padding: "12px 0" }}>
                 {icons.map((ic, i) => {
@@ -260,7 +272,7 @@ const Toolbar: React.FC = () => {
                         <div key={i} style={{
                             width: 44, height: 44, borderRadius: 12,
                             display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
-                            background: isActive ? `linear-gradient(135deg, ${LF.primary}, ${LF.purple})` : "rgba(255,255,255,0.05)",
+                            background: isActive ? `linear-gradient(135deg, ${LF.primary}, ${LF.purple})` : (isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"),
                             boxShadow: isActive ? `0 4px 15px ${LF.purple}66` : "none",
                             border: `1px solid ${isActive ? LF.primary : "transparent"}`,
                             transition: "all 0.3s ease"
@@ -280,13 +292,14 @@ const PlaybackControls: React.FC<{ props: GamifiedLearningProps }> = ({ props })
         <Panel3D
             width={200} height={140} zOffset={80} delay={55} delayY={45} rx={-5} ry={5}
             style={{ right: "12%", top: "35%", marginRight: -100, marginTop: -70 }}
+            isDarkMode={props.isDarkMode}
         >
-            <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16, alignItems: "center", justifyContent: "center", height: "100%", background: "rgba(0,0,0,0.1)" }}>
-                <div style={{ fontSize: 12, fontWeight: 900, color: LF.textMuted, letterSpacing: 1, textTransform: "uppercase", textAlign: "center" }}>{props.ui_preview}</div>
+            <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16, alignItems: "center", justifyContent: "center", height: "100%", background: props.isDarkMode ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.02)" }}>
+                <div style={{ fontSize: 12, fontWeight: 900, color: props.isDarkMode ? LF.textMuted : "rgba(0,0,0,0.5)", letterSpacing: 1, textTransform: "uppercase", textAlign: "center" }}>{props.ui_preview}</div>
                 <div style={{ display: "flex", gap: 16 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: `1px solid ${LF.border}` }}>⏮</div>
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: props.isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.1)"}` }}>⏮</div>
                     <div style={{ width: 50, height: 50, borderRadius: "50%", background: `linear-gradient(135deg, ${LF.green}, #10b981)`, boxShadow: `0 0 25px ${LF.green}88`, border: `2px solid #86efac`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, paddingLeft: 4 }}>▶️</div>
-                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: `1px solid ${LF.border}` }}>⏭</div>
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: props.isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: `1px solid ${props.isDarkMode ? LF.border : "rgba(0,0,0,0.1)"}` }}>⏭</div>
                 </div>
             </div>
         </Panel3D>
@@ -304,12 +317,19 @@ const FloatingBadge: React.FC<{
     zOffset: number;
     delay: number;
     scaleMult?: number;
-}> = ({ icon, text, subtext, color, left, top, zOffset, delay, scaleMult = 1 }) => {
+    isDarkMode: boolean;
+}> = ({ icon, text, subtext, color, left, top, zOffset, delay, scaleMult = 1, isDarkMode }) => {
     const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
     const float = Math.sin((frame + delay * 2) / 25) * 20;
-    const scale = interpolate(sp(frame, fps, delay, 10, 120), [0, 1], [0, 1 * scaleMult]);
-    const opacity = interpolate(frame, [delay, delay + 10], [0, 1], C);
+    const scale = interpolate(frame, [delay, delay + 15], [0, scaleMult], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+    });
+    const opacity = interpolate(frame, [delay, delay + 15], [0, 1], { extrapolateRight: "clamp" });
+
+    // Use a darker color for gold subtext in light mode for readability
+    const renderSubtextColor = (!isDarkMode && color === LF.gold) ? "#c2410c" : color;
 
     return (
         <div style={{
@@ -318,35 +338,33 @@ const FloatingBadge: React.FC<{
             transformStyle: "preserve-3d",
             transform: `translateZ(${zOffset + float}px) scale(${scale})`,
             opacity,
-            background: "rgba(20, 25, 40, 0.7)",
+            background: isDarkMode ? "rgba(20, 25, 40, 0.7)" : "rgba(255, 255, 255, 0.85)",
             backdropFilter: "blur(12px)",
-            border: `1px solid ${color}66`,
+            border: `1px solid ${color}${isDarkMode ? '66' : '33'}`,
             borderRadius: 99,
             padding: "10px 20px",
             display: "flex",
             alignItems: "center",
             gap: 12,
-            boxShadow: `0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px ${color}15`,
+            boxShadow: isDarkMode ? `0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px ${color}15` : `0 15px 35px rgba(0,0,0,0.1), inset 0 0 20px ${color}15`,
         }}>
             <div style={{
                 width: 36, height: 36, borderRadius: "50%",
-                background: `linear-gradient(135deg, ${color}66, ${color}22)`,
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-                border: `1px solid ${color}`,
-                boxShadow: `0 0 15px ${color}44`,
+                background: `${color}22`, color, display: "flex",
+                alignItems: "center", justifyContent: "center", fontSize: 18,
             }}>
                 {icon}
             </div>
             <div>
-                <div style={{ fontSize: 14, fontWeight: 900, color: LF.textPrimary, whiteSpace: "nowrap" }}>{text}</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: color, whiteSpace: "nowrap" }}>{subtext}</div>
+                <div style={{ fontSize: 14, fontWeight: 900, color: isDarkMode ? LF.textPrimary : "#111827", whiteSpace: "nowrap" }}>{text}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: renderSubtextColor, whiteSpace: "nowrap" }}>{subtext}</div>
             </div>
         </div>
     );
 };
 
 // ─── AnimBackground ───────────────────────────────────────────────────────────
-const AnimBackground: React.FC = () => {
+const AnimBackground: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     const frame = useCurrentFrame();
     // Rotate hue slowly
     const hue = interpolate(frame, [0, 900], [240, 270], C);
@@ -374,9 +392,12 @@ const AnimBackground: React.FC = () => {
                 left: "50%", top: "50%",
                 marginLeft: -2000, marginTop: -2000,
                 transform: "translateZ(-1400px) rotateX(45deg)",
-                backgroundImage: `
-                    linear-gradient(rgba(255,255,255,0.03) 2px, transparent 2px),
-                    linear-gradient(90deg, rgba(255,255,255,0.03) 2px, transparent 2px)
+                backgroundImage: isDarkMode ? `
+                    linear-gradient(rgba(255,255,255,0.12) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(255,255,255,0.12) 2px, transparent 2px)
+                ` : `
+                    linear-gradient(rgba(0,0,0,0.15) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(0,0,0,0.15) 2px, transparent 2px)
                 `,
                 backgroundSize: "100px 100px",
                 backgroundPosition: "center center",
@@ -405,11 +426,11 @@ export const GamifiedLearningComposition: React.FC<GamifiedLearningProps> = (pro
             style={{
                 fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
                 overflow: "visible",
-                color: LF.textPrimary,
+                color: props.isDarkMode ? LF.textPrimary : "#111827",
                 perspective: 1600, // Deep perspective for isometric effect
             }}
         >
-            <AnimBackground />
+            <AnimBackground isDarkMode={props.isDarkMode} />
 
             {/* 3D World Container */}
             <div style={{
@@ -426,28 +447,28 @@ export const GamifiedLearningComposition: React.FC<GamifiedLearningProps> = (pro
                 {/* Main Isometric Elements */}
                 <EditorWindow props={props} />
                 <TimelinePanel props={props} />
-                <Toolbar />
+                <Toolbar isDarkMode={props.isDarkMode} />
                 <PlaybackControls props={props} />
 
                 {/* Floating Decorative Elements */}
                 <FloatingBadge
                     icon="🎓" text={`+150 ${props.xp_label}`} subtext={props.step4_label}
-                    color={LF.gold} left="60%" top="15%" zOffset={220} delay={80} scaleMult={1.1}
+                    color={LF.gold} left="60%" top="15%" zOffset={220} delay={80} scaleMult={1.1} isDarkMode={props.isDarkMode}
                 />
 
                 <FloatingBadge
                     icon="🌟" text={props.step2_label} subtext={`+50 ${props.coins_label}`}
-                    color={LF.green} left="25%" top="75%" zOffset={180} delay={120}
+                    color={LF.green} left="25%" top="75%" zOffset={180} delay={120} isDarkMode={props.isDarkMode}
                 />
 
                 <FloatingBadge
                     icon="💼" text="Startup" subtext={props.step5_label}
-                    color={LF.primary} left="70%" top="60%" zOffset={260} delay={160} scaleMult={0.9}
+                    color={LF.primary} left="70%" top="60%" zOffset={260} delay={160} scaleMult={0.9} isDarkMode={props.isDarkMode}
                 />
 
                 <FloatingBadge
                     icon="🤖" text={props.ai_title} subtext={props.step1_label}
-                    color={LF.purple} left="35%" top="25%" zOffset={300} delay={200} scaleMult={1.2}
+                    color={LF.purple} left="35%" top="25%" zOffset={300} delay={200} scaleMult={1.2} isDarkMode={props.isDarkMode}
                 />
             </div>
         </AbsoluteFill>
