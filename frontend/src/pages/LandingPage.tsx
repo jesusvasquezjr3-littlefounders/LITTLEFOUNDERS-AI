@@ -25,11 +25,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useUserLanguage } from "@/hooks/useUserLanguage";
+import { SupportedLanguage } from "@/i18n";
 
 const LandingPage = () => {
   const { t } = useTranslation('landing');
+  const { languages, isCurrentLanguage } = useLanguage();
+  const { saveLanguagePreference } = useUserLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -92,11 +96,9 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.lessons')}</a>
               <a href="#faq" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.faq')}</a>
 
-              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-6 pr-2">
+              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-6 pr-6">
                 <ThemeToggle />
               </div>
-
-              <LanguageSelector variant="pill" />
 
               <Button asChild variant="outline" className="border-pink-200 text-pink-700 hover:bg-pink-50 hover:text-pink-800 dark:border-pink-800 dark:text-pink-300 dark:hover:bg-pink-900/30 dark:hover:text-pink-200 rounded-full px-6 bg-transparent">
                 <Link to="/login">{t('nav.login')}</Link>
@@ -120,8 +122,7 @@ const LandingPage = () => {
             <a href="#features" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.lessons')}</a>
             <a href="#faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('faq.title')}</a>
 
-            <div className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-slate-800">
-              <LanguageSelector variant="pill" />
+            <div className="flex items-center justify-center py-4 border-b border-gray-50 dark:border-slate-800">
               <ThemeToggle />
             </div>
 
@@ -220,6 +221,29 @@ const LandingPage = () => {
         </div>
       </header>
 
+      {/* --- LANGUAGE SWITCHER BAR --- */}
+      <section className="py-8 bg-gray-900 dark:bg-black transition-colors duration-500 border-y border-gray-800 dark:border-slate-800 z-10 relative overflow-hidden">
+        {/* Ambient glows behind the languages */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full bg-pink-500/10 dark:bg-pink-500/5 blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
+          <h3 className="text-xs sm:text-sm font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-[0.2em] text-center">
+            {t('language.title')}
+          </h3>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
+                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${isCurrentLanguage(lang.code) ? "bg-white text-gray-900 border-white shadow-xl scale-105" : "bg-white/5 text-gray-400 border-gray-700/50 hover:text-white hover:bg-white/10 hover:border-gray-500"}`}
+              >
+                <span className="text-xl sm:text-2xl leading-none drop-shadow-md">{lang.flag}</span>
+                {lang.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* --- SCAR TISSUE / PROBLEM SECTION --- */}
       <section id="problem" className="py-24 bg-white dark:bg-slate-950 transition-colors duration-500">
@@ -393,17 +417,16 @@ const LandingPage = () => {
               {t('cta.button')}
             </Link>
           </Button>
-          <p className="mt-6 text-sm text-gray-400 dark:text-gray-600">{t('cta.disclaimer')}</p>
+          <p className="mt-6 text-sm text-gray-400 dark:text-gray-500">{t('cta.disclaimer')}</p>
         </div>
       </section>
 
-      <footer className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-12 transition-colors duration-500">
+      <footer className="bg-gray-900 dark:bg-black border-t border-gray-800 dark:border-slate-800 py-12 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2 opacity-80 grayscale hover:grayscale-0 transition-all">
             <img src="/logo-sized.png" alt="LittleFounders" className="h-8 w-auto object-contain dark:invert dark:brightness-200" />
           </div>
           <div className="flex items-center gap-6">
-            <LanguageSelector variant="pill" />
             <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
               <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.terms')}</Link>
               <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.privacy')}</Link>

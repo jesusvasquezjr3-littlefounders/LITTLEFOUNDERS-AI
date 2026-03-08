@@ -9,16 +9,14 @@ import {
 } from "./GamifiedLearningComposition";
 
 // Composition canvas dimensions (internal reference for Remotion scaling)
-const COMP_W = 800;
-const COMP_H = 560;
+const COMP_W = 1000;
+const COMP_H = 750;
 const FPS = 30;
 
 // ─── Animated player wrapper ──────────────────────────────────────────────────
 function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
     const playerRef = useRef<PlayerRef>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-    const [hasInteracted, setHasInteracted] = useState(false);
 
     // Auto-play when scrolled into view (IntersectionObserver)
     useEffect(() => {
@@ -27,7 +25,9 @@ function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
         const obs = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    setIsVisible(true);
+                    try {
+                        playerRef.current?.play();
+                    } catch (_) { }
                     obs.disconnect();
                 }
             },
@@ -37,131 +37,35 @@ function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
         return () => obs.disconnect();
     }, []);
 
-    // Trigger play via PlayerRef once visible
-    useEffect(() => {
-        if (!isVisible) return;
-        const t = setTimeout(() => {
-            try {
-                playerRef.current?.play();
-            } catch (_) {
-                // Browser blocked autoplay — user can click to start
-            }
-        }, 200);
-        return () => clearTimeout(t);
-    }, [isVisible]);
-
-    const handleClick = useCallback(() => {
-        const p = playerRef.current;
-        if (!p) return;
-        if (p.isPlaying()) p.pause();
-        else p.play();
-        setHasInteracted(true);
-    }, []);
-
     return (
         <div
             ref={wrapperRef}
-            style={{ position: "relative", width: "100%", cursor: "pointer" }}
-            onClick={handleClick}
+            style={{
+                position: "relative",
+                width: "100%",
+                aspectRatio: `${COMP_W} / ${COMP_H}`,
+            }}
         >
-            {/* Purple/pink glow halo */}
-            <div
+            <Player
+                ref={playerRef}
+                component={GamifiedLearningComposition}
+                durationInFrames={TOTAL_FRAMES}
+                fps={FPS}
+                compositionWidth={COMP_W}
+                compositionHeight={COMP_H}
+                inputProps={inputProps}
+                loop
+                controls={false}
+                clickToPlay={false}
+                allowFullscreen={false}
                 style={{
-                    position: "absolute",
-                    inset: -4,
-                    borderRadius: 30,
-                    background:
-                        "linear-gradient(135deg, rgba(91,108,248,0.5), rgba(147,51,234,0.5), rgba(236,72,153,0.4))",
-                    filter: "blur(20px)",
-                    zIndex: 0,
-                    opacity: 0.7,
-                }}
-            />
-
-            {/* Player box */}
-            <div
-                style={{
-                    position: "relative",
-                    zIndex: 1,
-                    borderRadius: 22,
-                    overflow: "hidden",
-                    boxShadow: "0 28px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07)",
-                    aspectRatio: `${COMP_W} / ${COMP_H}`,
                     width: "100%",
+                    height: "100%",
+                    display: "block",
+                    background: "transparent",
                 }}
-            >
-                <Player
-                    ref={playerRef}
-                    component={GamifiedLearningComposition}
-                    durationInFrames={TOTAL_FRAMES}
-                    fps={FPS}
-                    compositionWidth={COMP_W}
-                    compositionHeight={COMP_H}
-                    inputProps={inputProps}
-                    loop
-                    controls={false}
-                    clickToPlay={false}
-                    allowFullscreen={false}
-                    style={{ width: "100%", height: "100%", display: "block" }}
-                    acknowledgeRemotionLicense
-                />
-
-                {/* Click-to-play overlay before first interaction */}
-                {!hasInteracted && !isVisible && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            inset: 0,
-                            background: "rgba(0,0,0,0.4)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            zIndex: 10,
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: "50%",
-                                background: "rgba(255,255,255,0.15)",
-                                border: "2px solid rgba(255,255,255,0.35)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: 22,
-                            }}
-                        >
-                            ▶️
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Module indicator dots */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 6,
-                    marginTop: 12,
-                }}
-            >
-                {["#5b6cf8", "#10b981", "#22c55e", "#9333ea", "#f59e0b"].map(
-                    (c, i) => (
-                        <div
-                            key={i}
-                            style={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: "50%",
-                                background: c,
-                                opacity: 0.6,
-                            }}
-                        />
-                    )
-                )}
-            </div>
+                acknowledgeRemotionLicense
+            />
         </div>
     );
 }
@@ -193,19 +97,35 @@ export function GamifiedLearningSection() {
         sim_title: t("solution.animation.sim_title"),
         ai_title: t("solution.animation.ai_title"),
         bank_title: t("solution.animation.bank_title"),
+        ui_timeline: t("solution.animation.ui_timeline"),
+        ui_preview: t("solution.animation.ui_preview"),
+        ui_engine: t("solution.animation.ui_engine"),
     };
 
     return (
         <section className="relative py-16 md:py-24 bg-gray-900 dark:bg-black text-white overflow-hidden transition-colors duration-500">
 
-            {/* Dot grid */}
-            <div
-                className="absolute inset-0 opacity-10 pointer-events-none"
-                style={{
-                    backgroundImage: "radial-gradient(#4b5563 1px, transparent 1px)",
-                    backgroundSize: "32px 32px",
-                }}
-            />
+            {/* Isometric Grid */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none perspective-[1000px]">
+                <div
+                    className="absolute"
+                    style={{
+                        width: "300%",
+                        height: "300%",
+                        left: "-100%",
+                        top: "-100%",
+                        transform: "rotateX(60deg) rotateZ(-45deg)",
+                        transformOrigin: "center center",
+                        backgroundImage: `
+                            linear-gradient(rgba(255,255,255,0.03) 2px, transparent 2px),
+                            linear-gradient(90deg, rgba(255,255,255,0.03) 2px, transparent 2px)
+                        `,
+                        backgroundSize: "80px 80px",
+                        WebkitMaskImage: "radial-gradient(ellipse at center, black 0%, transparent 60%)",
+                        maskImage: "radial-gradient(ellipse at center, black 0%, transparent 60%)",
+                    }}
+                />
+            </div>
 
             {/* Ambient glows */}
             <div className="absolute top-0 right-0 w-[480px] h-[480px] rounded-full bg-purple-600/10 blur-3xl pointer-events-none" />
@@ -266,8 +186,12 @@ export function GamifiedLearningSection() {
                     </div>
 
                     {/* ── Remotion Player ── */}
-                    <div className="flex-1 w-full max-w-xs sm:max-w-md md:max-w-xl order-2">
-                        <AnimPlayer inputProps={inputProps} />
+                    <div className="flex-1 w-full order-2 relative min-h-[400px] md:min-h-[600px] pointer-events-none">
+                        {/* We use an absolutely positioned wrapper that deliberately overflows its parent container 
+                            so the isometric canvas can be large enough that no 3D elements hit the edge and look "cropped" */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] sm:w-[130%] md:w-[180%] lg:w-[160%]">
+                            <AnimPlayer inputProps={inputProps} />
+                        </div>
                     </div>
 
                 </div>

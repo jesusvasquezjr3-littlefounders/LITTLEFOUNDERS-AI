@@ -65,7 +65,10 @@
             "games_title": "Video Games",
             "sim_title": "Launch Startup",
             "ai_title": "AI Tutor",
-            "bank_title": "Digital Banking"
+            "bank_title": "Digital Banking",
+            "ui_timeline": "Timeline",
+            "ui_preview": "Preview Mode",
+            "ui_engine": "LittleFounders_Engine.js"
         }
     },
     "features": {
@@ -118,5 +121,8 @@
         "privacy": "Privacy",
         "contact": "Contact",
         "copyright": "© 2026 littlefounders.ai"
+    },
+    "language": {
+        "title": "Select Language"
     }
 }

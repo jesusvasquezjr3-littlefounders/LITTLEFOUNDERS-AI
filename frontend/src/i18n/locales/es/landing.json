@@ -60,7 +60,10 @@
             "games_title": "Videojuegos",
             "sim_title": "Emprende Ahora",
             "ai_title": "Tutor con IA",
-            "bank_title": "Banca Digital"
+            "bank_title": "Banca Digital",
+            "ui_timeline": "Línea de tiempo",
+            "ui_preview": "Modo Pre-visualización",
+            "ui_engine": "Motor_LittleFounders.js"
         }
     },
     "features": {
@@ -113,5 +116,8 @@
         "privacy": "Privacidad",
         "contact": "Contacto",
         "copyright": "© 2026 littlefounders.ai"
+    },
+    "language": {
+        "title": "Selecciona tu Idioma"
     }
 }
