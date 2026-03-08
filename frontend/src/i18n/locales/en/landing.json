@@ -12,10 +12,16 @@
         "register": "Sign Up Free"
     },
     "hero": {
-        "badge": "New Open Beta",
+        "badge": "New update available",
         "title_part1": "The",
-        "title_highlight": "Startup Simulator",
-        "title_part2": "for",
+        "rotating_topics": [
+            "Startup",
+            "Finance",
+            "Entrepreneurship",
+            "Economy",
+            "Accounting"
+        ],
+        "title_part2": "Simulator for",
         "rotating_words": [
             "Kids",
             "Teens",

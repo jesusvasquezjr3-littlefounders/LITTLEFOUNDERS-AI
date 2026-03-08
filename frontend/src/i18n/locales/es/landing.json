@@ -7,9 +7,15 @@
         "register": "Registrate Gratis"
     },
     "hero": {
-        "badge": "Nueva Beta Abierta",
-        "title_part1": "El",
-        "title_highlight": "Simulador de Startup",
+        "badge": "Nueva actualización disponible",
+        "title_part1": "El Simulador de",
+        "rotating_topics": [
+            "Startup",
+            "Finanzas",
+            "Emprendimiento",
+            "Economía",
+            "Contabilidad"
+        ],
         "title_part2": "para",
         "rotating_words": [
             "Niños",

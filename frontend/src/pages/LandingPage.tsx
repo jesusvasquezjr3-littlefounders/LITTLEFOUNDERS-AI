@@ -48,18 +48,29 @@ const LandingPage = () => {
   const [wordIndex, setWordIndex] = useState(0);
   const rotatorWords = t('hero.rotating_words', { returnObjects: true }) as string[];
 
+  const [topicIndex, setTopicIndex] = useState(0);
+  const rotatorTopics = t('hero.rotating_topics', { returnObjects: true }) as string[];
+
   const [ctaWordIndex, setCtaWordIndex] = useState(0);
   const ctaWords = t('cta.rotating_words', { returnObjects: true }) as string[];
 
   const [dinaExpr, setDinaExpr] = useState<'neutral' | 'wink'>('neutral');
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const wordInterval = setInterval(() => {
       setWordIndex((prev) => (prev + 1) % rotatorWords.length);
       setCtaWordIndex((prev) => (prev + 1) % ctaWords.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [rotatorWords.length, ctaWords.length]);
+    }, 4000); // 4 seconds for audiencies (Kids, Teens, Adults)
+
+    const topicInterval = setInterval(() => {
+      setTopicIndex((prev) => (prev + 1) % rotatorTopics.length);
+    }, 2800); // 2.8 seconds for topics (Startup, Finance, etc)
+
+    return () => {
+      clearInterval(wordInterval);
+      clearInterval(topicInterval);
+    };
+  }, [rotatorWords.length, ctaWords.length, rotatorTopics.length]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,8 +172,21 @@ const LandingPage = () => {
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight transition-colors">
-                {t('hero.title_part1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">{t('hero.title_highlight')}</span> {t('hero.title_part2')} <span className="inline-block relative">
-                  <span key={wordIndex} className="animate-fade-in-up inline-block text-pink-600 dark:text-pink-400">
+                {t('hero.title_part1')}{' '}
+                <span className="inline-flex overflow-hidden align-bottom">
+                  <span
+                    key={topicIndex}
+                    className="animate-fade-in-up text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 block min-w-[300px] sm:min-w-[420px] lg:min-w-[580px]"
+                  >
+                    {rotatorTopics[topicIndex]}
+                  </span>
+                </span>{' '}
+                {t('hero.title_part2')}{' '}
+                <span className="inline-flex overflow-hidden align-bottom">
+                  <span
+                    key={wordIndex}
+                    className="animate-fade-in-up text-pink-600 dark:text-pink-400 block min-w-[200px] sm:min-w-[280px] lg:min-w-[380px]"
+                  >
                     {rotatorWords[wordIndex]}.
                   </span>
                 </span>
