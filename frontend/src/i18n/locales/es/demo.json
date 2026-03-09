@@ -130,6 +130,10 @@
                 "title": "Lecciones Divertidas",
                 "desc": "¡Aprende sobre finanzas y emprendimiento jugando! Lecciones interactivas que te convertirán en un experto."
             },
+            "step_ai": {
+                "title": "Tu Asistente de IA 🤖",
+                "desc": "Zaravex y el Dr. Rho están aquí para responder todas tus dudas financieras con Inteligencia Artificial."
+            },
             "step3": {
                 "title": "Misiones y Tareas",
                 "desc": "Tus papás te dejarán misiones aquí. ¡Complétalas todas para ganar recompensas reales!"
@@ -163,6 +167,10 @@
             "step2": {
                 "title": "Currículo Educativo",
                 "desc": "Revisa el progreso académico. Las lecciones están diseñadas pedagógicamente para distintas edades."
+            },
+            "step_ai": {
+                "title": "Asistente Educativo de IA",
+                "desc": "Una herramienta segura impulsada por IA que responde dudas de los niños y te sugiere temas de conversación."
             },
             "step3": {
                 "title": "Asignación de Tareas",

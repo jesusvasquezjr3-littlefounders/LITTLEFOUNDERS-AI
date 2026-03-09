@@ -130,6 +130,10 @@
                 "title": "Fun Lessons",
                 "desc": "Learn about finance and entrepreneurship by playing! Interactive lessons that will turn you into an expert."
             },
+            "step_ai": {
+                "title": "Your AI Assistant 🤖",
+                "desc": "Zaravex and Dr. Rho are here to answer all your financial questions with Artificial Intelligence."
+            },
             "step3": {
                 "title": "Missions and Tasks",
                 "desc": "Your parents will leave missions here. Complete them all to earn real rewards!"
@@ -163,6 +167,10 @@
             "step2": {
                 "title": "Educational Curriculum",
                 "desc": "Review academic progress. Lessons are designed pedagogically for different ages."
+            },
+            "step_ai": {
+                "title": "Educational AI Assistant",
+                "desc": "A safe AI-powered tool that answers children's questions and suggests conversation topics for you."
             },
             "step3": {
                 "title": "Task Assignment",

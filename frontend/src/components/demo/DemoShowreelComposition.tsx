@@ -431,7 +431,7 @@ const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 <div style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, lineHeight: 1.1, background: `linear-gradient(135deg, ${LF.primary}, ${LF.pink})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{p.s_cta_headline}</div>
                 <div style={{ fontSize: 28, fontWeight: 600, color: p.isDarkMode ? "#aaa" : "#555", marginTop: 20 }}>{p.s_cta_sub}</div>
                 <div style={{ marginTop: 40, transform: `scale(${1 + Math.sin(t * 0.2) * 0.02})` }}>
-                    <span style={{ background: `linear-gradient(135deg, ${LF.primary}, ${LF.purple})`, padding: "20px 60px", borderRadius: 999, fontSize: 32, fontWeight: 900, color: "#fff", boxShadow: `0 20px 50px ${LF.primary}88` }}>{p.s_cta_button}</span>
+                    <span style={{ fontSize: 36, fontWeight: 900, color: LF.primary, letterSpacing: 6, textTransform: "uppercase", filter: `drop-shadow(0 0 20px ${LF.primary}66)`, opacity: 0.9 }}>{p.s_cta_button}</span>
                 </div>
             </div>
         </div>
