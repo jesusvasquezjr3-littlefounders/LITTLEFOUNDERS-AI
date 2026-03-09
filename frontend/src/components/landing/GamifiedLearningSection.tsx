@@ -28,11 +28,13 @@ function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
     }, []);
 
     // Offscreen Pause/Resume: stop ALL computation when not visible
+    const isVisibleRef = useRef(false);
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
         const obs = new IntersectionObserver(
             ([entry]) => {
+                isVisibleRef.current = entry.isIntersecting;
                 try {
                     if (entry.isIntersecting) {
                         playerRef.current?.play();
@@ -45,6 +47,27 @@ function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
         );
         obs.observe(el);
         return () => obs.disconnect();
+    }, []);
+
+    // Scroll Pause: pause rendering while the user is actively scrolling
+    useEffect(() => {
+        let scrollTimeout: NodeJS.Timeout;
+        const handleScroll = () => {
+            if (!isVisibleRef.current) return;
+            try { playerRef.current?.pause(); } catch (_) { }
+
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                if (isVisibleRef.current) {
+                    try { playerRef.current?.play(); } catch (_) { }
+                }
+            }, 150); // Resume 150ms after scroll stops
+        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            clearTimeout(scrollTimeout);
+        };
     }, []);
 
     const fps = isMobile ? FPS_MOBILE : FPS_DESKTOP;
