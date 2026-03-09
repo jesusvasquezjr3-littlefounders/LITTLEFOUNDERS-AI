@@ -130,20 +130,24 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const stopBGM = useCallback((options?: { fade?: boolean, fadeDuration?: number }) => {
         if (!bgmRef.current) return;
 
+        const currentBgm = bgmRef.current;
+
         if (options?.fade) {
             const duration = options.fadeDuration || 1000;
             // Fade out
-            bgmRef.current.fade(bgmRef.current.volume(), 0, duration);
+            currentBgm.fade(currentBgm.volume(), 0, duration);
             setTimeout(() => {
                 // Only stop if it's still the same BGM instance
-                if (bgmRef.current === bgmRef.current) { // This line was `if (bgmRef.current === bgm)` in the instruction, but `bgm` is not in scope here. Assuming it should be `bgmRef.current`
-                    bgmRef.current?.stop();
+                if (bgmRef.current === currentBgm) {
+                    currentBgm.stop();
                     bgmRef.current = null;
                 }
             }, duration);
         } else {
-            bgmRef.current.stop();
-            bgmRef.current = null;
+            currentBgm.stop();
+            if (bgmRef.current === currentBgm) {
+                bgmRef.current = null;
+            }
         }
     }, []);
 

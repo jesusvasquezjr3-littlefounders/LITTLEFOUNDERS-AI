@@ -2,7 +2,7 @@
    Néctar de las Sombras – Main Game Component
    ────────────────────────────────────────────────────────────── */
 
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSound } from '@/contexts/SoundContext';
@@ -59,6 +59,19 @@ export function NectarGame() {
     playBGM(AUDIO.bgm, { volume: 0.4 });
     dispatch({ type: 'START_DAY' });
   }, [playBGM]);
+
+  /* ── BGM Lifecycle ─────────────────────────────────────── */
+  useEffect(() => {
+    if (state.phase === 'GAME_OVER' || state.phase === 'START') {
+      stopBGM({ fade: true, fadeDuration: 500 });
+    }
+  }, [state.phase, stopBGM]);
+
+  useEffect(() => {
+    return () => {
+      stopBGM({ fade: true, fadeDuration: 300 });
+    };
+  }, [stopBGM]);
 
   const handleRunnerFinish = useCallback(
     (lemons: number, sugar: number) => {
