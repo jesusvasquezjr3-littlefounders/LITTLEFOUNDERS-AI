@@ -10,10 +10,15 @@ import {
 // 1920x1080 cinematic canvas
 const COMP_W = 1920;
 const COMP_H = 1080;
-const FPS = 30;
+const FPS_DESKTOP = 30;
+const FPS_MOBILE = 15;
 
 /**
  * Memoized Remotion Player wrapper for the Demo Showreel.
+ * Optimizations:
+ *  - Dynamic FPS: 15fps on mobile (<768px), 30fps on desktop
+ *  - Offscreen Pause: Player pauses entirely when scrolled out of viewport
+ *  - Adjusts durationInFrames proportionally so animation speed stays constant
  */
 const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
     const playerRef = useRef<PlayerRef>(null);
@@ -42,21 +47,31 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
+    // Offscreen Pause/Resume: stop ALL computation when not visible
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
         const obs = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    try { playerRef.current?.play(); } catch (_) { }
-                    obs.disconnect();
-                }
+                try {
+                    if (entry.isIntersecting) {
+                        playerRef.current?.play();
+                    } else {
+                        playerRef.current?.pause();
+                    }
+                } catch (_) { }
             },
-            { threshold: 0.15 }
+            { threshold: 0.05 }
         );
         obs.observe(el);
         return () => obs.disconnect();
     }, []);
+
+    const fps = isMobile ? FPS_MOBILE : FPS_DESKTOP;
+    // Scale duration proportionally so animation plays at same real-time speed
+    const scaledFrames = isMobile
+        ? Math.round(TOTAL_FRAMES_SHOWREEL * (FPS_MOBILE / FPS_DESKTOP))
+        : TOTAL_FRAMES_SHOWREEL;
 
     const inputProps: DemoShowreelProps = {
         isDarkMode: isDark,
@@ -121,8 +136,8 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
             <Player
                 ref={playerRef}
                 component={DemoShowreelComposition}
-                durationInFrames={TOTAL_FRAMES_SHOWREEL}
-                fps={FPS}
+                durationInFrames={scaledFrames}
+                fps={fps}
                 compositionWidth={COMP_W}
                 compositionHeight={COMP_H}
                 inputProps={inputProps}
@@ -133,8 +148,6 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
                 style={{
                     width: "100%",
                     height: "100%",
-                    // OVERRIDE: cover ensures the 3D space bleeds off the edges continuously
-                    // rather than creating "empty" letterboxes that look like a video player.
                     objectFit: "cover",
                     position: "absolute",
                 }}

@@ -11,31 +11,46 @@ import {
 // Composition canvas dimensions (internal reference for Remotion scaling)
 const COMP_W = 1000;
 const COMP_H = 750;
-const FPS = 30;
+const FPS_DESKTOP = 30;
+const FPS_MOBILE = 15;
 
 // ─── Animated player wrapper ──────────────────────────────────────────────────
 function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
     const playerRef = useRef<PlayerRef>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    // Auto-play when scrolled into view (IntersectionObserver)
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener("resize", check);
+        return () => window.removeEventListener("resize", check);
+    }, []);
+
+    // Offscreen Pause/Resume: stop ALL computation when not visible
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
         const obs = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    try {
+                try {
+                    if (entry.isIntersecting) {
                         playerRef.current?.play();
-                    } catch (_) { }
-                    obs.disconnect();
-                }
+                    } else {
+                        playerRef.current?.pause();
+                    }
+                } catch (_) { }
             },
-            { threshold: 0.2 }
+            { threshold: 0.05 }
         );
         obs.observe(el);
         return () => obs.disconnect();
     }, []);
+
+    const fps = isMobile ? FPS_MOBILE : FPS_DESKTOP;
+    const scaledFrames = isMobile
+        ? Math.round(TOTAL_FRAMES * (FPS_MOBILE / FPS_DESKTOP))
+        : TOTAL_FRAMES;
 
     return (
         <div
@@ -49,8 +64,8 @@ function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
             <Player
                 ref={playerRef}
                 component={GamifiedLearningComposition}
-                durationInFrames={TOTAL_FRAMES}
-                fps={FPS}
+                durationInFrames={scaledFrames}
+                fps={fps}
                 compositionWidth={COMP_W}
                 compositionHeight={COMP_H}
                 inputProps={inputProps}
