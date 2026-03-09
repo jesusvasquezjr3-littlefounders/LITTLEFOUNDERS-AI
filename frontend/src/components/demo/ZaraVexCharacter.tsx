@@ -56,7 +56,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     };
 
     return (
-        <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
+        <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer", className)} style={{ willChange: "transform" }} onClick={handleClick}>
 
             {/* Burbuja */}
             <div className={cn(

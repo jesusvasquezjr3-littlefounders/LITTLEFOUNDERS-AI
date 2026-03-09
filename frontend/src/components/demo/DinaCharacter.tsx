@@ -205,7 +205,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     };
 
     return (
-        <div className={`scene relative w-full h-full flex justify-center items-center cursor-pointer ${className}`} onClick={handleClick}>
+        <div className={`scene relative w-full h-full flex justify-center items-center cursor-pointer ${className}`} style={{ willChange: "transform" }} onClick={handleClick}>
             {/* We can inline the styles or rely on className. 
             The user provided specific keyframes. We inject them here scoped or globally. 
             Using a style tag for the keyframes. */}

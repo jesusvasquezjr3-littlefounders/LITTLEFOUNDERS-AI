@@ -102,6 +102,7 @@ const Panel3D: React.FC<{
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
+                willChange: "transform, opacity, filter",
                 ...style,
             }}
         >

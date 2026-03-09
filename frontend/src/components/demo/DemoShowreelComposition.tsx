@@ -15,6 +15,7 @@ import { ZaraVexCharacter } from "@/components/demo/ZaraVexCharacter";
 
 export interface DemoShowreelProps {
     isDarkMode: boolean;
+    isMobile?: boolean;
     s_hook_title: string; s_hook_subtitle: string;
     s_lesson_title: string; s_lesson_question: string; s_lesson_opt_a: string; s_lesson_opt_b: string; s_lesson_opt_c: string; s_lesson_opt_d: string; s_lesson_badge_xp: string; s_lesson_badge_level: string;
     s_games_title: string; s_games_badge_1: string; s_games_badge_2: string; s_games_badge_3: string;
@@ -36,16 +37,20 @@ const C = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as cons
 const EZ = Easing.bezier(0.8, 0, 0.2, 1); // Aggressive Apple-style easing (slow start, lightning fast middle, slow end)
 
 // Theme helpers
-function bg(d: boolean) { return d ? "rgba(15, 20, 35, 0.7)" : "rgba(255, 255, 255, 0.85)"; }
+function bg(d: boolean, m?: boolean) { return d ? `rgba(15, 20, 35, ${m ? 0.95 : 0.7})` : `rgba(255, 255, 255, ${m ? 0.98 : 0.85})`; }
 function txt(d: boolean) { return d ? "#fff" : "#000"; }
 function border(d: boolean) { return d ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"; }
-function shadow(d: boolean) { return d ? `0 40px 80px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.2)` : `0 40px 80px rgba(0,0,0,0.15), inset 0 2px 3px rgba(255,255,255,0.8)`; }
+function shadow(d: boolean, m?: boolean) {
+    if (m) return d ? `0 10px 20px rgba(0,0,0,0.8)` : `0 10px 20px rgba(0,0,0,0.1)`;
+    return d ? `0 40px 80px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.2)` : `0 40px 80px rgba(0,0,0,0.15), inset 0 2px 3px rgba(255,255,255,0.8)`;
+}
 
 // ─── APPLE-STYLE PANEL ──────────────────────────────────────────────────────
 const PromoPanel: React.FC<{
     children: React.ReactNode; width: number; height: number;
     delayIn: number; delayOut: number; actT: number; dark: boolean;
-}> = ({ children, width, height, delayIn, delayOut, actT, dark }) => {
+    isMobile?: boolean;
+}> = ({ children, width, height, delayIn, delayOut, actT, dark, isMobile }) => {
     const { fps } = useVideoConfig();
 
     // Aggressive Spring In
@@ -72,9 +77,11 @@ const PromoPanel: React.FC<{
             transformStyle: "preserve-3d",
             transform: `translateZ(${zIn + zOut + breath}px) rotateX(${rotX + breathRot}deg) rotateY(${rotY - breathRot}deg)`,
             opacity: interpolate(sprIn, [0, 0.2], [0, 1], C) * opOut,
-            background: bg(dark), backdropFilter: "blur(24px)",
+            background: bg(dark, isMobile),
+            backdropFilter: isMobile ? "none" : "blur(24px)",
             border: `1px solid ${border(dark)}`, borderRadius: 24, padding: 30,
-            boxShadow: shadow(dark), color: txt(dark),
+            boxShadow: shadow(dark, isMobile), color: txt(dark),
+            willChange: "transform, opacity, filter",
             display: "flex", flexDirection: "column"
         }}>
             {children}
@@ -84,10 +91,10 @@ const PromoPanel: React.FC<{
 
 // ─── APPLE-STYLE BADGE ──────────────────────────────────────────────────────
 const PromoBadge: React.FC<{
-    icon: string; text: string; sub: string; color: string;
+    icon: string; text: string; sub?: string; color: string;
     offsetX: number; offsetY: number; zSpace: number;
-    delayIn: number; delayOut: number; actT: number; dark: boolean;
-}> = ({ icon, text, sub, color, offsetX, offsetY, zSpace, delayIn, delayOut, actT, dark }) => {
+    delayIn: number; delayOut: number; actT: number; dark: boolean; isMobile?: boolean;
+}> = ({ icon, text, sub, color, offsetX, offsetY, zSpace, delayIn, delayOut, actT, dark, isMobile }) => {
     const { fps } = useVideoConfig();
     const sprIn = spring({ frame: actT - delayIn, fps, config: { damping: 12, stiffness: 150 } });
     const outT = Math.max(0, actT - delayOut);
@@ -101,10 +108,11 @@ const PromoBadge: React.FC<{
             transformStyle: "preserve-3d",
             transform: `translateZ(${zSpace + zOut + floater}px) scale(${sprIn}) rotateZ(${interpolate(sprIn, [0, 1], [-20, 0])}deg)`,
             opacity: interpolate(outT, [10, 20], [1, 0], C),
-            background: dark ? "rgba(20,25,35,0.9)" : "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(20px)", border: `1px solid ${color}66`,
+            background: dark ? `rgba(20,25,35,${isMobile ? 0.98 : 0.9})` : `rgba(255,255,255,${isMobile ? 0.98 : 0.95})`,
+            backdropFilter: isMobile ? "none" : "blur(20px)", border: `1px solid ${color}66`,
             borderRadius: 99, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
-            boxShadow: shadow(dark), color: txt(dark)
+            boxShadow: shadow(dark, isMobile), color: txt(dark),
+            willChange: "transform, opacity, filter"
         }}>
             <div style={{ fontSize: 28, filter: `drop-shadow(0 0 10px ${color}88)` }}>{icon}</div>
             <div>
@@ -158,7 +166,7 @@ const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) =>
     const fill = interpolate(t, [40, 120], [0, 65], C);
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={460} delayIn={0} delayOut={180} actT={t} dark={d}>
+            <PromoPanel width={800} height={460} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_lesson_title}</div>
                 <div style={{ height: 16, background: border(d), borderRadius: 8, overflow: "hidden", marginBottom: 40 }}>
                     <div style={{ width: `${fill}%`, height: "100%", background: LF.primary }} />
@@ -193,8 +201,8 @@ const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) =>
                 <DinoCharacter mood="excited" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🌟" text={p.s_lesson_badge_xp} sub="+50 XP" color={LF.gold} offsetX={350} offsetY={100} zSpace={300} delayIn={60} delayOut={185} actT={t} dark={d} />
-            <PromoBadge icon="🔥" text={p.s_lesson_badge_level} sub="Level Up" color={LF.pink} offsetX={-550} offsetY={150} zSpace={400} delayIn={80} delayOut={190} actT={t} dark={d} />
+            <PromoBadge icon="🌟" text={p.s_lesson_badge_xp} sub="+50 XP" color={LF.gold} offsetX={350} offsetY={100} zSpace={300} delayIn={60} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🔥" text={p.s_lesson_badge_level} sub="Level Up" color={LF.pink} offsetX={-550} offsetY={150} zSpace={400} delayIn={80} delayOut={190} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -209,7 +217,7 @@ const Act3Games: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={760} height={600} delayIn={0} delayOut={180} actT={t} dark={d}>
+            <PromoPanel width={760} height={600} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_games_title}</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                     {games.map((g, i) => {
@@ -240,8 +248,8 @@ const Act3Games: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 <DinaCharacter expression="happy" enableMouseTracking={false} />
             </div>
 
-            <PromoBadge icon="🏆" text={p.s_games_badge_1} sub={p.s_badge_win} color={LF.gold} offsetX={300} offsetY={-180} zSpace={250} delayIn={100} delayOut={185} actT={t} dark={d} />
-            <PromoBadge icon="💼" text={p.s_games_badge_2} sub={p.s_badge_money} color={LF.green} offsetX={380} offsetY={100} zSpace={350} delayIn={120} delayOut={190} actT={t} dark={d} />
+            <PromoBadge icon="🏆" text={p.s_games_badge_1} sub={p.s_badge_win} color={LF.gold} offsetX={300} offsetY={-180} zSpace={250} delayIn={100} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="💼" text={p.s_games_badge_2} sub={p.s_badge_money} color={LF.green} offsetX={380} offsetY={100} zSpace={350} delayIn={120} delayOut={190} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -256,7 +264,7 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={420} delayIn={0} delayOut={180} actT={t} dark={d}>
+            <PromoPanel width={800} height={420} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 20, color: p.isDarkMode ? "#aaa" : "#666" }}>{p.s_bank_balance_label}</div>
                 <div style={{ fontSize: 64, fontWeight: 900, color: LF.green, marginBottom: 30 }}>${Math.floor(bal)}</div>
 
@@ -290,7 +298,7 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 <DrRhoCharacter mood="wise" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🔒" text={p.s_bank_badge} sub={p.s_badge_parental} color={LF.purple} offsetX={300} offsetY={160} zSpace={250} delayIn={80} delayOut={185} actT={t} dark={d} />
+            <PromoBadge icon="🔒" text={p.s_bank_badge} sub={p.s_badge_parental} color={LF.purple} offsetX={300} offsetY={160} zSpace={250} delayIn={80} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -305,7 +313,7 @@ const Act5AI: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={640} height={400} delayIn={0} delayOut={180} actT={t} dark={d}>
+            <PromoPanel width={640} height={400} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 20 }}>{p.s_ai_title}</div>
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, opacity: interpolate(t, [30, 50], [0, 1], C) }}>
                     <div style={{ background: `${LF.primary}22`, borderRadius: "20px 20px 4px 20px", padding: 20, maxWidth: "80%", fontSize: 18, fontWeight: 600 }}>{p.s_ai_user_msg}</div>
@@ -328,7 +336,7 @@ const Act5AI: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 <ZaraVexCharacter mood="curious" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🤖" text={p.s_stat_ai} sub="24/7" color={LF.pink} offsetX={-450} offsetY={100} zSpace={300} delayIn={90} delayOut={185} actT={t} dark={d} />
+            <PromoBadge icon="🤖" text={p.s_stat_ai} sub="24/7" color={LF.pink} offsetX={-450} offsetY={100} zSpace={300} delayIn={90} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -342,7 +350,7 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={820} height={460} delayIn={0} delayOut={180} actT={t} dark={d}>
+            <PromoPanel width={820} height={460} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30, color: LF.cyan }}>{p.s_social_title}</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, flex: 1, height: "100%" }}>
@@ -390,7 +398,7 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
                 <DinaCharacter expression="happy" enableMouseTracking={false} />
             </div>
 
-            <PromoBadge icon="🤝" text="Team" sub="Ranking" color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={185} actT={t} dark={d} />
+            <PromoBadge icon="🤝" text="Team" sub="Ranking" color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -405,7 +413,7 @@ const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", width: "150%", height: "150%", background: `radial-gradient(circle, ${LF.primary}30 0%, ${LF.pink}20 40%, transparent 70%)`, filter: "blur(120px)", transform: "translateZ(-800px)" }} />
+            <div style={{ position: "absolute", width: "150%", height: "150%", background: `radial-gradient(circle at 50% 50%, ${LF.primary}30 0%, transparent 80%)`, filter: "blur(100px)", transform: "translateZ(-800px)" }} />
 
             {/* Characters exploding outwards */}
             <div style={{ display: "flex", gap: 30, transform: `translateZ(100px) scale(${spr})`, marginBottom: 300 }}>
@@ -433,7 +441,8 @@ const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 // ─── Main Composition ─────────────────────────────────────────────────────────
 export const TOTAL_FRAMES_SHOWREEL = 1570;
 
-const BackgroundParticles: React.FC<{ frame: number, isDark: boolean }> = ({ frame, isDark }) => {
+const BackgroundParticles: React.FC<{ frame: number, isDark: boolean, isMobile?: boolean }> = ({ frame, isDark, isMobile }) => {
+    if (isMobile) return null;
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", pointerEvents: "none" }}>
             {[...Array(15)].map((_, i) => {
@@ -459,7 +468,8 @@ const BackgroundParticles: React.FC<{ frame: number, isDark: boolean }> = ({ fra
                         transform: `translate3d(${x}px, ${animatedY}px, ${z}px) rotateZ(${frame * (i % 2 === 0 ? 0.2 : -0.2)}deg)`,
                         opacity: isDark ? opacity * 1.5 : opacity,
                         fontSize: size,
-                        filter: `drop-shadow(0 0 10px rgba(255,255,255,0.2))`
+                        filter: `drop-shadow(0 0 10px rgba(255,255,255,0.2))`,
+                        willChange: "transform, opacity"
                     }}>
                         {icon}
                     </div>
@@ -473,10 +483,10 @@ export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => {
     const frame = useCurrentFrame();
 
     // Marketing Enhancement: Continuous, subtle cinematic camera drift
-    const pitch = Math.sin(frame / 120) * 5;
-    const yaw = Math.cos(frame / 150) * 6;
-    const roll = Math.sin(frame / 200) * 1.5;
-    const globalZ = Math.sin(frame / 80) * 60;
+    const pitch = props.isMobile ? 0 : Math.sin(frame / 120) * 5;
+    const yaw = props.isMobile ? 0 : Math.cos(frame / 150) * 6;
+    const roll = props.isMobile ? 0 : Math.sin(frame / 200) * 1.5;
+    const globalZ = props.isMobile ? 0 : Math.sin(frame / 80) * 60;
 
     return (
         <AbsoluteFill style={{ fontFamily: "'Inter', sans-serif", background: "transparent", perspective: 1400, overflow: "hidden" }}>
@@ -484,9 +494,10 @@ export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => {
 
             <div style={{
                 position: "absolute", inset: 0, transformStyle: "preserve-3d",
-                transform: `rotateX(${pitch}deg) rotateY(${yaw}deg) rotateZ(${roll}deg) translateZ(${globalZ}px) scale(1.05)`
+                transform: `rotateX(${pitch}deg) rotateY(${yaw}deg) rotateZ(${roll}deg) translateZ(${globalZ}px)`,
+                willChange: "transform"
             }}>
-                <BackgroundParticles frame={frame} isDark={props.isDarkMode} />
+                <BackgroundParticles frame={frame} isDark={props.isDarkMode} isMobile={props.isMobile} />
                 <Act1Intro p={props} t={frame} />
                 <Act2Lessons p={props} t={frame - 220} />
                 <Act3Games p={props} t={frame - 440} />

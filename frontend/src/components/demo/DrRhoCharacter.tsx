@@ -95,7 +95,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     };
 
     return (
-        <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
+        <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer", className)} style={{ willChange: "transform" }} onClick={handleClick}>
 
             {/* --- Burbuja de Diálogo --- */}
             <div className={cn(

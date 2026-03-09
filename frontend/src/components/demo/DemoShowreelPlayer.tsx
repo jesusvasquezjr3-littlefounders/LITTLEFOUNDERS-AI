@@ -34,6 +34,14 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
         return () => observer.disconnect();
     }, []);
 
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
+
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
@@ -52,6 +60,7 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
 
     const inputProps: DemoShowreelProps = {
         isDarkMode: isDark,
+        isMobile: isMobile,
         s_hook_title: t("showreel.hook_title"),
         s_hook_subtitle: t("showreel.hook_subtitle"),
         s_lesson_title: t("showreel.lesson_title"),
