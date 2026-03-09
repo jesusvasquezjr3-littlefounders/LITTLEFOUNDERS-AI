@@ -112,7 +112,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 id="dino-svg"
                 viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-auto cursor-pointer overflow-visible"
+                className="w-full h-full object-contain cursor-pointer overflow-visible"
                 onClick={handleClick}
             >
                 <defs>

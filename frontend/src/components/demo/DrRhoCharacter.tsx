@@ -95,7 +95,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     };
 
     return (
-        <div className={cn("relative w-full aspect-[4/5] flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
+        <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer", className)} onClick={handleClick}>
 
             {/* --- Burbuja de Diálogo --- */}
             <div className={cn(
@@ -117,7 +117,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             <svg
                 id="drrho-svg"
                 viewBox="0 0 400 500"
-                className="w-full h-auto max-h-full transition-transform duration-500"
+                className="w-full h-full object-contain transition-transform duration-500"
                 xmlns="http://www.w3.org/2000/svg"
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -3,21 +3,86 @@
         "title": "Hello, Little Founder! 👋",
         "subtitle": "Welcome to your Little Founders dashboard!"
     },
+    "tutorial": {
+        "section_title": "What is LittleFounders?",
+        "section_subtitle": "An interactive tutorial in 15 seconds",
+        "hook_line": "Learning Finance has never been this epic",
+        "problem_line": "Traditional education is boring",
+        "solution_line": "Discover LittleFounders",
+        "chars_label": "Your Adventure Guides",
+        "xp_label": "XP Points",
+        "coins_label": "coins",
+        "cta_label": "Start Now",
+        "lesson_label": "Lessons",
+        "game_label": "Games",
+        "bank_label": "Digital Bank",
+        "ai_label": "AI Tutor",
+        "replay": "Replay",
+        "chapter": {
+            "intro": "Intro",
+            "problem": "Problem",
+            "solution": "Solution",
+            "chars": "Characters",
+            "rewards": "Rewards",
+            "cta": "Start"
+        }
+    },
+    "greeting": {
+        "title": "Your guide is waiting!",
+        "start_cta": "Start First Lesson",
+        "games_cta": "Explore Games",
+        "stat_lessons": "Lessons",
+        "stat_games": "Games",
+        "stat_ai": "AI Tutor"
+    },
+    "features": {
+        "title": "Explore the Platform",
+        "subtitle": "Available and coming soon modules",
+        "lessons": {
+            "title": "Lessons",
+            "desc": "Learn by playing with interactive lessons"
+        },
+        "games": {
+            "title": "Games",
+            "desc": "Business and finance simulators"
+        },
+        "ai": {
+            "title": "AI Tutor",
+            "desc": "Your personal learning assistant"
+        },
+        "bank": {
+            "title": "Digital Bank",
+            "desc": "Supervised virtual account and card"
+        },
+        "savings": {
+            "title": "My Savings",
+            "desc": "Set goals and track your progress"
+        },
+        "missions": {
+            "title": "Missions",
+            "desc": "Challenges and tasks with real rewards"
+        },
+        "store": {
+            "title": "Little Store",
+            "desc": "Redeem points for awesome rewards"
+        }
+    },
     "stats": {
+        "section_title": "Your progress this session",
         "completed_lessons": {
-            "title": "Completed Lessons",
+            "title": "Lessons",
             "desc": "Keep it up!"
         },
         "minutes_studied": {
-            "title": "Minutes Studied",
+            "title": "Min. Studied",
             "desc": "Time well spent"
         },
         "points_earned": {
-            "title": "Points Earned",
+            "title": "Points",
             "desc": "You're an expert!"
         },
         "current_streak": {
-            "title": "Current Streak",
+            "title": "Streak",
             "desc": "Days in a row!"
         }
     },
@@ -137,5 +202,60 @@
         "dino": {
             "default_greeting": "Hi, I'm Liruf!"
         }
+    },
+    "showreel": {
+        "hook_title": "What is LittleFounders?",
+        "hook_subtitle": "Gamified financial education for the whole family",
+        "lesson_title": "Interactive Lessons",
+        "lesson_question": "Which of these is a LIABILITY?",
+        "lesson_opt_a": "Paid-off house",
+        "lesson_opt_b": "Car on credit",
+        "lesson_opt_c": "Credit card",
+        "lesson_opt_d": "Expensive phone",
+        "lesson_badge_xp": "+150 XP",
+        "lesson_badge_level": "Level 2 Unlocked",
+        "games_title": "Financial Arcade",
+        "games_badge_1": "1st Successful Business",
+        "games_badge_2": "+200 Coins",
+        "games_badge_3": "Strategist Level 1",
+        "bank_title": "Digital Banking",
+        "bank_balance_label": "Available Balance",
+        "bank_limit_1": "Daily Limit",
+        "bank_limit_2": "Monthly Withdrawals",
+        "bank_badge": "24/7 Supervision",
+        "ai_title": "AI Tutor",
+        "ai_user_msg": "What is compound interest?",
+        "ai_bot_msg": "It's when your profits generate more profits. Like a financial snowball! 🌟",
+        "char_liruf": "Liruf",
+        "char_dina": "Dina",
+        "char_rho": "Dr. Rho",
+        "char_zara": "Zara Vex",
+        "cta_headline": "Learn. Play. Build.",
+        "cta_sub": "Join thousands of families on LittleFounders",
+        "cta_button": "Start Free →",
+        "stat_lessons": "12+ Lessons",
+        "stat_games": "5 Simulators",
+        "stat_ai": "Personalized AI",
+        "stat_bank": "Real Banking",
+        "ai_typing": "Typing",
+        "game_lemonade": "Lemonade",
+        "game_market": "Market",
+        "game_stocks": "Stocks",
+        "game_factory": "Factory",
+        "game_farm": "Farm",
+        "game_risk": "Risk",
+        "badge_win": "100% Win",
+        "badge_money": "$2,500",
+        "badge_parental": "Parental Control",
+        "card_name": "LittleFounders",
+        "card_number": "**** **** 4092",
+        "social_title": "Learn with Friends",
+        "social_streak": "5 Days Growing",
+        "social_incentive": "Safe Environment: No chat or contact. Only shared progress between parent-approved friends.",
+        "social_privacy": "Privacy & Safety",
+        "dash_lessons": "Lessons",
+        "dash_minutes": "Minutes",
+        "dash_points": "Points",
+        "dash_streak": "Current Streak"
     }
 }

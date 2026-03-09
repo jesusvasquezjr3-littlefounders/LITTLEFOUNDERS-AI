@@ -3,21 +3,86 @@
         "title": "¡Hola, Pequeño Fundador! 👋",
         "subtitle": "¡Bienvenido a tu panel de Little Founders!"
     },
+    "tutorial": {
+        "section_title": "¿Qué es LittleFounders?",
+        "section_subtitle": "Un tutorial interactivo en 15 segundos",
+        "hook_line": "Aprender Finanzas nunca fue tan épico",
+        "problem_line": "La educación tradicional es aburrida",
+        "solution_line": "Descubre LittleFounders",
+        "chars_label": "Tus Guías de Aventura",
+        "xp_label": "Puntos XP",
+        "coins_label": "monedas",
+        "cta_label": "Empieza Ahora",
+        "lesson_label": "Lecciones",
+        "game_label": "Videojuegos",
+        "bank_label": "Banca Digital",
+        "ai_label": "Tutor con IA",
+        "replay": "Repetir",
+        "chapter": {
+            "intro": "Intro",
+            "problem": "Problema",
+            "solution": "Solución",
+            "chars": "Personajes",
+            "rewards": "Recompensas",
+            "cta": "Empieza"
+        }
+    },
+    "greeting": {
+        "title": "¡Tu guía te espera!",
+        "start_cta": "Iniciar Primera Lección",
+        "games_cta": "Explorar Videojuegos",
+        "stat_lessons": "Lecciones",
+        "stat_games": "Juegos",
+        "stat_ai": "Tutor IA"
+    },
+    "features": {
+        "title": "Explora la Plataforma",
+        "subtitle": "Módulos disponibles y próximamente",
+        "lessons": {
+            "title": "Lecciones",
+            "desc": "Aprende jugando con lecciones interactivas"
+        },
+        "games": {
+            "title": "Videojuegos",
+            "desc": "Simuladores de negocio y finanzas"
+        },
+        "ai": {
+            "title": "Tutor con IA",
+            "desc": "Tu asistente personal de aprendizaje"
+        },
+        "bank": {
+            "title": "Banca Digital",
+            "desc": "Cuenta y tarjeta virtual supervisada"
+        },
+        "savings": {
+            "title": "Mis Ahorros",
+            "desc": "Establece metas y sigue tu progreso"
+        },
+        "missions": {
+            "title": "Misiones",
+            "desc": "Retos y tareas con recompensas reales"
+        },
+        "store": {
+            "title": "Tiendita",
+            "desc": "Canjea puntos por recompensas geniales"
+        }
+    },
     "stats": {
+        "section_title": "Tu progreso en esta sesión",
         "completed_lessons": {
-            "title": "Lecciones Completadas",
+            "title": "Lecciones",
             "desc": "¡Sigue así!"
         },
         "minutes_studied": {
-            "title": "Minutos Estudiados",
+            "title": "Min. Estudio",
             "desc": "Tiempo bien invertido"
         },
         "points_earned": {
-            "title": "Puntos Ganados",
+            "title": "Puntos",
             "desc": "¡Eres un experto!"
         },
         "current_streak": {
-            "title": "Racha Actual",
+            "title": "Racha",
             "desc": "¡Días seguidos!"
         }
     },
@@ -137,5 +202,60 @@
         "dino": {
             "default_greeting": "¡Hola soy Liruf!"
         }
+    },
+    "showreel": {
+        "hook_title": "¿Qué es LittleFounders?",
+        "hook_subtitle": "Educación financiera gamificada para toda la familia",
+        "lesson_title": "Lecciones Interactivas",
+        "lesson_question": "¿Cuál de estos es un PASIVO?",
+        "lesson_opt_a": "Casa pagada",
+        "lesson_opt_b": "Auto a crédito",
+        "lesson_opt_c": "Tarjeta de crédito",
+        "lesson_opt_d": "Teléfono caro",
+        "lesson_badge_xp": "+150 XP",
+        "lesson_badge_level": "Nivel 2 Desbloqueado",
+        "games_title": "Arcade Financiero",
+        "games_badge_1": "1er Negocio Exitoso",
+        "games_badge_2": "+200 Monedas",
+        "games_badge_3": "Estratega Nivel 1",
+        "bank_title": "Banca Digital",
+        "bank_balance_label": "Saldo Disponible",
+        "bank_limit_1": "Límite Diario",
+        "bank_limit_2": "Retiros del Mes",
+        "bank_badge": "Supervisión 24/7",
+        "ai_title": "Tutor con IA",
+        "ai_user_msg": "¿Qué es el interés compuesto?",
+        "ai_bot_msg": "Es cuando tus ganancias generan más ganancias. ¡Como una bola de nieve financiera! 🌟",
+        "char_liruf": "Liruf",
+        "char_dina": "Dina",
+        "char_rho": "Dr. Rho",
+        "char_zara": "Zara Vex",
+        "cta_headline": "Aprende. Juega. Construye.",
+        "cta_sub": "Únete a miles de familias en LittleFounders",
+        "cta_button": "Empieza Gratis →",
+        "stat_lessons": "12+ Lecciones",
+        "stat_games": "5 Simuladores",
+        "stat_ai": "IA Personalizada",
+        "stat_bank": "Banca Real",
+        "ai_typing": "Escribiendo",
+        "game_lemonade": "Limonada",
+        "game_market": "Mercado",
+        "game_stocks": "Acciones",
+        "game_factory": "Fábrica",
+        "game_farm": "Granja",
+        "game_risk": "Riesgo",
+        "badge_win": "100% Victoria",
+        "badge_money": "$2,500",
+        "badge_parental": "Control Parental",
+        "card_name": "LittleFounders",
+        "card_number": "**** **** 4092",
+        "social_title": "Aprende con tus Amigos",
+        "social_streak": "5 Días Creciendo",
+        "social_incentive": "Ambiente Seguro: Sin chat ni contacto. Solo progreso compartido entre amigos aprobados por los padres.",
+        "social_privacy": "Privacidad y Seguridad",
+        "dash_lessons": "Lecciones",
+        "dash_minutes": "Minutos",
+        "dash_points": "Puntos",
+        "dash_streak": "Racha Actual"
     }
 }
