@@ -23,7 +23,7 @@ import NotFound from "./pages/NotFound";
 import PageUnderConstruction from "./pages/PageUnderConstruction";
 
 import Demo from "./pages/demo/Demo";
-import DemoPageUnderConstruction from "./pages/demo/DemoPageUnderConstruction";
+import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
 
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
@@ -152,8 +152,11 @@ const App = () => (
                 } />
                 {/* Demo Routes */}
                 <Route path="/demo" element={<Demo />} />
-                <Route path="/demo/lecciones" element={<DemoPageUnderConstruction />} />
-                <Route path="/demo/investment-games" element={<DemoPageUnderConstruction />} />
+                <Route path="/demo/lecciones" element={<Lecciones isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/lessons" element={<Lecciones isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/investment-games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/juegos" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
 
                 {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
                     though Sidebar has them locked with '#' */}

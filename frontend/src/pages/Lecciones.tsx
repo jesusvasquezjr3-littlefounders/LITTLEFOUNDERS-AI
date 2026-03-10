@@ -8,6 +8,13 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
+import { DemoBanner } from "@/components/demo/DemoBanner";
+import { cn } from "@/lib/utils";
+
+interface LeccionesProps {
+  isDemo?: boolean;
+  Layout?: React.ComponentType<{ children: React.ReactNode }>;
+}
 
 // Navigation states
 type ViewState =
@@ -15,8 +22,8 @@ type ViewState =
   | { type: 'sagas'; adventureId: number }
   | { type: 'lessons'; adventureId: number; sagaId: number; sagaTitle: string };
 
-const Lecciones = () => {
-  const { t } = useTranslation('lessons');
+export default function Lecciones({ isDemo = false, Layout = DashboardLayout }: LeccionesProps) {
+  const { t } = useTranslation(['lessons', 'common', 'demo']);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewState, setViewState] = useState<ViewState>({ type: 'adventures' });
@@ -102,17 +109,23 @@ const Lecciones = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
-        <LessonsLoadingScreen />
-      </DashboardLayout>
+      <Layout>
+        <div className="max-w-6xl mx-auto p-4 md:p-6">
+          <LessonsLoadingScreen minimal={true} />
+        </div>
+      </Layout>
     );
   }
+
+  // Common wrapper class for all views
+  const contentWrapperClass = "space-y-6 pb-20 max-w-6xl mx-auto px-4";
 
   // Lessons View (deepest level)
   if (viewState.type === 'lessons') {
     return (
-      <DashboardLayout>
-        <div className="space-y-4 pb-20">
+      <Layout>
+        <div className={contentWrapperClass}>
+          {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
           {/* Header */}
           <div className="flex items-center gap-3">
             <Button
@@ -128,7 +141,7 @@ const Lecciones = () => {
                 {viewState.sagaTitle}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {lessons.filter(l => l.completed).length}/{lessons.length} {t('completed', { defaultValue: 'completadas' })}
+                {lessons.filter(l => l.completed).length}/{lessons.length} {t('lessons:completed')}
               </p>
             </div>
           </div>
@@ -140,27 +153,31 @@ const Lecciones = () => {
             themeColor={getCurrentTheme()}
           />
         </div>
-      </DashboardLayout>
+      </Layout>
     );
   }
 
   // Sagas View
   if (viewState.type === 'sagas') {
     return (
-      <DashboardLayout>
-        <SagaView
-          adventureId={viewState.adventureId}
-          onBack={handleBack}
-          onSelectSaga={handleSagaSelect}
-        />
-      </DashboardLayout>
+      <Layout>
+        <div className={cn(contentWrapperClass, "space-y-0")}>
+          {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
+          <SagaView
+            adventureId={viewState.adventureId}
+            onBack={handleBack}
+            onSelectSaga={handleSagaSelect}
+          />
+        </div>
+      </Layout>
     );
   }
 
   // Adventures View (default)
   return (
-    <DashboardLayout>
-      <div className="space-y-6 pb-20">
+    <Layout>
+      <div className={contentWrapperClass}>
+        {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
         {/* Adventures */}
         {!isLoading && (
           <Adventures
@@ -170,8 +187,6 @@ const Lecciones = () => {
           />
         )}
       </div>
-    </DashboardLayout>
+    </Layout>
   );
 };
-
-export default Lecciones;

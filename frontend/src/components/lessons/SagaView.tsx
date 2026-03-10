@@ -177,7 +177,7 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
         <div className="w-full h-full relative">
 
             {/* Simple Header Title - Static like "AVENTURAS" */}
-            <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="py-8">
                 <div className="flex items-center gap-4 mb-6">
                     <Button variant="ghost" size="icon" onClick={onBack} className="text-slate-500 hover:text-slate-900 dark:text-slate-400">
                         <ArrowLeft size={24} />

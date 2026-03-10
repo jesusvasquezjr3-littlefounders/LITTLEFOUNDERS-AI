@@ -265,5 +265,9 @@
         "dash_minutes": "Minutes",
         "dash_points": "Points",
         "dash_streak": "Current Streak"
+    },
+    "demo_banner": {
+        "lessons": "Log in or register to save your progress",
+        "games": "Log in or register to access the full catalog of games"
     }
 }

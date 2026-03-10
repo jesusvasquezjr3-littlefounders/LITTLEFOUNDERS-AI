@@ -1,32 +1,28 @@
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { DemoThemeToggle } from "./DemoThemeToggle";
+import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useTranslation } from "react-i18next";
 
 export function DemoTopNav() {
     const { t } = useTranslation('demo');
 
     return (
-        <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
-            {/* Centered Logo - Hidden on mobile to prevent overlap */}
-            <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+        <header className="relative flex items-center px-4 md:px-6 py-3 bg-card/80 backdrop-blur-md border-b border-border min-h-[72px] md:min-h-[80px]">
+            {/* Logo Container - Left on mobile, center on desktop */}
+            <div className="relative md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-10">
                 <img
                     src="/logo-sized.png"
                     alt="LittleFounders"
-                    className="h-8 w-auto object-contain"
+                    className="h-8 md:h-10 w-auto object-contain transition-all duration-300"
                 />
             </div>
 
-
-            {/* Right Section */}
-            <div className="flex items-center space-x-4">
-                <ThemeToggle />
-                <Button asChild variant="ghost">
-                    <Link to="/login">{t('nav.login')}</Link>
-                </Button>
-                <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
-                    <Link to="/register">{t('nav.register')}</Link>
-                </Button>
+            {/* Right Section - Theme & Language Toggles Balanced */}
+            <div className="flex items-center gap-3 ml-auto z-20">
+                <DemoThemeToggle className="h-10 w-10 md:h-11 md:w-11" />
+                <LanguageSelector
+                    variant="pill"
+                    className="h-10 md:h-11 px-4 md:px-5 text-xs md:text-sm font-bold shadow-sm"
+                />
             </div>
         </header>
     );

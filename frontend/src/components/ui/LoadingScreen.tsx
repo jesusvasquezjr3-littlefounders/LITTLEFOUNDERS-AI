@@ -7,6 +7,7 @@ interface LoadingScreenProps {
   loadingMessage: string;
   icon?: React.ReactNode;
   className?: string;
+  minimal?: boolean;
 }
 
 export function LoadingScreen({
@@ -14,9 +15,27 @@ export function LoadingScreen({
   description,
   loadingMessage,
   icon,
-  className = ""
+  className = "",
+  minimal = false
 }: LoadingScreenProps) {
   const { t } = useTranslation('common');
+
+  const content = (
+    <div className="flex flex-col items-center space-y-4">
+      {icon || (
+        <dotlottie-wc
+          src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
+          style={{ width: '300px', height: '300px' }}
+          autoplay
+          loop
+        />
+      )}
+      <h2 className="text-2xl font-bold">{loadingMessage}</h2>
+      <p className="text-muted-foreground max-w-md">
+        {t('loading.please_wait')}
+      </p>
+    </div>
+  );
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -29,24 +48,17 @@ export function LoadingScreen({
         </div>
       )}
 
-      <Card className="p-8 text-center">
-        <CardContent>
-          <div className="flex flex-col items-center space-y-4">
-            {icon || (
-              <dotlottie-wc
-                src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
-                style={{ width: '300px', height: '300px' }}
-                autoplay
-                loop
-              />
-            )}
-            <h2 className="text-2xl font-bold">{loadingMessage}</h2>
-            <p className="text-muted-foreground max-w-md">
-              {t('loading.please_wait')}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {minimal ? (
+        <div className="text-center py-12">
+          {content}
+        </div>
+      ) : (
+        <Card className="p-8 text-center">
+          <CardContent>
+            {content}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
@@ -76,11 +88,12 @@ export function SavingsLoadingScreen() {
 }
 
 // Componente específico para lecciones
-export function LessonsLoadingScreen() {
+export function LessonsLoadingScreen({ minimal = true }: { minimal?: boolean }) {
   const { t } = useTranslation('common');
   return (
     <LoadingScreen
       loadingMessage={t('loading.lessons')}
+      minimal={minimal}
     />
   );
 }

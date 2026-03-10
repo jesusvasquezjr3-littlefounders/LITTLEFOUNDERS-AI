@@ -43,6 +43,7 @@ const LessonNode: React.FC<LessonNodeProps> = ({
     theme,
     totalInUnit
 }) => {
+    const { t } = useTranslation('lessons');
     const navigate = useNavigate();
     const colors = isLocked
         ? { bg: 'bg-gray-300 dark:bg-gray-700', border: 'border-gray-400 dark:border-gray-600', text: 'text-gray-400' }
@@ -116,7 +117,7 @@ const LessonNode: React.FC<LessonNodeProps> = ({
                             {lesson.completed && <Check className="w-4 h-4 text-green-500" />}
                         </h4>
                         <p className="text-xs text-muted-foreground mb-3 line-clamp-3">
-                            {lesson.description || "Completa esta lección para desbloquear más contenido."}
+                            {lesson.description || t('locked_description')}
                         </p>
 
                         <div className="flex items-center gap-2">
@@ -128,7 +129,7 @@ const LessonNode: React.FC<LessonNodeProps> = ({
                             </Badge>
                             {isLocked && (
                                 <Badge variant="outline" className="text-[10px] h-5 px-1.5 ml-auto text-gray-400 border-dashed">
-                                    <Lock className="w-3 h-3 mr-1" /> Bloqueado
+                                    <Lock className="w-3 h-3 mr-1" /> {t('locked')}
                                 </Badge>
                             )}
                         </div>
@@ -153,7 +154,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({
         const groups: Record<number, { title: string, lessons: LessonItem[] }> = {};
         lessons.forEach(l => {
             if (!groups[l.topicLevel]) {
-                groups[l.topicLevel] = { title: l.topicTitle || `Unit ${l.topicLevel}`, lessons: [] };
+                groups[l.topicLevel] = { title: l.topicTitle || `${t('unit')} ${l.topicLevel}`, lessons: [] };
             }
             groups[l.topicLevel].lessons.push(l);
         });
@@ -193,7 +194,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({
     const currentLessonId = lessons[currentLessonGlobalIndex]?.id || -1;
 
     return (
-        <div className="w-full max-w-6xl mx-auto py-2 px-4 pb-32">
+        <div className="w-full py-2 pb-32">
 
             {/* Units */}
             <div className="space-y-4">

@@ -4,22 +4,62 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DemoBanner } from "@/components/demo/DemoBanner";
+
+interface GamesPageProps {
+  isDemo?: boolean;
+  Layout?: React.ComponentType<{ children: React.ReactNode }>;
+}
 
 const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/2-nam-vs-yum-game';
 const NAM_VS_YUM_GIF = `${ASSET_BASE}/pictures/2-nam-vs-yum-game.gif`;
 const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
 const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
 
-export default function GamesPage() {
-  const { t } = useTranslation(['games', 'common']);
+const ALL_GAMES = [
+  {
+    id: 'nam-vs-yum',
+    path: '/games/nam-vs-yum',
+    titleKey: 'games:namVsYum.title',
+    subtitleKey: 'games:namVsYum.subtitle',
+    gif: NAM_VS_YUM_GIF,
+    fallbackEmojis: ['🦎', 'VS', '👾'],
+    accentColor: 'green',
+    isDemo: true, // User can change this
+  },
+  {
+    id: 'nectar',
+    path: '/games/nectar-de-las-sombras',
+    titleKey: 'games:nectar.title',
+    subtitleKey: 'games:nectar.subtitle',
+    gif: NECTAR_GIF,
+    fallbackEmojis: ['🍋', '&', '💎'],
+    accentColor: 'indigo',
+    isDemo: true, // User can change this
+  },
+  {
+    id: 'paper-detective',
+    path: '/games/paper-detective',
+    titleKey: 'games:paperDetective.title',
+    subtitleKey: 'games:paperDetective.subtitle',
+    gif: PAPER_DETECTIVE_GIF,
+    fallbackEmojis: ['🔍', '&', '💰'],
+    accentColor: 'amber',
+    isDemo: true, // User can change this
+  }
+];
+
+export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: GamesPageProps) {
+  const { t } = useTranslation(['games', 'common', 'demo']);
   const navigate = useNavigate();
   const [gifError, setGifError] = useState(false);
   const [nectarGifError, setNectarGifError] = useState(false);
   const [detectiveGifError, setDetectiveGifError] = useState(false);
 
   return (
-    <DashboardLayout>
-      <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
+    <Layout>
+      <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
+        {isDemo && <DemoBanner message={t('demo:demo_banner.games')} />}
         {/* Header Section */}
         <div className="relative mb-8 p-5 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/10 via-orange-500/5 to-red-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
           {/* Decorative Background Icon */}
@@ -52,191 +92,71 @@ export default function GamesPage() {
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-          {/* Ñam vs. Yum Card */}
-          <button
-            onClick={() => navigate('/games/nam-vs-yum')}
-            className={cn(
-              "group relative overflow-hidden rounded-3xl",
-              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
-              "transition-all duration-300",
-              "hover:scale-[1.03] hover:shadow-xl hover:shadow-purple-500/10",
-              "active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-              "text-left w-full h-full flex flex-col",
-            )}
-          >
-            {/* Square Preview */}
-            <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-              {!gifError ? (
-                <img
-                  src={NAM_VS_YUM_GIF}
-                  alt={t('games:namVsYum.title')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={() => setGifError(true)}
-                  draggable={false}
-                  loading="eager"
-                />
-              ) : (
-                /* Fallback if GIF fails to load */
-                <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-green-900/60 via-slate-900 to-purple-900/60">
-                  <div className="flex items-center gap-4">
-                    <span className="text-4xl">🦎</span>
-                    <span className="text-2xl font-bold text-white/60">VS</span>
-                    <span className="text-4xl">👾</span>
-                  </div>
-                  <p className="text-white/40 text-xs font-medium">
-                    {t('games:namVsYum.title')}
-                  </p>
-                </div>
+          {ALL_GAMES.filter(g => !isDemo || g.isDemo).map((game) => (
+            <button
+              key={game.id}
+              onClick={() => navigate(game.path)}
+              className={cn(
+                "group relative overflow-hidden rounded-3xl",
+                "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
+                "transition-all duration-300",
+                "hover:scale-[1.03] hover:shadow-xl hover:shadow-purple-500/10",
+                "active:scale-[0.98]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                "text-left w-full h-full flex flex-col",
               )}
-
-              {/* Play overlay on hover */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
-                <div className={cn(
-                  "w-14 h-14 rounded-full flex items-center justify-center",
-                  "bg-green-500 shadow-lg shadow-green-500/40",
-                  "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
-                  "transition-all duration-300",
-                )}>
-                  <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
-                </div>
-              </div>
-
-              {/* Title Overlay for 1:1 look */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <h3 className="font-bold text-lg text-white leading-tight">
-                  {t('games:namVsYum.title')}
-                </h3>
-                <p className="text-xs text-white/70 line-clamp-1">
-                  {t('games:namVsYum.subtitle')}
-                </p>
-              </div>
-            </div>
-          </button>
-
-          {/* Néctar de las Sombras Card */}
-          <button
-            onClick={() => navigate('/games/nectar-de-las-sombras')}
-            className={cn(
-              "group relative overflow-hidden rounded-3xl",
-              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
-              "transition-all duration-300",
-              "hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/10",
-              "active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-              "text-left w-full h-full flex flex-col",
-            )}
-          >
-            {/* Square Preview */}
-            <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-              {!nectarGifError ? (
+            >
+              <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
                 <img
-                  src={NECTAR_GIF}
-                  alt={t('games:nectar.title')}
+                  src={game.gif}
+                  alt={t(game.titleKey)}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={() => setNectarGifError(true)}
                   draggable={false}
                   loading="eager"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
                 />
-              ) : (
-                /* Fallback if GIF fails to load */
-                <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-indigo-900/60 via-slate-900 to-indigo-900/60">
+
+                {/* Fallback */}
+                <div className="hidden w-full h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-800 to-slate-900">
                   <div className="flex items-center gap-4">
-                    <span className="text-4xl">🍋</span>
-                    <span className="text-2xl font-bold text-white/60">&</span>
-                    <span className="text-4xl">💎</span>
+                    <span className="text-4xl">{game.fallbackEmojis[0]}</span>
+                    <span className="text-2xl font-bold text-white/60">{game.fallbackEmojis[1]}</span>
+                    <span className="text-4xl">{game.fallbackEmojis[2]}</span>
                   </div>
                   <p className="text-white/40 text-xs font-medium px-4 text-center">
-                    {t('games:nectar.title')}
+                    {t(game.titleKey)}
                   </p>
                 </div>
-              )}
 
-              {/* Play overlay on hover */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
-                <div className={cn(
-                  "w-14 h-14 rounded-full flex items-center justify-center",
-                  "bg-indigo-500 shadow-lg shadow-indigo-500/40",
-                  "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
-                  "transition-all duration-300",
-                )}>
-                  <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
-                </div>
-              </div>
-
-              {/* Title Overlay for 1:1 look */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <h3 className="font-bold text-lg text-white leading-tight">
-                  {t('games:nectar.title')}
-                </h3>
-                <p className="text-xs text-white/70 line-clamp-1">
-                  {t('games:nectar.subtitle')}
-                </p>
-              </div>
-            </div>
-          </button>
-
-          {/* Paper Detective Card */}
-          <button
-            onClick={() => navigate('/games/paper-detective')}
-            className={cn(
-              "group relative overflow-hidden rounded-3xl",
-              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
-              "transition-all duration-300",
-              "hover:scale-[1.03] hover:shadow-xl hover:shadow-amber-500/10",
-              "active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-              "text-left w-full h-full flex flex-col",
-            )}
-          >
-            {/* Square Preview */}
-            <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-              {!detectiveGifError ? (
-                <img
-                  src={PAPER_DETECTIVE_GIF}
-                  alt={t('games:paperDetective.title')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={() => setDetectiveGifError(true)}
-                  draggable={false}
-                  loading="eager"
-                />
-              ) : (
-                /* Fallback if GIF fails to load */
-                <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-amber-900/60 via-slate-900 to-amber-900/60">
-                  <div className="flex items-center gap-4">
-                    <span className="text-4xl">🔍</span>
-                    <span className="text-2xl font-bold text-white/60">&</span>
-                    <span className="text-4xl">💰</span>
+                {/* Play overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
+                  <div className={cn(
+                    "w-14 h-14 rounded-full flex items-center justify-center",
+                    `bg-${game.accentColor}-500 shadow-lg shadow-${game.accentColor}-500/40`,
+                    "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
+                    "transition-all duration-300",
+                  )}>
+                    <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
                   </div>
-                  <p className="text-white/40 text-xs font-medium px-4 text-center">
-                    {t('games:paperDetective.title')}
+                </div>
+
+                {/* Title Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                  <h3 className="font-bold text-lg text-white leading-tight">
+                    {t(game.titleKey)}
+                  </h3>
+                  <p className="text-xs text-white/70 line-clamp-1">
+                    {t(game.subtitleKey)}
                   </p>
                 </div>
-              )}
-
-              {/* Play overlay on hover */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
-                <div className={cn(
-                  "w-14 h-14 rounded-full flex items-center justify-center",
-                  "bg-amber-500 shadow-lg shadow-amber-500/40",
-                  "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
-                  "transition-all duration-300",
-                )}>
-                  <Play className="w-7 h-7 text-white ml-0.5" fill="white" />
-                </div>
               </div>
-
-              {/* Title Overlay for 1:1 look */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <h3 className="font-bold text-lg text-white leading-tight">
-                  {t('games:paperDetective.title')}
-                </h3>
-                <p className="text-xs text-white/70 line-clamp-1">
-                  {t('games:paperDetective.subtitle')}
-                </p>
-              </div>
-            </div>
-          </button>
+            </button>
+          ))}
 
           {/* Coming Soon Card (Square 1:1) */}
           <div className={cn(
@@ -261,6 +181,6 @@ export default function GamesPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </Layout>
   );
 }

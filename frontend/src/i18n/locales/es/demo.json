@@ -265,5 +265,9 @@
         "dash_minutes": "Minutos",
         "dash_points": "Puntos",
         "dash_streak": "Racha Actual"
+    },
+    "demo_banner": {
+        "lessons": "Iniciar Sesión/Registrarte para no perder el progreso",
+        "games": "Inicia sesión/registrate para acceder al catálogo completo de juegos"
     }
 }

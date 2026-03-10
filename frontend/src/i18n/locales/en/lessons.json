@@ -107,6 +107,9 @@
   },
   "completed": "completed",
   "no_lessons": "No lessons available.",
+  "unit": "Unit",
+  "locked": "Locked",
+  "locked_description": "Complete this lesson to unlock more content.",
   "tip": "TIP",
   "price_detective": {
     "investigate": "🔍 INVESTIGATE PRICES",

@@ -58,7 +58,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
     }
 
     return (
-        <div className="adventures-container w-full max-w-6xl mx-auto px-4 py-8">
+        <div className="adventures-container w-full py-8">
             {/* Header Section */}
             <div className="relative mb-10 p-5 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/10 via-purple-500/5 to-blue-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
                 {/* Decorative Background Icon */}

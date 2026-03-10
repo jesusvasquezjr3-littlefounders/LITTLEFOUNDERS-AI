@@ -102,6 +102,9 @@
   },
   "completed": "completadas",
   "no_lessons": "No hay lecciones disponibles.",
+  "unit": "Unidad",
+  "locked": "Bloqueado",
+  "locked_description": "Completa esta lección para desbloquear más contenido.",
   "tip": "CONSEJO",
   "price_detective": {
     "investigate": "🔍 INVESTIGAR PRECIOS",
