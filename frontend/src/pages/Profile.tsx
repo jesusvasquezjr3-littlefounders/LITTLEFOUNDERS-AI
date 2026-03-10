@@ -196,7 +196,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Stats Card */}
-          <Card className="border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-yellow-500" />
@@ -238,7 +238,7 @@ const Profile = () => {
           </Card>
 
           {/* Details Card */}
-          <Card className="border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5 text-purple-500" />

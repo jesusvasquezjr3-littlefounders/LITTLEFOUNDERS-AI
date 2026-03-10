@@ -83,6 +83,15 @@ const Lecciones = () => {
     }
   };
 
+  const handleResumeMap = (adventureId: number, sagaId: number, sagaTitle: string) => {
+    setViewState({
+      type: 'lessons',
+      adventureId,
+      sagaId,
+      sagaTitle
+    });
+  };
+
   const handleBack = () => {
     if (viewState.type === 'lessons') {
       setViewState({ type: 'sagas', adventureId: viewState.adventureId });
@@ -156,6 +165,7 @@ const Lecciones = () => {
         {!isLoading && (
           <Adventures
             onSelectAdventure={handleAdventureSelect}
+            onResumeMap={handleResumeMap}
             userId={userId || undefined}
           />
         )}

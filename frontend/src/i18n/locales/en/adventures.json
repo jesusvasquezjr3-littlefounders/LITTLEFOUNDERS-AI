@@ -4,11 +4,14 @@
         "subtitle": "Explore new worlds and build your financial skills step by step.",
         "locked": "Locked",
         "locked_desc": "Complete the previous adventure",
-        "continue": "Continue",
+        "continue": "Explore the Terrain",
         "next_adventure": "Next Adventure",
         "completed_all_title": "Congratulations, Grand Founder!",
         "completed_all_desc": "You have completed all adventures",
-        "explorer_label": "Worlds to Explore"
+        "explorer_label": "Worlds to Explore",
+        "continue_learning": "Continue Adventure",
+        "all_completed": "All adventures completed!",
+        "saga_default": "Saga {{id}}"
     },
     "list": {
         "1": {

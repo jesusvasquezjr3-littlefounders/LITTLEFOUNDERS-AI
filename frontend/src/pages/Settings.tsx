@@ -71,7 +71,7 @@ const SettingItem = ({
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
     <div className="space-y-3">
         <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">{title}</h3>
-        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden divide-y divide-slate-100 dark:divide-slate-700/50">
+        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-700/50">
             {children}
         </div>
     </div>

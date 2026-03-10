@@ -143,7 +143,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className={`border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all overflow-hidden relative ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
+          <Card key={index} className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
             <CardContent className="p-4 md:p-6">
               <div className="flex flex-col items-center text-center space-y-2 relative z-10">
                 <div className={`p-2 rounded-full ${stat.bgColor} mb-2 h-[170px] flex items-center justify-center`}>
@@ -168,7 +168,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
       </div>
 
       {/* Weekly Goal Progress */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
+      <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-blue-800">
             <Target className="h-5 w-5" />
@@ -192,7 +192,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Next Lessons */}
-        <Card>
+        <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Play className="h-5 w-5 text-green-600" />
@@ -236,7 +236,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
         </Card>
 
         {/* Achievements */}
-        <Card>
+        <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Award className="h-5 w-5 text-yellow-600" />

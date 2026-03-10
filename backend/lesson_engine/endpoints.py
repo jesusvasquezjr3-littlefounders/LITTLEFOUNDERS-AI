@@ -680,6 +680,78 @@ async def get_user_streak(public_id: str, db: Session = Depends(get_db)):
         "total_days_studied": len([d for d in activity_days if d["active"]])
     }
 
+@router.get("/users/{public_id}/next-lesson")
+async def get_user_next_global_lesson(public_id: str, db: Session = Depends(get_db)):
+    """
+    Get the absolute next lesson the user should play globally.
+    Finds the highest completed lesson and returns the strictly next one.
+    If no lessons completed, returns the very first lesson of the app.
+    """
+    user = _resolve_user(db, public_id)
+
+    # Get the highest completed lesson
+    last_completed = db.query(Lesson).join(
+        UserLessonProgress, Lesson.id == UserLessonProgress.lesson_id
+    ).filter(
+        UserLessonProgress.user_id == user.id,
+        UserLessonProgress.completed == True
+    ).order_by(
+        Lesson.adventure_level.desc(),
+        Lesson.saga_level.desc(),
+        Lesson.topic_level.desc(),
+        Lesson.lesson_number.desc()
+    ).first()
+
+    if not last_completed:
+        # User hasn't completed any lessons, return very first lesson (1-1-1-1)
+        first_lesson = db.query(Lesson).order_by(
+            Lesson.adventure_level,
+            Lesson.saga_level,
+            Lesson.topic_level,
+            Lesson.lesson_number
+        ).first()
+        if not first_lesson:
+            raise HTTPException(status_code=404, detail="No lessons found in database")
+        return {"next_code": first_lesson.lesson_code, "is_last": False}
+
+    # Find the strictly next lesson after the last completed one
+    # Same logic as get_next_lesson
+    
+    # 1. Next in same topic
+    next_lesson = db.query(Lesson).filter(
+        Lesson.adventure_level == last_completed.adventure_level,
+        Lesson.saga_level == last_completed.saga_level,
+        Lesson.topic_level == last_completed.topic_level,
+        Lesson.lesson_number > last_completed.lesson_number
+    ).order_by(Lesson.lesson_number).first()
+
+    # 2. First in next topic
+    if not next_lesson:
+        next_lesson = db.query(Lesson).filter(
+            Lesson.adventure_level == last_completed.adventure_level,
+            Lesson.saga_level == last_completed.saga_level,
+            Lesson.topic_level > last_completed.topic_level
+        ).order_by(Lesson.topic_level, Lesson.lesson_number).first()
+
+    # 3. First in next saga
+    if not next_lesson:
+        next_lesson = db.query(Lesson).filter(
+            Lesson.adventure_level == last_completed.adventure_level,
+            Lesson.saga_level > last_completed.saga_level
+        ).order_by(Lesson.saga_level, Lesson.topic_level, Lesson.lesson_number).first()
+
+    # 4. First in next adventure
+    if not next_lesson:
+        next_lesson = db.query(Lesson).filter(
+            Lesson.adventure_level > last_completed.adventure_level
+        ).order_by(Lesson.adventure_level, Lesson.saga_level, Lesson.topic_level, Lesson.lesson_number).first()
+
+    if not next_lesson:
+        # They finished the entire game!
+        return {"next_code": None, "is_last": True}
+
+    return {"next_code": next_lesson.lesson_code, "is_last": False}
+
 # =====================================================
 # LESSONS BY TOPIC (For catalog navigation)
 # =====================================================

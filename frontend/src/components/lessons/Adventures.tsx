@@ -3,19 +3,46 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, ChevronRight, BookOpen } from 'lucide-react';
 import { AdventureCard } from './AdventureCard';
 import { useAdventuresAPI, Adventure } from './hooks/useAdventures';
+import { useResumeLesson } from './hooks/useResumeLesson';
+import { useSagaData } from './hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '../ui/LoadingScreen';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
+    onResumeMap?: (adventureId: number, sagaId: number, sagaTitle: string) => void;
     userId?: string;
 }
 
-export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userId }) => {
+export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onResumeMap, userId }) => {
     const navigate = useNavigate();
     const [selectedAdventure, setSelectedAdventure] = useState<number | null>(null);
     const { adventures, isLoading } = useAdventuresAPI(userId);
+    const { nextLessonCode, isLoading: isNextLessonLoading, isFinished } = useResumeLesson(userId);
+    const { adventure1Sagas, adventure6Sagas } = useSagaData();
     const { t } = useTranslation('adventures');
+
+    const handleResumeClick = () => {
+        if (!nextLessonCode || !onResumeMap) return;
+
+        try {
+            const parts = nextLessonCode.split('-').map(Number);
+            if (parts.length >= 2) {
+                const advId = parts[0];
+                const sagId = parts[1];
+                const sagas = advId === 6 ? adventure6Sagas : adventure1Sagas;
+                const saga = sagas.find(s => s.id === sagId);
+                const sagaTitle = saga ? saga.title : t('general.saga_default', { id: sagId });
+
+                onResumeMap(advId, sagId, sagaTitle);
+            }
+        } catch (err) {
+            console.error('Failed to parse next lesson code for map resume');
+            // Fallback: just open the adventure
+            const advId = parseInt(nextLessonCode.split('-')[0]) || 1;
+            if (onSelectAdventure) onSelectAdventure(advId);
+        }
+    };
 
     const handleAdventureClick = (adventure: Adventure) => {
         if (adventure.status === 'locked') return;
@@ -39,17 +66,42 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, userI
                     <BookOpen className="w-32 h-32 rotate-12 text-indigo-500" />
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-5 relative z-10">
-                    <div className="p-3 bg-gradient-to-br from-indigo-400 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/30 transform -rotate-3 transition-transform duration-300">
-                        <BookOpen className="w-8 h-8 text-white" />
+                <div className="flex flex-col md:flex-row items-center justify-between gap-5 relative z-10 w-full">
+                    <div className="flex flex-col md:flex-row items-center gap-5 flex-1">
+                        <div className="p-3 bg-gradient-to-br from-indigo-400 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/30 transform -rotate-3 transition-transform duration-300 shrink-0">
+                            <BookOpen className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-1">
+                                {t('general.title')}
+                            </h1>
+                            <p className="text-base text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed">
+                                {t('general.subtitle')}
+                            </p>
+                        </div>
                     </div>
-                    <div className="text-center md:text-left">
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-1">
-                            {t('general.title')}
-                        </h1>
-                        <p className="text-base text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed">
-                            {t('general.subtitle')}
-                        </p>
+
+                    {/* Quick Resume Button */}
+                    <div className="shrink-0 mt-2 md:mt-0">
+                        {!isFinished && nextLessonCode && (
+                            <button
+                                onClick={handleResumeClick}
+                                disabled={isNextLessonLoading}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full font-bold shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-70"
+                            >
+                                {isNextLessonLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <ChevronRight size={20} />
+                                )}
+                                {t('general.continue_learning')}
+                            </button>
+                        )}
+                        {isFinished && (
+                            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full font-bold shadow-lg shadow-amber-500/30">
+                                🏆 {t('general.all_completed')}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

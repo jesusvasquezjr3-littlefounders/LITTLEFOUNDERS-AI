@@ -66,7 +66,7 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map((stat, index) => (
-                    <Card key={index} className={`border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all overflow-hidden relative shadow-sm hover:shadow-md ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
+                    <Card key={index} className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
                         <CardContent className="p-4 md:p-6">
                             <div className="flex flex-col items-center text-center space-y-2 relative z-10">
                                 <div className={`p-2 rounded-full ${stat.bgColor} mb-2 h-[170px] flex items-center justify-center`}>

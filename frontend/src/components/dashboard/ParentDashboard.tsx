@@ -232,7 +232,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
           {/* Quick Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Lecciones */}
-            <div className={`bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-5 relative overflow-hidden group ${childData?.lessons_completed === 0 ? 'grayscale opacity-70' : ''}`}>
+            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.lessons_completed === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <BookOpen className="w-24 h-24 text-blue-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -249,7 +249,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
             </div>
 
             {/* Puntos */}
-            <div className={`bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-5 relative overflow-hidden group ${childData?.points_earned === 0 ? 'grayscale opacity-70' : ''}`}>
+            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.points_earned === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Star className="w-24 h-24 text-yellow-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -266,7 +266,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
             </div>
 
             {/* Racha */}
-            <div className={`bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-5 relative overflow-hidden group ${childData?.current_streak === 0 ? 'grayscale opacity-70' : ''}`}>
+            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.current_streak === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Zap className="w-24 h-24 text-orange-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -284,7 +284,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
           </div>
 
           {/* Detailed Progress Tabs */}
-          <div className="bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-6">
+          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
             <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod} className="w-full">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
@@ -395,7 +395,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
         <div className="xl:col-span-4 space-y-6">
 
           {/* Card: Metas */}
-          <div className="bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-6">
+          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-extrabold text-slate-800 dark:text-white text-lg flex items-center gap-2">
                 <Target className="w-5 h-5 text-red-500" />
@@ -431,7 +431,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
           </div>
 
           {/* Card: Perfil Aprendizaje */}
-          <div className="bg-white/10 backdrop-blur-sm border-0 rounded-3xl p-6">
+          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
             <h3 className="font-extrabold text-slate-800 dark:text-white text-lg flex items-center gap-2 mb-6">
               <Briefcase className="w-5 h-5 text-purple-500" />
               {t('parent.student_profile')}
@@ -461,7 +461,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
           </div>
 
           {/* Call to Action Card */}
-          <div className="bg-gradient-to-br from-primary to-primary-foreground dark:from-primary/20 dark:to-primary/10 rounded-3xl p-6 text-center border-2 border-primary/20 dark:border-primary/50 relative overflow-hidden">
+          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 text-center relative overflow-hidden">
             <div className="relative z-10">
               <Award className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="font-extrabold text-lg text-slate-800 dark:text-white mb-2">{t('parent.celebrate_title')}</h3>
@@ -479,10 +479,10 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
 
       {/* Footer / Additional Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 overflow-hidden">
           <ExecutiveSummary childData={childData} userType={user?.user_type} />
         </div>
-        <div className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 overflow-hidden">
           <AdvancedMetrics childData={childData} />
         </div>
       </div>

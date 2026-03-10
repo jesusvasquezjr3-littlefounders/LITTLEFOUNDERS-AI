@@ -193,7 +193,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({
     const currentLessonId = lessons[currentLessonGlobalIndex]?.id || -1;
 
     return (
-        <div className="w-full max-w-md mx-auto py-2 px-4 pb-32">
+        <div className="w-full max-w-6xl mx-auto py-2 px-4 pb-32">
 
             {/* Units */}
             <div className="space-y-4">

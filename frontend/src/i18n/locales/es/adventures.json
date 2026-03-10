@@ -4,11 +4,14 @@
         "subtitle": "Explora nuevos mundos y desarrolla tus habilidades financieras paso a paso.",
         "locked": "Bloqueado",
         "locked_desc": "Completa la aventura anterior",
-        "continue": "Continuar",
+        "continue": "Explorar el Terreno",
         "next_adventure": "Próxima Aventura",
         "completed_all_title": "¡Felicidades, Gran Fundador!",
         "completed_all_desc": "Has completado todas las aventuras",
-        "explorer_label": "Mundos por Explorar"
+        "explorer_label": "Mundos por Explorar",
+        "continue_learning": "Continuar Aventura",
+        "all_completed": "¡Todas las aventuras completadas!",
+        "saga_default": "Saga {{id}}"
     },
     "list": {
         "1": {

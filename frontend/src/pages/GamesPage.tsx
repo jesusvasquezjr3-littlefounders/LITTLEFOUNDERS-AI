@@ -57,7 +57,7 @@ export default function GamesPage() {
             onClick={() => navigate('/games/nam-vs-yum')}
             className={cn(
               "group relative overflow-hidden rounded-3xl",
-              "bg-card border border-border/50",
+              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
               "transition-all duration-300",
               "hover:scale-[1.03] hover:shadow-xl hover:shadow-purple-500/10",
               "active:scale-[0.98]",
@@ -119,7 +119,7 @@ export default function GamesPage() {
             onClick={() => navigate('/games/nectar-de-las-sombras')}
             className={cn(
               "group relative overflow-hidden rounded-3xl",
-              "bg-card border border-border/50",
+              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
               "transition-all duration-300",
               "hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/10",
               "active:scale-[0.98]",
@@ -181,7 +181,7 @@ export default function GamesPage() {
             onClick={() => navigate('/games/paper-detective')}
             className={cn(
               "group relative overflow-hidden rounded-3xl",
-              "bg-card border border-border/50",
+              "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
               "transition-all duration-300",
               "hover:scale-[1.03] hover:shadow-xl hover:shadow-amber-500/10",
               "active:scale-[0.98]",
@@ -240,9 +240,9 @@ export default function GamesPage() {
 
           {/* Coming Soon Card (Square 1:1) */}
           <div className={cn(
-            "relative aspect-square rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800",
+            "relative aspect-square rounded-3xl border-2 border-dashed border-white/20 dark:border-white/5",
             "flex flex-col items-center justify-center gap-4 p-6 text-center",
-            "bg-slate-50/50 dark:bg-slate-900/50",
+            "shadow-xl backdrop-blur-sm bg-gradient-to-br from-slate-600/10 via-slate-500/5 to-slate-400/10",
             "group overflow-hidden transition-all duration-300"
           )}>
             <div className="w-16 h-16 rounded-2xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
