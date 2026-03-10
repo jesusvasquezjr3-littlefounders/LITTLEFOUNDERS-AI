@@ -30,6 +30,17 @@ export interface DemoShowreelProps {
     s_badge_parental: string; s_card_name: string; s_card_number: string;
     s_social_title: string; s_social_streak: string; s_social_incentive: string; s_social_privacy: string;
     s_dash_lessons: string; s_dash_minutes: string; s_dash_points: string; s_dash_streak: string;
+    s_ai_feature_custom: string; s_ai_feature_guided: string; s_ai_feature_adaptive: string; s_ai_feature_modern: string;
+    s_lesson_feature_analogies: string; s_lesson_sub_analogies: string;
+    s_lesson_feature_interactive: string; s_lesson_sub_interactive: string;
+    s_lesson_feature_logic: string; s_lesson_sub_logic: string;
+    s_lesson_feature_progress: string; s_lesson_sub_progress: string;
+    s_lesson_analogy_1: string; s_lesson_analogy_2: string;
+    s_games_feature_edu: string; s_games_sub_edu: string;
+    s_games_feature_strategy: string; s_games_sub_strategy: string;
+    s_games_feature_rewards: string; s_games_sub_rewards: string;
+    s_games_feature_family: string; s_games_sub_family: string;
+    onCtaClick?: () => void;
 }
 
 const LF = { primary: "#5b6cf8", purple: "#9333ea", pink: "#ec4899", green: "#22c55e", gold: "#f59e0b", cyan: "#06b6d4" };
@@ -150,17 +161,34 @@ const PromoTitle: React.FC<{ text: string; actT: number; delay: number; color1: 
 // ACT 1: APERTURA (0 - 220)
 // ──────────────────────────────────────────────────────────────────────────────
 const Act1Intro: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
+    if (t < 0 || t > 150) return null;
     const { fps } = useVideoConfig();
     const spr = spring({ frame: t, fps, config: { damping: 20, stiffness: 100 } });
-    const outT = Math.max(0, t - 190);
-    const zOut = interpolate(outT, [0, 30], [0, 2000], { easing: Easing.in(Easing.exp), ...C });
+    const outT = Math.max(0, t - 130);
+    const zOut = interpolate(outT, [0, 20], [0, 2000], { easing: Easing.in(Easing.exp), ...C });
 
     return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ transform: `scale(${spr}) translateZ(${zOut}px)`, opacity: interpolate(outT, [10, 25], [1, 0], C), textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Img src="/logo-main.png" style={{ height: 440, filter: `drop-shadow(0 0 70px ${LF.primary}AA)`, transform: `translateY(${Math.sin(t * 0.05) * 20}px)`, marginBottom: -80 }} />
-                <div style={{ fontSize: 36, fontWeight: 700, color: p.isDarkMode ? "#E2E8F0" : "#334155", opacity: interpolate(t, [30, 45], [0, 1], C) }}>{p.s_hook_title}</div>
+        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center", paddingBottom: 120 }}>
+            <div style={{ transform: `scale(${spr}) translateZ(${zOut}px)`, opacity: interpolate(outT, [10, 25], [1, 0], C), textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", marginTop: -60 }}>
+                <Img src="/logo-main.png" style={{ height: 400, filter: `drop-shadow(0 0 70px ${LF.primary}AA)`, transform: `translateY(${Math.sin(t * 0.05) * 20}px)`, marginBottom: -60 }} />
+                <div style={{
+                    fontSize: 36,
+                    fontWeight: 900,
+                    color: txt(p.isDarkMode),
+                    opacity: interpolate(t, [30, 45], [0, 1], C),
+                    background: bg(p.isDarkMode, p.isMobile),
+                    backdropFilter: p.isMobile ? "none" : "blur(50px) saturate(200%)",
+                    padding: "20px 50px",
+                    borderRadius: "32px",
+                    border: `1.5px solid ${border(p.isDarkMode)}`,
+                    boxShadow: shadow(p.isDarkMode, p.isMobile),
+                    display: "inline-block",
+                    marginTop: -55,
+                    transform: `translateZ(50px)`,
+                    willChange: "transform, opacity"
+                }}>
+                    {p.s_hook_title}
+                </div>
             </div>
         </div>
     );
@@ -169,13 +197,18 @@ const Act1Intro: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 // ──────────────────────────────────────────────────────────────────────────────
 // ACT 2: LECCIONES (220 - 440)
 // ──────────────────────────────────────────────────────────────────────────────
+// ACT 2: LECCIONES (Longer Duration: 350 frames)
+// ──────────────────────────────────────────────────────────────────────────────
 const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
+    if (t < 0 || t > 350) return null;
     const d = p.isDarkMode;
-    const fill = interpolate(t, [40, 120], [0, 65], C);
+    const fill = interpolate(t, [40, 150], [0, 65], C);
+    const lessonDuration = 350;
+    const fadeOutStart = lessonDuration - 20;
+
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={460} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
+            <PromoPanel width={800} height={460} delayIn={0} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_lesson_title}</div>
                 <div style={{ height: 16, background: border(d), borderRadius: 8, overflow: "hidden", marginBottom: 40 }}>
                     <div style={{ width: `${fill}%`, height: "100%", background: LF.primary }} />
@@ -198,20 +231,32 @@ const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) =>
                 </div>
             </PromoPanel>
 
-            {/* Liruf flying by */}
             <div style={{
                 position: "absolute", left: "50%", top: "50%", marginLeft: 300, marginTop: -100, width: 250, height: 250,
                 transformStyle: "preserve-3d",
                 transform: `translateX(${interpolate(t, [0, 80], [800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 180), [0, 30], [200, 1500], { easing: Easing.in(Easing.exp), ...C })}px)
+                            translateZ(${interpolate(Math.max(0, t - fadeOutStart), [0, 20], [200, 1500], { easing: Easing.in(Easing.exp), ...C })}px)
                             rotateY(-20deg)`,
-                opacity: interpolate(Math.max(0, t - 185), [0, 15], [1, 0], C)
+                opacity: interpolate(Math.max(0, t - fadeOutStart), [10, 20], [1, 0], C)
             }}>
                 <DinoCharacter mood="excited" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🌟" text={p.s_lesson_badge_xp} sub="+50 XP" color={LF.gold} offsetX={350} offsetY={100} zSpace={300} delayIn={60} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🔥" text={p.s_lesson_badge_level} sub="Level Up" color={LF.pink} offsetX={-550} offsetY={150} zSpace={400} delayIn={80} delayOut={190} actT={t} dark={d} isMobile={p.isMobile} />
+            {/* Pair 1 (frames 55-140): Gamification */}
+            <PromoBadge icon="🌟" text={p.s_lesson_badge_xp} sub="+50 XP" color={LF.gold} offsetX={390} offsetY={160} zSpace={300} delayIn={55} delayOut={145} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🔥" text={p.s_lesson_badge_level} sub="Level Up" color={LF.pink} offsetX={-390} offsetY={160} zSpace={400} delayIn={65} delayOut={145} actT={t} dark={d} isMobile={p.isMobile} />
+
+            {/* Pair 2 (frames 135-220): Analogy Method */}
+            <PromoBadge icon="💡" text={p.s_lesson_feature_analogies} sub={p.s_lesson_sub_analogies} color={LF.gold} offsetX={-380} offsetY={-180} zSpace={350} delayIn={135} delayOut={225} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🎮" text={p.s_lesson_feature_interactive} sub={p.s_lesson_sub_interactive} color={LF.primary} offsetX={380} offsetY={-180} zSpace={450} delayIn={145} delayOut={225} actT={t} dark={d} isMobile={p.isMobile} />
+
+            {/* Pair 3 (frames 215-300): Logic + Progress */}
+            <PromoBadge icon="🧠" text={p.s_lesson_feature_logic} sub={p.s_lesson_sub_logic} color={LF.cyan} offsetX={-370} offsetY={190} zSpace={500} delayIn={215} delayOut={305} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="📈" text={p.s_lesson_feature_progress} sub={p.s_lesson_sub_progress} color={LF.green} offsetX={370} offsetY={190} zSpace={300} delayIn={225} delayOut={305} actT={t} dark={d} isMobile={p.isMobile} />
+
+            {/* Pair 4 (frames 295-fadeOut): Analogies */}
+            <PromoBadge icon="🛡️" text={p.s_lesson_analogy_1} sub="Como un escudo" color={LF.pink} offsetX={-375} offsetY={-170} zSpace={300} delayIn={295} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🌱" text={p.s_lesson_analogy_2} sub="Como plantar semillas" color={LF.gold} offsetX={375} offsetY={-170} zSpace={350} delayIn={305} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -220,13 +265,14 @@ const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) =>
 // ACT 3: JUEGOS (440 - 660)
 // ──────────────────────────────────────────────────────────────────────────────
 const Act3Games: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
+    if (t < 0 || t > 300) return null;
     const d = p.isDarkMode;
+    const fadeOut = 280;
     const games = [{ e: "🍋", t: p.s_game_lemonade, c: LF.gold }, { e: "🏪", t: p.s_game_market, c: LF.pink }, { e: "📈", t: p.s_game_stocks, c: LF.primary }, { e: "🏭", t: p.s_game_factory, c: LF.purple }, { e: "🚜", t: p.s_game_farm, c: LF.green }, { e: "🎲", t: p.s_game_risk, c: LF.cyan }];
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={760} height={600} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
+            <PromoPanel width={760} height={600} delayIn={0} delayOut={fadeOut} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_games_title}</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                     {games.map((g, i) => {
@@ -245,20 +291,22 @@ const Act3Games: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 </div>
             </PromoPanel>
 
-            {/* Dina popping from bottom */}
             <div style={{
                 position: "absolute", left: "50%", top: "50%", marginLeft: -500, marginTop: 50, width: 220, height: 220,
                 transformStyle: "preserve-3d",
                 transform: `translateX(${interpolate(t, [20, 90], [-800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 180), [0, 30], [300, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
+                            translateZ(${interpolate(Math.max(0, t - fadeOut), [0, 20], [300, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
                             rotateZ(10deg)`,
-                opacity: interpolate(Math.max(0, t - 185), [0, 15], [1, 0], C)
+                opacity: interpolate(Math.max(0, t - fadeOut), [5, 15], [1, 0], C)
             }}>
                 <DinaCharacter expression="happy" enableMouseTracking={false} />
             </div>
 
-            <PromoBadge icon="🏆" text={p.s_games_badge_1} sub={p.s_badge_win} color={LF.gold} offsetX={300} offsetY={-180} zSpace={250} delayIn={100} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="💼" text={p.s_games_badge_2} sub={p.s_badge_money} color={LF.green} offsetX={380} offsetY={100} zSpace={350} delayIn={120} delayOut={190} actT={t} dark={d} isMobile={p.isMobile} />
+            {/* Sequential badge pairs for Games */}
+            <PromoBadge icon="🎯" text={p.s_games_feature_edu} sub={p.s_games_sub_edu} color={LF.gold} offsetX={-370} offsetY={-180} zSpace={300} delayIn={50} delayOut={140} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🗺️" text={p.s_games_feature_strategy} sub={p.s_games_sub_strategy} color={LF.primary} offsetX={370} offsetY={-180} zSpace={350} delayIn={60} delayOut={140} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🎁" text={p.s_games_feature_rewards} sub={p.s_games_sub_rewards} color={LF.pink} offsetX={370} offsetY={190} zSpace={250} delayIn={130} delayOut={220} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="👨‍👩‍👧‍👦" text={p.s_games_feature_family} sub={p.s_games_sub_family} color={LF.green} offsetX={-370} offsetY={190} zSpace={400} delayIn={140} delayOut={220} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -273,7 +321,7 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={420} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
+            <PromoPanel width={800} height={420} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 20, color: p.isDarkMode ? "#aaa" : "#666" }}>{p.s_bank_balance_label}</div>
                 <div style={{ fontSize: 64, fontWeight: 900, color: LF.green, marginBottom: 30 }}>${Math.floor(bal)}</div>
 
@@ -304,14 +352,14 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 position: "absolute", left: "50%", top: "50%", marginLeft: -400, marginTop: -150, width: 160, height: 160,
                 transformStyle: "preserve-3d",
                 transform: `translateX(${interpolate(t, [20, 90], [800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 180), [0, 30], [400, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
+                            translateZ(${interpolate(Math.max(0, t - 210), [0, 30], [400, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
                             rotateY(-15deg)`,
-                opacity: interpolate(Math.max(0, t - 185), [0, 15], [1, 0], C)
+                opacity: interpolate(Math.max(0, t - 215), [0, 15], [1, 0], C)
             }}>
                 <DrRhoCharacter mood="wise" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🔒" text={p.s_bank_badge} sub={p.s_badge_parental} color={LF.purple} offsetX={300} offsetY={160} zSpace={250} delayIn={80} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🔒" text={p.s_bank_badge} sub={p.s_badge_parental} color={LF.purple} offsetX={300} offsetY={160} zSpace={250} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -326,7 +374,7 @@ const Act5AI: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={640} height={400} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
+            <PromoPanel width={640} height={400} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 20 }}>{p.s_ai_title}</div>
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, opacity: interpolate(t, [30, 50], [0, 1], C) }}>
                     <div style={{ background: `${LF.primary}22`, borderRadius: "20px 20px 4px 20px", padding: 20, maxWidth: "80%", fontSize: 18, fontWeight: 600 }}>{p.s_ai_user_msg}</div>
@@ -349,7 +397,12 @@ const Act5AI: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
                 <ZaraVexCharacter mood="curious" showBubble={false} />
             </div>
 
-            <PromoBadge icon="🤖" text={p.s_stat_ai} sub="24/7" color={LF.pink} offsetX={-450} offsetY={100} zSpace={300} delayIn={90} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
+            {/* Sequential pairs for AI badges */}
+            <PromoBadge icon="🤖" text={p.s_stat_ai} sub="24/7" color={LF.pink} offsetX={-370} offsetY={160} zSpace={300} delayIn={60} delayOut={150} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🎨" text={p.s_ai_feature_custom} sub="AI Generated" color={LF.primary} offsetX={370} offsetY={160} zSpace={350} delayIn={70} delayOut={150} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🧭" text={p.s_ai_feature_guided} sub="Mentorship" color={LF.gold} offsetX={-370} offsetY={-170} zSpace={250} delayIn={140} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="👶" text={p.s_ai_feature_adaptive} sub="For Everyone" color={LF.cyan} offsetX={370} offsetY={-170} zSpace={400} delayIn={150} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🚀" text={p.s_ai_feature_modern} sub="Next-Gen" color={LF.purple} offsetX={-370} offsetY={35} zSpace={300} delayIn={185} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -363,7 +416,7 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
 
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={820} height={460} delayIn={0} delayOut={180} actT={t} dark={d} isMobile={p.isMobile}>
+            <PromoPanel width={820} height={460} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
                 <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30, color: LF.cyan }}>{p.s_social_title}</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, flex: 1, height: "100%" }}>
@@ -404,14 +457,14 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
                 position: "absolute", left: "50%", top: "50%", marginLeft: -380, marginTop: 150, width: 160, height: 160,
                 transformStyle: "preserve-3d",
                 transform: `translateX(${interpolate(t, [20, 90], [-800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 180), [0, 30], [200, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
+                            translateZ(${interpolate(Math.max(0, t - 210), [0, 30], [200, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
                             rotateZ(-10deg)`,
-                opacity: interpolate(Math.max(0, t - 185), [0, 15], [1, 0], C)
+                opacity: interpolate(Math.max(0, t - 215), [0, 15], [1, 0], C)
             }}>
                 <DinaCharacter expression="happy" enableMouseTracking={false} />
             </div>
 
-            <PromoBadge icon="🤝" text="Team" sub="Ranking" color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={185} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🤝" text="Team" sub="Ranking" color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
@@ -420,7 +473,7 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
 // ACT 7: CTA (1320 - 1570)
 // ──────────────────────────────────────────────────────────────────────────────
 const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0) return null;
+    if (t < 0 || t > 450) return null;
     const { fps } = useVideoConfig();
     const spr = spring({ frame: t, fps, config: { damping: 14, stiffness: 100 } });
 
@@ -443,8 +496,46 @@ const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
             <div style={{ position: "absolute", transform: `translateZ(250px) scale(${spr})`, textAlign: "center", marginTop: 100 }}>
                 <div style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, lineHeight: 1.1, background: `linear-gradient(135deg, ${LF.primary}, ${LF.pink})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{p.s_cta_headline}</div>
                 <div style={{ fontSize: 28, fontWeight: 600, color: p.isDarkMode ? "#aaa" : "#555", marginTop: 20 }}>{p.s_cta_sub}</div>
-                <div style={{ marginTop: 40, transform: `scale(${1 + Math.sin(t * 0.2) * 0.02})` }}>
-                    <span style={{ fontSize: 36, fontWeight: 900, color: LF.primary, letterSpacing: 6, textTransform: "uppercase", filter: `drop-shadow(0 0 20px ${LF.primary}66)`, opacity: 0.9 }}>{p.s_cta_button}</span>
+                <div style={{ marginTop: 40 }}>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log("CTA Clicked!");
+                            if (p.onCtaClick) {
+                                p.onCtaClick();
+                            } else {
+                                window.location.href = '/demo/lessons';
+                            }
+                        }}
+                        style={{
+                            background: `linear-gradient(135deg, ${LF.primary}, ${LF.purple})`,
+                            border: "none",
+                            borderRadius: "16px",
+                            cursor: "pointer",
+                            fontSize: 32,
+                            fontWeight: 900,
+                            color: "white",
+                            letterSpacing: 2,
+                            textTransform: "uppercase",
+                            boxShadow: `0 10px 25px ${LF.primary}66`,
+                            padding: "16px 40px",
+                            outline: "none",
+                            transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                            pointerEvents: "auto",
+                            display: "inline-block",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.08) translateY(-5px)";
+                            e.currentTarget.style.boxShadow = `0 15px 35px ${LF.primary}88`;
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1) translateY(0)";
+                            e.currentTarget.style.boxShadow = `0 10px 25px ${LF.primary}66`;
+                        }}
+                    >
+                        {p.s_cta_button}
+                    </button>
                 </div>
             </div>
         </div>
@@ -452,7 +543,7 @@ const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 };
 
 // ─── Main Composition ─────────────────────────────────────────────────────────
-export const TOTAL_FRAMES_SHOWREEL = 1570;
+export const TOTAL_FRAMES_SHOWREEL = 1910;
 
 const BackgroundParticles: React.FC<{ frame: number, isDark: boolean, isMobile?: boolean }> = ({ frame, isDark, isMobile }) => {
     if (isMobile) return null;
@@ -496,14 +587,15 @@ export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => {
     const frame = useCurrentFrame();
 
     // Marketing Enhancement: Continuous, subtle cinematic camera drift
-    const pitch = props.isMobile ? 0 : Math.sin(frame / 120) * 5;
-    const yaw = props.isMobile ? 0 : Math.cos(frame / 150) * 6;
-    const roll = props.isMobile ? 0 : Math.sin(frame / 200) * 1.5;
-    const globalZ = props.isMobile ? 0 : Math.sin(frame / 80) * 60;
+    const isStatic = frame < 150 || frame > 1460;
+    const pitch = props.isMobile || isStatic ? 0 : Math.sin(frame / 120) * 5;
+    const yaw = props.isMobile || isStatic ? 0 : Math.cos(frame / 150) * 6;
+    const roll = props.isMobile || isStatic ? 0 : Math.sin(frame / 200) * 1.5;
+    const globalZ = props.isMobile || isStatic ? 0 : Math.sin(frame / 80) * 60;
 
     return (
         <AbsoluteFill style={{ fontFamily: "'Inter', sans-serif", background: "transparent", perspective: 1400, overflow: "hidden" }}>
-            <div style={{ position: "absolute", width: "100%", height: "100%", background: `radial-gradient(circle at 50% 50%, ${LF.primary}10 0%, transparent 80%)`, filter: "blur(100px)" }} />
+            <div style={{ position: "absolute", width: "120%", height: "120%", left: "-10%", top: "-10%", background: `radial-gradient(circle at 50% 50%, ${LF.primary}15 0%, transparent 80%)`, filter: "blur(120px)" }} />
 
             <div style={{
                 position: "absolute", inset: 0, transformStyle: "preserve-3d",
@@ -512,12 +604,12 @@ export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => {
             }}>
                 <BackgroundParticles frame={frame} isDark={props.isDarkMode} isMobile={props.isMobile} />
                 <Act1Intro p={props} t={frame} />
-                <Act2Lessons p={props} t={frame - 220} />
-                <Act3Games p={props} t={frame - 440} />
-                <Act4Bank p={props} t={frame - 660} />
-                <Act5AI p={props} t={frame - 880} />
-                <Act6Social p={props} t={frame - 1100} />
-                <Act7CTA p={props} t={frame - 1320} />
+                <Act2Lessons p={props} t={frame - 150} />
+                <Act3Games p={props} t={frame - 500} />
+                <Act4Bank p={props} t={frame - 800} />
+                <Act5AI p={props} t={frame - 1020} />
+                <Act6Social p={props} t={frame - 1240} />
+                <Act7CTA p={props} t={frame - 1460} />
             </div>
         </AbsoluteFill>
     );

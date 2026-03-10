@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Player, PlayerRef } from "@remotion/player";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
     DemoShowreelComposition,
     TOTAL_FRAMES_SHOWREEL,
@@ -20,10 +21,18 @@ const FPS_MOBILE = 15;
  *  - Offscreen Pause: Player pauses entirely when scrolled out of viewport
  *  - Adjusts durationInFrames proportionally so animation speed stays constant
  */
-const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
+const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer({ playerRef: externalRef }: { playerRef?: React.RefObject<any> }) {
     const playerRef = useRef<PlayerRef>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslation("demo");
+    const navigate = useNavigate();
+
+    // Sync internal playerRef to external so parent can poll getCurrentFrame
+    useEffect(() => {
+        if (externalRef) {
+            (externalRef as React.MutableRefObject<any>).current = playerRef.current;
+        }
+    });
 
     const [isDark, setIsDark] = useState(false);
     useEffect(() => {
@@ -152,10 +161,36 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
         s_dash_minutes: t("showreel.dash_minutes"),
         s_dash_points: t("showreel.dash_points"),
         s_dash_streak: t("showreel.dash_streak"),
+        s_ai_feature_custom: t("showreel.ai_feature_custom"),
+        s_ai_feature_guided: t("showreel.ai_feature_guided"),
+        s_ai_feature_adaptive: t("showreel.ai_feature_adaptive"),
+        s_ai_feature_modern: t("showreel.ai_feature_modern"),
+        s_lesson_feature_analogies: t("showreel.lesson_feature_analogies"),
+        s_lesson_sub_analogies: t("showreel.lesson_sub_analogies"),
+        s_lesson_feature_interactive: t("showreel.lesson_feature_interactive"),
+        s_lesson_sub_interactive: t("showreel.lesson_sub_interactive"),
+        s_lesson_feature_logic: t("showreel.lesson_feature_logic"),
+        s_lesson_sub_logic: t("showreel.lesson_sub_logic"),
+        s_lesson_feature_progress: t("showreel.lesson_feature_progress"),
+        s_lesson_sub_progress: t("showreel.lesson_sub_progress"),
+        s_lesson_analogy_1: t("showreel.lesson_analogy_1"),
+        s_lesson_analogy_2: t("showreel.lesson_analogy_2"),
+        s_games_feature_edu: t("showreel.games_feature_edu"),
+        s_games_sub_edu: t("showreel.games_sub_edu"),
+        s_games_feature_strategy: t("showreel.games_feature_strategy"),
+        s_games_sub_strategy: t("showreel.games_sub_strategy"),
+        s_games_feature_rewards: t("showreel.games_feature_rewards"),
+        s_games_sub_rewards: t("showreel.games_sub_rewards"),
+        s_games_feature_family: t("showreel.games_feature_family"),
+        s_games_sub_family: t("showreel.games_sub_family"),
+        onCtaClick: () => navigate("/demo/lessons"),
     };
 
     return (
-        <div ref={wrapperRef} className="absolute inset-0 w-full h-full overflow-hidden">
+        <div
+            ref={wrapperRef}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        >
             <Player
                 ref={playerRef}
                 component={DemoShowreelComposition}
@@ -171,8 +206,7 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer() {
                 style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "cover",
-                    position: "absolute",
+                    pointerEvents: "auto",
                 }}
                 acknowledgeRemotionLicense
             />

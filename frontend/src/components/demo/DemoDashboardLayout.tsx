@@ -8,9 +8,10 @@ import { useTranslation } from "react-i18next";
 
 interface DemoDashboardLayoutProps {
     children: ReactNode;
+    noPadding?: boolean;
 }
 
-export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
+export function DemoDashboardLayout({ children, noPadding }: DemoDashboardLayoutProps) {
     const { t } = useTranslation('demo');
     // Initialize from localStorage or default to true (collapsed by default)
     const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -30,21 +31,36 @@ export function DemoDashboardLayout({ children }: DemoDashboardLayoutProps) {
             <AnimatedBackground />
 
             <div className="flex h-full overflow-hidden relative">
-                {/* Sidebar is now autonomous/floating in its expansion, but occupies 16 (4rem) of space in the grid implicitly or via padding */}
-                <GamifiedSidebar
-                    collapsed={sidebarCollapsed}
-                    onToggle={handleToggle}
-                />
+                {/* Sidebar: always visible.
+                    In noPadding (demo) mode: fixed position at z-30 so it floats above
+                    the fixed player (z-10) and topnav (z-20) without pushing layout.
+                    In normal mode: renders inline in the flex, pushing content right. */}
+                {noPadding ? (
+                    <div className="fixed left-0 top-0 h-full z-30">
+                        <GamifiedSidebar
+                            collapsed={sidebarCollapsed}
+                            onToggle={handleToggle}
+                        />
+                    </div>
+                ) : (
+                    <GamifiedSidebar
+                        collapsed={sidebarCollapsed}
+                        onToggle={handleToggle}
+                    />
+                )}
 
-                {/* Main Content - TopNav spans full width, main shifts for sidebar */}
+                {/* Main Content: topnav at z-20 to appear above fixed player */}
                 <div className="flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300 pb-24 md:pb-0">
-                    {/* Top Nav - spans full width */}
-                    <DemoTopNav />
+                    {/* Top Nav: z-20 above fixed player (z-10), below sidebar (z-30) */}
+                    <div className="relative z-20">
+                        <DemoTopNav />
+                    </div>
 
                     <main className={cn(
-                        "flex-1 p-6 overflow-y-auto custom-scrollbar transition-all duration-300",
-                        // Desktop: dynamic margin for sidebar
-                        !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
+                        "flex-1 overflow-y-auto custom-scrollbar transition-all duration-300 relative",
+                        !noPadding && "p-6",
+                        // Desktop: dynamic margin for sidebar (only non-demo mode)
+                        !noPadding && (!sidebarCollapsed ? "md:ml-64" : "md:ml-28")
                     )} aria-label={t('layout.main_content')}>
                         {children}
                     </main>
