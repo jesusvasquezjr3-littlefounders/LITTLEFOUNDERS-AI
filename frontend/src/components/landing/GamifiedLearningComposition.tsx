@@ -92,13 +92,15 @@ const Panel3D: React.FC<{
                 scale(${scale})
             `,
                 opacity,
-                background: isDarkMode ? "rgba(30, 35, 51, 0.85)" : "rgba(255, 255, 255, 0.85)", // Glassy Light/Dark
-                backdropFilter: "blur(12px)",
-                border: `1px solid ${isDarkMode ? LF.border : "rgba(0,0,0,0.1)"}`,
+                background: isDarkMode
+                    ? "linear-gradient(160deg, rgba(30, 35, 51, 0.4), rgba(91, 108, 248, 0.1), rgba(147, 51, 234, 0.1), rgba(30, 35, 51, 0.6))"
+                    : "linear-gradient(160deg, rgba(255, 255, 255, 0.5), rgba(91, 108, 248, 0.08), rgba(147, 51, 234, 0.08), rgba(255, 255, 255, 0.7))",
+                backdropFilter: "blur(45px) saturate(180%)",
+                border: "1.5px solid rgba(255, 255, 255, 0.3)",
                 borderRadius: LF.radius,
                 boxShadow: isDarkMode
-                    ? `-20px 30px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)`
-                    : `-20px 30px 40px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6)`,
+                    ? `0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.1), 0 0 40px rgba(91, 108, 248, 0.15)`
+                    : `0 30px 60px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.4), 0 0 40px rgba(91, 108, 248, 0.08)`,
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
@@ -339,15 +341,19 @@ const FloatingBadge: React.FC<{
             transformStyle: "preserve-3d",
             transform: `translateZ(${zOffset + float}px) scale(${scale})`,
             opacity,
-            background: isDarkMode ? "rgba(20, 25, 40, 0.7)" : "rgba(255, 255, 255, 0.85)",
-            backdropFilter: "blur(12px)",
-            border: `1px solid ${color}${isDarkMode ? '66' : '33'}`,
+            background: isDarkMode
+                ? "linear-gradient(135deg, rgba(20, 25, 40, 0.4), rgba(91, 108, 248, 0.2))"
+                : "linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(91, 108, 248, 0.1))",
+            backdropFilter: "blur(30px) saturate(150%)",
+            border: `1.5px solid rgba(255, 255, 255, 0.4)`,
             borderRadius: 99,
             padding: "10px 20px",
             display: "flex",
             alignItems: "center",
             gap: 12,
-            boxShadow: isDarkMode ? `0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px ${color}15` : `0 15px 35px rgba(0,0,0,0.1), inset 0 0 20px ${color}15`,
+            boxShadow: isDarkMode
+                ? `0 20px 40px rgba(0,0,0,0.7), inset 0 0 20px ${color}20, 0 0 20px rgba(91, 108, 248, 0.2)`
+                : `0 20px 40px rgba(0,0,0,0.15), inset 0 0 20px ${color}15`,
         }}>
             <div style={{
                 width: 36, height: 36, borderRadius: "50%",

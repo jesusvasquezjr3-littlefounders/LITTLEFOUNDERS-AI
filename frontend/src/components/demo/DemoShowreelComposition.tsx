@@ -37,12 +37,19 @@ const C = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as cons
 const EZ = Easing.bezier(0.8, 0, 0.2, 1); // Aggressive Apple-style easing (slow start, lightning fast middle, slow end)
 
 // Theme helpers
-function bg(d: boolean, m?: boolean) { return d ? `rgba(15, 20, 35, ${m ? 0.95 : 0.7})` : `rgba(255, 255, 255, ${m ? 0.98 : 0.85})`; }
+function bg(d: boolean, m?: boolean) {
+    if (m) return d ? `rgba(15, 20, 35, 0.95)` : `rgba(255, 255, 255, 0.98)`;
+    return d
+        ? "linear-gradient(160deg, rgba(30, 35, 51, 0.2), rgba(91, 108, 248, 0.1), rgba(147, 51, 234, 0.1), rgba(30, 35, 51, 0.4))"
+        : "linear-gradient(160deg, rgba(255, 255, 255, 0.3), rgba(91, 108, 248, 0.08), rgba(147, 51, 234, 0.08), rgba(255, 255, 255, 0.5))";
+}
 function txt(d: boolean) { return d ? "#fff" : "#000"; }
-function border(d: boolean) { return d ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"; }
+function border(d: boolean) { return "rgba(255, 255, 255, 0.3)"; }
 function shadow(d: boolean, m?: boolean) {
     if (m) return d ? `0 10px 20px rgba(0,0,0,0.8)` : `0 10px 20px rgba(0,0,0,0.1)`;
-    return d ? `0 40px 80px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.2)` : `0 40px 80px rgba(0,0,0,0.15), inset 0 2px 3px rgba(255,255,255,0.8)`;
+    return d
+        ? `0 50px 100px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.1), 0 0 50px rgba(91, 108, 248, 0.2)`
+        : `0 50px 100px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.5), 0 0 50px rgba(91, 108, 248, 0.1)`;
 }
 
 // ─── APPLE-STYLE PANEL ──────────────────────────────────────────────────────
@@ -78,8 +85,8 @@ const PromoPanel: React.FC<{
             transform: `translateZ(${zIn + zOut + breath}px) rotateX(${rotX + breathRot}deg) rotateY(${rotY - breathRot}deg)`,
             opacity: interpolate(sprIn, [0, 0.2], [0, 1], C) * opOut,
             background: bg(dark, isMobile),
-            backdropFilter: isMobile ? "none" : "blur(24px)",
-            border: `1px solid ${border(dark)}`, borderRadius: 24, padding: 30,
+            backdropFilter: isMobile ? "none" : "blur(50px) saturate(200%)",
+            border: `1.5px solid ${border(dark)}`, borderRadius: 24, padding: 30,
             boxShadow: shadow(dark, isMobile), color: txt(dark),
             willChange: "transform, opacity, filter",
             display: "flex", flexDirection: "column"
@@ -108,8 +115,10 @@ const PromoBadge: React.FC<{
             transformStyle: "preserve-3d",
             transform: `translateZ(${zSpace + zOut + floater}px) scale(${sprIn}) rotateZ(${interpolate(sprIn, [0, 1], [-20, 0])}deg)`,
             opacity: interpolate(outT, [10, 20], [1, 0], C),
-            background: dark ? `rgba(20,25,35,${isMobile ? 0.98 : 0.9})` : `rgba(255,255,255,${isMobile ? 0.98 : 0.95})`,
-            backdropFilter: isMobile ? "none" : "blur(20px)", border: `1px solid ${color}66`,
+            background: dark
+                ? `linear-gradient(135deg, rgba(20, 25, 35, 0.3), rgba(91, 108, 248, 0.2))`
+                : `linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(91, 108, 248, 0.1))`,
+            backdropFilter: isMobile ? "none" : "blur(35px) saturate(160%)", border: `1.5px solid rgba(255, 255, 255, 0.4)`,
             borderRadius: 99, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
             boxShadow: shadow(dark, isMobile), color: txt(dark),
             willChange: "transform, opacity, filter"
@@ -270,14 +279,18 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
                 {/* 3D Spinning Card inside the panel! */}
                 <div style={{
-                    position: "absolute", right: 40, top: 40, width: 260, height: 160, borderRadius: 20,
-                    background: `linear-gradient(135deg, ${LF.purple}, ${LF.primary})`, padding: 20,
-                    boxShadow: `0 30px 60px ${LF.purple}66`, display: "flex", flexDirection: "column", justifyContent: "space-between",
+                    position: "absolute", right: 20, top: 30, width: 280, height: 170, borderRadius: 24,
+                    background: `linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(220, 38, 38, 0.7), rgba(255, 255, 255, 0.9))`,
+                    padding: 24,
+                    backdropFilter: "blur(25px)",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                    boxShadow: `0 40px 70px rgba(0,0,0,0.4), 0 0 30px rgba(37, 99, 235, 0.3)`,
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
                     transformStyle: "preserve-3d",
-                    transform: `translateZ(${interpolate(Math.sin(t * 0.05), [-1, 1], [60, 100])}px) translateY(${Math.sin(t * 0.04) * 10}px)`
+                    transform: `translateZ(${interpolate(Math.sin(t * 0.05), [-1, 1], [120, 180])}px) translateY(${Math.sin(t * 0.04) * 15}px) rotateY(${Math.sin(t * 0.03) * 10}deg)`
                 }}>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>{p.s_card_name}</div>
-                    <div style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", letterSpacing: 4 }}>{p.s_card_number}</div>
+                    <div style={{ fontSize: 20, fontWeight: 900, color: "#1e293b", textShadow: "0 1px 2px rgba(255,255,255,0.5)" }}>{p.s_card_name}</div>
+                    <div style={{ fontSize: 18, color: "#334155", letterSpacing: 4, fontWeight: "bold" }}>{p.s_card_number}</div>
                 </div>
 
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 10, flex: 1 }}>
