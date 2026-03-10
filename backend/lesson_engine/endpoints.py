@@ -393,6 +393,47 @@ async def get_lesson_for_play(
         "timeline": timeline
     }
 
+@router.get("/lessons/{code}/next")
+async def get_next_lesson(code: str, db: Session = Depends(get_db)):
+    """
+    Devuelve el código de la siguiente lección en secuencia.
+    Busca en orden: mismo topic → siguiente topic → siguiente saga.
+    Retorna next_code=null e is_last=true si no hay siguiente.
+    """
+    lesson = db.query(Lesson).filter(Lesson.lesson_code == code).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+
+    # 1. Siguiente lección dentro del mismo topic
+    next_lesson = db.query(Lesson).filter(
+        Lesson.adventure_level == lesson.adventure_level,
+        Lesson.saga_level == lesson.saga_level,
+        Lesson.topic_level == lesson.topic_level,
+        Lesson.lesson_number > lesson.lesson_number
+    ).order_by(Lesson.lesson_number).first()
+
+    # 2. Primera lección del siguiente topic (mismo saga)
+    if not next_lesson:
+        next_lesson = db.query(Lesson).filter(
+            Lesson.adventure_level == lesson.adventure_level,
+            Lesson.saga_level == lesson.saga_level,
+            Lesson.topic_level > lesson.topic_level
+        ).order_by(Lesson.topic_level, Lesson.lesson_number).first()
+
+    # 3. Primera lección del siguiente saga (misma aventura)
+    if not next_lesson:
+        next_lesson = db.query(Lesson).filter(
+            Lesson.adventure_level == lesson.adventure_level,
+            Lesson.saga_level > lesson.saga_level
+        ).order_by(Lesson.saga_level, Lesson.topic_level, Lesson.lesson_number).first()
+
+    if not next_lesson:
+        return {"next_code": None, "is_last": True}
+
+    return {"next_code": next_lesson.lesson_code, "is_last": False}
+
+
+
 @router.post("/lessons/{code}/complete")
 async def complete_lesson(
     code: str,

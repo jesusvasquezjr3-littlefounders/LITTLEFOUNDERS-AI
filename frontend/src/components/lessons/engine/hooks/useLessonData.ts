@@ -190,17 +190,34 @@ export function useLessonData(lessonCode: string, language?: string): UseLessonD
 }
 
 /**
- * Calcula el código de la siguiente lección basado en el código actual
- * Formato: adventure-saga-topic-lesson (ej: "1-1-1-1" -> "1-1-1-2")
+ * Calcula el código de la siguiente lección basado en el código actual.
+ * @deprecated Use fetchNextLessonCode() para obtener el siguiente código
+ * validado contra el backend (evita navegar a códigos inexistentes).
  */
 export function getNextLessonCode(currentCode: string): string {
     const parts = currentCode.split('-').map(Number);
     if (parts.length !== 4) return currentCode;
-
-    // Incrementar el número de lección
     parts[3] += 1;
     return parts.join('-');
 }
+
+/**
+ * Consulta el backend para obtener el código de la siguiente lección real.
+ * Retorna null si es la última lección de la aventura.
+ */
+export async function fetchNextLessonCode(currentCode: string): Promise<string | null> {
+    if (!currentCode) return null;
+    try {
+        const url = `${API_BASE}/lesson-engine/lessons/${currentCode}/next`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.next_code ?? null;
+    } catch {
+        return null;
+    }
+}
+
 
 /**
  * Marca una lección como completada en el backend

@@ -34,12 +34,20 @@ const Lecciones = () => {
   };
 
   // Fetch lessons when in lessons view
-  const { lessons, isLoading: lessonsLoading } = useLessonsList(
+  const { lessons, isLoading: lessonsLoading, refetch: refetchLessons } = useLessonsList(
     viewState.type === 'lessons' ? viewState.adventureId : 0,
     viewState.type === 'lessons' ? viewState.sagaId : undefined,
     undefined,
     userId || undefined
   );
+
+  // Re-fetch lessons every time the user enters the lessons view
+  // (covers the case where they return from a LessonRunner session)
+  useEffect(() => {
+    if (viewState.type === 'lessons') {
+      refetchLessons();
+    }
+  }, [viewState.type]);  // intentionally omit refetchLessons to avoid infinite loop
 
   // Get user ID from localStorage
   useEffect(() => {

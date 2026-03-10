@@ -16,7 +16,7 @@ import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
 import { DinaCharacter } from '@/components/demo/DinaCharacter';
 import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
-import { useLessonData, useLessonState, completeLesson, getNextLessonCode } from './hooks';
+import { useLessonData, useLessonState, completeLesson, fetchNextLessonCode } from './hooks';
 import { useSound } from "@/contexts/SoundContext";
 import { MultipleChoice } from './activities/MultipleChoice';
 import { TapAction } from './activities/TapAction';
@@ -128,6 +128,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const [showSuccess, setShowSuccess] = useState(false);
     const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number } | null>(null);
     const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+    // null = last lesson (no next), undefined = still loading, string = ready to navigate
+    const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
     const [showGameOver, setShowGameOver] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
 
@@ -315,23 +317,27 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     useEffect(() => {
         if (state === 'COMPLETED' && !isCompletingLesson) {
             setIsCompletingLesson(true);
-            stopBGM({ fade: true, fadeDuration: 1500 }); // Fade out BGM
+            setNextLessonCode(undefined); // reset to loading state
+            stopBGM({ fade: true, fadeDuration: 1500 });
 
-            // Call backend to mark lesson as completed
+            // Mark lesson complete AND fetch next code concurrently
             const markComplete = async () => {
                 try {
                     const userStr = localStorage.getItem('user');
                     const user = userStr ? JSON.parse(userStr) : null;
                     const userId = user?.public_id || user?.id;
 
-                    if (userId && code) {
-                        const result = await completeLesson(code, userId, 100, 180);
-                        if (result) {
-                            setCompletionResult(result);
-                        }
-                    }
+                    const [result, nextCode] = await Promise.all([
+                        userId && code ? completeLesson(code, userId, 100, 180) : Promise.resolve(null),
+                        fetchNextLessonCode(code),
+                    ]);
+
+                    if (result) setCompletionResult(result);
+                    // null = last lesson, string = has next
+                    setNextLessonCode(nextCode);
                 } catch (err) {
                     console.error('Error completing lesson:', err);
+                    setNextLessonCode(null); // fall back gracefully
                 }
             };
 
@@ -341,7 +347,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 playSound('edu_complete');
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
                 setShowSuccess(true);
-            }, 1000); // Wait for fade to mostly finish before fanfare
+            }, 1000);
         }
     }, [state, playSound, stopBGM, isCompletingLesson, code]);
 
@@ -1785,17 +1791,36 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
                         {/* Action Buttons - Full width, stacked on small mobile */}
                         <div className="flex flex-col gap-2 w-full">
+                            {/* Primary CTA: navigate to next lesson (or back to map if last lesson) */}
                             <Button
                                 onClick={() => {
-                                    const nextCode = getNextLessonCode(code);
-                                    setShowSuccess(false);
-                                    setIsCompletingLesson(false);
-                                    navigate(`/lesson/${nextCode}`);
+                                    if (nextLessonCode) {
+                                        // Navigate to the real next lesson (validated by backend)
+                                        setShowSuccess(false);
+                                        // NOTE: intentionally do NOT reset isCompletingLesson here.
+                                        // Resetting it would allow the useEffect to re-fire if the
+                                        // component remounts (e.g., user presses browser back), which
+                                        // is what caused multiple complete() calls for the same lesson.
+                                        navigate(`/lesson/${nextLessonCode}`);
+                                    } else {
+                                        // Last lesson of the saga → go back to the lesson map
+                                        handleClose();
+                                    }
                                 }}
-                                className="w-full h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg"
+                                disabled={nextLessonCode === undefined} // still fetching
+                                className="w-full h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg disabled:opacity-60"
                             >
-                                <ArrowRight className="w-5 h-5 mr-2" />
-                                {t('completion.next_lesson')}
+                                {nextLessonCode === undefined ? (
+                                    // Still fetching next code
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                ) : nextLessonCode ? (
+                                    <ArrowRight className="w-5 h-5 mr-2" />
+                                ) : null}
+                                {nextLessonCode === undefined
+                                    ? t('loading')
+                                    : nextLessonCode
+                                        ? t('completion.next_lesson')
+                                        : t('completion.back_to_map', { defaultValue: '¡Aventura completada! Volver al mapa' })}
                             </Button>
                             <div className="flex gap-2">
                                 <Button
@@ -1807,7 +1832,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => { setShowSuccess(false); setIsCompletingLesson(false); startLesson(); }}
+                                    onClick={() => { setShowSuccess(false); setIsCompletingLesson(false); setNextLessonCode(undefined); startLesson(); }}
                                     className="flex-1 h-11 rounded-xl font-semibold text-sm border-2"
                                 >
                                     🎮 {t('actions.retry')}
