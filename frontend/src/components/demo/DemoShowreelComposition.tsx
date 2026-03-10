@@ -38,13 +38,13 @@ const EZ = Easing.bezier(0.8, 0, 0.2, 1); // Aggressive Apple-style easing (slow
 
 // Theme helpers
 function bg(d: boolean, m?: boolean) {
-    if (m) return d ? `rgba(15, 20, 35, 0.95)` : `rgba(255, 255, 255, 0.98)`;
+    if (m) return d ? `rgba(20, 24, 40, 0.92)` : `rgba(248, 250, 252, 0.94)`;
     return d
-        ? "linear-gradient(160deg, rgba(30, 35, 51, 0.2), rgba(91, 108, 248, 0.1), rgba(147, 51, 234, 0.1), rgba(30, 35, 51, 0.4))"
-        : "linear-gradient(160deg, rgba(255, 255, 255, 0.3), rgba(91, 108, 248, 0.08), rgba(147, 51, 234, 0.08), rgba(255, 255, 255, 0.5))";
+        ? "linear-gradient(165deg, rgba(30, 41, 59, 0.4), rgba(91, 108, 248, 0.18), rgba(147, 51, 234, 0.15), rgba(15, 23, 42, 0.6))"
+        : "linear-gradient(165deg, rgba(255, 255, 255, 0.7), rgba(91, 108, 248, 0.12), rgba(219, 39, 119, 0.1), rgba(255, 255, 255, 0.8))";
 }
 function txt(d: boolean) { return d ? "#fff" : "#000"; }
-function border(d: boolean) { return "rgba(255, 255, 255, 0.3)"; }
+function border(d: boolean) { return d ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.5)"; }
 function shadow(d: boolean, m?: boolean) {
     if (m) return d ? `0 10px 20px rgba(0,0,0,0.8)` : `0 10px 20px rgba(0,0,0,0.1)`;
     return d
@@ -86,7 +86,7 @@ const PromoPanel: React.FC<{
             opacity: interpolate(sprIn, [0, 0.2], [0, 1], C) * opOut,
             background: bg(dark, isMobile),
             backdropFilter: isMobile ? "none" : "blur(50px) saturate(200%)",
-            border: `1.5px solid ${border(dark)}`, borderRadius: 24, padding: 30,
+            border: `1.5px solid ${border(dark)}`, borderRadius: 32, padding: 40,
             boxShadow: shadow(dark, isMobile), color: txt(dark),
             willChange: "transform, opacity, filter",
             display: "flex", flexDirection: "column"
@@ -159,7 +159,7 @@ const Act1Intro: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
     return (
         <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ transform: `scale(${spr}) translateZ(${zOut}px)`, opacity: interpolate(outT, [10, 25], [1, 0], C), textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Img src="/logo-main.png" style={{ height: 380, filter: `drop-shadow(0 0 60px ${LF.primary}AA)`, transform: `translateY(${Math.sin(t * 0.05) * 20}px)`, marginBottom: 40 }} />
+                <Img src="/logo-main.png" style={{ height: 440, filter: `drop-shadow(0 0 70px ${LF.primary}AA)`, transform: `translateY(${Math.sin(t * 0.05) * 20}px)`, marginBottom: -80 }} />
                 <div style={{ fontSize: 36, fontWeight: 700, color: p.isDarkMode ? "#E2E8F0" : "#334155", opacity: interpolate(t, [30, 45], [0, 1], C) }}>{p.s_hook_title}</div>
             </div>
         </div>
@@ -279,12 +279,12 @@ const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
 
                 {/* 3D Spinning Card inside the panel! */}
                 <div style={{
-                    position: "absolute", right: 20, top: 30, width: 280, height: 170, borderRadius: 24,
-                    background: `linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(220, 38, 38, 0.7), rgba(255, 255, 255, 0.9))`,
+                    position: "absolute", right: 20, top: 10, width: 280, height: 170, borderRadius: 24,
+                    background: `linear-gradient(135deg, rgba(91, 108, 248, 0.85), rgba(147, 51, 234, 0.75), rgba(236, 72, 153, 0.85))`,
                     padding: 24,
                     backdropFilter: "blur(25px)",
                     border: "1px solid rgba(255,255,255,0.4)",
-                    boxShadow: `0 40px 70px rgba(0,0,0,0.4), 0 0 30px rgba(37, 99, 235, 0.3)`,
+                    boxShadow: `0 40px 70px rgba(0,0,0,0.4), 0 0 40px rgba(147, 51, 234, 0.4)`,
                     display: "flex", flexDirection: "column", justifyContent: "space-between",
                     transformStyle: "preserve-3d",
                     transform: `translateZ(${interpolate(Math.sin(t * 0.05), [-1, 1], [120, 180])}px) translateY(${Math.sin(t * 0.04) * 15}px) rotateY(${Math.sin(t * 0.03) * 10}deg)`
