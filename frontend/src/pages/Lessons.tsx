@@ -11,7 +11,7 @@ import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
 import { DemoBanner } from "@/components/demo/DemoBanner";
 import { cn } from "@/lib/utils";
 
-interface LeccionesProps {
+interface LessonsProps {
   isDemo?: boolean;
   Layout?: React.ComponentType<{ children: React.ReactNode }>;
 }
@@ -22,7 +22,7 @@ type ViewState =
   | { type: 'sagas'; adventureId: number }
   | { type: 'lessons'; adventureId: number; sagaId: number; sagaTitle: string };
 
-export default function Lecciones({ isDemo = false, Layout = DashboardLayout }: LeccionesProps) {
+export default function Lessons({ isDemo = false, Layout = DashboardLayout }: LessonsProps) {
   const { t } = useTranslation(['lessons', 'common', 'demo']);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);

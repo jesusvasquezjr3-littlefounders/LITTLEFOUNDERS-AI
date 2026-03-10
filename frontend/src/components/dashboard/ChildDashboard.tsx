@@ -228,7 +228,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
               </div>
             ))}
             <Button asChild className="w-full mt-4 bg-gradient-to-r from-primary to-purple-600">
-              <Link to="/lecciones">
+              <Link to="/lessons">
                 {t('next_lessons.view_all')}
               </Link>
             </Button>
@@ -284,7 +284,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Interactive Lessons Card */}
-          <Link to="/lecciones" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
+          <Link to="/lessons" className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600"></div>
             <div className="relative p-6 flex flex-col items-center justify-center h-48 text-center space-y-3">
               <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full shadow-inner group-hover:scale-110 transition-transform duration-300">

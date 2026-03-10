@@ -29,7 +29,7 @@ const ALL_GAMES = [
   },
   {
     id: 'nectar',
-    path: '/games/nectar-de-las-sombras',
+    path: '/games/nectar-of-shadows',
     titleKey: 'games:nectar.title',
     subtitleKey: 'games:nectar.subtitle',
     gif: NECTAR_GIF,

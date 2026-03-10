@@ -369,13 +369,13 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
               {t('parent.explore_children_see')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link to="/lecciones" className="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-sm hover:shadow-[0_6px_0_0_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all">
+              <Link to="/lessons" className="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-sm hover:shadow-[0_6px_0_0_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all">
                 <div className="bg-blue-500 rounded-2xl p-4 h-full flex flex-col items-center text-center justify-center gap-2 group-hover:bg-blue-600 transition-colors">
                   <BookOpen className="text-white w-8 h-8" />
                   <span className="font-bold text-white text-lg">{t('parent.learn')}</span>
                 </div>
               </Link>
-              <Link to="/lemonade-stand" className="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-sm hover:shadow-[0_6px_0_0_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all">
+              <Link to="/games" className="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-1 shadow-sm hover:shadow-[0_6px_0_0_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all">
                 <div className="bg-orange-500 rounded-2xl p-4 h-full flex flex-col items-center text-center justify-center gap-2 group-hover:bg-orange-600 transition-colors">
                   <Lightbulb className="text-white w-8 h-8" />
                   <span className="font-bold text-white text-lg">{t('parent.entrepreneurship')}</span>

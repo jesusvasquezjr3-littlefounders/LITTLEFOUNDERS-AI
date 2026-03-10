@@ -14,13 +14,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bye from "./pages/Bye";
 import DiscordCallback from "./pages/DiscordCallback";
-import Lecciones from "./pages/Lecciones";
+import Lessons from "./pages/Lessons";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import PageUnderConstruction from "./pages/PageUnderConstruction";
+import { Navigate } from "react-router-dom";
 
 import Demo from "./pages/demo/Demo";
 import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
@@ -34,7 +35,7 @@ import { SoundProvider } from "@/contexts/SoundContext";
 // Games
 import GamesPage from "./pages/GamesPage";
 import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
-import NectarDeLasSombrasPage from "@/games/nectar-de-las-sombras/NectarDeLasSombrasPage";
+import NectarOfShadowsPage from "@/games/nectar-of-shadows/NectarOfShadowsPage";
 import PaperDetectivePage from "@/games/paper-detective/PaperDetectivePage";
 
 // Admin Panel
@@ -73,11 +74,15 @@ const App = () => (
                 <Route path="/register" element={<Register />} />
                 <Route path="/bye" element={<Bye />} />
                 <Route path="/auth/discord/callback" element={<DiscordCallback />} />
-                <Route path="/lecciones" element={
+
+                {/* Lessons */}
+                <Route path="/lessons" element={
                   <ProtectedRoute>
-                    <Lecciones />
+                    <Lessons />
                   </ProtectedRoute>
                 } />
+                <Route path="/lessons" element={<Navigate to="/lessons" replace />} />
+
                 <Route path="/ai" element={
                   <ProtectedRoute>
                     <PageUnderConstruction />
@@ -118,22 +123,26 @@ const App = () => (
                     <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
-                <Route path="/investment-games" element={
+                <Route path="/games" element={
                   <ProtectedRoute>
                     <GamesPage />
                   </ProtectedRoute>
                 } />
+                <Route path="/investment-games" element={<Navigate to="/games" replace />} />
+
                 {/* Games */}
                 <Route path="/games/nam-vs-yum" element={
                   <ProtectedRoute>
                     <NamVsYumPage />
                   </ProtectedRoute>
                 } />
-                <Route path="/games/nectar-de-las-sombras" element={
+                <Route path="/games/nectar-of-shadows" element={
                   <ProtectedRoute>
-                    <NectarDeLasSombrasPage />
+                    <NectarOfShadowsPage />
                   </ProtectedRoute>
                 } />
+                <Route path="/games/nectar-de-las-sombras" element={<Navigate to="/games/nectar-of-shadows" replace />} />
+
                 <Route path="/games/paper-detective" element={
                   <ProtectedRoute>
                     <PaperDetectivePage />
@@ -150,13 +159,15 @@ const App = () => (
                     <Help />
                   </ProtectedRoute>
                 } />
+
                 {/* Demo Routes */}
                 <Route path="/demo" element={<Demo />} />
-                <Route path="/demo/lecciones" element={<Lecciones isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/lessons" element={<Lecciones isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/investment-games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/lessons" element={<Lessons isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/lessons" element={<Navigate to="/demo/lessons" replace />} />
+
                 <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/juegos" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
+                <Route path="/demo/games" element={<Navigate to="/demo/games" replace />} />
+                <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
 
                 {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
                     though Sidebar has them locked with '#' */}
