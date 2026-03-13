@@ -1,5 +1,5 @@
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
-import { UserPublicProfile } from "@/lib/api/social";
+import { UserPublicProfile } from "../../lib/api/social";
 import { useNavigate } from "react-router-dom";
 import { Users, Star, Flame, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";

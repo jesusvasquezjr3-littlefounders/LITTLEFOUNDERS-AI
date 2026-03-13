@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Settings, User, Trophy, Flame, Star, Mail, Calendar, Shield, Palette, Check, Loader2, BookOpen, Clock, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
-import { socialApi, UserPublicProfile, FollowRequest } from "@/lib/api/social";
+import { socialApi, UserPublicProfile, FollowRequest } from "../lib/api/social";
 import { UserConnectionsList } from "@/components/social/UserConnectionsList";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";

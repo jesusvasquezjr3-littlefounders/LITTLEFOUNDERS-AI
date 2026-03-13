@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Trophy, Star, Flame, MapPin, Loader2, Users, ArrowLeft } from "lucide-react";
-import { socialApi, UserPublicProfile } from "@/lib/api/social";
+import { socialApi, UserPublicProfile } from "../../lib/api/social";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 
