@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 from sqlalchemy import func
 from database import get_db
@@ -11,6 +12,25 @@ from auth.endpoints import get_current_user_from_token
 import os
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
+
+# ── In-memory rate limiter (lightweight, no decorator needed) ──────────────────
+# Format: { key: [timestamp, ...] }
+_rate_store: dict = defaultdict(list)
+
+def _check_rate_limit(key: str, max_requests: int, window_seconds: int = 60):
+    """Simple sliding-window rate limiter. Raises 429 if limit exceeded."""
+    now = datetime.utcnow()
+    cutoff = now - timedelta(seconds=window_seconds)
+    # Purge old requests
+    timestamps = [t for t in _rate_store[key] if t > cutoff]
+    _rate_store[key] = timestamps
+
+    if len(timestamps) >= max_requests:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Demasiadas solicitudes. Por favor espera un momento e intenta de nuevo."
+        )
+    _rate_store[key].append(now)
 
 # ── Helper ─────────────────────────────────────────────────────────────────────
 
@@ -26,9 +46,7 @@ def _validate_evidence_url(url: Optional[str]):
     """Ensure evidence URL belongs to our Supabase domain to prevent malicious link injection."""
     if not url:
         return
-    # Basic check for Supabase domain from env
     supabase_url = os.getenv("VITE_SUPABASE_URL", "supabase.co")
-    # Clean protocol
     domain = supabase_url.replace("https://", "").replace("http://", "").split("/")[0]
     
     if "supabase.co" in url or (domain and domain in url) or url.startswith("[attached:"):
@@ -53,10 +71,9 @@ async def create_report(
     No requiere autenticación (accesible para usuarios sin sesión).
     Si hay token de sesión válido, el user_id se asocia automáticamente.
     """
-    # Rate limit: 5 reports per minute per IP
-    from utils.limiter import limiter
-    # We apply IP-based limiting for any request
-    await limiter.limit("5/minute")(request, lambda: None)
+    # Rate limit by IP: 5 per minute
+    client_ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(f"ip:{client_ip}", max_requests=5, window_seconds=60)
 
     # Try to get authenticated user (optional)
     user_id: Optional[int] = None
@@ -74,9 +91,9 @@ async def create_report(
     except Exception:
         pass  # No auth — continue as anonymous report
 
-    # Secondary Rate limit: 3 reports per minute per User ID (if authenticated)
+    # Additional rate limit by User ID (if authenticated): 3 per minute
     if user_id:
-        await limiter.limit("3/minute", key_func=lambda: f"user_{user_id}")(request, lambda: None)
+        _check_rate_limit(f"user:{user_id}", max_requests=3, window_seconds=60)
 
     # Security: Validate evidence URL domain
     _validate_evidence_url(report_data.evidence_url)
@@ -84,7 +101,7 @@ async def create_report(
     # Build metadata with browser/platform context from request
     extra_meta = dict(report_data.report_metadata or {})
     extra_meta.setdefault("user_agent", request.headers.get("User-Agent", ""))
-    extra_meta.setdefault("ip", request.client.host if request.client else None)
+    extra_meta.setdefault("ip", client_ip)
 
     new_report = PlatformReport(
         user_id=user_id,
