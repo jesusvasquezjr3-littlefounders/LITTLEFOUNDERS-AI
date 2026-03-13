@@ -205,7 +205,7 @@ class AudioResponse(BaseModel):
 
 class HistoryEntry(BaseModel):
     id: int
-    editor_user_id: int
+    editor_public_id: Optional[str] = None
     editor_name: Optional[str] = None
     entity_type: str
     entity_id: int
@@ -246,7 +246,7 @@ class AdminStats(BaseModel):
 # ──── USUARIOS ADMIN ────
 
 class AdminUserResponse(BaseModel):
-    id: int
+    public_id: str
     name: str
     email: str
     user_type: str

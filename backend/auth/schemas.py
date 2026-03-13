@@ -63,7 +63,6 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: int
     public_id: UUID  # SQLAlchemy returns uuid.UUID object — Pydantic v2 accepts it natively
     name: str
     email: str

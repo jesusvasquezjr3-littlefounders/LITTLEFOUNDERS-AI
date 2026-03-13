@@ -1,10 +1,11 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON, Index
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON, Index, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
 import enum
 import uuid
+from typing import Optional
 
 
 # Enums
@@ -45,6 +46,12 @@ class TransactionType(str, enum.Enum):
     WITHDRAWAL = "withdrawal"
     REWARD = "reward"
     PURCHASE = "purchase"
+
+
+class FollowStatus(str, enum.Enum):
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
 
 
 # =====================================================
@@ -205,7 +212,34 @@ class User(Base):
     
     # Relationships
     learning_streaks = relationship("UserLearningStreak", back_populates="user", cascade="all, delete-orphan")
+    followers = relationship(
+        "Follow",
+        foreign_keys="[Follow.followed_id]",
+        back_populates="followed",
+        cascade="all, delete-orphan"
+    )
+    following = relationship(
+        "Follow",
+        foreign_keys="[Follow.follower_id]",
+        back_populates="follower",
+        cascade="all, delete-orphan"
+    )
 
+class Follow(Base):
+    __tablename__ = "follows"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    follower_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    followed_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    status = Column(String(20), default=FollowStatus.PENDING)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    __table_args__ = (UniqueConstraint('follower_id', 'followed_id', name='uq_follower_followed'),)
+    
+    # Relationships
+    follower = relationship("User", foreign_keys=[follower_id], back_populates="following")
+    followed = relationship("User", foreign_keys=[followed_id], back_populates="followers")
 
 class UserLearningStreak(Base):
     """Daily learning activity tracking for streak calculation"""
@@ -395,6 +429,10 @@ class ContentEditHistory(Base):
     # Relationships
     editor = relationship("User", foreign_keys=[editor_user_id])
 
+    @property
+    def editor_public_id(self) -> Optional[str]:
+        return str(self.editor.public_id) if self.editor else None
+
 
 class LessonAudioSegment(Base):
     """Segmentos de audio para lecciones"""
@@ -469,3 +507,7 @@ class PlatformReport(Base):
 
     # Relationships
     user = relationship("User", foreign_keys=[user_id])
+
+    @property
+    def reporter_public_id(self) -> Optional[str]:
+        return str(self.user.public_id) if self.user else None

@@ -1249,11 +1249,11 @@ async def list_history(
 
     items = []
     for entry in entries:
-        editor_name = db.query(User.name).filter(User.id == entry.editor_user_id).scalar()
+        editor = db.query(User).filter(User.id == entry.editor_user_id).first()
         items.append({
             "id": entry.id,
-            "editor_user_id": entry.editor_user_id,
-            "editor_name": editor_name,
+            "editor_public_id": str(editor.public_id) if editor else None,
+            "editor_name": editor.name if editor else None,
             "entity_type": entry.entity_type,
             "entity_id": entry.entity_id,
             "action": entry.action,
@@ -1282,11 +1282,11 @@ async def get_entity_history(
 
     items = []
     for entry in entries:
-        editor_name = db.query(User.name).filter(User.id == entry.editor_user_id).scalar()
+        editor = db.query(User).filter(User.id == entry.editor_user_id).first()
         items.append({
             "id": entry.id,
-            "editor_user_id": entry.editor_user_id,
-            "editor_name": editor_name,
+            "editor_public_id": str(editor.public_id) if editor else None,
+            "editor_name": editor.name if editor else None,
             "entity_type": entry.entity_type,
             "entity_id": entry.entity_id,
             "action": entry.action,
@@ -1333,7 +1333,7 @@ async def list_admin_users(
 
     return [
         {
-            "id": u.id,
+            "public_id": str(u.public_id),
             "name": u.name,
             "email": u.email,
             "user_type": u.user_type,
@@ -1344,14 +1344,14 @@ async def list_admin_users(
     ]
 
 
-@router.post("/users/{user_id}/promote")
+@router.post("/users/{public_id}/promote")
 async def promote_to_admin(
-    user_id: int,
+    public_id: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Promover usuario a admin."""
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.public_id == public_id).first()
     if not user:
         raise HTTPException(404, "Usuario no encontrado")
 
@@ -1383,14 +1383,14 @@ async def promote_to_admin(
     return {"message": f"Usuario {user.name} promovido a admin"}
 
 
-@router.post("/users/{user_id}/demote")
+@router.post("/users/{public_id}/demote")
 async def demote_from_admin(
-    user_id: int,
+    public_id: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Revocar rol admin."""
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.public_id == public_id).first()
     if not user:
         raise HTTPException(404, "Usuario no encontrado")
 

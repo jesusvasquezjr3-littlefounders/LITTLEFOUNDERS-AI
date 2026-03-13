@@ -93,8 +93,7 @@ async def register_user(request: Request, user_data: UserRegister, db: Session =
         return {
             "message": "Registration successful",
             "user": {
-                "id": new_user.id,
-                "public_id": str(new_user.public_id),
+            "public_id": str(new_user.public_id),
                 "name": new_user.name,
                 "email": new_user.email,
                 "user_type": new_user.user_type,
@@ -159,7 +158,6 @@ async def login_user(request: Request, credentials: UserLogin, db: Session = Dep
     
     # Prepare user response
     user_data = {
-        "id": user.id,
         "public_id": str(user.public_id),
         "name": user.name,
         "email": user.email,
@@ -264,7 +262,6 @@ async def google_login(request: Request, google_data: GoogleLoginRequest, db: Se
         
         # Prepare user response
         user_data = {
-            "id": user.id,
             "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
@@ -418,7 +415,6 @@ async def discord_login(request: Request, discord_data: DiscordLoginRequest, db:
         
          # Prepare user response
         user_data = {
-            "id": user.id,
             "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
@@ -476,7 +472,6 @@ async def get_all_users(db: Session = Depends(get_db)):
     safe_users = []
     for user in users:
         safe_user = {
-            "id": user.id,
             "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
@@ -592,7 +587,6 @@ async def get_user_family(public_id: str, db: Session = Depends(get_db)):
     
     family_data = {
         "user": {
-            "id": user.id,
             "public_id": str(user.public_id),
             "name": user.name,
             "email": user.email,
@@ -608,7 +602,6 @@ async def get_user_family(public_id: str, db: Session = Depends(get_db)):
             tutor = db.query(User).filter(User.id == user.tutor_id).first()
             if tutor:
                 family_data["tutor"] = {
-                    "id": tutor.id,
                     "public_id": str(tutor.public_id),
                     "name": tutor.name,
                     "email": tutor.email,
@@ -620,7 +613,6 @@ async def get_user_family(public_id: str, db: Session = Depends(get_db)):
         children = db.query(User).filter(User.tutor_id == user.id).all()
         family_data["children"] = [
             {
-                "id": child.id,
                 "public_id": str(child.public_id),
                 "name": child.name,
                 "email": child.email,

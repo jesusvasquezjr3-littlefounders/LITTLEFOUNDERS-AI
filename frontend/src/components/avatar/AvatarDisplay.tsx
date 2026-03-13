@@ -37,7 +37,7 @@ export const AvatarDisplay = ({
     size = 128,
     className = "",
     showCTA = true,
-    linkToEdit = true,
+    linkToEdit = false,
     includeBorder = true
 }: AvatarDisplayProps) => {
 

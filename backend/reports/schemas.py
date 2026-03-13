@@ -61,7 +61,7 @@ class ReportResponse(BaseModel):
 
 class ReportAdminResponse(ReportResponse):
     """Schema extendido para admin (incluye notas, user_id, metadata)."""
-    user_id: Optional[int]
+    reporter_public_id: Optional[str]
     admin_notes: Optional[str]
     report_metadata: Optional[dict]
     updated_at: Optional[datetime]

@@ -83,13 +83,13 @@ Obtener todos los usuarios (debug)
 
 ### 2. **Dashboard** (`/dashboard`)
 
-#### `GET /dashboard/stats/{user_id}`
+#### `GET /dashboard/stats/{public_id}`
 Obtener estadísticas del usuario (lecciones completadas, puntos, racha, balance)
 
-#### `GET /dashboard/recent-activity/{user_id}`
+#### `GET /dashboard/recent-activity/{public_id}`
 Obtener actividad reciente (transacciones)
 
-#### `GET /dashboard/pending-tasks/{user_id}`
+#### `GET /dashboard/pending-tasks/{public_id}`
 Obtener tareas pendientes
 
 ---
@@ -99,7 +99,7 @@ Obtener tareas pendientes
 #### `POST /tasks/`
 Crear nueva tarea
 
-#### `GET /tasks/available/{user_id}`
+#### `GET /tasks/available/{public_id}`
 Obtener tareas disponibles para un niño
 
 #### `POST /tasks/complete`
@@ -120,7 +120,7 @@ Aprobar o rechazar tarea completada (padres)
 }
 ```
 
-#### `GET /tasks/completed/{user_id}`
+#### `GET /tasks/completed/{public_id}`
 Obtener tareas completadas
 
 #### `DELETE /tasks/{task_id}`
@@ -133,13 +133,13 @@ Eliminar tarea
 #### `POST /parent-tasks/`
 Crear y asignar tarea a un hijo
 
-#### `GET /parent-tasks/children/{parent_id}`
+#### `GET /parent-tasks/children/{public_id}`
 Obtener hijos asociados al padre
 
-#### `GET /parent-tasks/pending-approvals/{parent_id}`
+#### `GET /parent-tasks/pending-approvals/{public_id}`
 Obtener tareas pendientes de aprobación
 
-#### `GET /parent-tasks/child-tasks/{child_id}`
+#### `GET /parent-tasks/child-tasks/{public_id}`
 Obtener todas las tareas de un hijo específico
 
 ---
@@ -158,7 +158,7 @@ Crear meta de ahorro
 }
 ```
 
-#### `GET /savings/goals/{user_id}`
+#### `GET /savings/goals/{public_id}`
 Obtener metas de ahorro del usuario
 
 #### `PUT /savings/goals/{goal_id}`
@@ -177,7 +177,7 @@ Depositar a una meta de ahorro
 #### `POST /savings/withdraw`
 Retirar de una meta de ahorro
 
-#### `GET /savings/transactions/{user_id}`
+#### `GET /savings/transactions/{public_id}`
 Obtener historial de transacciones
 
 #### `DELETE /savings/goals/{goal_id}`
@@ -209,7 +209,7 @@ Comprar productos
 }
 ```
 
-#### `GET /store/purchases/{user_id}`
+#### `GET /store/purchases/{public_id}`
 Obtener historial de compras
 
 #### `POST /store/products`
@@ -234,7 +234,7 @@ Obtener lección específica
 #### `GET /lecciones/by-level/{level_id}`
 Obtener lecciones por nivel
 
-#### `GET /lecciones/progress/{user_id}`
+#### `GET /lecciones/progress/{public_id}`
 Obtener progreso del usuario
 
 #### `POST /lecciones/progress/update`
@@ -256,7 +256,7 @@ Completar lección
 }
 ```
 
-#### `GET /lecciones/completed/{user_id}`
+#### `GET /lecciones/completed/{public_id}`
 Obtener lecciones completadas
 
 ---
@@ -266,7 +266,7 @@ Obtener lecciones completadas
 #### `GET /lecciones-v2/`
 Obtener lecciones v2 (framework científico)
 
-#### `GET /lecciones-v2/progress/{user_id}`
+#### `GET /lecciones-v2/progress/{public_id}`
 Obtener progreso v2
 
 #### `POST /lecciones-v2/progress/update`
@@ -284,7 +284,7 @@ Crear sesión de juego
 }
 ```
 
-#### `GET /investment-games/session/{user_id}/{game_type}`
+#### `GET /investment-games/session/{public_id}/{game_type}`
 Obtener sesión activa
 
 #### `PUT /investment-games/session/{session_id}`
@@ -304,7 +304,7 @@ Terminar sesión de juego
 #### `GET /investment-games/leaderboard/{game_type}`
 Obtener tabla de líderes
 
-#### `GET /investment-games/history/{user_id}`
+#### `GET /investment-games/history/{public_id}`
 Obtener historial de juegos
 
 ---

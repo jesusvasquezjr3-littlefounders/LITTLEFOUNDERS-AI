@@ -15,7 +15,10 @@
         "avatar": "Avatar",
         "banner": "Banners",
         "info": "Info",
-        "badges": "Badges"
+        "badges": "Badges",
+        "friends": "Friends",
+        "requests": "Requests",
+        "search": "Search Friends"
     },
     "messages": {
         "profile_updated": "Profile updated!",
@@ -27,7 +30,15 @@
         "limit_reached": "Limit reached",
         "limit_reached_desc": "You can only display 3 badges at a time.",
         "upload_error_type": "Please select a valid image",
-        "upload_error_size": "Image must be smaller than 5MB"
+        "upload_error_size": "Image must be smaller than 5MB",
+        "follow_success": "You are now following {{name}}!",
+        "follow_pending": "Request sent to {{name}}",
+        "unfollow_success": "You have unfollowed {{name}}",
+        "accept_success": "Request accepted",
+        "reject_success": "Request rejected",
+        "search_error": "Error searching for users",
+        "user_not_found": "User not found",
+        "action_error": "Could not perform the action"
     },
     "sections": {
         "current_avatar": "Current Avatar",
@@ -37,7 +48,26 @@
         "personal_info": "Personal Information",
         "security_info": "Security Information",
         "security_desc": "Sensitive information like email and password can only be modified from account settings.",
-        "preferences": "Preferences"
+        "preferences": "Preferences",
+        "social": "Social Connections",
+        "followers": "Followers",
+        "following": "Following",
+        "no_results": "No results found",
+        "search_placeholder": "Search by @username (e.g. @rodrigo)",
+        "no_requests": "You have no pending requests",
+        "learning_stats": "Learning Statistics"
+    },
+    "social": {
+        "followers": "Followers",
+        "following": "Following",
+        "follow": "Follow",
+        "unfollow": "Unfollow",
+        "pending": "Pending",
+        "accept": "Accept",
+        "reject": "Reject",
+        "search": "Search",
+        "empty_following": "You are not following anyone yet.",
+        "empty_followers": "You have no followers yet."
     },
     "fields": {
         "nickname": "Nickname",
@@ -114,6 +144,7 @@
         "unicorn": "Unicorn",
         "robot": "Robot",
         "ninja": "Ninja",
+        "silent": "Silent",
         "pirate": "Pirate",
         "superhero": "Superhero",
         "alien": "Alien"

@@ -23,6 +23,9 @@ import NotFound from "./pages/NotFound";
 import PageUnderConstruction from "./pages/PageUnderConstruction";
 import { Navigate } from "react-router-dom";
 
+// Social
+import UserProfile from "./pages/social/UserProfile";
+
 import Demo from "./pages/demo/Demo";
 import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
 
@@ -96,6 +99,11 @@ const App = () => (
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/u/:username" element={
+                  <ProtectedRoute>
+                    <UserProfile />
                   </ProtectedRoute>
                 } />
                 <Route path="/avatar/edit" element={

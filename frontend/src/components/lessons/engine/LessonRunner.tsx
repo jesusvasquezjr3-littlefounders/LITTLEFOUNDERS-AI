@@ -325,7 +325,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 try {
                     const userStr = localStorage.getItem('user');
                     const user = userStr ? JSON.parse(userStr) : null;
-                    const userId = user?.public_id || user?.id;
+                    const userId = user?.public_id;
 
                     const [result, nextCode] = await Promise.all([
                         userId && code ? completeLesson(code, userId, 100, 180) : Promise.resolve(null),

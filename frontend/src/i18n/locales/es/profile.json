@@ -15,7 +15,10 @@
         "avatar": "Avatar",
         "banner": "Fundas",
         "info": "Información",
-        "badges": "Logros"
+        "badges": "Logros",
+        "friends": "Siguiendo",
+        "requests": "Solicitudes",
+        "search": "Buscar Amigos"
     },
     "messages": {
         "profile_updated": "¡Perfil actualizado!",
@@ -27,7 +30,15 @@
         "limit_reached": "Límite alcanzado",
         "limit_reached_desc": "Solo puedes mostrar 3 badges a la vez.",
         "upload_error_type": "Por favor selecciona una imagen válida",
-        "upload_error_size": "La imagen debe ser menor a 5MB"
+        "upload_error_size": "La imagen debe ser menor a 5MB",
+        "follow_success": "¡Ahora sigues a {{name}}!",
+        "follow_pending": "Solicitud enviada a {{name}}",
+        "unfollow_success": "Has dejado de seguir a {{name}}",
+        "accept_success": "Solicitud aceptada",
+        "reject_success": "Solicitud rechazada",
+        "search_error": "Hubo un error al buscar usuarios",
+        "user_not_found": "Usuario no encontrado",
+        "action_error": "No se pudo realizar la acción"
     },
     "sections": {
         "current_avatar": "Avatar actual",
@@ -37,7 +48,26 @@
         "personal_info": "Información Personal",
         "security_info": "Información de Seguridad",
         "security_desc": "La información sensible como email y contraseña solo puede ser modificada desde la configuración de la cuenta.",
-        "preferences": "Preferencias"
+        "preferences": "Preferencias",
+        "social": "Amigos",
+        "followers": "Seguidores",
+        "following": "Siguiendo",
+        "no_results": "No se encontraron resultados",
+        "search_placeholder": "Buscar por @usuario (ej. @rodrigo)",
+        "no_requests": "No tienes solicitudes pendientes",
+        "learning_stats": "Estadísticas de Aprendizaje"
+    },
+    "social": {
+        "followers": "Seguidores",
+        "following": "Siguiendo",
+        "follow": "Seguir",
+        "unfollow": "Dejar de seguir",
+        "pending": "Pendiente",
+        "accept": "Aceptar",
+        "reject": "Rechazar",
+        "search": "Buscar",
+        "empty_following": "Aún no sigues a nadie.",
+        "empty_followers": "Aún no tienes seguidores."
     },
     "fields": {
         "nickname": "Apodo / Nickname",
