@@ -48,6 +48,10 @@ import AdminAudio from "@/pages/admin/AdminAudio";
 import AdminHistory from "@/pages/admin/AdminHistory";
 import AdminUsers from "@/pages/admin/AdminUsers";
 import { AdminHelp } from "@/pages/admin/AdminHelp";
+import AdminReports from "@/pages/admin/AdminReports";
+
+// Common
+import { ReportFAB } from "@/components/common/ReportFAB";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +66,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <LanguageSyncWrapper>
+              <ReportFAB />
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/dashboard" element={
@@ -217,6 +222,11 @@ const App = () => (
                 <Route path="/admin/help" element={
                   <AdminProtectedRoute>
                     <AdminHelp />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/reports" element={
+                  <AdminProtectedRoute>
+                    <AdminReports />
                   </AdminProtectedRoute>
                 } />
 

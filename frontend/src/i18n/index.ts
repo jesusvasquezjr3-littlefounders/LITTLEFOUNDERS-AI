@@ -33,6 +33,7 @@ import esAvatar from './locales/es/avatar.json';
 import esAdmin from './locales/es/admin.json';
 import esDemo from './locales/es/demo.json';
 import esGames from './locales/es/games.json';
+import esReports from './locales/es/reports.json';
 
 import enCommon from './locales/en/common.json';
 import enAuth from './locales/en/auth.json';
@@ -47,6 +48,7 @@ import enAvatar from './locales/en/avatar.json';
 import enAdmin from './locales/en/admin.json';
 import enDemo from './locales/en/demo.json';
 import enGames from './locales/en/games.json';
+import enReports from './locales/en/reports.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = ['es', 'en'] as const;
@@ -80,6 +82,7 @@ const resources = {
         admin: esAdmin,
         demo: esDemo,
         games: esGames,
+        reports: esReports,
     },
     en: {
         common: enCommon,
@@ -95,6 +98,7 @@ const resources = {
         admin: enAdmin,
         demo: enDemo,
         games: enGames,
+        reports: enReports,
     },
 };
 

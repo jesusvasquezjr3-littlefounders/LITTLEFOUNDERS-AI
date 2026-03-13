@@ -5,9 +5,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from utils.limiter import limiter
 import hashlib
 import json
 import os
@@ -22,14 +22,14 @@ from dashboard.endpoints import router as dashboard_router
 
 from lesson_engine.endpoints import router as lesson_engine_router
 from admin.endpoints import router as admin_router
+from reports.endpoints import router as reports_router
 
 # Create database tables
 # DISABLED for Vercel: Tables should already exist in Supabase
 # In serverless environments, this fails because it runs on every cold start
 # models.Base.metadata.create_all(bind=engine)
 
-# Rate limiter
-limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
+# Rate limiter is configured in utils.limiter
 
 app = FastAPI(
     title=settings.api_title,
@@ -91,6 +91,7 @@ app.include_router(dashboard_router)
 
 app.include_router(lesson_engine_router)
 app.include_router(admin_router)
+app.include_router(reports_router)
 
 @app.get("/")
 async def root():

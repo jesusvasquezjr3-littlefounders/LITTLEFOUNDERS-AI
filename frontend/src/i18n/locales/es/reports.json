@@ -1,0 +1,95 @@
+{
+  "title": "Reportar un Problema",
+  "button_label": "Reportar",
+  "fab_tooltip": "Reportar un problema",
+  "form": {
+    "type_label": "Tipo de reporte",
+    "types": {
+      "bug": "🐛 Error técnico",
+      "abuse": "🚫 Uso indebido",
+      "suggestion": "💡 Sugerencia",
+      "content": "⚠️ Contenido inapropiado",
+      "other": "📝 Otro"
+    },
+    "email_label": "Tu correo electrónico",
+    "email_placeholder": "correo@ejemplo.com",
+    "subject_label": "Asunto",
+    "subject_placeholder": "Describe brevemente el problema...",
+    "url_label": "URL o sección afectada",
+    "url_placeholder": "Se capturó automáticamente",
+    "context_label": "Descripción detallada",
+    "context_placeholder": "Describe con el mayor detalle posible qué ocurrió, qué esperabas que pasara y qué pasos llevaste a cabo...",
+    "evidence_label": "Evidencia (opcional)",
+    "evidence_hint": "Sube una foto, video o audio que respalde tu reporte",
+    "evidence_button": "Seleccionar archivo",
+    "evidence_uploading": "Subiendo...",
+    "evidence_uploaded": "Archivo subido ✓",
+    "submit": "Enviar Reporte",
+    "submitting": "Enviando...",
+    "cancel": "Cancelar"
+  },
+  "success": {
+    "title": "¡Reporte enviado!",
+    "description": "Gracias por ayudarnos a mejorar. Nuestro equipo revisará tu reporte a la brevedad.",
+    "close": "Cerrar"
+  },
+  "error": {
+    "submit_failed": "No se pudo enviar el reporte. Inténtalo de nuevo.",
+    "upload_failed": "No se pudo subir el archivo. Inténtalo de nuevo.",
+    "file_too_large": "El archivo es demasiado grande (máx. 10MB).",
+    "file_type_invalid": "Tipo de archivo no permitido. Solo se aceptan imágenes, videos y audios."
+  },
+  "validation": {
+    "email_required": "El correo es requerido",
+    "subject_required": "El asunto es requerido",
+    "context_required": "La descripción es requerida",
+    "context_min": "La descripción debe tener al menos 10 caracteres"
+  },
+  "help_page": {
+    "section_title": "¿Tienes un problema o sugerencia?",
+    "section_description": "Si encontraste un error, contenido inapropiado, o tienes alguna sugerencia, no dudes en reportarlo. Tu opinión nos ayuda a mejorar la plataforma.",
+    "open_form": "Abrir formulario de reporte"
+  },
+  "admin": {
+    "page_title": "Gestión de Reportes",
+    "stats": {
+      "total": "Total",
+      "pending": "Pendientes",
+      "in_review": "En Revisión",
+      "resolved": "Resueltos",
+      "closed": "Cerrados"
+    },
+    "labels": {
+      "id": "ID",
+      "type": "Tipo",
+      "subject": "Asunto",
+      "reporter": "Reportante",
+      "date": "Fecha",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "description": "Descripción",
+      "url": "URL",
+      "evidence": "Evidencia",
+      "admin_notes": "Notas del Admin",
+      "notes_placeholder": "Notas internas..."
+    },
+    "priorities": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "actions": {
+      "refresh": "Actualizar",
+      "save": "Guardar cambios",
+      "saving": "Guardando...",
+      "clear_filters": "Limpiar filtros",
+      "view_evidence": "Ver evidencia"
+    },
+    "messages": {
+      "no_reports": "No hay reportes con estos filtros",
+      "loading": "Cargando reportes...",
+      "save_error": "Error al guardar. Intenta de nuevo."
+    }
+  }
+}

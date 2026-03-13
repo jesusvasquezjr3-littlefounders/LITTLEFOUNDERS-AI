@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON, Index
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -419,3 +419,53 @@ class LessonAudioSegment(Base):
     # Relationships
     lesson = relationship("Lesson", foreign_keys=[lesson_id])
     character = relationship("Character", foreign_keys=[character_id])
+
+
+# =====================================================
+# PLATFORM REPORTS
+# =====================================================
+
+class ReportType(str, enum.Enum):
+    BUG = "bug"
+    ABUSE = "abuse"
+    SUGGESTION = "suggestion"
+    CONTENT = "content"
+    OTHER = "other"
+
+
+class ReportStatus(str, enum.Enum):
+    PENDING = "pending"
+    IN_REVIEW = "in_review"
+    RESOLVED = "resolved"
+    CLOSED = "closed"
+
+
+class ReportPriority(str, enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class PlatformReport(Base):
+    """Reportes/quejas/sugerencias enviadas por usuarios de la plataforma"""
+    __tablename__ = "platform_reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    reporter_email = Column(String(255), nullable=False, index=True)
+    report_type = Column(String(20), nullable=False, default="other", index=True)
+    subject = Column(String(200), nullable=False)
+    reported_url = Column(String(500), nullable=True)
+    context = Column(Text, nullable=False)
+    evidence_url = Column(String(500), nullable=True)
+    status = Column(String(20), nullable=False, default="pending", index=True)
+    priority = Column(String(20), nullable=False, default="low")
+    report_metadata = Column("report_metadata", JSON, nullable=True, default=dict)
+    admin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
