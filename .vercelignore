@@ -13,5 +13,5 @@ backend/scripts/
 
 # Ignorar todo el código del backend en Vercel
 # (El backend ahora se despliega exclusivamente en Render)
-backend/
-api/
+/backend/
+/api/
