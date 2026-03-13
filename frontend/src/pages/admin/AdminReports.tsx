@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface PlatformReport {
-  id: number;
+  id: string; // Used strictly as a UUID (public_id) internally
+  public_id: string;
   reporter_email: string;
   report_type: string;
   subject: string;
@@ -121,7 +122,7 @@ function ReportDetail({
       <div className="flex items-start justify-between p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-slate-400">#{report.id}</span>
+            <span className="text-xs font-mono text-slate-400">#{report.public_id.split("-")[0]}</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               {TYPE_LABELS[report.report_type] ?? report.report_type}
             </span>

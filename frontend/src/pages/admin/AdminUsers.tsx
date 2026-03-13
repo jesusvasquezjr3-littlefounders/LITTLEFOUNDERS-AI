@@ -79,8 +79,14 @@ export const AdminUsers: React.FC = () => {
     try {
       await promoteUser.mutateAsync(userId);
       setPromoteConfirmId(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Promote error:', error);
+      if (error.message && error.message.includes('403')) {
+        alert(t('users.promoteErrorDomain'));
+      } else {
+        alert(t('common.error') + ': ' + error.message);
+      }
+      setPromoteConfirmId(null);
     }
   };
 

@@ -249,6 +249,7 @@
     "demote": "Revocar Admin",
     "promoteTitle": "Promover Usuario",
     "promoteConfirm": "¿Promover a admin? Tendrá acceso completo al panel de administración.",
+    "promoteErrorDomain": "Error: Solo correos con el dominio @littlefounders.ai pueden ser administradores.",
     "demoteTitle": "Revocar Admin",
     "demoteConfirm": "¿Revocar rol de admin? Volverá a su tipo de usuario anterior.",
     "cancel": "Cancelar",

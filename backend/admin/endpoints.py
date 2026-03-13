@@ -1358,6 +1358,13 @@ async def promote_to_admin(
     if user.user_type == UserType.ADMIN.value:
         raise HTTPException(400, "El usuario ya es admin")
 
+    # Domain restriction for admin promotion
+    if not user.email or not user.email.endswith("@littlefounders.ai"):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo correos con el dominio @littlefounders.ai pueden ser administradores."
+        )
+
     prev_type = user.user_type
     user.user_type = UserType.ADMIN.value
 
