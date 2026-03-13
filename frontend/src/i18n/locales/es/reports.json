@@ -37,7 +37,10 @@
     "submit_failed": "No se pudo enviar el reporte. Inténtalo de nuevo.",
     "upload_failed": "No se pudo subir el archivo. Inténtalo de nuevo.",
     "file_too_large": "El archivo es demasiado grande (máx. 10MB).",
-    "file_type_invalid": "Tipo de archivo no permitido. Solo se aceptan imágenes, videos y audios."
+    "file_type_invalid": "Tipo de archivo no permitido. Solo se aceptan imágenes, videos y audios.",
+    "network_error": "Error de conexión. Verifica tu internet e inténtalo de nuevo.",
+    "rate_limit": "Has enviado demasiados reportes. Por favor, espera un momento (60s) e inténtalo de nuevo.",
+    "server_error": "Hubo un problema en nuestro servidor. Inténtalo más tarde."
   },
   "validation": {
     "email_required": "El correo es requerido",

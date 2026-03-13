@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Flag, AlertCircle, Clock, CheckCircle2, XCircle, Filter, RefreshCw, ExternalLink, ChevronDown } from "lucide-react";
+import { Flag, AlertCircle, Clock, CheckCircle2, XCircle, Filter, RefreshCw, ExternalLink, ChevronDown, Image, Video, FileText, Eye, Play, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
@@ -159,18 +159,81 @@ function ReportDetail({
           </div>
         )}
 
-        {/* Evidence */}
-        {report.evidence_url && !report.evidence_url.startsWith("[attached") && (
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Evidencia</p>
-            {report.evidence_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-              <img src={report.evidence_url} alt="Evidence" className="rounded-xl max-h-48 object-cover border border-slate-200 dark:border-slate-700" />
-            ) : (
-              <a href={report.evidence_url} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
-                <ExternalLink className="w-4 h-4" /> Ver evidencia
-              </a>
-            )}
+        {/* Evidence Section */}
+        {report.evidence_url && (
+          <div className="space-y-2">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">{t("admin.labels.evidence")}</p>
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/50 group">
+              {(() => {
+                const url = report.evidence_url || "";
+                const cleanUrl = url.split("?")[0].toLowerCase();
+                
+                if (cleanUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+                  return (
+                    <div className="space-y-3">
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-200 dark:bg-slate-900 group">
+                        <img src={url} alt="Evidence" className="w-full h-auto max-h-[300px] object-contain transition-transform duration-500 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                           <a href={url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white rounded-full text-slate-900 shadow-xl transition-transform hover:scale-110">
+                             <Eye className="w-5 h-5" />
+                           </a>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-500 text-center font-medium">Previsualización de imagen</p>
+                    </div>
+                  );
+                }
+                
+                if (cleanUrl.match(/\.(mp4|webm|ogg|mov)$/i)) {
+                  return (
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <Video className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white">Archivo de Video</p>
+                        <p className="text-xs text-slate-500 truncate">{url.split("/").pop()}</p>
+                      </div>
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <Play className="w-4 h-4" />
+                      </a>
+                    </div>
+                  );
+                }
+
+                if (cleanUrl.match(/\.(mp3|wav|flac)$/i)) {
+                  return (
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                        <Music className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white">Archivo de Audio</p>
+                        <p className="text-xs text-slate-500 truncate">{url.split("/").pop()}</p>
+                      </div>
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-purple-500 text-white hover:bg-purple-600 transition-colors">
+                        <Play className="w-4 h-4" />
+                      </a>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-500/10 flex items-center justify-center text-slate-500">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">Otro Archivo</p>
+                      <p className="text-xs text-slate-500 truncate">{url}</p>
+                    </div>
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-slate-500 text-white hover:bg-slate-600 transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         )}
 

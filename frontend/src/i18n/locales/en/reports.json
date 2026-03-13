@@ -37,7 +37,10 @@
     "submit_failed": "Failed to send report. Please try again.",
     "upload_failed": "Failed to upload file. Please try again.",
     "file_too_large": "File is too large (max. 10MB).",
-    "file_type_invalid": "File type not allowed. Only images, videos, and audios are accepted."
+    "file_type_invalid": "File type not allowed. Only images, videos, and audios are accepted.",
+    "network_error": "Connection error. Please check your internet and try again.",
+    "rate_limit": "Too many requests. Please wait a moment (60s) and try again.",
+    "server_error": "There was a problem with our server. Please try again later."
   },
   "validation": {
     "email_required": "Email is required",

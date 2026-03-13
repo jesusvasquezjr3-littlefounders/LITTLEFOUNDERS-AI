@@ -171,6 +171,12 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
       });
 
       if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error(t("error.rate_limit"));
+        }
+        if (res.status >= 500) {
+          throw new Error(t("error.server_error"));
+        }
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.detail ?? t("error.submit_failed"));
       }
@@ -178,7 +184,12 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
       setSubmitState("success");
     } catch (err: any) {
       setSubmitState("error");
-      setErrorMsg(err?.message ?? t("error.submit_failed"));
+      // Categorize errors for better UX
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
+        setErrorMsg(t("error.network_error"));
+      } else {
+        setErrorMsg(err?.message ?? t("error.submit_failed"));
+      }
     }
   };
 
