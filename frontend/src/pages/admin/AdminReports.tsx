@@ -166,6 +166,23 @@ function ReportDetail({
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/50 group">
               {(() => {
                 const url = report.evidence_url || "";
+                
+                // Handle local fallback case where file wasn't uploaded completely
+                if (url.startsWith("[attached:")) {
+                  const filename = url.replace("[attached:", "").replace("]", "");
+                  return (
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                        <AlertCircle className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white">Archivo de Texto / Fallback Local</p>
+                        <p className="text-[10px] text-slate-500 truncate mt-0.5">La evidencia de {filename} no se sincronizó a la nube (falta VITE_SUPABASE_URL).</p>
+                      </div>
+                    </div>
+                  );
+                }
+
                 const cleanUrl = url.split("?")[0].toLowerCase();
                 
                 if (cleanUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
