@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
+import { Analytics } from '@vercel/analytics/react';
 
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
@@ -67,6 +68,7 @@ const App = () => (
         <SoundProvider>
           <Toaster />
           <Sonner />
+          <Analytics />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <GoogleAnalytics />
             <LanguageSyncWrapper>
