@@ -67,3 +67,6 @@ littlefounders_lessons/
 .claude/
 
 ADMIN_PANEL_IMPLEMENTACION.md
+
+# ts
+*.tsbuildinfo

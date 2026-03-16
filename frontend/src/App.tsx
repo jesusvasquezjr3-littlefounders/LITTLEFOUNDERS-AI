@@ -34,6 +34,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LessonRunner } from "@/components/lessons/engine";
 import { LanguageSyncWrapper } from "@/components/auth/LanguageSyncWrapper";
 import { SoundProvider } from "@/contexts/SoundContext";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 // Games
 import GamesPage from "./pages/GamesPage";
@@ -64,10 +65,10 @@ const App = () => (
     <TooltipProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <SoundProvider>
-
           <Toaster />
           <Sonner />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <GoogleAnalytics />
             <LanguageSyncWrapper>
               <ReportFAB />
               <Routes>
@@ -89,7 +90,6 @@ const App = () => (
                     <Lessons />
                   </ProtectedRoute>
                 } />
-                <Route path="/lessons" element={<Navigate to="/lessons" replace />} />
 
                 <Route path="/ai" element={
                   <ProtectedRoute>
@@ -173,13 +173,9 @@ const App = () => (
                   </ProtectedRoute>
                 } />
 
-                {/* Demo Routes */}
                 <Route path="/demo" element={<Demo />} />
                 <Route path="/demo/lessons" element={<Lessons isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/lessons" element={<Navigate to="/demo/lessons" replace />} />
 
-                <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/games" element={<Navigate to="/demo/games" replace />} />
                 <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
 
                 {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
