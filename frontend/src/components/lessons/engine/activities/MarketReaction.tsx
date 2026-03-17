@@ -55,7 +55,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
         <div className="w-full max-w-3xl animate-slide-in-bottom">
 
             {/* Newspaper Headline */}
-            <div className="mb-8 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-8 border-4 border-slate-300 dark:border-slate-700 shadow-2xl">
+            <div className="mb-8 liquid-glass-strong rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-xl">
                 <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-400 dark:border-slate-600">
                     <Newspaper className="w-8 h-8 text-slate-700 dark:text-slate-300" />
                     <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">
@@ -131,9 +131,10 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                     <Button
                         onClick={handleCheck}
                         disabled={!selectedOption}
-                        className="w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
                     >
-                        {t('actions.verify')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -143,15 +144,18 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                     : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                                 "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                             )}
                         >
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

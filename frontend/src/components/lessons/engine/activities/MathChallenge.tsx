@@ -59,7 +59,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
         <div className="w-full max-w-sm animate-slide-in-bottom flex flex-col items-center">
 
             {/* Display / Question */}
-            <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-3xl w-full mb-6 text-center shadow-inner border-2 border-slate-200 dark:border-slate-700">
+            <div className="liquid-glass-strong p-6 rounded-3xl w-full mb-6 text-center shadow-xl border border-white/20 dark:border-white/10">
                 <h3 className="text-xl font-medium text-slate-500 mb-2 uppercase tracking-wide">
                     {t('actions.calculate')}
                 </h3>
@@ -110,23 +110,27 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                 <Button
                     onClick={handleCheck}
                     disabled={input.length === 0}
-                    className="w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
                 >
-                    {t('actions.verify')}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                             : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                         "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                     )}
                 >
-                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative flex items-center justify-center">
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                    </span>
                 </Button>
             )}
         </div>

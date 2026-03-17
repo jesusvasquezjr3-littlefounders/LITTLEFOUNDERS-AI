@@ -3,6 +3,7 @@
  * Mobile-first, dark mode compatible, grouped by Topic
  */
 import React, { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Check, Lock, Star, Play, BookOpen, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -201,20 +202,24 @@ export const LessonPath: React.FC<LessonPathProps> = ({
                 {groupedLessons.map((group, groupIndex) => (
                     <div key={groupIndex} className="relative">
                         {/* Unit Header */}
-                        <div className={`
-                            sticky top-20 z-30 mb-8 mx-2 p-5 rounded-2xl 
-                            ${colors.bg} text-white shadow-lg shadow-${themeColor}-500/20
-                            flex items-center justify-between
-                        `}>
+                        <div className={cn(
+                            "sticky top-20 z-30 mb-8 mx-2 p-5 rounded-2xl",
+                            "flex items-center justify-between text-white relative overflow-hidden",
+                            "shadow-xl",
+                            colors.bg
+                        )}
+                        style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)' }}>
+                            {/* Glass inner highlight */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none rounded-2xl" />
                             <div>
-                                <h3 className="uppercase text-xs font-bold opacity-80 mb-1 tracking-wider">
+                                <h3 className="uppercase text-xs font-bold opacity-80 mb-1 tracking-wider relative">
                                     {t('unit')} {groupIndex + 1}
                                 </h3>
-                                <h2 className="text-lg font-black leading-tight">
+                                <h2 className="text-lg font-black leading-tight relative">
                                     {group.title}
                                 </h2>
                             </div>
-                            <BookOpen className="w-8 h-8 opacity-90" />
+                            <BookOpen className="w-8 h-8 opacity-90 relative" />
                         </div>
 
                         {/* Lessons Path for this Unit */}

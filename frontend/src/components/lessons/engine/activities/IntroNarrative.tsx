@@ -82,7 +82,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
 
             {/* Speech Bubble with Narrative */}
             <div className="w-full flex justify-center">
-                <div className="relative bg-card rounded-xl shadow-sm border border-border px-6 py-4 max-w-md">
+                <div className="relative liquid-glass-strong rounded-xl shadow-xl border border-white/20 dark:border-white/10 px-6 py-4 max-w-md">
                     <p className="text-center font-medium text-foreground leading-snug">
                         {narrativeText}
                     </p>
@@ -103,9 +103,10 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             <Button
                 onClick={onNext}
                 disabled={isAudioPlaying}
-                className="w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
             >
-                {t('actions.continue')}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                <span className="relative flex items-center justify-center">{t('actions.continue')}</span>
             </Button>
         </div>
     );

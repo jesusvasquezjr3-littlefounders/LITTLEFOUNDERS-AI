@@ -112,7 +112,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {/* Asset Sliders */}
             <div className="mb-6 space-y-3">
                 {assets.map((asset: any) => (
-                    <div key={asset.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                    <div key={asset.id} className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                                 <div
@@ -167,10 +167,13 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                     <Button
                         onClick={handleSubmit}
                         disabled={allocatedTotal !== totalAmount}
-                        className="w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                     >
-                        <PieChart className="w-5 h-5 mr-2" />
-                        {t('actions.build_portfolio')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            <PieChart className="w-5 h-5 mr-2" />
+                            {t('actions.build_portfolio')}
+                        </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -179,10 +182,13 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                         </p>
                         <Button
                             onClick={onNext}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

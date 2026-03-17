@@ -48,8 +48,8 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
         <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
 
             {/* Statement Card */}
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl border-2 border-slate-100 dark:border-slate-800 mb-10 w-full text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-purple-500" />
+            <div className="liquid-glass-strong p-8 rounded-3xl border border-white/20 dark:border-white/10 mb-10 w-full text-center relative overflow-hidden shadow-xl">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-purple-500" />
                 <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 leading-tight">
                     {exercise.content.statement}
                 </h3>
@@ -62,16 +62,17 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                     onClick={() => handleAnswer(true)}
                     disabled={answered !== null}
                     className={cn(
-                        "h-32 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-b-4",
+                        "relative overflow-hidden h-32 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-b-4",
                         "bg-blue-500 hover:bg-blue-600 border-blue-700 text-white shadow-lg shadow-blue-500/30",
                         answered === true && "scale-95 border-b-0 translate-y-2 ring-4 ring-blue-300",
-                        answered === false && "opacity-30 grayscale", // If picked False, dim this
-                        feedback === 'success' && exercise.correct_answer?.isTrue === true && "bg-green-500 border-green-700 ring-4 ring-green-300 scale-105", // Pulse if correct answer
-                        feedback === 'error' && answered === true && "bg-red-500 border-red-700 shake" // Shake if wrong pick
+                        answered === false && "opacity-30 grayscale",
+                        feedback === 'success' && exercise.correct_answer?.isTrue === true && "bg-green-500 border-green-700 ring-4 ring-green-300 scale-105",
+                        feedback === 'error' && answered === true && "bg-red-500 border-red-700 shake"
                     )}
                 >
-                    <Check className="w-10 h-10" />
-                    <span className="text-2xl font-black uppercase tracking-wider">{t('common:true')}</span>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+                    <Check className="w-10 h-10 relative" />
+                    <span className="text-2xl font-black uppercase tracking-wider relative">{t('common:true')}</span>
                 </button>
 
                 {/* FALSE BUTTON */}
@@ -79,7 +80,7 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                     onClick={() => handleAnswer(false)}
                     disabled={answered !== null}
                     className={cn(
-                        "h-32 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-b-4",
+                        "relative overflow-hidden h-32 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-b-4",
                         "bg-orange-500 hover:bg-orange-600 border-orange-700 text-white shadow-lg shadow-orange-500/30",
                         answered === false && "scale-95 border-b-0 translate-y-2 ring-4 ring-orange-300",
                         answered === true && "opacity-30 grayscale",
@@ -87,8 +88,9 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                         feedback === 'error' && answered === false && "bg-red-500 border-red-700 shake"
                     )}
                 >
-                    <X className="w-10 h-10" />
-                    <span className="text-2xl font-black uppercase tracking-wider">{t('common:false')}</span>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+                    <X className="w-10 h-10 relative" />
+                    <span className="text-2xl font-black uppercase tracking-wider relative">{t('common:false')}</span>
                 </button>
             </div>
 
@@ -111,15 +113,18 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                            "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                 : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                             "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                         )}
                     >
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </span>
                     </Button>
                 </div>
             )}

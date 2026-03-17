@@ -119,10 +119,10 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                         <div
                             key={box.id}
                             className={cn(
-                                "p-4 rounded-2xl border-2 transition-all duration-300",
-                                "bg-white dark:bg-slate-800",
+                                "p-4 rounded-2xl border transition-all duration-300",
+                                "liquid-glass-strong",
                                 invested > 0 && "ring-4 ring-purple-400 dark:ring-purple-600 shadow-xl",
-                                invested === 0 && "border-slate-200 dark:border-slate-700",
+                                invested === 0 && "border-white/20 dark:border-white/10",
                                 showResults && "border-green-500"
                             )}
                         >
@@ -227,10 +227,13 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     <Button
                         onClick={handleInvest}
                         disabled={remainingCoins > 0}
-                        className="w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
                     >
-                        <Gift className="w-5 h-5 mr-2" />
-                        {t('mystery_investment.invest')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            <Gift className="w-5 h-5 mr-2" />
+                            {t('mystery_investment.invest')}
+                        </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -240,14 +243,17 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
                                 totalReturn >= totalCoins
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                     : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                                 "hover:translate-y-[2px] active:translate-y-1 active:shadow-none")}
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

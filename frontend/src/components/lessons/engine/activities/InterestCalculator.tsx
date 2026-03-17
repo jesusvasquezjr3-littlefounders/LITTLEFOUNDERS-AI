@@ -69,7 +69,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
             {/* Sliders */}
             <div className="space-y-6 mb-8">
                 {/* Principal */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.principal')}
@@ -93,7 +93,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Interest Rate */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.rate')}
@@ -117,7 +117,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Time */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.time')}
@@ -163,7 +163,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Visual Chart - Comparative Line Chart */}
             <div className="mb-8">
-                <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-6">
+                <div className="liquid-glass-strong rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-xl">
                     {/* Legend */}
                     <div className="flex justify-center gap-6 mb-4">
                         <div className="flex items-center gap-2">
@@ -265,10 +265,13 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        className="w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                     >
-                        <DollarSign className="w-5 h-5 mr-2" />
-                        {t('interest_calculator.calculate')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            <DollarSign className="w-5 h-5 mr-2" />
+                            {t('interest_calculator.calculate')}
+                        </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -277,10 +280,13 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

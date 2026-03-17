@@ -49,7 +49,9 @@
     "points_earned": "Puntos ganados",
     "xp_earned": "XP ganados",
     "next_lesson": "Siguiente lección",
-    "back_to_lessons": "Volver a lecciones"
+    "back_to_lessons": "Volver a lecciones",
+    "streak": "Racha",
+    "time": "Tiempo"
   },
   "game_over": {
     "title": "¡Se acabó la energía!",

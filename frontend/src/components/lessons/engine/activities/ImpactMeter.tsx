@@ -125,10 +125,13 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                     <Button
                         onClick={handleDonate}
                         disabled={!selectedCause}
-                        className="w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
                     >
-                        <Heart className="w-5 h-5 mr-2 fill-white" />
-                        {t('impact_meter.donate')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            <Heart className="w-5 h-5 mr-2 fill-white" />
+                            {t('impact_meter.donate')}
+                        </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -138,10 +141,13 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

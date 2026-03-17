@@ -146,10 +146,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Snowball */}
                 <div className={cn(
-                    "p-6 rounded-2xl border-2 transition-all",
+                    "p-6 rounded-2xl border transition-all shadow-xl",
                     selectedStrategy === 'snowball'
                         ? "bg-blue-100 dark:bg-blue-950 border-blue-500"
-                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        : "liquid-glass-strong border-white/20 dark:border-white/10"
                 )}>
                     <h3 className="text-lg font-black text-blue-600 mb-4 flex items-center gap-2">
                         ❄️ {t('debt_strategy.snowball')}
@@ -183,10 +183,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 
                 {/* Avalanche */}
                 <div className={cn(
-                    "p-6 rounded-2xl border-2 transition-all",
+                    "p-6 rounded-2xl border transition-all shadow-xl",
                     selectedStrategy === 'avalanche'
                         ? "bg-purple-100 dark:bg-purple-950 border-purple-500"
-                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        : "liquid-glass-strong border-white/20 dark:border-white/10"
                 )}>
                     <h3 className="text-lg font-black text-purple-600 mb-4 flex items-center gap-2">
                         🏔️ {t('debt_strategy.avalanche')}
@@ -225,10 +225,13 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                     <Button
                         onClick={handleSimulate}
                         disabled={isSimulating}
-                        className="w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                     >
-                        <TrendingDown className="w-5 h-5 mr-2" />
-                        {isSimulating ? t('debt_strategy.simulating') : t('debt_strategy.simulate')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            <TrendingDown className="w-5 h-5 mr-2" />
+                            {isSimulating ? t('debt_strategy.simulating') : t('debt_strategy.simulate')}
+                        </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -248,10 +251,13 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                         </div>
                         <Button
                             onClick={onNext}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

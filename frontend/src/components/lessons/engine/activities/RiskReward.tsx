@@ -112,15 +112,18 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "w-full max-w-sm h-14 text-lg font-bold rounded-2xl transition-all",
+                            "relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold rounded-2xl transition-all",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                 : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                             "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                         )}
                     >
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </span>
                     </Button>
                 </div>
             )}

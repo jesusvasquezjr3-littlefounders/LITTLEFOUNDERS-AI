@@ -102,7 +102,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     };
 
     return (
-        <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border-2 border-slate-200 dark:border-slate-800 shadow-xl">
+        <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col liquid-glass-strong rounded-3xl overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
 
             {/* Header */}
             <div className="bg-slate-100 dark:bg-slate-800 p-4 border-b dark:border-slate-700 flex items-center gap-3">
@@ -173,14 +173,17 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "w-full h-12 text-lg font-bold rounded-xl transition-all",
+                                "relative overflow-hidden w-full h-12 text-lg font-bold rounded-xl transition-all",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white"
                                     : "bg-orange-500 hover:bg-orange-600 text-white"
                             )}
                         >
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

@@ -222,15 +222,18 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                             }
                         }}
                         className={cn(
-                            "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
                             quizPassed
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                 : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                             "hover:shadow-[0_2px_0] hover:translate-y-[2px] active:shadow-none active:translate-y-1"
                         )}
                     >
-                        {quizPassed ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            {quizPassed ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </span>
                     </Button>
                 </div>
             )}

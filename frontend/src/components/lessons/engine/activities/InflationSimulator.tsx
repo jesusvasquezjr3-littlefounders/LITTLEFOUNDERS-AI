@@ -68,7 +68,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
 
             {/* Year Selectors */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                     <label className="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-3">
                         {t('inflation.start_year')}
                     </label>
@@ -91,7 +91,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700">
+                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                     <label className="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-3">
                         {t('inflation.end_year')}
                     </label>
@@ -157,9 +157,10 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        className="w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                     >
-                        {t('inflation.compare')}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">{t('inflation.compare')}</span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -168,10 +169,13 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
-                            {t('actions.continue')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                            <span className="relative flex items-center justify-center">
+                                {t('actions.continue')}
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </span>
                         </Button>
                     </div>
                 )}

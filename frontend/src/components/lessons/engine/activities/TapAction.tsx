@@ -144,23 +144,27 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                 <Button
                     onClick={handleCheck}
                     disabled={tappedItems.size === 0}
-                    className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:from-gray-400 disabled:to-gray-400"
+                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:from-gray-400 disabled:to-gray-400"
                 >
-                    🎯 {t('actions.verify')}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative flex items-center justify-center">🎯 {t('actions.verify')}</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                             : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                         "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                     )}
                 >
-                    {feedback === 'success' ? '🎉 ' + t('actions.continue') : '🔄 ' + t('actions.retry')}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative flex items-center justify-center">
+                        {feedback === 'success' ? '🎉 ' + t('actions.continue') : '🔄 ' + t('actions.retry')}
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                    </span>
                 </Button>
             )}
         </div>

@@ -54,7 +54,9 @@
     "points_earned": "Points earned",
     "xp_earned": "XP earned",
     "next_lesson": "Next lesson",
-    "back_to_lessons": "Back to lessons"
+    "back_to_lessons": "Back to lessons",
+    "streak": "Streak",
+    "time": "Time"
   },
   "game_over": {
     "title": "Out of energy!",

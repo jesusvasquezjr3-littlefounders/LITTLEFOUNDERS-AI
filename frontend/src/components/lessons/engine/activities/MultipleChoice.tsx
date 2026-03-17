@@ -159,8 +159,9 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
                                 )}
                             </div>
 
-                            {/* Shine Effect */}
-                            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                            {/* Glass Shine */}
+                            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-full h-px bg-black/10 pointer-events-none" />
                         </button>
                     );
                 })}
@@ -171,23 +172,27 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
                 <Button
                     onClick={handleCheck}
                     disabled={!selectedOption}
-                    className="w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:bg-muted"
+                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:bg-muted"
                 >
-                    {t('actions.verify')}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative">{t('actions.verify')}</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                             : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                         "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                     )}
                 >
-                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                    <span className="relative flex items-center justify-center">
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                    </span>
                 </Button>
             )}
         </div>

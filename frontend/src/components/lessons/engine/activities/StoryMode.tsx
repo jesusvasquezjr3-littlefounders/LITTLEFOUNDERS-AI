@@ -112,7 +112,7 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center animate-fade-in relative px-4">
             {/* Story Book Container */}
-            <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-4 border-amber-200 dark:border-amber-900 overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
+            <div className="w-full max-w-4xl liquid-glass-strong rounded-3xl shadow-xl border border-white/20 dark:border-white/10 overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
 
                 {/* Book Decoration */}
                 <div className="absolute top-0 left-0 w-full h-4 bg-amber-300 dark:bg-amber-800 z-10" />
@@ -176,9 +176,12 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                                         )}
                                         <Button
                                             onClick={handleNext}
-                                            className="flex-1 h-14 text-lg font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                                            className="relative overflow-hidden flex-1 h-14 text-lg font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                                         >
-                                            {pageIndex === pages.length - 1 ? t('actions.finish') : t('actions.continue')} <ArrowRight className="ml-2 w-5 h-5" />
+                                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                                            <span className="relative flex items-center justify-center">
+                                                {pageIndex === pages.length - 1 ? t('actions.finish') : t('actions.continue')} <ArrowRight className="ml-2 w-5 h-5" />
+                                            </span>
                                         </Button>
                                     </div>
                                 )}

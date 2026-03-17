@@ -117,7 +117,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {/* Scenario */}
             {scenario && feedback === 'none' && (
                 <>
-                    <div className="mb-6 bg-slate-100 dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-300 dark:border-slate-600">
+                    <div className="mb-6 liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
                         <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">
                             {t('credit_score.scenario')} {currentScenario + 1}/{scenarios.length}
                         </h3>
@@ -178,15 +178,18 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
                                 : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
                             "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
                         )}
                     >
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                        <span className="relative flex items-center justify-center">
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </span>
                     </Button>
                 </div>
             )}
