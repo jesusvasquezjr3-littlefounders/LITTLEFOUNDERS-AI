@@ -381,5 +381,133 @@
       "soundOn": "Sonido: Activado",
       "soundOff": "Sonido: Desactivado"
     }
+  },
+  "paperCoin": {
+    "title": "Paper Coin",
+    "subtitle": "El Héroe del Mostrador",
+    "startScreen": {
+      "shopSign": "Tienda del Aventurero",
+      "playButton": "¡JUGAR!",
+      "howToPlay": "¿Cómo Jugar?",
+      "highScore": "Mejor Récord: {{score}} XP",
+      "footerHint": "¡Atiende a los aventureros y da el cambio correcto!"
+    },
+    "tutorial": {
+      "title": "Tutorial",
+      "step1Title": "¡Conoce a tus Clientes!",
+      "step1Desc": "Aventureros de todo el reino vendrán a tu tienda. Cada uno pedirá un artículo y pagará con una moneda grande.",
+      "step2Title": "Calcula el Cambio",
+      "step2Desc": "El cliente te dice qué compró y cuánto paga. ¡Tú debes dar el cambio exacto! Precio - Pago = Cambio.",
+      "step3Title": "¡Usa el Teclado!",
+      "step3Desc": "Escribe el cambio correcto con el teclado numérico y presiona el botón ✓. ¡Rápido antes de que se acabe la mecha!",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "skip": "Saltar",
+      "startGame": "¡Empezar!"
+    },
+    "hud": {
+      "day": "Día {{day}}",
+      "pause": "Pausa",
+      "timerLabel": "Mecha"
+    },
+    "scene": {
+      "shopName": "La Posada del Papel",
+      "totalLabel": "Total",
+      "paysLabel": "Paga con",
+      "changeLabel": "Cambio:"
+    },
+    "keypad": {
+      "placeholder": "¿Cuánto?",
+      "submit": "¡COBRAR!"
+    },
+    "feedback": {
+      "correct": "¡Correcto!",
+      "wrong": "¡Ups! Incorrecto",
+      "timeout": "¡Sin tiempo!",
+      "correctWas": "Era:",
+      "speedBonus": "¡Velocidad Crítica!",
+      "streak": "¡Racha ×{{count}}!"
+    },
+    "shop": {
+      "dayComplete": "¡Día {{day}} completado!",
+      "earnedToday": "Ganaste {{score}} XP hoy",
+      "balance": "Monedas de Propina",
+      "upgradesTitle": "Mejoras de Tienda",
+      "owned": "Comprado",
+      "heartsRestored": "❤️ Los corazones se restauran cada día",
+      "nextDay": "¡Día {{day}}!",
+      "upgrades": {
+        "hourglass": {
+          "name": "Reloj de Arena Mágico",
+          "desc": "+2 segundos permanentes al temporizador"
+        },
+        "amulet": {
+          "name": "Amuleto de Corazón",
+          "desc": "+1 corazón extra máximo"
+        },
+        "forest": {
+          "name": "Decoración: Bosque",
+          "desc": "Cambia el estilo visual a temática de bosque"
+        },
+        "castle": {
+          "name": "Decoración: Castillo",
+          "desc": "Cambia el estilo visual a temática de castillo"
+        },
+        "ghost": {
+          "name": "Decoración: Fantasma",
+          "desc": "Cambia el estilo visual a temática mágica"
+        }
+      }
+    },
+    "customers": {
+      "knight": "Caballero",
+      "wizard": "Mago",
+      "rogue": "Pícaro",
+      "ranger": "Explorador",
+      "healer": "Sanadora",
+      "bard": "Bardo"
+    },
+    "items": {
+      "bread": "Pan",
+      "herb": "Hierbas",
+      "torch": "Antorcha",
+      "water": "Agua",
+      "rope": "Cuerda",
+      "potion": "Poción",
+      "apple": "Manzana",
+      "arrow": "Flecha",
+      "mushroom": "Hongo",
+      "map": "Mapa",
+      "lantern": "Linterna",
+      "boots": "Botas",
+      "shield": "Escudo",
+      "scroll": "Pergamino",
+      "cloak": "Capa",
+      "helmet": "Casco",
+      "armor": "Armadura",
+      "sword": "Espada",
+      "staff": "Bastón Mágico",
+      "crown": "Corona"
+    },
+    "pause": {
+      "title": "Pausa",
+      "resume": "Continuar",
+      "restart": "Reiniciar",
+      "quit": "Salir",
+      "soundOn": "Sonido: Activado",
+      "soundOff": "Sonido: Desactivado"
+    },
+    "gameOver": {
+      "title": "¡Fin del Juego!",
+      "subtitle": "Los aventureros tendrán que esperar...",
+      "dayReached": "Día alcanzado",
+      "score": "Puntuación",
+      "maxStreak": "Racha máxima",
+      "tipsEarned": "Propinas ganadas",
+      "bestRecord": "Mejor récord",
+      "newRecord": "¡Nuevo Récord!",
+      "playAgain": "¡Jugar de Nuevo!",
+      "backToGames": "Regresar a Juegos"
+    }
   }
 }

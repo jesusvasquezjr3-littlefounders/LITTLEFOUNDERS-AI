@@ -43,6 +43,7 @@ import GamesPage from "./pages/GamesPage";
 import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
 import NectarOfShadowsPage from "@/games/nectar-of-shadows/NectarOfShadowsPage";
 import PaperDetectivePage from "@/games/paper-detective/PaperDetectivePage";
+import PaperCoinPage from "@/games/paper-coin/PaperCoinPage";
 
 // Admin Panel
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
@@ -158,6 +159,12 @@ const App = () => (
                 <Route path="/games/paper-detective" element={
                   <ProtectedRoute>
                     <PaperDetectivePage />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/games/paper-coin" element={
+                  <ProtectedRoute>
+                    <PaperCoinPage />
                   </ProtectedRoute>
                 } />
 

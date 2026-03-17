@@ -16,6 +16,7 @@ const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/p
 const NAM_VS_YUM_GIF = `${ASSET_BASE}/pictures/2-nam-vs-yum-game.gif`;
 const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
 const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
+const PAPER_COIN_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/7-paper-coin/pictures/paper-coin.gif';
 
 const ALL_GAMES = [
   {
@@ -46,8 +47,18 @@ const ALL_GAMES = [
     gif: PAPER_DETECTIVE_GIF,
     fallbackEmojis: ['🔍', '&', '💰'],
     accentColor: 'amber',
-    isDemo: true, // User can change this
-  }
+    isDemo: true,
+  },
+  {
+    id: 'paper-coin',
+    path: '/games/paper-coin',
+    titleKey: 'games:paperCoin.title',
+    subtitleKey: 'games:paperCoin.subtitle',
+    gif: PAPER_COIN_GIF,
+    fallbackEmojis: ['🪙', '⚔️', '🏪'],
+    accentColor: 'yellow',
+    isDemo: true,
+  },
 ];
 
 export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: GamesPageProps) {

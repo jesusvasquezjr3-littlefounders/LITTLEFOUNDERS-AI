@@ -381,5 +381,133 @@
       "soundOn": "Sound: On",
       "soundOff": "Sound: Off"
     }
+  },
+  "paperCoin": {
+    "title": "Paper Coin",
+    "subtitle": "Hero of the Counter",
+    "startScreen": {
+      "shopSign": "Adventurer's Shop",
+      "playButton": "PLAY!",
+      "howToPlay": "How to Play?",
+      "highScore": "Best Record: {{score}} XP",
+      "footerHint": "Serve adventurers and give the right change!"
+    },
+    "tutorial": {
+      "title": "Tutorial",
+      "step1Title": "Meet Your Customers!",
+      "step1Desc": "Adventurers from across the kingdom will visit your shop. Each one orders an item and pays with a large coin.",
+      "step2Title": "Calculate the Change",
+      "step2Desc": "The customer tells you what they bought and how much they paid. You must give the exact change! Payment − Price = Change.",
+      "step3Title": "Use the Keypad!",
+      "step3Desc": "Type the correct change using the number keypad and press ✓. Be quick before the fuse runs out!",
+      "back": "Back",
+      "next": "Next",
+      "skip": "Skip",
+      "startGame": "Start!"
+    },
+    "hud": {
+      "day": "Day {{day}}",
+      "pause": "Pause",
+      "timerLabel": "Fuse"
+    },
+    "scene": {
+      "shopName": "The Paper Inn",
+      "totalLabel": "Total",
+      "paysLabel": "Pays with",
+      "changeLabel": "Change:"
+    },
+    "keypad": {
+      "placeholder": "How much?",
+      "submit": "CHARGE!"
+    },
+    "feedback": {
+      "correct": "Correct!",
+      "wrong": "Oops! Wrong",
+      "timeout": "Time's up!",
+      "correctWas": "It was:",
+      "speedBonus": "Critical Speed!",
+      "streak": "Streak ×{{count}}!"
+    },
+    "shop": {
+      "dayComplete": "Day {{day}} Complete!",
+      "earnedToday": "You earned {{score}} XP today",
+      "balance": "Tip Coins",
+      "upgradesTitle": "Shop Upgrades",
+      "owned": "Owned",
+      "heartsRestored": "❤️ Hearts are restored each day",
+      "nextDay": "Day {{day}}!",
+      "upgrades": {
+        "hourglass": {
+          "name": "Magic Hourglass",
+          "desc": "+2 permanent seconds to the timer"
+        },
+        "amulet": {
+          "name": "Heart Amulet",
+          "desc": "+1 extra max heart"
+        },
+        "forest": {
+          "name": "Decor: Forest",
+          "desc": "Change visual style to forest theme"
+        },
+        "castle": {
+          "name": "Decor: Castle",
+          "desc": "Change visual style to castle theme"
+        },
+        "ghost": {
+          "name": "Decor: Ghost",
+          "desc": "Change visual style to magic theme"
+        }
+      }
+    },
+    "customers": {
+      "knight": "Knight",
+      "wizard": "Wizard",
+      "rogue": "Rogue",
+      "ranger": "Ranger",
+      "healer": "Healer",
+      "bard": "Bard"
+    },
+    "items": {
+      "bread": "Bread",
+      "herb": "Herbs",
+      "torch": "Torch",
+      "water": "Water",
+      "rope": "Rope",
+      "potion": "Potion",
+      "apple": "Apple",
+      "arrow": "Arrow",
+      "mushroom": "Mushroom",
+      "map": "Map",
+      "lantern": "Lantern",
+      "boots": "Boots",
+      "shield": "Shield",
+      "scroll": "Scroll",
+      "cloak": "Cloak",
+      "helmet": "Helmet",
+      "armor": "Armor",
+      "sword": "Sword",
+      "staff": "Magic Staff",
+      "crown": "Crown"
+    },
+    "pause": {
+      "title": "Paused",
+      "resume": "Resume",
+      "restart": "Restart",
+      "quit": "Quit",
+      "soundOn": "Sound: On",
+      "soundOff": "Sound: Off"
+    },
+    "gameOver": {
+      "title": "Game Over!",
+      "subtitle": "The adventurers will have to wait...",
+      "dayReached": "Day reached",
+      "score": "Score",
+      "maxStreak": "Max streak",
+      "tipsEarned": "Tips earned",
+      "bestRecord": "Best record",
+      "newRecord": "New Record!",
+      "playAgain": "Play Again!",
+      "backToGames": "Back to Games"
+    }
   }
 }
