@@ -20,7 +20,7 @@ export interface AudioFilters {
 
 // From GET /admin/audio endpoint
 export interface AudioFile {
-  id: string;
+  public_id: string;
   lesson_id: string;
   exercise_id: string;
   character_id: string;
@@ -44,14 +44,14 @@ export interface AudioPaginatedResponse {
 
 // POST /admin/audio/upload response
 export interface AudioUploadResponse {
-  id: string;
+  public_id: string;
   audio_url: string;
   message: string;
 }
 
 // POST /admin/audio/generate response
 export interface AudioGenerateResponse {
-  id: string;
+  public_id: string;
   audio_url: string;
   message: string;
 }
@@ -196,8 +196,8 @@ export function useDeleteAudio() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`${API_URL}/admin/audio/${id}`, {
+    mutationFn: async (publicId: string) => {
+      const response = await fetch(`${API_URL}/admin/audio/${publicId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
@@ -207,10 +207,11 @@ export function useDeleteAudio() {
       }
 
       const result: AudioDeleteResponse = await response.json();
-      return { id, ...result };
+      return { publicId, ...result };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-audio'] });
+      queryClient.removeQueries({ queryKey: ['admin-audio-detail', data.publicId] });
     },
   });
 }

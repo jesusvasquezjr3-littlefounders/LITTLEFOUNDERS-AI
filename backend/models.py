@@ -67,6 +67,7 @@ class Lesson(Base):
     __tablename__ = "lessons"
     
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     lesson_code = Column(String(50), unique=True, nullable=False)  # "1-1-1-1"
     
     # Metadatos Internacionalizados
@@ -128,6 +129,7 @@ class Character(Base):
     __tablename__ = "characters"
     
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     code = Column(String(50), unique=True, nullable=False)  # e.g., "liruf", "dina", "dr_rho", "zara_vex"
     name = Column(String(100), nullable=False)
     default_appearance = Column(JSON)  # Configuración visual base
@@ -439,6 +441,7 @@ class LessonAudioSegment(Base):
     __tablename__ = "lesson_audio_segments"
 
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=True)
     exercise_id = Column(Integer, nullable=True)
     character_id = Column(Integer, ForeignKey("characters.id"), nullable=True)

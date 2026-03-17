@@ -33,7 +33,7 @@ import {
 import { Play, Trash2, Upload, Zap, Volume2, Search } from 'lucide-react';
 
 interface AudioSegment {
-  id: string;
+  public_id: string;
   lesson_id?: string;
   character_id?: string;
   emotion: string;
@@ -99,7 +99,7 @@ export const AdminAudio: React.FC = () => {
     const term = searchTerm.toLowerCase();
     return audioSegments.filter(
       (seg) =>
-        seg.id.toLowerCase().includes(term) ||
+        seg.public_id.toLowerCase().includes(term) ||
         seg.lesson_id?.toLowerCase().includes(term) ||
         seg.character_id?.toLowerCase().includes(term) ||
         seg.emotion.toLowerCase().includes(term) ||
@@ -158,9 +158,9 @@ export const AdminAudio: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (publicId: string) => {
     try {
-      await deleteMutation.mutateAsync(id);
+      await deleteMutation.mutateAsync(publicId);
       setDeleteConfirmId(null);
     } catch (error) {
       console.error('Delete error:', error);
@@ -518,9 +518,9 @@ export const AdminAudio: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredAudio.map((segment) => (
-                    <TableRow key={segment.id} className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <TableRow key={segment.public_id} className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
                       <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate">
-                        {segment.id}
+                        {segment.public_id}
                       </TableCell>
                       <TableCell>
                         {segment.lesson_id ? (
@@ -573,15 +573,15 @@ export const AdminAudio: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center justify-center gap-2">
                           <audio
-                            key={segment.id}
+                            key={segment.public_id}
                             controls
                             className="hidden"
                             src={segment.audio_url}
-                            onPlay={() => setPlayingId(segment.id)}
+                            onPlay={() => setPlayingId(segment.public_id)}
                             onEnded={() => setPlayingId(null)}
                           />
                           <Dialog
-                            open={deleteConfirmId === segment.id}
+                            open={deleteConfirmId === segment.public_id}
                             onOpenChange={(open) => {
                               if (!open) setDeleteConfirmId(null);
                             }}
@@ -590,7 +590,7 @@ export const AdminAudio: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setDeleteConfirmId(segment.id)}
+                                onClick={() => setDeleteConfirmId(segment.public_id)}
                                 className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                                 title={t('common.delete')}
                               >
@@ -616,7 +616,7 @@ export const AdminAudio: React.FC = () => {
                                 </Button>
                                 <Button
                                   variant="destructive"
-                                  onClick={() => handleDelete(segment.id)}
+                                  onClick={() => handleDelete(segment.public_id)}
                                   disabled={deleteMutation.isPending}
                                 >
                                   {deleteMutation.isPending ? t('common.deleting') : t('common.delete')}

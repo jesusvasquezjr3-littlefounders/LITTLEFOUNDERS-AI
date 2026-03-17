@@ -23,10 +23,10 @@ export const AdminCharacters: React.FC = () => {
   // Map<characterId, gestureCode>
   const [activeGestures, setActiveGestures] = useState<Record<string, string>>({});
 
-  const handleGestureClick = (charId: string, gestureCode: string) => {
+  const handleGestureClick = (charPublicId: string, gestureCode: string) => {
     setActiveGestures(prev => ({
       ...prev,
-      [charId]: gestureCode
+      [charPublicId]: gestureCode
     }));
   };
 
@@ -118,10 +118,10 @@ export const AdminCharacters: React.FC = () => {
       ) : typedCharacters.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-2">
           {typedCharacters.map((character) => {
-            const currentGesture = activeGestures[character.id];
+            const currentGesture = activeGestures[character.public_id];
 
             return (
-              <Card key={character.id} className="overflow-hidden border-2 dark:bg-slate-800 dark:border-slate-700 flex flex-col h-full">
+              <Card key={character.public_id} className="overflow-hidden border-2 dark:bg-slate-800 dark:border-slate-700 flex flex-col h-full">
                 <CardHeader className="bg-slate-50 dark:bg-slate-900/50 border-b dark:border-slate-700 pb-4">
                   <div className="flex justify-between items-start">
                     <div>
@@ -174,7 +174,7 @@ export const AdminCharacters: React.FC = () => {
                               key={gesture.id}
                               variant={currentGesture === gesture.gesture_code ? "default" : "outline"}
                               size="sm"
-                              onClick={() => handleGestureClick(character.id, gesture.gesture_code)}
+                              onClick={() => handleGestureClick(character.public_id, gesture.gesture_code)}
                               className={`justify-start h-auto py-3 px-4 transition-all w-full text-left
                                 ${currentGesture === gesture.gesture_code
                                   ? 'bg-blue-600 hover:bg-blue-700 shadow-md ring-2 ring-blue-200 dark:ring-blue-900'

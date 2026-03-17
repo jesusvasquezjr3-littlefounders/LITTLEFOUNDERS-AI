@@ -22,7 +22,7 @@ export interface LessonFilters {
 
 // From GET /admin/lessons endpoint
 export interface LessonListItem {
-  id: string;
+  public_id: string;
   lesson_code: string;
   title_es: string;
   title_en: string;
@@ -39,7 +39,7 @@ export interface LessonListItem {
 
 // From GET /admin/lessons/:id endpoint (returned directly, no wrapper)
 export interface Lesson {
-  id: string;
+  public_id: string;
   lesson_code: string;
   title_es: string;
   title_en: string;
@@ -68,7 +68,7 @@ export interface LessonsPaginatedResponse {
 
 // POST/PUT response
 export interface LessonResponse {
-  id: string;
+  public_id: string;
   lesson_code: string;
   message: string;
 }
@@ -159,11 +159,11 @@ export function useAdminLessons(filters: LessonFilters = {}) {
  * Fetch a single lesson by ID
  * Returns lesson object directly (no wrapper)
  */
-export function useAdminLesson(id: string) {
+export function useAdminLesson(publicId: string) {
   return useQuery({
-    queryKey: ['admin-lesson', id],
+    queryKey: ['admin-lesson', publicId],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/admin/lessons/${id}`, {
+      const response = await fetch(`${API_URL}/admin/lessons/${publicId}`, {
         method: 'GET',
         headers: getAuthHeaders(),
       });
@@ -175,7 +175,7 @@ export function useAdminLesson(id: string) {
       const result: Lesson = await response.json();
       return result;
     },
-    enabled: !!id,
+    enabled: !!publicId,
   });
 }
 
@@ -187,7 +187,7 @@ export function useCreateLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (lesson: Omit<Lesson, 'public_id' | 'created_at' | 'updated_at'>) => {
       const response = await fetch(`${API_URL}/admin/lessons`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -215,8 +215,8 @@ export function useUpdateLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, lesson }: { id: string; lesson: Partial<Lesson> }) => {
-      const response = await fetch(`${API_URL}/admin/lessons/${id}`, {
+    mutationFn: async ({ publicId, lesson }: { publicId: string; lesson: Partial<Lesson> }) => {
+      const response = await fetch(`${API_URL}/admin/lessons/${publicId}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(lesson),
@@ -231,7 +231,7 @@ export function useUpdateLesson() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-lessons'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-lesson', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['admin-lesson', data.public_id] });
     },
   });
 }
@@ -244,8 +244,8 @@ export function useDeleteLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`${API_URL}/admin/lessons/${id}`, {
+    mutationFn: async (publicId: string) => {
+      const response = await fetch(`${API_URL}/admin/lessons/${publicId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
@@ -255,11 +255,11 @@ export function useDeleteLesson() {
       }
 
       const result: DeleteResponse = await response.json();
-      return { id, ...result };
+      return { publicId, ...result };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-lessons'] });
-      queryClient.removeQueries({ queryKey: ['admin-lesson', data.id] });
+      queryClient.removeQueries({ queryKey: ['admin-lesson', data.publicId] });
     },
   });
 }
@@ -272,8 +272,8 @@ export function useDuplicateLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`${API_URL}/admin/lessons/${id}/duplicate`, {
+    mutationFn: async (publicId: string) => {
+      const response = await fetch(`${API_URL}/admin/lessons/${publicId}/duplicate`, {
         method: 'POST',
         headers: getAuthHeaders(),
       });
@@ -297,8 +297,8 @@ export function useDuplicateLesson() {
  */
 export function useValidateLesson() {
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`${API_URL}/admin/lessons/${id}/validate`, {
+    mutationFn: async (publicId: string) => {
+      const response = await fetch(`${API_URL}/admin/lessons/${publicId}/validate`, {
         method: 'POST',
         headers: getAuthHeaders(),
       });

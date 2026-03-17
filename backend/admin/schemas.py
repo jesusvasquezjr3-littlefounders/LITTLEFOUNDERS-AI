@@ -56,7 +56,7 @@ class LessonFullUpdate(BaseModel):
 
 
 class LessonResponse(BaseModel):
-    id: int
+    public_id: str
     lesson_code: str
     title_es: str
     title_en: str
@@ -80,7 +80,7 @@ class LessonResponse(BaseModel):
 
 class LessonListItem(BaseModel):
     """Versión ligera para listados (sin content)."""
-    id: int
+    public_id: str
     lesson_code: str
     title_es: str
     title_en: str
@@ -147,7 +147,7 @@ class CharacterUpdate(BaseModel):
 
 
 class CharacterResponse(BaseModel):
-    id: int
+    public_id: str
     code: str
     name: str
     description: Optional[str] = None
@@ -185,7 +185,7 @@ class AudioGenerateRequest(BaseModel):
 
 
 class AudioResponse(BaseModel):
-    id: int
+    public_id: str
     lesson_id: Optional[int] = None
     exercise_id: Optional[int] = None
     character_id: Optional[int] = None

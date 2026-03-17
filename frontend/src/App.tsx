@@ -197,7 +197,7 @@ const App = () => (
                     <AdminLessonEditor />
                   </AdminProtectedRoute>
                 } />
-                <Route path="/admin/lessons/:id/edit" element={
+                <Route path="/admin/lessons/:publicId/edit" element={
                   <AdminProtectedRoute>
                     <AdminLessonEditor />
                   </AdminProtectedRoute>

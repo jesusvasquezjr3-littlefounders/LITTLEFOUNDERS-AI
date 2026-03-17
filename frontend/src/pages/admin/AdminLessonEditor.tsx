@@ -90,12 +90,12 @@ function parseContent(raw: any): ExerciseContent[] {
 // ── Component ──
 
 export const AdminLessonEditor: React.FC = () => {
-  const { id } = useParams<{ id?: string }>();
+  const { publicId } = useParams<{ publicId?: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation('admin');
-  const isNew = !id;
+  const isNew = !publicId;
 
-  const { data: fetchedLesson, isLoading } = useAdminLesson(id || '');
+  const { data: fetchedLesson, isLoading } = useAdminLesson(publicId || '');
   const createLesson = useCreateLesson();
   const updateLesson = useUpdateLesson();
   const validateLesson = useValidateLesson();
@@ -217,9 +217,9 @@ export const AdminLessonEditor: React.FC = () => {
   };
 
   const handleValidate = async () => {
-    if (!id) { setValidationErrors([t('editor.mustSaveFirst')]); return; }
+    if (isNew || !publicId) { setValidationErrors([t('editor.mustSaveFirst')]); return; }
     try {
-      const result = await validateLesson.mutateAsync(id);
+      const result = await validateLesson.mutateAsync(publicId);
       setValidationErrors(result.is_valid ? [] : [...(result.errors_es || []), ...(result.errors_en || [])]);
     } catch {
       setValidationErrors([t('editor.validationError')]);
@@ -235,13 +235,13 @@ export const AdminLessonEditor: React.FC = () => {
         content_en: lessonData.content_en,
       };
       if (isNew) {
-        const result = await createLesson.mutateAsync(apiData as unknown as Omit<Lesson, 'id' | 'created_at' | 'updated_at'>);
+        const result = await createLesson.mutateAsync(apiData as unknown as Omit<Lesson, 'public_id' | 'created_at' | 'updated_at'>);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
         setIsEditing(false);
-        if (result?.id) navigate(`/admin/lessons/${result.id}/edit`);
+        if (result?.public_id) navigate(`/admin/lessons/${result.public_id}/edit`);
       } else {
-        await updateLesson.mutateAsync({ id: id || '', lesson: apiData as unknown as Partial<Lesson> });
+        await updateLesson.mutateAsync({ publicId: publicId || '', lesson: apiData as unknown as Partial<Lesson> });
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
         setIsEditing(false);

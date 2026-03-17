@@ -187,7 +187,7 @@ async def list_lessons(
     items = []
     for lesson in lessons:
         items.append({
-            "id": lesson.id,
+            "public_id": str(lesson.public_id),
             "lesson_code": lesson.lesson_code,
             "title_es": lesson.title_es,
             "title_en": lesson.title_en,
@@ -210,19 +210,24 @@ async def list_lessons(
     }
 
 
-@router.get("/lessons/{lesson_id}")
+@router.get("/lessons/{lesson_id_or_uuid}")
 async def get_lesson(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Obtener lección completa con contenido JSON."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    """Obtener lección completa con contenido JSON (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
+    # Fallback a ID numérico si aplica
+    if not lesson and lesson_id_or_uuid.isdigit():
+        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
     return {
-        "id": lesson.id,
+        "public_id": str(lesson.public_id),
         "lesson_code": lesson.lesson_code,
         "title_es": lesson.title_es,
         "title_en": lesson.title_en,
@@ -311,15 +316,20 @@ async def create_lesson(
     }
 
 
-@router.put("/lessons/{lesson_id}")
+@router.put("/lessons/{lesson_id_or_uuid}")
 async def update_lesson(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     data: LessonFullUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Actualizar lección (metadata + contenido)."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    """Actualizar lección (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
+    # Fallback a ID numérico if applies
+    if not lesson and lesson_id_or_uuid.isdigit():
+        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -350,8 +360,8 @@ async def update_lesson(
     if data.lesson_code and data.lesson_code != lesson.lesson_code:
         existing = db.query(Lesson).filter(
             Lesson.lesson_code == data.lesson_code,
-            Lesson.id != lesson_id
-        ).first()
+        Lesson.id != lesson.id
+    ).first()
         if existing:
             raise HTTPException(400, f"Ya existe otra lección con código '{data.lesson_code}'")
 
@@ -382,14 +392,19 @@ async def update_lesson(
     }
 
 
-@router.delete("/lessons/{lesson_id}")
+@router.delete("/lessons/{lesson_id_or_uuid}")
 async def delete_lesson(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Eliminar lección (verificar dependencias)."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    """Eliminar lección (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not lesson and lesson_id_or_uuid.isdigit():
+        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -425,14 +440,19 @@ async def delete_lesson(
     return {"message": "Lección eliminada exitosamente"}
 
 
-@router.post("/lessons/{lesson_id}/duplicate")
+@router.post("/lessons/{lesson_id_or_uuid}/duplicate")
 async def duplicate_lesson(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Duplicar una lección como plantilla."""
-    original = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    """Duplicar una lección (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    original = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not original and lesson_id_or_uuid.isdigit():
+        original = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not original:
         raise HTTPException(404, "Lección original no encontrada")
 
@@ -468,8 +488,7 @@ async def duplicate_lesson(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=new_lesson.id,
-        action="create",
-        new_value={"duplicated_from": lesson_id, "lesson_code": new_code},
+        new_value={"duplicated_from_public_id": str(original.public_id), "lesson_code": new_code},
         metadata={"original_lesson_code": base_code}
     )
 
@@ -477,20 +496,25 @@ async def duplicate_lesson(
     db.refresh(new_lesson)
 
     return {
-        "id": new_lesson.id,
+        "public_id": str(new_lesson.public_id),
         "lesson_code": new_lesson.lesson_code,
         "message": "Lección duplicada exitosamente"
     }
 
 
-@router.post("/lessons/{lesson_id}/validate")
+@router.post("/lessons/{lesson_id_or_uuid}/validate")
 async def validate_lesson(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Validar estructura JSON sin guardar."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    """Validar estructura JSON (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not lesson and lesson_id_or_uuid.isdigit():
+        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -782,7 +806,7 @@ async def list_characters(
             CharacterGesture.character_id == char.id
         ).all()
         result.append({
-            "id": char.id,
+            "public_id": str(char.public_id),
             "code": char.code,
             "name": char.name,
             "description": char.description,
@@ -833,18 +857,24 @@ async def create_character(
 
     db.commit()
     db.refresh(character)
-    return {"id": character.id, "code": character.code, "message": "Personaje creado"}
+    return {"public_id": str(character.public_id), "code": character.code, "message": "Personaje creado"}
 
 
-@router.put("/characters/{character_id}")
+@router.put("/characters/{character_id_or_uuid}")
 async def update_character(
-    character_id: int,
+    character_id_or_uuid: str,
     data: CharacterUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Editar personaje."""
-    character = db.query(Character).filter(Character.id == character_id).first()
+    """Editar personaje (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not character and character_id_or_uuid.isdigit():
+        character = db.query(Character).filter(Character.id == int(character_id_or_uuid)).first()
+    
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
 
@@ -868,20 +898,26 @@ async def update_character(
     return {"message": "Personaje actualizado"}
 
 
-@router.post("/characters/{character_id}/gestures", status_code=201)
+@router.post("/characters/{character_id_or_uuid}/gestures", status_code=201)
 async def add_gesture(
-    character_id: int,
+    character_id_or_uuid: str,
     data: GestureCreate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Agregar gesto a un personaje."""
-    character = db.query(Character).filter(Character.id == character_id).first()
+    """Agregar gesto (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not character and character_id_or_uuid.isdigit():
+        character = db.query(Character).filter(Character.id == int(character_id_or_uuid)).first()
+        
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
 
     gesture = CharacterGesture(
-        character_id=character_id,
+        character_id=character.id,
         gesture_code=data.gesture_code,
         animation_data=data.animation_data,
         duration_ms=data.duration_ms,
@@ -895,7 +931,7 @@ async def add_gesture(
         entity_type="gesture",
         entity_id=gesture.id,
         action="create",
-        new_value={"gesture_code": data.gesture_code, "character_id": character_id},
+        new_value={"gesture_code": data.gesture_code, "character_public_id": str(character.public_id)},
     )
 
     db.commit()
@@ -1004,8 +1040,8 @@ async def list_audio(
     items = []
     for seg in segments:
         items.append({
-            "id": seg.id,
-            "lesson_id": seg.lesson_id,
+            "public_id": str(seg.public_id),
+            "lesson_id": seg.lesson_id, # Keep lesson_id for now as it's internal relation
             "exercise_id": seg.exercise_id,
             "character_id": seg.character_id,
             "audio_url": seg.audio_url,
@@ -1099,7 +1135,7 @@ async def upload_audio(
     )
     db.commit()
 
-    return {"id": segment.id, "audio_url": audio_url, "message": "Audio subido exitosamente"}
+    return {"public_id": str(segment.public_id), "audio_url": audio_url, "message": "Audio subido exitosamente"}
 
 
 @router.post("/audio/generate")
@@ -1171,20 +1207,25 @@ async def generate_audio_tts(
     db.commit()
 
     return {
-        "id": segment.id,
+        "public_id": str(segment.public_id),
         "audio_url": audio_url,
         "message": "Audio generado exitosamente"
     }
 
 
-@router.delete("/audio/{audio_id}")
+@router.delete("/audio/{audio_id_or_uuid}")
 async def delete_audio(
-    audio_id: int,
+    audio_id_or_uuid: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Eliminar audio (soft delete)."""
-    segment = db.query(LessonAudioSegment).filter(LessonAudioSegment.id == audio_id).first()
+    """Eliminar audio (Vía public_id o id numérico)."""
+    # Intentar por public_id (UUID) primero
+    segment = db.query(LessonAudioSegment).filter(func.cast(LessonAudioSegment.public_id, String) == audio_id_or_uuid).first()
+    
+    # Fallback a ID numérico
+    if not segment and audio_id_or_uuid.isdigit():
+        segment = db.query(LessonAudioSegment).filter(LessonAudioSegment.id == int(audio_id_or_uuid)).first()
     if not segment:
         raise HTTPException(404, "Audio no encontrado")
 

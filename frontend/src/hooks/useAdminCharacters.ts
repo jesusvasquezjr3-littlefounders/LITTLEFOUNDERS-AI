@@ -18,7 +18,7 @@ export interface Gesture {
 
 // From GET /admin/characters endpoint (returned as array directly)
 export interface Character {
-  id: string;
+  public_id: string;
   code: string;
   name: string;
   description: string;
@@ -30,7 +30,7 @@ export interface Character {
 
 // POST /admin/characters response
 export interface CharacterCreateResponse {
-  id: string;
+  public_id: string;
   code: string;
   message: string;
 }
@@ -99,7 +99,7 @@ export function useCreateCharacter() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (character: Omit<Character, 'id' | 'created_at' | 'gestures'>) => {
+    mutationFn: async (character: Omit<Character, 'public_id' | 'created_at' | 'gestures'>) => {
       const response = await fetch(`${API_URL}/admin/characters`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -127,8 +127,8 @@ export function useUpdateCharacter() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, character }: { id: string; character: Partial<Character> }) => {
-      const response = await fetch(`${API_URL}/admin/characters/${id}`, {
+    mutationFn: async ({ publicId, character }: { publicId: string; character: Partial<Character> }) => {
+      const response = await fetch(`${API_URL}/admin/characters/${publicId}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(character),
@@ -155,8 +155,8 @@ export function useCreateGesture() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ characterId, gesture }: { characterId: string; gesture: Omit<Gesture, 'id'> }) => {
-      const response = await fetch(`${API_URL}/admin/characters/${characterId}/gestures`, {
+    mutationFn: async ({ characterPublicId, gesture }: { characterPublicId: string; gesture: Omit<Gesture, 'id'> }) => {
+      const response = await fetch(`${API_URL}/admin/characters/${characterPublicId}/gestures`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(gesture),
@@ -184,15 +184,15 @@ export function useUpdateGesture() {
 
   return useMutation({
     mutationFn: async ({
-      characterId,
+      characterPublicId,
       gestureId,
       gesture,
     }: {
-      characterId: string;
+      characterPublicId: string;
       gestureId: string;
       gesture: Partial<Gesture>;
     }) => {
-      const response = await fetch(`${API_URL}/admin/characters/${characterId}/gestures/${gestureId}`, {
+      const response = await fetch(`${API_URL}/admin/characters/${characterPublicId}/gestures/${gestureId}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(gesture),
@@ -220,13 +220,13 @@ export function useDeleteGesture() {
 
   return useMutation({
     mutationFn: async ({
-      characterId,
+      characterPublicId,
       gestureId,
     }: {
-      characterId: string;
+      characterPublicId: string;
       gestureId: string;
     }) => {
-      const response = await fetch(`${API_URL}/admin/characters/${characterId}/gestures/${gestureId}`, {
+      const response = await fetch(`${API_URL}/admin/characters/${characterPublicId}/gestures/${gestureId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
@@ -236,7 +236,7 @@ export function useDeleteGesture() {
       }
 
       const result: GestureDeleteResponse = await response.json();
-      return { characterId, gestureId, ...result };
+      return { characterPublicId, gestureId, ...result };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-characters'] });

@@ -33,7 +33,7 @@ import { Edit, Trash2, Copy, Plus, Search, ChevronUp, ChevronDown } from 'lucide
 import { Link } from 'react-router-dom';
 
 interface Lesson {
-  id: string;
+  public_id: string;
   lesson_code: string;
   title_es: string;
   title_en: string;
@@ -320,7 +320,7 @@ export const AdminLessons: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {paginatedLessons.map((lesson) => (
-                    <TableRow key={lesson.id} className="border-slate-200 dark:border-slate-700">
+                    <TableRow key={lesson.public_id} className="border-slate-200 dark:border-slate-700">
                       <TableCell className="font-mono font-medium text-sm text-slate-900 dark:text-white">
                         {lesson.lesson_code}
                       </TableCell>
@@ -346,7 +346,7 @@ export const AdminLessons: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-center gap-2">
-                          <Link to={`/admin/lessons/${lesson.id}/edit`}>
+                          <Link to={`/admin/lessons/${lesson.public_id}/edit`}>
                             <Button variant="ghost" size="sm" title={t('lessons.edit')}>
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -354,14 +354,14 @@ export const AdminLessons: React.FC = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDuplicate(lesson.id)}
+                            onClick={() => handleDuplicate(lesson.public_id)}
                             disabled={duplicateLesson.isPending}
                             title={t('lessons.duplicate')}
                           >
                             <Copy className="h-4 w-4" />
                           </Button>
                           <Dialog
-                            open={deleteConfirmId === lesson.id}
+                            open={deleteConfirmId === lesson.public_id}
                             onOpenChange={(open) => {
                               if (!open) setDeleteConfirmId(null);
                             }}
@@ -370,7 +370,7 @@ export const AdminLessons: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setDeleteConfirmId(lesson.id)}
+                                onClick={() => setDeleteConfirmId(lesson.public_id)}
                                 title={t('lessons.delete')}
                                 className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                               >
@@ -395,7 +395,7 @@ export const AdminLessons: React.FC = () => {
                                 </Button>
                                 <Button
                                   variant="destructive"
-                                  onClick={() => handleDelete(lesson.id)}
+                                  onClick={() => handleDelete(lesson.public_id)}
                                   disabled={deleteLesson.isPending}
                                 >
                                   {deleteLesson.isPending ? t('lessons.deleting') : t('lessons.delete')}
