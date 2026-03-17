@@ -50,7 +50,6 @@ async def get_recent_activity(public_id: str, requester_public_id: str, limit: i
     return {
         "transactions": [
             {
-                "id": t.id,
                 "type": t.transaction_type.value,
                 "amount": t.amount,
                 "description": t.description,
@@ -82,7 +81,6 @@ async def get_pending_tasks(public_id: str, requester_public_id: str, db: Sessio
     return {
         "tasks": [
             {
-                "id": task.id,
                 "title": task.title,
                 "category": task.category.value,
                 "reward": task.reward,

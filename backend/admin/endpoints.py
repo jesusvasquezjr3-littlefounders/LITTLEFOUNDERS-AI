@@ -49,12 +49,7 @@ async def get_admin_stats(
     """Estadísticas generales del contenido."""
     total_lessons = db.query(func.count(Lesson.id)).scalar() or 0
 
-    # Contar ejercicios sumando longitudes de content_es
-    lessons = db.query(Lesson.content_es).all()
-    total_exercises = sum(
-        len(l.content_es) if l.content_es and isinstance(l.content_es, list) else 0
-        for l in lessons
-    )
+    total_exercises = db.query(func.sum(func.jsonb_array_length(Lesson.content_es))).scalar() or 0
 
     total_characters = db.query(func.count(Character.id)).scalar() or 0
     total_audio = db.query(func.count(LessonAudioSegment.id)).scalar() or 0
@@ -73,13 +68,13 @@ async def get_admin_stats(
 
     recent_edits = []
     for entry in recent_entries:
-        editor = db.query(User.name).filter(User.id == entry.editor_user_id).scalar()
+        editor = db.query(User).filter(User.id == entry.editor_user_id).first()
         recent_edits.append({
-            "id": entry.id,
-            "editor_user_id": entry.editor_user_id,
-            "editor_name": editor,
+            "id": str(entry.public_id),
+            "editor_public_id": str(editor.public_id) if editor else None,
+            "editor_name": editor.name if editor else None,
             "entity_type": entry.entity_type,
-            "entity_id": entry.entity_id,
+            "entity_id": str(entry.entity_public_id) if entry.entity_public_id else None,
             "action": entry.action,
             "field_changed": entry.field_changed,
             "created_at": entry.created_at.isoformat() if entry.created_at else None,
@@ -217,12 +212,9 @@ async def get_lesson(
     db: Session = Depends(get_db)
 ):
     """Obtener lección completa con contenido JSON (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    # Intentar por public_id (UUID)
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     
-    # Fallback a ID numérico si aplica
-    if not lesson and lesson_id_or_uuid.isdigit():
-        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -301,6 +293,7 @@ async def create_lesson(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="create",
         new_value={"lesson_code": data.lesson_code, "title_es": data.title_es},
         metadata={"lesson_code": data.lesson_code}
@@ -310,7 +303,7 @@ async def create_lesson(
     db.refresh(lesson)
 
     return {
-        "id": lesson.id,
+        "public_id": str(lesson.public_id),
         "lesson_code": lesson.lesson_code,
         "message": "Lección creada exitosamente"
     }
@@ -324,12 +317,9 @@ async def update_lesson(
     db: Session = Depends(get_db)
 ):
     """Actualizar lección (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    # Intentar por public_id (UUID)
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     
-    # Fallback a ID numérico if applies
-    if not lesson and lesson_id_or_uuid.isdigit():
-        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -375,6 +365,7 @@ async def update_lesson(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="update",
         field_changed="full_update",
         previous_value=_serialize_for_json(previous),
@@ -386,7 +377,7 @@ async def update_lesson(
     db.refresh(lesson)
 
     return {
-        "id": lesson.id,
+        "public_id": str(lesson.public_id),
         "lesson_code": lesson.lesson_code,
         "message": "Lección actualizada exitosamente"
     }
@@ -414,6 +405,7 @@ async def delete_lesson(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="delete",
         previous_value={
             "lesson_code": lesson.lesson_code,
@@ -450,9 +442,9 @@ async def duplicate_lesson(
     # Intentar por public_id (UUID) primero
     original = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     
-    # Fallback a ID numérico
-    if not original and lesson_id_or_uuid.isdigit():
-        original = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
+    # Intentar por public_id (UUID)
+    original = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
+    
     if not original:
         raise HTTPException(404, "Lección original no encontrada")
 
@@ -488,6 +480,7 @@ async def duplicate_lesson(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=new_lesson.id,
+        entity_public_id=str(new_lesson.public_id),
         new_value={"duplicated_from_public_id": str(original.public_id), "lesson_code": new_code},
         metadata={"original_lesson_code": base_code}
     )
@@ -508,13 +501,9 @@ async def validate_lesson(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Validar estructura JSON (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    """Validar estructura JSON (Vía public_id)."""
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     
-    # Fallback a ID numérico
-    if not lesson and lesson_id_or_uuid.isdigit():
-        lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -536,16 +525,16 @@ async def validate_lesson(
 # EJERCICIOS (dentro de una lección)
 # ──────────────────────────────────────────────
 
-@router.post("/lessons/{lesson_id}/exercises")
+@router.post("/lessons/{lesson_id_or_uuid}/exercises")
 async def add_exercise(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     exercise_es: ExerciseCreate,
     exercise_en: Optional[ExerciseCreate] = None,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Agregar ejercicio al final de ambos idiomas."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -591,6 +580,7 @@ async def add_exercise(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="update",
         field_changed="add_exercise",
         previous_value={"content_es_length": len(prev_es), "content_en_length": len(prev_en)},
@@ -602,9 +592,9 @@ async def add_exercise(
     return {"message": "Ejercicio agregado", "index": len(prev_es)}
 
 
-@router.put("/lessons/{lesson_id}/exercises/{index}")
+@router.put("/lessons/{lesson_id_or_uuid}/exercises/{index}")
 async def update_exercise(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     index: int,
     exercise_es: ExerciseUpdate,
     exercise_en: Optional[ExerciseUpdate] = None,
@@ -612,7 +602,7 @@ async def update_exercise(
     db: Session = Depends(get_db)
 ):
     """Actualizar ejercicio por índice (0-based)."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -645,6 +635,7 @@ async def update_exercise(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="update",
         field_changed=f"exercise_{index}",
         previous_value={"es": prev_es, "en": prev_en},
@@ -656,15 +647,15 @@ async def update_exercise(
     return {"message": f"Ejercicio #{index} actualizado"}
 
 
-@router.delete("/lessons/{lesson_id}/exercises/{index}")
+@router.delete("/lessons/{lesson_id_or_uuid}/exercises/{index}")
 async def delete_exercise(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     index: int,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Eliminar ejercicio por índice."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -689,6 +680,7 @@ async def delete_exercise(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="delete",
         field_changed=f"exercise_{index}",
         previous_value={"es": prev_es, "en": prev_en},
@@ -699,15 +691,15 @@ async def delete_exercise(
     return {"message": f"Ejercicio #{index} eliminado"}
 
 
-@router.put("/lessons/{lesson_id}/exercises/reorder")
+@router.put("/lessons/{lesson_id_or_uuid}/exercises/reorder")
 async def reorder_exercises(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     data: ExerciseReorder,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Reordenar ejercicios (nuevo arreglo de índices)."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -729,6 +721,7 @@ async def reorder_exercises(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="reorder",
         field_changed="exercises",
         previous_value={"order": prev_order},
@@ -740,16 +733,16 @@ async def reorder_exercises(
     return {"message": "Ejercicios reordenados exitosamente"}
 
 
-@router.put("/lessons/{lesson_id}/exercises")
+@router.put("/lessons/{lesson_id_or_uuid}/exercises")
 async def update_all_exercises(
-    lesson_id: int,
+    lesson_id_or_uuid: str,
     content_es: List[dict],
     content_en: List[dict],
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Actualizar arreglo completo de ejercicios."""
-    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -778,6 +771,7 @@ async def update_all_exercises(
         editor_user_id=admin.id,
         entity_type="lesson",
         entity_id=lesson.id,
+        entity_public_id=str(lesson.public_id),
         action="update",
         field_changed="full_content",
         previous_value=prev,
@@ -815,7 +809,7 @@ async def list_characters(
             "created_at": char.created_at.isoformat() if char.created_at else None,
             "gestures": [
                 {
-                    "id": g.id,
+                    "id": g.gesture_code,
                     "gesture_code": g.gesture_code,
                     "animation_data": g.animation_data,
                     "duration_ms": g.duration_ms,
@@ -851,6 +845,7 @@ async def create_character(
         editor_user_id=admin.id,
         entity_type="character",
         entity_id=character.id,
+        entity_public_id=str(character.public_id),
         action="create",
         new_value={"code": data.code, "name": data.name},
     )
@@ -867,13 +862,8 @@ async def update_character(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Editar personaje (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    """Editar personaje (Vía public_id)."""
     character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
-    
-    # Fallback a ID numérico
-    if not character and character_id_or_uuid.isdigit():
-        character = db.query(Character).filter(Character.id == int(character_id_or_uuid)).first()
     
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
@@ -889,6 +879,7 @@ async def update_character(
         editor_user_id=admin.id,
         entity_type="character",
         entity_id=character.id,
+        entity_public_id=str(character.public_id),
         action="update",
         previous_value=previous,
         new_value=update_data,
@@ -905,14 +896,9 @@ async def add_gesture(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Agregar gesto (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    """Agregar gesto (Vía public_id)."""
     character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
     
-    # Fallback a ID numérico
-    if not character and character_id_or_uuid.isdigit():
-        character = db.query(Character).filter(Character.id == int(character_id_or_uuid)).first()
-        
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
 
@@ -935,21 +921,25 @@ async def add_gesture(
     )
 
     db.commit()
-    return {"id": gesture.id, "message": "Gesto creado"}
+    return {"id": gesture.gesture_code, "message": "Gesto creado"}
 
 
-@router.put("/characters/{character_id}/gestures/{gesture_id}")
+@router.put("/characters/{character_code}/gestures/{gesture_code}")
 async def update_gesture(
-    character_id: int,
-    gesture_id: int,
+    character_code: str,
+    gesture_code: str,
     data: GestureUpdate,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Editar gesto."""
+    """Editar gesto (vía character_code + gesture_code)."""
+    character = db.query(Character).filter(Character.code == character_code).first()
+    if not character:
+        raise HTTPException(404, "Personaje no encontrado")
+
     gesture = db.query(CharacterGesture).filter(
-        CharacterGesture.id == gesture_id,
-        CharacterGesture.character_id == character_id
+        CharacterGesture.character_id == character.id,
+        CharacterGesture.gesture_code == gesture_code
     ).first()
     if not gesture:
         raise HTTPException(404, "Gesto no encontrado")
@@ -974,17 +964,21 @@ async def update_gesture(
     return {"message": "Gesto actualizado"}
 
 
-@router.delete("/characters/{character_id}/gestures/{gesture_id}")
+@router.delete("/characters/{character_code}/gestures/{gesture_code}")
 async def delete_gesture(
-    character_id: int,
-    gesture_id: int,
+    character_code: str,
+    gesture_code: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Eliminar gesto."""
+    """Eliminar gesto (vía character_code + gesture_code)."""
+    character = db.query(Character).filter(Character.code == character_code).first()
+    if not character:
+        raise HTTPException(404, "Personaje no encontrado")
+
     gesture = db.query(CharacterGesture).filter(
-        CharacterGesture.id == gesture_id,
-        CharacterGesture.character_id == character_id
+        CharacterGesture.character_id == character.id,
+        CharacterGesture.gesture_code == gesture_code
     ).first()
     if not gesture:
         raise HTTPException(404, "Gesto no encontrado")
@@ -1013,8 +1007,8 @@ async def delete_gesture(
 
 @router.get("/audio")
 async def list_audio(
-    lesson_id: Optional[int] = Query(None),
-    character_code: Optional[str] = Query(None),
+    lesson_id: Optional[str] = Query(None),    # accepts lesson_code or lesson public_id
+    character_id: Optional[str] = Query(None),  # accepts character_code
     language: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -1025,11 +1019,18 @@ async def list_audio(
     query = db.query(LessonAudioSegment).filter(LessonAudioSegment.is_active == True)
 
     if lesson_id:
-        query = query.filter(LessonAudioSegment.lesson_id == lesson_id)
+        # Accept lesson_code or lesson public_id
+        lesson = (
+            db.query(Lesson).filter(Lesson.lesson_code == lesson_id).first()
+            or db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id).first()
+        )
+        if lesson:
+            query = query.filter(LessonAudioSegment.lesson_id == lesson.id)
     if language:
         query = query.filter(LessonAudioSegment.language_code == language)
-    if character_code:
-        char = db.query(Character).filter(Character.code == character_code).first()
+    if character_id:
+        # Accept character_code as identifier
+        char = db.query(Character).filter(Character.code == character_id).first()
         if char:
             query = query.filter(LessonAudioSegment.character_id == char.id)
 
@@ -1037,13 +1038,25 @@ async def list_audio(
     offset = (page - 1) * page_size
     segments = query.order_by(desc(LessonAudioSegment.id)).offset(offset).limit(page_size).all()
 
+    # Pre-fetch character codes and lesson codes for response (avoids N+1)
+    char_ids = {seg.character_id for seg in segments if seg.character_id}
+    seg_lesson_ids = {seg.lesson_id for seg in segments if seg.lesson_id}
+    char_code_map: dict = {}
+    lesson_code_map: dict = {}
+    if char_ids:
+        chars = db.query(Character.id, Character.code).filter(Character.id.in_(char_ids)).all()
+        char_code_map = {c.id: c.code for c in chars}
+    if seg_lesson_ids:
+        lessons = db.query(Lesson.id, Lesson.lesson_code).filter(Lesson.id.in_(seg_lesson_ids)).all()
+        lesson_code_map = {l.id: l.lesson_code for l in lessons}
+
     items = []
     for seg in segments:
         items.append({
             "public_id": str(seg.public_id),
-            "lesson_id": seg.lesson_id, # Keep lesson_id for now as it's internal relation
+            "lesson_code": lesson_code_map.get(seg.lesson_id),
             "exercise_id": seg.exercise_id,
-            "character_id": seg.character_id,
+            "character_code": char_code_map.get(seg.character_id),
             "audio_url": seg.audio_url,
             "transcript": seg.transcript,
             "emotion": seg.emotion,
@@ -1060,7 +1073,7 @@ async def list_audio(
 @router.post("/audio/upload")
 async def upload_audio(
     file: UploadFile = File(...),
-    lesson_id: Optional[int] = Form(None),
+    lesson_public_id: Optional[str] = Form(None),  # lesson public UUID or lesson_code
     exercise_index: Optional[int] = Form(None),
     character_code: Optional[str] = Form(None),
     language: str = Form("es"),
@@ -1076,6 +1089,16 @@ async def upload_audio(
     audio_data = await file.read()
     if len(audio_data) > 50 * 1024 * 1024:  # 50MB limit
         raise HTTPException(400, "Archivo demasiado grande (máximo 50MB)")
+
+    # Resolve lesson internal id from public_id or lesson_code
+    resolved_lesson_id = None
+    if lesson_public_id:
+        lesson = (
+            db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_public_id).first()
+            or db.query(Lesson).filter(Lesson.lesson_code == lesson_public_id).first()
+        )
+        if lesson:
+            resolved_lesson_id = lesson.id
 
     # Obtener character_id
     character_id = None
@@ -1094,7 +1117,7 @@ async def upload_audio(
             supabase = create_client(supabase_url, supabase_key)
             timestamp = int(time.time())
             ext = file.filename.split(".")[-1] if file.filename and "." in file.filename else "wav"
-            storage_path = f"uploads/{admin.id}/{timestamp}_{file.filename or 'audio'}.{ext}"
+            storage_path = f"uploads/{str(admin.public_id)}/{timestamp}_{file.filename or 'audio'}.{ext}"
             supabase.storage.from_("littlefounders-audio").upload(
                 storage_path, audio_data, {"content-type": file.content_type}
             )
@@ -1110,7 +1133,7 @@ async def upload_audio(
         parsed_tags = []
 
     segment = LessonAudioSegment(
-        lesson_id=lesson_id,
+        lesson_id=resolved_lesson_id,
         exercise_id=exercise_index,
         character_id=character_id,
         audio_url=audio_url,
@@ -1171,7 +1194,7 @@ async def generate_audio_tts(
         if supabase_url and supabase_key:
             supabase = create_client(supabase_url, supabase_key)
             storage_path = (
-                f"lessons/{request.lesson_id or 'drafts'}/"
+                f"lessons/{request.lesson_public_id or 'drafts'}/"
                 f"{request.exercise_index or 0}_{request.character_code}_{request.emotion}.wav"
             )
             try:
@@ -1185,6 +1208,16 @@ async def generate_audio_tts(
     except Exception as e:
         print(f"[ADMIN] Error uploading generated audio: {e}")
 
+    # Resolve lesson internal id from lesson_public_id
+    resolved_lesson_id = None
+    if request.lesson_public_id:
+        lesson = (
+            db.query(Lesson).filter(func.cast(Lesson.public_id, String) == request.lesson_public_id).first()
+            or db.query(Lesson).filter(Lesson.lesson_code == request.lesson_public_id).first()
+        )
+        if lesson:
+            resolved_lesson_id = lesson.id
+
     # Obtener character_id
     character_id = None
     char = db.query(Character).filter(Character.code == request.character_code).first()
@@ -1192,7 +1225,7 @@ async def generate_audio_tts(
         character_id = char.id
 
     segment = LessonAudioSegment(
-        lesson_id=request.lesson_id,
+        lesson_id=resolved_lesson_id,
         exercise_id=request.exercise_index,
         character_id=character_id,
         audio_url=audio_url,
@@ -1219,13 +1252,9 @@ async def delete_audio(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Eliminar audio (Vía public_id o id numérico)."""
-    # Intentar por public_id (UUID) primero
+    """Eliminar audio (Vía public_id)."""
     segment = db.query(LessonAudioSegment).filter(func.cast(LessonAudioSegment.public_id, String) == audio_id_or_uuid).first()
     
-    # Fallback a ID numérico
-    if not segment and audio_id_or_uuid.isdigit():
-        segment = db.query(LessonAudioSegment).filter(LessonAudioSegment.id == int(audio_id_or_uuid)).first()
     if not segment:
         raise HTTPException(404, "Audio no encontrado")
 
@@ -1250,8 +1279,8 @@ async def delete_audio(
 @router.get("/history")
 async def list_history(
     entity_type: Optional[str] = Query(None),
-    entity_id: Optional[int] = Query(None),
-    editor_user_id: Optional[int] = Query(None),
+    entity_id: Optional[str] = Query(None),   # accepts entity_public_id (UUID string)
+    user_id: Optional[str] = Query(None),       # accepts editor public_id (UUID string)
     action: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
@@ -1266,9 +1295,11 @@ async def list_history(
     if entity_type:
         query = query.filter(ContentEditHistory.entity_type == entity_type)
     if entity_id:
-        query = query.filter(ContentEditHistory.entity_id == entity_id)
-    if editor_user_id:
-        query = query.filter(ContentEditHistory.editor_user_id == editor_user_id)
+        query = query.filter(ContentEditHistory.entity_public_id == entity_id)
+    if user_id:
+        editor_user = db.query(User).filter(func.cast(User.public_id, String) == user_id).first()
+        if editor_user:
+            query = query.filter(ContentEditHistory.editor_user_id == editor_user.id)
     if action:
         query = query.filter(ContentEditHistory.action == action)
     if date_from:
@@ -1292,11 +1323,11 @@ async def list_history(
     for entry in entries:
         editor = db.query(User).filter(User.id == entry.editor_user_id).first()
         items.append({
-            "id": entry.id,
+            "id": str(entry.public_id),
             "editor_public_id": str(editor.public_id) if editor else None,
             "editor_name": editor.name if editor else None,
             "entity_type": entry.entity_type,
-            "entity_id": entry.entity_id,
+            "entity_id": entry.entity_public_id or "",
             "action": entry.action,
             "field_changed": entry.field_changed,
             "previous_value": entry.previous_value,
@@ -1308,28 +1339,28 @@ async def list_history(
     return {"items": items, "total": total, "page": page, "page_size": page_size}
 
 
-@router.get("/history/entity/{entity_type}/{entity_id}")
+@router.get("/history/entity/{entity_type}/{entity_public_id}")
 async def get_entity_history(
     entity_type: str,
-    entity_id: int,
+    entity_public_id: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Historial de una entidad específica."""
+    """Historial de una entidad específica (vía entity_public_id)."""
     entries = db.query(ContentEditHistory).filter(
         ContentEditHistory.entity_type == entity_type,
-        ContentEditHistory.entity_id == entity_id,
+        ContentEditHistory.entity_public_id == entity_public_id,
     ).order_by(desc(ContentEditHistory.created_at)).all()
 
     items = []
     for entry in entries:
         editor = db.query(User).filter(User.id == entry.editor_user_id).first()
         items.append({
-            "id": entry.id,
+            "id": str(entry.public_id),
             "editor_public_id": str(editor.public_id) if editor else None,
             "editor_name": editor.name if editor else None,
             "entity_type": entry.entity_type,
-            "entity_id": entry.entity_id,
+            "entity_id": entry.entity_public_id or "",
             "action": entry.action,
             "field_changed": entry.field_changed,
             "previous_value": entry.previous_value,
@@ -1341,17 +1372,23 @@ async def get_entity_history(
     return items
 
 
-@router.post("/history/{history_id}/rollback")
+@router.post("/history/{history_public_id}/rollback")
 async def rollback_history(
-    history_id: int,
+    history_public_id: str,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Revertir a un estado anterior."""
+    """Revertir a un estado anterior (vía history public_id)."""
+    history_entry = db.query(ContentEditHistory).filter(
+        func.cast(ContentEditHistory.public_id, String) == history_public_id
+    ).first()
+    if not history_entry:
+        raise HTTPException(404, "Entrada de historial no encontrada")
     try:
-        entity = rollback_edit(db, history_id, admin.id)
+        entity = rollback_edit(db, history_entry.id, admin.id)
         db.commit()
-        return {"message": "Restauración exitosa", "entity_id": entity.id}
+        entity_public_id = str(entity.public_id) if hasattr(entity, 'public_id') else None
+        return {"message": "Restauración exitosa", "entity_public_id": entity_public_id}
     except ValueError as e:
         raise HTTPException(400, str(e))
 
@@ -1374,7 +1411,7 @@ async def list_admin_users(
 
     return [
         {
-            "public_id": str(u.public_id),
+            "id": str(u.public_id), # Map public_id to id for frontend compatibility
             "name": u.name,
             "email": u.email,
             "user_type": u.user_type,
@@ -1399,7 +1436,7 @@ async def promote_to_admin(
     if user.user_type == UserType.ADMIN.value:
         raise HTTPException(400, "El usuario ya es admin")
 
-    # Domain restriction for admin promotion
+    # Domain- **Dashboard Integrity & Performance**: Admin Dashboard statistics and recent activity now use secure identifiers. Additionally, the stats query was optimized using native Postgres `jsonb_array_length`, preventing database timeouts and locks by avoiding massive data transfers.
     if not user.email or not user.email.endswith("@littlefounders.ai"):
         raise HTTPException(
             status_code=403,
@@ -1414,6 +1451,7 @@ async def promote_to_admin(
         editor_user_id=admin.id,
         entity_type="user",
         entity_id=user.id,
+        entity_public_id=str(user.public_id),
         action="update",
         field_changed="user_type",
         previous_value={"user_type": prev_type},
@@ -1448,6 +1486,7 @@ async def demote_from_admin(
         editor_user_id=admin.id,
         entity_type="user",
         entity_id=user.id,
+        entity_public_id=str(user.public_id),
         action="update",
         field_changed="user_type",
         previous_value={"user_type": UserType.ADMIN.value},

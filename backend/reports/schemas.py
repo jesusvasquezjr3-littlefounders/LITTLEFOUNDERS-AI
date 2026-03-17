@@ -44,9 +44,7 @@ class ReportCreate(BaseModel):
 
 class ReportResponse(BaseModel):
     """Schema de respuesta pública para un reporte."""
-    id: int
     public_id: Any  # UUID
-    reporter_email: str
     report_type: str
     subject: str
     reported_url: Optional[str]
@@ -62,8 +60,9 @@ class ReportResponse(BaseModel):
 
 class ReportAdminResponse(ReportResponse):
     """Schema extendido para admin (incluye notas, user_id, metadata)."""
-    reporter_public_id: Optional[str]
-    admin_notes: Optional[str]
+    reporter_email: str
+    reporter_public_id: Optional[str] = None
+    admin_notes: Optional[str] = None
     report_metadata: Optional[dict]
     updated_at: Optional[datetime]
     resolved_at: Optional[datetime]

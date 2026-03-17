@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, model_validator
 from typing import Optional, List
 from datetime import datetime
 
@@ -90,10 +90,22 @@ class SagaWithProgress(SagaResponse):
 # Character Schemas
 class CharacterResponse(BaseModel):
     """Personaje para LF Audio Engine"""
-    id: int
+    id: str    # public_id serialized as string (not internal integer)
     code: str  # Used by LF Audio Engine: liruf, dina, dr_rho, zara_vex
     name: str
     description: Optional[str] = None
+
+    @model_validator(mode='before')
+    @classmethod
+    def extract_public_id(cls, data):
+        if hasattr(data, 'public_id'):
+            return {
+                'id': str(data.public_id),
+                'code': data.code,
+                'name': data.name,
+                'description': getattr(data, 'description', None),
+            }
+        return data
 
     class Config:
         from_attributes = True

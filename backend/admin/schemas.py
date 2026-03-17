@@ -180,15 +180,15 @@ class AudioGenerateRequest(BaseModel):
     character_code: str
     emotion: str = "neutral"
     language_code: str = "es"
-    lesson_id: Optional[int] = None
+    lesson_public_id: Optional[str] = None  # lesson public UUID or lesson_code
     exercise_index: Optional[int] = None
 
 
 class AudioResponse(BaseModel):
     public_id: str
-    lesson_id: Optional[int] = None
+    lesson_code: Optional[str] = None
     exercise_id: Optional[int] = None
-    character_id: Optional[int] = None
+    character_code: Optional[str] = None
     audio_url: Optional[str] = None
     transcript: Optional[str] = None
     emotion: Optional[str] = None
@@ -204,11 +204,11 @@ class AudioResponse(BaseModel):
 # ──── HISTORIAL ────
 
 class HistoryEntry(BaseModel):
-    id: int
+    public_id: str = Field(alias="id")  # We map public_id to 'id' for frontend compatibility
     editor_public_id: Optional[str] = None
     editor_name: Optional[str] = None
     entity_type: str
-    entity_id: int
+    entity_public_id: Optional[str] = Field(None, alias="entity_id") # Map public_id to entity_id
     action: str
     field_changed: Optional[str] = None
     previous_value: Optional[Any] = None
@@ -240,7 +240,7 @@ class AdminStats(BaseModel):
     total_characters: int
     total_audio_segments: int
     recent_edits: List[HistoryEntry]
-    lessons_by_adventure: Dict[int, int]
+    lessons_by_adventure: Dict[str, int]
 
 
 # ──── USUARIOS ADMIN ────

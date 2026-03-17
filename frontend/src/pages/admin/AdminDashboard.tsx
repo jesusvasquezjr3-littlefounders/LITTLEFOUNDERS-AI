@@ -28,7 +28,7 @@ interface DashboardStats {
   total_exercises: number;
   total_characters: number;
   total_audio_segments: number;
-  lessons_by_adventure: Record<number, number>;
+  lessons_by_adventure: Record<string, number>;
   recent_edits: RecentEdit[];
   daily_activity: any[];
 }

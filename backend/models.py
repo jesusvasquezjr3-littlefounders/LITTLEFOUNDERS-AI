@@ -418,9 +418,11 @@ class ContentEditHistory(Base):
     __tablename__ = "content_edit_history"
 
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     editor_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     entity_type = Column(String(50), nullable=False)    # lesson, character, gesture, audio
     entity_id = Column(Integer, nullable=False)
+    entity_public_id = Column(String(100), nullable=True)
     action = Column(String(20), nullable=False)          # create, update, delete, reorder, rollback
     field_changed = Column(String(100), nullable=True)
     previous_value = Column(JSON, nullable=True)

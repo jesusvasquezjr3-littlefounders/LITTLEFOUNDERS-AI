@@ -7,21 +7,20 @@ import { useTranslation } from "react-i18next";
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface PlatformReport {
-  id: number;
   public_id: string;
   reporter_email: string;
-  report_type: string;
+  reporter_public_id?: string;
+  report_type: 'bug' | 'abuse' | 'suggestion' | 'content' | 'other';
   subject: string;
   reported_url?: string;
   context: string;
   evidence_url?: string;
-  status: string;
-  priority: string;
-  user_id?: number;
+  status: 'pending' | 'in_review' | 'resolved' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  report_metadata?: any;
   admin_notes?: string;
-  report_metadata?: Record<string, any>;
   created_at: string;
-  updated_at?: string;
+  updated_at: string;
   resolved_at?: string;
 }
 
@@ -96,7 +95,7 @@ function ReportDetail({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const idToUse = report.public_id || report.id;
+      const idToUse = report.public_id;
       const res = await fetch(`${API_BASE}/reports/${idToUse}`, {
         method: "PATCH",
         headers: {
@@ -124,7 +123,7 @@ function ReportDetail({
       <div className="flex items-start justify-between p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-slate-400">#{report.public_id?.split("-")[0] || report.id}</span>
+            <span className="text-xs font-mono text-slate-400">#{report.public_id?.split("-")[0]}</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               {TYPE_LABELS[report.report_type] ?? report.report_type}
             </span>
@@ -336,7 +335,7 @@ export default function AdminReports() {
   useEffect(() => { fetchData(); }, [filterStatus, filterType]);
 
   const handleUpdate = (updated: PlatformReport) => {
-    setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+    setReports((prev) => prev.map((r) => (r.public_id === updated.public_id ? updated : r)));
     setSelectedReport(updated);
   };
 
@@ -426,10 +425,10 @@ export default function AdminReports() {
             </div>
           ) : (
             reports.map((report) => (
-              <div key={report.id}
-                onClick={() => setSelectedReport(selectedReport?.id === report.id ? null : report)}
+              <div key={report.public_id}
+                onClick={() => setSelectedReport(selectedReport?.public_id === report.public_id ? null : report)}
                 className={`p-4 rounded-xl border cursor-pointer transition-all duration-150 hover:shadow-md
-                    ${selectedReport?.id === report.id
+                    ${selectedReport?.public_id === report.public_id
                     ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/20"
                     : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-slate-300"
                   }
@@ -437,7 +436,7 @@ export default function AdminReports() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs text-slate-400 font-mono">#{report.public_id?.split("-")[0] || report.id}</span>
+                      <span className="text-xs text-slate-400 font-mono">#{report.public_id?.split("-")[0]}</span>
                       <span className="text-xs text-slate-500">{t(`form.types.${report.report_type}`)}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_BADGES[report.priority]}`}>
                         {t(`admin.priorities.${report.priority}`)}

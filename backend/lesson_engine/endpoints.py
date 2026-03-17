@@ -373,7 +373,7 @@ async def get_lesson_for_play(
 
     return {
         "lesson": {
-            "id": lesson.id,
+            "id": str(lesson.public_id),
             "code": lesson.lesson_code,
             "title": title,
             "description": description,
@@ -577,7 +577,7 @@ async def get_character(code: str, db: Session = Depends(get_db)):
     ).all()
     
     return {
-        "id": character.id,
+        "id": str(character.public_id),
         "code": character.code,
         "name": character.name,
         "description": character.description,
@@ -810,7 +810,7 @@ async def get_lessons_by_adventure(
             topic_title = topic.get('title_es', f"Tema {lesson.topic_level}")
         
         result.append({
-            "id": lesson.id,
+            "id": str(lesson.public_id),
             "code": lesson.lesson_code,
             "title": lesson.title_en if lang == "en" else lesson.title_es,
             "description": lesson.description_en if lang == "en" else lesson.description_es,
