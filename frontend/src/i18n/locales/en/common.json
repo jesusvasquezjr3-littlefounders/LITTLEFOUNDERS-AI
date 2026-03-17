@@ -138,5 +138,6 @@
         "savings": "Loading Saving Goals",
         "verification_banking": "Verifying activation status...",
         "verification_savings": "Loading your saving goals..."
-    }
+    },
+    "whatItTeaches": "Teaches"
 }

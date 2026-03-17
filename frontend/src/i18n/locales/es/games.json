@@ -3,8 +3,35 @@
     "title": "Misiones y Juegos",
     "subtitle": "Domina las finanzas y el emprendimiento superando retos interactivos.",
     "playButton": "¡Jugar!",
-    "comingSoon": "Nuevos juegos en camino",
-    "availableChallenges": "Desafíos Disponibles"
+    "comingSoon": "Nuevos juegos en camino"
+  },
+  "ageGroups": {
+    "ages5to7": "Semillas Financieras (5 - 7 años)",
+    "ages8to9": "Navegantes del Ahorro (8 - 9 años)",
+    "comingSoon5to7": "Más juegos para esta edad en camino",
+    "comingSoon8to9": "Más juegos para esta edad en camino"
+  },
+  "gameDescriptions": {
+    "namVsYum": {
+      "summary": "Un festín monstruoso donde los niños aprenden a diferenciar entre necesidades y caprichos.",
+      "teaches": "Educación financiera básica, toma de decisiones, priorización de gastos",
+      "ageGroup": "ages5to7"
+    },
+    "nectar": {
+      "summary": "Dirige tu propio puesto de néctar en un reino subterráneo mientras aprendes sobre costos y ganancias.",
+      "teaches": "Emprendimiento, cálculo de costos, fijación de precios, ahorro",
+      "ageGroup": "ages5to7"
+    },
+    "paperDetective": {
+      "summary": "Resuelve misterios financieros identificando monedas y ahorrando en una alcancía.",
+      "teaches": "Reconocimiento de monedas, conteo de dinero, metas de ahorro",
+      "ageGroup": "ages5to7"
+    },
+    "paperCoin": {
+      "summary": "Atiende una tienda de aventureros calculando el cambio correcto bajo presión.",
+      "teaches": "Cálculo mental, manejo de dinero, atención al cliente, rapidez mental",
+      "ageGroup": "ages8to9"
+    }
   },
   "namVsYum": {
     "title": "Ñam vs. Yum",

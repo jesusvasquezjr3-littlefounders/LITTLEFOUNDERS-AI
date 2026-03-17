@@ -3,8 +3,35 @@
     "title": "Missions & Games",
     "subtitle": "Master finance and entrepreneurship while overcoming interactive challenges.",
     "playButton": "Play!",
-    "comingSoon": "New games coming soon",
-    "availableChallenges": "Available Challenges"
+    "comingSoon": "New games coming soon"
+  },
+  "ageGroups": {
+    "ages5to7": "Financial Seeds (5 - 7 years)",
+    "ages8to9": "Savings Navigators (8 - 9 years)",
+    "comingSoon5to7": "More games for this age coming soon",
+    "comingSoon8to9": "More games for this age coming soon"
+  },
+  "gameDescriptions": {
+    "namVsYum": {
+      "summary": "A monstrous feast where children learn to differentiate between needs and wants.",
+      "teaches": "Basic financial education, decision making, expense prioritization",
+      "ageGroup": "ages5to7"
+    },
+    "nectar": {
+      "summary": "Run your own nectar stand in an underground kingdom while learning about costs and profits.",
+      "teaches": "Entrepreneurship, cost calculation, pricing, saving",
+      "ageGroup": "ages5to7"
+    },
+    "paperDetective": {
+      "summary": "Solve financial mysteries by identifying coins and saving in a piggy bank.",
+      "teaches": "Coin recognition, money counting, savings goals",
+      "ageGroup": "ages5to7"
+    },
+    "paperCoin": {
+      "summary": "Run an adventurer's shop by calculating the correct change under pressure.",
+      "teaches": "Mental math, money handling, customer service, quick thinking",
+      "ageGroup": "ages8to9"
+    }
   },
   "namVsYum": {
     "title": "Ñam vs. Yum",
