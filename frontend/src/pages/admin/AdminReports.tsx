@@ -260,7 +260,7 @@ function ReportDetail({
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("admin.labels.status")}</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}
+            <select value={status} onChange={(e) => setStatus(e.target.value as PlatformReport["status"])}
               className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white px-3 py-2 outline-none focus:ring-2 focus:ring-blue-300">
               {STATUS_OPTIONS.map(s => (
                 <option key={s} value={s}>{t(STATUS_CONFIG[s].label_key)}</option>
@@ -269,7 +269,7 @@ function ReportDetail({
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("admin.labels.priority")}</label>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)}
+            <select value={priority} onChange={(e) => setPriority(e.target.value as PlatformReport["priority"])}
               className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white px-3 py-2 outline-none focus:ring-2 focus:ring-blue-300">
               {PRIORITY_OPTIONS.map(p => (
                 <option key={p} value={p}>{t(`admin.priorities.${p}`)}</option>
