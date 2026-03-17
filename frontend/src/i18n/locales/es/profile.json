@@ -60,7 +60,8 @@
         "no_results": "No se encontraron resultados",
         "search_placeholder": "Buscar por @usuario (ej. @rodrigo)",
         "no_requests": "No tienes solicitudes pendientes",
-        "learning_stats": "Estadísticas de Aprendizaje"
+        "learning_stats": "Estadísticas de Aprendizaje",
+        "find_friends": "Encuentra a tus amigos"
     },
     "social": {
         "followers": "Seguidores",

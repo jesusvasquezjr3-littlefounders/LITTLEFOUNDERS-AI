@@ -60,7 +60,8 @@
         "no_results": "No results found",
         "search_placeholder": "Search by @username (e.g. @rodrigo)",
         "no_requests": "You have no pending requests",
-        "learning_stats": "Learning Statistics"
+        "learning_stats": "Learning Statistics",
+        "find_friends": "Find your friends"
     },
     "social": {
         "followers": "Followers",

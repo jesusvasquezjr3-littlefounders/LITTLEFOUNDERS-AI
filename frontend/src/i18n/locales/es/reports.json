@@ -49,6 +49,34 @@
     "context_min": "La descripción debe tener al menos 10 caracteres"
   },
   "help_page": {
+    "title": "¿En qué podemos ayudarte?",
+    "subtitle": "Explora las categorías o revisa nuestras preguntas frecuentes.",
+    "popular_questions": "Preguntas Populares",
+    "team_available": "Nuestro equipo está aquí para ayudarte 24/7",
+    "categories": {
+      "lessons": "Lecciones",
+      "games": "Juegos",
+      "privacy": "Privacidad",
+      "contact": "Contacto"
+    },
+    "faq": {
+      "q1": {
+        "question": "¿Cómo funciona el sistema de lecciones?",
+        "answer": "Las lecciones están organizadas por aventuras, sagas y temas. Completa cada lección para ganar puntos y desbloquear las siguientes. Tu progreso se guarda automáticamente."
+      },
+      "q2": {
+        "question": "¿Los juegos cuentan para mi progreso?",
+        "answer": "Sí, los juegos te permiten practicar conceptos financieros de manera divertida y también acumulan puntos de experiencia en tu perfil."
+      },
+      "q3": {
+        "question": "¿Cómo puedo cambiar mi contraseña?",
+        "answer": "Ve a Configuración → Seguridad → Cambiar contraseña. Si entraste con Google o Discord, no tendrás esta opción ya que tu cuenta está vinculada a esos proveedores."
+      },
+      "q4": {
+        "question": "¿Puedo usar LittleFounders en otro idioma?",
+        "answer": "¡Sí! Puedes cambiar entre Español e Inglés en cualquier momento desde Configuración → Idioma, o directamente desde el menú del perfil."
+      }
+    },
     "section_title": "¿Tienes un problema o sugerencia?",
     "section_description": "Si encontraste un error, contenido inapropiado, o tienes alguna sugerencia, no dudes en reportarlo. Tu opinión nos ayuda a mejorar la plataforma.",
     "open_form": "Abrir formulario de reporte"

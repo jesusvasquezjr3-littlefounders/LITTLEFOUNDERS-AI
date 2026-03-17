@@ -69,10 +69,13 @@ const SettingItem = ({
 );
 
 // Section Container
-const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
+const Section = ({ title, children, accentColor = "from-indigo-500 to-purple-600" }: { title: string, children: React.ReactNode, accentColor?: string }) => (
     <div className="space-y-4">
-        <h3 className="px-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">{title}</h3>
-        <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden divide-y divide-black/5 dark:divide-white/5 rounded-3xl border-none shadow-xl">
+        <div className="flex items-center gap-2 px-1">
+            <div className={`w-1 h-5 rounded-full bg-gradient-to-b ${accentColor}`} />
+            <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{title}</h3>
+        </div>
+        <GlassPanel variant="subtle" className="overflow-hidden divide-y divide-black/5 dark:divide-white/5 rounded-3xl border border-white/20 dark:border-white/5 shadow-xl">
             {children}
         </GlassPanel>
     </div>
@@ -261,15 +264,29 @@ const Settings = () => {
 
     return (
         <DashboardLayout>
-            <div className="max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500">
-                
+            <div className="max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500 space-y-8">
+
+                {/* ── Page Header ── */}
+                <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-7 py-6 flex items-center gap-5">
+                    <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+                    <div className="relative w-14 h-14 rounded-[1.25rem] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0">
+                        <Shield className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest">LittleFounders</span>
+                        </div>
+                        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{t('settings:title')}</h1>
+                    </div>
+                </div>
+
                 {/* ── Main Layout (3:9) ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
+
                     {/* ── Sidebar (3/12) ── */}
                     <div className="lg:col-span-3 space-y-6">
                         {/* Compact Profile Card */}
-                        <GlassPanel variant="default" className="liquid-glass-strong p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-2xl">
+                        <GlassPanel variant="strong" className="p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-2xl border border-white/20 dark:border-white/5">
                             <div className="relative group">
                                 <div
                                     className="absolute -inset-1 rounded-full blur-lg opacity-40 group-hover:opacity-100 transition duration-700"
@@ -298,15 +315,15 @@ const Settings = () => {
                         </GlassPanel>
 
                         {/* Navigation Sidebar */}
-                        <GlassPanel variant="default" className="liquid-glass-subtle p-2 rounded-[2rem] overflow-hidden hidden lg:block">
+                        <GlassPanel variant="subtle" className="p-2 rounded-[2rem] overflow-hidden hidden lg:block border border-white/20 dark:border-white/5">
                             <div className="flex flex-col gap-1">
-                                {[
-                                    { icon: UserIcon, label: t('settings:identity.title'), id: 'identity' },
-                                    { icon: Mail, label: t('settings:account.title'), id: 'account' },
-                                    { icon: Lock, label: t('settings:account.password.label'), id: 'security' },
-                                    { icon: Globe, label: t('settings:account.language'), id: 'prefs' }
-                                ].map((tab) => (
-                                    <button 
+                                {([
+                                    { icon: UserIcon, label: t('settings:identity.title'), id: 'identity', iconCls: "group-hover:text-indigo-500" },
+                                    { icon: Mail, label: t('settings:account.title'), id: 'account', iconCls: "group-hover:text-blue-500" },
+                                    { icon: Lock, label: t('settings:account.password.label'), id: 'security', iconCls: "group-hover:text-emerald-500" },
+                                    { icon: Globe, label: t('settings:account.language'), id: 'prefs', iconCls: "group-hover:text-cyan-500" }
+                                ] as const).map((tab) => (
+                                    <button
                                         key={tab.id}
                                         onClick={() => {
                                             const el = document.getElementById(tab.id);
@@ -314,8 +331,10 @@ const Settings = () => {
                                         }}
                                         className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/10 dark:hover:bg-black/10 transition-all group text-left"
                                     >
-                                        <tab.icon className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                                        <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">{tab.label}</span>
+                                        <div className="w-7 h-7 rounded-lg flex items-center justify-center transition-all">
+                                            <tab.icon className={cn("w-4 h-4 text-slate-400 transition-colors", tab.iconCls)} />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{tab.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -327,7 +346,7 @@ const Settings = () => {
                         
                         {/* Identity Section */}
                         <div id="identity">
-                            <Section title={t('settings:identity.title')}>
+                            <Section title={t('settings:identity.title')} accentColor="from-indigo-500 to-purple-600">
                                 <SettingItem icon={UserIcon} label={t('settings:identity.name.label')}>
                                     <Input
                                         value={name}
@@ -426,7 +445,7 @@ const Settings = () => {
 
                         {/* Account Section */}
                         <div id="account">
-                            <Section title={t('settings:account.title')}>
+                            <Section title={t('settings:account.title')} accentColor="from-blue-500 to-cyan-500">
                                 <SettingItem icon={Mail} label={t('settings:account.email')}>
                                     <div className="flex items-center gap-3 bg-white/5 dark:bg-black/20 p-3 px-5 rounded-2xl border-2 border-black/5 dark:border-white/5">
                                         <span className="text-sm font-black text-slate-500">{user.email}</span>
@@ -449,7 +468,7 @@ const Settings = () => {
 
                         {/* Security Section (Floating / Separate) */}
                         <div id="security">
-                            <Section title={t('settings:account.password.label')}>
+                            <Section title={t('settings:account.password.label')} accentColor="from-emerald-500 to-teal-500">
                                 <SettingItem icon={Lock} label={t('settings:account.password.dialog.title')}>
                                     {isEmailAuth ? (
                                         <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
@@ -501,16 +520,22 @@ const Settings = () => {
                         </div>
 
                         {/* FINAL SAVE BAR */}
-                        <div className="pt-6 sticky bottom-8 z-20">
-                            <GlassPanel variant="default" className="liquid-glass-strong p-4 rounded-3xl border-indigo-500/20 shadow-2xl flex justify-between items-center gap-6">
-                                <div className="hidden md:block">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('settings:actions.success_desc')}</p>
-                                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{t('settings:identity.title')} & {t('settings:account.title')}</p>
+                        <div className="pt-6 sticky bottom-6 z-20">
+                            <GlassPanel variant="strong" className="relative overflow-hidden p-4 rounded-3xl shadow-2xl shadow-indigo-500/10 flex justify-between items-center gap-4 border border-indigo-500/15 dark:border-indigo-500/10">
+                                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/3 to-transparent pointer-events-none" />
+                                <div className="hidden md:flex items-center gap-3 relative">
+                                    <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                                        <Save className="w-4 h-4 text-indigo-500" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">{t('settings:title')}</p>
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{t('settings:identity.title')} · {t('settings:account.title')}</p>
+                                    </div>
                                 </div>
                                 <Button
                                     onClick={handleSaveProfile}
                                     disabled={isSaving || !!usernameError}
-                                    className="flex-1 md:flex-none md:min-w-[240px] h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                    className="relative flex-1 md:flex-none md:min-w-[220px] h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
                                 >
                                     {isSaving ? (
                                         <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> {t('settings:actions.saving')}</>

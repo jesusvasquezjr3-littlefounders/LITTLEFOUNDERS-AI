@@ -208,6 +208,14 @@ const Profile = () => {
           className="relative rounded-3xl p-6 md:p-8 liquid-glass-strong overflow-hidden transition-colors duration-500"
           style={user?.avatar_config?.bannerColor ? { backgroundColor: user.avatar_config.bannerColor } : {}}
         >
+          {/* Decorative gradient orbs when no banner color */}
+          {!user?.avatar_config?.bannerColor && (
+            <>
+              <div className="absolute -top-12 -right-12 w-56 h-56 bg-gradient-to-br from-indigo-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-8 left-8 w-48 h-48 bg-gradient-to-br from-blue-500/8 to-cyan-500/8 rounded-full blur-2xl pointer-events-none" />
+            </>
+          )}
+
           {/* Banner Edit Button */}
           <div className="absolute top-4 right-4 z-20">
             <Popover>
@@ -307,50 +315,51 @@ const Profile = () => {
           {/* Left Column: Learning & Info (Desktop: 8/12) */}
           <div className="lg:col-span-8 space-y-8 order-1 lg:order-1">
 
-            {/* Learning Stats - Intelligent Design */}
+            {/* Learning Stats */}
             <section className="space-y-4">
-              <div className="flex items-center gap-2 px-2">
-                <Trophy className="w-5 h-5 text-yellow-500" />
-                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">{t('profile:sections.my_achievements')}</h3>
+              <div className="flex items-center gap-2 px-1">
+                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-yellow-400 to-orange-500" />
+                <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.my_achievements')}</h3>
               </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                   {
                     title: t('common:dashboard.stats.lessons'),
                     value: lessonsCompleted,
                     lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
-                    color: "text-blue-600",
+                    accent: "from-blue-500/10 to-cyan-500/10 border-blue-500/10",
                     size: "70px"
                   },
                   {
                     title: t('common:dashboard.stats.minutes'),
                     value: minutesStudied,
                     lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
-                    color: "text-green-600",
+                    accent: "from-emerald-500/10 to-green-500/10 border-emerald-500/10",
                     size: "70px"
                   },
                   {
                     title: t('common:dashboard.stats.points'),
                     value: pointsEarned,
                     lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
-                    color: "text-yellow-600",
+                    accent: "from-amber-500/10 to-yellow-500/10 border-amber-500/10",
                     size: "70px"
                   },
                   {
                     title: t('common:dashboard.stats.streak'),
                     value: currentStreak,
                     lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
-                    color: "text-purple-600",
+                    accent: "from-purple-500/10 to-pink-500/10 border-purple-500/10",
                     size: "60px"
                   }
                 ].map((stat, idx) => (
-                  <GlassPanel 
-                    key={idx} 
-                    variant="default" 
+                  <GlassPanel
+                    key={idx}
+                    variant="subtle"
                     className={cn(
-                      "liquid-glass-subtle hover:scale-[1.02] transition-all duration-300 overflow-hidden",
-                      stat.value === 0 && "grayscale opacity-60"
+                      "hover:scale-[1.03] hover:shadow-lg transition-all duration-300 overflow-hidden border",
+                      `bg-gradient-to-br ${stat.accent}`,
+                      stat.value === 0 && "grayscale opacity-50"
                     )}
                   >
                     <div className="p-4 flex flex-col items-center text-center">
@@ -372,11 +381,11 @@ const Profile = () => {
               </div>
             </section>
 
-            {/* Account Info - Standardized */}
+            {/* Account Info */}
             <section className="space-y-4">
-              <div className="flex items-center gap-2 px-2">
-                <User className="w-5 h-5 text-purple-500" />
-                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">{t('profile:sections.personal_info')}</h3>
+              <div className="flex items-center gap-2 px-1">
+                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500" />
+                <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.personal_info')}</h3>
               </div>
               <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden">
                 <CardContent className="p-4 space-y-4">
@@ -432,24 +441,24 @@ const Profile = () => {
             </section>
 
             <section className="lg:hidden">
-              <GlassPanel 
-                variant="gradient" 
-                gradient="blue" 
-                className="p-8 flex flex-col items-center text-center gap-4 cursor-pointer hover:scale-[1.02] transition-transform active:scale-95"
+              <GlassPanel
+                variant="subtle"
+                className="relative overflow-hidden p-7 flex flex-col items-center text-center gap-5 cursor-pointer hover:scale-[1.01] transition-all duration-300 active:scale-95 border border-blue-500/10 dark:border-blue-500/10 shadow-xl"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setIsSearchDialogOpen(true);
                 }}
               >
-                <div className="w-16 h-16 rounded-[2rem] bg-white flex items-center justify-center shadow-lg">
-                  <UserPlus className="w-8 h-8 text-blue-600" />
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-500/15 to-cyan-500/15 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/25">
+                  <UserPlus className="w-8 h-8 text-white" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase">
                     {t('profile:actions.add_friends')}
                   </h3>
-                  <p className="text-sm font-medium text-slate-600 opacity-80">
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     {t('profile:actions.add_friends_desc')}
                   </p>
                 </div>
@@ -459,25 +468,25 @@ const Profile = () => {
 
           {/* Right Column: Social Hub (Desktop Only) */}
           <div className="hidden lg:block lg:col-span-4 space-y-6 order-2 lg:order-2">
-            <div className="space-y-6 lg:sticky lg:top-8">
-              <div className="flex items-center justify-between px-2">
+            <div className="space-y-4 lg:sticky lg:top-8">
+              <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-wider text-sm">{t('profile:sections.social')}</h3>
+                  <div className="w-1 h-5 rounded-full bg-gradient-to-b from-blue-500 to-cyan-500" />
+                  <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.social')}</h3>
                 </div>
 
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-blue-600 font-bold hover:bg-blue-50 rounded-xl gap-2 h-8 px-3"
+                  className="text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl gap-2 h-8 px-3 text-xs"
                   onClick={() => setActiveSocialTab("search")}
                 >
-                  <UserPlus className="w-4 h-4" />
+                  <UserPlus className="w-3.5 h-3.5" />
                   {t('profile:social.search')}
                 </Button>
               </div>
 
-              <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px] shadow-xl">
+              <GlassPanel variant="subtle" className="overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px] shadow-xl border border-white/20 dark:border-white/5">
                 {/* Custom Tab Switcher */}
                 <div className="flex border-b border-black/5 dark:border-white/5 px-6 shrink-0">
                   {[
@@ -589,7 +598,7 @@ const Profile = () => {
                         {!searchQuery && !isSocialLoading && (
                           <div className="text-center py-20 opacity-30 select-none grayscale">
                             <UserPlus className="w-16 h-16 mx-auto mb-4" />
-                            <p className="text-sm font-black uppercase tracking-widest">Encuentra a tus amigos</p>
+                            <p className="text-sm font-black uppercase tracking-widest">{t('profile:sections.find_friends')}</p>
                           </div>
                         )}
                       </div>
