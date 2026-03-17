@@ -291,5 +291,15 @@
     "demo_banner": {
         "lessons": "Log in or register to save your progress",
         "games": "Log in or register to access the full catalog of games"
+    },
+    "theme_toggle": "Toggle theme",
+    "timeline": {
+        "intro": "Intro",
+        "lessons": "Lessons",
+        "games": "Games",
+        "banking": "Banking",
+        "ai": "AI",
+        "social": "Social",
+        "start": "Start!"
     }
 }

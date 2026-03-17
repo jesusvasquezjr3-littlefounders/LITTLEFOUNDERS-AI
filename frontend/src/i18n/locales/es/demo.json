@@ -291,5 +291,15 @@
     "demo_banner": {
         "lessons": "Iniciar Sesión/Registrarte para no perder el progreso",
         "games": "Inicia sesión/registrate para acceder al catálogo completo de juegos"
+    },
+    "theme_toggle": "Cambiar tema",
+    "timeline": {
+        "intro": "Intro",
+        "lessons": "Lecciones",
+        "games": "Juegos",
+        "banking": "Banca",
+        "ai": "IA",
+        "social": "Social",
+        "start": "¡Empieza!"
     }
 }

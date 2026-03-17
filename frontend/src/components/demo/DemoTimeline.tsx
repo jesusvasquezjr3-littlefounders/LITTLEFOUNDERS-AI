@@ -1,18 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TOTAL_FRAMES_SHOWREEL } from "./DemoShowreelComposition";
+import { useTranslation } from "react-i18next";
 
 // Chapter positions match DemoShowreelComposition Main offsets:
 // Act1Intro: 0, Act2Lessons: 150, Act3Games: 500, Act4Bank: 800
 // Act5AI: 1020, Act6Social: 1240, Act7CTA: 1460
-const CHAPTERS = [
-    { frame: 0, label: "Intro", icon: "✨" },
-    { frame: 150, label: "Lecciones", icon: "📚" },
-    { frame: 500, label: "Juegos", icon: "🎮" },
-    { frame: 800, label: "Banca", icon: "💰" },
-    { frame: 1020, label: "IA", icon: "🤖" },
-    { frame: 1240, label: "Social", icon: "🤝" },
-    { frame: 1460, label: "¡Empieza!", icon: "🚀" },
-];
 
 interface DemoTimelineProps {
     playerRef: React.RefObject<{ getCurrentFrame: () => number } | null>;
@@ -20,9 +12,21 @@ interface DemoTimelineProps {
 }
 
 export function DemoTimeline({ playerRef, totalFrames = TOTAL_FRAMES_SHOWREEL }: DemoTimelineProps) {
+    const { t } = useTranslation('demo');
     const [currentFrame, setCurrentFrame] = useState(0);
     const rafRef = useRef<number>(0);
     const barRef = useRef<HTMLDivElement>(null);
+
+    // Chapter definitions using i18n
+    const CHAPTERS = [
+        { frame: 0, label: t('timeline.intro'), icon: "✨" },
+        { frame: 150, label: t('timeline.lessons'), icon: "📚" },
+        { frame: 500, label: t('timeline.games'), icon: "🎮" },
+        { frame: 800, label: t('timeline.banking'), icon: "💰" },
+        { frame: 1020, label: t('timeline.ai'), icon: "🤖" },
+        { frame: 1240, label: t('timeline.social'), icon: "🤝" },
+        { frame: 1460, label: t('timeline.start'), icon: "🚀" },
+    ];
 
     useEffect(() => {
         const tick = () => {

@@ -464,7 +464,7 @@ const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => 
                 <DinaCharacter expression="happy" enableMouseTracking={false} />
             </div>
 
-            <PromoBadge icon="🤝" text="Team" sub="Ranking" color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
+            <PromoBadge icon="🤝" text={p.s_social_title} sub={p.s_social_streak} color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
         </div>
     );
 };
