@@ -193,22 +193,27 @@ async def get_report_stats(
 
 @router.get("/{report_id}", response_model=ReportAdminResponse)
 async def get_report(
-    report_id: int,
+    report_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token),
 ):
     """Ver detalle de un reporte — solo para admins."""
     _require_admin(current_user)
 
-    report = db.query(PlatformReport).filter(PlatformReport.id == report_id).first()
+    report = db.query(PlatformReport).filter(PlatformReport.public_id == report_id).first()
     if not report:
-        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+        # Fallback to internal ID if it's a number (for backward compatibility during migration)
+        if report_id.isdigit():
+            report = db.query(PlatformReport).filter(PlatformReport.id == int(report_id)).first()
+        
+        if not report:
+            raise HTTPException(status_code=404, detail="Reporte no encontrado")
     return report
 
 
 @router.patch("/{report_id}", response_model=ReportAdminResponse)
 async def update_report(
-    report_id: int,
+    report_id: str,
     update_data: ReportStatusUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token),
@@ -216,9 +221,14 @@ async def update_report(
     """Actualizar status, prioridad y notas de un reporte — solo para admins."""
     _require_admin(current_user)
 
-    report = db.query(PlatformReport).filter(PlatformReport.id == report_id).first()
+    report = db.query(PlatformReport).filter(PlatformReport.public_id == report_id).first()
     if not report:
-        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+        # Fallback to internal ID if it's a number
+        if report_id.isdigit():
+            report = db.query(PlatformReport).filter(PlatformReport.id == int(report_id)).first()
+            
+        if not report:
+            raise HTTPException(status_code=404, detail="Reporte no encontrado")
 
     if update_data.status is not None:
         report.status = update_data.status

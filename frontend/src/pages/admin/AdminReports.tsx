@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface PlatformReport {
-  id: string; // Used strictly as a UUID (public_id) internally
+  id: number;
   public_id: string;
   reporter_email: string;
   report_type: string;
@@ -96,7 +96,8 @@ function ReportDetail({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE}/reports/${report.id}`, {
+      const idToUse = report.public_id || report.id;
+      const res = await fetch(`${API_BASE}/reports/${idToUse}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +124,7 @@ function ReportDetail({
       <div className="flex items-start justify-between p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-slate-400">#{report.public_id.split("-")[0]}</span>
+            <span className="text-xs font-mono text-slate-400">#{report.public_id?.split("-")[0] || report.id}</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               {TYPE_LABELS[report.report_type] ?? report.report_type}
             </span>
@@ -436,7 +437,7 @@ export default function AdminReports() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs text-slate-400 font-mono">#{report.id}</span>
+                      <span className="text-xs text-slate-400 font-mono">#{report.public_id?.split("-")[0] || report.id}</span>
                       <span className="text-xs text-slate-500">{t(`form.types.${report.report_type}`)}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_BADGES[report.priority]}`}>
                         {t(`admin.priorities.${report.priority}`)}

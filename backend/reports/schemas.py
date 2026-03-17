@@ -45,6 +45,7 @@ class ReportCreate(BaseModel):
 class ReportResponse(BaseModel):
     """Schema de respuesta pública para un reporte."""
     id: int
+    public_id: Any  # UUID
     reporter_email: str
     report_type: str
     subject: str

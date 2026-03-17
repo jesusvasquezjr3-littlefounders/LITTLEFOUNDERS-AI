@@ -490,6 +490,7 @@ class PlatformReport(Base):
     __tablename__ = "platform_reports"
 
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     reporter_email = Column(String(255), nullable=False, index=True)
     report_type = Column(String(20), nullable=False, default="other", index=True)
