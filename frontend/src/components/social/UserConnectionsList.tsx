@@ -40,7 +40,7 @@ export function UserConnectionsList({
           {/* Rank/Index would go here in a leaderboard, omitted for simple friends list */}
           
           <div className="flex-shrink-0 relative">
-            <AvatarDisplay config={u.avatar_config} size={48} />
+            <AvatarDisplay config={u.avatar_config} size={48} showCTA={false} />
           </div>
           
           <div className="flex-1 min-w-0">

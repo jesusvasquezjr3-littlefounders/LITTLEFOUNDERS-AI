@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
-import { Trophy, Star, Flame, MapPin, Loader2, Users, ArrowLeft } from "lucide-react";
+import { Trophy, Star, Flame, Loader2, ArrowLeft } from "lucide-react";
 import { socialApi, UserPublicProfile } from "../../lib/api/social";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export default function UserProfile() {
   const { username } = useParams();
@@ -164,7 +165,7 @@ export default function UserProfile() {
         {/* Stats Grid */}
         <h3 className="text-xl font-bold text-slate-800 dark:text-white px-2 mt-8 mb-4">{t('profile:sections.learning_stats')}</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Card className="border-0 shadow-lg bg-orange-50 dark:bg-orange-950/20">
+          <Card className={cn("border-0 shadow-lg bg-orange-50 dark:bg-orange-950/20 transition-all", profile.current_streak === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-2xl flex items-center justify-center mb-3 text-orange-600">
                 <Flame className="w-6 h-6" />
@@ -174,7 +175,7 @@ export default function UserProfile() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg bg-yellow-50 dark:bg-yellow-950/20">
+          <Card className={cn("border-0 shadow-lg bg-yellow-50 dark:bg-yellow-950/20 transition-all", profile.points_earned === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-2xl flex items-center justify-center mb-3 text-yellow-600">
                 <Star className="w-6 h-6" />
@@ -184,7 +185,7 @@ export default function UserProfile() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg bg-emerald-50 dark:bg-emerald-950/20">
+          <Card className={cn("border-0 shadow-lg bg-emerald-50 dark:bg-emerald-950/20 transition-all", profile.lessons_completed === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center mb-3 text-emerald-600">
                 <Trophy className="w-6 h-6" />

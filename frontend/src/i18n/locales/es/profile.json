@@ -75,7 +75,7 @@
         "empty_followers": "Aún no tienes seguidores."
     },
     "fields": {
-        "nickname": "Apodo / Nickname",
+        "nickname": "Usuario",
         "nickname_placeholder": "¿Cómo quieres que te llamemos?",
         "bio": "Biografía",
         "bio_placeholder": "Cuéntanos algo sobre ti...",

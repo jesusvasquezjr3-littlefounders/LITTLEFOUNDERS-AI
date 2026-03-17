@@ -49,6 +49,21 @@ async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: S
         raise credentials_exception
     return user
 
+async def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
+    """Optional authentication: returns User if valid token present, else None"""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+    
+    token = auth_header.split(" ")[1]
+    try:
+        email = verify_token(token, None)
+        if not email:
+            return None
+        return db.query(User).filter(User.email == email).first()
+    except Exception:
+        return None
+
 
 @router.post("/register", response_model=dict)
 async def register_user(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):

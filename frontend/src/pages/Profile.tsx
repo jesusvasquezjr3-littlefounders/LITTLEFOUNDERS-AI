@@ -144,9 +144,8 @@ const Profile = () => {
   const handleShare = async () => {
     if (!user?.username) return;
     
-    // Using window.location.origin to ensure it's 100% functional in local and prod
-    // while following the pattern littlefounders.ai/@username in prod
-    const shareUrl = `${window.location.origin}/@${user.username}`;
+    // Using standard /u/ pattern and literal domain as requested
+    const shareUrl = `https://littlefounders.ai/u/${user.username}`;
     const message = `${t('profile:messages.share_message')} ${shareUrl}`;
     
     try {
@@ -260,34 +259,32 @@ const Profile = () => {
               />
             </div>
 
-            <div className="text-center md:text-left space-y-2">
+            <div className="text-center md:text-left space-y-3">
               <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
                 {user.name}
               </h1>
-              <div className="flex items-center justify-center md:justify-start gap-4">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                 {user.user_type === 'child' && (
                   <p className="text-sm text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
                     <Shield className="w-4 h-4 text-blue-500" />
                     {t('common:roles.little_founder')}
                   </p>
                 )}
-                <div className="hidden md:flex items-center gap-3 text-sm font-bold text-slate-600 dark:text-slate-300">
-                  {/* Stats removed from header as per request, but kept hidden optionally if needed later */}
-                </div>
+                
+                {/* Desktop Share Button - Redesigned with premium aesthetic */}
+                <Button
+                  onClick={handleShare}
+                  variant="ghost"
+                  className="hidden md:flex items-center gap-2 px-6 h-10 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-blue-500/10 hover:from-indigo-500/20 hover:to-blue-500/20 border border-white/40 dark:border-white/10 text-indigo-700 dark:text-blue-300 font-black text-xs uppercase tracking-widest shadow-lg shadow-indigo-500/5 backdrop-blur-md transition-all active:scale-95 group overflow-hidden relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <Globe className="w-4 h-4 text-indigo-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" />
+                  <span>{t('profile:actions.share_profile')}</span>
+                </Button>
               </div>
             </div>
 
             <div className="md:ml-auto flex items-center gap-3">
-              {/* Desktop Share Button */}
-              <Button
-                onClick={handleShare}
-                variant="outline"
-                className="hidden md:flex rounded-full border-2 border-slate-200 hover:border-slate-300 dark:border-slate-700 gap-2 bg-white/20 backdrop-blur-sm"
-              >
-                <Globe className="w-4 h-4 text-blue-500" />
-                {t('profile:actions.share_profile')}
-              </Button>
-
               {/* Mobile Stats & Inline Share */}
               <div className="flex md:hidden items-center gap-6 mt-4 md:mt-0">
                 <div className="text-center">
@@ -434,13 +431,16 @@ const Profile = () => {
               </GlassPanel>
             </section>
 
-            {/* Mobile-only "Add Friends" Card */}
             <section className="lg:hidden">
               <GlassPanel 
                 variant="gradient" 
                 gradient="blue" 
                 className="p-8 flex flex-col items-center text-center gap-4 cursor-pointer hover:scale-[1.02] transition-transform active:scale-95"
-                onClick={() => setIsSearchDialogOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsSearchDialogOpen(true);
+                }}
               >
                 <div className="w-16 h-16 rounded-[2rem] bg-white flex items-center justify-center shadow-lg">
                   <UserPlus className="w-8 h-8 text-blue-600" />
@@ -514,7 +514,7 @@ const Profile = () => {
                         {requests.map(req => (
                           <div key={req.public_id} className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-orange-50 dark:border-orange-900/20 group">
                             <div className="flex items-center gap-3">
-                              <AvatarDisplay config={req.avatar_config} size={32} />
+                              <AvatarDisplay config={req.avatar_config} size={32} showCTA={false} />
                               <h4 className="font-bold text-slate-800 dark:text-white truncate text-xs">
                                 {req.name || `@${req.username}`}
                               </h4>
@@ -615,14 +615,23 @@ const Profile = () => {
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('profile:sections.search_placeholder')}
-                className="pl-11 h-12 rounded-2xl bg-white/50 dark:bg-black/20 border-slate-200 dark:border-slate-800 font-bold focus:ring-blue-500"
-              />
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('profile:sections.search_placeholder')}
+                  className="pl-11 h-12 rounded-2xl bg-white/50 dark:bg-black/20 border-slate-200 dark:border-slate-800 font-bold focus:ring-blue-500"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                disabled={isSocialLoading || !searchQuery}
+                className="h-12 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black"
+              >
+                {isSocialLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              </Button>
             </form>
 
             <div className="min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide pr-1">

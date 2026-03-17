@@ -43,8 +43,14 @@ export const socialApi = {
   },
 
   getUserProfile: async (username: string): Promise<UserPublicProfile> => {
+    const token = localStorage.getItem('token')?.replace(/"/g, '');
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_URL}/social/profile/${encodeURIComponent(username)}`, {
-      headers: authHeaders()
+      headers
     });
     if (!response.ok) throw new Error("User not found");
     return response.json();

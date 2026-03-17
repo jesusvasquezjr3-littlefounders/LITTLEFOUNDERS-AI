@@ -75,7 +75,7 @@
         "empty_followers": "You have no followers yet."
     },
     "fields": {
-        "nickname": "Nickname",
+        "nickname": "Username",
         "nickname_placeholder": "What should we call you?",
         "bio": "Bio",
         "bio_placeholder": "Tell us something about yourself...",

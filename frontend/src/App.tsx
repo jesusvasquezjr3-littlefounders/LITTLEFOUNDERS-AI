@@ -104,16 +104,7 @@ const App = () => (
                     <Profile />
                   </ProtectedRoute>
                 } />
-                <Route path="/u/:username" element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/@:username" element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                } />
+                <Route path="/u/:username" element={<UserProfile />} />
                 <Route path="/avatar/edit" element={
                   <ProtectedRoute>
                     <AvatarEditor />

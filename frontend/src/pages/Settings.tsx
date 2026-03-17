@@ -285,7 +285,7 @@ const Settings = () => {
                                         size={96}
                                         showCTA={false}
                                         linkToEdit={true}
-                                        className="z-10 bg-white/10 dark:bg-black/20"
+                                        className="z-10"
                                     />
                                 </div>
                             </div>

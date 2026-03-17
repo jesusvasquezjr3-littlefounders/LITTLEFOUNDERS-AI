@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func
-from typing import List
+from typing import List, Optional
 
 from database import get_db
 from models import User, Follow, FollowStatus, UserType
-from auth.endpoints import get_current_user_from_token
+from auth.endpoints import get_current_user_from_token, get_current_user_optional
 from .schemas import UserPublicProfile, FollowActionResponse, FollowRequestResponse
 
 router = APIRouter(prefix="/social", tags=["Social"])
 
-def get_profile_data(db: Session, target_user: User, current_user: User) -> UserPublicProfile:
+def get_profile_data(db: Session, target_user: User, current_user: Optional[User]) -> UserPublicProfile:
     # Get stats
     followers_count = db.query(Follow).filter(
         Follow.followed_id == target_user.id,
@@ -73,7 +73,7 @@ async def search_users(q: str, db: Session = Depends(get_db), current_user: User
     return results
 
 @router.get("/profile/{username}", response_model=UserPublicProfile)
-async def get_user_profile(username: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user_from_token)):
+async def get_user_profile(username: str, db: Session = Depends(get_db), current_user: Optional[User] = Depends(get_current_user_optional)):
     username = username.lstrip('@')
     target_user = db.query(User).filter(User.username == username).first()
     if not target_user:
