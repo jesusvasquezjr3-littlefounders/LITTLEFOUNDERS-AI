@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Settings, User, Trophy, Flame, Star, Mail, Calendar, Shield, Palette, Check, Loader2, BookOpen, Clock, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
 import { socialApi, UserPublicProfile, FollowRequest } from "../lib/api/social";
 import { UserConnectionsList } from "@/components/social/UserConnectionsList";
@@ -14,6 +15,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { API_URL } from "@/config/api";
 import { cn } from "@/lib/utils";
@@ -39,6 +47,7 @@ const Profile = () => {
   const [isUpdatingBanner, setIsUpdatingBanner] = useState(false);
   const [activeSocialTab, setActiveSocialTab] = useState("following");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<UserPublicProfile[]>([]);
   const [following, setFollowing] = useState<UserPublicProfile[]>([]);
   const [followers, setFollowers] = useState<UserPublicProfile[]>([]);
@@ -132,19 +141,39 @@ const Profile = () => {
     }
   };
 
+  const handleShare = async () => {
+    if (!user?.username) return;
+    
+    // Using window.location.origin to ensure it's 100% functional in local and prod
+    // while following the pattern littlefounders.ai/@username in prod
+    const shareUrl = `${window.location.origin}/@${user.username}`;
+    const message = `${t('profile:messages.share_message')} ${shareUrl}`;
+    
+    try {
+      await navigator.clipboard.writeText(message);
+      toast({
+        title: t('profile:messages.share_success'),
+        className: "bg-blue-50 text-blue-900 border-blue-200",
+        duration: 2000,
+      });
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery || searchQuery.length < 3) return;
-    
+
     setIsSocialLoading(true);
     try {
       const results = await socialApi.searchUsers(searchQuery);
       setSearchResults(results);
     } catch (error) {
-      toast({ 
-        title: t('common:status.error'), 
-        description: t('profile:messages.search_error'), 
-        variant: "destructive" 
+      toast({
+        title: t('common:status.error'),
+        description: t('profile:messages.search_error'),
+        variant: "destructive"
       });
     } finally {
       setIsSocialLoading(false);
@@ -177,7 +206,7 @@ const Profile = () => {
 
         {/* Header Section - Full Width */}
         <div
-          className="relative bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden transition-colors duration-500"
+          className="relative rounded-3xl p-6 md:p-8 liquid-glass-strong overflow-hidden transition-colors duration-500"
           style={user?.avatar_config?.bannerColor ? { backgroundColor: user.avatar_config.bannerColor } : {}}
         >
           {/* Banner Edit Button */}
@@ -248,136 +277,198 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="md:ml-auto">
+            <div className="md:ml-auto flex items-center gap-3">
+              {/* Desktop Share Button */}
               <Button
-                onClick={() => navigate('/settings')}
+                onClick={handleShare}
                 variant="outline"
-                className="rounded-full border-2 border-slate-200 hover:border-slate-300 dark:border-slate-700 gap-2"
+                className="hidden md:flex rounded-full border-2 border-slate-200 hover:border-slate-300 dark:border-slate-700 gap-2 bg-white/20 backdrop-blur-sm"
               >
-                <Settings className="w-4 h-4" />
-                {t('common:navigation.settings')}
+                <Globe className="w-4 h-4 text-blue-500" />
+                {t('profile:actions.share_profile')}
               </Button>
+
+              {/* Mobile Stats & Inline Share */}
+              <div className="flex md:hidden items-center gap-6 mt-4 md:mt-0">
+                <div className="text-center">
+                  <p className="text-xl font-black text-slate-900 dark:text-white leading-none">{socialStats.followers}</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">{t('profile:social.followers')}</p>
+                </div>
+                <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
+                <div className="text-center">
+                  <p className="text-xl font-black text-slate-900 dark:text-white leading-none">{socialStats.following}</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">{t('profile:social.following')}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Learning & Info (Desktop: 7/12) */}
-          <div className="lg:col-span-7 space-y-8 order-1 lg:order-1">
-            
-            {/* Learning Stats */}
+
+          {/* Left Column: Learning & Info (Desktop: 8/12) */}
+          <div className="lg:col-span-8 space-y-8 order-1 lg:order-1">
+
+            {/* Learning Stats - Intelligent Design */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 px-2">
-                 <Trophy className="w-5 h-5 text-yellow-500" />
-                 <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-wider text-sm">{t('profile:sections.my_achievements')}</h3>
+                <Trophy className="w-5 h-5 text-yellow-500" />
+                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">{t('profile:sections.my_achievements')}</h3>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.02]">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-2">
-                    <BookOpen className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <span className="text-2xl font-black text-slate-900 dark:text-white">{lessonsCompleted}</span>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">{t('common:dashboard.stats.lessons')}</span>
-                </div>
-                
-                <div className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.02]">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-2">
-                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <span className="text-2xl font-black text-slate-900 dark:text-white">{minutesStudied}</span>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">{t('common:dashboard.stats.minutes')}</span>
-                </div>
-
-                <div className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.02]">
-                  <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-2xl flex items-center justify-center mb-2">
-                    <Star className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                  </div>
-                  <span className="text-2xl font-black text-slate-900 dark:text-white">{pointsEarned}</span>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">{t('common:dashboard.stats.points')}</span>
-                </div>
-
-                <div className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.02]">
-                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center mb-2">
-                    <Flame className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <span className="text-2xl font-black text-slate-900 dark:text-white">{currentStreak}</span>
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">{t('common:dashboard.stats.streak')}</span>
-                </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  {
+                    title: t('common:dashboard.stats.lessons'),
+                    value: lessonsCompleted,
+                    lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie",
+                    color: "text-blue-600",
+                    size: "70px"
+                  },
+                  {
+                    title: t('common:dashboard.stats.minutes'),
+                    value: minutesStudied,
+                    lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie",
+                    color: "text-green-600",
+                    size: "70px"
+                  },
+                  {
+                    title: t('common:dashboard.stats.points'),
+                    value: pointsEarned,
+                    lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
+                    color: "text-yellow-600",
+                    size: "70px"
+                  },
+                  {
+                    title: t('common:dashboard.stats.streak'),
+                    value: currentStreak,
+                    lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie",
+                    color: "text-purple-600",
+                    size: "60px"
+                  }
+                ].map((stat, idx) => (
+                  <GlassPanel 
+                    key={idx} 
+                    variant="default" 
+                    className={cn(
+                      "liquid-glass-subtle hover:scale-[1.02] transition-all duration-300 overflow-hidden",
+                      stat.value === 0 && "grayscale opacity-60"
+                    )}
+                  >
+                    <div className="p-4 flex flex-col items-center text-center">
+                      <div className="h-16 flex items-center justify-center mb-1">
+                        {/* @ts-ignore */}
+                        <dotlottie-wc
+                          src={stat.lottieSrc}
+                          // @ts-ignore
+                          style={{ width: stat.size, height: stat.size }}
+                          autoplay
+                          loop
+                        ></dotlottie-wc>
+                      </div>
+                      <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">{stat.value}</span>
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">{stat.title}</span>
+                    </div>
+                  </GlassPanel>
+                ))}
               </div>
             </section>
 
-            {/* Account Info */}
+            {/* Account Info - Standardized */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 px-2">
-                 <User className="w-5 h-5 text-purple-500" />
-                 <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-wider text-sm">{t('profile:sections.personal_info')}</h3>
+                <User className="w-5 h-5 text-purple-500" />
+                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">{t('profile:sections.personal_info')}</h3>
               </div>
-              <Card className="border border-slate-100 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 rounded-3xl overflow-hidden">
-                <CardContent className="p-2 space-y-1">
-                  <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                      <UserCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden">
+                <CardContent className="p-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 dark:bg-black/5 hover:bg-white/10 dark:hover:bg-black/10 transition-colors">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                        <UserCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('auth:fields.name.label')}</p>
+                        <p className="text-lg font-black text-slate-900 dark:text-white truncate">{user.name}</p>
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{t('auth:fields.name.label')}</p>
-                      <p className="text-base font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-                      <AtSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 dark:bg-black/5 hover:bg-white/10 dark:hover:bg-black/10 transition-colors">
+                      <div className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                        <AtSign className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('profile:fields.nickname')}</p>
+                        <p className="text-lg font-black text-slate-900 dark:text-white truncate">
+                          {user.username ? `@${user.username}` : <span className="text-slate-400 italic font-medium">{t('common:status.not_configured')}</span>}
+                        </p>
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{t('profile:fields.nickname')}</p>
-                      <p className="text-base font-bold text-slate-900 dark:text-white truncate">
-                        {user.username ? `@${user.username}` : <span className="text-slate-400 italic">{t('common:status.not_configured')}</span>}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 dark:bg-black/5 hover:bg-white/10 dark:hover:bg-black/10 transition-colors">
+                      <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('auth:fields.email.label')}</p>
+                        <p className="text-lg font-black text-slate-900 dark:text-white truncate" title={user.email}>
+                          {user.email}
+                        </p>
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{t('auth:fields.email.label')}</p>
-                      <p className="text-base font-bold text-slate-900 dark:text-white truncate" title={user.email}>
-                        {user.email}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                      <Shield className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                    </div>
-                    <div className="overflow-hidden">
-                      <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{t('profile:fields.user_type')}</p>
-                      <p className="text-base font-bold text-slate-900 dark:text-white truncate">
-                        {getUserTypeLabel(user.user_type)}
-                      </p>
+                    <div className="flex items-center gap-4 p-4 rounded-3xl bg-white/5 dark:bg-black/5 hover:bg-white/10 dark:hover:bg-black/10 transition-colors">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('profile:fields.user_type')}</p>
+                        <p className="text-lg font-black text-slate-900 dark:text-white truncate">
+                          {getUserTypeLabel(user.user_type)}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </GlassPanel>
+            </section>
+
+            {/* Mobile-only "Add Friends" Card */}
+            <section className="lg:hidden">
+              <GlassPanel 
+                variant="gradient" 
+                gradient="blue" 
+                className="p-8 flex flex-col items-center text-center gap-4 cursor-pointer hover:scale-[1.02] transition-transform active:scale-95"
+                onClick={() => setIsSearchDialogOpen(true)}
+              >
+                <div className="w-16 h-16 rounded-[2rem] bg-white flex items-center justify-center shadow-lg">
+                  <UserPlus className="w-8 h-8 text-blue-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+                    {t('profile:actions.add_friends')}
+                  </h3>
+                  <p className="text-sm font-medium text-slate-600 opacity-80">
+                    {t('profile:actions.add_friends_desc')}
+                  </p>
+                </div>
+              </GlassPanel>
             </section>
           </div>
 
-          {/* Right Column: Social Hub (Desktop: 5/12) */}
-          <div className="lg:col-span-5 space-y-6 order-2 lg:order-2">
+          {/* Right Column: Social Hub (Desktop Only) */}
+          <div className="hidden lg:block lg:col-span-4 space-y-6 order-2 lg:order-2">
             <div className="space-y-6 lg:sticky lg:top-8">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-blue-500" />
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-wider text-sm">{t('profile:sections.social')}</h3>
                 </div>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="text-blue-600 font-bold hover:bg-blue-50 rounded-xl gap-2 h-8 px-3"
                   onClick={() => setActiveSocialTab("search")}
                 >
@@ -385,10 +476,10 @@ const Profile = () => {
                   {t('profile:social.search')}
                 </Button>
               </div>
-              
-              <div className="bg-white dark:bg-slate-800/50 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden min-h-[300px] lg:min-h-[500px] flex flex-col">
+
+              <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px] shadow-xl">
                 {/* Custom Tab Switcher */}
-                <div className="flex border-b border-slate-100 dark:border-slate-700 px-6 shrink-0">
+                <div className="flex border-b border-black/5 dark:border-white/5 px-6 shrink-0">
                   {[
                     { id: "following", label: t('profile:tabs.friends') },
                     { id: "followers", label: t('profile:social.followers') },
@@ -399,8 +490,8 @@ const Profile = () => {
                       onClick={() => setActiveSocialTab(tab.id)}
                       className={cn(
                         "px-4 py-4 text-xs font-black uppercase tracking-widest transition-all relative",
-                        activeSocialTab === tab.id 
-                          ? "text-blue-600" 
+                        activeSocialTab === tab.id
+                          ? "text-blue-600"
                           : "text-slate-400 hover:text-slate-600"
                       )}
                     >
@@ -430,7 +521,7 @@ const Profile = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <Button size="sm" variant="ghost" className="h-7 rounded-lg text-green-600 hover:bg-green-50 font-bold px-2 text-[10px]" onClick={() => handleAccept(req.username)}>
-                                 {t('profile:social.accept')}
+                                {t('profile:social.accept')}
                               </Button>
                               <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-slate-300 hover:bg-slate-50 transition-colors" onClick={() => handleReject(req.username)}>
                                 <X className="w-3 h-3" />
@@ -463,18 +554,18 @@ const Profile = () => {
                       <form onSubmit={handleSearch} className="relative group shrink-0 flex gap-2">
                         <div className="relative flex-1">
                           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                          <Input 
+                          <Input
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={t('profile:sections.search_placeholder')}
-                            className="pl-12 h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus-visible:ring-0 focus-visible:border-blue-500 transition-all font-bold placeholder:font-medium"
+                            className="pl-12 h-14 rounded-3xl bg-black/5 dark:bg-white/5 border-2 border-transparent focus-visible:ring-0 focus-visible:border-blue-500 transition-all font-bold placeholder:font-medium"
                             autoFocus
                           />
                         </div>
-                        <Button 
-                          type="submit" 
-                          disabled={isSocialLoading || !searchQuery} 
-                          className="h-14 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                        <Button
+                          type="submit"
+                          disabled={isSocialLoading || !searchQuery}
+                          className="h-14 px-8 rounded-3xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
                         >
                           {isSocialLoading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
@@ -496,20 +587,59 @@ const Profile = () => {
                           </div>
                         )}
                         {!searchQuery && !isSocialLoading && (
-                           <div className="text-center py-20 opacity-30 select-none grayscale">
-                             <UserPlus className="w-16 h-16 mx-auto mb-4" />
-                             <p className="text-sm font-black uppercase tracking-widest">Encuentra a tus amigos</p>
-                           </div>
+                          <div className="text-center py-20 opacity-30 select-none grayscale">
+                            <UserPlus className="w-16 h-16 mx-auto mb-4" />
+                            <p className="text-sm font-black uppercase tracking-widest">Encuentra a tus amigos</p>
+                          </div>
                         )}
                       </div>
                     </div>
                   )}
                 </div>
-              </div>
+              </GlassPanel>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Dialog */}
+      <Dialog open={isSearchDialogOpen} onOpenChange={setIsSearchDialogOpen}>
+        <DialogContent className="liquid-glass-strong border-none p-0 overflow-hidden rounded-[2.5rem] max-w-sm mx-auto">
+          <div className="p-8 space-y-6">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight text-center">
+                {t('profile:actions.add_friends')}
+              </DialogTitle>
+              <DialogDescription className="text-center font-medium">
+                {t('profile:actions.add_friends_desc')}
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSearch} className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('profile:sections.search_placeholder')}
+                className="pl-11 h-12 rounded-2xl bg-white/50 dark:bg-black/20 border-slate-200 dark:border-slate-800 font-bold focus:ring-blue-500"
+              />
+            </form>
+
+            <div className="min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide pr-1">
+              {isSocialLoading ? (
+                <div className="flex justify-center items-center h-[200px]">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                </div>
+              ) : (
+                <UserConnectionsList
+                  users={searchResults}
+                  emptyMessage={t('profile:sections.no_results')}
+                />
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

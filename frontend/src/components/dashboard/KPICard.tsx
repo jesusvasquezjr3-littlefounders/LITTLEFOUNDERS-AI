@@ -72,7 +72,7 @@ export function KPICard({
     : changeLabel;
 
   return (
-    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-1 bg-white/10 backdrop-blur-sm border-0">
+    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-1 liquid-glass border-none">
       {/* Franja de color superior */}
       <div className={cn("absolute top-0 left-0 w-full h-1", config.bgGradient)} />
 

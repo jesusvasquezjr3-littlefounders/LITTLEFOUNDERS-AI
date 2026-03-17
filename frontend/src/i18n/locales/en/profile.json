@@ -9,7 +9,10 @@
         "save": "Save",
         "upload_photo": "Upload custom photo",
         "remove_photo": "Remove custom photo",
-        "select_image": "Select image"
+        "select_image": "Select image",
+        "share_profile": "Share Profile",
+        "add_friends": "Add Friends",
+        "add_friends_desc": "Search and connect with other LittleFounders"
     },
     "tabs": {
         "avatar": "Avatar",
@@ -38,7 +41,9 @@
         "reject_success": "Request rejected",
         "search_error": "Error searching for users",
         "user_not_found": "User not found",
-        "action_error": "Could not perform the action"
+        "action_error": "Could not perform the action",
+        "share_success": "Link copied to clipboard!",
+        "share_message": "Follow me on LittleFounders so we can learn about finances together! 🚀"
     },
     "sections": {
         "current_avatar": "Current Avatar",

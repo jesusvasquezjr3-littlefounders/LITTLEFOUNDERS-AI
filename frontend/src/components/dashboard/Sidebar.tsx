@@ -111,9 +111,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         className={cn(
           "hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50",
           "flex-col items-center gap-1 p-3",
-          "rounded-3xl backdrop-blur-xl",
-          "bg-white/70 dark:bg-slate-900/70",
-          "border border-white/50 dark:border-slate-700/50",
+          "rounded-3xl liquid-glass",
           "shadow-2xl shadow-black/10",
           "transition-all duration-300 ease-out",
           isExpanded ? "w-60" : "w-24"
@@ -186,7 +184,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* Mobile Bottom Dock - Horizontal */}
-      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-white/50 dark:border-slate-700/50 shadow-2xl overflow-x-auto max-w-[95vw]">
+      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 rounded-2xl liquid-glass shadow-2xl overflow-x-auto max-w-[95vw]">
         {menuItems.slice(0, 7).map((item: any) => {
           const active = isActive(item.url);
           return (

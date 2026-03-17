@@ -139,7 +139,7 @@ export function TopNav() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-72 p-2 rounded-2xl border border-indigo-100/50 dark:border-slate-800/50 shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl"
+            className="w-72 p-2 rounded-2xl border border-indigo-100/50 dark:border-slate-800/50 shadow-2xl liquid-glass-strong"
             align="end"
             forceMount
           >

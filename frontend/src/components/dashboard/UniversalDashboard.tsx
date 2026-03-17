@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from "@/components/ui/card";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 interface UniversalDashboardProps {
     user: any;
@@ -50,7 +51,7 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Premium Welcome Header */}
-            <div className="relative mb-8 p-6 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+            <GlassPanel variant="gradient" gradient="indigo" className="relative mb-8 p-6 overflow-hidden">
                 <div className="flex flex-col md:flex-row items-center gap-5 relative z-10">
                     <div className="text-center md:text-left">
                         <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-1">
@@ -61,15 +62,15 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
                         </p>
                     </div>
                 </div>
-            </div>
+            </GlassPanel>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map((stat, index) => (
-                    <Card key={index} className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
+                    <GlassPanel key={index} variant="default" className={`liquid-glass-subtle overflow-hidden relative hover:scale-[1.02] transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
                         <CardContent className="p-4 md:p-6">
                             <div className="flex flex-col items-center text-center space-y-2 relative z-10">
-                                <div className={`p-2 rounded-full ${stat.bgColor} mb-2 h-[170px] flex items-center justify-center`}>
+                                <div className={`p-2 rounded-full mb-2 h-[170px] flex items-center justify-center`}>
                                     {/* @ts-ignore */}
                                     <dotlottie-wc
                                         src={stat.lottieSrc}
@@ -79,18 +80,18 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
                                         loop
                                     ></dotlottie-wc>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                                    <p className="text-3xl font-bold my-1 text-gray-800 dark:text-gray-100">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground">{stat.description}</p>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-bold text-slate-500/80 uppercase tracking-wider">{stat.title}</p>
+                                    <p className="text-4xl font-black text-slate-800 dark:text-white">{stat.value}</p>
+                                    <p className="text-xs font-semibold text-slate-500">{stat.description}</p>
                                 </div>
                             </div>
                         </CardContent>
-                    </Card>
+                    </GlassPanel>
                 ))}
             </div>
 
 
-        </div>
+        </div >
     );
 }

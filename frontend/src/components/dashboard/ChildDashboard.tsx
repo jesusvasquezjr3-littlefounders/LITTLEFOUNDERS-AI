@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import {
   BookOpen,
   Clock,
@@ -127,7 +128,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
   return (
     <div className="space-y-6 p-6">
       {/* Premium Welcome Header */}
-      <div className="relative mb-8 p-6 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+      <GlassPanel variant="gradient" gradient="indigo" className="relative mb-8 p-6 overflow-hidden">
         <div className="flex flex-col md:flex-row items-center gap-5 relative z-10">
           <div className="text-center md:text-left">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-1">
@@ -138,12 +139,12 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
             </p>
           </div>
         </div>
-      </div>
+      </GlassPanel>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
+          <GlassPanel key={index} variant="gradient" gradient="indigo" className={`overflow-hidden relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${stat.value === 0 ? 'grayscale opacity-70' : ''}`}>
             <CardContent className="p-4 md:p-6">
               <div className="flex flex-col items-center text-center space-y-2 relative z-10">
                 <div className={`p-2 rounded-full ${stat.bgColor} mb-2 h-[170px] flex items-center justify-center`}>
@@ -163,12 +164,12 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </GlassPanel>
         ))}
       </div>
 
       {/* Weekly Goal Progress */}
-      <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
+      <GlassPanel variant="gradient" gradient="indigo" className="overflow-hidden">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-blue-800">
             <Target className="h-5 w-5" />
@@ -187,12 +188,12 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Next Lessons */}
-        <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
+        <GlassPanel variant="gradient" gradient="indigo" className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Play className="h-5 w-5 text-green-600" />
@@ -204,7 +205,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {nextLessons.map((lesson, index) => (
-              <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div key={index} className="flex items-center justify-between p-4 liquid-glass-subtle hover:scale-[1.02] transition-all">
                 <div className="flex-1">
                   <h4 className="font-medium">{lesson.title}</h4>
                   <div className="flex items-center space-x-4 mt-1">
@@ -233,10 +234,10 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
               </Link>
             </Button>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
         {/* Achievements */}
-        <Card className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden">
+        <GlassPanel variant="gradient" gradient="indigo" className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Award className="h-5 w-5 text-yellow-600" />
@@ -248,9 +249,9 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {achievements.map((achievement, index) => (
-              <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-2 transition-all ${achievement.unlocked
-                ? 'border-green-200 bg-green-50'
-                : 'border-gray-200 bg-gray-50'
+              <div key={index} className={`flex items-center space-x-4 p-3 transition-all ${achievement.unlocked
+                ? 'liquid-glass border-green-500/30'
+                : 'liquid-glass-subtle grayscale opacity-60 scale-95'
                 }`}>
                 <div className={`p-2 rounded-full ${achievement.unlocked ? 'bg-green-100' : 'bg-gray-100'
                   }`}>
@@ -275,7 +276,7 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
               </div>
             ))}
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Explore Features Section */}
@@ -326,6 +327,6 @@ export function ChildDashboard({ user }: ChildDashboardProps) {
           </Link>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

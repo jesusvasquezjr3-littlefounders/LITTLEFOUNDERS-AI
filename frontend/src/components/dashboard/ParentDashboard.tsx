@@ -10,6 +10,7 @@ import { AdvancedMetrics } from "./AdvancedMetrics";
 import { ExecutiveSummary } from "./ExecutiveSummary";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import {
   BookOpen,
   Clock,
@@ -232,7 +233,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
           {/* Quick Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Lecciones */}
-            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.lessons_completed === 0 ? 'grayscale opacity-70' : ''}`}>
+            <GlassPanel variant="gradient" gradient="indigo" className={`p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.lessons_completed === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <BookOpen className="w-24 h-24 text-blue-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -246,10 +247,10 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 <div className="text-4xl font-black text-slate-800 dark:text-white mb-1">{childData.lessons_completed}</div>
                 <div className="text-sm font-bold text-blue-500">{t('parent.completed')}</div>
               </div>
-            </div>
+            </GlassPanel>
 
             {/* Puntos */}
-            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.points_earned === 0 ? 'grayscale opacity-70' : ''}`}>
+            <GlassPanel variant="gradient" gradient="indigo" className={`p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.points_earned === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Star className="w-24 h-24 text-yellow-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -263,10 +264,10 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 <div className="text-4xl font-black text-slate-800 dark:text-white mb-1">{childData.points_earned}</div>
                 <div className="text-sm font-bold text-yellow-500">{t('parent.total_accumulated')}</div>
               </div>
-            </div>
+            </GlassPanel>
 
             {/* Racha */}
-            <div className={`border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.current_streak === 0 ? 'grayscale opacity-70' : ''}`}>
+            <GlassPanel variant="gradient" gradient="indigo" className={`p-5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${childData?.current_streak === 0 ? 'grayscale opacity-70' : ''}`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Zap className="w-24 h-24 text-orange-500 transform rotate-12 translate-x-4 -translate-y-4" />
               </div>
@@ -280,11 +281,11 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 <div className="text-4xl font-black text-slate-800 dark:text-white mb-1">{childData.current_streak}</div>
                 <div className="text-sm font-bold text-orange-500">{t('parent.days_in_row')}</div>
               </div>
-            </div>
+            </GlassPanel>
           </div>
 
           {/* Detailed Progress Tabs */}
-          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
+          <GlassPanel variant="gradient" gradient="indigo" className="p-6">
             <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod} className="w-full">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
@@ -312,14 +313,14 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                   <TabsContent key={period} value={period} className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       {/* Charts */}
-                      <div className="bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
+                      <div className="liquid-glass-subtle rounded-2xl p-4">
                         <ProgressCharts childData={childData} selectedPeriod={period} />
                       </div>
 
                       {/* Text Stats */}
                       <div className="space-y-4">
-                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 flex items-center gap-4 border border-blue-100 dark:border-blue-900/50">
-                          <div className="w-12 h-12 bg-white dark:bg-blue-900 rounded-full flex items-center justify-center text-2xl shadow-sm border border-blue-100 dark:border-blue-800">
+                        <div className="liquid-glass-subtle rounded-2xl p-4 flex items-center gap-4 border border-blue-500/20">
+                          <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-2xl shadow-sm">
                             📚
                           </div>
                           <div>
@@ -332,8 +333,8 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                           </div>
                         </div>
 
-                        <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 flex items-center gap-4 border border-green-100 dark:border-green-900/50">
-                          <div className="w-12 h-12 bg-white dark:bg-green-900 rounded-full flex items-center justify-center text-2xl shadow-sm border border-green-100 dark:border-green-800">
+                        <div className="liquid-glass-subtle rounded-2xl p-4 flex items-center gap-4 border border-green-500/20">
+                          <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center text-2xl shadow-sm">
                             ⏱️
                           </div>
                           <div>
@@ -344,8 +345,8 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                           </div>
                         </div>
 
-                        <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl p-4 flex items-center gap-4 border border-yellow-100 dark:border-yellow-900/50">
-                          <div className="w-12 h-12 bg-white dark:bg-yellow-900 rounded-full flex items-center justify-center text-2xl shadow-sm border border-yellow-100 dark:border-yellow-800">
+                        <div className="liquid-glass-subtle rounded-2xl p-4 flex items-center gap-4 border border-yellow-500/20">
+                          <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center text-2xl shadow-sm">
                             🌟
                           </div>
                           <div>
@@ -361,7 +362,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 );
               })}
             </Tabs>
-          </div>
+          </GlassPanel>
 
           {/* Student Features Shortcut */}
           <div className="pt-4">
@@ -395,7 +396,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
         <div className="xl:col-span-4 space-y-6">
 
           {/* Card: Metas */}
-          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
+          <GlassPanel variant="gradient" gradient="indigo" className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-extrabold text-slate-800 dark:text-white text-lg flex items-center gap-2">
                 <Target className="w-5 h-5 text-red-500" />
@@ -428,18 +429,18 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
               {t('parent.view_all_goals')}
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </div>
+          </GlassPanel>
 
           {/* Card: Perfil Aprendizaje */}
-          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6">
+          <GlassPanel variant="gradient" gradient="indigo" className="p-6">
             <h3 className="font-extrabold text-slate-800 dark:text-white text-lg flex items-center gap-2 mb-6">
               <Briefcase className="w-5 h-5 text-purple-500" />
               {t('parent.student_profile')}
             </h3>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-3 rounded-2xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/50">
-                <div className="w-10 h-10 rounded-full bg-purple-200 dark:bg-purple-800 flex items-center justify-center text-purple-700 dark:text-purple-300 font-bold">
+              <div className="flex items-center gap-4 p-3 liquid-glass border-purple-500/20">
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold">
                   <Star className="w-5 h-5" />
                 </div>
                 <div>
@@ -448,8 +449,8 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold">
+              <div className="flex items-center gap-4 p-3 liquid-glass-subtle border-slate-500/10">
+                <div className="w-10 h-10 rounded-full bg-slate-500/10 flex items-center justify-center text-slate-500 dark:text-slate-300 font-bold">
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
@@ -458,10 +459,10 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </GlassPanel>
 
           {/* Call to Action Card */}
-          <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 text-center relative overflow-hidden">
+          <GlassPanel variant="gradient" gradient="indigo" className="p-6 text-center relative overflow-hidden">
             <div className="relative z-10">
               <Award className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="font-extrabold text-lg text-slate-800 dark:text-white mb-2">{t('parent.celebrate_title')}</h3>
@@ -472,21 +473,21 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
                 {t('parent.send_reward')}
               </Button>
             </div>
-          </div>
+          </GlassPanel>
 
         </div>
       </div>
 
       {/* Footer / Additional Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 overflow-hidden">
+        <GlassPanel variant="gradient" gradient="indigo" className="p-6 overflow-hidden">
           <ExecutiveSummary childData={childData} userType={user?.user_type} />
-        </div>
-        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl p-6 overflow-hidden">
+        </GlassPanel>
+        <GlassPanel variant="gradient" gradient="indigo" className="p-6 overflow-hidden">
           <AdvancedMetrics childData={childData} />
-        </div>
+        </GlassPanel>
       </div>
 
-    </div>
+    </div >
   );
 }

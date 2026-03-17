@@ -12,6 +12,7 @@ import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { getTranslatedError } from "@/utils/errorUtils";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const Login = () => {
   const { t } = useTranslation(['auth', 'common', 'errors']);
@@ -282,7 +283,7 @@ const Login = () => {
           </div>
 
           {/* Login Card */}
-          <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-white/50 dark:border-slate-700/50 p-6 space-y-5">
+          <GlassPanel variant="strong" className="p-6 space-y-5">
             {/* Header */}
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
@@ -424,7 +425,7 @@ const Login = () => {
                 </p>
               </div>
             </form>
-          </div>
+          </GlassPanel>
 
           {/* Footer Message */}
           <div className="mt-6 text-center">
@@ -436,7 +437,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

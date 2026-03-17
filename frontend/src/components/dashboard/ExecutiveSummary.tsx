@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import {
   TrendingUp,
   Target,
@@ -84,7 +85,7 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
 
       {/* Métricas Clave */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="rounded-3xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-900/30 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-blue-200 dark:border-blue-900/30 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold flex items-center space-x-2 text-blue-700 dark:text-blue-300 uppercase tracking-wide">
               <Target className="h-4 w-4" />
@@ -106,9 +107,9 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-900/30 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-green-200 dark:border-green-900/30 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold flex items-center space-x-2 text-green-700 dark:text-green-300 uppercase tracking-wide">
               <BookOpen className="h-4 w-4" />
@@ -129,9 +130,9 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-purple-200 bg-purple-50 dark:bg-purple-900/10 dark:border-purple-900/30 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-purple-200 dark:border-purple-900/30 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold flex items-center space-x-2 text-purple-700 dark:text-purple-300 uppercase tracking-wide">
               <Zap className="h-4 w-4" />
@@ -152,9 +153,9 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/10 dark:border-yellow-900/30 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-yellow-200 dark:border-yellow-900/30 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold flex items-center space-x-2 text-yellow-700 dark:text-yellow-400 uppercase tracking-wide">
               <Star className="h-4 w-4" />
@@ -175,12 +176,12 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Análisis de Rendimiento */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -235,9 +236,9 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -283,11 +284,11 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Recomendaciones */}
-      <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+      <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Lightbulb className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
@@ -344,7 +345,7 @@ export function ExecutiveSummary({ childData, userType }: ExecutiveSummaryProps)
             </div>
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
     </div>
   );
 }

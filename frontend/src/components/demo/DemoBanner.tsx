@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus, Info } from "lucide-react";
@@ -12,7 +13,7 @@ export function DemoBanner({ message }: DemoBannerProps) {
     const { t } = useTranslation('demo');
 
     return (
-        <div className="relative mb-6 p-3 px-5 rounded-2xl overflow-hidden border border-white/20 dark:border-white/10 shadow-lg backdrop-blur-md bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 animate-in fade-in slide-in-from-top-2 duration-700">
+        <GlassPanel variant="default" className="relative mb-6 p-3 px-5 rounded-2xl overflow-hidden border border-white/20 dark:border-white/10 shadow-lg bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 animate-in fade-in slide-in-from-top-2 duration-700">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
                 <div className="flex items-center gap-3 text-center sm:text-left">
                     <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-400/20">
@@ -43,6 +44,6 @@ export function DemoBanner({ message }: DemoBannerProps) {
                     </Button>
                 </div>
             </div>
-        </div>
+        </GlassPanel>
     );
 }

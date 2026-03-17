@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 import {
   Table,
   TableBody,
@@ -271,7 +272,7 @@ export const AdminUsers: React.FC = () => {
       </div>
 
       {/* Search */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <CardContent className="pt-6">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -283,11 +284,11 @@ export const AdminUsers: React.FC = () => {
             />
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Users Summary */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {t('users.totalUsers')}
@@ -300,8 +301,8 @@ export const AdminUsers: React.FC = () => {
               <div className="text-2xl font-bold text-slate-900 dark:text-white">{users.length}</div>
             )}
           </CardContent>
-        </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        </GlassPanel>
+        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {t('users.admins')}
@@ -314,8 +315,8 @@ export const AdminUsers: React.FC = () => {
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{adminUsers.length}</div>
             )}
           </CardContent>
-        </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        </GlassPanel>
+        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {t('users.otherUsers')}
@@ -328,11 +329,11 @@ export const AdminUsers: React.FC = () => {
               <div className="text-2xl font-bold text-slate-600 dark:text-slate-400">{otherUsers.length}</div>
             )}
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Admin Users Section */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="text-slate-900 dark:text-white">
             {t('users.administrators')} ({filteredAdmins.length})
@@ -369,10 +370,10 @@ export const AdminUsers: React.FC = () => {
             </p>
           )}
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Other Users Section */}
-      <Card className="bg-white dark:bg-slate-800 border-yellow-400 dark:border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
+      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-yellow-400 dark:border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
         <CardHeader>
           <CardTitle className="text-slate-900 dark:text-white">
             {t('users.otherUsersTitle')} ({filteredOthers.length})
@@ -481,10 +482,10 @@ export const AdminUsers: React.FC = () => {
             )
           )}
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* User Roles Legend */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <CardHeader>
           <CardTitle className="text-base text-slate-900 dark:text-white">
             {t('users.userRoles')}
@@ -526,7 +527,7 @@ export const AdminUsers: React.FC = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
     </div>
   );
 };

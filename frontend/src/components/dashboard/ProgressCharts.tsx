@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import {
   LineChart,
   Line,
@@ -145,7 +146,7 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
   return (
     <div className="space-y-6">
       {/* Gráfico de progreso según el período */}
-      <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+      <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -203,11 +204,11 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Gráficos de comparación mensual */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -231,9 +232,9 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -257,12 +258,12 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Gráficos de logros y metas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
@@ -303,9 +304,9 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -341,7 +342,7 @@ export function ProgressCharts({ childData, selectedPeriod }: ProgressChartsProp
               ))}
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
     </div>
   );

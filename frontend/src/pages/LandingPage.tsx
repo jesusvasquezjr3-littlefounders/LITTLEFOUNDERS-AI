@@ -91,7 +91,7 @@ const LandingPage = () => {
 
       {/* --- NAVIGATION --- */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen
-        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm py-3'
+        ? 'liquid-glass-subtle py-3'
         : 'bg-transparent py-5'
         }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -259,7 +259,7 @@ const LandingPage = () => {
               <button
                 key={lang.code}
                 onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
-                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${isCurrentLanguage(lang.code) ? "bg-white dark:bg-white text-gray-900 border-gray-300 dark:border-white shadow-xl scale-105" : "bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700/50 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-gray-500"}`}
+                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border liquid-glass ${isCurrentLanguage(lang.code) ? "text-gray-900 dark:text-gray-900 border-gray-300 dark:border-white shadow-xl scale-105" : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700/50 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500"}`}
               >
                 <span className="text-xl sm:text-2xl leading-none drop-shadow-md">{lang.flag}</span>
                 {lang.name}

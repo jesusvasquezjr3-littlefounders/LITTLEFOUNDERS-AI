@@ -7,6 +7,7 @@ import { useResumeLesson } from './hooks/useResumeLesson';
 import { useSagaData } from './hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '../ui/LoadingScreen';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
@@ -60,7 +61,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
     return (
         <div className="adventures-container w-full py-8">
             {/* Header Section */}
-            <div className="relative mb-10 p-5 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/10 via-purple-500/5 to-blue-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+            <GlassPanel variant="gradient" gradient="indigo" className="relative mb-10 p-5 overflow-hidden">
                 {/* Decorative Background Icon */}
                 <div className="absolute -right-6 -bottom-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
                     <BookOpen className="w-32 h-32 rotate-12 text-indigo-500" />
@@ -104,7 +105,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                         )}
                     </div>
                 </div>
-            </div>
+            </GlassPanel>
 
             {/* Separator Decorative Line */}
             <div className="flex items-center gap-4 mb-10">
@@ -179,7 +180,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
           50% { transform: scaleY(1.05); }
         }
       `}</style>
-        </div>
+        </div >
     );
 };
 

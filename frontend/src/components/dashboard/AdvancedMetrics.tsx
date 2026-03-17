@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useTranslation } from "react-i18next";
@@ -69,7 +70,7 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
     <div className="space-y-6">
       {/* Métricas de Rendimiento */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('metrics.efficiency')}</CardTitle>
           </CardHeader>
@@ -91,9 +92,9 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('metrics.consistency')}</CardTitle>
           </CardHeader>
@@ -110,9 +111,9 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               <Progress value={calculateConsistencyScore()} className="h-2 bg-slate-100 dark:bg-slate-800" />
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Crecimiento</CardTitle>
           </CardHeader>
@@ -132,9 +133,9 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Racha</CardTitle>
           </CardHeader>
@@ -156,12 +157,12 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Análisis Comparativo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -225,9 +226,9 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -270,12 +271,12 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
 
       {/* Proyecciones y Metas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -321,9 +322,9 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
 
-        <Card className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all hover:shadow-md">
+        <GlassPanel variant="default" className="rounded-3xl border-2 border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Award className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
@@ -366,7 +367,7 @@ export function AdvancedMetrics({ childData }: AdvancedMetricsProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassPanel>
       </div>
     </div>
   );

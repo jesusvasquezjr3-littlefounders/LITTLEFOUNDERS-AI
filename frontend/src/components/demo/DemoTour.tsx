@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Rocket, ChevronRight, X, Sparkles, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -238,7 +239,7 @@ export function DemoTour() {
     if (!role) {
         return (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                <Card className="w-[400px] p-8 shadow-2xl border-2 border-border/50 bg-background/95 relative overflow-hidden text-center space-y-6">
+                <GlassPanel variant="strong" className="w-[400px] p-8 shadow-2xl border-2 border-border/50 relative overflow-hidden text-center space-y-6">
                     <div className="space-y-2">
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                             {t('tour.role_selection.title')}
@@ -280,7 +281,7 @@ export function DemoTour() {
                     >
                         {t('tour.role_selection.skip')}
                     </Button>
-                </Card>
+                </GlassPanel>
             </div>
         );
     }
@@ -313,8 +314,8 @@ export function DemoTour() {
                     )}
                 </div>
 
-                <Card className={cn(
-                    "w-[340px] p-6 pt-10 shadow-2xl border-2 relative overflow-visible bg-background/95 backdrop-blur-xl",
+                <GlassPanel variant="strong" className={cn(
+                    "w-[340px] p-6 pt-10 shadow-2xl border-2 relative overflow-visible",
                     isCenter ? "text-center border-primary/30 scale-110" : "border-primary/50 animate-in fade-in zoom-in-95 slide-in-from-left-4"
                 )}>
                     {/* Background decoration */}
@@ -375,7 +376,7 @@ export function DemoTour() {
                             style={{ top: `${coords.arrowTop}px` }}
                         />
                     )}
-                </Card>
+                </GlassPanel>
             </div>
         </div>
     );

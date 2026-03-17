@@ -36,6 +36,7 @@ import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 // Setting Item Component
 const SettingItem = ({
@@ -51,17 +52,17 @@ const SettingItem = ({
     className?: string,
     description?: string
 }) => (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center gap-3 p-4", className)}>
-        <div className="flex items-center gap-3 min-w-[140px]">
-            <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
-                <Icon className="w-4 h-4 text-indigo-500" />
+    <div className={cn("flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 hover:bg-white/5 dark:hover:bg-black/10 transition-colors first:rounded-t-[2rem] last:rounded-b-[2rem]", className)}>
+        <div className="flex items-center gap-5">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-lg border border-indigo-500/20">
+                <Icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <div className="flex flex-col">
-                <span className="font-medium text-slate-700 dark:text-slate-200 text-sm">{label}</span>
-                {description && <span className="text-xs text-slate-400 font-normal">{description}</span>}
+            <div className="flex flex-col gap-0.5">
+                <span className="font-black text-slate-800 dark:text-slate-100 text-sm uppercase tracking-widest">{label}</span>
+                {description && <span className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">{description}</span>}
             </div>
         </div>
-        <div className="flex-1 w-full sm:w-auto">
+        <div className="w-full md:w-auto min-w-[200px] flex justify-end">
             {children}
         </div>
     </div>
@@ -69,11 +70,11 @@ const SettingItem = ({
 
 // Section Container
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
-    <div className="space-y-3">
-        <h3 className="px-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">{title}</h3>
-        <div className="border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10 rounded-3xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-700/50">
+    <div className="space-y-4">
+        <h3 className="px-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">{title}</h3>
+        <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden divide-y divide-black/5 dark:divide-white/5 rounded-3xl border-none shadow-xl">
             {children}
-        </div>
+        </GlassPanel>
     </div>
 );
 
@@ -260,249 +261,267 @@ const Settings = () => {
 
     return (
         <DashboardLayout>
-            <div className="max-w-xl mx-auto pb-24 px-4 pt-6 space-y-8">
+            <div className="max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500">
+                
+                {/* ── Main Layout (3:9) ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* ── Sidebar (3/12) ── */}
+                    <div className="lg:col-span-3 space-y-6">
+                        {/* Compact Profile Card */}
+                        <GlassPanel variant="default" className="liquid-glass-strong p-6 rounded-[2.5rem] flex flex-col items-center text-center gap-4 shadow-2xl">
+                            <div className="relative group">
+                                <div
+                                    className="absolute -inset-1 rounded-full blur-lg opacity-40 group-hover:opacity-100 transition duration-700"
+                                    style={{
+                                        background: user.avatar_config?.backgroundColor?.[0] && user.avatar_config.backgroundColor[0] !== 'none'
+                                            ? `#${user.avatar_config.backgroundColor[0]}`
+                                            : 'linear-gradient(to right, #6366f1, #a855f7)'
+                                    }}
+                                />
+                                <div className="relative">
+                                    <AvatarDisplay
+                                        config={user.avatar_config}
+                                        size={96}
+                                        showCTA={false}
+                                        linkToEdit={true}
+                                        className="z-10 bg-white/10 dark:bg-black/20"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <h1 className="text-xl font-black text-slate-900 dark:text-white truncate max-w-[160px]">
+                                    {name || user.name}
+                                </h1>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">@{username || t('common:status.not_configured')}</p>
+                            </div>
+                        </GlassPanel>
 
-                {/* Header Profile */}
-                <div className="flex flex-col items-center gap-4 py-4">
-                    <div className="relative group">
-                        <div
-                            className="absolute -inset-1 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"
-                            style={{
-                                background: user.avatar_config?.backgroundColor?.[0] && user.avatar_config.backgroundColor[0] !== 'none'
-                                    ? `#${user.avatar_config.backgroundColor[0]}`
-                                    : 'linear-gradient(to right, #ec4899, #9333ea)'
-                            }}
-                        />
-                        <div className="relative">
-                            <AvatarDisplay
-                                config={user.avatar_config}
-                                size={128}
-                                showCTA={false}
-                                linkToEdit={true}
-                                className="z-10"
-                            />
-                        </div>
+                        {/* Navigation Sidebar */}
+                        <GlassPanel variant="default" className="liquid-glass-subtle p-2 rounded-[2rem] overflow-hidden hidden lg:block">
+                            <div className="flex flex-col gap-1">
+                                {[
+                                    { icon: UserIcon, label: t('settings:identity.title'), id: 'identity' },
+                                    { icon: Mail, label: t('settings:account.title'), id: 'account' },
+                                    { icon: Lock, label: t('settings:account.password.label'), id: 'security' },
+                                    { icon: Globe, label: t('settings:account.language'), id: 'prefs' }
+                                ].map((tab) => (
+                                    <button 
+                                        key={tab.id}
+                                        onClick={() => {
+                                            const el = document.getElementById(tab.id);
+                                            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }}
+                                        className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/10 dark:hover:bg-black/10 transition-all group text-left"
+                                    >
+                                        <tab.icon className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                                        <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">{tab.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </GlassPanel>
                     </div>
-                    <div className="text-center">
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-                            {name || user.name}
-                        </h1>
-                        <p className="text-slate-500 text-sm font-medium">@{username || t('common:status.not_configured')}</p>
-                    </div>
-                </div>
 
-                {/* Basic Info Group */}
-                <Section title={t('settings:identity.title')}>
-                    <SettingItem icon={UserIcon} label={t('settings:identity.name.label')}>
-                        <Input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="h-10 border-0 bg-transparent text-right font-medium focus-visible:ring-0 placeholder:text-slate-300 p-0 shadow-none text-slate-900 dark:text-white"
-                            placeholder={t('settings:identity.name.placeholder')}
-                        />
-                    </SettingItem>
-                    <SettingItem icon={AtSign} label={t('settings:identity.username.label')} description={usernameError ? usernameError : ""}>
-                        <div className="relative">
-                            <Input
-                                value={username}
-                                onChange={(e) => {
-                                    const val = e.target.value.toLowerCase();
-                                    setUsername(val);
-                                    validateUsername(val);
-                                }}
-                                className={cn(
-                                    "h-10 border-0 bg-transparent text-right font-medium focus-visible:ring-0 placeholder:text-slate-300 p-0 shadow-none font-mono",
-                                    usernameError ? "text-red-500" : "text-indigo-600 dark:text-indigo-400"
-                                )}
-                                placeholder={t('settings:identity.username.placeholder')}
-                            />
+                    {/* ── Main content area (9/12) ── */}
+                    <div className="lg:col-span-9 space-y-10">
+                        
+                        {/* Identity Section */}
+                        <div id="identity">
+                            <Section title={t('settings:identity.title')}>
+                                <SettingItem icon={UserIcon} label={t('settings:identity.name.label')}>
+                                    <Input
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="h-12 border-2 border-black/5 dark:border-white/5 bg-white/5 dark:bg-black/20 rounded-2xl px-4 font-black focus-visible:ring-indigo-500 text-slate-900 dark:text-white"
+                                        placeholder={t('settings:identity.name.placeholder')}
+                                    />
+                                </SettingItem>
+                                <SettingItem icon={AtSign} label={t('settings:identity.username.label')} description={usernameError ? usernameError : ""}>
+                                    <Input
+                                        value={username}
+                                        onChange={(e) => {
+                                            const val = e.target.value.toLowerCase();
+                                            setUsername(val);
+                                            validateUsername(val);
+                                        }}
+                                        className={cn(
+                                            "h-12 border-2 border-black/5 dark:border-white/5 bg-white/5 dark:bg-black/20 rounded-2xl px-4 font-black focus-visible:ring-indigo-500 font-mono uppercase",
+                                            usernameError ? "text-red-500 border-red-500/20" : "text-indigo-600 dark:text-indigo-400"
+                                        )}
+                                        placeholder={t('settings:identity.username.placeholder')}
+                                    />
+                                </SettingItem>
+                                <SettingItem icon={Calendar} label={t('settings:identity.birthday.label')}>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className={cn(
+                                                    "w-full h-12 justify-between px-4 rounded-2xl border-2 border-black/5 dark:border-white/5 bg-white/5 dark:bg-black/20 font-black",
+                                                    !birthDate && "text-slate-300"
+                                                )}
+                                            >
+                                                {birthDate ? (
+                                                    format(birthDate, t('settings:identity.birthday.display_format'), { locale: dateLocale })
+                                                ) : (
+                                                    <span>{t('settings:identity.birthday.select')}</span>
+                                                )}
+                                                <Calendar className="w-4 h-4 text-slate-400" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-4 rounded-[2rem] liquid-glass-strong shadow-3xl border-white/10" align="end">
+                                            {/* (Existing Calendar Selection Logic is inside Section logic above) */}
+                                            <div className="flex gap-2 mb-4">
+                                                <Select
+                                                    value={birthDate ? birthDate.getFullYear().toString() : new Date().getFullYear().toString()}
+                                                    onValueChange={(year) => {
+                                                        const newDate = birthDate ? new Date(birthDate) : new Date();
+                                                        newDate.setFullYear(parseInt(year));
+                                                        setBirthDate(newDate);
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="w-[120px] rounded-xl font-bold bg-white/10">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl liquid-glass pb-10">
+                                                        {Array.from({ length: 120 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                                                            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <Select
+                                                    value={birthDate ? birthDate.getMonth().toString() : new Date().getMonth().toString()}
+                                                    onValueChange={(month) => {
+                                                        const newDate = birthDate ? new Date(birthDate) : new Date();
+                                                        newDate.setMonth(parseInt(month));
+                                                        setBirthDate(newDate);
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="w-[140px] rounded-xl font-bold bg-white/10">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl liquid-glass pb-10">
+                                                        {Array.from({ length: 12 }, (_, i) => i).map((month) => (
+                                                            <SelectItem key={month} value={month.toString()}>
+                                                                {format(new Date(2000, month, 1), "MMMM", { locale: dateLocale })}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <CalendarComponent
+                                                mode="single"
+                                                selected={birthDate}
+                                                onSelect={setBirthDate}
+                                                locale={dateLocale}
+                                                className="rounded-xl"
+                                                month={birthDate || new Date()}
+                                                onMonthChange={setBirthDate}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </SettingItem>
+                            </Section>
                         </div>
-                    </SettingItem>
-                    <SettingItem icon={Calendar} label={t('settings:identity.birthday.label')}>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"ghost"}
-                                    className={cn(
-                                        "w-full justify-end text-right font-medium p-0 hover:bg-transparent hover:text-indigo-600",
-                                        !birthDate && "text-slate-300"
-                                    )}
-                                >
-                                    {birthDate ? (
-                                        format(birthDate, t('settings:identity.birthday.display_format'), { locale: dateLocale })
+
+                        {/* Account Section */}
+                        <div id="account">
+                            <Section title={t('settings:account.title')}>
+                                <SettingItem icon={Mail} label={t('settings:account.email')}>
+                                    <div className="flex items-center gap-3 bg-white/5 dark:bg-black/20 p-3 px-5 rounded-2xl border-2 border-black/5 dark:border-white/5">
+                                        <span className="text-sm font-black text-slate-500">{user.email}</span>
+                                        <Shield className="w-4 h-4 text-green-500" />
+                                    </div>
+                                </SettingItem>
+                                <SettingItem icon={Globe} label={t('settings:account.language')}>
+                                    <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                                        <SelectTrigger className="h-12 w-full max-w-[200px] border-2 border-black/5 dark:border-white/5 bg-white/5 dark:bg-black/20 rounded-2xl px-5 font-black focus:ring-indigo-500">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-2xl liquid-glass">
+                                            <SelectItem value="es">Español</SelectItem>
+                                            <SelectItem value="en">English</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </SettingItem>
+                            </Section>
+                        </div>
+
+                        {/* Security Section (Floating / Separate) */}
+                        <div id="security">
+                            <Section title={t('settings:account.password.label')}>
+                                <SettingItem icon={Lock} label={t('settings:account.password.dialog.title')}>
+                                    {isEmailAuth ? (
+                                        <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                                                    {t('settings:account.password.change')}
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">{t('settings:account.password.dialog.title')}</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="space-y-4 py-4">
+                                                    <div className="space-y-2">
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.current')}</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={currentPassword}
+                                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.new')}</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={newPassword}
+                                                            onChange={(e) => setNewPassword(e.target.value)}
+                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20"
+                                                        onClick={handleChangePassword}
+                                                    >
+                                                        {isChangingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : t('settings:account.password.dialog.submit')}
+                                                    </Button>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
                                     ) : (
-                                        <span>{t('settings:identity.birthday.select')}</span>
+                                        <div className="flex items-center gap-2 bg-green-500/10 text-green-600 p-3 px-5 rounded-2xl font-black text-xs uppercase">
+                                            <Globe className="w-4 h-4" />
+                                            {t('settings:account.social')} ({user.auth_provider})
+                                        </div>
+                                    )}
+                                </SettingItem>
+                            </Section>
+                        </div>
+
+                        {/* FINAL SAVE BAR */}
+                        <div className="pt-6 sticky bottom-8 z-20">
+                            <GlassPanel variant="default" className="liquid-glass-strong p-4 rounded-3xl border-indigo-500/20 shadow-2xl flex justify-between items-center gap-6">
+                                <div className="hidden md:block">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('settings:actions.success_desc')}</p>
+                                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{t('settings:identity.title')} & {t('settings:account.title')}</p>
+                                </div>
+                                <Button
+                                    onClick={handleSaveProfile}
+                                    disabled={isSaving || !!usernameError}
+                                    className="flex-1 md:flex-none md:min-w-[240px] h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    {isSaving ? (
+                                        <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> {t('settings:actions.saving')}</>
+                                    ) : (
+                                        <><Save className="w-5 h-5 mr-3" /> {t('settings:actions.save')}</>
                                     )}
                                 </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-4" align="end">
-                                <div className="flex gap-2 mb-4">
-                                    <Select
-                                        value={birthDate ? birthDate.getFullYear().toString() : new Date().getFullYear().toString()}
-                                        onValueChange={(year) => {
-                                            const newDate = birthDate ? new Date(birthDate) : new Date();
-                                            newDate.setFullYear(parseInt(year));
-                                            setBirthDate(newDate);
-                                        }}
-                                    >
-                                        <SelectTrigger className="w-[120px]">
-                                            <SelectValue placeholder={t('settings:identity.birthday.year')} />
-                                        </SelectTrigger>
-                                        <SelectContent className="max-h-[300px]">
-                                            {Array.from({ length: 120 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                                                <SelectItem key={year} value={year.toString()}>
-                                                    {year}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-
-                                    <Select
-                                        value={birthDate ? birthDate.getMonth().toString() : new Date().getMonth().toString()}
-                                        onValueChange={(month) => {
-                                            const newDate = birthDate ? new Date(birthDate) : new Date();
-                                            newDate.setMonth(parseInt(month));
-                                            setBirthDate(newDate);
-                                        }}
-                                    >
-                                        <SelectTrigger className="w-[140px]">
-                                            <SelectValue placeholder={t('settings:identity.birthday.month')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {Array.from({ length: 12 }, (_, i) => i).map((month) => (
-                                                <SelectItem key={month} value={month.toString()}>
-                                                    {format(new Date(2000, month, 1), "MMMM", { locale: dateLocale })}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <CalendarComponent
-                                    mode="single"
-                                    selected={birthDate}
-                                    onSelect={setBirthDate}
-                                    initialFocus
-                                    locale={dateLocale}
-                                    month={birthDate || new Date()}
-                                    onMonthChange={setBirthDate}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </SettingItem>
-                    <SettingItem icon={Users} label={t('settings:identity.gender.label')}>
-                        <Select value={gender} onValueChange={setGender}>
-                            <SelectTrigger className="border-0 bg-transparent shadow-none focus:ring-0 p-0 h-auto justify-end gap-2 text-right">
-                                <SelectValue placeholder={t('settings:identity.gender.placeholder')} />
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                                <SelectItem value="male">{t('settings:identity.gender.options.male')}</SelectItem>
-                                <SelectItem value="female">{t('settings:identity.gender.options.female')}</SelectItem>
-                                <SelectItem value="prefer_not_say">{t('settings:identity.gender.options.prefer_not_say')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </SettingItem>
-                </Section>
-
-                {/* Account Group */}
-                <Section title={t('settings:account.title')}>
-                    <SettingItem icon={Mail} label={t('settings:account.email')}>
-                        <div className="flex items-center justify-end gap-2 text-slate-500">
-                            <span className="text-sm truncate max-w-[180px]">{user.email}</span>
-                            <Shield className="w-3 h-3 text-green-500" />
+                            </GlassPanel>
                         </div>
-                    </SettingItem>
 
-                    {isEmailAuth ? (
-                        <SettingItem icon={Lock} label={t('settings:account.password.label')}>
-                            <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-auto p-0 text-slate-400 hover:text-indigo-600 font-normal hover:bg-transparent">
-                                        {t('settings:account.password.change')} <ChevronRight className="w-4 h-4 ml-1" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md rounded-2xl">
-                                    <DialogHeader>
-                                        <DialogTitle>{t('settings:account.password.dialog.title')}</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="space-y-4 py-4">
-                                        <div className="space-y-2">
-                                            <Label>{t('settings:account.password.dialog.current')}</Label>
-                                            <Input
-                                                type="password"
-                                                value={currentPassword}
-                                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                                placeholder={t('settings:account.password.dialog.current_placeholder')}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>{t('settings:account.password.dialog.new')}</Label>
-                                            <Input
-                                                type="password"
-                                                value={newPassword}
-                                                onChange={(e) => setNewPassword(e.target.value)}
-                                                placeholder={t('settings:account.password.dialog.new_placeholder')}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>{t('settings:account.password.dialog.confirm')}</Label>
-                                            <Input
-                                                type="password"
-                                                value={confirmPassword}
-                                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                                placeholder={t('settings:account.password.dialog.confirm_placeholder')}
-                                            />
-                                        </div>
-                                        <Button
-                                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
-                                            onClick={handleChangePassword}
-                                            disabled={isChangingPassword}
-                                        >
-                                            {isChangingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : t('settings:account.password.dialog.submit')}
-                                        </Button>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        </SettingItem>
-                    ) : (
-                        <SettingItem icon={Globe} label={t('settings:account.social')}>
-                            <div className="flex items-center justify-end gap-2 text-slate-600">
-                                <span className="text-sm capitalize">{user.auth_provider}</span>
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            </div>
-                        </SettingItem>
-                    )}
-
-                    <SettingItem icon={Globe} label={t('settings:account.language')}>
-                        <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
-                            <SelectTrigger className="border-0 bg-transparent shadow-none focus:ring-0 p-0 h-auto justify-end gap-2 text-right">
-                                <SelectValue placeholder={t('settings:account.language')} />
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                                <SelectItem value="es">Español</SelectItem>
-                                <SelectItem value="en">English</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </SettingItem>
-                </Section>
-
-                {/* Save Button */}
-                <div className="flex justify-center pt-4">
-                    <Button
-                        onClick={handleSaveProfile}
-                        disabled={isSaving || !!usernameError}
-                        className="w-auto px-12 md:px-16 mx-auto h-12 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 shadow-lg shadow-slate-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                {t('settings:actions.saving')}
-                            </>
-                        ) : (
-                            <>
-                                {t('settings:actions.save')}
-                            </>
-                        )}
-                    </Button>
+                    </div>
                 </div>
 
             </div>

@@ -12,6 +12,7 @@ import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
 import { getTranslatedError } from "@/utils/errorUtils";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const Register = () => {
   const { t } = useTranslation(['auth', 'common', 'errors']);
@@ -239,7 +240,7 @@ const Register = () => {
           </div>
 
           {/* Register Card */}
-          <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-white/50 dark:border-slate-700/50 p-6 space-y-5">
+          <GlassPanel variant="strong" className="p-6 space-y-5">
             {/* Header */}
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -404,7 +405,7 @@ const Register = () => {
                 </p>
               </div>
             </form>
-          </div>
+          </GlassPanel>
 
           {/* Footer Message */}
           <div className="mt-6 text-center">
@@ -416,7 +417,7 @@ const Register = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

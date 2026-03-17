@@ -5,6 +5,7 @@ import * as avataaars from '@dicebear/avataaars';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 import { ArrowLeft, Shuffle, Save, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { API_URL } from '@/config/api';
@@ -301,7 +302,7 @@ const AvatarEditor = () => {
                 </div>
 
                 {/* Avatar Preview */}
-                <Card className="border-0 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-lg">
+                <GlassPanel variant="default" className="border-0 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-lg">
                     <CardContent className="flex flex-col items-center py-8">
                         <div className="relative">
                             <div
@@ -327,7 +328,7 @@ const AvatarEditor = () => {
                             {t('avatar:actions.randomize')}
                         </Button>
                     </CardContent>
-                </Card>
+                </GlassPanel>
 
                 {/* Duolingo-style Category Selector - Horizontal scroll on ALL devices */}
                 <div className="w-full relative group">
@@ -398,7 +399,7 @@ const AvatarEditor = () => {
                 </div>
 
                 {/* Options Grid - Larger items on mobile */}
-                <Card className="border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl">
+                <GlassPanel variant="strong" className="border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl">
                     <CardContent className="p-3 md:p-6">
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
                             {AVATAR_OPTIONS[activeTab as keyof typeof AVATAR_OPTIONS]?.values.map((value) => {
@@ -455,7 +456,7 @@ const AvatarEditor = () => {
                             })}
                         </div>
                     </CardContent>
-                </Card>
+                </GlassPanel>
 
             </div>
         </DashboardLayout>

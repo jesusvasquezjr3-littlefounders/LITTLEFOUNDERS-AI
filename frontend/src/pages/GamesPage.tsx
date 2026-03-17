@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DemoBanner } from "@/components/demo/DemoBanner";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 interface GamesPageProps {
   isDemo?: boolean;
@@ -61,7 +62,7 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
       <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {isDemo && <DemoBanner message={t('demo:demo_banner.games')} />}
         {/* Header Section */}
-        <div className="relative mb-8 p-5 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/10 via-orange-500/5 to-red-600/10 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm">
+        <GlassPanel variant="gradient" gradient="indigo" className="relative mb-8 p-5 overflow-hidden">
           {/* Decorative Background Icon */}
           <div className="absolute -right-6 -bottom-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
             <Gamepad2 className="w-32 h-32 rotate-12" />
@@ -80,7 +81,7 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
               </p>
             </div>
           </div>
-        </div>
+        </GlassPanel>
 
         {/* Separator Decorative Line */}
         <div className="flex items-center gap-4 mb-8">
@@ -98,7 +99,7 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
               onClick={() => navigate(game.path)}
               className={cn(
                 "group relative overflow-hidden rounded-3xl",
-                "border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-sm bg-gradient-to-br from-blue-600/10 via-purple-500/5 to-indigo-600/10",
+                "liquid-glass",
                 "transition-all duration-300",
                 "hover:scale-[1.03] hover:shadow-xl hover:shadow-purple-500/10",
                 "active:scale-[0.98]",
@@ -181,6 +182,6 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
           </div>
         </div>
       </div>
-    </Layout>
+    </Layout >
   );
 }

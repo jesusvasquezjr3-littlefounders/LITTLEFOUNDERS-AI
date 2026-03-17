@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Flag, AlertCircle, Clock, CheckCircle2, XCircle, Filter, RefreshCw, ExternalLink, ChevronDown, Image, Video, FileText, Eye, Play, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useTranslation } from "react-i18next";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -167,7 +168,7 @@ function ReportDetail({
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/50 group">
               {(() => {
                 const url = report.evidence_url || "";
-                
+
                 // Handle local fallback case where file wasn't uploaded completely
                 if (url.startsWith("[attached:")) {
                   const filename = url.replace("[attached:", "").replace("]", "");
@@ -185,23 +186,23 @@ function ReportDetail({
                 }
 
                 const cleanUrl = url.split("?")[0].toLowerCase();
-                
+
                 if (cleanUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
                   return (
                     <div className="space-y-3">
                       <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-200 dark:bg-slate-900 group">
                         <img src={url} alt="Evidence" className="w-full h-auto max-h-[300px] object-contain transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                           <a href={url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white rounded-full text-slate-900 shadow-xl transition-transform hover:scale-110">
-                             <Eye className="w-5 h-5" />
-                           </a>
+                          <a href={url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white rounded-full text-slate-900 shadow-xl transition-transform hover:scale-110">
+                            <Eye className="w-5 h-5" />
+                          </a>
                         </div>
                       </div>
                       <p className="text-[10px] text-slate-500 text-center font-medium">Previsualización de imagen</p>
                     </div>
                   );
                 }
-                
+
                 if (cleanUrl.match(/\.(mp4|webm|ogg|mov)$/i)) {
                   return (
                     <div className="flex items-center gap-4">
@@ -351,123 +352,123 @@ export default function AdminReports() {
 
   return (
     <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
-              <Flag className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{t("admin.page_title")}</h1>
-              <p className="text-sm text-slate-500">{stats?.total ?? 0} {t("admin.stats.total").toLowerCase()} · {stats?.by_status?.pending ?? 0} {t("admin.stats.pending").toLowerCase()}</p>
-            </div>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
+            <Flag className="w-5 h-5 text-white" />
           </div>
-          <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}
-            className="rounded-xl gap-2">
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-            {t("admin.actions.refresh")}
-          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{t("admin.page_title")}</h1>
+            <p className="text-sm text-slate-500">{stats?.total ?? 0} {t("admin.stats.total").toLowerCase()} · {stats?.by_status?.pending ?? 0} {t("admin.stats.pending").toLowerCase()}</p>
+          </div>
         </div>
+        <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}
+          className="rounded-xl gap-2">
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          {t("admin.actions.refresh")}
+        </Button>
+      </div>
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-              const Icon = cfg.icon;
-              return (
-                <button key={key} onClick={() => setFilterStatus(filterStatus === key ? "" : key)}
-                  className={`p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] ${filterStatus === key ? "ring-2 ring-blue-400 " + cfg.color : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <Icon className="w-5 h-5 text-slate-500" />
-                    <span className="text-2xl font-bold text-slate-800 dark:text-white">{stats.by_status[key] ?? 0}</span>
-                  </div>
-                  <p className="text-xs font-medium text-slate-500">{t(cfg.label_key)}</p>
-                </button>
-              );
-            })}
-          </div>
-        )}
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+            const Icon = cfg.icon;
+            return (
+              <button key={key} onClick={() => setFilterStatus(filterStatus === key ? "" : key)}
+                className={`p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] ${filterStatus === key ? "ring-2 ring-blue-400 " + cfg.color : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <Icon className="w-5 h-5 text-slate-500" />
+                  <span className="text-2xl font-bold text-slate-800 dark:text-white">{stats.by_status[key] ?? 0}</span>
+                </div>
+                <p className="text-xs font-medium text-slate-500">{t(cfg.label_key)}</p>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 items-center">
-          <Filter className="w-4 h-4 text-slate-400" />
-          {Object.entries(TYPE_LABELS).map(([key, label]) => (
-            <button key={key} onClick={() => setFilterType(filterType === key ? "" : key)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-all
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <Filter className="w-4 h-4 text-slate-400" />
+        {Object.entries(TYPE_LABELS).map(([key, label]) => (
+          <button key={key} onClick={() => setFilterType(filterType === key ? "" : key)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-all
                 ${filterType === key
-                  ? "bg-red-500 text-white border-red-500"
-                  : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-red-300"
-                }`}>
-              {label}
-            </button>
-          ))}
-          {(filterStatus || filterType) && (
-            <button onClick={() => { setFilterStatus(""); setFilterType(""); }}
-              className="text-xs text-slate-500 hover:text-red-500 underline">
-              {t("admin.actions.clear_filters")}
-            </button>
-          )}
-        </div>
+                ? "bg-red-500 text-white border-red-500"
+                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-red-300"
+              }`}>
+            {label}
+          </button>
+        ))}
+        {(filterStatus || filterType) && (
+          <button onClick={() => { setFilterStatus(""); setFilterType(""); }}
+            className="text-xs text-slate-500 hover:text-red-500 underline">
+            {t("admin.actions.clear_filters")}
+          </button>
+        )}
+      </div>
 
-        {/* Content */}
-        <div className={`grid gap-6 ${selectedReport ? "md:grid-cols-[1fr_420px]" : ""}`}>
-          {/* Reports List */}
-          <div className="space-y-2">
-            {loading ? (
-              <div className="flex items-center justify-center h-40 text-slate-400 gap-2">
-                <RefreshCw className="w-5 h-5 animate-spin" /> Cargando...
-              </div>
-            ) : reports.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-40 text-slate-400 gap-2">
-                <CheckCircle2 className="w-10 h-10" />
-                <p className="text-sm">{t("admin.messages.no_reports")}</p>
-              </div>
-            ) : (
-              reports.map((report) => (
-                <div key={report.id}
-                  onClick={() => setSelectedReport(selectedReport?.id === report.id ? null : report)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-150 hover:shadow-md
+      {/* Content */}
+      <div className={`grid gap-6 ${selectedReport ? "md:grid-cols-[1fr_420px]" : ""}`}>
+        {/* Reports List */}
+        <div className="space-y-2">
+          {loading ? (
+            <div className="flex items-center justify-center h-40 text-slate-400 gap-2">
+              <RefreshCw className="w-5 h-5 animate-spin" /> Cargando...
+            </div>
+          ) : reports.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-slate-400 gap-2">
+              <CheckCircle2 className="w-10 h-10" />
+              <p className="text-sm">{t("admin.messages.no_reports")}</p>
+            </div>
+          ) : (
+            reports.map((report) => (
+              <div key={report.id}
+                onClick={() => setSelectedReport(selectedReport?.id === report.id ? null : report)}
+                className={`p-4 rounded-xl border cursor-pointer transition-all duration-150 hover:shadow-md
                     ${selectedReport?.id === report.id
-                      ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/20"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-slate-300"
-                    }
+                    ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/20"
+                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-slate-300"
+                  }
                   `}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-slate-400 font-mono">#{report.id}</span>
-                        <span className="text-xs text-slate-500">{t(`form.types.${report.report_type}`)}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_BADGES[report.priority]}`}>
-                          {t(`admin.priorities.${report.priority}`)}
-                        </span>
-                      </div>
-                      <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{report.subject}</p>
-                      <p className="text-xs text-slate-500 truncate">{report.context}</p>
-                      <p className="text-xs text-slate-400">{report.reporter_email} · {timeAgo(report.created_at)}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-slate-400 font-mono">#{report.id}</span>
+                      <span className="text-xs text-slate-500">{t(`form.types.${report.report_type}`)}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${PRIORITY_BADGES[report.priority]}`}>
+                        {t(`admin.priorities.${report.priority}`)}
+                      </span>
                     </div>
-                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                      <StatusBadge status={report.status} />
-                      {report.evidence_url && (
-                        <span className="text-xs text-blue-500">📎 {t("admin.labels.evidence")}</span>
-                      )}
-                    </div>
+                    <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{report.subject}</p>
+                    <p className="text-xs text-slate-500 truncate">{report.context}</p>
+                    <p className="text-xs text-slate-400">{report.reporter_email} · {timeAgo(report.created_at)}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                    <StatusBadge status={report.status} />
+                    {report.evidence_url && (
+                      <span className="text-xs text-blue-500">📎 {t("admin.labels.evidence")}</span>
+                    )}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          {/* Detail Panel */}
-          {selectedReport && (
-            <div className="sticky top-4">
-              <ReportDetail
-                report={selectedReport}
-                onUpdate={handleUpdate}
-                onClose={() => setSelectedReport(null)}
-              />
-            </div>
+              </div>
+            ))
           )}
         </div>
+
+        {/* Detail Panel */}
+        {selectedReport && (
+          <div className="sticky top-4">
+            <ReportDetail
+              report={selectedReport}
+              onUpdate={handleUpdate}
+              onClose={() => setSelectedReport(null)}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
