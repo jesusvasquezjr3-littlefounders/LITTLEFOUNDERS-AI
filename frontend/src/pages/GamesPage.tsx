@@ -160,7 +160,7 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
                   <HoverCard openDelay={200}>
                     <HoverCardTrigger asChild>
                       <button
-                        onClick={() => navigate(game.path)}
+                        onClick={() => navigate(isDemo ? `/demo${game.path}` : game.path)}
                         className={cn(
                           "relative overflow-hidden rounded-3xl w-full",
                           "liquid-glass",

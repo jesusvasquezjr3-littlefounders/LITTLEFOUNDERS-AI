@@ -181,8 +181,13 @@ const App = () => (
 
                 <Route path="/demo" element={<Demo />} />
                 <Route path="/demo/lessons" element={<Lessons isDemo Layout={DemoDashboardLayout} />} />
-
                 <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
+                
+                {/* Public Game Demo Routes */}
+                <Route path="/demo/games/nam-vs-yum" element={<NamVsYumPage />} />
+                <Route path="/demo/games/nectar-of-shadows" element={<NectarOfShadowsPage />} />
+                <Route path="/demo/games/paper-detective" element={<PaperDetectivePage />} />
+                <Route path="/demo/games/paper-coin" element={<PaperCoinPage />} />
 
                 {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
                     though Sidebar has them locked with '#' */}
