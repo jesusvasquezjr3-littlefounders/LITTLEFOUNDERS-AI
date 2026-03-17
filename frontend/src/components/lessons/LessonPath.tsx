@@ -203,7 +203,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({
                     <div key={groupIndex} className="relative">
                         {/* Unit Header */}
                         <div className={cn(
-                            "sticky top-20 z-30 mb-8 mx-2 p-5 rounded-2xl",
+                            "sticky top-0 z-30 mb-8 mx-2 p-5 rounded-2xl",
                             "flex items-center justify-between text-white relative overflow-hidden",
                             "shadow-xl",
                             colors.bg
