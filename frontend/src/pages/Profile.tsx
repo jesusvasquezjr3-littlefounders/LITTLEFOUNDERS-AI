@@ -646,6 +646,18 @@ const Profile = () => {
                 />
               )}
             </div>
+
+            {/* Mobile Share Button Integration */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/50">
+              <Button
+                onClick={handleShare}
+                variant="ghost"
+                className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-blue-500/10 text-indigo-700 dark:text-blue-300 font-black uppercase tracking-widest text-xs"
+              >
+                <Globe className="w-5 h-5" />
+                {t('profile:actions.share_profile')}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

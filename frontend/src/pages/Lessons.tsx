@@ -178,6 +178,36 @@ export default function Lessons({ isDemo = false, Layout = DashboardLayout }: Le
     <Layout>
       <div className={contentWrapperClass}>
         {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
+        
+        {/* Development Notice Bar */}
+        <div className="bg-yellow-400/10 dark:bg-yellow-400/5 border border-yellow-400/20 h-10 px-4 rounded-xl flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">
+          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shrink-0" />
+          <div className="relative flex-1 overflow-hidden whitespace-nowrap">
+            <p className="inline-block text-[9px] font-black uppercase tracking-widest text-yellow-700 dark:text-yellow-500/80 animate-marquee sm:animate-none">
+              {t('lessons:notices.beta_improvement')}
+            </p>
+          </div>
+          <style>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-100%); }
+            }
+            .animate-marquee {
+              display: inline-block;
+              padding-left: 100%;
+              animation: marquee 20s linear infinite;
+            }
+            @media (min-width: 640px) {
+              .animate-marquee {
+                animation: none;
+                padding-left: 0;
+                transform: none;
+                white-space: normal;
+              }
+            }
+          `}</style>
+        </div>
+
         {/* Adventures */}
         {!isLoading && (
           <Adventures

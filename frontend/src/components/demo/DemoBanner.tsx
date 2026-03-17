@@ -13,37 +13,55 @@ export function DemoBanner({ message }: DemoBannerProps) {
     const { t } = useTranslation('demo');
 
     return (
-        <GlassPanel variant="default" className="relative mb-6 p-3 px-5 rounded-2xl overflow-hidden border border-white/20 dark:border-white/10 shadow-lg bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 animate-in fade-in slide-in-from-top-2 duration-700">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-                <div className="flex items-center gap-3 text-center sm:text-left">
-                    <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-400/20">
-                        <Info className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-                    </div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <div className="bg-indigo-400/10 dark:bg-indigo-400/5 border border-indigo-400/20 h-10 px-3 rounded-xl flex items-center justify-between gap-3 mb-3 animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">
+            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shrink-0" />
+                <div className="relative flex-1 overflow-hidden whitespace-nowrap">
+                    <p className="inline-block text-[9px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400/80 animate-marquee sm:animate-none">
                         {message}
                     </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate('/login')}
-                        className="h-8 rounded-lg border border-white/10 hover:bg-white/10 text-xs text-slate-600 dark:text-slate-300"
-                    >
-                        <LogIn className="w-3.5 h-3.5 mr-1.5" />
-                        {t('nav.login')}
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={() => navigate('/register')}
-                        className="h-8 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-xs text-white shadow-md shadow-blue-500/20 border-none"
-                    >
-                        <UserPlus className="w-3.5 h-3.5 mr-1.5" />
-                        {t('nav.register')}
-                    </Button>
+                    {/* Invisible copy for smooth loop if we were using a more complex marquee, 
+                        but for now a simple overflow-hidden with sm:animate-none works for basic slimness */}
                 </div>
             </div>
-        </GlassPanel>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                    className="h-6 px-2 rounded-lg border border-indigo-200/50 dark:border-indigo-800/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-[8px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 transition-all"
+                >
+                    {t('nav.login')}
+                </Button>
+                <Button
+                    size="sm"
+                    onClick={() => navigate('/register')}
+                    className="h-6 px-2 rounded-lg bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-[8px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-500/20 border-none transition-all active:scale-95"
+                >
+                    {t('nav.register')}
+                </Button>
+            </div>
+            
+            <style>{`
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-100%); }
+                }
+                .animate-marquee {
+                    display: inline-block;
+                    padding-left: 20px;
+                    animation: marquee 15s linear infinite;
+                }
+                @media (min-width: 640px) {
+                    .animate-marquee {
+                        animation: none;
+                        padding-left: 0;
+                        transform: none;
+                        white-space: normal;
+                    }
+                }
+            `}</style>
+        </div>
     );
 }

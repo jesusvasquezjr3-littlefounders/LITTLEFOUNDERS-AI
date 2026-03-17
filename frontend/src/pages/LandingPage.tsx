@@ -259,7 +259,11 @@ const LandingPage = () => {
               <button
                 key={lang.code}
                 onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
-                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border liquid-glass ${isCurrentLanguage(lang.code) ? "text-gray-900 dark:text-gray-900 border-gray-300 dark:border-white shadow-xl scale-105" : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700/50 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500"}`}
+                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${
+                  isCurrentLanguage(lang.code) 
+                    ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white border-pink-200 dark:border-pink-500/50 shadow-lg shadow-pink-500/10 scale-105" 
+                    : "bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-800 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-slate-700"
+                }`}
               >
                 <span className="text-xl sm:text-2xl leading-none drop-shadow-md">{lang.flag}</span>
                 {lang.name}

@@ -1,10 +1,22 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
 import { DemoShowreelPlayer } from "@/components/demo/DemoShowreelPlayer";
 import { DemoTimeline } from "@/components/demo/DemoTimeline";
+import { useSound } from "@/contexts/SoundContext";
 
 export default function Demo() {
     const playerRef = useRef<any>(null);
+    const { playBGM, stopBGM } = useSound();
+
+    useEffect(() => {
+        // Play the same background music used in lessons for consistency
+        playBGM('/sounds/edu/background.mp3', { volume: 0.2 });
+
+        return () => {
+            // Stop BGM with a fade out when leaving the demo page
+            stopBGM({ fade: true, fadeDuration: 1000 });
+        };
+    }, [playBGM, stopBGM]);
 
     return (
         <DemoDashboardLayout noPadding>

@@ -327,5 +327,8 @@
   "roleplay_chat": {
     "excellent_decision": "Excellent decision!",
     "not_best_choice": "Hmm, maybe that's not the best choice..."
+  },
+  "notices": {
+    "beta_improvement": "We're working daily to bring you the best lessons; current content may evolve to be more engaging and effective."
   }
 }
