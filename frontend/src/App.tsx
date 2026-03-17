@@ -8,6 +8,7 @@ import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
 import { Analytics } from '@vercel/analytics/react';
 
+// Pages
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import LandingPage from "./pages/LandingPage";
