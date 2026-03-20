@@ -1,0 +1,171 @@
+{
+  "start": {
+    "title": "HACKER DEFENSE",
+    "subtitle": "Protect your bank account from cyberattacks",
+    "playButton": "LOG IN",
+    "highScore": "High Score",
+    "spaceHint": "SPACE → Critical Strike • Click → Collect Data"
+  },
+  "tutorial": {
+    "step1Title": "Protect the Vault",
+    "step1Desc": "Your bank account has $10,000. If hackers reach it, they'll steal your money! Build towers to stop them.",
+    "step2Title": "Your Defense Towers",
+    "step2Desc": "Place towers on the green circles. The Password Tower shoots, Antivirus slows and reveals phishing, and the 2FA Wall blocks enemies.",
+    "step3Title": "Types of Threats",
+    "step3Desc": "Viruses are fast, Trojans are tough, Phishing goes in disguise (click them to reveal!), and the Boss The Scammer creates annoying popups.",
+    "step4Title": "Critical Strikes",
+    "step4Desc": "When your towers shoot, press SPACE for a Critical Strike that doubles damage. Also collect the falling data packets!",
+    "spacebarHint": "Press SPACE for Critical Strike",
+    "actionCommandHint": "Double damage when the indicator glows",
+    "skip": "Skip",
+    "next": "Next →",
+    "done": "Let's Defend!"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "level": "Level {{level}}",
+    "subtitle": "Identify if this message is phishing before the attack begins",
+    "from": "From",
+    "isPhishing": "IT'S PHISHING! Block It",
+    "trust": "It's Legitimate",
+    "correct": "Correct! Great eye for detecting threats.",
+    "wrong": "Watch out! That was a trick.",
+    "starting": "Preparing defense",
+    "email1": {
+      "sender": "support@secure-real-bank.com.ru",
+      "subject": "⚠️ URGENT: Your account is locked",
+      "body": "Hello! We are National Bank. Your account has been locked due to suspicious activity. You must verify your identity NOW by clicking the link:",
+      "link": "www.secure-real-bank.com.ru/verify?token=abc123",
+      "explain": "Clues: suspicious '.ru' domain, urgency language, real banks never ask you to click links via email."
+    },
+    "email2": {
+      "sender": "notifications@bankofamerica.com",
+      "subject": "Your March statement is ready",
+      "body": "Your monthly March account statement is now available in the app. You can view it directly from your mobile app or official online banking.",
+      "link": "Access from your official app at bankofamerica.com",
+      "explain": "Correct: real banks don't ask for urgent data, don't include third-party links, and direct you to their official app."
+    },
+    "email3": {
+      "sender": "prize@winning-lottery-2024.net",
+      "subject": "🏆 Congratulations! You won $50,000 — claim in 24 hours",
+      "body": "You have been selected as the winner of our lottery! To claim your prize we need your account number and password to transfer the money. It's URGENT, you only have 24 hours!",
+      "link": "claim-prize.winning-lottery-2024.net/form",
+      "explain": "Classic phishing: fake prize promise, requests bank data, artificial urgency. Nobody wins prizes without entering."
+    }
+  },
+  "hud": {
+    "bank": "Account",
+    "wave": "Wave",
+    "level": "Level",
+    "score": "Score",
+    "data": "Data",
+    "pause": "Pause"
+  },
+  "towers": {
+    "password": {
+      "name": "Password"
+    },
+    "antivirus": {
+      "name": "Antivirus"
+    },
+    "wall2fa": {
+      "name": "2FA Wall"
+    }
+  },
+  "toolbar": {
+    "place": "Build"
+  },
+  "tower": {
+    "upgrade": "Upgrade tower"
+  },
+  "map": {
+    "nextWaveIn": "Next wave in {{seconds}}s",
+    "buildHint": "Build and upgrade towers before the next attack"
+  },
+  "enemy": {
+    "phishingHint": "Click to mark as Phishing!",
+    "phishingRevealed": "PHISHING!"
+  },
+  "twoFA": {
+    "title": "WALL UNDER ATTACK!",
+    "subtitle": "Type the code to restore the wall",
+    "code": "Access code",
+    "submit": "Verify",
+    "skip": "Skip (lose wall)"
+  },
+  "bossPopup": {
+    "title1": "🏆 CONGRATULATIONS YOU WON!",
+    "body1": "You won an iPhone 15 Pro. Click to claim your prize NOW.",
+    "title2": "💰 GUARANTEED Investment",
+    "body2": "Double your money in 24 hours. We just need your account number.",
+    "title3": "🔔 Virus Detected",
+    "body3": "Your system is infected. Call 800-SUPPORT to clean your PC now.",
+    "close": "Close",
+    "doNotClick": "DON'T CLICK! This is Phishing"
+  },
+  "upgrade": {
+    "title": "Password Forge",
+    "subtitle": "Create a strong password to upgrade your tower. Select one of each type.",
+    "uppercase": "UPPERCASE",
+    "lowercase": "lowercase",
+    "numbers": "Numbers",
+    "symbols": "Symbols",
+    "strengthLabel": "Strength",
+    "weak": "Weak",
+    "fair": "Fair",
+    "good": "Good",
+    "strong": "STRONG!",
+    "confirm": "Upgrade Tower!",
+    "cancel": "Cancel",
+    "hint": "A good password uses all 4 types of characters"
+  },
+  "levelResult": {
+    "levelComplete": "Level {{level}} Complete!",
+    "victory": "Game Complete!",
+    "rankS": "Perfect defense! You're a cybersecurity expert.",
+    "rankA": "Excellent work! Most threats blocked.",
+    "rankB": "Good try. Some attacks got through.",
+    "rankC": "You need to strengthen your defenses.",
+    "bankSaved": "Balance protected",
+    "phishingDetected": "Phishing detected",
+    "inboxResult": "Email identified",
+    "twoFASuccess": "Walls restored (2FA)",
+    "enemiesKilled": "Threats eliminated",
+    "score": "Total score",
+    "popupsClosed": "Scam pop-ups closed: {{count}}",
+    "restart": "Restart",
+    "nextLevel": "Next Level →",
+    "backToMenu": "Play Again"
+  },
+  "gameOver": {
+    "title": "ACCOUNT EMPTIED",
+    "subtitle": "Hackers stole all your money",
+    "levelReached": "Level reached",
+    "waveReached": "Wave reached",
+    "finalScore": "Final score",
+    "highScore": "High score",
+    "newRecord": "NEW RECORD!",
+    "tip": "Tip: Build Antivirus towers to detect Phishing and use the 2FA Wall to stop large waves.",
+    "tryAgain": "🔄 Try Again"
+  },
+  "victory": {
+    "title": "SYSTEM PROTECTED!",
+    "subtitle": "You successfully defended against all 3 levels of cyberattacks",
+    "petsUnlocked": "Cyber Pets unlocked:",
+    "playAgain": "Play Again"
+  },
+  "pause": {
+    "title": "PAUSED",
+    "subtitle": "System on standby",
+    "resume": "Resume",
+    "restart": "Restart",
+    "spaceHint": "Critical Strike",
+    "escHint": "Pause / Resume",
+    "clickHint": "Place towers on green circles"
+  },
+  "pets": {
+    "dog": "Privacy Dog",
+    "lock": "Happy Lock",
+    "shield": "Shield Guardian"
+  }
+}

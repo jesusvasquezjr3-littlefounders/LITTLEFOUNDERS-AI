@@ -44,6 +44,7 @@ import NamVsYumPage from "@/games/nam-vs-yum/NamVsYumPage";
 import NectarOfShadowsPage from "@/games/nectar-of-shadows/NectarOfShadowsPage";
 import PaperDetectivePage from "@/games/paper-detective/PaperDetectivePage";
 import PaperCoinPage from "@/games/paper-coin/PaperCoinPage";
+import HackerDefensePage from "@/games/hacker-defense/HackerDefensePage";
 
 // Admin Panel
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
@@ -168,6 +169,12 @@ const App = () => (
                   </ProtectedRoute>
                 } />
 
+                <Route path="/games/hacker-defense" element={
+                  <ProtectedRoute>
+                    <HackerDefensePage />
+                  </ProtectedRoute>
+                } />
+
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <Settings />
@@ -188,6 +195,7 @@ const App = () => (
                 <Route path="/demo/games/nectar-of-shadows" element={<NectarOfShadowsPage />} />
                 <Route path="/demo/games/paper-detective" element={<PaperDetectivePage />} />
                 <Route path="/demo/games/paper-coin" element={<PaperCoinPage />} />
+                <Route path="/demo/games/hacker-defense" element={<HackerDefensePage />} />
 
                 {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
                     though Sidebar has them locked with '#' */}

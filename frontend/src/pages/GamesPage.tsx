@@ -23,7 +23,7 @@ interface GameCard {
   fallbackEmojis: string[];
   accentColor: string;
   isDemo: boolean;
-  ageGroup: '5-7' | '8-9';
+  ageGroup: '5-7' | '8-9' | '10-12';
   descriptionKey: string;
 }
 
@@ -32,6 +32,7 @@ const NAM_VS_YUM_GIF = `${ASSET_BASE}/pictures/2-nam-vs-yum-game.gif`;
 const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
 const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
 const PAPER_COIN_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/7-paper-coin/pictures/paper-coin.gif';
+const HACKER_DEFENSE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/13-hacker-defense/pictures/hacker-defense.gif';
 
 const ALL_GAMES: GameCard[] = [
   {
@@ -82,6 +83,18 @@ const ALL_GAMES: GameCard[] = [
     ageGroup: '8-9',
     descriptionKey: 'paperCoin',
   },
+  {
+    id: 'hacker-defense',
+    path: '/games/hacker-defense',
+    titleKey: 'games:hackerDefense.title',
+    subtitleKey: 'games:hackerDefense.subtitle',
+    gif: HACKER_DEFENSE_GIF,
+    fallbackEmojis: ['🔐', '🛡️', '💻'],
+    accentColor: 'green',
+    isDemo: true,
+    ageGroup: '10-12',
+    descriptionKey: 'hackerDefense',
+  },
 ];
 
 export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: GamesPageProps) {
@@ -108,12 +121,16 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
 
   // Helper to convert age group key for header
   const getAgeGroupHeaderKey = (ageGroup: string): string => {
-    return ageGroup === '5-7' ? 'ages5to7' : 'ages8to9';
+    if (ageGroup === '5-7') return 'ages5to7';
+    if (ageGroup === '8-9') return 'ages8to9';
+    return 'ages10to12';
   };
 
   // Helper to get coming soon key
   const getComingSoonKey = (ageGroup: string): string => {
-    return ageGroup === '5-7' ? 'comingSoon5to7' : 'comingSoon8to9';
+    if (ageGroup === '5-7') return 'comingSoon5to7';
+    if (ageGroup === '8-9') return 'comingSoon8to9';
+    return 'comingSoon10to12';
   };
 
   return (

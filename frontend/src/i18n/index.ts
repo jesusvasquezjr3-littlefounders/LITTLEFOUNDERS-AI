@@ -33,6 +33,7 @@ import esAvatar from './locales/es/avatar.json';
 import esAdmin from './locales/es/admin.json';
 import esDemo from './locales/es/demo.json';
 import esGames from './locales/es/games.json';
+import esHackerDefense from './locales/es/hackerDefense.json';
 import esReports from './locales/es/reports.json';
 
 import enCommon from './locales/en/common.json';
@@ -48,6 +49,7 @@ import enAvatar from './locales/en/avatar.json';
 import enAdmin from './locales/en/admin.json';
 import enDemo from './locales/en/demo.json';
 import enGames from './locales/en/games.json';
+import enHackerDefense from './locales/en/hackerDefense.json';
 import enReports from './locales/en/reports.json';
 
 // Supported languages
@@ -82,6 +84,7 @@ const resources = {
         admin: esAdmin,
         demo: esDemo,
         games: esGames,
+        hackerDefense: esHackerDefense,
         reports: esReports,
     },
     en: {
@@ -98,6 +101,7 @@ const resources = {
         admin: enAdmin,
         demo: enDemo,
         games: enGames,
+        hackerDefense: enHackerDefense,
         reports: enReports,
     },
 };

@@ -8,8 +8,10 @@
   "ageGroups": {
     "ages5to7": "Semillas Financieras (5 - 7 años)",
     "ages8to9": "Navegantes del Ahorro (8 - 9 años)",
+    "ages10to12": "Estrategas Digitales (10 - 12 años)",
     "comingSoon5to7": "Más juegos para esta edad en camino",
-    "comingSoon8to9": "Más juegos para esta edad en camino"
+    "comingSoon8to9": "Más juegos para esta edad en camino",
+    "comingSoon10to12": "Más juegos para esta edad en camino"
   },
   "gameDescriptions": {
     "namVsYum": {
@@ -31,6 +33,11 @@
       "summary": "Atiende una tienda de aventureros calculando el cambio correcto bajo presión.",
       "teaches": "Cálculo mental, manejo de dinero, atención al cliente, rapidez mental",
       "ageGroup": "ages8to9"
+    },
+    "hackerDefense": {
+      "summary": "Defiende tu cuenta bancaria de ciberataques construyendo torres y detectando amenazas en tiempo real.",
+      "teaches": "Ciberseguridad, reconocimiento de phishing, contraseñas seguras, autenticación en dos pasos",
+      "ageGroup": "ages10to12"
     }
   },
   "namVsYum": {
@@ -536,5 +543,9 @@
       "playAgain": "¡Jugar de Nuevo!",
       "backToGames": "Regresar a Juegos"
     }
+  },
+  "hackerDefense": {
+    "title": "Hacker Defense",
+    "subtitle": "Tower Defense de Ciberseguridad"
   }
 }

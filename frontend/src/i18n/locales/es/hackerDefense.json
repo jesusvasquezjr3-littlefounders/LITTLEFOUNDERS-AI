@@ -1,0 +1,170 @@
+{
+  "start": {
+    "title": "HACKER DEFENSE",
+    "subtitle": "Protege tu cuenta bancaria de los ciberataques",
+    "playButton": "INICIAR SESIÓN",
+    "highScore": "Mejor Puntaje",
+    "spaceHint": "ESPACIO → Ataque Crítico • Click → Recolectar Datos"
+  },
+  "tutorial": {
+    "step1Title": "Protege la Bóveda",
+    "step1Desc": "Tu cuenta bancaria tiene $10,000. Si los hackers llegan a ella, ¡robarán tu dinero! Construye torres para detenerlos.",
+    "step2Title": "Tus Torres Defensivas",
+    "step2Desc": "Coloca torres en los círculos verdes. La Torre de Contraseña dispara, el Antivirus ralentiza y revela phishing, y el Muro 2FA bloquea enemigos.",
+    "step3Title": "Tipos de Amenazas",
+    "step3Desc": "Los Virus son rápidos, los Troyanos son resistentes, el Phishing va disfrazado (haz clic en ellos para revelarlos), y el jefe El Estafador crea pop-ups molestos.",
+    "step4Title": "Ataques Críticos",
+    "step4Desc": "Cuando tus torres disparan, presiona ESPACIO para hacer un Ataque Crítico que duplica el daño. ¡También recolecta los paquetes de datos que caen!",
+    "spacebarHint": "Presiona ESPACIO para Ataque Crítico",
+    "actionCommandHint": "Doble daño cuando el indicador brilla",
+    "skip": "Saltar",
+    "next": "Siguiente →",
+    "done": "¡A Defender!"
+  },
+  "inbox": {
+    "title": "Bandeja de Entrada",
+    "level": "Nivel {{level}}",
+    "subtitle": "Identifica si este mensaje es phishing antes de iniciar el ataque",
+    "from": "De",
+    "isPhishing": "¡ES PHISHING! Bloquear",
+    "trust": "Es Legítimo",
+    "correct": "¡Correcto! Buen ojo para detectar amenazas.",
+    "wrong": "¡Cuidado! Eso era un truco.",
+    "starting": "Preparando defensa",
+    "email1": {
+      "sender": "soporte@banco-seguro-real.com.ru",
+      "subject": "⚠️ URGENTE: Tu cuenta está bloqueada",
+      "body": "¡Hola! Somos el Banco Nacional. Tu cuenta ha sido bloqueada por actividad sospechosa. Debes verificar tu identidad AHORA haciendo clic en el enlace:",
+      "link": "www.banco-seguro-real.com.ru/verificar?token=abc123",
+      "explain": "Pistas: dominio '.ru' sospechoso, lenguaje de urgencia, el banco real nunca pide clic en enlaces por correo."
+    },
+    "email2": {
+      "sender": "notificaciones@bancosantander.com",
+      "subject": "Tu estado de cuenta de marzo está listo",
+      "body": "Tu estado de cuenta mensual de marzo ya está disponible en la aplicación. Puedes consultarlo directamente desde tu app móvil o banca en línea oficial.",
+      "link": "Accede desde tu app oficial bancosantander.com",
+      "explain": "Correcto: el banco real no pide datos urgentes, no incluye links de terceros y te dirige a su app oficial."
+    },
+    "email3": {
+      "sender": "premio@loteria-ganadora-2024.net",
+      "subject": "🏆 ¡Felicidades! Ganaste $50,000 — reclama en 24 horas",
+      "body": "¡Has sido seleccionado como ganador de nuestro sorteo! Para reclamar tu premio necesitamos tu número de cuenta y clave para transferir el dinero. ¡Es URGENTE, solo tienes 24 horas!",
+      "link": "reclamar-premio.loteria-ganadora-2024.net/form",
+      "explain": "Phishing clásico: promesa de premio falso, piden datos bancarios, urgencia artificial. Nadie gana premios sin participar."
+    }
+  },
+  "hud": {
+    "bank": "Cuenta",
+    "wave": "Oleada",
+    "level": "Nivel",
+    "score": "Puntaje",
+    "data": "Datos",
+    "pause": "Pausar"
+  },
+  "towers": {
+    "password": {
+      "name": "Contraseña"
+    },
+    "antivirus": {
+      "name": "Antivirus"
+    },
+    "wall2fa": {
+      "name": "Muro 2FA"
+    }
+  },
+  "toolbar": {
+    "place": "Construir"
+  },
+  "tower": {
+    "upgrade": "Mejorar torre"
+  },
+  "map": {
+    "nextWaveIn": "Próxima oleada en {{seconds}}s",
+    "buildHint": "Construye y mejora torres antes del próximo ataque"
+  },
+  "enemy": {
+    "phishingHint": "¡Click para marcar como Phishing!",
+    "phishingRevealed": "¡PHISHING!"
+  },
+  "twoFA": {
+    "title": "¡MURO BAJO ATAQUE!",
+    "subtitle": "Teclea el código para restaurar el muro",
+    "code": "Código de acceso",
+    "submit": "Verificar",
+    "skip": "Ignorar (perder muro)"
+  },
+  "bossPopup": {
+    "title1": "🏆 ¡FELICIDADES GANASTE!",
+    "body1": "Has ganado un iPhone 15 Pro. Haz clic para reclamar tu premio AHORA.",
+    "title2": "💰 Inversión GARANTIZADA",
+    "body2": "Duplica tu dinero en 24 horas. Solo necesitamos tu número de cuenta.",
+    "title3": "🔔 Virus Detectado",
+    "body3": "Tu sistema está infectado. Llama al 800-SOPORTE para limpiar tu PC ya.",
+    "close": "Cerrar",
+    "doNotClick": "¡NO HAGAS CLIC! Esto es Phishing"
+  },
+  "upgrade": {
+    "title": "Forja de Contraseña",
+    "subtitle": "Crea una contraseña fuerte para mejorar tu torre. Selecciona uno de cada tipo.",
+    "uppercase": "MAYÚSCULAS",
+    "lowercase": "minúsculas",
+    "numbers": "Números",
+    "symbols": "Símbolos",
+    "strengthLabel": "Fortaleza",
+    "weak": "Débil",
+    "fair": "Regular",
+    "good": "Buena",
+    "strong": "¡FUERTE!",
+    "confirm": "¡Mejorar Torre!",
+    "cancel": "Cancelar",
+    "hint": "Una buena contraseña usa los 4 tipos de caracteres"
+  },
+  "levelResult": {
+    "levelComplete": "¡Nivel {{level}} Completado!",
+    "victory": "¡Juego Completado!",
+    "rankS": "¡Defensa perfecta! Eres un experto en ciberseguridad.",
+    "rankA": "¡Excelente trabajo! La mayoría de amenazas bloqueadas.",
+    "rankB": "Buen intento. Algunos ataques lograron pasar.",
+    "rankC": "Necesitas fortalecer tus defensas.",
+    "bankSaved": "Saldo protegido",
+    "phishingDetected": "Phishing detectado",
+    "inboxResult": "Email identificado",
+    "twoFASuccess": "Muros restaurados (2FA)",
+    "enemiesKilled": "Amenazas eliminadas",
+    "score": "Puntaje total",
+    "popupsClosed": "Pop-ups de estafa cerrados: {{count}}",
+    "restart": "Reiniciar",
+    "nextLevel": "Siguiente Nivel →"
+  },
+  "gameOver": {
+    "title": "CUENTA VACIADA",
+    "subtitle": "Los hackers robaron todo tu dinero",
+    "levelReached": "Nivel alcanzado",
+    "waveReached": "Oleada alcanzada",
+    "finalScore": "Puntaje final",
+    "highScore": "Mejor puntaje",
+    "newRecord": "¡NUEVO RÉCORD!",
+    "tip": "Consejo: Construye torres Antivirus para detectar el Phishing y usa el Muro 2FA para detener las oleadas grandes.",
+    "tryAgain": "🔄 Volver a Intentar"
+  },
+  "victory": {
+    "title": "¡SISTEMA PROTEGIDO!",
+    "subtitle": "Defendiste exitosamente los 3 niveles de ataques cibernéticos",
+    "petsUnlocked": "Mascotas Ciber desbloqueadas:",
+    "playAgain": "Jugar de Nuevo"
+  },
+  "pause": {
+    "title": "PAUSA",
+    "subtitle": "El sistema está en espera",
+    "resume": "Continuar",
+    "restart": "Reiniciar",
+    "spaceHint": "Ataque Crítico",
+    "escHint": "Pausar / Continuar",
+    "clickHint": "Colocar torres en los círculos verdes"
+  },
+  "pets": {
+    "dog": "Perro de Privacidad",
+    "lock": "Candado Feliz",
+    "shield": "Escudo Guardián"
+  }
+}
