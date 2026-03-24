@@ -1,0 +1,179 @@
+{
+  "start": {
+    "title": "La Máquina del Tiempo del Interés",
+    "codename": "ChronoBloom",
+    "description": "Planta semillas de dinero, avanza el tiempo y observa cómo el Interés Compuesto transforma tus ahorros en una fortuna. Defiende tu Invernadero del Rey Déficit.",
+    "yourPlants": "Tus plantas",
+    "enemiesYoullFace": "Amenazas que enfrentarás",
+    "playButton": "¡Plantar y Crecer!",
+    "clickHint": "Presiona Enter para avanzar el año durante el juego",
+    "highScore": "Mejor Puntaje"
+  },
+  "tutorial": {
+    "stepLabel": "Paso {{current}} de {{total}}",
+    "step0": {
+      "title": "¡Bienvenido al Invernadero!",
+      "desc": "Eres el Crono-Botánico, guardián del Invernadero Financiero. Planta semillas de dinero en la cuadrícula y deja que el tiempo haga su magia. Los enemigos vendrán de la derecha — ¡defiéndelo!"
+    },
+    "step1": {
+      "title": "El Poder del Interés Compuesto",
+      "desc": "Cada año que avances, tus plantas generarán intereses sobre su valor acumulado. Un Árbol Accionario al 12% anual duplica su valor en ~6 años. ¡Aguanta la tentación de liquidar pronto!"
+    },
+    "step2": {
+      "title": "Sembrar vs. Cosechar — Tu Gran Dilema",
+      "desc": "Puedes liquidar cualquier planta en la fase de Planificación y recuperar su valor. Pero si lo haces muy pronto, perderás el potencial de crecimiento. Liquida solo si es una emergencia real."
+    },
+    "step3": {
+      "title": "Amenazas Financieras",
+      "desc": "Los Gastos Hormiga roban tus monedas del suelo (¡haz click rápido para recogerlas!). Las Bestias Impulsivas hipnotizan tus plantas. El Zepelín de la Inflación encarece todo. El Rey Déficit es el jefe final."
+    },
+    "zelda": "Es peligroso ir solo. Toma esta semilla.",
+    "skip": "Saltar",
+    "next": "Siguiente",
+    "start": "¡A Sembrar!"
+  },
+  "hud": {
+    "capital": "Capital",
+    "year": "Año",
+    "level": "Nivel",
+    "greenhouse": "Invernadero",
+    "score": "Puntaje",
+    "inflation": "Inflación",
+    "pause": "Pausar"
+  },
+  "plants": {
+    "savings_sprout": {
+      "name": "Brote de Ahorro",
+      "desc": "Alta defensa, bajo riesgo. Genera 3% anual y dispara monedas a los enemigos en su fila."
+    },
+    "stock_tree": {
+      "name": "Árbol Accionario",
+      "desc": "No ataca. Muy frágil. Genera 12% anual — ¡el de mayor retorno! Puede perder valor en años de mercado bajista."
+    },
+    "div_vine": {
+      "name": "Enredadera Diversificada",
+      "desc": "No ataca. Genera 5% anual. Si se planta junto a dos plantas diferentes, potencia su rendimiento y les da un escudo."
+    },
+    "emergency_cactus": {
+      "name": "Cactus de Emergencia",
+      "desc": "Daño de área al inicio de cada año. Desaparece al final del año y no genera intereses. ¡Fondo de emergencia!"
+    }
+  },
+  "enemies": {
+    "ant_expense": {
+      "name": "Gasto Hormiga",
+      "desc": "Rápido y pequeño. Pasa a través de las plantas y roba las monedas del suelo. Si llega al Invernadero, roba Capital."
+    },
+    "impulsive_beast": {
+      "name": "Bestia Impulsiva",
+      "desc": "Hipnotiza a las plantas (paraliza su ataque). Destrúyela rápido o paga para despertar tus plantas."
+    },
+    "inflation_zeppelin": {
+      "name": "Zepelín de la Inflación",
+      "desc": "Flota sobre el tablero. Mientras esté vivo, todo en la tienda cuesta un 5% más. ¡Muy resistente!"
+    },
+    "deficit_king": {
+      "name": "Rey Déficit",
+      "desc": "El jefe más poderoso. Lento pero demoledor. Destruye plantas en su camino y roba mucho Capital al llegar al Invernadero."
+    }
+  },
+  "toolbar": {
+    "advanceYear": "Avanzar Año {{year}}",
+    "yearInProgress": "Año {{year}} en curso...",
+    "waiting": "Esperando...",
+    "needPlants": "¡Planta al menos una semilla primero!",
+    "highRisk": "Alto Riesgo",
+    "support": "Apoyo",
+    "aoe": "Área",
+    "oneTime": "1 uso",
+    "perYear": "año"
+  },
+  "plantInfo": {
+    "currentValue": "Valor actual",
+    "originalCost": "Costo original",
+    "yearsAlive": "Años en pie",
+    "interestRate": "Tasa de interés",
+    "valueIn5yr": "Valor estimado (5 años)",
+    "hodl": "HODL Achievement",
+    "unfreeze": "Descongelar (-${{cost}})",
+    "liquidate": "Retirar Inversión",
+    "liquidateEarly": "⚠️ Liquidar Pronto",
+    "close": "Cerrar"
+  },
+  "yearResult": {
+    "title": "Año {{year}} — Nivel {{level}} Completado",
+    "subtitle": "Tus plantas generaron intereses. Revisa cuánto creció tu capital.",
+    "bearMarket": "¡Mercado Bajista! Los Árboles Accionarios perdieron un 20% de su valor este año.",
+    "cactusDisappeared": "El Cactus de Emergencia fue usado y desapareció.",
+    "capitalBefore": "Capital antes",
+    "interestEarned": "Interés ganado",
+    "totalCapital": "Capital total",
+    "growthChart": "Curva de Crecimiento",
+    "compoundLine": "Tu crecimiento (interés compuesto)",
+    "flatLine": "Sin invertir (sin interés)",
+    "earlySellWarning": "Vendiste {{count}} planta(s) antes de su madurez. El costo de oportunidad puede ser enorme.",
+    "continue": "Planear Año {{nextYear}}"
+  },
+  "levelComplete": {
+    "title": "¡Nivel {{level}} Completado!",
+    "desc": "Sobreviviste 5 años en el Nivel {{level}}. ¡El Invernadero sigue en pie!",
+    "victoryTitle": "¡Todos los Niveles Completados!",
+    "victoryDesc": "Has completado los 3 niveles y 15 años de inversión compuesta. ¡Eres un Crono-Botánico experto!",
+    "stars3": "¡Defensa perfecta! Gratificación diferida dominada.",
+    "stars2": "¡Buen trabajo! Sobreviviste con algunas pérdidas.",
+    "stars1": "Sobreviviste. ¡Practica la paciencia inversora!",
+    "totalInterest": "Interés total ganado",
+    "enemiesDefeated": "Enemigos derrotados",
+    "capitalProtected": "Capital acumulado",
+    "capitalLost": "Capital robado",
+    "survivedBear": "¡Superaste un Mercado Bajista! Los inversores pacientes siempre se recuperan.",
+    "bonus": "🎁 Bono de nivel: +${{amount}} de Capital",
+    "seeResults": "Ver Resultados Finales",
+    "nextLevel": "Nivel {{level}} →"
+  },
+  "gameOver": {
+    "title": "INVERNADERO DESTRUIDO",
+    "subtitle": "Los enemigos financieros demolieron tu Invernadero. ¡No te rindas!",
+    "levelReached": "Nivel alcanzado",
+    "yearReached": "Año alcanzado",
+    "finalCapital": "Capital final",
+    "score": "Puntaje",
+    "interestEarned": "Interés acumulado",
+    "enemiesDefeated": "Enemigos derrotados",
+    "newRecord": "¡NUEVO RÉCORD!",
+    "tip": "Consejo: Protege tus plantas de inversión (🌳 Árbol Accionario) con Brotes de Ahorro defensivos. ¡Y no vendas pronto!",
+    "tryAgain": "Volver a Intentar"
+  },
+  "victory": {
+    "title": "¡JARDÍN FINANCIERO MAESTRO!",
+    "subtitle": "Completaste 15 años de interés compuesto y derrotaste al Rey Déficit.",
+    "finalWealth": "Riqueza Final",
+    "noInvestment": "Sin Inversión",
+    "totalInterest": "Interés total",
+    "enemiesDefeated": "Enemigos derrotados",
+    "capitalLost": "Capital robado",
+    "score": "Puntaje total",
+    "hodlAchievement": "¡Lograste el logro HODL con {{count}} planta(s) — Hold the Door... I mean, Hold the Coin! 🏆",
+    "lesson": "Has aprendido que el Interés Compuesto es la 8ª maravilla del mundo. La paciencia inversora convierte pequeñas semillas en grandes árboles.",
+    "newRecord": "¡NUEVO RÉCORD!",
+    "playAgain": "Jugar de Nuevo"
+  },
+  "pause": {
+    "title": "PAUSA",
+    "subtitle": "El jardín descansa mientras planeas",
+    "resume": "Continuar",
+    "restart": "Reiniciar",
+    "hintClick": "Haz clic en el jardín para colocar plantas (Fase de Planificación)",
+    "hintCollect": "Haz clic en las monedas 🪙 del suelo para recolectarlas (durante la oleada)",
+    "hintAdvance": "Presiona Enter o el botón verde para avanzar el año",
+    "hintLiquidate": "Haz clic en una planta para ver su valor o liquidarla"
+  },
+  "ponzi": {
+    "title": "🧙‍♂️ Vendedor Ambulante",
+    "offer": "¡Psst! Tengo una Semilla Mágica que rinde el 500% — ¡solo ${{cost}}! ¿No te parece una oportunidad única?",
+    "hint": "\"Esta semilla te hará rico rápido... ¿o el pastel es una mentira?\"",
+    "decline": "No, gracias",
+    "accept": "¡Comprar la Semilla!",
+    "portal": "— El Vendedor Ambulante (inspirado en Portal, Valve Corp.)"
+  }
+}

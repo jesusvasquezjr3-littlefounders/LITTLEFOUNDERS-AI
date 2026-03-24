@@ -38,6 +38,11 @@
       "summary": "Defend your bank account from cyberattacks by building towers and detecting threats in real time.",
       "teaches": "Cybersecurity, phishing detection, strong passwords, two-factor authentication",
       "ageGroup": "ages10to12"
+    },
+    "chronoBloom": {
+      "summary": "Plant financial seeds on a grid, advance time, and watch compound interest multiply your savings while defending your greenhouse from financial threats.",
+      "teaches": "Compound interest, delayed gratification, opportunity cost, diversification, inflation",
+      "ageGroup": "ages8to9"
     }
   },
   "namVsYum": {
@@ -547,5 +552,9 @@
   "hackerDefense": {
     "title": "Hacker Defense",
     "subtitle": "Cybersecurity Tower Defense"
+  },
+  "chronoBloom": {
+    "title": "ChronoBloom",
+    "subtitle": "The Compound Interest Time Machine"
   }
 }

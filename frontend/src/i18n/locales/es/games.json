@@ -38,6 +38,11 @@
       "summary": "Defiende tu cuenta bancaria de ciberataques construyendo torres y detectando amenazas en tiempo real.",
       "teaches": "Ciberseguridad, reconocimiento de phishing, contraseñas seguras, autenticación en dos pasos",
       "ageGroup": "ages10to12"
+    },
+    "chronoBloom": {
+      "summary": "Planta semillas financieras en una cuadrícula, avanza el tiempo y observa cómo el interés compuesto multiplica tus ahorros mientras defiendes tu invernadero.",
+      "teaches": "Interés compuesto, gratificación diferida, costo de oportunidad, diversificación, inflación",
+      "ageGroup": "ages8to9"
     }
   },
   "namVsYum": {
@@ -547,5 +552,9 @@
   "hackerDefense": {
     "title": "Hacker Defense",
     "subtitle": "Tower Defense de Ciberseguridad"
+  },
+  "chronoBloom": {
+    "title": "ChronoBloom",
+    "subtitle": "La Máquina del Tiempo del Interés Compuesto"
   }
 }

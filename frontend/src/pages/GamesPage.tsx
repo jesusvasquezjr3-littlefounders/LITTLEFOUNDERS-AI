@@ -33,6 +33,7 @@ const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/p
 const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
 const PAPER_COIN_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/7-paper-coin/pictures/paper-coin.gif';
 const HACKER_DEFENSE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/13-hacker-defense/pictures/hacker-defense.gif';
+const CHRONO_BLOOM_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/8-chronobloom/pictures/chronobloom.gif';
 
 const ALL_GAMES: GameCard[] = [
   {
@@ -94,6 +95,18 @@ const ALL_GAMES: GameCard[] = [
     isDemo: true,
     ageGroup: '10-12',
     descriptionKey: 'hackerDefense',
+  },
+  {
+    id: 'chronobloom',
+    path: '/games/chronobloom',
+    titleKey: 'games:chronoBloom.title',
+    subtitleKey: 'games:chronoBloom.subtitle',
+    gif: CHRONO_BLOOM_GIF,
+    fallbackEmojis: ['🌱', '⏳', '💰'],
+    accentColor: 'emerald',
+    isDemo: true,
+    ageGroup: '8-9',
+    descriptionKey: 'chronoBloom',
   },
 ];
 

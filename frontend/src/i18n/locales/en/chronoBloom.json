@@ -1,0 +1,179 @@
+{
+  "start": {
+    "title": "The Compound Interest Time Machine",
+    "codename": "ChronoBloom",
+    "description": "Plant money seeds, advance time, and watch Compound Interest turn your savings into a fortune. Defend your Greenhouse from King Deficit!",
+    "yourPlants": "Your plants",
+    "enemiesYoullFace": "Threats you'll face",
+    "playButton": "Plant & Grow!",
+    "clickHint": "Press Enter to advance the year during the game",
+    "highScore": "High Score"
+  },
+  "tutorial": {
+    "stepLabel": "Step {{current}} of {{total}}",
+    "step0": {
+      "title": "Welcome to the Greenhouse!",
+      "desc": "You are the Chrono-Botanist, guardian of the Financial Greenhouse. Plant money seeds in the grid and let time work its magic. Enemies will come from the right — defend it!"
+    },
+    "step1": {
+      "title": "The Power of Compound Interest",
+      "desc": "Each year you advance, your plants will earn interest on their accumulated value. A Stock Tree at 12% per year doubles its value in ~6 years. Resist the urge to cash out early!"
+    },
+    "step2": {
+      "title": "Plant vs. Harvest — Your Big Dilemma",
+      "desc": "You can liquidate any plant during the Planning phase and recover its current value. But if you do it too soon, you'll miss out on future growth — that's Opportunity Cost!"
+    },
+    "step3": {
+      "title": "Financial Threats",
+      "desc": "Ant Expenses steal coins from the ground (click fast to collect them!). Impulsive Beasts hypnotize your plants. The Inflation Zeppelin makes everything more expensive. King Deficit is the final boss."
+    },
+    "zelda": "It's dangerous to go alone. Take this seed.",
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Let's Plant!"
+  },
+  "hud": {
+    "capital": "Capital",
+    "year": "Year",
+    "level": "Level",
+    "greenhouse": "Greenhouse",
+    "score": "Score",
+    "inflation": "Inflation",
+    "pause": "Pause"
+  },
+  "plants": {
+    "savings_sprout": {
+      "name": "Savings Sprout",
+      "desc": "High defense, low risk. Generates 3% per year and shoots coins at enemies in its row."
+    },
+    "stock_tree": {
+      "name": "Stock Tree",
+      "desc": "Does not attack. Very fragile. Generates 12% per year — the highest return! May lose value during bear market years."
+    },
+    "div_vine": {
+      "name": "Diversification Vine",
+      "desc": "Does not attack. Generates 5% per year. When planted next to two different plants, it boosts their yield and gives them a shield."
+    },
+    "emergency_cactus": {
+      "name": "Emergency Cactus",
+      "desc": "Area damage at the start of each year. Disappears at year's end and earns no interest. Emergency fund!"
+    }
+  },
+  "enemies": {
+    "ant_expense": {
+      "name": "Ant Expense",
+      "desc": "Fast and small. Passes through plants and steals coins from the ground. Reaches the Greenhouse to steal Capital."
+    },
+    "impulsive_beast": {
+      "name": "Impulsive Beast",
+      "desc": "Hypnotizes plants (paralyzes their attack). Destroy it fast or pay to wake up your plants."
+    },
+    "inflation_zeppelin": {
+      "name": "Inflation Zeppelin",
+      "desc": "Floats over the board. While alive, everything in the shop costs 5% more. Very resistant!"
+    },
+    "deficit_king": {
+      "name": "King Deficit",
+      "desc": "The most powerful boss. Slow but devastating. Destroys plants in its path and steals huge amounts of Capital."
+    }
+  },
+  "toolbar": {
+    "advanceYear": "Advance Year {{year}}",
+    "yearInProgress": "Year {{year}} in progress...",
+    "waiting": "Waiting...",
+    "needPlants": "Plant at least one seed first!",
+    "highRisk": "High Risk",
+    "support": "Support",
+    "aoe": "AoE",
+    "oneTime": "1 use",
+    "perYear": "yr"
+  },
+  "plantInfo": {
+    "currentValue": "Current value",
+    "originalCost": "Original cost",
+    "yearsAlive": "Years standing",
+    "interestRate": "Interest rate",
+    "valueIn5yr": "Estimated value (5 years)",
+    "hodl": "HODL Achievement",
+    "unfreeze": "Unfreeze (-${{cost}})",
+    "liquidate": "Withdraw Investment",
+    "liquidateEarly": "⚠️ Liquidate Early",
+    "close": "Close"
+  },
+  "yearResult": {
+    "title": "Year {{year}} — Level {{level}} Complete",
+    "subtitle": "Your plants generated interest. See how much your capital grew.",
+    "bearMarket": "Bear Market! Stock Trees lost 20% of their value this year.",
+    "cactusDisappeared": "The Emergency Cactus was used and disappeared.",
+    "capitalBefore": "Capital before",
+    "interestEarned": "Interest earned",
+    "totalCapital": "Total capital",
+    "growthChart": "Growth Curve",
+    "compoundLine": "Your growth (compound interest)",
+    "flatLine": "Without investing (no interest)",
+    "earlySellWarning": "You sold {{count}} plant(s) before maturity. The opportunity cost can be enormous.",
+    "continue": "Plan Year {{nextYear}}"
+  },
+  "levelComplete": {
+    "title": "Level {{level}} Complete!",
+    "desc": "You survived 5 years in Level {{level}}. The Greenhouse still stands!",
+    "victoryTitle": "All Levels Complete!",
+    "victoryDesc": "You completed all 3 levels and 15 years of compound investing. You're a master Chrono-Botanist!",
+    "stars3": "Perfect defense! Delayed gratification mastered.",
+    "stars2": "Great work! You survived with some losses.",
+    "stars1": "You survived. Practice investor patience!",
+    "totalInterest": "Total interest earned",
+    "enemiesDefeated": "Enemies defeated",
+    "capitalProtected": "Accumulated capital",
+    "capitalLost": "Capital stolen",
+    "survivedBear": "You survived a Bear Market! Patient investors always recover.",
+    "bonus": "🎁 Level bonus: +${{amount}} Capital",
+    "seeResults": "See Final Results",
+    "nextLevel": "Level {{level}} →"
+  },
+  "gameOver": {
+    "title": "GREENHOUSE DESTROYED",
+    "subtitle": "Financial enemies demolished your Greenhouse. Don't give up!",
+    "levelReached": "Level reached",
+    "yearReached": "Year reached",
+    "finalCapital": "Final capital",
+    "score": "Score",
+    "interestEarned": "Accumulated interest",
+    "enemiesDefeated": "Enemies defeated",
+    "newRecord": "NEW RECORD!",
+    "tip": "Tip: Protect your investment plants (🌳 Stock Tree) with defensive Savings Sprouts. And don't sell too early!",
+    "tryAgain": "Try Again"
+  },
+  "victory": {
+    "title": "MASTER FINANCIAL GARDEN!",
+    "subtitle": "You completed 15 years of compound interest and defeated King Deficit.",
+    "finalWealth": "Final Wealth",
+    "noInvestment": "No Investment",
+    "totalInterest": "Total interest",
+    "enemiesDefeated": "Enemies defeated",
+    "capitalLost": "Capital stolen",
+    "score": "Total score",
+    "hodlAchievement": "You achieved the HODL trophy with {{count}} plant(s) — Hold the Door... I mean, Hold the Coin! 🏆",
+    "lesson": "You've learned that Compound Interest is the 8th wonder of the world. Investor patience turns small seeds into mighty trees.",
+    "newRecord": "NEW RECORD!",
+    "playAgain": "Play Again"
+  },
+  "pause": {
+    "title": "PAUSED",
+    "subtitle": "The garden rests while you plan",
+    "resume": "Resume",
+    "restart": "Restart",
+    "hintClick": "Click on the garden to place plants (Planning Phase)",
+    "hintCollect": "Click on 🪙 coins on the ground to collect them (during a wave)",
+    "hintAdvance": "Press Enter or the green button to advance the year",
+    "hintLiquidate": "Click on a plant to see its value or liquidate it"
+  },
+  "ponzi": {
+    "title": "🧙‍♂️ Wandering Vendor",
+    "offer": "Psst! I have a Magic Seed with 500% returns — only ${{cost}}! Sounds like a once-in-a-lifetime opportunity, doesn't it?",
+    "hint": "\"This seed will make you rich quick... or maybe the cake is a lie?\"",
+    "decline": "No thanks",
+    "accept": "Buy the Seed!",
+    "portal": "— The Wandering Vendor (inspired by Portal, Valve Corp.)"
+  }
+}

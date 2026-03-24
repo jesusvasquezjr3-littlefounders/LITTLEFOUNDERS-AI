@@ -34,6 +34,7 @@ import esAdmin from './locales/es/admin.json';
 import esDemo from './locales/es/demo.json';
 import esGames from './locales/es/games.json';
 import esHackerDefense from './locales/es/hackerDefense.json';
+import esChronoBloom from './locales/es/chronoBloom.json';
 import esReports from './locales/es/reports.json';
 
 import enCommon from './locales/en/common.json';
@@ -50,6 +51,7 @@ import enAdmin from './locales/en/admin.json';
 import enDemo from './locales/en/demo.json';
 import enGames from './locales/en/games.json';
 import enHackerDefense from './locales/en/hackerDefense.json';
+import enChronoBloom from './locales/en/chronoBloom.json';
 import enReports from './locales/en/reports.json';
 
 // Supported languages
@@ -85,6 +87,7 @@ const resources = {
         demo: esDemo,
         games: esGames,
         hackerDefense: esHackerDefense,
+        chronoBloom: esChronoBloom,
         reports: esReports,
     },
     en: {
@@ -102,6 +105,7 @@ const resources = {
         demo: enDemo,
         games: enGames,
         hackerDefense: enHackerDefense,
+        chronoBloom: enChronoBloom,
         reports: enReports,
     },
 };
