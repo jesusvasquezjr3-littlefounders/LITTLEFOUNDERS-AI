@@ -104,7 +104,7 @@ async def get_my_notifications(
             body=body,
             media_url=n.media_url,
             action_url=n.action_url,
-            metadata=n.metadata,
+            metadata=n.notif_metadata,
             read_at=un.read_at if un else None,
             created_at=n.created_at,
         ))
@@ -286,7 +286,7 @@ async def admin_list_notifications(
             action_url=n.action_url,
             target_type=n.target_type,
             target_value=n.target_value,
-            metadata=n.metadata,
+            metadata=n.notif_metadata,
             created_by_name=n.creator.name if n.creator else None,
             read_count=read_count,
             total_recipients=total,
@@ -316,7 +316,7 @@ async def admin_create_notification(
         action_url=data.action_url,
         target_type=data.target_type,
         target_value=data.target_value,
-        metadata=data.metadata,
+        notif_metadata=data.metadata,
         created_by=admin.id,
         scheduled_at=data.scheduled_at,
         expires_at=data.expires_at,
@@ -353,7 +353,7 @@ async def admin_create_notification(
         action_url=notif.action_url,
         target_type=notif.target_type,
         target_value=notif.target_value,
-        metadata=notif.metadata,
+        metadata=notif.notif_metadata,
         created_by_name=admin.name,
         read_count=0,
         total_recipients=total,
@@ -378,7 +378,7 @@ async def admin_update_notification(
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         if key == "metadata":
-            setattr(notif, "metadata", value)
+            setattr(notif, "notif_metadata", value)
         else:
             setattr(notif, key, value)
 
@@ -410,7 +410,7 @@ async def admin_update_notification(
         action_url=notif.action_url,
         target_type=notif.target_type,
         target_value=notif.target_value,
-        metadata=notif.metadata,
+        metadata=notif.notif_metadata,
         created_by_name=notif.creator.name if notif.creator else None,
         read_count=read_count,
         total_recipients=total,

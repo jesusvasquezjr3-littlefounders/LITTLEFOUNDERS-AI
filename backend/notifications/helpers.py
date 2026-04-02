@@ -33,7 +33,7 @@ def create_notification_for_user(
         action_url=action_url,
         target_type=NotificationTargetType.SPECIFIC_USER,
         target_value=str(recipient.public_id),
-        metadata=metadata,
+        notif_metadata=metadata,
     )
     db.add(notif)
     db.flush()

@@ -583,7 +583,7 @@ class Notification(Base):
     target_value = Column(String(100), nullable=True)  # user public_id or user_type value
 
     # Metadata
-    metadata = Column("notif_metadata", JSON, nullable=True)  # Extra data (e.g. follower username, streak count)
+    notif_metadata = Column("notif_metadata", JSON, nullable=True)  # Extra data (e.g. follower username, streak count)
     created_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     scheduled_at = Column(DateTime(timezone=True), nullable=True)
     expires_at = Column(DateTime(timezone=True), nullable=True)
