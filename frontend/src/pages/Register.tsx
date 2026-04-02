@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { SiDiscord } from "react-icons/si";
-import { useGoogleLogin } from '@react-oauth/google';
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -129,70 +129,35 @@ const Register = () => {
     }
   };
 
-  const handleDiscordRegister = () => {
+  const handleGoogleRegister = async () => {
     playSound('ui_tap');
-    sessionStorage.setItem('discord_auth_mode', 'register');
-    const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "YOUR_DISCORD_CLIENT_ID";
-    const REDIRECT_URI = encodeURIComponent(window.location.origin + "/auth/discord/callback");
-    window.location.href = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify+email`;
-  };
-
-  const handleGoogleRegister = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_URL}/auth/google`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token: tokenResponse.access_token, mode: 'register' }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('token', data.access_token);
-
-          playSound('auth_success');
-
-          // Navigate to welcome or dashboard based on whether it is a new user
-          if (data.is_new_user) {
-            setTimeout(() => {
-              navigate('/welcome');
-            }, 500);
-          } else {
-            // Existing user (treated as login)
-            setTimeout(() => {
-              navigate('/dashboard');
-            }, 500);
-          }
-        } else {
-          playSound('auth_error');
-          throw new Error(getTranslatedError(data.detail, t));
-        }
-      } catch (error) {
-        console.error(error);
-        playSound('auth_error');
-        toast({
-          title: t('auth:validation.registration_error'),
-          description: error instanceof Error ? error.message : t('auth:validation.registration_error'),
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    onError: () => {
-      setIsLoading(false);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
       toast({
         title: t('auth:validation.registration_error'),
-        description: t('auth:messages.google_popup_closed'),
-        variant: "destructive",
+        description: error.message,
+        variant: 'destructive',
       });
     }
-  });
+  };
+
+  const handleDiscordRegister = async () => {
+    playSound('ui_tap');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
+      toast({
+        title: t('auth:validation.registration_error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900">
@@ -352,7 +317,7 @@ const Register = () => {
                 )}
               </Button>
 
-              {/* Social Login Buttons (Non-functional) */}
+              {/* Social Login Buttons */}
               <div className="grid grid-cols-2 gap-3 pt-1">
                 {/* Google Login Button */}
                 <Button

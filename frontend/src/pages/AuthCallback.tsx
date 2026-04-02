@@ -1,40 +1,38 @@
-import { useEffect, useState, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/config/api';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedError } from '@/utils/errorUtils';
 import { useSound } from '@/contexts/SoundContext';
 
-const DiscordCallback = () => {
-    const [searchParams] = useSearchParams();
+const AuthCallback = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const { t } = useTranslation(['auth', 'errors']);
     const { playSound } = useSound();
-    const [isProcessing, setIsProcessing] = useState(true);
     const processedRef = useRef(false);
 
     useEffect(() => {
         if (processedRef.current) return;
         processedRef.current = true;
 
-        const code = searchParams.get('code');
-        const mode = sessionStorage.getItem('discord_auth_mode') || 'mixed';
-
-        if (!code) {
-            navigate('/login');
-            return;
-        }
-
-        const handleDiscordAuth = async () => {
+        const handleCallback = async () => {
             try {
-                const response = await fetch(`${API_URL}/auth/discord`, {
+                // Supabase puts the session in the URL hash after OAuth redirect.
+                // getSession() reads it automatically.
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error || !session) {
+                    throw new Error(error?.message || 'No se encontró sesión de Supabase');
+                }
+
+                // Exchange the Supabase access token for an app token
+                const response = await fetch(`${API_URL}/auth/supabase`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code, mode }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ access_token: session.access_token }),
                 });
 
                 const data = await response.json();
@@ -45,48 +43,38 @@ const DiscordCallback = () => {
 
                     playSound('auth_success');
 
-                    // If register mode or new user
                     if (data.is_new_user) {
                         toast({
                             title: t('auth:messages.register_success'),
                             description: t('auth:messages.register_success_subtitle'),
-                            className: "bg-green-50 border-green-200 text-green-800"
+                            className: 'bg-green-50 border-green-200 text-green-800',
                         });
                         navigate('/welcome');
                     } else {
                         toast({
                             title: t('auth:messages.login_success', { name: data.user.name }),
                             description: t('auth:messages.login_success_subtitle'),
-                            className: "bg-green-50 border-green-200 text-green-800"
+                            className: 'bg-green-50 border-green-200 text-green-800',
                         });
                         navigate('/dashboard');
                     }
                 } else {
-                    playSound('auth_error');
                     throw new Error(getTranslatedError(data.detail, t));
                 }
             } catch (error) {
-                console.error('Discord Auth Error:', error);
+                console.error('Auth callback error:', error);
                 playSound('auth_error');
                 toast({
                     title: t('auth:messages.login_error'),
-                    description: error instanceof Error ? error.message : "Discord Login Failed",
-                    variant: "destructive",
+                    description: error instanceof Error ? error.message : t('auth:messages.login_error_detail'),
+                    variant: 'destructive',
                 });
-                // Redirect back to login or register based on mode
-                if (mode === 'register') {
-                    navigate('/register');
-                } else {
-                    navigate('/login');
-                }
-            } finally {
-                setIsProcessing(false);
-                sessionStorage.removeItem('discord_auth_mode');
+                navigate('/login');
             }
         };
 
-        handleDiscordAuth();
-    }, [searchParams, navigate, toast, t, playSound]);
+        handleCallback();
+    }, [navigate, toast, t, playSound]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
@@ -100,4 +88,4 @@ const DiscordCallback = () => {
     );
 };
 
-export default DiscordCallback;
+export default AuthCallback;

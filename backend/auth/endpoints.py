@@ -14,6 +14,7 @@ from auth.schemas import (
     Token,
     GoogleLoginRequest,
     DiscordLoginRequest,
+    SupabaseAuthRequest,
     PasswordChange
 )
 import requests
@@ -202,6 +203,114 @@ async def login_user(request: Request, credentials: UserLogin, db: Session = Dep
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+
+@router.post("/supabase", response_model=dict)
+async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, db: Session = Depends(get_db)):
+    """
+    Login or Register via Supabase OAuth (Google, Discord, etc.)
+    Validates the Supabase access_token by calling the Supabase Auth API,
+    then creates or syncs the user in the app database.
+    """
+    try:
+        # Validate token via Supabase /auth/v1/user
+        headers = {
+            "Authorization": f"Bearer {payload.access_token}",
+            "apikey": settings.supabase_key,
+        }
+        supabase_response = requests.get(
+            f"{settings.supabase_url}/auth/v1/user", headers=headers
+        )
+
+        if supabase_response.status_code != 200:
+            raise ValueError("Invalid or expired Supabase token")
+
+        supabase_user = supabase_response.json()
+
+        email = supabase_user.get("email")
+        if not email:
+            raise ValueError("Email not found in Supabase user — make sure email scope is granted")
+
+        app_metadata = supabase_user.get("app_metadata", {})
+        user_metadata = supabase_user.get("user_metadata", {})
+
+        provider = app_metadata.get("provider", "unknown")
+        name = (
+            user_metadata.get("full_name")
+            or user_metadata.get("name")
+            or user_metadata.get("global_name")
+            or user_metadata.get("custom_claims", {}).get("global_name")
+            or email.split("@")[0]
+        )
+
+        # Check if user exists
+        user = db.query(User).filter(User.email == email).first()
+
+        if not user:
+            user = User(
+                email=email,
+                name=name,
+                password_hash=f"{provider.upper()}_AUTH_NO_PASSWORD",
+                user_type=UserType.UNIVERSAL.value,
+                auth_provider=provider,
+                is_active=True,
+                balance=0.0,
+                points_earned=0,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            is_new_user = True
+        else:
+            is_new_user = False
+            if user.auth_provider == "email":
+                user.auth_provider = provider
+                db.commit()
+
+        # Create app access token
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token = create_access_token(
+            data={"sub": user.email}, expires_delta=access_token_expires
+        )
+
+        user_data = {
+            "public_id": str(user.public_id),
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type,
+            "created_at": user.created_at.isoformat(),
+            "avatar_config": user.avatar_config,
+            "username": user.username,
+            "preferred_language": user.preferred_language,
+            "auth_provider": user.auth_provider,
+            "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+            "gender": user.gender,
+            "lessons_completed": getattr(user, "lessons_completed", 0),
+            "points_earned": getattr(user, "points_earned", 0),
+            "balance": getattr(user, "balance", 0.0),
+        }
+
+        if user.user_type == UserType.CHILD:
+            user_data["has_virtual_card"] = getattr(user, "has_virtual_card", False)
+
+        return {
+            "message": f"{provider.capitalize()} Login successful",
+            "user": user_data,
+            "access_token": access_token,
+            "token_type": "bearer",
+            "is_new_user": is_new_user,
+        }
+
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Supabase Auth Error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Supabase Authentication Failed",
+        )
 
 
 @router.post("/google", response_model=dict)

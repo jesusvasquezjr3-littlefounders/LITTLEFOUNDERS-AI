@@ -15,7 +15,7 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bye from "./pages/Bye";
-import DiscordCallback from "./pages/DiscordCallback";
+import AuthCallback from "./pages/AuthCallback";
 import Lessons from "./pages/Lessons";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";
@@ -88,7 +88,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/bye" element={<Bye />} />
-                <Route path="/auth/discord/callback" element={<DiscordCallback />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
 
                 {/* Lessons */}
                 <Route path="/lessons" element={

@@ -108,6 +108,10 @@ class DiscordLoginRequest(BaseModel):
     mode: Optional[str] = "mixed" # 'login', 'register', or 'mixed'
 
 
+class SupabaseAuthRequest(BaseModel):
+    access_token: str
+
+
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str

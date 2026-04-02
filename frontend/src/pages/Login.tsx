@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { SiDiscord } from "react-icons/si";
-import { useGoogleLogin } from '@react-oauth/google';
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -79,164 +78,35 @@ const Login = () => {
     }
   };
 
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_URL}/auth/google`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token: tokenResponse.access_token }),
-          // Note: useGoogleLogin by default returns an access_token (Implicit flow) or code.
-          // However, for backend verification with 'google-auth' library verify_oauth2_token, we ideally want an ID Token.
-          // We can switch flow to 'auth-code' or just send the access_token and use a different backend verification method.
-          // BUT, simplest with @react-oauth/google for ID token is using the <GoogleLogin /> component, 
-          // OR using flow: 'implicit' looks for access_token. 
-          // Let's check docs or common usage. 
-          // Actually, 'useGoogleLogin' with default flow 'implicit' returns access_token. 
-          // To get ID Token usually we use <GoogleLogin /> component or configure flow.
-
-          // Let's try sending whatever we get to backend and see if we can adjust backend or frontend.
-          // Recommendation: Use the GoogleLogin component or request 'id_token' scope?
-          // Wait, 'useGoogleLogin' gives us an access token which we can use to fetch user info from Google UserInfo endpoint IN FRONTEND
-          // and then send signed data to backend? No that's insecure.
-
-          // Let's stick to the plan: Send token to backend.
-          // If we use 'flow: implicit', we get access_token.
-          // If backend uses `id_token.verify_oauth2_token`, it expects an OIDC JWT (ID Token).
-          // Access Token != ID Token.
-
-          // STRICT CORRECTION: To get an ID Token compatible with backend validator, 
-          // we should might effectively use the <GoogleLogin> component OR use flow that returns id_token.
-          // However, to customize the button completely (as we have a custom UI), we want useGoogleLogin.
-          // We call UserInfo endpoint from backend using access_token? Or from frontend?
-          // Safer: Send access_token to backend, backend calls https://www.googleapis.com/oauth2/v3/userinfo.
-
-          // LET'S CHANGE BACKEND STRATEGY SLIGHTLY OR FRONTEND?
-          // If I change frontend to send what I get, I need to know what I get.
-          // Let's add `onSuccess` logic to just print/debug first? No, user wants solution.
-
-          // Alternative: Use `flow: 'auth-code'` and backend exchanges code for tokens (more secure).
-          // But that requires Client Secret in backend. We didn't ask user for Client Secret.
-
-          // Alternative 2: Backend validates access_token via `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=...`.
-          // This is standard for Implicit flow.
-        });
-
-        // RE-EVALUATION: The backend code I wrote uses `id_token.verify_oauth2_token`.
-        // This EXPECTS a JWT.
-        // `useGoogleLogin` does NOT return a JWT by default.
-        // It returns `{ output: "...", access_token: "...", ... }`.
-
-        // I will update this frontend code to fetch the Google User Info explicitly here,
-        // OR better, swap to `<GoogleLogin ... />` purely? 
-        // No, the user likes the custom UI buttons.
-
-        // BEST PATH:
-        // 1. Frontend gets `access_token` via `useGoogleLogin`.
-        // 2. Frontend calls Google `https://www.googleapis.com/oauth2/v3/userinfo`.
-        // 3. Frontend sends that info to Backend? NO, insecure (spoofing).
-
-        // CORRECT PATH:
-        // 1. Frontend gets `access_token`.
-        // 2. Frontend sends `access_token` to Backend.
-        // 3. Backend verifies `access_token` using Google API (not `verify_oauth2_token` which is for JWT).
-
-        // WAIT: `useGoogleLogin` CAN return an id_token if we use 'id_token' flow? 
-        // Actually, the easiest modern way with `@react-oauth/google` that allows custom button is simply:
-        // passing `onSuccess` response which contains `access_token`. 
-        // AND updating backend to verify access_token instead of id_token.
-
-        // Let's Assume I will fix the backend to verify access_token, 
-        // OR I can try to get the ID token here.
-        // To get ID Token with custom button: 
-        // We can't easily force it without `response_type='id_token'`.
-
-        // PLAN UPDATE:
-        // I will implement sending the `access_token` here.
-        // I will then immediately update the backend `google_login` endpoint to support `access_token` verification 
-        // using `google_requests.Request()` against tokeninfo endpoint OR just userinfo endpoint.
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    onError: () => {
+  const handleGoogleLogin = async () => {
+    playSound('ui_tap');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
       toast({
         title: t('auth:messages.login_error'),
-        description: t('auth:messages.google_login_failed'),
-        variant: "destructive",
+        description: error.message,
+        variant: 'destructive',
       });
     }
-  });
-
-  const handleDiscordLogin = () => {
-    playSound('ui_tap');
-    sessionStorage.setItem('discord_auth_mode', 'login');
-    // Replace with your actual Client ID and Redirect URI
-    const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "YOUR_DISCORD_CLIENT_ID";
-    const REDIRECT_URI = encodeURIComponent(window.location.origin + "/auth/discord/callback");
-    window.location.href = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify+email`;
   };
 
-  // Re-implementing the actual google login handler properly
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        console.log("Google response:", tokenResponse);
-
-        // We send the access_token to the backend
-        const response = await fetch(`${API_URL}/auth/google`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // We are sending the access_token as 'token'
-          body: JSON.stringify({ token: tokenResponse.access_token, mode: 'login' }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('token', data.access_token);
-
-          playSound('auth_success');
-
-          toast({
-            title: t('auth:messages.login_success', { name: data.user.name }),
-            description: t('auth:messages.login_success_subtitle'),
-            className: "bg-green-50 border-green-200 text-green-800"
-          });
-
-          navigate('/dashboard');
-        } else {
-          playSound('auth_error');
-          throw new Error(getTranslatedError(data.detail, t));
-        }
-      } catch (error) {
-        console.error(error);
-        playSound('auth_error');
-        toast({
-          title: t('auth:messages.login_error'),
-          description: error instanceof Error ? error.message : t('auth:messages.login_error_detail'),
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    onError: () => {
-      setIsLoading(false);
+  const handleDiscordLogin = async () => {
+    playSound('ui_tap');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
       toast({
         title: t('auth:messages.login_error'),
-        description: t('auth:messages.google_popup_closed'),
-        variant: "destructive",
+        description: error.message,
+        variant: 'destructive',
       });
     }
-  });
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-purple-900/20 dark:to-slate-900">
@@ -372,13 +242,13 @@ const Login = () => {
                 )}
               </Button>
 
-              {/* Social Login Buttons (Non-functional) */}
+              {/* Social Login Buttons */}
               <div className="grid grid-cols-2 gap-3 pt-1">
                 {/* Google Login Button */}
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => handleGoogleLogin()}
+                  onClick={handleGoogleLogin}
                   className="w-full h-10 gap-2 border-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
