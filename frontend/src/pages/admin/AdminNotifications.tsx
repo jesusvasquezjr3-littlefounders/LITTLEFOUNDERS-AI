@@ -5,7 +5,6 @@ import {
   Megaphone, UserPlus, Flame, Trophy, BookOpen, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AdminLayout } from "@/components/admin/AdminLayout";
 import {
   notificationsAdminApi,
   type NotificationAdminItem,
@@ -502,8 +501,7 @@ export default function AdminNotifications() {
   const totalRead = notifications.reduce((sum, n) => sum + n.read_count, 0);
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -668,7 +666,6 @@ export default function AdminNotifications() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Editor Modal */}
       {showEditor && (
@@ -678,6 +675,6 @@ export default function AdminNotifications() {
           onClose={closeEditor}
         />
       )}
-    </AdminLayout>
+    </div>
   );
 }

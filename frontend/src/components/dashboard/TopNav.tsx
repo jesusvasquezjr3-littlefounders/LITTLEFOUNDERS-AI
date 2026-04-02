@@ -111,7 +111,10 @@ export function TopNav() {
     }
   }, [isOpen, fetchNotifications]);
 
+  const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
+
   const handleNotificationClick = async (notif: NotificationItem) => {
+    // Mark as read
     if (!notif.read_at) {
       await notificationsApi.markAsRead(notif.public_id);
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -119,9 +122,21 @@ export function TopNav() {
         prev.map(n => n.public_id === notif.public_id ? { ...n, read_at: new Date().toISOString() } : n)
       );
     }
-    if (notif.action_url) {
+    // If the notification has a body, show detail modal; otherwise navigate directly
+    if (notif.body) {
+      setIsOpen(false);
+      setSelectedNotification(notif);
+    } else if (notif.action_url) {
+      setIsOpen(false);
       navigate(notif.action_url);
     }
+  };
+
+  const handleDetailNavigate = () => {
+    if (selectedNotification?.action_url) {
+      navigate(selectedNotification.action_url);
+    }
+    setSelectedNotification(null);
   };
 
   const handleMarkAllRead = async () => {
@@ -166,6 +181,7 @@ export function TopNav() {
   };
 
   return (
+    <>
     <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
       {/* Centered Logo - Hidden on mobile to prevent overlap */}
       <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
@@ -395,5 +411,83 @@ export function TopNav() {
         </DropdownMenu>
       </div>
     </header>
+
+      {/* Notification Detail Modal */}
+      {selectedNotification && (() => {
+        const notif = selectedNotification;
+        const config = NOTIFICATION_TYPE_CONFIG[notif.type] || NOTIFICATION_TYPE_CONFIG.system;
+        const Icon = config.icon;
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setSelectedNotification(null)}
+          >
+            <div
+              className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Modal header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className={`flex items-center justify-center w-9 h-9 rounded-xl shrink-0 ${config.bgClass}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    {notif.type.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedNotification(null)}
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <X className="h-4 w-4 text-slate-500" />
+                </button>
+              </div>
+
+              {/* Modal body */}
+              <div className="px-5 py-5 space-y-3">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                  {notif.title}
+                </h2>
+                {notif.body && (
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    {notif.body}
+                  </p>
+                )}
+                {notif.media_url && (
+                  <img
+                    src={notif.media_url}
+                    alt=""
+                    className="w-full rounded-xl object-cover max-h-56 mt-2"
+                    onError={e => (e.currentTarget.style.display = 'none')}
+                  />
+                )}
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {getTimeAgo(notif.created_at, t)}
+                </p>
+              </div>
+
+              {/* Modal footer */}
+              <div className="px-5 pb-5 flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setSelectedNotification(null)}
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  {t('notifications.dismiss')}
+                </button>
+                {notif.action_url && (
+                  <button
+                    onClick={handleDetailNavigate}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                  >
+                    {t('notifications.go_to_action') || 'Ver más'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+    </>
   );
 }

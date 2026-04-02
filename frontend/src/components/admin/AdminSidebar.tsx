@@ -13,6 +13,7 @@ import {
   X,
   LogOut,
   Flag,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,12 @@ const adminMenuItems = [
     icon: Flag,
     id: "nav-reports",
   },
+  {
+    title: "Notificaciones",
+    url: "/admin/notifications",
+    icon: Bell,
+    id: "nav-notifications",
+  },
 ];
 
 export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
@@ -90,6 +97,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
     { ...adminMenuItems[5], title: t('sidebar.users') },
     { ...adminMenuItems[6], title: t('sidebar.help') },
     { ...adminMenuItems[7], title: 'Reportes' },
+    { ...adminMenuItems[8], title: 'Notificaciones' },
   ];
 
   const handleLogout = () => {
