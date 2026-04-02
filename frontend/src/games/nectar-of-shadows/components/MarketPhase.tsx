@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, GAME_CONFIG, calculateSatisfaction } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { Customer, Recipe, WeatherType, DayResult } from '../types';
 
 interface Props {
@@ -203,7 +204,7 @@ export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, o
     <div ref={containerRef} className="nectar-market" style={{ backgroundImage: `url(${bgImage})` }}>
       {/* Stand */}
       <div className="nectar-market-stand">
-        <img src={PICTURES.stand} alt="" className="nectar-market-stand-img" style={{ width: 240, height: 200, objectFit: 'contain' }} />
+        <AssetImg assetPath={PICTURES.stand} alt="" className="nectar-market-stand-img" style={{ width: 240, height: 200, objectFit: 'contain' }} />
       </div>
 
       {/* Customers — positioned with % for responsive layout */}
@@ -219,8 +220,8 @@ export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, o
             className={`nectar-customer nectar-customer-${c.animState}`}
             style={{ left: `${c.x}%`, bottom: '15%' }}
           >
-            <img
-              src={imgSrc}
+            <AssetImg
+              assetPath={imgSrc}
               alt=""
               className="nectar-customer-img"
               style={{ width: 100, height: 120, objectFit: 'contain' }}
@@ -238,7 +239,7 @@ export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, o
       {/* Coin counter */}
       <div className="nectar-market-hud">
         <div className="nectar-market-coins">
-          <img src={PICTURES.coin} alt="" className="nectar-icon-sm" />
+          <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-sm" />
           <span>{earnedCoins}</span>
         </div>
         <p className="nectar-market-label">{t('nectar.market.watching')}</p>

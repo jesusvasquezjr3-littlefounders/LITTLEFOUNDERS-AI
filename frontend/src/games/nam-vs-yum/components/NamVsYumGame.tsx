@@ -1,4 +1,5 @@
 import { useReducer, useCallback, useRef, useEffect, useState } from 'react';
+import { AssetImg } from '@/components/ui/AssetImg';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useSound } from '@/contexts/SoundContext';
@@ -34,7 +35,6 @@ export function NamVsYumGame() {
   const [eatingMonster, setEatingMonster] = useState<MonsterType | null>(null);
   const [rejectingMonster, setRejectingMonster] = useState<MonsterType | null>(null);
   const [highlightedMonster, setHighlightedMonster] = useState<MonsterType | null>(null);
-  const [bgError, setBgError] = useState(false);
 
   // Track the last known drag position (local-coords) so dragEnd doesn't
   // depend on state — which may be stale due to RAF UPDATE_ITEMS dispatches.
@@ -188,15 +188,12 @@ export function NamVsYumGame() {
     <div className="w-full h-full relative">
       {/* Background — always visible */}
       <div className="absolute inset-0 game-bg-sky">
-        {!bgError && (
-          <img
-            src={PICTURES.background}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover pixel-art opacity-40"
-            onError={() => setBgError(true)}
-            draggable={false}
-          />
-        )}
+        <AssetImg
+          assetPath={PICTURES.background}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover pixel-art opacity-40"
+          draggable={false}
+        />
       </div>
 
       {/* CRT effects — above game content (z-40) but below phase overlays (z-70) */}

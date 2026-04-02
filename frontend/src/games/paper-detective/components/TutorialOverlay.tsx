@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, ITEM_EMOJI, COIN_EMOJI } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   onComplete: () => void;
@@ -46,8 +47,8 @@ export function TutorialOverlay({ onComplete, onSkip }: Props) {
         {/* Illustration */}
         <div className="mb-4 flex items-center justify-center" style={{ height: '120px' }}>
           {current.imgKey ? (
-            <img
-              src={PICTURES[current.imgKey]}
+            <AssetImg
+              assetPath={PICTURES[current.imgKey]}
               alt=""
               className="h-full object-contain drop-shadow-md"
               draggable={false}

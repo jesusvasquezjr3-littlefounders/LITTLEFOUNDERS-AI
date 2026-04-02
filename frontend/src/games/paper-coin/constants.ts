@@ -1,26 +1,25 @@
 import { CustomerDef, ItemDef, Transaction, GameUpgrades, ThemeType } from './types';
 
-const ASSET_BASE =
-  'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/7-paper-coin';
+const BASE = '7-paper-coin';
 
 // ─── Audio ────────────────────────────────────────────────────────────────────
 export const AUDIO = {
-  bgm: `${ASSET_BASE}/audio/bgm.mp3`,
-  bgmFast: `${ASSET_BASE}/audio/bgm-fast.mp3`,
-  caching: `${ASSET_BASE}/audio/ca-ching.mp3`,
-  error: `${ASSET_BASE}/audio/error.mp3`,
-  paperCrumple: `${ASSET_BASE}/audio/paper-crumple.mp3`,
-  levelUp: `${ASSET_BASE}/audio/level-up.mp3`,
-  gameOver: `${ASSET_BASE}/audio/game-over.mp3`,
-  tick: `${ASSET_BASE}/audio/tick.mp3`,
-  speedBonus: `${ASSET_BASE}/audio/speed-bonus.mp3`,
-  buttonPress: `${ASSET_BASE}/audio/button.mp3`,
-  coinFlip: `${ASSET_BASE}/audio/coin-flip.mp3`,
-  shopOpen: `${ASSET_BASE}/audio/shop-open.mp3`,
+  bgm: `${BASE}/audio/bgm.mp3`,
+  bgmFast: `${BASE}/audio/bgm-fast.mp3`,
+  caching: `${BASE}/audio/ca-ching.mp3`,
+  error: `${BASE}/audio/error.mp3`,
+  paperCrumple: `${BASE}/audio/paper-crumple.mp3`,
+  levelUp: `${BASE}/audio/level-up.mp3`,
+  gameOver: `${BASE}/audio/game-over.mp3`,
+  tick: `${BASE}/audio/tick.mp3`,
+  speedBonus: `${BASE}/audio/speed-bonus.mp3`,
+  buttonPress: `${BASE}/audio/button.mp3`,
+  coinFlip: `${BASE}/audio/coin-flip.mp3`,
+  shopOpen: `${BASE}/audio/shop-open.mp3`,
 };
 
 // ─── Item helpers ──────────────────────────────────────────────────────────────
-const pic = (name: string) => `${ASSET_BASE}/pictures/${name}.png`;
+const pic = (name: string) => `${BASE}/pictures/${name}.png`;
 
 // ─── Items ─────────────────────────────────────────────────────────────────────
 // Tier 1: simple prices 3–15, customer pays 10 or 20

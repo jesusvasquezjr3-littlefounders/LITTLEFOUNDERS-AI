@@ -4,6 +4,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   day: number;
@@ -30,7 +31,7 @@ export function GameOverScreen({ day, totalCoinsEarned, highScore, bestDay, isNe
         )}
 
         {/* Character */}
-        <img src={PICTURES.dina} alt="" className="nectar-gameover-char" />
+        <AssetImg assetPath={PICTURES.dina} alt="" className="nectar-gameover-char" />
 
         {/* Stats */}
         <div className="nectar-gameover-stats">
@@ -42,14 +43,14 @@ export function GameOverScreen({ day, totalCoinsEarned, highScore, bestDay, isNe
             <span className="nectar-gameover-stat-label">{t('nectar.gameOver.totalEarned')}</span>
             <span className="nectar-gameover-stat-value">
               {totalCoinsEarned}
-              <img src={PICTURES.coin} alt="" className="nectar-icon-xs" />
+              <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-xs" />
             </span>
           </div>
           <div className="nectar-gameover-stat">
             <span className="nectar-gameover-stat-label">{t('nectar.gameOver.bestRecord')}</span>
             <span className="nectar-gameover-stat-value">
               {highScore}
-              <img src={PICTURES.coin} alt="" className="nectar-icon-xs" />
+              <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-xs" />
             </span>
           </div>
           <div className="nectar-gameover-stat">

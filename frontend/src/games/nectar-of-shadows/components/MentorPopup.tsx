@@ -4,6 +4,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { MentorTip, MentorCharacter } from '../types';
 
 interface Props {
@@ -24,8 +25,8 @@ export function MentorPopup({ tip, onDismiss }: Props) {
   return (
     <div className="nectar-mentor-popup" onClick={onDismiss}>
       <div className="nectar-mentor-bubble">
-        <img
-          src={MENTOR_PICS[tip.character]}
+        <AssetImg
+          assetPath={MENTOR_PICS[tip.character]}
           alt={t(tip.nameKey)}
           className="nectar-mentor-img"
           style={{ width: 88, height: 88, objectFit: 'contain', flexShrink: 0 }}

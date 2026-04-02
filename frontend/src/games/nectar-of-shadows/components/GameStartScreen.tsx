@@ -4,6 +4,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   highScore: number;
@@ -26,15 +27,15 @@ export function GameStartScreen({ highScore, bestDay, onPlay, onTutorial }: Prop
 
       {/* Logo / Title */}
       <div className="nectar-start-header">
-        <img src={PICTURES.logo} alt="" className="nectar-logo" />
+        <AssetImg assetPath={PICTURES.logo} alt="" className="nectar-logo" />
         <h1 className="nectar-title">{t('nectar.title')}</h1>
         <p className="nectar-subtitle">{t('nectar.subtitle')}</p>
       </div>
 
       {/* Character preview */}
       <div className="nectar-start-characters">
-        <img src={PICTURES.liruf} alt="Liruf" className="nectar-char-preview nectar-char-bounce" />
-        <img src={PICTURES.dina} alt="Dina" className="nectar-char-preview nectar-char-bounce" style={{ animationDelay: '0.3s' }} />
+        <AssetImg assetPath={PICTURES.liruf} alt="Liruf" className="nectar-char-preview nectar-char-bounce" />
+        <AssetImg assetPath={PICTURES.dina} alt="Dina" className="nectar-char-preview nectar-char-bounce" style={{ animationDelay: '0.3s' }} />
       </div>
 
       {/* Stats */}

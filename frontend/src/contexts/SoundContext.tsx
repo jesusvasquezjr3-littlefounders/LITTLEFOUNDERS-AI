@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Howl, Howler } from 'howler';
+import { resolveAudioSrc } from '@/lib/assets';
 
 // Define sound types based on our design
 type SoundType =
@@ -91,10 +92,23 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, [mute, getHowl]);
 
+    // Cache for Howl instances keyed by bucket path (separate from local sound cache)
+    const assetHowls = useRef<Record<string, Howl>>({});
+
     const playFile = useCallback((path: string) => {
         if (mute) return;
-        const sound = getHowl(path);
-        sound.play();
+        // Local sounds (start with /) bypass signed URL resolution
+        if (path.startsWith('/') || path.startsWith('http') || path.startsWith('blob:')) {
+            getHowl(path).play();
+            return;
+        }
+        // Supabase bucket path — resolve to signed URL first
+        resolveAudioSrc(path).then((src) => {
+            if (!assetHowls.current[path]) {
+                assetHowls.current[path] = new Howl({ src: [src], preload: true, volume: 1.0 });
+            }
+            assetHowls.current[path].play();
+        }).catch((err) => console.error('[SoundContext] playFile error:', path, err));
     }, [mute, getHowl]);
 
     // Preload UI sounds on mount
@@ -108,23 +122,25 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const bgmRef = useRef<Howl | null>(null);
 
     const playBGM = useCallback((path: string, options?: { volume?: number }) => {
-        // Note: We do NOT check mute here. We want the BGM object to exist 
+        // Note: We do NOT check mute here. We want the BGM object to exist
         // so we can unmute it later if the user toggles sound.
 
         // Stop previous BGM if any
         if (bgmRef.current) {
             bgmRef.current.stop();
+            bgmRef.current = null;
         }
 
-        const bgm = new Howl({
-            src: [path],
-            loop: true,
-            volume: options?.volume || 0.1,
-            onloaderror: (id, err) => console.error('BGM Load Error:', err),
-        });
-
-        bgmRef.current = bgm;
-        bgm.play();
+        resolveAudioSrc(path).then((src) => {
+            const bgm = new Howl({
+                src: [src],
+                loop: true,
+                volume: options?.volume || 0.1,
+                onloaderror: (_id, err) => console.error('BGM Load Error:', err),
+            });
+            bgmRef.current = bgm;
+            bgm.play();
+        }).catch((err) => console.error('[SoundContext] playBGM error:', path, err));
     }, []); // No dependency on mute.
 
     const stopBGM = useCallback((options?: { fade?: boolean, fadeDuration?: number }) => {

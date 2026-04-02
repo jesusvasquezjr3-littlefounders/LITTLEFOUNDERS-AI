@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MonsterType } from '../types';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import { cn } from '@/lib/utils';
 
 interface MonsterProps {
@@ -13,7 +13,6 @@ interface MonsterProps {
 
 export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterProps) {
   const { t } = useTranslation('games');
-  const [imgError, setImgError] = useState(false);
 
   const isVitalio = type === 'vitalio';
   const name = isVitalio ? t('namVsYum.monsters.vitalio') : t('namVsYum.monsters.capricho');
@@ -32,11 +31,6 @@ export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterP
   const bgColor = isVitalio ? 'from-green-600 to-green-800' : 'from-purple-600 to-purple-800';
   const labelBg = isVitalio ? 'bg-green-500' : 'bg-purple-500';
 
-  // Reset img error when img source changes
-  useEffect(() => {
-    setImgError(false);
-  }, [currentImg]);
-
   return (
     <div className="flex flex-col items-center gap-1">
       {/* Monster image */}
@@ -50,17 +44,13 @@ export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterP
           isRejecting && 'monster-rejecting',
         )}
       >
-        {!imgError ? (
-          <img
-            src={currentImg}
-            alt={name}
-            className="w-full h-full object-contain pixel-art p-1"
-            onError={() => setImgError(true)}
-            draggable={false}
-          />
-        ) : (
-          <span className="text-3xl sm:text-4xl md:text-5xl">{emoji}</span>
-        )}
+        <AssetImg
+          assetPath={currentImg}
+          alt={name}
+          className="w-full h-full object-contain pixel-art p-1"
+          draggable={false}
+          fallback={<span className="text-3xl sm:text-4xl md:text-5xl">{emoji}</span>}
+        />
 
         {/* Glow effect when highlighted */}
         {isHighlighted && (

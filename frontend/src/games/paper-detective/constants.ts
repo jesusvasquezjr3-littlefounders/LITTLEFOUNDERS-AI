@@ -4,56 +4,56 @@ import type { ItemSilhouette, CoinOption, DrawerCoin, Cosmetic } from './types';
 // Detective de Papel: Misión Alcancía — Constants
 // ─────────────────────────────────────────────────────
 
-const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective';
+const BASE = '3-paper-detective';
 
 // ── Audio ────────────────────────────────────────────
 export const AUDIO = {
-  bgm:       `${ASSET_BASE}/audio/bgm-jazz.mp3`,
-  correct:   `${ASSET_BASE}/audio/correct.mp3`,
-  incorrect: `${ASSET_BASE}/audio/incorrect.mp3`,
-  drag:      `${ASSET_BASE}/audio/drag.mp3`,
-  coinIn:    `${ASSET_BASE}/audio/coin-in.mp3`,
-  combo:     `${ASSET_BASE}/audio/combo.mp3`,
-  gameOver:  `${ASSET_BASE}/audio/game-over.mp3`,
-  levelUp:   `${ASSET_BASE}/audio/level-up.mp3`,
-  highScore: `${ASSET_BASE}/audio/high-score.mp3`,
-  eject:     `${ASSET_BASE}/audio/incorrect.mp3`, // reuse incorrect sfx for eject
+  bgm:       `${BASE}/audio/bgm-jazz.mp3`,
+  correct:   `${BASE}/audio/correct.mp3`,
+  incorrect: `${BASE}/audio/incorrect.mp3`,
+  drag:      `${BASE}/audio/drag.mp3`,
+  coinIn:    `${BASE}/audio/coin-in.mp3`,
+  combo:     `${BASE}/audio/combo.mp3`,
+  gameOver:  `${BASE}/audio/game-over.mp3`,
+  levelUp:   `${BASE}/audio/level-up.mp3`,
+  highScore: `${BASE}/audio/high-score.mp3`,
+  eject:     `${BASE}/audio/incorrect.mp3`, // reuse incorrect sfx for eject
 };
 
 // ── Pictures ─────────────────────────────────────────
 export const PICTURES = {
-  detective:        `${ASSET_BASE}/pictures/detective.png`,
-  vendor:           `${ASSET_BASE}/pictures/vendor.png`,
-  piggyBank:        `${ASSET_BASE}/pictures/piggy-bank.png`,
-  piggyBankFull:    `${ASSET_BASE}/pictures/piggy-bank-full.png`,
-  logo:             `${ASSET_BASE}/pictures/logo.png`,
-  background:       `${ASSET_BASE}/pictures/background.png`,
+  detective:        `${BASE}/pictures/detective.png`,
+  vendor:           `${BASE}/pictures/vendor.png`,
+  piggyBank:        `${BASE}/pictures/piggy-bank.png`,
+  piggyBankFull:    `${BASE}/pictures/piggy-bank-full.png`,
+  logo:             `${BASE}/pictures/logo.png`,
+  background:       `${BASE}/pictures/background.png`,
   // Real coins
-  coin1:            `${ASSET_BASE}/pictures/coins/coin-1.png`,
-  coin2:            `${ASSET_BASE}/pictures/coins/coin-2.png`,
-  coin5:            `${ASSET_BASE}/pictures/coins/coin-5.png`,
-  coin10:           `${ASSET_BASE}/pictures/coins/coin-10.png`,
+  coin1:            `${BASE}/pictures/coins/coin-1.png`,
+  coin2:            `${BASE}/pictures/coins/coin-2.png`,
+  coin5:            `${BASE}/pictures/coins/coin-5.png`,
+  coin10:           `${BASE}/pictures/coins/coin-10.png`,
   // Fakes
-  pokerChip:        `${ASSET_BASE}/pictures/fakes/poker-chip.png`,
-  button:           `${ASSET_BASE}/pictures/fakes/button.png`,
-  bottleCap:        `${ASSET_BASE}/pictures/fakes/bottle-cap.png`,
-  pirateCoin:       `${ASSET_BASE}/pictures/fakes/pirate-coin.png`,
-  carrot:           `${ASSET_BASE}/pictures/fakes/carrot.png`,
+  pokerChip:        `${BASE}/pictures/fakes/poker-chip.png`,
+  button:           `${BASE}/pictures/fakes/button.png`,
+  bottleCap:        `${BASE}/pictures/fakes/bottle-cap.png`,
+  pirateCoin:       `${BASE}/pictures/fakes/pirate-coin.png`,
+  carrot:           `${BASE}/pictures/fakes/carrot.png`,
   // Items (used as silhouettes via CSS filter)
-  itemCandy:        `${ASSET_BASE}/pictures/items/candy.png`,
-  itemApple:        `${ASSET_BASE}/pictures/items/apple.png`,
-  itemDonut:        `${ASSET_BASE}/pictures/items/donut.png`,
-  itemMagnifier:    `${ASSET_BASE}/pictures/items/magnifier.png`,
-  itemHat:          `${ASSET_BASE}/pictures/items/hat.png`,
-  itemPencil:       `${ASSET_BASE}/pictures/items/pencil.png`,
-  itemNotebook:     `${ASSET_BASE}/pictures/items/notebook.png`,
-  itemLollipop:     `${ASSET_BASE}/pictures/items/lollipop.png`,
-  itemIceCream:     `${ASSET_BASE}/pictures/items/ice-cream.png`,
+  itemCandy:        `${BASE}/pictures/items/candy.png`,
+  itemApple:        `${BASE}/pictures/items/apple.png`,
+  itemDonut:        `${BASE}/pictures/items/donut.png`,
+  itemMagnifier:    `${BASE}/pictures/items/magnifier.png`,
+  itemHat:          `${BASE}/pictures/items/hat.png`,
+  itemPencil:       `${BASE}/pictures/items/pencil.png`,
+  itemNotebook:     `${BASE}/pictures/items/notebook.png`,
+  itemLollipop:     `${BASE}/pictures/items/lollipop.png`,
+  itemIceCream:     `${BASE}/pictures/items/ice-cream.png`,
   // Cosmetics
-  cosmeticTopHat:       `${ASSET_BASE}/pictures/cosmetics/hat-top.png`,
-  cosmeticDetectiveHat: `${ASSET_BASE}/pictures/cosmetics/detective-hat.png`,
-  cosmeticSunglasses:   `${ASSET_BASE}/pictures/cosmetics/sunglasses.png`,
-  cosmeticMustache:     `${ASSET_BASE}/pictures/cosmetics/mustache.png`,
+  cosmeticTopHat:       `${BASE}/pictures/cosmetics/hat-top.png`,
+  cosmeticDetectiveHat: `${BASE}/pictures/cosmetics/detective-hat.png`,
+  cosmeticSunglasses:   `${BASE}/pictures/cosmetics/sunglasses.png`,
+  cosmeticMustache:     `${BASE}/pictures/cosmetics/mustache.png`,
 };
 
 // ── Coin emoji fallbacks (shown if image fails to load) ─────

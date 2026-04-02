@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, COIN_EMOJI } from '../constants';
 import type { DrawerCoin } from '../types';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   target: number;
@@ -15,23 +16,19 @@ interface Props {
 }
 
 function CoinImg({ imageKey, size, className = '' }: { imageKey: string; size: number; className?: string }) {
-  const [err, setErr] = useState(false);
   const src = (PICTURES as Record<string, string>)[imageKey];
-  if (err || !src) {
-    return (
-      <span style={{ fontSize: size * 0.65 }} className="select-none pointer-events-none">
-        {COIN_EMOJI[imageKey] ?? '🪙'}
-      </span>
-    );
-  }
   return (
-    <img
-      src={src}
+    <AssetImg
+      assetPath={src}
       alt=""
       style={{ width: size, height: size, objectFit: 'contain' }}
       className={`pointer-events-none ${className}`}
-      onError={() => setErr(true)}
       draggable={false}
+      fallback={
+        <span style={{ fontSize: size * 0.65 }} className="select-none pointer-events-none">
+          {COIN_EMOJI[imageKey] ?? '🪙'}
+        </span>
+      }
     />
   );
 }
@@ -149,8 +146,6 @@ export function Phase2Vault({
   const currentSum = vaultCoins.reduce((s, c) => s + c.value, 0);
   const disabled = feedback !== null;
 
-  const [piggyError, setPiggyError] = useState(false);
-
   return (
     <div className="flex flex-col items-center justify-between h-full pt-14 pb-3 px-3 pd-font">
 
@@ -174,17 +169,13 @@ export function Phase2Vault({
             `}
             style={{ width: 120, height: 120 }}
           >
-            {!piggyError ? (
-              <img
-                src={feedback === 'correct' ? PICTURES.piggyBankFull : PICTURES.piggyBank}
-                alt="Piggy Bank"
-                className="w-full h-full object-contain drop-shadow-lg"
-                onError={() => setPiggyError(true)}
-                draggable={false}
-              />
-            ) : (
-              <span className="text-7xl">🐷</span>
-            )}
+            <AssetImg
+              assetPath={feedback === 'correct' ? PICTURES.piggyBankFull : PICTURES.piggyBank}
+              alt="Piggy Bank"
+              className="w-full h-full object-contain drop-shadow-lg"
+              draggable={false}
+              fallback={<span className="text-7xl">🐷</span>}
+            />
             {/* Vault flash overlays */}
             {feedback === 'correct' && <div className="pd-vault-success-overlay rounded-full" />}
             {feedback === 'incorrect' && <div className="pd-vault-error-overlay rounded-full" />}

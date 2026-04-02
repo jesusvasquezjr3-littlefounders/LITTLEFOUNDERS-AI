@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, COSMETICS } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   highScore: number;
@@ -12,8 +12,6 @@ interface Props {
 
 export function GameStartScreen({ highScore, totalPoints, equippedCosmetic, onPlay, onTutorial }: Props) {
   const { t } = useTranslation('games');
-  const [imgError, setImgError] = useState(false);
-  const [logoError, setLogoError] = useState(false);
 
   const equippedDef = equippedCosmetic ? COSMETICS.find(c => c.id === equippedCosmetic) : null;
 
@@ -31,45 +29,41 @@ export function GameStartScreen({ highScore, totalPoints, equippedCosmetic, onPl
 
       {/* Logo */}
       <div className="mb-2 pd-slide-up">
-        {!logoError ? (
-          <img
-            src={PICTURES.logo}
-            alt={t('paperDetective.title')}
-            className="w-64 sm:w-80 max-w-xs object-contain drop-shadow-lg"
-            onError={() => setLogoError(true)}
-            draggable={false}
-          />
-        ) : (
-          <div className="pd-card px-6 py-3 text-center">
-            <h1 className="text-2xl sm:text-3xl font-black text-amber-900 leading-tight">
-              🕵️ {t('paperDetective.title')}
-            </h1>
-            <p className="text-sm sm:text-base font-bold text-amber-700 mt-1">
-              {t('paperDetective.subtitle')}
-            </p>
-          </div>
-        )}
+        <AssetImg
+          assetPath={PICTURES.logo}
+          alt={t('paperDetective.title')}
+          className="w-64 sm:w-80 max-w-xs object-contain drop-shadow-lg"
+          draggable={false}
+          fallback={
+            <div className="pd-card px-6 py-3 text-center">
+              <h1 className="text-2xl sm:text-3xl font-black text-amber-900 leading-tight">
+                🕵️ {t('paperDetective.title')}
+              </h1>
+              <p className="text-sm sm:text-base font-bold text-amber-700 mt-1">
+                {t('paperDetective.subtitle')}
+              </p>
+            </div>
+          }
+        />
       </div>
 
       {/* Detective character */}
       <div className="relative mb-4" style={{ height: '180px', width: '160px' }}>
-        {!imgError ? (
-          <img
-            src={PICTURES.detective}
-            alt="Detective"
-            className="pd-detective-wobble absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain drop-shadow-xl"
-            onError={() => setImgError(true)}
-            draggable={false}
-          />
-        ) : (
-          <div className="pd-detective-wobble absolute bottom-0 left-1/2 -translate-x-1/2 text-8xl select-none">
-            🕵️
-          </div>
-        )}
+        <AssetImg
+          assetPath={PICTURES.detective}
+          alt="Detective"
+          className="pd-detective-wobble absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain drop-shadow-xl"
+          draggable={false}
+          fallback={
+            <div className="pd-detective-wobble absolute bottom-0 left-1/2 -translate-x-1/2 text-8xl select-none">
+              🕵️
+            </div>
+          }
+        />
         {/* Equipped cosmetic overlay */}
         {equippedDef && (
-          <img
-            src={PICTURES[equippedDef.imageKey as keyof typeof PICTURES] as string}
+          <AssetImg
+            assetPath={PICTURES[equippedDef.imageKey as keyof typeof PICTURES] as string}
             alt=""
             className="pd-detective-wobble absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain pointer-events-none"
             draggable={false}

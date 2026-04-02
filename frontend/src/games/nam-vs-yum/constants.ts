@@ -1,32 +1,32 @@
 import type { GameItemDefinition, DifficultyLevel, MentorTip } from './types';
 
-const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/2-nam-vs-yum-game';
+const BASE = '2-nam-vs-yum-game';
 
 export const AUDIO = {
-  bgm: `${ASSET_BASE}/audio/bgm-retro-loop.mp3`,
-  correct: `${ASSET_BASE}/audio/correct.mp3`,
-  incorrect: `${ASSET_BASE}/audio/incorrect.mp3`,
-  combo: `${ASSET_BASE}/audio/combo.mp3`,
-  levelUp: `${ASSET_BASE}/audio/level-up.mp3`,
-  gameOver: `${ASSET_BASE}/audio/game-over.mp3`,
-  chomp: `${ASSET_BASE}/audio/chomp.mp3`,
-  reject: `${ASSET_BASE}/audio/reject.mp3`,
-  mentorPop: `${ASSET_BASE}/audio/mentor-pop.mp3`,
-  highScore: `${ASSET_BASE}/audio/high-score.mp3`,
+  bgm: `${BASE}/audio/bgm-retro-loop.mp3`,
+  correct: `${BASE}/audio/correct.mp3`,
+  incorrect: `${BASE}/audio/incorrect.mp3`,
+  combo: `${BASE}/audio/combo.mp3`,
+  levelUp: `${BASE}/audio/level-up.mp3`,
+  gameOver: `${BASE}/audio/game-over.mp3`,
+  chomp: `${BASE}/audio/chomp.mp3`,
+  reject: `${BASE}/audio/reject.mp3`,
+  mentorPop: `${BASE}/audio/mentor-pop.mp3`,
+  highScore: `${BASE}/audio/high-score.mp3`,
 };
 
 export const PICTURES = {
-  vitalio: `${ASSET_BASE}/pictures/vitalio.png`,
-  vitalioEat: `${ASSET_BASE}/pictures/vitalio-eat.png`,
-  vitalioReject: `${ASSET_BASE}/pictures/vitalio-reject.png`,
-  capricho: `${ASSET_BASE}/pictures/capricho.png`,
-  caprichoEat: `${ASSET_BASE}/pictures/capricho-eat.png`,
-  caprichoReject: `${ASSET_BASE}/pictures/capricho-reject.png`,
-  background: `${ASSET_BASE}/pictures/background.png`,
-  logo: `${ASSET_BASE}/pictures/logo.png`,
+  vitalio: `${BASE}/pictures/vitalio.png`,
+  vitalioEat: `${BASE}/pictures/vitalio-eat.png`,
+  vitalioReject: `${BASE}/pictures/vitalio-reject.png`,
+  capricho: `${BASE}/pictures/capricho.png`,
+  caprichoEat: `${BASE}/pictures/capricho-eat.png`,
+  caprichoReject: `${BASE}/pictures/capricho-reject.png`,
+  background: `${BASE}/pictures/background.png`,
+  logo: `${BASE}/pictures/logo.png`,
 };
 
-const itemPic = (name: string) => `${ASSET_BASE}/pictures/items/${name}.png`;
+const itemPic = (name: string) => `${BASE}/pictures/items/${name}.png`;
 
 export const ITEMS: GameItemDefinition[] = [
   // NEEDS (Vitalio) - Tier 1

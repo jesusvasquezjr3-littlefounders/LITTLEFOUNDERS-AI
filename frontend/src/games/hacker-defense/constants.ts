@@ -1,48 +1,48 @@
 import type { TowerSlot, WaveDef, InboxEmail } from './types';
 
-// ─── Asset Base URL ──────────────────────────────────────────────────────
-const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/13-hacker-defense';
+// ─── Asset Base Path (relative to game-assets bucket) ────────────────────────
+const BASE = '13-hacker-defense';
 
 export const AUDIO = {
-  bgm: `${ASSET_BASE}/audio/bgm.mp3`,
-  bgmBoss: `${ASSET_BASE}/audio/bgm-boss.mp3`,
-  bgmTense: `${ASSET_BASE}/audio/bgm-tense.mp3`,
-  place: `${ASSET_BASE}/audio/place-tower.mp3`,
-  shoot: `${ASSET_BASE}/audio/shoot.mp3`,
-  kill: `${ASSET_BASE}/audio/kill.mp3`,
-  clack: `${ASSET_BASE}/audio/clack.mp3`,
-  caching: `${ASSET_BASE}/audio/ca-ching.mp3`,
-  alert: `${ASSET_BASE}/audio/alert.mp3`,
-  twoFASuccess: `${ASSET_BASE}/audio/2fa-success.mp3`,
-  twoFAFail: `${ASSET_BASE}/audio/2fa-fail.mp3`,
-  levelUp: `${ASSET_BASE}/audio/level-up.mp3`,
-  gameOver: `${ASSET_BASE}/audio/game-over.mp3`,
-  victory: `${ASSET_BASE}/audio/victory.mp3`,
-  phishingAlert: `${ASSET_BASE}/audio/phishing-alert.mp3`,
-  critical: `${ASSET_BASE}/audio/critical.mp3`,
+  bgm: `${BASE}/audio/bgm.mp3`,
+  bgmBoss: `${BASE}/audio/bgm-boss.mp3`,
+  bgmTense: `${BASE}/audio/bgm-tense.mp3`,
+  place: `${BASE}/audio/place-tower.mp3`,
+  shoot: `${BASE}/audio/shoot.mp3`,
+  kill: `${BASE}/audio/kill.mp3`,
+  clack: `${BASE}/audio/clack.mp3`,
+  caching: `${BASE}/audio/ca-ching.mp3`,
+  alert: `${BASE}/audio/alert.mp3`,
+  twoFASuccess: `${BASE}/audio/2fa-success.mp3`,
+  twoFAFail: `${BASE}/audio/2fa-fail.mp3`,
+  levelUp: `${BASE}/audio/level-up.mp3`,
+  gameOver: `${BASE}/audio/game-over.mp3`,
+  victory: `${BASE}/audio/victory.mp3`,
+  phishingAlert: `${BASE}/audio/phishing-alert.mp3`,
+  critical: `${BASE}/audio/critical.mp3`,
 };
 
 export const PICTURES = {
   // Enemies
-  virus: `${ASSET_BASE}/pictures/enemy-virus.png`,
-  trojan: `${ASSET_BASE}/pictures/enemy-trojan.png`,
-  phishingDisguised: `${ASSET_BASE}/pictures/enemy-phishing-disguised.png`,
-  phishingRevealed: `${ASSET_BASE}/pictures/enemy-phishing-revealed.png`,
-  ddos: `${ASSET_BASE}/pictures/enemy-ddos.png`,
-  boss: `${ASSET_BASE}/pictures/enemy-boss.png`,
+  virus: `${BASE}/pictures/enemy-virus.png`,
+  trojan: `${BASE}/pictures/enemy-trojan.png`,
+  phishingDisguised: `${BASE}/pictures/enemy-phishing-disguised.png`,
+  phishingRevealed: `${BASE}/pictures/enemy-phishing-revealed.png`,
+  ddos: `${BASE}/pictures/enemy-ddos.png`,
+  boss: `${BASE}/pictures/enemy-boss.png`,
   // Towers
-  towerPassword: `${ASSET_BASE}/pictures/tower-password.png`,
-  towerAntivirus: `${ASSET_BASE}/pictures/tower-antivirus.png`,
-  towerWall2fa: `${ASSET_BASE}/pictures/tower-wall-2fa.png`,
+  towerPassword: `${BASE}/pictures/tower-password.png`,
+  towerAntivirus: `${BASE}/pictures/tower-antivirus.png`,
+  towerWall2fa: `${BASE}/pictures/tower-wall-2fa.png`,
   // Map elements
-  base: `${ASSET_BASE}/pictures/bank-vault.png`,
-  map: `${ASSET_BASE}/pictures/map-bg.png`,
+  base: `${BASE}/pictures/bank-vault.png`,
+  map: `${BASE}/pictures/map-bg.png`,
   // UI
-  dataPacket: `${ASSET_BASE}/pictures/data-packet.png`,
+  dataPacket: `${BASE}/pictures/data-packet.png`,
   // Pets
-  petDog: `${ASSET_BASE}/pictures/pet-privacy-dog.png`,
-  petLock: `${ASSET_BASE}/pictures/pet-happy-lock.png`,
-  petShield: `${ASSET_BASE}/pictures/pet-shield.png`,
+  petDog: `${BASE}/pictures/pet-privacy-dog.png`,
+  petLock: `${BASE}/pictures/pet-happy-lock.png`,
+  petShield: `${BASE}/pictures/pet-shield.png`,
 };
 
 // ─── Canvas dimensions ────────────────────────────────────────────────────

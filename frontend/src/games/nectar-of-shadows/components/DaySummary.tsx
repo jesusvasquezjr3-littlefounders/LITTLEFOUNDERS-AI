@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, MENTOR_TIPS } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { DayResult, MentorTip, MentorCharacter } from '../types';
 
 interface Props {
@@ -77,7 +78,7 @@ export function DaySummary({ day, result, totalCoins, onContinue, onShowMentor }
             <span>{t('nectar.summary.totalSales')}</span>
             <span className="nectar-summary-value nectar-text-positive">
               +{result.totalSales}
-              <img src={PICTURES.coin} alt="" className="nectar-icon-xs" />
+              <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-xs" />
             </span>
           </div>
 
@@ -85,7 +86,7 @@ export function DaySummary({ day, result, totalCoins, onContinue, onShowMentor }
             <span>{t('nectar.summary.ingredientCost')}</span>
             <span className="nectar-summary-value nectar-text-negative">
               -{result.ingredientCost}
-              <img src={PICTURES.coin} alt="" className="nectar-icon-xs" />
+              <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-xs" />
             </span>
           </div>
 
@@ -95,14 +96,14 @@ export function DaySummary({ day, result, totalCoins, onContinue, onShowMentor }
             <span>{t('nectar.summary.netProfit')}</span>
             <span className={`nectar-summary-value-big ${isProfit ? 'nectar-text-positive' : 'nectar-text-negative'}`}>
               {animatedProfit > 0 ? '+' : ''}{animatedProfit}
-              <img src={PICTURES.coin} alt="" className="nectar-icon-sm" />
+              <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-sm" />
             </span>
           </div>
         </div>
 
         {/* Customers */}
         <div className="nectar-summary-customers">
-          <img src={PICTURES.customerHappy} alt="" className="nectar-icon-sm" />
+          <AssetImg assetPath={PICTURES.customerHappy} alt="" className="nectar-icon-sm" />
           <span>
             {t('nectar.summary.customersBought', {
               bought: result.customersBought,
@@ -113,14 +114,14 @@ export function DaySummary({ day, result, totalCoins, onContinue, onShowMentor }
 
         {/* Total balance */}
         <div className="nectar-summary-balance">
-          <img src={PICTURES.coin} alt="" className="nectar-icon-sm" />
+          <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-sm" />
           <span>{t('nectar.summary.totalBalance', { coins: totalCoins })}</span>
         </div>
 
         {/* Character reaction */}
         <div className="nectar-summary-reaction">
-          <img
-            src={isProfit ? PICTURES.liruf : PICTURES.dina}
+          <AssetImg
+            assetPath={isProfit ? PICTURES.liruf : PICTURES.dina}
             alt=""
             className="nectar-summary-char"
           />

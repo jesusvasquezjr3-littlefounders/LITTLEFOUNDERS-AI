@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { FallingItem as FallingItemType, GameItemDefinition } from '../types';
 import { GAME_CONFIG } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import { cn } from '@/lib/utils';
 
 interface FallingItemProps {
@@ -14,7 +15,6 @@ interface FallingItemProps {
 
 export function FallingItemComponent({ item, definition, onDragStart, onDragMove, onDragEnd }: FallingItemProps) {
   const { t } = useTranslation('games');
-  const [imgError, setImgError] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   // Track dragging state locally with a ref so pointer events work
@@ -128,17 +128,13 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
           'shadow-md',
         )}
       >
-        {!imgError ? (
-          <img
-            src={definition.imageUrl}
-            alt={itemName}
-            className="w-[80%] h-[80%] object-contain pixel-art"
-            onError={() => setImgError(true)}
-            draggable={false}
-          />
-        ) : (
-          <span className="text-2xl sm:text-3xl">{definition.emoji}</span>
-        )}
+        <AssetImg
+          assetPath={definition.imageUrl}
+          alt={itemName}
+          className="w-[80%] h-[80%] object-contain pixel-art"
+          draggable={false}
+          fallback={<span className="text-2xl sm:text-3xl">{definition.emoji}</span>}
+        />
       </div>
 
       {/* Item name label (visible when dragging) */}

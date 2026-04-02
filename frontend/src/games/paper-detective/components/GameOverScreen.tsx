@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
 import type { GameState } from '../types';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   state: GameState;
@@ -12,7 +12,6 @@ interface Props {
 
 export function GameOverScreen({ state, onRetry, onExit, onWardrobe }: Props) {
   const { t } = useTranslation('games');
-  const [detectiveError, setDetectiveError] = useState(false);
 
   const isNewHighScore = state.score > 0 && state.score >= state.highScore;
 
@@ -21,17 +20,13 @@ export function GameOverScreen({ state, onRetry, onExit, onWardrobe }: Props) {
 
       {/* Detective falls */}
       <div className="relative mb-4" style={{ height: 160, width: 200 }}>
-        {!detectiveError ? (
-          <img
-            src={PICTURES.detective}
-            alt="Detective"
-            className="pd-detective-fall absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain opacity-90"
-            onError={() => setDetectiveError(true)}
-            draggable={false}
-          />
-        ) : (
-          <div className="pd-detective-fall absolute bottom-0 left-1/2 -translate-x-1/2 text-8xl">😵</div>
-        )}
+        <AssetImg
+          assetPath={PICTURES.detective}
+          alt="Detective"
+          className="pd-detective-fall absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain opacity-90"
+          draggable={false}
+          fallback={<div className="pd-detective-fall absolute bottom-0 left-1/2 -translate-x-1/2 text-8xl">😵</div>}
+        />
       </div>
 
       {/* Title */}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import { cn } from '@/lib/utils';
 
 interface GameStartScreenProps {
@@ -11,9 +12,6 @@ interface GameStartScreenProps {
 
 export function GameStartScreen({ highScore, onPlay, onTutorial }: GameStartScreenProps) {
   const { t } = useTranslation('games');
-  const [vitalioError, setVitalioError] = useState(false);
-  const [caprichoError, setCaprichoError] = useState(false);
-  const [logoError, setLogoError] = useState(false);
   const [ready, setReady] = useState(false);
 
   // Entrance animation delay
@@ -49,19 +47,17 @@ export function GameStartScreen({ highScore, onPlay, onTutorial }: GameStartScre
       >
         {/* Logo */}
         <div className="animate-float">
-          {!logoError ? (
-            <img
-              src={PICTURES.logo}
-              alt={t('namVsYum.title')}
-              className="w-40 h-40 sm:w-52 sm:h-52 object-contain pixel-art"
-              onError={() => setLogoError(true)}
-              draggable={false}
-            />
-          ) : (
-            <div className="w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center">
-              <span className="text-6xl">🎮</span>
-            </div>
-          )}
+          <AssetImg
+            assetPath={PICTURES.logo}
+            alt={t('namVsYum.title')}
+            className="w-40 h-40 sm:w-52 sm:h-52 object-contain pixel-art"
+            draggable={false}
+            fallback={
+              <div className="w-40 h-40 sm:w-52 sm:h-52 flex items-center justify-center">
+                <span className="text-6xl">🎮</span>
+              </div>
+            }
+          />
         </div>
 
         {/* Title */}
@@ -79,17 +75,13 @@ export function GameStartScreen({ highScore, onPlay, onTutorial }: GameStartScre
           {/* Vitalio */}
           <div className="flex flex-col items-center gap-1 animate-bounce-in">
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-b from-green-600 to-green-800 rounded-xl flex items-center justify-center">
-              {!vitalioError ? (
-                <img
-                  src={PICTURES.vitalio}
-                  alt={t('namVsYum.monsters.vitalio')}
-                  className="w-full h-full object-contain pixel-art p-1"
-                  onError={() => setVitalioError(true)}
-                  draggable={false}
-                />
-              ) : (
-                <span className="text-3xl">🦎</span>
-              )}
+              <AssetImg
+                assetPath={PICTURES.vitalio}
+                alt={t('namVsYum.monsters.vitalio')}
+                className="w-full h-full object-contain pixel-art p-1"
+                draggable={false}
+                fallback={<span className="text-3xl">🦎</span>}
+              />
             </div>
             <span className="pixel-font text-[7px] sm:text-[8px] text-green-300">
               {t('namVsYum.monsters.vitalio')}
@@ -101,17 +93,13 @@ export function GameStartScreen({ highScore, onPlay, onTutorial }: GameStartScre
           {/* Capricho */}
           <div className="flex flex-col items-center gap-1 animate-bounce-in" style={{ animationDelay: '0.15s' }}>
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-b from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
-              {!caprichoError ? (
-                <img
-                  src={PICTURES.capricho}
-                  alt={t('namVsYum.monsters.capricho')}
-                  className="w-full h-full object-contain pixel-art p-1"
-                  onError={() => setCaprichoError(true)}
-                  draggable={false}
-                />
-              ) : (
-                <span className="text-3xl">👾</span>
-              )}
+              <AssetImg
+                assetPath={PICTURES.capricho}
+                alt={t('namVsYum.monsters.capricho')}
+                className="w-full h-full object-contain pixel-art p-1"
+                draggable={false}
+                fallback={<span className="text-3xl">👾</span>}
+              />
             </div>
             <span className="pixel-font text-[7px] sm:text-[8px] text-purple-300">
               {t('namVsYum.monsters.capricho')}

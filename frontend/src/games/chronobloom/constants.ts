@@ -1,30 +1,30 @@
 import type { PlantType, EnemyType, YearWave } from './types';
 
-// ─── Asset Base URL ───────────────────────────────────────────────────────────
-const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/8-chronobloom';
+// ─── Asset Base Path (relative to game-assets bucket) ────────────────────────
+const BASE = '8-chronobloom';
 
 export const AUDIO = {
-  bgm:         `${ASSET_BASE}/audio/bgm.mp3`,
-  bgmBoss:     `${ASSET_BASE}/audio/bgm-boss.mp3`,
-  bgmVictory:  `${ASSET_BASE}/audio/bgm-victory.mp3`,
-  plantPlace:  `${ASSET_BASE}/audio/plant-place.mp3`,
-  plantLevelUp:`${ASSET_BASE}/audio/plant-level-up.mp3`,
-  plantSell:   `${ASSET_BASE}/audio/plant-sell.mp3`,
-  coinCollect: `${ASSET_BASE}/audio/coin-collect.mp3`,
-  coinShoot:   `${ASSET_BASE}/audio/coin-shoot.mp3`,
-  enemyKill:   `${ASSET_BASE}/audio/enemy-kill.mp3`,
-  enemyHit:    `${ASSET_BASE}/audio/enemy-hit.mp3`,
-  greenhouseHit:`${ASSET_BASE}/audio/greenhouse-hit.mp3`,
-  yearAdvance: `${ASSET_BASE}/audio/year-advance.mp3`,
-  interestEarn:`${ASSET_BASE}/audio/interest-earn.mp3`,
-  bearMarket:  `${ASSET_BASE}/audio/bear-market.mp3`,
-  gameOver:    `${ASSET_BASE}/audio/game-over.mp3`,
-  victory:     `${ASSET_BASE}/audio/victory.mp3`,
+  bgm:         `${BASE}/audio/bgm.mp3`,
+  bgmBoss:     `${BASE}/audio/bgm-boss.mp3`,
+  bgmVictory:  `${BASE}/audio/bgm-victory.mp3`,
+  plantPlace:  `${BASE}/audio/plant-place.mp3`,
+  plantLevelUp:`${BASE}/audio/plant-level-up.mp3`,
+  plantSell:   `${BASE}/audio/plant-sell.mp3`,
+  coinCollect: `${BASE}/audio/coin-collect.mp3`,
+  coinShoot:   `${BASE}/audio/coin-shoot.mp3`,
+  enemyKill:   `${BASE}/audio/enemy-kill.mp3`,
+  enemyHit:    `${BASE}/audio/enemy-hit.mp3`,
+  greenhouseHit:`${BASE}/audio/greenhouse-hit.mp3`,
+  yearAdvance: `${BASE}/audio/year-advance.mp3`,
+  interestEarn:`${BASE}/audio/interest-earn.mp3`,
+  bearMarket:  `${BASE}/audio/bear-market.mp3`,
+  gameOver:    `${BASE}/audio/game-over.mp3`,
+  victory:     `${BASE}/audio/victory.mp3`,
 };
 
 export const PICTURES = {
-  background: `${ASSET_BASE}/pictures/bg-garden.png`,
-  greenhouse: `${ASSET_BASE}/pictures/greenhouse.png`,
+  background: `${BASE}/pictures/bg-garden.png`,
+  greenhouse: `${BASE}/pictures/greenhouse.png`,
 };
 
 // ─── Canvas Layout ────────────────────────────────────────────────────────────

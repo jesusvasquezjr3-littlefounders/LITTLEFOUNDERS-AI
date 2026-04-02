@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { X, Flag, Upload, CheckCircle2, Loader2, AlertCircle, ExternalLink, XCircle } from "lucide-react";
+import { X, Flag, Upload, CheckCircle2, Loader2, ExternalLink, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { supabase } from "@/lib/supabase";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -93,47 +94,21 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
     setErrorMsg("");
 
     try {
-      // Upload to Supabase Storage via REST (using VITE_SUPABASE vars)
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const ext = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-      if (supabaseUrl && supabaseKey) {
-        const ext = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const uploadPath = `report-evidence/${fileName}`;
+      const { data, error } = await supabase.storage
+        .from("report-evidence")
+        .upload(fileName, file, { contentType: file.type, upsert: false });
 
-        const res = await fetch(
-          `${supabaseUrl}/storage/v1/object/${uploadPath}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${supabaseKey}`,
-              "Content-Type": file.type,
-              "x-upsert": "false",
-            },
-            body: file,
-          }
-        );
+      if (error) throw error;
 
-        if (!res.ok) throw new Error("Upload failed");
-        const publicUrl = `${supabaseUrl}/storage/v1/object/public/${uploadPath}`;
-        setEvidenceUrl(publicUrl);
-        setUploadState("done");
-      } else {
-        // Fallback: convert to base64 data URL for small images (< 1MB)
-        if (file.size < 1024 * 1024) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setEvidenceUrl(e.target?.result as string);
-            setUploadState("done");
-          };
-          reader.readAsDataURL(file);
-        } else {
-          // Just mark as attached without uploading
-          setEvidenceUrl(`[attached:${file.name}]`);
-          setUploadState("done");
-        }
-      }
+      const { data: urlData } = supabase.storage
+        .from("report-evidence")
+        .getPublicUrl(data.path);
+
+      setEvidenceUrl(urlData.publicUrl);
+      setUploadState("done");
     } catch {
       setUploadState("error");
       setErrorMsg(t("error.upload_failed"));

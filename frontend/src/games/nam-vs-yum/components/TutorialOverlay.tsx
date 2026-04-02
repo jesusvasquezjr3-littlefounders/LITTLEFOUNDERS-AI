@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import { cn } from '@/lib/utils';
 import { ArrowDown, Heart } from 'lucide-react';
 
@@ -12,8 +13,6 @@ interface TutorialOverlayProps {
 export function TutorialOverlay({ onComplete, onSkip }: TutorialOverlayProps) {
   const { t } = useTranslation('games');
   const [step, setStep] = useState(0);
-  const [vitalioError, setVitalioError] = useState(false);
-  const [caprichoError, setCaprichoError] = useState(false);
 
   const totalSteps = 3;
 
@@ -46,11 +45,7 @@ export function TutorialOverlay({ onComplete, onSkip }: TutorialOverlayProps) {
               {/* Vitalio */}
               <div className="flex flex-col items-center gap-2">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-green-600 to-green-800 rounded-xl flex items-center justify-center">
-                  {!vitalioError ? (
-                    <img src={PICTURES.vitalio} alt="" className="w-full h-full object-contain pixel-art p-1" onError={() => setVitalioError(true)} draggable={false} />
-                  ) : (
-                    <span className="text-4xl">🦎</span>
-                  )}
+                  <AssetImg assetPath={PICTURES.vitalio} alt="" className="w-full h-full object-contain pixel-art p-1" draggable={false} fallback={<span className="text-4xl">🦎</span>} />
                 </div>
                 <span className="pixel-font text-[8px] sm:text-[10px] text-green-300">{t('namVsYum.tutorial.vitalioLabel')}</span>
                 <span className="text-[10px] sm:text-xs text-green-200 text-center">{t('namVsYum.tutorial.vitalioDesc')}</span>
@@ -59,11 +54,7 @@ export function TutorialOverlay({ onComplete, onSkip }: TutorialOverlayProps) {
               {/* Capricho */}
               <div className="flex flex-col items-center gap-2">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
-                  {!caprichoError ? (
-                    <img src={PICTURES.capricho} alt="" className="w-full h-full object-contain pixel-art p-1" onError={() => setCaprichoError(true)} draggable={false} />
-                  ) : (
-                    <span className="text-4xl">👾</span>
-                  )}
+                  <AssetImg assetPath={PICTURES.capricho} alt="" className="w-full h-full object-contain pixel-art p-1" draggable={false} fallback={<span className="text-4xl">👾</span>} />
                 </div>
                 <span className="pixel-font text-[8px] sm:text-[10px] text-purple-300">{t('namVsYum.tutorial.caprichoLabel')}</span>
                 <span className="text-[10px] sm:text-xs text-purple-200 text-center">{t('namVsYum.tutorial.caprichoDesc')}</span>

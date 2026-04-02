@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   onComplete: () => void;
@@ -57,7 +58,7 @@ export function TutorialOverlay({ onComplete }: Props) {
 
         {/* Image */}
         <div className="nectar-tutorial-img-wrap">
-          <img src={current.image} alt="" className="nectar-tutorial-img" />
+          <AssetImg assetPath={current.image} alt="" className="nectar-tutorial-img" />
         </div>
 
         {/* Content */}

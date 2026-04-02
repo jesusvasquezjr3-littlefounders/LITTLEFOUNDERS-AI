@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { Upgrade, UpgradeKey } from '../types';
 
 interface Props {
@@ -43,7 +44,7 @@ export function UpgradeShop({ coins, vaultSavings, upgrades, hasVault, onPurchas
 
         {/* Balance */}
         <div className="nectar-shop-balance">
-          <img src={PICTURES.coin} alt="" className="nectar-icon-sm" />
+          <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-sm" />
           <span>{t('nectar.shop.balance', { coins })}</span>
         </div>
 
@@ -74,7 +75,7 @@ export function UpgradeShop({ coins, vaultSavings, upgrades, hasVault, onPurchas
                   </span>
                 ) : (
                   <span className="nectar-shop-item-price">
-                    <img src={PICTURES.coin} alt="" className="nectar-icon-xs" />
+                    <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-xs" />
                     {upgrade.cost}
                   </span>
                 )}
@@ -87,7 +88,7 @@ export function UpgradeShop({ coins, vaultSavings, upgrades, hasVault, onPurchas
         {hasVault && (
           <div className="nectar-shop-vault">
             <div className="nectar-shop-vault-header">
-              <img src={PICTURES.vault} alt="" className="nectar-icon-sm" />
+              <AssetImg assetPath={PICTURES.vault} alt="" className="nectar-icon-sm" />
               <span>{t('nectar.shop.vault.title')}</span>
             </div>
             <p className="nectar-shop-vault-balance">

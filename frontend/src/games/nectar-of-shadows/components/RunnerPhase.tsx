@@ -5,6 +5,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, GAME_CONFIG } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { RunnerCollectible, RunnerObstacle } from '../types';
 
 interface Props {
@@ -569,7 +570,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
           transition: 'none',
         }}
       >
-        <img src={playerSrc} alt="Liruf" className="nectar-runner-player-img" />
+        <AssetImg assetPath={playerSrc} alt="Liruf" className="nectar-runner-player-img" />
       </div>
 
       {/* Collectibles — with random visual variety */}
@@ -593,8 +594,8 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
               willChange: 'transform',
             }}
           >
-            <img
-              src={c.type === 'lemon' ? PICTURES.lemon : PICTURES.sugar}
+            <AssetImg
+              assetPath={c.type === 'lemon' ? PICTURES.lemon : PICTURES.sugar}
               alt={c.type}
               className="nectar-runner-collectible-img"
             />
@@ -617,8 +618,8 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
             transformOrigin: 'center bottom',
           }}
         >
-          <img
-            src={o.obstacleType === 'rock' ? PICTURES.rock : PICTURES.mushroom}
+          <AssetImg
+            assetPath={o.obstacleType === 'rock' ? PICTURES.rock : PICTURES.mushroom}
             alt="obstacle"
             className="nectar-runner-obstacle-img"
           />
@@ -635,10 +636,10 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
         </div>
         <div className="nectar-runner-hud-row">
           <span className="nectar-runner-count">
-            <img src={PICTURES.lemon} alt="" className="nectar-icon-sm" /> {lemons}
+            <AssetImg assetPath={PICTURES.lemon} alt="" className="nectar-icon-sm" /> {lemons}
           </span>
           <span className="nectar-runner-count">
-            <img src={PICTURES.sugar} alt="" className="nectar-icon-sm" /> {sugar}
+            <AssetImg assetPath={PICTURES.sugar} alt="" className="nectar-icon-sm" /> {sugar}
           </span>
         </div>
       </div>

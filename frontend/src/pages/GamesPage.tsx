@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,7 @@ import { DemoBanner } from "@/components/demo/DemoBanner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
+import { AssetImg } from "@/components/ui/AssetImg";
 
 interface GamesPageProps {
   isDemo?: boolean;
@@ -27,13 +27,13 @@ interface GameCard {
   descriptionKey: string;
 }
 
-const ASSET_BASE = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/2-nam-vs-yum-game';
-const NAM_VS_YUM_GIF = `${ASSET_BASE}/pictures/2-nam-vs-yum-game.gif`;
-const NECTAR_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
-const PAPER_DETECTIVE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/3-paper-detective/pictures/paper-detective.gif';
-const PAPER_COIN_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/7-paper-coin/pictures/paper-coin.gif';
-const HACKER_DEFENSE_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/13-hacker-defense/pictures/hacker-defense.gif';
-const CHRONO_BLOOM_GIF = 'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/8-chronobloom/pictures/chronobloom.gif';
+// Paths relative to the game-assets private bucket
+const NAM_VS_YUM_GIF = '2-nam-vs-yum-game/pictures/2-nam-vs-yum-game.gif';
+const NECTAR_GIF = '1-the-small-entrepreneur/pictures/1-the-small-entrepreneur.gif';
+const PAPER_DETECTIVE_GIF = '3-paper-detective/pictures/paper-detective.gif';
+const PAPER_COIN_GIF = '7-paper-coin/pictures/paper-coin.gif';
+const HACKER_DEFENSE_GIF = '13-hacker-defense/pictures/hacker-defense.gif';
+const CHRONO_BLOOM_GIF = '8-chronobloom/pictures/chronobloom.gif';
 
 const ALL_GAMES: GameCard[] = [
   {
@@ -113,10 +113,6 @@ const ALL_GAMES: GameCard[] = [
 export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: GamesPageProps) {
   const { t } = useTranslation(['games', 'common', 'demo']);
   const navigate = useNavigate();
-  const [gifError, setGifError] = useState(false);
-  const [nectarGifError, setNectarGifError] = useState(false);
-  const [detectiveGifError, setDetectiveGifError] = useState(false);
-
   // Group games by age group
   const gamesByAge = ALL_GAMES.reduce((acc, game) => {
     if (!acc[game.ageGroup]) {
@@ -202,31 +198,24 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
                         )}
                       >
                         <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-                          <img
-                            src={game.gif}
+                          <AssetImg
+                            assetPath={game.gif}
                             alt={t(game.titleKey)}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             draggable={false}
-                            loading="eager"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = target.nextElementSibling as HTMLElement;
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
+                            fallback={
+                              <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-800 to-slate-900">
+                                <div className="flex items-center gap-4">
+                                  <span className="text-4xl">{game.fallbackEmojis[0]}</span>
+                                  <span className="text-2xl font-bold text-white/60">{game.fallbackEmojis[1]}</span>
+                                  <span className="text-4xl">{game.fallbackEmojis[2]}</span>
+                                </div>
+                                <p className="text-white/40 text-xs font-medium px-4 text-center">
+                                  {t(game.titleKey)}
+                                </p>
+                              </div>
+                            }
                           />
-
-                          {/* Fallback */}
-                          <div className="hidden w-full h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-800 to-slate-900">
-                            <div className="flex items-center gap-4">
-                              <span className="text-4xl">{game.fallbackEmojis[0]}</span>
-                              <span className="text-2xl font-bold text-white/60">{game.fallbackEmojis[1]}</span>
-                              <span className="text-4xl">{game.fallbackEmojis[2]}</span>
-                            </div>
-                            <p className="text-white/40 text-xs font-medium px-4 text-center">
-                              {t(game.titleKey)}
-                            </p>
-                          </div>
 
                           {/* Play overlay */}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">

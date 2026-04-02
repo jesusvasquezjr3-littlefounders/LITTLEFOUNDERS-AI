@@ -2,6 +2,7 @@ import { useReducer, useEffect, useRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useSound } from '@/contexts/SoundContext';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 import { gameReducer, createInitialState } from '../gameReducer';
 import { AUDIO, PICTURES, GAME_CONFIG } from '../constants';
@@ -64,7 +65,6 @@ export function PaperDetectiveGame() {
   // UI state for confetti + day banner
   const [confetti, setConfetti] = useState<ReturnType<typeof generateConfetti>>([]);
   const [showDayBanner, setShowDayBanner] = useState(false);
-  const [bgError, setBgError] = useState(false);
 
   // ── Game loop ──────────────────────────────────────
   useEffect(() => {
@@ -218,15 +218,12 @@ export function PaperDetectiveGame() {
     <div className="w-full h-full relative pd-bg overflow-hidden" style={{ touchAction: 'none' }}>
 
       {/* Background image */}
-      {!bgError && (
-        <img
-          src={PICTURES.background}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
-          onError={() => setBgError(true)}
-          draggable={false}
-        />
-      )}
+      <AssetImg
+        assetPath={PICTURES.background}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+        draggable={false}
+      />
 
       {/* ── Playing phase ── */}
       {isPlaying && (

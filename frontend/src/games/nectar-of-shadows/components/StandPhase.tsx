@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, GAME_CONFIG, MENTOR_TIPS, calculateSatisfaction, getIdealRecipe } from '../constants';
+import { AssetImg } from '@/components/ui/AssetImg';
 import type { WeatherType, Recipe, MentorTip, MentorCharacter } from '../types';
 
 interface Props {
@@ -130,9 +131,9 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
               <span className="nectar-bowl-empty">{t('nectar.stand.tapToAdd')}</span>
             )}
             {bowlIcons.map((item) => (
-              <img
+              <AssetImg
                 key={item.key}
-                src={item.type === 'lemon' ? PICTURES.lemon : PICTURES.sugar}
+                assetPath={item.type === 'lemon' ? PICTURES.lemon : PICTURES.sugar}
                 alt=""
                 className={`nectar-bowl-item nectar-bowl-item-${item.type}`}
               />
@@ -157,7 +158,7 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
               onClick={addLemon}
               disabled={lemons >= lemonsAvailable}
             >
-              <img src={PICTURES.lemon} alt="" className="nectar-ingredient-icon" />
+              <AssetImg assetPath={PICTURES.lemon} alt="" className="nectar-ingredient-icon" />
               <span className="nectar-ingredient-count">{lemons}</span>
             </button>
             <span className="nectar-ingredient-avail">/{lemonsAvailable}</span>
@@ -178,7 +179,7 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
               onClick={addSugar}
               disabled={sugarAmount >= sugarAvailable}
             >
-              <img src={PICTURES.sugar} alt="" className="nectar-ingredient-icon" />
+              <AssetImg assetPath={PICTURES.sugar} alt="" className="nectar-ingredient-icon" />
               <span className="nectar-ingredient-count">{sugarAmount}</span>
             </button>
             <span className="nectar-ingredient-avail">/{sugarAvailable}</span>
@@ -208,7 +209,7 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
 
         {/* Cost preview */}
         <div className="nectar-cost-preview">
-          <img src={PICTURES.coin} alt="" className="nectar-icon-sm" />
+          <AssetImg assetPath={PICTURES.coin} alt="" className="nectar-icon-sm" />
           <span>
             {t('nectar.stand.cost')}: {ingredientCost}
           </span>
@@ -229,9 +230,9 @@ export function StandPhase({ weather, lemonsAvailable, sugarAvailable, day, onSe
       {/* Mentor character portraits */}
       <div className="nectar-stand-mentors">
         {(['zara', 'drRho'] as MentorCharacter[]).map((char) => (
-          <img
+          <AssetImg
             key={char}
-            src={MENTOR_PICS[char]}
+            assetPath={MENTOR_PICS[char]}
             alt={char}
             className="nectar-mentor-portrait"
             style={{ width: 80, height: 80, objectFit: 'contain' }}

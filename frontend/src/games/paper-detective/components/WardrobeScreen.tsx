@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COSMETICS, PICTURES } from '../constants';
 import type { GameState, GameAction, CosmeticType } from '../types';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   state: GameState;
@@ -18,7 +19,6 @@ const CATEGORY_ICONS: Record<CosmeticType, string> = {
 
 export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) {
   const { t } = useTranslation('games');
-  const [detectiveError, setDetectiveError] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CosmeticType | 'all'>('all');
   const [spendConfirm, setSpendConfirm] = useState<string | null>(null);
 
@@ -67,20 +67,16 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
       {/* Detective preview */}
       <div className="flex-shrink-0 flex flex-col items-center py-2">
         <div className="relative" style={{ height: 100, width: 100 }}>
-          {!detectiveError ? (
-            <img
-              src={PICTURES.detective}
-              alt="Detective"
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain"
-              onError={() => setDetectiveError(true)}
-              draggable={false}
-            />
-          ) : (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-6xl">🕵️</span>
-          )}
+          <AssetImg
+            assetPath={PICTURES.detective}
+            alt="Detective"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain"
+            draggable={false}
+            fallback={<span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-6xl">🕵️</span>}
+          />
           {equippedDef && (
-            <img
-              src={(PICTURES as Record<string, string>)[equippedDef.imageKey]}
+            <AssetImg
+              assetPath={(PICTURES as Record<string, string>)[equippedDef.imageKey]}
               alt=""
               className="absolute bottom-0 left-1/2 -translate-x-1/2 h-full object-contain pointer-events-none"
               draggable={false}
@@ -127,8 +123,8 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
               >
                 {/* Image */}
                 <div className="flex items-center justify-center mb-2" style={{ height: 60 }}>
-                  <img
-                    src={(PICTURES as Record<string, string>)[cosmetic.imageKey]}
+                  <AssetImg
+                    assetPath={(PICTURES as Record<string, string>)[cosmetic.imageKey]}
                     alt={t(cosmetic.nameKey)}
                     style={{ maxHeight: 56, objectFit: 'contain' }}
                     draggable={false}

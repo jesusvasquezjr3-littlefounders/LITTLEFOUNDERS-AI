@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PICTURES, COIN_EMOJI, ITEM_EMOJI } from '../constants';
 import type { ItemSilhouette, CoinOption } from '../types';
+import { AssetImg } from '@/components/ui/AssetImg';
 
 interface Props {
   item: ItemSilhouette;
@@ -12,44 +12,36 @@ interface Props {
 }
 
 function CoinImage({ imageKey, size }: { imageKey: string; size: number }) {
-  const [error, setError] = useState(false);
   const src = (PICTURES as Record<string, string>)[imageKey];
-  if (error || !src) {
-    return (
-      <span style={{ fontSize: size * 0.6 }} className="select-none">
-        {COIN_EMOJI[imageKey] ?? '🪙'}
-      </span>
-    );
-  }
   return (
-    <img
-      src={src}
+    <AssetImg
+      assetPath={src}
       alt=""
       style={{ width: size, height: size, objectFit: 'contain' }}
-      onError={() => setError(true)}
       draggable={false}
+      fallback={
+        <span style={{ fontSize: size * 0.6 }} className="select-none">
+          {COIN_EMOJI[imageKey] ?? '🪙'}
+        </span>
+      }
     />
   );
 }
 
 function ItemImage({ imageKey, size }: { imageKey: string; size: number }) {
-  const [error, setError] = useState(false);
   const src = (PICTURES as Record<string, string>)[imageKey];
-  if (error || !src) {
-    return (
-      <span style={{ fontSize: size * 0.7 }} className="select-none">
-        {ITEM_EMOJI[imageKey] ?? '🎁'}
-      </span>
-    );
-  }
   return (
-    <img
-      src={src}
+    <AssetImg
+      assetPath={src}
       alt=""
       className="pd-item-silhouette"
       style={{ width: size, height: size, objectFit: 'contain' }}
-      onError={() => setError(true)}
       draggable={false}
+      fallback={
+        <span style={{ fontSize: size * 0.7 }} className="select-none">
+          {ITEM_EMOJI[imageKey] ?? '🎁'}
+        </span>
+      }
     />
   );
 }

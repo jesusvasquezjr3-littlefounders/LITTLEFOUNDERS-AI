@@ -4,62 +4,61 @@
 
 import type { Upgrade, MentorTip } from './types';
 
-const ASSET_BASE =
-  'https://xxpsyormxalqjcbomiwe.supabase.co/storage/v1/object/public/game-assets/1-the-small-entrepreneur';
+const BASE = '1-the-small-entrepreneur';
 
 /* ── Audio assets ─────────────────────────────────────────── */
 export const AUDIO = {
-  bgm: `${ASSET_BASE}/audio/bgm-ambient.mp3`,
-  coinCollect: `${ASSET_BASE}/audio/coin-collect.mp3`,
-  sell: `${ASSET_BASE}/audio/sell.mp3`,
-  customerHappy: `${ASSET_BASE}/audio/customer-happy.mp3`,
-  customerSad: `${ASSET_BASE}/audio/customer-sad.mp3`,
-  jump: `${ASSET_BASE}/audio/jump.mp3`,
-  hit: `${ASSET_BASE}/audio/hit.mp3`,
-  dayEnd: `${ASSET_BASE}/audio/day-end.mp3`,
-  upgrade: `${ASSET_BASE}/audio/upgrade.mp3`,
-  gameOver: `${ASSET_BASE}/audio/game-over.mp3`,
-  mentorPop: `${ASSET_BASE}/audio/mentor-pop.mp3`,
+  bgm: `${BASE}/audio/bgm-ambient.mp3`,
+  coinCollect: `${BASE}/audio/coin-collect.mp3`,
+  sell: `${BASE}/audio/sell.mp3`,
+  customerHappy: `${BASE}/audio/customer-happy.mp3`,
+  customerSad: `${BASE}/audio/customer-sad.mp3`,
+  jump: `${BASE}/audio/jump.mp3`,
+  hit: `${BASE}/audio/hit.mp3`,
+  dayEnd: `${BASE}/audio/day-end.mp3`,
+  upgrade: `${BASE}/audio/upgrade.mp3`,
+  gameOver: `${BASE}/audio/game-over.mp3`,
+  mentorPop: `${BASE}/audio/mentor-pop.mp3`,
 };
 
 /* ── Picture assets ───────────────────────────────────────── */
 export const PICTURES = {
   // Characters
-  liruf: `${ASSET_BASE}/pictures/liruf.png`,
-  lirufRun1: `${ASSET_BASE}/pictures/liruf-run1.png`,
-  lirufRun2: `${ASSET_BASE}/pictures/liruf-run2.png`,
-  lirufJump: `${ASSET_BASE}/pictures/liruf-jump.png`,
-  dina: `${ASSET_BASE}/pictures/dina.png`,
-  drRho: `${ASSET_BASE}/pictures/dr-rho.png`,
-  zara: `${ASSET_BASE}/pictures/zara.png`,
+  liruf: `${BASE}/pictures/liruf.png`,
+  lirufRun1: `${BASE}/pictures/liruf-run1.png`,
+  lirufRun2: `${BASE}/pictures/liruf-run2.png`,
+  lirufJump: `${BASE}/pictures/liruf-jump.png`,
+  dina: `${BASE}/pictures/dina.png`,
+  drRho: `${BASE}/pictures/dr-rho.png`,
+  zara: `${BASE}/pictures/zara.png`,
 
   // Stand
-  stand: `${ASSET_BASE}/pictures/stand.png`,
-  standWithAwning: `${ASSET_BASE}/pictures/stand-awning.png`,
-  standWithSign: `${ASSET_BASE}/pictures/stand-sign.png`,
+  stand: `${BASE}/pictures/stand.png`,
+  standWithAwning: `${BASE}/pictures/stand-awning.png`,
+  standWithSign: `${BASE}/pictures/stand-sign.png`,
 
   // Ingredients
-  lemon: `${ASSET_BASE}/pictures/lemon.png`,
-  sugar: `${ASSET_BASE}/pictures/sugar.png`,
+  lemon: `${BASE}/pictures/lemon.png`,
+  sugar: `${BASE}/pictures/sugar.png`,
 
   // Customers
-  customerHappy: `${ASSET_BASE}/pictures/customer-happy.png`,
-  customerSad: `${ASSET_BASE}/pictures/customer-sad.png`,
-  customerWalk: `${ASSET_BASE}/pictures/customer-walk.png`,
+  customerHappy: `${BASE}/pictures/customer-happy.png`,
+  customerSad: `${BASE}/pictures/customer-sad.png`,
+  customerWalk: `${BASE}/pictures/customer-walk.png`,
 
   // Backgrounds
-  bgRunner: `${ASSET_BASE}/pictures/bg-runner.png`,
-  bgStandHot: `${ASSET_BASE}/pictures/bg-stand-hot.png`,
-  bgStandCold: `${ASSET_BASE}/pictures/bg-stand-cold.png`,
+  bgRunner: `${BASE}/pictures/bg-runner.png`,
+  bgStandHot: `${BASE}/pictures/bg-stand-hot.png`,
+  bgStandCold: `${BASE}/pictures/bg-stand-cold.png`,
 
   // Obstacles
-  rock: `${ASSET_BASE}/pictures/rock.png`,
-  mushroom: `${ASSET_BASE}/pictures/mushroom.png`,
+  rock: `${BASE}/pictures/rock.png`,
+  mushroom: `${BASE}/pictures/mushroom.png`,
 
   // UI
-  logo: `${ASSET_BASE}/pictures/logo.png`,
-  coin: `${ASSET_BASE}/pictures/coin.png`,
-  vault: `${ASSET_BASE}/pictures/vault.png`,
+  logo: `${BASE}/pictures/logo.png`,
+  coin: `${BASE}/pictures/coin.png`,
+  vault: `${BASE}/pictures/vault.png`,
 };
 
 /* ── Game configuration ───────────────────────────────────── */
