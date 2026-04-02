@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { Bell, User, Settings, LogOut, HelpCircle } from "lucide-react";
+import {
+  Bell, User, Settings, LogOut, HelpCircle,
+  UserPlus, UserCheck, Flame, Trophy, BookOpen, Megaphone, Clock, Sparkles,
+  Check, CheckCheck, X,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 import { Button } from "@/components/ui/button";
@@ -15,9 +19,36 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSound } from "@/contexts/SoundContext";
+import { notificationsApi, type NotificationItem } from "@/lib/api/notifications";
 
+const NOTIFICATION_TYPE_CONFIG: Record<string, { icon: any; bgClass: string }> = {
+  follow_request: { icon: UserPlus, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
+  follow_accepted: { icon: UserCheck, bgClass: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" },
+  new_follower: { icon: UserPlus, bgClass: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400" },
+  streak: { icon: Flame, bgClass: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400" },
+  achievement: { icon: Trophy, bgClass: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" },
+  lesson: { icon: BookOpen, bgClass: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
+  admin_broadcast: { icon: Megaphone, bgClass: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
+  reminder: { icon: Clock, bgClass: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
+  system: { icon: Sparkles, bgClass: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400" },
+};
+
+function getTimeAgo(dateStr: string, t: (key: string, opts?: any) => string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHrs = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHrs / 24);
+
+  if (diffMin < 1) return t('notifications.just_now');
+  if (diffMin < 60) return t('notifications.minutes_ago', { count: diffMin });
+  if (diffHrs < 24) return t('notifications.hours_ago', { count: diffHrs });
+  if (diffDays < 7) return t('notifications.days_ago', { count: diffDays });
+  return date.toLocaleDateString();
+}
 
 export function TopNav() {
   const { t } = useTranslation('dashboard');
@@ -25,12 +56,86 @@ export function TopNav() {
   const navigate = useNavigate();
   const { playSound } = useSound();
 
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  // Fetch unread count
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const count = await notificationsApi.getUnreadCount();
+      setUnreadCount(count);
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  // Fetch notifications list
+  const fetchNotifications = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const items = await notificationsApi.getNotifications(20);
+      setNotifications(items);
+    } catch {
+      // silently fail
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Poll unread count every 30 seconds
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    fetchUnreadCount();
+    pollRef.current = setInterval(fetchUnreadCount, 30000);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [fetchUnreadCount]);
+
+  // Load notifications when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen, fetchNotifications]);
+
+  const handleNotificationClick = async (notif: NotificationItem) => {
+    if (!notif.read_at) {
+      await notificationsApi.markAsRead(notif.public_id);
+      setUnreadCount(prev => Math.max(0, prev - 1));
+      setNotifications(prev =>
+        prev.map(n => n.public_id === notif.public_id ? { ...n, read_at: new Date().toISOString() } : n)
+      );
+    }
+    if (notif.action_url) {
+      navigate(notif.action_url);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    await notificationsApi.markAllAsRead();
+    setUnreadCount(0);
+    setNotifications(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+  };
+
+  const handleDismiss = async (e: React.MouseEvent, publicId: string) => {
+    e.stopPropagation();
+    await notificationsApi.dismiss(publicId);
+    setNotifications(prev => prev.filter(n => n.public_id !== publicId));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
 
   const handleLogout = () => {
     playSound('auth_bye');
@@ -52,7 +157,6 @@ export function TopNav() {
       case 'admin':
         return t('user_types.admin');
       default:
-        // Fallback gracefully without assuming all unrecognized users should literally be just labeled "Usuario"
         return userType.charAt(0).toUpperCase() + userType.slice(1);
     }
   };
@@ -60,8 +164,6 @@ export function TopNav() {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
-
-
 
   return (
     <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
@@ -76,41 +178,109 @@ export function TopNav() {
 
       {/* Right Section */}
       <div className="flex items-center space-x-4">
-        {/* Language Selector */}
-
-
         {/* Theme Toggle */}
         <ThemeToggle />
 
         {/* Notifications */}
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-              >
-                3
-              </Badge>
+              {unreadCount > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </Badge>
+              )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>{t('notifications.title')}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="space-y-2 p-2">
-              <div className="p-3 bg-revenue-light rounded-lg">
-                <p className="font-medium text-sm">{t('notifications.goal_achieved')}</p>
-                <p className="text-xs text-muted-foreground">{t('notifications.goal_achieved_desc')}</p>
-              </div>
-              <div className="p-3 bg-customers-light rounded-lg">
-                <p className="font-medium text-sm">{t('notifications.reminder')}</p>
-                <p className="text-xs text-muted-foreground">{t('notifications.reminder_desc')}</p>
-              </div>
-              <div className="p-3 bg-product-light rounded-lg">
-                <p className="font-medium text-sm">{t('notifications.new_skill')}</p>
-                <p className="text-xs text-muted-foreground">{t('notifications.new_skill_desc')}</p>
-              </div>
+          <DropdownMenuContent align="end" className="w-96 max-h-[480px] p-0 rounded-xl shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <h3 className="font-semibold text-sm">{t('notifications.title')}</h3>
+              {unreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs h-7 px-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
+                  onClick={handleMarkAllRead}
+                >
+                  <CheckCheck className="h-3.5 w-3.5 mr-1" />
+                  {t('notifications.mark_all_read')}
+                </Button>
+              )}
+            </div>
+
+            {/* Notification list */}
+            <div className="overflow-y-auto max-h-[380px]">
+              {isLoading && notifications.length === 0 ? (
+                <div className="flex items-center justify-center py-10 text-muted-foreground text-sm">
+                  <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full mr-2" />
+                  {t('notifications.loading')}
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                  <Bell className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">{t('notifications.empty')}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">{t('notifications.empty_desc')}</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {notifications.map(notif => {
+                    const config = NOTIFICATION_TYPE_CONFIG[notif.type] || NOTIFICATION_TYPE_CONFIG.system;
+                    const Icon = config.icon;
+                    const isUnread = !notif.read_at;
+
+                    return (
+                      <div
+                        key={notif.public_id}
+                        className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 group ${
+                          isUnread ? 'bg-indigo-50/50 dark:bg-indigo-950/20' : ''
+                        }`}
+                        onClick={() => handleNotificationClick(notif)}
+                      >
+                        <div className={`flex items-center justify-center w-9 h-9 rounded-lg shrink-0 mt-0.5 ${config.bgClass}`}>
+                          <Icon className="h-4.5 w-4.5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={`text-sm leading-snug ${isUnread ? 'font-semibold text-slate-900 dark:text-slate-100' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                              {notif.title}
+                            </p>
+                            <button
+                              onClick={(e) => handleDismiss(e, notif.public_id)}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 shrink-0"
+                              title={t('notifications.dismiss')}
+                            >
+                              <X className="h-3.5 w-3.5 text-muted-foreground" />
+                            </button>
+                          </div>
+                          {notif.body && (
+                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.body}</p>
+                          )}
+                          {notif.media_url && (
+                            <img
+                              src={notif.media_url}
+                              alt=""
+                              className="mt-2 rounded-lg max-h-32 object-cover w-full"
+                            />
+                          )}
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[11px] text-muted-foreground/70">
+                              {getTimeAgo(notif.created_at, t)}
+                            </span>
+                            {isUnread && (
+                              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>

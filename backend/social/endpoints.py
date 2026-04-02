@@ -7,6 +7,7 @@ from database import get_db
 from models import User, Follow, FollowStatus, UserType
 from auth.endpoints import get_current_user_from_token, get_current_user_optional
 from .schemas import UserPublicProfile, FollowActionResponse, FollowRequestResponse
+from notifications.helpers import notify_follow_request, notify_new_follower, notify_follow_accepted
 
 router = APIRouter(prefix="/social", tags=["Social"])
 
@@ -118,8 +119,16 @@ async def follow_user(username: str, db: Session = Depends(get_db), current_user
         status=new_status
     )
     db.add(new_follow)
+    db.flush()
+
+    # Auto-notifications
+    if new_status == FollowStatus.ACCEPTED:
+        notify_new_follower(db, follower=current_user, target=target_user)
+    else:
+        notify_follow_request(db, follower=current_user, target=target_user)
+
     db.commit()
-    
+
     return FollowActionResponse(
         message="Siguiendo" if str(new_status) == FollowStatus.ACCEPTED else "Solicitud enviada",
         status=new_status.value if hasattr(new_status, 'value') else new_status
@@ -202,8 +211,9 @@ async def accept_request(username: str, db: Session = Depends(get_db), current_u
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
         
     follow_req.status = FollowStatus.ACCEPTED
+    notify_follow_accepted(db, accepted_by=current_user, requester=follower)
     db.commit()
-    
+
     return FollowActionResponse(message="Solicitud aceptada", status="accepted")
 
 @router.post("/requests/reject/{username}", response_model=FollowActionResponse)

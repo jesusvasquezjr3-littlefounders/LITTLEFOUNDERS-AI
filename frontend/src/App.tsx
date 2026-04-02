@@ -58,6 +58,7 @@ import AdminHistory from "@/pages/admin/AdminHistory";
 import AdminUsers from "@/pages/admin/AdminUsers";
 import { AdminHelp } from "@/pages/admin/AdminHelp";
 import AdminReports from "@/pages/admin/AdminReports";
+import AdminNotifications from "@/pages/admin/AdminNotifications";
 
 // Common
 import { ReportFAB } from "@/components/common/ReportFAB";
@@ -258,6 +259,11 @@ const App = () => (
                 <Route path="/admin/reports" element={
                   <AdminProtectedRoute>
                     <AdminReports />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/notifications" element={
+                  <AdminProtectedRoute>
+                    <AdminNotifications />
                   </AdminProtectedRoute>
                 } />
 

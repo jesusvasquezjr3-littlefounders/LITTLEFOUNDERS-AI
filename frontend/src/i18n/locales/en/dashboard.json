@@ -66,12 +66,15 @@
     },
     "notifications": {
         "title": "Notifications",
-        "goal_achieved": "Goal achieved!",
-        "goal_achieved_desc": "Congratulations! You reached your savings goal.",
-        "reminder": "Reminder",
-        "reminder_desc": "Don't forget to do your finance challenge today.",
-        "new_skill": "New skill",
-        "new_skill_desc": "You unlocked a lesson about budgeting!"
+        "mark_all_read": "Mark all as read",
+        "loading": "Loading...",
+        "empty": "No notifications yet",
+        "empty_desc": "Your notifications will appear here when you receive them.",
+        "dismiss": "Dismiss",
+        "just_now": "Just now",
+        "minutes_ago": "{{count}}m ago",
+        "hours_ago": "{{count}}h ago",
+        "days_ago": "{{count}}d ago"
     },
     "weekly_goal": {
         "title": "Weekly Goal",

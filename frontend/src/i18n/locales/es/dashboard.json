@@ -62,12 +62,15 @@
     },
     "notifications": {
         "title": "Notificaciones",
-        "goal_achieved": "¡Meta lograda!",
-        "goal_achieved_desc": "¡Felicitaciones! Alcanzaste tu objetivo de ahorro.",
-        "reminder": "Recordatorio",
-        "reminder_desc": "No olvides hacer tu reto de finanzas hoy.",
-        "new_skill": "Nueva habilidad",
-        "new_skill_desc": "¡Desbloqueaste una lección sobre presupuesto!"
+        "mark_all_read": "Marcar todo leido",
+        "loading": "Cargando...",
+        "empty": "No tienes notificaciones",
+        "empty_desc": "Aqui apareceran tus notificaciones cuando las recibas.",
+        "dismiss": "Descartar",
+        "just_now": "Ahora",
+        "minutes_ago": "Hace {{count}} min",
+        "hours_ago": "Hace {{count}} h",
+        "days_ago": "Hace {{count}} d"
     },
     "weekly_goal": {
         "title": "Meta Semanal",
