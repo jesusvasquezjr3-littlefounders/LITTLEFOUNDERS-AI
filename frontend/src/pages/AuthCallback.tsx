@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/config/api';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +9,7 @@ import { useSound } from '@/contexts/SoundContext';
 
 const AuthCallback = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { toast } = useToast();
     const { t } = useTranslation(['auth', 'errors']);
     const { playSound } = useSound();
@@ -20,46 +21,103 @@ const AuthCallback = () => {
 
         const handleCallback = async () => {
             try {
-                // Supabase puts the session in the URL hash after OAuth redirect.
-                // getSession() reads it automatically.
+                // Check if this is a password recovery flow
+                const type = searchParams.get('type');
+
+                // Listen for the auth event to determine the type
+                const { data: { subscription } } = supabase.auth.onAuthStateChange(
+                    async (event, session) => {
+                        subscription.unsubscribe();
+
+                        if (event === 'PASSWORD_RECOVERY' || type === 'recovery') {
+                            // Redirect to reset password page
+                            navigate('/reset-password');
+                            return;
+                        }
+
+                        if (!session) {
+                            throw new Error('No se encontró sesión de Supabase');
+                        }
+
+                        // Exchange the Supabase access token for an app token
+                        const response = await fetch(`${API_URL}/auth/supabase`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ access_token: session.access_token }),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            localStorage.setItem('token', data.access_token);
+
+                            playSound('auth_success');
+
+                            if (data.is_new_user) {
+                                toast({
+                                    title: t('auth:messages.register_success'),
+                                    description: t('auth:messages.register_success_subtitle'),
+                                    className: 'bg-green-50 border-green-200 text-green-800',
+                                });
+                                navigate('/welcome');
+                            } else {
+                                toast({
+                                    title: t('auth:messages.login_success', { name: data.user.name }),
+                                    description: t('auth:messages.login_success_subtitle'),
+                                    className: 'bg-green-50 border-green-200 text-green-800',
+                                });
+                                navigate('/dashboard');
+                            }
+                        } else {
+                            throw new Error(getTranslatedError(data.detail, t));
+                        }
+                    }
+                );
+
+                // Also try getSession as fallback for OAuth providers
+                // that put session in URL hash (not via onAuthStateChange)
                 const { data: { session }, error } = await supabase.auth.getSession();
 
-                if (error || !session) {
-                    throw new Error(error?.message || 'No se encontró sesión de Supabase');
+                if (error) {
+                    throw new Error(error.message);
                 }
 
-                // Exchange the Supabase access token for an app token
-                const response = await fetch(`${API_URL}/auth/supabase`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ access_token: session.access_token }),
-                });
+                // If session exists and we haven't been handled by the event listener,
+                // process it (this handles OAuth redirects)
+                if (session && !type) {
+                    const response = await fetch(`${API_URL}/auth/supabase`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ access_token: session.access_token }),
+                    });
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (response.ok) {
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    localStorage.setItem('token', data.access_token);
+                    if (response.ok) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        localStorage.setItem('token', data.access_token);
 
-                    playSound('auth_success');
+                        playSound('auth_success');
 
-                    if (data.is_new_user) {
-                        toast({
-                            title: t('auth:messages.register_success'),
-                            description: t('auth:messages.register_success_subtitle'),
-                            className: 'bg-green-50 border-green-200 text-green-800',
-                        });
-                        navigate('/welcome');
+                        if (data.is_new_user) {
+                            toast({
+                                title: t('auth:messages.register_success'),
+                                description: t('auth:messages.register_success_subtitle'),
+                                className: 'bg-green-50 border-green-200 text-green-800',
+                            });
+                            navigate('/welcome');
+                        } else {
+                            toast({
+                                title: t('auth:messages.login_success', { name: data.user.name }),
+                                description: t('auth:messages.login_success_subtitle'),
+                                className: 'bg-green-50 border-green-200 text-green-800',
+                            });
+                            navigate('/dashboard');
+                        }
                     } else {
-                        toast({
-                            title: t('auth:messages.login_success', { name: data.user.name }),
-                            description: t('auth:messages.login_success_subtitle'),
-                            className: 'bg-green-50 border-green-200 text-green-800',
-                        });
-                        navigate('/dashboard');
+                        throw new Error(getTranslatedError(data.detail, t));
                     }
-                } else {
-                    throw new Error(getTranslatedError(data.detail, t));
                 }
             } catch (error) {
                 console.error('Auth callback error:', error);
@@ -74,7 +132,7 @@ const AuthCallback = () => {
         };
 
         handleCallback();
-    }, [navigate, toast, t, playSound]);
+    }, [navigate, searchParams, toast, t, playSound]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">

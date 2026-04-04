@@ -23,11 +23,6 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
-    # Social Auth Configuration (legacy - kept for backward compat)
-    discord_client_id: str = ""
-    discord_client_secret: str = ""
-    discord_redirect_uri: str = ""
-
     # Supabase Auth (for validating Supabase OAuth tokens)
     supabase_url: str = ""
     supabase_key: str = ""  # anon key

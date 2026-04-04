@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
-import { getTranslatedError } from "@/utils/errorUtils";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const Login = () => {
@@ -37,12 +36,27 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      // 1. Authenticate via Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        playSound('auth_error');
+        toast({
+          title: t('auth:messages.login_error'),
+          description: t('auth:messages.login_error_detail'),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 2. Sync with backend to get app token + user profile
+      const response = await fetch(`${API_URL}/auth/supabase`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: authData.session.access_token }),
       });
 
       const data = await response.json();
@@ -63,7 +77,7 @@ const Login = () => {
         playSound('auth_error');
         toast({
           title: t('auth:messages.login_error'),
-          description: getTranslatedError(data.detail, t),
+          description: data.detail || t('auth:messages.login_error_detail'),
           variant: "destructive",
         });
       }
@@ -221,6 +235,16 @@ const Login = () => {
                     </Button>
                   </div>
                 </div>
+              </div>
+
+              {/* Forgot Password */}
+              <div className="text-right -mt-2">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+                >
+                  {t('auth:login.forgot_password')}
+                </Link>
               </div>
 
               {/* Submit Button */}

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { API_URL } from "@/config/api";
+import { supabase } from "@/lib/supabase";
 import { useTranslation } from "react-i18next";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { cn } from "@/lib/utils";
@@ -206,7 +207,7 @@ const Settings = () => {
     };
 
     const handleChangePassword = async () => {
-        if (!currentPassword || !newPassword || !confirmPassword) {
+        if (!newPassword || !confirmPassword) {
             toast({ title: t('settings:actions.error_title'), description: t('settings:account.password.error.required'), variant: "destructive" });
             return;
         }
@@ -223,23 +224,10 @@ const Settings = () => {
 
         setIsChangingPassword(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/auth/change-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    current_password: currentPassword,
-                    new_password: newPassword,
-                    confirm_password: confirmPassword
-                })
-            });
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || t('settings:account.password.error.generic'));
+            if (error) {
+                throw new Error(error.message || t('settings:account.password.error.generic'));
             }
 
             toast({ title: t('settings:actions.success_title'), description: t('settings:account.password.success') });

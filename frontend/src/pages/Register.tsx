@@ -11,7 +11,6 @@ import { API_URL } from "@/config/api";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
-import { getTranslatedError } from "@/utils/errorUtils";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const Register = () => {
@@ -73,46 +72,62 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const payload = {
+      // 1. Register via Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
-        password: formData.password
-      };
-
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
-        body: JSON.stringify(payload),
+      });
+
+      if (authError) {
+        playSound('auth_error');
+        toast({
+          title: t('auth:validation.registration_error'),
+          description: authError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // If email confirmation is required, session will be null
+      if (!authData.session) {
+        playSound('auth_success');
+        toast({
+          title: t('auth:messages.register_success'),
+          description: t('auth:messages.check_email'),
+          className: "bg-green-50 border-green-200 text-green-800"
+        });
+        setTimeout(() => navigate('/login'), 3000);
+        return;
+      }
+
+      // 2. Session exists (auto-confirm enabled) — sync with backend
+      const response = await fetch(`${API_URL}/auth/supabase`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: authData.session.access_token }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
         playSound('auth_success');
         toast({
           title: t('auth:messages.register_success'),
           description: t('auth:messages.register_success_subtitle'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
-
-        if (data.access_token) {
-          localStorage.setItem('token', data.access_token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          setTimeout(() => {
-            navigate('/welcome');
-          }, 500);
-        } else {
-          setTimeout(() => {
-            navigate('/login');
-          }, 2000);
-        }
-
+        setTimeout(() => navigate('/welcome'), 500);
       } else {
         playSound('auth_error');
         toast({
           title: t('auth:validation.registration_error'),
-          description: getTranslatedError(data.detail, t),
+          description: data.detail || t('auth:messages.register_error'),
           variant: "destructive",
         });
       }

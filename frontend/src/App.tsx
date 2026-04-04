@@ -16,6 +16,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bye from "./pages/Bye";
 import AuthCallback from "./pages/AuthCallback";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Lessons from "./pages/Lessons";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";
@@ -90,6 +92,8 @@ const App = () => (
                 <Route path="/register" element={<Register />} />
                 <Route path="/bye" element={<Bye />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Lessons */}
                 <Route path="/lessons" element={
