@@ -50,7 +50,23 @@
                 "mismatch": "New passwords do not match",
                 "length": "Password must be at least 8 characters",
                 "required": "All fields are required",
+                "wrong_current": "Current password is incorrect",
                 "generic": "Could not change password"
+            }
+        },
+        "email_change": {
+            "title": "Change Email",
+            "current": "Current email",
+            "new": "New email",
+            "password_confirm": "Confirm your current password",
+            "button": "Send confirmation",
+            "sent_title": "Check your inbox!",
+            "sent_desc": "We sent a confirmation link to {{email}}. Click it to complete the change.",
+            "error": {
+                "required": "Please fill in all fields",
+                "same": "New email must be different from current one",
+                "wrong_password": "Password is incorrect",
+                "generic": "Could not change email"
             }
         },
         "social": "Auth Provider",

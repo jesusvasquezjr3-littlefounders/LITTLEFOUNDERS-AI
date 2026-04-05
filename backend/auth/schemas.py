@@ -7,6 +7,7 @@ import re
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
+    email: Optional[str] = None
     birth_date: Optional[str] = None
     gender: Optional[str] = None
     avatar_config: Optional[dict] = None

@@ -163,7 +163,7 @@ class User(Base):
     public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)  # Nullable: Supabase manages auth
     user_type = Column(String, nullable=False)
     birth_date = Column(DateTime)
     gender = Column(String)
@@ -205,8 +205,6 @@ class User(Base):
     # Preferences
     preferred_language = Column(String(10), default='es')
     auth_provider = Column(String(20), default='email')
-    google_id = Column(String(100), nullable=True, unique=True)
-    discord_id = Column(String(100), nullable=True, unique=True)
     
     avatar_config = Column(JSON, nullable=True)
     username = Column(String(30), nullable=True, unique=True)

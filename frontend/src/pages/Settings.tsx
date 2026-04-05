@@ -104,6 +104,13 @@ const Settings = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+    // Email Change State
+    const [isEmailOpen, setIsEmailOpen] = useState(false);
+    const [emailCurrentPassword, setEmailCurrentPassword] = useState("");
+    const [newEmail, setNewEmail] = useState("");
+    const [isChangingEmail, setIsChangingEmail] = useState(false);
+    const [emailChangeSent, setEmailChangeSent] = useState(false);
+
     // Loading states
     const [isSaving, setIsSaving] = useState(false);
     const [usernameError, setUsernameError] = useState("");
@@ -207,7 +214,7 @@ const Settings = () => {
     };
 
     const handleChangePassword = async () => {
-        if (!newPassword || !confirmPassword) {
+        if (!currentPassword || !newPassword || !confirmPassword) {
             toast({ title: t('settings:actions.error_title'), description: t('settings:account.password.error.required'), variant: "destructive" });
             return;
         }
@@ -224,11 +231,27 @@ const Settings = () => {
 
         setIsChangingPassword(true);
         try {
-            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            // Verify current password via Edge Function (server-side, no client session side-effects)
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error(t('settings:account.password.error.generic'));
 
-            if (error) {
-                throw new Error(error.message || t('settings:account.password.error.generic'));
-            }
+            const verifyRes = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session.access_token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify({ password: currentPassword }),
+                }
+            );
+            const { valid } = await verifyRes.json();
+            if (!valid) throw new Error(t('settings:account.password.error.wrong_current'));
+
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) throw new Error(error.message || t('settings:account.password.error.generic'));
 
             toast({ title: t('settings:actions.success_title'), description: t('settings:account.password.success') });
             setIsPasswordOpen(false);
@@ -244,6 +267,71 @@ const Settings = () => {
             });
         } finally {
             setIsChangingPassword(false);
+        }
+    };
+
+    const handleChangeEmail = async () => {
+        if (!emailCurrentPassword.trim() || !newEmail.trim()) {
+            toast({ title: t('settings:actions.error_title'), description: t('settings:account.email_change.error.required'), variant: "destructive" });
+            return;
+        }
+        if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+            toast({ title: t('settings:actions.error_title'), description: t('settings:account.email_change.error.same'), variant: "destructive" });
+            return;
+        }
+
+        setIsChangingEmail(true);
+        try {
+            // Verify current password via Edge Function (server-side, no client session side-effects)
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error(t('settings:account.email_change.error.generic'));
+
+            const verifyRes = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session.access_token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify({ password: emailCurrentPassword }),
+                }
+            );
+            const { valid } = await verifyRes.json();
+            if (!valid) throw new Error(t('settings:account.email_change.error.wrong_password'));
+
+            // 1. Update in Supabase Auth (sends confirmation email to new address)
+            const { error } = await supabase.auth.updateUser({
+                email: newEmail,
+                options: { emailRedirectTo: `${window.location.origin}/auth/callback?type=email_change` }
+            });
+
+            if (error) throw new Error(error.message);
+
+            // 2. Sync new email to backend DB (optimistic — confirmed via Supabase email)
+            const token = localStorage.getItem('token');
+            await fetch(`${API_URL}/auth/me`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ email: newEmail.toLowerCase().trim() })
+            });
+
+            // Update localStorage
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            localStorage.setItem('user', JSON.stringify({ ...currentUser, email: newEmail.toLowerCase().trim() }));
+            setUser((prev: any) => ({ ...prev, email: newEmail.toLowerCase().trim() }));
+
+            setEmailCurrentPassword("");
+            setEmailChangeSent(true);
+        } catch (error: any) {
+            toast({
+                title: t('settings:actions.error_title'),
+                description: error.message || t('settings:account.email_change.error.generic'),
+                variant: "destructive"
+            });
+        } finally {
+            setIsChangingEmail(false);
         }
     };
 
@@ -435,10 +523,72 @@ const Settings = () => {
                         <div id="account">
                             <Section title={t('settings:account.title')} accentColor="from-blue-500 to-cyan-500">
                                 <SettingItem icon={Mail} label={t('settings:account.email')}>
-                                    <div className="flex items-center gap-3 bg-white/5 dark:bg-black/20 p-3 px-5 rounded-2xl border-2 border-black/5 dark:border-white/5">
-                                        <span className="text-sm font-black text-slate-500">{user.email}</span>
-                                        <Shield className="w-4 h-4 text-green-500" />
-                                    </div>
+                                    {isEmailAuth ? (
+                                        <Dialog open={isEmailOpen} onOpenChange={(open) => { setIsEmailOpen(open); if (!open) { setEmailCurrentPassword(""); setNewEmail(""); setEmailChangeSent(false); } }}>
+                                            <DialogTrigger asChild>
+                                                <button className="flex items-center gap-3 bg-white/5 dark:bg-black/20 p-3 px-5 rounded-2xl border-2 border-black/5 dark:border-white/5 hover:border-blue-400/30 transition-all group">
+                                                    <span className="text-sm font-black text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">{user.email}</span>
+                                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                                                </button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">{t('settings:account.email_change.title')}</DialogTitle>
+                                                </DialogHeader>
+                                                {emailChangeSent ? (
+                                                    <div className="text-center space-y-4 py-6">
+                                                        <div className="w-16 h-16 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                                            <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                                                        </div>
+                                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{t('settings:account.email_change.sent_title')}</p>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('settings:account.email_change.sent_desc', { email: newEmail })}</p>
+                                                        <Button className="w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest" onClick={() => { setIsEmailOpen(false); setEmailChangeSent(false); setNewEmail(""); }}>
+                                                            {t('common:close')}
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-4 py-4">
+                                                        <div className="space-y-2">
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.current')}</Label>
+                                                            <div className="h-12 flex items-center px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-500">{user.email}</div>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.new')}</Label>
+                                                            <Input
+                                                                type="email"
+                                                                value={newEmail}
+                                                                onChange={(e) => setNewEmail(e.target.value)}
+                                                                placeholder="nuevo@email.com"
+                                                                className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-blue-500"
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.password_confirm')}</Label>
+                                                            <Input
+                                                                type="password"
+                                                                value={emailCurrentPassword}
+                                                                onChange={(e) => setEmailCurrentPassword(e.target.value)}
+                                                                placeholder="••••••••"
+                                                                className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-blue-500"
+                                                            />
+                                                        </div>
+                                                        <Button
+                                                            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg"
+                                                            onClick={handleChangeEmail}
+                                                            disabled={isChangingEmail}
+                                                        >
+                                                            {isChangingEmail ? <Loader2 className="w-5 h-5 animate-spin" /> : t('settings:account.email_change.button')}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </DialogContent>
+                                        </Dialog>
+                                    ) : (
+                                        <div className="flex items-center gap-3 bg-white/5 dark:bg-black/20 p-3 px-5 rounded-2xl border-2 border-black/5 dark:border-white/5">
+                                            <span className="text-sm font-black text-slate-500">{user.email}</span>
+                                            <Shield className="w-4 h-4 text-green-500" />
+                                        </div>
+                                    )}
                                 </SettingItem>
                                 <SettingItem icon={Globe} label={t('settings:account.language')}>
                                     <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
@@ -459,7 +609,7 @@ const Settings = () => {
                             <Section title={t('settings:account.password.label')} accentColor="from-emerald-500 to-teal-500">
                                 <SettingItem icon={Lock} label={t('settings:account.password.dialog.title')}>
                                     {isEmailAuth ? (
-                                        <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
+                                        <Dialog open={isPasswordOpen} onOpenChange={(open) => { setIsPasswordOpen(open); if (!open) { setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); } }}>
                                             <DialogTrigger asChild>
                                                 <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
                                                     {t('settings:account.password.change')}
@@ -488,9 +638,19 @@ const Settings = () => {
                                                             className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
                                                         />
                                                     </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.confirm')}</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={confirmPassword}
+                                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                        />
+                                                    </div>
                                                     <Button
                                                         className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20"
                                                         onClick={handleChangePassword}
+                                                        disabled={isChangingPassword}
                                                     >
                                                         {isChangingPassword ? <Loader2 className="w-5 h-5 animate-spin" /> : t('settings:account.password.dialog.submit')}
                                                     </Button>

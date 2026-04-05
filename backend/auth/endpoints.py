@@ -187,6 +187,17 @@ async def update_user_profile(
     """
     try:
         # specific fields to update
+        if user_update.email is not None:
+            normalized_email = user_update.email.lower().strip()
+            if normalized_email != current_user.email.lower():
+                existing = db.query(User).filter(
+                    User.email == normalized_email,
+                    User.id != current_user.id
+                ).first()
+                if existing:
+                    raise HTTPException(status_code=400, detail="Este correo ya está en uso")
+                current_user.email = normalized_email
+
         if user_update.name is not None:
             current_user.name = user_update.name
         if user_update.birth_date is not None:
