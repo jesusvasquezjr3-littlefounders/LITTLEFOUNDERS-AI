@@ -302,10 +302,10 @@ const Settings = () => {
             if (!valid) throw new Error(t('settings:account.email_change.error.wrong_password'));
 
             // 1. Update in Supabase Auth (sends confirmation email to new address)
-            const { error } = await supabase.auth.updateUser({
-                email: newEmail,
-                options: { emailRedirectTo: `${window.location.origin}/auth/callback?type=email_change` }
-            });
+            const { error } = await supabase.auth.updateUser(
+                { email: newEmail },
+                { emailRedirectTo: `${window.location.origin}/auth/callback?type=email_change` }
+            );
 
             if (error) throw new Error(error.message);
 
