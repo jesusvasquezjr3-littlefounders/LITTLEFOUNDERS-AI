@@ -31,7 +31,9 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronDown, ChevronUp, RotateCcw, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, RotateCcw, Search, History } from 'lucide-react';
+import { GlassPanel } from '@/components/ui/GlassPanel';
+import { cn } from '@/lib/utils';
 
 interface HistoryEntry {
   id: string;
@@ -137,30 +139,43 @@ export const AdminHistory: React.FC = () => {
   return (
     <div className="space-y-6 p-8 bg-white dark:bg-slate-900 min-h-screen">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          {t('history.title')}
-        </h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          {t('history.description')}
-        </p>
+      {/* Premium Admin Header */}
+      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-amber-500/10 dark:border-amber-500/5 shadow-2xl">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-amber-500/15 to-orange-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-yellow-500/10 to-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-amber-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+                  <History className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              </div>
+              <div className="text-left">
+                  <div className="flex items-center gap-2 mb-0.5">
+                      {/* Branding removed as per user request */}
+                  </div>
+                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                      {t('history.title')}
+                  </h1>
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+                      {t('history.description')}
+                  </p>
+              </div>
+          </div>
       </div>
 
       {/* Filters */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-base text-slate-900 dark:text-white">
-            {t('common.filters')}
-          </CardTitle>
+      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
+        <CardHeader className="py-3 px-6 border-b border-slate-100 dark:border-slate-800/50">
+          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{t('common.filters')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
             {/* Search */}
-            <div className="relative lg:col-span-2">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <div className="relative lg:col-span-2 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-amber-500 transition-colors" />
               <Input
                 placeholder={t('history.searchPlaceholder')}
-                className="pl-10 bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -174,13 +189,13 @@ export const AdminHistory: React.FC = () => {
               setEntityTypeFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white">
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white">
                 <SelectValue placeholder={t('history.allTypes')} />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl">
                 {ENTITY_TYPES.map((type) => (
                   <SelectItem key={type} value={type} className="text-slate-900 dark:text-white">
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                    {t(`history.entityNames.${type}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -191,13 +206,13 @@ export const AdminHistory: React.FC = () => {
               setActionFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white">
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white">
                 <SelectValue placeholder={t('history.allActions')} />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl">
                 {ACTIONS.map((action) => (
                   <SelectItem key={action} value={action} className="text-slate-900 dark:text-white">
-                    {action.charAt(0).toUpperCase() + action.slice(1)}
+                    {t(`history.actionNames.${action}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -206,7 +221,7 @@ export const AdminHistory: React.FC = () => {
             {/* Editor */}
             <Input
               placeholder={t('history.editorPlaceholder')}
-              className="bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+              className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
               value={editorFilter}
               onChange={(e) => {
                 setEditorFilter(e.target.value);
@@ -226,7 +241,7 @@ export const AdminHistory: React.FC = () => {
                 setSearchTerm('');
                 setCurrentPage(1);
               }}
-              className="lg:col-span-1 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+              className="h-11 rounded-xl font-bold bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               {t('common.clear')}
             </Button>
@@ -235,7 +250,7 @@ export const AdminHistory: React.FC = () => {
           {/* Date Filters */}
           <div className="grid gap-4 md:grid-cols-2 mt-4">
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block ml-1">
                 {t('common.fromDate')}
               </label>
               <Input
@@ -245,11 +260,11 @@ export const AdminHistory: React.FC = () => {
                   setDateStartFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="mt-1 bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block ml-1">
                 {t('common.toDate')}
               </label>
               <Input
@@ -259,12 +274,12 @@ export const AdminHistory: React.FC = () => {
                   setDateEndFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="mt-1 bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
               />
             </div>
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Results Info */}
       <div className="text-sm text-slate-600 dark:text-slate-400">

@@ -22,7 +22,8 @@ import {
     ChevronRight,
     Shield,
     CreditCard,
-    LogOut
+    LogOut,
+    Check
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { API_URL } from "@/config/api";
@@ -342,17 +343,22 @@ const Settings = () => {
         <DashboardLayout>
             <div className="max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500 space-y-8">
 
-                {/* ── Page Header ── */}
-                <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-7 py-6 flex items-center gap-5">
+                {/* Premium Page Header */}
+                <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 border border-indigo-500/10 dark:border-indigo-500/5 shadow-2xl">
+                    {/* Ambient Glows */}
                     <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="relative w-14 h-14 rounded-[1.25rem] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0">
-                        <Shield className="w-7 h-7 text-white" />
+                    <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+                    
+                    <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-[1.25rem] bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0 transform -rotate-3 transition-transform hover:rotate-0 duration-300">
+                        <Shield className="w-6 h-6 md:w-7 md:h-7 text-white" />
                     </div>
-                    <div>
+                    <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest">LittleFounders</span>
+                            <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
                         </div>
-                        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{t('settings:title')}</h1>
+                        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight">
+                            {t('settings:title')}
+                        </h1>
                     </div>
                 </div>
 
@@ -531,49 +537,55 @@ const Settings = () => {
                                                     <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
                                                 </button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl">
-                                                <DialogHeader>
-                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">{t('settings:account.email_change.title')}</DialogTitle>
+                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl p-8">
+                                                <DialogHeader className="mb-6">
+                                                    <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4 mx-auto md:mx-0">
+                                                        <Mail className="w-7 h-7 text-blue-500" />
+                                                    </div>
+                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">{t('settings:account.email_change.title')}</DialogTitle>
                                                 </DialogHeader>
                                                 {emailChangeSent ? (
-                                                    <div className="text-center space-y-4 py-6">
-                                                        <div className="w-16 h-16 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                                            <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                                                    <div className="text-center space-y-6 py-6 animate-in fade-in zoom-in-95 duration-500">
+                                                        <div className="w-20 h-20 mx-auto bg-green-500/10 rounded-full flex items-center justify-center relative">
+                                                            <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+                                                            <Check className="w-10 h-10 text-green-500 relative z-10" />
                                                         </div>
-                                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{t('settings:account.email_change.sent_title')}</p>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400">{t('settings:account.email_change.sent_desc', { email: newEmail })}</p>
-                                                        <Button className="w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest" onClick={() => { setIsEmailOpen(false); setEmailChangeSent(false); setNewEmail(""); }}>
+                                                        <div className="space-y-2">
+                                                            <p className="text-lg font-black text-slate-800 dark:text-slate-100">{t('settings:account.email_change.sent_title')}</p>
+                                                            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto leading-relaxed">{t('settings:account.email_change.sent_desc', { email: newEmail })}</p>
+                                                        </div>
+                                                        <Button className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black uppercase tracking-widest shadow-xl transition-all active:scale-95" onClick={() => { setIsEmailOpen(false); setEmailChangeSent(false); setNewEmail(""); }}>
                                                             {t('common:close')}
                                                         </Button>
                                                     </div>
                                                 ) : (
-                                                    <div className="space-y-4 py-4">
+                                                    <div className="space-y-5">
                                                         <div className="space-y-2">
-                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.current')}</Label>
-                                                            <div className="h-12 flex items-center px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-500">{user.email}</div>
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-400 ml-1">{t('settings:account.email_change.current')}</Label>
+                                                            <div className="h-14 flex items-center px-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-sm font-bold text-slate-500 italic opacity-70 cursor-not-allowed">{user.email}</div>
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.new')}</Label>
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500 ml-1">{t('settings:account.email_change.new')}</Label>
                                                             <Input
                                                                 type="email"
                                                                 value={newEmail}
                                                                 onChange={(e) => setNewEmail(e.target.value)}
                                                                 placeholder="nuevo@email.com"
-                                                                className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-blue-500"
+                                                                className="h-14 rounded-2xl bg-white/50 dark:bg-black/20 border-2 border-transparent focus:border-blue-500 focus-visible:ring-0 transition-all font-bold"
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.email_change.password_confirm')}</Label>
+                                                            <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500 ml-1">{t('settings:account.email_change.password_confirm')}</Label>
                                                             <Input
                                                                 type="password"
                                                                 value={emailCurrentPassword}
                                                                 onChange={(e) => setEmailCurrentPassword(e.target.value)}
                                                                 placeholder="••••••••"
-                                                                className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-blue-500"
+                                                                className="h-14 rounded-2xl bg-white/50 dark:bg-black/20 border-2 border-transparent focus:border-blue-500 focus-visible:ring-0 transition-all font-bold"
                                                             />
                                                         </div>
                                                         <Button
-                                                            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg"
+                                                            className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 active:scale-95 transition-all mt-4"
                                                             onClick={handleChangeEmail}
                                                             disabled={isChangingEmail}
                                                         >
@@ -615,40 +627,46 @@ const Settings = () => {
                                                     {t('settings:account.password.change')}
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl">
-                                                <DialogHeader>
-                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">{t('settings:account.password.dialog.title')}</DialogTitle>
+                                            <DialogContent className="sm:max-w-md rounded-[2.5rem] liquid-glass-strong border-white/10 shadow-3xl p-8">
+                                                <DialogHeader className="mb-6">
+                                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4 mx-auto md:mx-0">
+                                                        <Lock className="w-7 h-7 text-emerald-500" />
+                                                    </div>
+                                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">{t('settings:account.password.dialog.title')}</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="space-y-4 py-4">
+                                                <div className="space-y-5">
                                                     <div className="space-y-2">
-                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.current')}</Label>
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500 ml-1">{t('settings:account.password.dialog.current')}</Label>
                                                         <Input
                                                             type="password"
                                                             value={currentPassword}
                                                             onChange={(e) => setCurrentPassword(e.target.value)}
-                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                            placeholder="••••••••"
+                                                            className="h-14 rounded-2xl bg-white/50 dark:bg-black/20 border-2 border-transparent focus:border-emerald-500 focus-visible:ring-0 transition-all font-bold"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.new')}</Label>
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500 ml-1">{t('settings:account.password.dialog.new')}</Label>
                                                         <Input
                                                             type="password"
                                                             value={newPassword}
                                                             onChange={(e) => setNewPassword(e.target.value)}
-                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                            placeholder="••••••••"
+                                                            className="h-14 rounded-2xl bg-white/50 dark:bg-black/20 border-2 border-transparent focus:border-emerald-500 focus-visible:ring-0 transition-all font-bold"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500">{t('settings:account.password.dialog.confirm')}</Label>
+                                                        <Label className="font-black uppercase tracking-widest text-[10px] text-slate-500 ml-1">{t('settings:account.password.dialog.confirm')}</Label>
                                                         <Input
                                                             type="password"
                                                             value={confirmPassword}
                                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                                            className="h-12 rounded-2xl bg-white/5 border-black/5 focus-visible:ring-indigo-500"
+                                                            placeholder="••••••••"
+                                                            className="h-14 rounded-2xl bg-white/50 dark:bg-black/20 border-2 border-transparent focus:border-emerald-500 focus-visible:ring-0 transition-all font-bold"
                                                         />
                                                     </div>
                                                     <Button
-                                                        className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20"
+                                                        className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all mt-4"
                                                         onClick={handleChangePassword}
                                                         disabled={isChangingPassword}
                                                     >

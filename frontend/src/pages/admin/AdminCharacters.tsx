@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Play } from 'lucide-react';
+import { AlertCircle, Play, Sparkles } from 'lucide-react';
 import { normalizeGesture } from '@/utils/gestureMapper';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 
 // Character Components
 import { DinoCharacter } from '@/components/demo/DinoCharacter';
@@ -98,14 +99,28 @@ export const AdminCharacters: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8 dark:bg-slate-950 dark:text-slate-50 min-h-screen">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          {t('characters.title')}
-        </h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          {t('characters.subtitle')}
-        </p>
+      {/* Premium Admin Header */}
+      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-purple-500/10 dark:border-purple-500/5 shadow-2xl">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-purple-500/15 to-pink-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-purple-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+                  <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              </div>
+              <div className="text-left">
+                  <div className="flex items-center gap-2 mb-0.5">
+                      {/* Branding removed as per user request */}
+                  </div>
+                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                      {t('characters.title')}
+                  </h1>
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+                      {t('characters.subtitle')}
+                  </p>
+              </div>
+          </div>
       </div>
 
       {/* Characters Grid */}

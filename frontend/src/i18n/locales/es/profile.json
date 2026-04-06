@@ -12,7 +12,8 @@
         "select_image": "Seleccionar imagen",
         "share_profile": "Compartir Perfil",
         "add_friends": "Añadir Amigos",
-        "add_friends_desc": "Busca y conecta con otros LittleFounders"
+        "add_friends_desc": "Busca y conecta con otros LittleFounders",
+        "reset": "Reiniciar"
     },
     "tabs": {
         "avatar": "Avatar",
@@ -73,7 +74,8 @@
         "reject": "Rechazar",
         "search": "Buscar",
         "empty_following": "Aún no sigues a nadie.",
-        "empty_followers": "Aún no tienes seguidores."
+        "empty_followers": "Aún no tienes seguidores.",
+        "want_to_connect": "Quiere conectar"
     },
     "fields": {
         "nickname": "Usuario",
@@ -100,12 +102,8 @@
         "fantasy": "Fantasía",
         "abstract": "Abstracto"
     },
-    "rarity": {
-        "common": "Común",
-        "rare": "Raro",
-        "epic": "Épico",
-        "legendary": "Legendario"
-    },
+    "rarity": {},
+
     "badges": {
         "first_savings": {
             "name": "Primer Ahorro",

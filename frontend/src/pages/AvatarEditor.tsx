@@ -6,7 +6,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { GlassPanel } from '@/components/ui/GlassPanel';
-import { ArrowLeft, Shuffle, Save, Check } from 'lucide-react';
+import { ArrowLeft, Shuffle, Save, Check, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { API_URL } from '@/config/api';
 import { useTranslation } from 'react-i18next';
@@ -266,26 +266,39 @@ const AvatarEditor = () => {
         <DashboardLayout>
             <div className="max-w-4xl mx-auto pb-8 space-y-6 animate-in fade-in duration-500">
 
-                {/* Header with Save Button */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 w-full md:w-auto">
+                {/* Premium Header with Save Button */}
+                <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-pink-500/10 dark:border-pink-500/5">
+                    {/* Ambient Glows */}
+                    <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-pink-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="flex items-center gap-4 w-full md:w-auto relative z-10">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => navigate('/profile')}
-                            className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                            className="rounded-full bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5"
                         >
-                            <ArrowLeft className="w-5 h-5 text-slate-500" />
+                            <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                         </Button>
-                        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                            {t('avatar:title')}
-                        </h1>
+                        
+                        <div className="flex items-center gap-3 md:gap-4">
+                            <div className="p-2 md:p-3 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl md:rounded-2xl shadow-xl shadow-pink-500/30 transform -rotate-3 shrink-0">
+                                <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-pink-500 dark:text-pink-400 uppercase tracking-widest leading-none mb-0.5">{t('common:app_name')}</span>
+                                <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-none">
+                                    {t('avatar:title')}
+                                </h1>
+                            </div>
+                        </div>
                     </div>
 
                     <Button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all gap-2"
+                        className="w-full md:w-auto bg-gradient-to-r relative z-10 from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-xl md:rounded-full px-6 shadow-lg shadow-pink-500/20 hover:shadow-xl hover:scale-105 active:scale-95 transition-all gap-2"
                     >
                         {isSaving ? (
                             <>

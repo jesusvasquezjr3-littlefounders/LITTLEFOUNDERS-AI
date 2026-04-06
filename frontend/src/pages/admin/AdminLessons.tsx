@@ -29,8 +29,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Edit, Trash2, Copy, Plus, Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { Edit, Trash2, Copy, Plus, Search, ChevronUp, ChevronDown, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { GlassPanel } from '@/components/ui/GlassPanel';
 
 interface Lesson {
   public_id: string;
@@ -182,37 +183,50 @@ export const AdminLessons: React.FC = () => {
 
   return (
     <div className="space-y-6 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {t('lessons.title')}
-          </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            {t('lessons.subtitle')}
-          </p>
-        </div>
-        <Link to="/admin/lessons/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            {t('lessons.createNew')}
-          </Button>
-        </Link>
+      {/* Premium Admin Header */}
+      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-indigo-500/10 dark:border-indigo-500/5 shadow-2xl">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-indigo-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+                  <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              </div>
+              <div className="text-left">
+                  <div className="flex items-center gap-2 mb-0.5">
+                      {/* Branding removed as per user request */}
+                  </div>
+                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                      {t('lessons.title')}
+                  </h1>
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+                      {t('lessons.subtitle')}
+                  </p>
+              </div>
+          </div>
+
+          <Link to="/admin/lessons/new" className="relative z-10 w-full md:w-auto">
+            <Button className="w-full md:w-auto h-11 px-6 rounded-xl md:rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold shadow-lg shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95 gap-2">
+                <Plus className="h-4 w-4" />
+                {t('lessons.createNew')}
+            </Button>
+          </Link>
       </div>
 
       {/* Filters Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('lessons.filters')}</CardTitle>
+      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
+        <CardHeader className="py-3 px-6 border-b border-slate-100 dark:border-slate-800/50">
+          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{t('lessons.filters')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-5">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 transition-colors" />
               <Input
                 placeholder={t('lessons.searchPlaceholder')}
-                className="pl-10 dark:bg-slate-800 dark:text-white dark:border-slate-700"
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 focus:border-indigo-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -226,10 +240,10 @@ export const AdminLessons: React.FC = () => {
               setAdventureFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
                 <SelectValue placeholder={t('lessons.allAdventures')} />
               </SelectTrigger>
-              <SelectContent className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
                 {[1, 2, 3, 4, 5, 6].map((level) => (
                   <SelectItem key={level} value={level.toString()}>
                     {t('lessons.adventure')} {level}
@@ -243,10 +257,10 @@ export const AdminLessons: React.FC = () => {
               setSagaFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
                 <SelectValue placeholder={t('lessons.allSagas')} />
               </SelectTrigger>
-              <SelectContent className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
                 {[1, 2, 3, 4, 5].map((level) => (
                   <SelectItem key={level} value={level.toString()}>
                     {t('lessons.saga')} {level}
@@ -260,10 +274,10 @@ export const AdminLessons: React.FC = () => {
               setTopicFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
                 <SelectValue placeholder={t('lessons.allTopics')} />
               </SelectTrigger>
-              <SelectContent className="dark:bg-slate-800 dark:text-white dark:border-slate-700">
+              <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
                 {[1, 2, 3, 4].map((level) => (
                   <SelectItem key={level} value={level.toString()}>
                     {t('lessons.topic')} {level}
@@ -275,6 +289,7 @@ export const AdminLessons: React.FC = () => {
             {/* Clear Filters */}
             <Button
               variant="outline"
+              className="h-11 rounded-xl font-bold bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               onClick={() => {
                 setSearchTerm('');
                 setAdventureFilter('');
@@ -287,7 +302,7 @@ export const AdminLessons: React.FC = () => {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </GlassPanel>
 
       {/* Results Info */}
       <div className="text-sm text-slate-600 dark:text-slate-400">

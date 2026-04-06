@@ -143,7 +143,7 @@ const Help = () => {
           </div>
           <div className="text-left">
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest">LittleFounders</span>
+              <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest">{t('common:app_name')}</span>
             </div>
             <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case">
               {t("reports:help_page.title")}

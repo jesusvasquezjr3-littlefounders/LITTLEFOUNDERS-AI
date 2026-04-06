@@ -146,22 +146,24 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
     <Layout>
       <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {isDemo && <DemoBanner message={t('demo:demo_banner.games')} />}
-        {/* Header Section */}
-        <GlassPanel variant="gradient" gradient="indigo" className="relative mb-6 md:mb-10 p-4 md:p-6 overflow-hidden">
-          {/* Decorative Background Icon */}
-          <div className="absolute -right-6 -bottom-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
-            <Gamepad2 className="w-32 h-32 rotate-12" />
-          </div>
+        {/* Premium Header Section */}
+        <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-orange-500/10 dark:border-orange-500/5 shadow-2xl">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-orange-500/15 to-red-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-orange-600/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
-            <div className="p-2 md:p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl md:rounded-2xl shadow-xl shadow-orange-500/30 transform -rotate-3 transition-transform duration-300 shrink-0">
-              <Gamepad2 className="w-5 h-5 md:w-8 h-8 text-white" />
+            <div className="p-2 md:p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-orange-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+              <Gamepad2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
             </div>
             <div className="text-left">
-              <h1 className="text-lg md:text-3xl font-black md:font-bold tracking-tight bg-gradient-to-r from-orange-500 via-red-500 to-indigo-600 bg-clip-text text-transparent mb-0.5 uppercase md:normal-case">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[10px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
+              </div>
+              <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
                 {t('games:listing.title')}
               </h1>
-              <p className="text-[10px] md:text-base text-slate-600 dark:text-slate-300 font-bold md:font-medium max-w-2xl leading-tight md:leading-relaxed">
+              <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
                 {t('games:listing.subtitle')}
               </p>
             </div>

@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useTranslation } from "react-i18next";
 
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface PlatformReport {
@@ -352,22 +355,34 @@ export default function AdminReports() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
-            <Flag className="w-5 h-5 text-white" />
+      {/* Premium Admin Header */}
+      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-red-500/10 dark:border-red-500/5 shadow-2xl mb-2">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-red-500/15 to-orange-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-pink-500/10 to-red-600/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-red-500 via-orange-500 to-pink-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-red-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+                  <Flag className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              </div>
+              <div className="text-left">
+                  <div className="flex items-center gap-2 mb-0.5">
+                      {/* Branding removed as per user request */}
+                  </div>
+                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                      {t("admin.page_title")}
+                  </h1>
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+                    {stats?.total ?? 0} {t("admin.stats.total").toLowerCase()} · {stats?.by_status?.pending ?? 0} {t("admin.stats.pending").toLowerCase()}
+                  </p>
+              </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{t("admin.page_title")}</h1>
-            <p className="text-sm text-slate-500">{stats?.total ?? 0} {t("admin.stats.total").toLowerCase()} · {stats?.by_status?.pending ?? 0} {t("admin.stats.pending").toLowerCase()}</p>
-          </div>
-        </div>
-        <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}
-          className="rounded-xl gap-2">
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          {t("admin.actions.refresh")}
-        </Button>
+
+          <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}
+            className="h-11 px-6 rounded-xl md:rounded-full bg-white/50 dark:bg-black/20 backdrop-blur-md border hover:bg-white/80 dark:hover:bg-black/40 transition-all shadow-sm font-bold text-slate-700 dark:text-slate-200 gap-2 relative z-10">
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+            {t("admin.actions.refresh")}
+          </Button>
       </div>
 
       {/* Stats Cards */}

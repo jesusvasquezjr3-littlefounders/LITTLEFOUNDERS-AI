@@ -230,7 +230,22 @@
     "previous": "Previous",
     "next": "Next",
     "field": "field",
-    "fields": "fields"
+    "fields": "fields",
+    "actionNames": {
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "duplicate": "Duplicate",
+      "rollback": "Rollback"
+    },
+    "entityNames": {
+      "lesson": "Lesson",
+      "exercise": "Exercise",
+      "character": "Character",
+      "gesture": "Gesture",
+      "audio": "Audio",
+      "user": "User"
+    }
   },
   "users": {
     "title": "User Management",

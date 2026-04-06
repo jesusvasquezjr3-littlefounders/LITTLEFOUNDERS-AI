@@ -19,9 +19,9 @@ export function UserConnectionsList({
 
   if (!users || users.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-slate-400 min-h-[200px] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl">
-        <Users className="w-12 h-12 mb-4 opacity-20" />
-        <p className="text-sm font-medium">{emptyMessage}</p>
+      <div className="flex flex-col items-center justify-center p-12 text-slate-400 min-h-[200px] border-2 border-dashed border-black/5 dark:border-white/10 rounded-3xl bg-black/5 dark:bg-white/5">
+        <Users className="w-12 h-12 mb-4 opacity-10" />
+        <p className="text-sm font-black uppercase tracking-widest">{emptyMessage}</p>
       </div>
     );
   }
@@ -32,8 +32,7 @@ export function UserConnectionsList({
         <div 
           key={u.public_id} 
           className={cn(
-            "flex items-center p-4 gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200 group relative",
-            index !== users.length - 1 && "border-b border-slate-50 dark:border-slate-800/50"
+            "flex items-center p-4 gap-4 cursor-pointer hover:bg-white/40 dark:hover:bg-white/10 transition-all duration-300 group relative border-b border-black/5 dark:border-white/5 last:border-0 rounded-2xl mx-1 my-0.5"
           )}
           onClick={() => navigate(`/u/${u.username}`)}
         >

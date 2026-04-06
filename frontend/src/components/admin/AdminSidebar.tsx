@@ -134,7 +134,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          "fixed md:relative h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 z-30",
+          "fixed md:relative h-screen liquid-glass-subtle border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 z-30",
           collapsed ? "w-20 md:w-20" : "w-64 md:w-64",
           !showMobileMenu && "md:translate-x-0 -translate-x-full"
         )}

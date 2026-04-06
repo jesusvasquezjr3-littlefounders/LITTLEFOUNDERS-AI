@@ -126,24 +126,30 @@ export default function Lessons({ isDemo = false, Layout = DashboardLayout }: Le
       <Layout>
         <div className={contentWrapperClass}>
           {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
-          {/* Header */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="shrink-0"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                {viewState.sagaTitle}
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {lessons.filter(l => l.completed).length}/{lessons.length} {t('lessons:completed')}
-              </p>
-            </div>
+          {/* Premium Page Header */}
+          <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 border border-white/10 shadow-2xl">
+              {/* Ambient Glows */}
+              <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleBack}
+                  className="relative z-10 shrink-0 rounded-full bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5"
+              >
+                  <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+              </Button>
+              
+              <div className="relative z-10 flex flex-col">
+                  <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none mb-0.5">{t('common:app_name')}</span>
+                  <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight">
+                      {viewState.sagaTitle}
+                  </h1>
+                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-none mt-1">
+                    {lessons.filter(l => l.completed).length}/{lessons.length} {t('lessons:completed')}
+                  </p>
+              </div>
           </div>
 
           {/* Lesson Path */}

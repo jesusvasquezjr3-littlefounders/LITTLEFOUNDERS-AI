@@ -176,16 +176,28 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
     return (
         <div className="w-full h-full relative">
 
-            {/* Simple Header Title - Static like "AVENTURAS" */}
-            <div className="py-8">
-                <div className="flex items-center gap-4 mb-6">
-                    <Button variant="ghost" size="icon" onClick={onBack} className="text-slate-500 hover:text-slate-900 dark:text-slate-400">
-                        <ArrowLeft size={24} />
-                    </Button>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-wide uppercase">
+            {/* Premium Header Title */}
+            <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 border border-purple-500/10 dark:border-purple-500/5 shadow-2xl mb-8">
+                {/* Ambient Glows */}
+                <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-purple-500/15 to-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={onBack} 
+                    className="relative z-10 rounded-full bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5"
+                >
+                    <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                </Button>
+                
+                <div className="relative z-10 flex flex-col">
+                    <span className="text-[10px] font-black text-purple-500 dark:text-purple-400 uppercase tracking-widest leading-none mb-0.5">{t('common:app_name')}</span>
+                    <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight">
                         {adventureTitle}
                     </h1>
                 </div>
+            </div>
                 {sagas.map((saga) => (
                     <div
                         key={saga.id}
@@ -200,7 +212,7 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
                 {/* Next Adventure Preview */}
                 <NextAdventurePreview currentAdventureId={adventureId} />
 
-            </div>
+
         </div>
     );
 };

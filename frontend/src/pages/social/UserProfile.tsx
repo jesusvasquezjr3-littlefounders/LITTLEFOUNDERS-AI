@@ -125,39 +125,46 @@ export default function UserProfile() {
           <ArrowLeft className="w-4 h-4 mr-2" /> {t('common:buttons.back')}
         </Button>
 
-        {/* Header Profile Card */}
-        <div className="relative bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center gap-8 group">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        {/* Premium Header Profile Card */}
+        <div className="relative rounded-3xl p-6 md:p-10 liquid-glass-strong overflow-hidden border border-blue-500/10 dark:border-blue-500/5 shadow-2xl transition-all duration-500 group">
+          {/* Ambient Glows */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-blue-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-cyan-500/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
           
-          <div className="relative flex-shrink-0 z-10">
-             <div className="absolute -inset-4 bg-blue-100 dark:bg-blue-900/30 rounded-full blur-xl opacity-50"></div>
-             <AvatarDisplay config={profile.avatar_config} size={140} showCTA={false} />
-          </div>
-
-          <div className="flex-1 space-y-4 z-10 w-full">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                {profile.name || `@${profile.username}`}
-              </h1>
-              <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-1">
-                @{profile.username}
-              </p>
+          <div className="relative flex flex-col md:flex-row items-center gap-8 z-10 w-full text-center md:text-left">
+            <div className="relative flex-shrink-0">
+               <div className="absolute -inset-4 bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+               <AvatarDisplay config={profile.avatar_config} size={140} showCTA={false} />
             </div>
 
-            <div className="flex justify-center md:justify-start items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-300">
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold text-slate-900 dark:text-white">{profile.following_count}</span>
-                <span className="opacity-70">{t('profile:social.following')}</span>
+            <div className="flex-1 space-y-5">
+              <div>
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                  <span className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
+                </div>
+                <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight">
+                  {profile.name || `@${profile.username}`}
+                </h1>
+                <p className="text-lg text-slate-500 dark:text-slate-400 font-bold md:font-medium mt-1">
+                  @{profile.username}
+                </p>
               </div>
-              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold text-slate-900 dark:text-white">{profile.followers_count}</span>
-                <span className="opacity-70">{t('profile:social.followers')}</span>
-              </div>
-            </div>
 
-            <div className="pt-2 flex justify-center md:justify-start">
-               {renderFollowButton()}
+              <div className="flex justify-center md:justify-start items-center gap-8 text-sm font-black md:font-semibold text-slate-600 dark:text-slate-300">
+                <div className="flex flex-col items-center md:items-start group/stat">
+                  <span className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-1 group-hover/stat:text-blue-500 transition-colors">{profile.following_count}</span>
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">{t('profile:social.following')}</span>
+                </div>
+                <div className="w-px h-10 bg-slate-200 dark:bg-slate-700/50"></div>
+                <div className="flex flex-col items-center md:items-start group/stat">
+                  <span className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-1 group-hover/stat:text-blue-500 transition-colors">{profile.followers_count}</span>
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">{t('profile:social.followers')}</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-center md:justify-start">
+                 {renderFollowButton()}
+              </div>
             </div>
           </div>
         </div>

@@ -239,10 +239,10 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                     type="button"
                     onClick={() => setReportType(type)}
                     className={`
-                      px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border
+                      px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border
                       ${reportType === type
-                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-md"
-                        : "bg-white/50 dark:bg-slate-800/30 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800/50"
+                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg scale-105"
+                        : "bg-white/10 dark:bg-black/20 text-slate-500 dark:text-slate-400 border-white/10 hover:bg-white/20 dark:hover:bg-black/30 hover:border-white/20"
                       }
                     `}
                   >
@@ -265,10 +265,10 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                   disabled={!!sessionEmail}
                   placeholder={t("form.email_placeholder")}
                   className={`
-                    w-full px-4 py-2.5 rounded-xl border transition-all outline-none text-sm
-                    ${errors.email ? "border-red-400 bg-red-50/50" : "border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 focus:bg-white dark:focus:bg-transparent focus:border-slate-300 dark:focus:border-slate-600 focus:ring-4 focus:ring-slate-500/5"}
-                    text-slate-900 dark:text-white placeholder-slate-400
-                    ${sessionEmail ? "opacity-50 cursor-not-allowed" : ""}
+                    w-full px-4 py-3 rounded-2xl border-2 transition-all outline-none text-sm font-bold
+                    ${errors.email ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
+                    text-slate-900 dark:text-white placeholder-slate-400/70
+                    ${sessionEmail ? "opacity-40 cursor-not-allowed" : ""}
                   `}
                 />
                 {errors.email && <p className="text-[10px] font-bold text-red-500 ml-1">{errors.email}</p>}
@@ -286,9 +286,9 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                   placeholder={t("form.subject_placeholder")}
                   maxLength={200}
                   className={`
-                    w-full px-4 py-2.5 rounded-xl border transition-all outline-none text-sm
-                    ${errors.subject ? "border-red-400 bg-red-50/50" : "border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 focus:bg-white dark:focus:bg-transparent focus:border-slate-300 dark:focus:border-slate-600 focus:ring-4 focus:ring-slate-500/5"}
-                    text-slate-900 dark:text-white placeholder-slate-400
+                    w-full px-4 py-3 rounded-2xl border-2 transition-all outline-none text-sm font-bold
+                    ${errors.subject ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
+                    text-slate-900 dark:text-white placeholder-slate-400/70
                   `}
                 />
                 {errors.subject && <p className="text-[10px] font-bold text-red-500 ml-1">{errors.subject}</p>}
@@ -305,12 +305,12 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                 onChange={(e) => setContext(e.target.value)}
                 placeholder={t("form.context_placeholder")}
                 rows={3}
-                className={`
-                  w-full px-4 py-3 rounded-2xl border transition-all outline-none resize-none text-sm leading-relaxed
-                  ${errors.context ? "border-red-400 bg-red-50/50" : "border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 focus:bg-white dark:focus:bg-transparent focus:border-slate-300 dark:focus:border-slate-600 focus:ring-4 focus:ring-slate-500/5"}
-                  text-slate-900 dark:text-white placeholder-slate-400
-                `}
-              />
+                  className={`
+                    w-full px-4 py-4 rounded-[1.5rem] border-2 transition-all outline-none resize-none text-sm leading-relaxed font-bold
+                    ${errors.context ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
+                    text-slate-900 dark:text-white placeholder-slate-400/70
+                  `}
+                />
               {errors.context && <p className="text-[10px] font-bold text-red-500 ml-1">{errors.context}</p>}
             </div>
 
@@ -367,13 +367,13 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
             {/* Actions */}
             <div className="flex gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={handleClose}
-                className="flex-1 h-12 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+                className="flex-1 h-14 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-black/5 dark:hover:bg-white/5 transition-all">
                 {t("form.cancel")}
               </Button>
               <Button type="submit" disabled={submitState === "loading"}
-                className="flex-1 h-12 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 font-bold text-sm shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+                className="flex-1 h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-95 font-black uppercase tracking-widest text-xs shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50">
                 {submitState === "loading" ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
                 ) : (
                   <Flag className="w-4 h-4 mr-2" />
                 )}

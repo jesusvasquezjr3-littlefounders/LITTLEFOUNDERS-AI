@@ -3,6 +3,7 @@
         "language": "en",
         "status": "complete"
     },
+    "app_name": "LittleFounders",
     "buttons": {
         "continue": "Continue",
         "back": "Back",
