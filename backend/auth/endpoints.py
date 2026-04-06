@@ -105,7 +105,6 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
             user = User(
                 email=email,
                 name=name,
-                password_hash=f"{provider.upper()}_AUTH_NO_PASSWORD",
                 user_type=UserType.UNIVERSAL.value,
                 auth_provider=provider,
                 is_active=True,

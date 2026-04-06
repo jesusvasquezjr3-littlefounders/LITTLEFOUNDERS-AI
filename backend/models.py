@@ -163,7 +163,6 @@ class User(Base):
     public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=True)  # Nullable: Supabase manages auth
     user_type = Column(String, nullable=False)
     birth_date = Column(DateTime)
     gender = Column(String)
