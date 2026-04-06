@@ -144,9 +144,6 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
             "balance": getattr(user, "balance", 0.0),
         }
 
-        if user.user_type == UserType.CHILD:
-            user_data["has_virtual_card"] = getattr(user, "has_virtual_card", False)
-
         return {
             "message": f"{provider.capitalize()} Login successful",
             "user": user_data,

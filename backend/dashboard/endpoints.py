@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from database import get_db
-from models import User, Task, UserTask, Transaction, UserLessonProgress
+from models import User
 from schemas import DashboardStats
-from auth.permissions import verify_family_access, get_authorized_parents
+from auth.permissions import verify_family_access
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -35,57 +34,4 @@ async def get_user_stats(public_id: str, requester_public_id: str, db: Session =
     )
 
 
-@router.get("/recent-activity/{public_id}")
-async def get_recent_activity(public_id: str, requester_public_id: str, limit: int = 10, db: Session = Depends(get_db)):
-    """Get recent activity for a user (with family access control)"""
-    user = _resolve(db, public_id)
-    requester = _resolve(db, requester_public_id)
-    
-    verify_family_access(db, requester.id, user.id, allow_self=True)
-    
-    transactions = db.query(Transaction).filter(
-        Transaction.user_id == user.id
-    ).order_by(Transaction.created_at.desc()).limit(limit).all()
-    
-    return {
-        "transactions": [
-            {
-                "type": t.transaction_type.value,
-                "amount": t.amount,
-                "description": t.description,
-                "created_at": t.created_at.isoformat()
-            }
-            for t in transactions
-        ]
-    }
 
-
-@router.get("/pending-tasks/{public_id}")
-async def get_pending_tasks(public_id: str, requester_public_id: str, db: Session = Depends(get_db)):
-    """Get pending tasks for a user (with family access control)"""
-    user = _resolve(db, public_id)
-    requester = _resolve(db, requester_public_id)
-    
-    verify_family_access(db, requester.id, user.id, allow_self=True)
-    
-    # Get authorized creators (tutor)
-    authorized_creators = get_authorized_parents(db, user.id)
-    
-    # Only show tasks from authorized creators
-    pending_tasks = db.query(Task, UserTask).join(UserTask).filter(
-        UserTask.user_id == user.id,
-        UserTask.is_completed == False,
-        Task.created_by.in_(authorized_creators) if authorized_creators else True
-    ).all()
-    
-    return {
-        "tasks": [
-            {
-                "title": task.title,
-                "category": task.category.value,
-                "reward": task.reward,
-                "due_date": task.due_date.isoformat() if task.due_date else None
-            }
-            for task, _ in pending_tasks
-        ]
-    }

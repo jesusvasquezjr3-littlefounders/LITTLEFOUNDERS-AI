@@ -26,28 +26,6 @@ class Gender(str, enum.Enum):
 
 
 
-class TaskCategory(str, enum.Enum):
-    CHORES = "chores"
-    EDUCATION = "education"
-    SOCIAL = "social"
-    BONUS = "bonus"
-
-
-class TaskDifficulty(str, enum.Enum):
-    EASY = "easy"
-    MEDIUM = "medium"
-    HARD = "hard"
-
-
-class TransactionType(str, enum.Enum):
-    INCOME = "income"
-    EXPENSE = "expense"
-    DEPOSIT = "deposit"
-    WITHDRAWAL = "withdrawal"
-    REWARD = "reward"
-    PURCHASE = "purchase"
-
-
 class FollowStatus(str, enum.Enum):
     PENDING = "pending"
     ACCEPTED = "accepted"
@@ -194,13 +172,7 @@ class User(Base):
     
     # Virtual balance
     balance = Column(Float, default=0.0)
-    has_virtual_card = Column(Boolean, default=False)
-    
-    # Digital banking
-    banking_activated = Column(Boolean, default=False)
-    banking_activated_at = Column(DateTime(timezone=True), nullable=True)
-    banking_activated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
+
     # Preferences
     preferred_language = Column(String(10), default='es')
     auth_provider = Column(String(20), default='email')
@@ -257,153 +229,6 @@ class UserLearningStreak(Base):
 
 
 
-
-
-# Task Models
-class Task(Base):
-    __tablename__ = "tasks"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(200), nullable=False)
-    description = Column(Text)
-    category = Column(Enum(TaskCategory), default=TaskCategory.CHORES)
-    difficulty = Column(Enum(TaskDifficulty), default=TaskDifficulty.EASY)
-    reward = Column(Float, nullable=False)  # Money reward
-    time_estimate = Column(Integer)  # in minutes
-    due_date = Column(DateTime)
-    is_first_dibs = Column(Boolean, default=False)  # Special/urgent task
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-    assigned_to = Column(Integer, ForeignKey("users.id"))
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-class UserTask(Base):
-    __tablename__ = "user_tasks"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
-    is_completed = Column(Boolean, default=False)
-    is_approved = Column(Boolean, default=None, nullable=True)
-    photo_evidence = Column(String(500))  # URL to photo
-    completed_date = Column(DateTime(timezone=True))
-    approval_date = Column(DateTime(timezone=True))
-    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
-
-
-# Savings Models
-class SavingsGoal(Base):
-    __tablename__ = "savings_goals"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Owner of the goal
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Who created the goal (tutor/child)
-    assigned_to = Column(Integer, ForeignKey("users.id"))  # For tutors assigning goals to children
-    title = Column(String(200), nullable=False)
-    description = Column(Text)
-    target_amount = Column(Float, nullable=False)
-    current_amount = Column(Float, default=0.0)
-    category = Column(String(50), default='other')  # toy, education, experience, electronics, other
-    deadline = Column(DateTime)
-    image_url = Column(String(500))
-    parent_match_percentage = Column(Integer, default=0)  # Porcentaje de match del tutor
-    round_up_enabled = Column(Boolean, default=False)  # Redondeo automático
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-class Transaction(Base):
-    __tablename__ = "transactions"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    transaction_type = Column(Enum(TransactionType), nullable=False)
-    amount = Column(Float, nullable=False)
-    description = Column(String(300))
-    category = Column(String(50))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-
-# Store Models
-class Product(Base):
-    __tablename__ = "products"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(200), nullable=False)
-    description = Column(Text)
-    price = Column(Float, nullable=False)
-    category = Column(String(50))
-    image_url = Column(String(500))
-    rating = Column(Float, default=0.0)
-    in_stock = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-class Purchase(Base):
-    __tablename__ = "purchases"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Integer, default=1)
-    total_price = Column(Float, nullable=False)
-    purchased_at = Column(DateTime(timezone=True), server_default=func.now())
-
-
-# Achievement and Badge Models
-class Achievement(Base):
-    __tablename__ = "achievements"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
-    description = Column(Text)
-    icon = Column(String(50))  # Icon name
-    color = Column(String(50))  # Color class
-    rarity = Column(String(20))  # common, rare, epic, legendary
-    requirement_type = Column(String(50))  # lessons_completed, points_earned, etc.
-    requirement_value = Column(Integer)
-    is_active = Column(Boolean, default=True)
-
-
-class UserAchievement(Base):
-    __tablename__ = "user_achievements"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    achievement_id = Column(Integer, ForeignKey("achievements.id"), nullable=False)
-    earned_date = Column(DateTime(timezone=True), server_default=func.now())
-
-
-# Investment Game Models (Lemonade Stand)
-class GameSession(Base):
-    __tablename__ = "game_sessions"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    game_type = Column(String(50))  # "lemonade_stand", etc.
-    day_number = Column(Integer, default=1)
-    cash = Column(Float, default=50.0)
-    inventory = Column(JSON)  # Ingredients inventory: {lemons, sugar, cups, ice}
-    recipe = Column(JSON)  # Recipe settings: {lemonsPerCup, sugarPerCup, icePerCup, price}
-    weather = Column(String(20))  # Current weather: sunny, cloudy, rainy, cold
-    temperature = Column(Integer)  # Temperature
-    location = Column(String(50))  # Location: park, school, mall, beach
-    weather_forecast = Column(JSON)  # Weather predictions
-    decisions = Column(JSON)  # Daily decisions
-    daily_stats = Column(JSON)  # Daily statistics: {cupsSold, revenue, profit, customersServed}
-    achievements = Column(JSON)  # Array of achievement IDs
-    reputation = Column(Integer, default=50)  # Customer reputation (0-100)
-    experience = Column(Integer, default=0)  # XP points
-    level = Column(Integer, default=1)  # Player level
-    score = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    started_at = Column(DateTime(timezone=True), server_default=func.now())
-    ended_at = Column(DateTime(timezone=True))
 
 
 # =====================================================

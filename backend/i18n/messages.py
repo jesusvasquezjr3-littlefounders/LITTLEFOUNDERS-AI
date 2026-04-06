@@ -53,40 +53,6 @@ class MessageCode(str, Enum):
     LESSON_COMPLETED = "LESSON_COMPLETED"
     LESSON_PROGRESS_SAVED = "LESSON_PROGRESS_SAVED"
     
-    # Adventures/Sagas
-    ADVENTURE_NOT_FOUND = "ADVENTURE_NOT_FOUND"
-    SAGA_NOT_FOUND = "SAGA_NOT_FOUND"
-    
-    # Tasks
-    TASK_NOT_FOUND = "TASK_NOT_FOUND"
-    TASK_CREATED = "TASK_CREATED"
-    TASK_COMPLETED = "TASK_COMPLETED"
-    TASK_APPROVED = "TASK_APPROVED"
-    ONLY_TUTORS_CAN_CREATE = "ONLY_TUTORS_CAN_CREATE"
-    CHILD_NOT_FOUND = "CHILD_NOT_FOUND"
-    
-    # Savings
-    SAVINGS_GOAL_CREATED = "SAVINGS_GOAL_CREATED"
-    SAVINGS_GOAL_NOT_FOUND = "SAVINGS_GOAL_NOT_FOUND"
-    INSUFFICIENT_BALANCE = "INSUFFICIENT_BALANCE"
-    
-    # Store
-    PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND"
-    PURCHASE_SUCCESS = "PURCHASE_SUCCESS"
-    OUT_OF_STOCK = "OUT_OF_STOCK"
-    
-    # Games
-    GAME_SESSION_NOT_FOUND = "GAME_SESSION_NOT_FOUND"
-    GAME_STARTED = "GAME_STARTED"
-    GAME_ENDED = "GAME_ENDED"
-    
-    # Virtual Cards / Banking
-    VIRTUAL_CARD_CREATED = "VIRTUAL_CARD_CREATED"
-    BANKING_NOT_ACTIVATED = "BANKING_NOT_ACTIVATED"
-    BANKING_ACTIVATED = "BANKING_ACTIVATED"
-    ONLY_TUTORS_CAN_ACTIVATE = "ONLY_TUTORS_CAN_ACTIVATE"
-    ALREADY_HAS_CARD = "ALREADY_HAS_CARD"
-    
     # Generic
     SUCCESS = "SUCCESS"
     ERROR = "ERROR"
@@ -122,40 +88,6 @@ MESSAGES_ES = {
     MessageCode.LESSON_COMPLETED: "¡Lección completada!",
     MessageCode.LESSON_PROGRESS_SAVED: "Progreso guardado",
     
-    # Adventures/Sagas
-    MessageCode.ADVENTURE_NOT_FOUND: "Aventura no encontrada",
-    MessageCode.SAGA_NOT_FOUND: "Saga no encontrada",
-    
-    # Tasks
-    MessageCode.TASK_NOT_FOUND: "Tarea no encontrada",
-    MessageCode.TASK_CREATED: "Tarea creada exitosamente",
-    MessageCode.TASK_COMPLETED: "¡Tarea completada!",
-    MessageCode.TASK_APPROVED: "Tarea aprobada",
-    MessageCode.ONLY_TUTORS_CAN_CREATE: "Solo los tutores pueden crear tareas",
-    MessageCode.CHILD_NOT_FOUND: "Niño no encontrado",
-    
-    # Savings
-    MessageCode.SAVINGS_GOAL_CREATED: "Meta de ahorro creada",
-    MessageCode.SAVINGS_GOAL_NOT_FOUND: "Meta de ahorro no encontrada",
-    MessageCode.INSUFFICIENT_BALANCE: "Saldo insuficiente",
-    
-    # Store
-    MessageCode.PRODUCT_NOT_FOUND: "Producto no encontrado",
-    MessageCode.PURCHASE_SUCCESS: "¡Compra exitosa!",
-    MessageCode.OUT_OF_STOCK: "Producto agotado",
-    
-    # Games
-    MessageCode.GAME_SESSION_NOT_FOUND: "Sesión de juego no encontrada",
-    MessageCode.GAME_STARTED: "¡Juego iniciado!",
-    MessageCode.GAME_ENDED: "Juego terminado",
-    
-    # Virtual Cards / Banking
-    MessageCode.VIRTUAL_CARD_CREATED: "Tarjeta virtual creada",
-    MessageCode.BANKING_NOT_ACTIVATED: "La banca digital no está activada",
-    MessageCode.BANKING_ACTIVATED: "¡Banca digital activada!",
-    MessageCode.ONLY_TUTORS_CAN_ACTIVATE: "Solo los tutores pueden activar la banca",
-    MessageCode.ALREADY_HAS_CARD: "Ya tienes una tarjeta virtual",
-    
     # Generic
     MessageCode.SUCCESS: "Operación exitosa",
     MessageCode.ERROR: "Error",
@@ -190,40 +122,6 @@ MESSAGES_EN = {
     MessageCode.LESSON_NOT_FOUND: "Lesson not found",
     MessageCode.LESSON_COMPLETED: "Lesson completed!",
     MessageCode.LESSON_PROGRESS_SAVED: "Progress saved",
-    
-    # Adventures/Sagas
-    MessageCode.ADVENTURE_NOT_FOUND: "Adventure not found",
-    MessageCode.SAGA_NOT_FOUND: "Saga not found",
-    
-    # Tasks
-    MessageCode.TASK_NOT_FOUND: "Task not found",
-    MessageCode.TASK_CREATED: "Task created successfully",
-    MessageCode.TASK_COMPLETED: "Task completed!",
-    MessageCode.TASK_APPROVED: "Task approved",
-    MessageCode.ONLY_TUTORS_CAN_CREATE: "Only tutors can create tasks",
-    MessageCode.CHILD_NOT_FOUND: "Child not found",
-    
-    # Savings
-    MessageCode.SAVINGS_GOAL_CREATED: "Savings goal created",
-    MessageCode.SAVINGS_GOAL_NOT_FOUND: "Savings goal not found",
-    MessageCode.INSUFFICIENT_BALANCE: "Insufficient balance",
-    
-    # Store
-    MessageCode.PRODUCT_NOT_FOUND: "Product not found",
-    MessageCode.PURCHASE_SUCCESS: "Purchase successful!",
-    MessageCode.OUT_OF_STOCK: "Product out of stock",
-    
-    # Games
-    MessageCode.GAME_SESSION_NOT_FOUND: "Game session not found",
-    MessageCode.GAME_STARTED: "Game started!",
-    MessageCode.GAME_ENDED: "Game ended",
-    
-    # Virtual Cards / Banking
-    MessageCode.VIRTUAL_CARD_CREATED: "Virtual card created",
-    MessageCode.BANKING_NOT_ACTIVATED: "Digital banking is not activated",
-    MessageCode.BANKING_ACTIVATED: "Digital banking activated!",
-    MessageCode.ONLY_TUTORS_CAN_ACTIVATE: "Only tutors can activate banking",
-    MessageCode.ALREADY_HAS_CARD: "You already have a virtual card",
     
     # Generic
     MessageCode.SUCCESS: "Operation successful",
