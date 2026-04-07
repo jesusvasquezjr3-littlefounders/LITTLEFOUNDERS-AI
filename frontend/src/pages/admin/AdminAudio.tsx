@@ -93,7 +93,7 @@ export const AdminAudio: React.FC = () => {
   const generateMutation = useGenerateAudio();
   const deleteMutation = useDeleteAudio();
 
-  const audioSegments = audioData ? (audioData as PaginatedResponse).items : [];
+  const audioSegments = audioData ? (audioData as unknown as PaginatedResponse).items : [];
 
   // Filter by search term
   const filteredAudio = useMemo(() => {
