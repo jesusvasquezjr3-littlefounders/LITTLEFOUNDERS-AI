@@ -7,6 +7,39 @@ import { useTranslation } from 'react-i18next';
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
+/**
+ * Represents a single audio segment for a specific sub-element of an exercise.
+ */
+export interface AudioSegment {
+    url: string | null;
+    duration_ms?: number;
+    emotion?: string;
+    transcript?: string;
+    characterCode?: string;
+}
+
+/**
+ * Map of audio segments keyed by target_field.
+ * Each exercise can have audio for multiple sub-elements:
+ * - main: Primary narration (transcript for intro_narrative, general narration)
+ * - statement: Statement text (true_false, tap_action)
+ * - question: Question text (multiple_choice, math_challenge)
+ * - instruction: Instruction text (all exercise types that have instructions)
+ * - feedback_success: Audio when user answers correctly
+ * - feedback_error: Audio when user answers incorrectly
+ */
+export interface AudioSegmentMap {
+    main?: AudioSegment;
+    statement?: AudioSegment;
+    question?: AudioSegment;
+    instruction?: AudioSegment;
+    feedback_success?: AudioSegment;
+    feedback_error?: AudioSegment;
+}
+
+/**
+ * @deprecated Use AudioSegmentMap instead. Kept for backwards compatibility.
+ */
 export interface AudioData {
     url: string | null;
     characterId?: number;
@@ -108,7 +141,7 @@ export interface ExerciseData {
     } | null;
     feedback?: { success: string; error: string } | null;
     points: number;
-    audio?: AudioData | null;
+    audio?: AudioSegmentMap | null;
 }
 
 export interface LessonMeta {

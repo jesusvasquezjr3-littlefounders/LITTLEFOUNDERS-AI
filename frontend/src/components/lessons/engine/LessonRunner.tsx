@@ -9,14 +9,14 @@
  * - Modo claro/oscuro 100% compatible
  * - Mobile-first responsive
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
 import { DinaCharacter } from '@/components/demo/DinaCharacter';
 import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
-import { useLessonData, useLessonState, completeLesson, fetchNextLessonCode } from './hooks';
+import { useLessonData, useLessonState, useLessonAudio, completeLesson, fetchNextLessonCode } from './hooks';
 import { useSound } from "@/contexts/SoundContext";
 import { MultipleChoice } from './activities/MultipleChoice';
 import { TapAction } from './activities/TapAction';
@@ -89,10 +89,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const navigate = useNavigate();
     const code = propLessonCode || params.lessonCode || '';
 
-    // Audio ref
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-    // Use global sound context
+    // Use global sound context (SFX: chimes, buzzer)
     const { playSound, mute: audioMuted, toggleMute: setAudioMuted, playBGM, stopBGM } = useSound();
 
     // Start BGM on mount
@@ -121,6 +118,16 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         retryExercise
     } = useLessonState(data);
 
+    // Narrative audio hook (character voice per exercise sub-elements)
+    // Handles on-load audio queue and feedback audio playback.
+    // Note: LF Audio Engine is currently off — this operates with pre-existing audio URLs in the DB.
+    // Methods are destructured so useCallback deps reference stable function refs, not the object.
+    const {
+        isNarrativeAudioPlaying,
+        playFeedback: playNarrativeFeedback,
+        stopAudio: stopNarrativeAudio,
+    } = useLessonAudio(currentExercise, audioMuted);
+
     // Energy system (lives)
     const [lives, setLives] = useState(5);
 
@@ -132,6 +139,56 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
     const [showGameOver, setShowGameOver] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
+
+    // ─── Submit/Next/Retry handlers with narrative audio integration ───
+    // These helpers encapsulate the common onSubmit/onNext/onRetry pattern
+    // and add lessonAudio.playFeedback() for narrative audio segments.
+
+    /** Standard submit handler: validates, plays SFX + narrative audio, manages lives */
+    const handleStandardSubmit = useCallback((answer: any): boolean => {
+        const isCorrect = submitAnswer(answer);
+        if (isCorrect) {
+            playSound('edu_success');
+            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
+            setLocalFeedback('success');
+        } else {
+            playSound('edu_error');
+            setLives(l => {
+                const newLives = l - 1;
+                if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
+                return newLives;
+            });
+            setLocalFeedback('error');
+        }
+        // playFeedback always stops any ongoing load-sequence audio first,
+        // then plays feedback voice if a segment exists. If not → no-op.
+        playNarrativeFeedback(isCorrect);
+        return isCorrect;
+    }, [submitAnswer, playSound, playNarrativeFeedback]);
+
+    /** Simulator submit: always succeeds, no life penalty */
+    const handleSimulatorSubmit = useCallback((answer: any): boolean => {
+        const isCorrect = submitAnswer(answer);
+        playSound('edu_success');
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
+        setLocalFeedback('success');
+        playNarrativeFeedback(true);
+        return isCorrect;
+    }, [submitAnswer, playSound, playNarrativeFeedback]);
+
+    /** Standard next: reset feedback, stop narrative audio, advance */
+    const handleNext = useCallback(() => {
+        setLocalFeedback('none');
+        stopNarrativeAudio();
+        nextExercise();
+    }, [nextExercise, stopNarrativeAudio]);
+
+    /** Standard retry: reset feedback, stop narrative audio, retry */
+    const handleRetry = useCallback(() => {
+        setLocalFeedback('none');
+        stopNarrativeAudio();
+        retryExercise();
+    }, [retryExercise, stopNarrativeAudio]);
 
 
     // Get mood based on state (for Liruf)
@@ -280,38 +337,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         }
     };
 
-    // Handle audio playback
-    useEffect(() => {
-        if (currentExercise?.audio?.url && state === 'PLAYING' && !audioMuted) {
-            const audio = audioRef.current;
-            if (audio) {
-                audio.src = currentExercise.audio.url;
-                audio.play().catch(console.log);
-                setIsAudioPlaying(true);
-            }
-        }
-        // If muted while playing, pause the audio
-        if (audioMuted && audioRef.current) {
-            audioRef.current.pause();
-            setIsAudioPlaying(false);
-        }
-    }, [currentExercise, state, audioMuted]);
-
-    // Handle audio end
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        const handleEnded = () => {
-            setIsAudioPlaying(false);
-            if (currentExercise?.type === 'intro_narrative') {
-                setTimeout(nextExercise, 500);
-            }
-        };
-
-        audio.addEventListener('ended', handleEnded);
-        return () => audio.removeEventListener('ended', handleEnded);
-    }, [currentExercise, nextExercise]);
+    // Narrative audio is now managed by the useLessonAudio hook.
+    // It auto-plays on exercise load and provides playFeedback() for answer responses.
+    // The old audioRef/setIsAudioPlaying pattern is replaced by lessonAudio.isNarrativeAudioPlaying.
 
     // Celebration on complete + API call
     useEffect(() => {
@@ -396,7 +424,6 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* Decorative orbs */}
                 <div className="absolute -top-20 -left-20 w-72 h-72 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-                <audio ref={audioRef} preload="auto" />
 
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
@@ -466,7 +493,6 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
     return (
         <div className="fixed inset-0 bg-background flex flex-col">
-            <audio ref={audioRef} preload="auto" />
 
             {/* ===== TOP BAR ===== */}
             <div className="flex items-center gap-3 p-4 pb-2">
@@ -563,11 +589,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'story_mode' && (
                     <StoryMode
                         exercise={currentExercise}
-                        onNext={() => {
-                            // Story mode es contenido de consumo, no necesita validación.
-                            // Solo avanzar al siguiente ejercicio.
-                            nextExercise();
-                        }}
+                        onNext={handleNext}
                     />
                 )}
 
@@ -576,12 +598,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'intro_narrative' && (
                     <IntroNarrative
                         exercise={currentExercise}
-                        onNext={() => {
-                            // Narrative es contenido de consumo, no necesita validación.
-                            // Solo avanzar al siguiente ejercicio.
-                            nextExercise();
-                        }}
-                        isAudioPlaying={isAudioPlaying}
+                        onNext={handleNext}
+                        isAudioPlaying={isNarrativeAudioPlaying}
                     />
                 )}
 
@@ -589,31 +607,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'multiple_choice' && (
                     <MultipleChoice
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -636,31 +632,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'sequencing' && (
                     <Sequencing
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -668,31 +642,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'classification' && (
                     <Classification
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -702,23 +654,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {(currentExercise?.type === 'match_pairs' || currentExercise?.type === 'matching_pairs') && (
                     <MatchingPairs
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -726,31 +664,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'fill_blank' && (
                     <FillBlank
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -758,29 +674,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'true_false' && (
                     <TrueFalse
                         exercise={currentExercise}
-                        onSubmit={(isTrue) => {
-                            const isCorrect = submitAnswer(isTrue);
-                            if (isCorrect) {
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -788,31 +684,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'math_challenge' && (
                     <MathChallenge
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -820,32 +694,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'roleplay_chat' && (
                     <RoleplayChat
                         exercise={currentExercise}
-                        onSubmit={(choiceId) => {
-                            const isCorrect = submitAnswer(choiceId);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                // Confetti might disrupt chat flow, maybe subtle?
-                                confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -853,31 +704,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'word_scramble' && (
                     <WordScramble
                         exercise={currentExercise}
-                        onSubmit={(word) => {
-                            const isCorrect = submitAnswer(word);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -885,31 +714,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'estimation_slider' && (
                     <EstimationSlider
                         exercise={currentExercise}
-                        onSubmit={(value) => {
-                            const isCorrect = submitAnswer(value);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -919,31 +726,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'risk_reward' && (
                     <RiskReward
                         exercise={currentExercise}
-                        onSubmit={(choiceId) => {
-                            const isCorrect = submitAnswer(choiceId);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -951,31 +736,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'shop_sim' && (
                     <ShopSim
                         exercise={currentExercise}
-                        onSubmit={(cartIds) => {
-                            const isCorrect = submitAnswer(cartIds);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -983,31 +746,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'coin_counter' && (
                     <CoinCounter
                         exercise={currentExercise}
-                        onSubmit={(value) => {
-                            const isCorrect = submitAnswer(value);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1015,31 +756,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'concept_builder' && (
                     <ConceptBuilder
                         exercise={currentExercise}
-                        onSubmit={(sequence) => {
-                            const isCorrect = submitAnswer(sequence);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1050,31 +769,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'tap_action' && (
                     <TapAction
                         exercise={currentExercise}
-                        onSubmit={(answer) => {
-                            const isCorrect = submitAnswer(answer);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1082,31 +779,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'price_detective' && (
                     <PriceDetective
                         exercise={currentExercise}
-                        onSubmit={(choiceId) => {
-                            const isCorrect = submitAnswer(choiceId);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1114,31 +789,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'spot_trap' && (
                     <SpotTheTrap
                         exercise={currentExercise}
-                        onSubmit={(selectedIds) => {
-                            const isCorrect = submitAnswer(selectedIds);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1146,21 +799,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'impact_meter' && (
                     <ImpactMeter
                         exercise={currentExercise}
-                        onSubmit={(causeId) => {
-                            const isCorrect = submitAnswer(causeId);
-                            playSound('edu_success');
-                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1168,31 +809,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'market_reaction' && (
                     <MarketReaction
                         exercise={currentExercise}
-                        onSubmit={(prediction) => {
-                            const isCorrect = submitAnswer(prediction);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1200,21 +819,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'mystery_investment' && (
                     <MysteryInvestment
                         exercise={currentExercise}
-                        onSubmit={(allocation) => {
-                            const isCorrect = submitAnswer(allocation);
-                            playSound('edu_success');
-                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1222,31 +829,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'budget_builder' && (
                     <BudgetBuilder
                         exercise={currentExercise}
-                        onSubmit={(allocation) => {
-                            const isCorrect = submitAnswer(allocation);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1255,21 +840,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'savings_race' && (
                     <SavingsRace
                         exercise={currentExercise}
-                        onSubmit={(strategy) => {
-                            const isCorrect = submitAnswer(strategy);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1277,31 +850,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'expense_timeline' && (
                     <ExpenseTimeline
                         exercise={currentExercise}
-                        onSubmit={(order) => {
-                            const isCorrect = submitAnswer(order);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1310,21 +861,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'interest_calculator' && (
                     <InterestCalculator
                         exercise={currentExercise}
-                        onSubmit={(values) => {
-                            const isCorrect = submitAnswer(values);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1332,31 +871,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'tax_puzzle' && (
                     <TaxPuzzle
                         exercise={currentExercise}
-                        onSubmit={(pieces) => {
-                            const isCorrect = submitAnswer(pieces);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1367,21 +884,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'subscription_tracker' && (
                     <SubscriptionTracker
                         exercise={currentExercise}
-                        onSubmit={(active) => {
-                            const isCorrect = submitAnswer(active);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1390,21 +895,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'inflation_simulator' && (
                     <InflationSimulator
                         exercise={currentExercise}
-                        onSubmit={(comparison) => {
-                            const isCorrect = submitAnswer(comparison);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1412,31 +905,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'credit_score' && (
                     <CreditScoreBuilder
                         exercise={currentExercise}
-                        onSubmit={(decisions) => {
-                            const isCorrect = submitAnswer(decisions);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1444,31 +915,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'emergency_fund' && (
                     <EmergencyFund
                         exercise={currentExercise}
-                        onSubmit={(decisions) => {
-                            const isCorrect = submitAnswer(decisions);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1476,31 +925,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'bill_splitter' && (
                     <BillSplitter
                         exercise={currentExercise}
-                        onSubmit={(splits) => {
-                            const isCorrect = submitAnswer(splits);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1508,31 +935,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'salary_comparison' && (
                     <SalaryComparison
                         exercise={currentExercise}
-                        onSubmit={(selectedId) => {
-                            const isCorrect = submitAnswer(selectedId);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1541,21 +946,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'debt_strategy' && (
                     <DebtStrategy
                         exercise={currentExercise}
-                        onSubmit={(strategy) => {
-                            const isCorrect = submitAnswer(strategy);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1563,31 +956,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'portfolio_builder' && (
                     <PortfolioBuilder
                         exercise={currentExercise}
-                        onSubmit={(allocation) => {
-                            const isCorrect = submitAnswer(allocation);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1596,21 +967,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'opportunity_cost' && (
                     <OpportunityCost
                         exercise={currentExercise}
-                        onSubmit={(choice) => {
-                            const isCorrect = submitAnswer(choice);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1618,31 +977,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'goal_roadmap' && (
                     <GoalRoadmap
                         exercise={currentExercise}
-                        onSubmit={(order) => {
-                            const isCorrect = submitAnswer(order);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1651,21 +988,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'mindset_comparison' && (
                     <MindsetComparison
                         exercise={currentExercise}
-                        onSubmit={(mindset) => {
-                            const isCorrect = submitAnswer(mindset);
-                            playSound('edu_success');
-                            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                            setLocalFeedback('success');
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleSimulatorSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1673,31 +998,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'passive_income' && (
                     <PassiveIncome
                         exercise={currentExercise}
-                        onSubmit={(selected) => {
-                            const isCorrect = submitAnswer(selected);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 
@@ -1705,31 +1008,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type === 'quiz_battle' && (
                     <QuizBattle
                         exercise={currentExercise}
-                        onSubmit={(score) => {
-                            const isCorrect = submitAnswer(score);
-                            if (isCorrect) {
-                                playSound('edu_success');
-                                confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
-                                setLocalFeedback('success');
-                            } else {
-                                playSound('edu_error');
-                                setLives(l => {
-                                    const newLives = l - 1;
-                                    if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
-                                    return newLives;
-                                });
-                                setLocalFeedback('error');
-                            }
-                            return isCorrect;
-                        }}
-                        onNext={() => {
-                            setLocalFeedback('none');
-                            nextExercise();
-                        }}
-                        onRetry={() => {
-                            setLocalFeedback('none');
-                            retryExercise();
-                        }}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
                     />
                 )}
 

@@ -11,7 +11,7 @@ from datetime import datetime
 from database import get_db
 from models import (
     Lesson, Character, CharacterGesture,
-    User, UserLessonProgress
+    User, UserLessonProgress, LessonAudioSegment
 )
 from schemas import (
     AdventureResponse, AdventureWithProgress,
@@ -330,6 +330,50 @@ async def get_lesson_for_play(
         description = lesson.description_es
         content_array = lesson.content_es
         
+    # ─── Fetch audio segments for this lesson ───
+    # Wrapped in try/except: a DB failure here must NOT crash the lesson.
+    # The lesson is fully functional without audio — exercises just play silently.
+    #
+    # exercise_id in lesson_audio_segments is 0-based, matching the position
+    # in content_es/content_en arrays (index 0 = first exercise, etc.).
+    audio_by_exercise: Dict[int, dict] = {}
+    try:
+        audio_segments = db.query(LessonAudioSegment).filter(
+            LessonAudioSegment.lesson_id == lesson.id,
+            LessonAudioSegment.language_code == lang,
+            LessonAudioSegment.is_active == True
+        ).all()
+
+        # Resolve character codes for audio segments (single query, no N+1)
+        audio_char_ids = {seg.character_id for seg in audio_segments if seg.character_id}
+        audio_char_map: Dict[int, str] = {}
+        if audio_char_ids:
+            chars = db.query(Character.id, Character.code).filter(Character.id.in_(audio_char_ids)).all()
+            audio_char_map = {c.id: c.code for c in chars}
+
+        # Build map: { exercise_index: { target_field: segment_data } }
+        for seg in audio_segments:
+            ex_id = seg.exercise_id
+            if ex_id is None:
+                continue
+            # Defensive access: target_field column may not exist on very old deployments
+            target = getattr(seg, 'target_field', None) or 'main'
+            # Validate target_field — ignore segments with unrecognised targets
+            valid_targets = {'main', 'statement', 'question', 'instruction', 'feedback_success', 'feedback_error'}
+            if target not in valid_targets:
+                target = 'main'
+            audio_by_exercise.setdefault(ex_id, {})[target] = {
+                "url": seg.audio_url or None,  # Ensure null not empty string
+                "duration_ms": seg.duration_ms,
+                "emotion": seg.emotion,
+                "transcript": seg.transcript,
+                "characterCode": audio_char_map.get(seg.character_id),
+            }
+    except Exception as e:
+        # Audio query failed — log and continue with empty audio map.
+        # The lesson will run without audio but is fully functional.
+        print(f"[LessonEngine] Warning: could not load audio segments for lesson {lesson.id}: {e}")
+
     # Build Timeline from JSON array
     timeline = []
     if content_array and isinstance(content_array, list):
@@ -337,6 +381,11 @@ async def get_lesson_for_play(
             # Normalize character code
             raw_char_code = ex.get('character_code')
             normalized_char_code = normalize_character_code(raw_char_code) if raw_char_code else None
+
+            # Lookup audio segments for this exercise index (0-based).
+            # Returns None if no segments exist — frontend handles null gracefully.
+            raw_audio = audio_by_exercise.get(idx)
+            exercise_audio = raw_audio if raw_audio else None
 
             # Inject ID and Order if missing
             ex_data = {
@@ -350,10 +399,8 @@ async def get_lesson_for_play(
                 "content": ex.get('content', {}),
                 "correct_answer": ex.get('correct_answer'),
                 "feedback": ex.get('feedback'),
-                "audio": None # Generated lessons don't define audio segments yet
+                "audio": exercise_audio  # AudioSegmentMap: { main?: {...}, feedback_success?: {...}, ... }
             }
-            # Add audio placeholder if structure exists in content (custom logic)
-            # content.audioUrl ?
 
             timeline.append(ex_data)
             

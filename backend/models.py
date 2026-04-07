@@ -275,6 +275,10 @@ class LessonAudioSegment(Base):
     order_index = Column(Integer, default=0)
     duration_ms = Column(Integer, nullable=True)
     language_code = Column(String(10), default='es')
+    # target_field identifica qué sub-elemento del ejercicio representa este audio:
+    # 'main' (narración/transcript), 'statement', 'question', 'instruction',
+    # 'feedback_success', 'feedback_error'
+    target_field = Column(String(50), default='main')
     # Campos extendidos para Admin Panel
     tags = Column(JSON, default=[])
     uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=True)

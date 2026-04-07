@@ -18,11 +18,15 @@ export interface AudioFilters {
   language_code?: string;
 }
 
+// Valid target_field values for audio segments
+export type AudioTargetField = 'main' | 'statement' | 'question' | 'instruction' | 'feedback_success' | 'feedback_error';
+
 // From GET /admin/audio endpoint
 export interface AudioFile {
   public_id: string;
   lesson_id: string;
   exercise_id: string;
+  target_field: AudioTargetField;
   character_id: string;
   audio_url: string;
   transcript: string;

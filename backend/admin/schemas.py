@@ -182,12 +182,14 @@ class AudioGenerateRequest(BaseModel):
     language_code: str = "es"
     lesson_public_id: Optional[str] = None  # lesson public UUID or lesson_code
     exercise_index: Optional[int] = None
+    target_field: str = "main"  # main, statement, question, instruction, feedback_success, feedback_error
 
 
 class AudioResponse(BaseModel):
     public_id: str
     lesson_code: Optional[str] = None
     exercise_id: Optional[int] = None
+    target_field: str = "main"  # main, statement, question, instruction, feedback_success, feedback_error
     character_code: Optional[str] = None
     audio_url: Optional[str] = None
     transcript: Optional[str] = None

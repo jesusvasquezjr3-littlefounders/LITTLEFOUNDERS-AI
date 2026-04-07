@@ -1056,6 +1056,7 @@ async def list_audio(
             "public_id": str(seg.public_id),
             "lesson_code": lesson_code_map.get(seg.lesson_id),
             "exercise_id": seg.exercise_id,
+            "target_field": getattr(seg, 'target_field', 'main') or 'main',
             "character_code": char_code_map.get(seg.character_id),
             "audio_url": seg.audio_url,
             "transcript": seg.transcript,
@@ -1075,6 +1076,7 @@ async def upload_audio(
     file: UploadFile = File(...),
     lesson_public_id: Optional[str] = Form(None),  # lesson public UUID or lesson_code
     exercise_index: Optional[int] = Form(None),
+    target_field: str = Form("main"),  # main, statement, question, instruction, feedback_success, feedback_error
     character_code: Optional[str] = Form(None),
     language: str = Form("es"),
     tags: str = Form("[]"),
@@ -1132,9 +1134,15 @@ async def upload_audio(
     except json.JSONDecodeError:
         parsed_tags = []
 
+    # Validar target_field
+    valid_targets = {'main', 'statement', 'question', 'instruction', 'feedback_success', 'feedback_error'}
+    if target_field not in valid_targets:
+        target_field = 'main'
+
     segment = LessonAudioSegment(
         lesson_id=resolved_lesson_id,
         exercise_id=exercise_index,
+        target_field=target_field,
         character_id=character_id,
         audio_url=audio_url,
         transcript="",
@@ -1224,9 +1232,16 @@ async def generate_audio_tts(
     if char:
         character_id = char.id
 
+    # Validar target_field
+    valid_targets = {'main', 'statement', 'question', 'instruction', 'feedback_success', 'feedback_error'}
+    req_target = getattr(request, 'target_field', 'main') or 'main'
+    if req_target not in valid_targets:
+        req_target = 'main'
+
     segment = LessonAudioSegment(
         lesson_id=resolved_lesson_id,
         exercise_id=request.exercise_index,
+        target_field=req_target,
         character_id=character_id,
         audio_url=audio_url,
         transcript=request.text,
