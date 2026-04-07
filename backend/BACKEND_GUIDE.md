@@ -641,11 +641,9 @@ app.include_router(social_router)        # /social/*
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/dashboard/stats/{public_id}?requester_public_id=` | None* | User statistics (family-gated) |
-| `GET` | `/dashboard/recent-activity/{public_id}?requester_public_id=` | None* | Transaction history |
-| `GET` | `/dashboard/pending-tasks/{public_id}?requester_public_id=` | None* | Pending tasks list |
+| `GET` | `/dashboard/stats/{public_id}` | Bearer | User statistics (family-gated) |
 
-*\*Uses `requester_public_id` query param for family access control instead of Bearer token.*
+*Requester identity is derived from the Bearer token. Family access control verifies the authenticated user has permission to view the target user's data.*
 
 #### Lesson Engine (`/lesson-engine`)
 
@@ -996,8 +994,9 @@ The dashboard provides aggregated statistics for users, gated by **family-based 
 
 ```mermaid
 graph LR
-    REQ["GET /dashboard/stats/{public_id}<br/>?requester_public_id=xxx"]
-    REQ --> RESOLVE["Resolve both<br/>public_ids to Users"]
+    REQ["GET /dashboard/stats/{public_id}<br/>+ Bearer Token"]
+    REQ --> AUTH["Authenticate via JWT<br/>(get_current_user_from_token)"]
+    AUTH --> RESOLVE["Resolve target<br/>public_id to User"]
     RESOLVE --> ACCESS["verify_family_access()<br/>(self, tutor→child)"]
     ACCESS --> DATA["Return DashboardStats:<br/>lessons, minutes, points,<br/>streak, balance"]
 ```
@@ -1005,8 +1004,6 @@ graph LR
 | Endpoint | Returns |
 |---|---|
 | `/dashboard/stats/{id}` | Lessons completed, minutes studied, points, streak, balance |
-| `/dashboard/recent-activity/{id}` | List of recent transactions |
-| `/dashboard/pending-tasks/{id}` | Incomplete tasks from authorized creators |
 
 ---
 

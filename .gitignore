@@ -70,3 +70,6 @@ ADMIN_PANEL_IMPLEMENTACION.md
 
 # ts
 *.tsbuildinfo
+
+# agents
+.mcp.json

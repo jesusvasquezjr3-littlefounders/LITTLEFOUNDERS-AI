@@ -27,9 +27,7 @@ try:
     Base = declarative_base()
     
 except Exception as e:
-    print(f"Database initialization error: {e}")
-    print(f"Environment: VERCEL={os.getenv('VERCEL')}")
-    print(f"DB Host: {settings.database_hostname if hasattr(settings, 'database_hostname') else 'NOT SET'}")
+    print(f"Database initialization failed: {type(e).__name__}")
     raise
 
 

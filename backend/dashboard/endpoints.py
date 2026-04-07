@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from schemas import DashboardStats
+from auth.endpoints import get_current_user_from_token
 from auth.permissions import verify_family_access
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -17,13 +18,16 @@ def _resolve(db: Session, public_id: str) -> User:
 
 
 @router.get("/stats/{public_id}", response_model=DashboardStats)
-async def get_user_stats(public_id: str, requester_public_id: str, db: Session = Depends(get_db)):
+async def get_user_stats(
+    public_id: str,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db),
+):
     """Get dashboard statistics for a user (with family access control)"""
     user = _resolve(db, public_id)
-    requester = _resolve(db, requester_public_id)
-    
-    # Verify family access using internal IDs
-    verify_family_access(db, requester.id, user.id, allow_self=True)
+
+    # Verify family access using the authenticated user
+    verify_family_access(db, current_user.id, user.id, allow_self=True)
     
     return DashboardStats(
         lessons_completed=user.lessons_completed or 0,

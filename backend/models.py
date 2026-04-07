@@ -180,6 +180,7 @@ class User(Base):
     avatar_config = Column(JSON, nullable=True)
     username = Column(String(30), nullable=True, unique=True)
     max_streak = Column(Integer, default=0)  # Historical max streak
+    password_changed_at = Column(DateTime(timezone=True), nullable=True)
     
     # Relationships
     learning_streaks = relationship("UserLearningStreak", back_populates="user", cascade="all, delete-orphan")

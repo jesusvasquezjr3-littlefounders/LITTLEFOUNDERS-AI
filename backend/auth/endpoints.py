@@ -12,7 +12,7 @@ from auth.schemas import (
     SupabaseAuthRequest,
 )
 import requests
-from auth.utils import create_access_token, verify_token
+from auth.utils import create_access_token, verify_token, get_token_issued_at
 from config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -42,6 +42,13 @@ async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: S
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
+
+    # Reject tokens issued before the last password change
+    if user.password_changed_at:
+        token_iat = get_token_issued_at(token)
+        if token_iat and token_iat < user.password_changed_at.replace(tzinfo=None):
+            raise credentials_exception
+
     return user
 
 async def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
@@ -227,15 +234,22 @@ async def update_user_profile(
     except Exception as e:
         db.rollback()
         print(f"[ERROR] PATCH /auth/me failed: {type(e).__name__}: {e}")
-        raise HTTPException(status_code=500, detail=f"Error al actualizar perfil: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al actualizar perfil")
 
 
 @router.get("/family/{public_id}")
-async def get_user_family(public_id: str, db: Session = Depends(get_db)):
+async def get_user_family(
+    public_id: str,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db),
+):
     """
-    Get complete family information for a user (tutor, child)
+    Get complete family information for a user (tutor, child).
+    Requires authentication and family-level access.
     """
+    from auth.permissions import verify_family_access
     user = resolve_user_by_public_id(db, public_id)
+    verify_family_access(db, current_user.id, user.id, allow_self=True)
     
     family_data = {
         "user": {

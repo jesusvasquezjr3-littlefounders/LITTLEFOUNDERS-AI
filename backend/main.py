@@ -70,21 +70,24 @@ app.add_middleware(
     allow_headers=settings.cors_allow_headers,
 )
 
-# Security headers middleware for OAuth flows
+# Security headers middleware
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
 
-    # OAuth routes need popup support - use unsafe-none for development
-    # In production, this should be same-origin-allow-popups
+    # COOP: OAuth routes need popup support; everything else is same-origin
     if request.url.path.startswith("/auth/") or request.url.path.startswith("/api/auth/"):
-        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
     else:
-        # For non-auth routes, keep it permissive during development
-        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
 
-    # Don't enforce COEP for now as it can break OAuth flows
-    # response.headers["Cross-Origin-Embedder-Policy"] = settings.coep_policy
+    # Standard security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+
     return response
 
 # Include routers
@@ -111,25 +114,17 @@ async def root():
 async def health_check():
     """Health check endpoint to verify backend is running"""
     try:
-        # Test database connection
         from database import get_db
         from sqlalchemy import text
         db = next(get_db())
         db.execute(text("SELECT 1"))
         db_status = "connected"
-    except Exception as e:
-        db_status = f"error: {str(e)}"
-    
-    env = "render" if os.getenv("RENDER") else "local"
+    except Exception:
+        db_status = "error"
+
     return {
         "status": "ok",
         "database": db_status,
-        "environment": env,
-        "config": {
-            "db_host": settings.database_hostname,
-            "db_port": settings.database_port,
-            "db_name": settings.database_name
-        }
     }
 
 # Legacy file-based auth code removed for Vercel/Supabase migration
