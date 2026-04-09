@@ -7,23 +7,13 @@
         "register": "Registrate Gratis"
     },
     "hero": {
-        "badge": "Nueva actualización disponible",
-        "title_part1": "El Simulador de",
-        "rotating_topics": [
-            "Startup",
-            "Finanzas",
-            "Emprendimiento",
-            "Economía",
-            "Contabilidad"
-        ],
-        "title_part2": "para",
-        "rotating_words": [
-            "Niños",
-            "Adolescentes",
-            "Adultos"
-        ],
-        "subtitle": "Aprende <strong>finanzas reales</strong> construyendo un negocio virtual. Sin teoría aburrida, solo diversión práctica.",
-        "cta_button": "Probar Demo",
+        "badge": "✨ No requiere tarjeta • Acceso inmediato",
+        "title_part1": "De Jugador a",
+        "title_highlight": "Emprendedor:",
+        "title_part2": "Educación Financiera que Funciona",
+        "subtitle": "Aprende <strong>finanzas reales</strong>. Sin teoría aburrida, solo diversión práctica.",
+        "cta_button": "Comenzar Aventura",
+        "login_link": "Ya tengo cuenta",
         "cta_subtext": "✨ No requiere tarjeta • Acceso inmediato"
     },
     "problem": {
@@ -84,9 +74,9 @@
             "description": "Aprende jugando con misiones y desafíos divertidos."
         },
         "ai_functionality": {
-            "title": "Aprendizaje con IA",
-            "description": "Tu asistente personal inteligente para resolver dudas.",
-            "badge": "En desarrollo"
+            "title": "Tutor Inteligente",
+            "description": "Aprendizaje inteligente que te enseña a tu ritmo, a tu edad y personalizado para ti.",
+            "badge": "IA"
         },
         "more_stuff": {
             "title": "Y mucho más...",
@@ -125,5 +115,26 @@
     },
     "language": {
         "title": "Selecciona tu Idioma"
+    },
+    "minigame": {
+        "title": "El Corredor del Interés Compuesto",
+        "start": "Iniciar Juego",
+        "game_over": "¡Fin del juego!",
+        "score_label": "Capital: $",
+        "final_capital": "Capital Final: $",
+        "time_label": "Tiempo: ",
+        "play_again": "Jugar de nuevo",
+        "obstacle_1": "Gasto Hormiga",
+        "obstacle_2": "Comisiones Altas",
+        "obstacle_3": "Deuda Tarjeta",
+        "obstacle_4": "Compra Impulsiva",
+        "obstacle_5": "Inflación",
+        "obstacle_6": "Suscripción Inútil",
+        "powerup_1": "Interés Compuesto",
+        "powerup_2": "Diversificación",
+        "powerup_3": "Fondo Emergencia",
+        "powerup_4": "Ahorro Automático",
+        "powerup_5": "Presupuesto",
+        "powerup_6": "Inversión Temprana"
     }
 }

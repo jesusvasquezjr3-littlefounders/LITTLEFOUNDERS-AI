@@ -29,6 +29,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useUserLanguage } from "@/hooks/useUserLanguage";
 import { SupportedLanguage } from "@/i18n";
+import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
 const LandingPage = () => {
   const { t } = useTranslation('landing');
@@ -45,12 +46,6 @@ const LandingPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const [wordIndex, setWordIndex] = useState(0);
-  const rotatorWords = t('hero.rotating_words', { returnObjects: true }) as string[];
-
-  const [topicIndex, setTopicIndex] = useState(0);
-  const rotatorTopics = t('hero.rotating_topics', { returnObjects: true }) as string[];
-
   const [ctaWordIndex, setCtaWordIndex] = useState(0);
   const ctaWords = t('cta.rotating_words', { returnObjects: true }) as string[];
 
@@ -58,19 +53,13 @@ const LandingPage = () => {
 
   useEffect(() => {
     const wordInterval = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % rotatorWords.length);
       setCtaWordIndex((prev) => (prev + 1) % ctaWords.length);
-    }, 4000); // 4 seconds for audiencies (Kids, Teens, Adults)
-
-    const topicInterval = setInterval(() => {
-      setTopicIndex((prev) => (prev + 1) % rotatorTopics.length);
-    }, 2800); // 2.8 seconds for topics (Startup, Finance, etc)
+    }, 4000); 
 
     return () => {
       clearInterval(wordInterval);
-      clearInterval(topicInterval);
     };
-  }, [rotatorWords.length, ctaWords.length, rotatorTopics.length]);
+  }, [ctaWords.length]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,16 +96,10 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.lessons')}</a>
               <a href="#faq" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.faq')}</a>
 
-              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-6 pr-6">
+              <div className="flex items-center gap-2 ml-4">
                 <ThemeToggle />
+                <LanguageSelector variant="simple" />
               </div>
-
-              <Button asChild variant="outline" className="border-pink-200 text-pink-700 hover:bg-pink-50 hover:text-pink-800 dark:border-pink-800 dark:text-pink-300 dark:hover:bg-pink-900/30 dark:hover:text-pink-200 rounded-full px-6 bg-transparent">
-                <Link to="/login">{t('nav.login')}</Link>
-              </Button>
-              <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-full px-6">
-                <Link to="/register">{t('nav.register')}</Link>
-              </Button>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -133,24 +116,18 @@ const LandingPage = () => {
             <a href="#features" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.lessons')}</a>
             <a href="#faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('faq.title')}</a>
 
-            <div className="flex items-center justify-center py-4 border-b border-gray-50 dark:border-slate-800">
-              <ThemeToggle />
-            </div>
-
             <div className="flex flex-col gap-3 mt-2">
-              <Button asChild variant="secondary" className="w-full justify-center border-pink-100 text-pink-700 dark:bg-slate-800 dark:text-pink-300 dark:border-slate-700">
-                <Link to="/login">{t('nav.login')}</Link>
-              </Button>
-              <Button asChild className="w-full justify-center bg-pink-600 hover:bg-pink-700 text-white">
-                <Link to="/register">{t('nav.register')}</Link>
-              </Button>
+              <div className="flex items-center justify-center py-2 gap-4">
+                <ThemeToggle />
+                <LanguageSelector variant="simple" />
+              </div>
             </div>
           </div>
         )}
       </nav>
 
       {/* --- HERO SECTION --- */}
-      <header className="relative pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
+      <header className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
 
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
@@ -162,7 +139,7 @@ const LandingPage = () => {
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
 
             {/* Copy (Left) */}
-            <div className="flex-1 text-center lg:text-left space-y-8 max-w-2xl">
+            <div className="flex-1 text-center lg:text-left space-y-5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 text-sm font-bold animate-fade-in-up">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
@@ -171,24 +148,13 @@ const LandingPage = () => {
                 {t('hero.badge')}
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight transition-colors">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-[1.15] tracking-tight transition-colors max-w-4xl">
                 {t('hero.title_part1')}{' '}
-                <span className="inline-flex overflow-hidden align-bottom">
-                  <span
-                    key={topicIndex}
-                    className="animate-fade-in-up text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 block min-w-[300px] sm:min-w-[420px] lg:min-w-[580px]"
-                  >
-                    {rotatorTopics[topicIndex]}
-                  </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
+                  {t('hero.title_highlight')}
                 </span>{' '}
-                {t('hero.title_part2')}{' '}
-                <span className="inline-flex overflow-hidden align-bottom">
-                  <span
-                    key={wordIndex}
-                    className="animate-fade-in-up text-pink-600 dark:text-pink-400 block min-w-[200px] sm:min-w-[280px] lg:min-w-[380px]"
-                  >
-                    {rotatorWords[wordIndex]}.
-                  </span>
+                <span className="text-slate-800 dark:text-slate-100">
+                  {t('hero.title_part2')}
                 </span>
               </h1>
 
@@ -196,14 +162,24 @@ const LandingPage = () => {
                 <Trans i18nKey="hero.subtitle" ns="landing" />
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
-                <Button asChild size="lg" className="w-full sm:w-auto px-8 py-7 text-xl rounded-2xl bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all group">
+              <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-4">
+                {/* Main Adventure Button - Improved contrast in Light Mode */}
+                <Button asChild size="lg" className="h-16 px-10 text-lg rounded-full border border-slate-900/10 dark:border-white/40 bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.08)] hover:bg-white/40 hover:scale-105 transition-all duration-300 group overflow-hidden border-t-white/60">
                   <Link to="/demo">
-                    {t('hero.cta_button')}
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <span className="relative z-10 flex items-center font-bold text-gray-900 dark:text-white">
+                      {t('hero.cta_button')}
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
                 </Button>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('hero.cta_subtext')}</p>
+                
+                {/* Secondary Login Button - Added shadow for depth */}
+                <Button asChild variant="ghost" size="lg" className="h-16 px-10 text-lg rounded-full border border-gray-200/60 dark:border-white/10 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md shadow-[0_4px_20px_0_rgba(0,0,0,0.04)] hover:bg-gray-100/50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300">
+                  <Link to="/login" className="font-bold text-gray-700 dark:text-gray-200">
+                    {t('hero.login_link')}
+                  </Link>
+                </Button>
               </div>
             </div>
 

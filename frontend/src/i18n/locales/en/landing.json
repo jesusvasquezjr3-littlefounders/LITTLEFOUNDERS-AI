@@ -12,23 +12,13 @@
         "register": "Sign Up Free"
     },
     "hero": {
-        "badge": "New update available",
-        "title_part1": "The",
-        "rotating_topics": [
-            "Startup",
-            "Finance",
-            "Entrepreneurship",
-            "Economy",
-            "Accounting"
-        ],
-        "title_part2": "Simulator for",
-        "rotating_words": [
-            "Kids",
-            "Teens",
-            "Adults"
-        ],
-        "subtitle": "Learn <strong>real finances</strong> by building a virtual business. No boring theory, just practical fun.",
-        "cta_button": "Try Demo",
+        "badge": "✨ No credit card required • Instant access",
+        "title_part1": "From Gamer to",
+        "title_highlight": "Entrepreneur:",
+        "title_part2": "Financial Education that Works",
+        "subtitle": "Learn <strong>real finances</strong>. No boring theory, just practical fun.",
+        "cta_button": "Start Adventure",
+        "login_link": "Already have an account?",
         "cta_subtext": "✨ No credit card required • Instant access"
     },
     "problem": {
@@ -89,9 +79,9 @@
             "description": "Learn by playing with fun missions and challenges."
         },
         "ai_functionality": {
-            "title": "AI Learning",
-            "description": "Your intelligent personal assistant to solve doubts.",
-            "badge": "In Development"
+            "title": "Intelligent Tutor",
+            "description": "Intelligent learning that teaches at your own pace, for your age, and personalized for you.",
+            "badge": "AI"
         },
         "more_stuff": {
             "title": "And much more...",
@@ -130,5 +120,26 @@
     },
     "language": {
         "title": "Select Language"
+    },
+    "minigame": {
+        "title": "The Compound Interest Runner",
+        "start": "Start Game",
+        "game_over": "Game Over!",
+        "score_label": "Capital: $",
+        "final_capital": "Final Capital: $",
+        "time_label": "Time: ",
+        "play_again": "Play Again",
+        "obstacle_1": "Latte Factor",
+        "obstacle_2": "High Fees",
+        "obstacle_3": "Card Debt",
+        "obstacle_4": "Impulse Buy",
+        "obstacle_5": "Inflation",
+        "obstacle_6": "Useless Sub",
+        "powerup_1": "Compound Interest",
+        "powerup_2": "Diversification",
+        "powerup_3": "Emergency Fund",
+        "powerup_4": "Auto Savings",
+        "powerup_5": "Budgeting",
+        "powerup_6": "Early Investing"
     }
 }

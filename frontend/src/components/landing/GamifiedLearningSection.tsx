@@ -1,165 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Player, PlayerRef } from "@remotion/player";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
-import {
-    GamifiedLearningComposition,
-    type GamifiedLearningProps,
-    TOTAL_FRAMES,
-} from "./GamifiedLearningComposition";
-
-// Composition canvas dimensions (internal reference for Remotion scaling)
-const COMP_W = 1000;
-const COMP_H = 750;
-const FPS_DESKTOP = 30;
-const FPS_MOBILE = 15;
-
-// ─── Animated player wrapper ──────────────────────────────────────────────────
-function AnimPlayer({ inputProps }: { inputProps: GamifiedLearningProps }) {
-    const playerRef = useRef<PlayerRef>(null);
-    const wrapperRef = useRef<HTMLDivElement>(null);
-
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768);
-        check();
-        window.addEventListener("resize", check);
-        return () => window.removeEventListener("resize", check);
-    }, []);
-
-    // Offscreen Pause/Resume: stop ALL computation when not visible
-    const isVisibleRef = useRef(false);
-    useEffect(() => {
-        const el = wrapperRef.current;
-        if (!el) return;
-        const obs = new IntersectionObserver(
-            ([entry]) => {
-                isVisibleRef.current = entry.isIntersecting;
-                try {
-                    if (entry.isIntersecting) {
-                        playerRef.current?.play();
-                    } else {
-                        playerRef.current?.pause();
-                    }
-                } catch (_) { }
-            },
-            { threshold: 0.05 }
-        );
-        obs.observe(el);
-        return () => obs.disconnect();
-    }, []);
-
-    // Scroll Pause: pause rendering while the user is actively scrolling
-    useEffect(() => {
-        let scrollTimeout: NodeJS.Timeout;
-        const handleScroll = () => {
-            if (!isVisibleRef.current) return;
-            try { playerRef.current?.pause(); } catch (_) { }
-
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                if (isVisibleRef.current) {
-                    try { playerRef.current?.play(); } catch (_) { }
-                }
-            }, 150); // Resume 150ms after scroll stops
-        };
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            clearTimeout(scrollTimeout);
-        };
-    }, []);
-
-    const fps = isMobile ? FPS_MOBILE : FPS_DESKTOP;
-    const scaledFrames = isMobile
-        ? Math.round(TOTAL_FRAMES * (FPS_MOBILE / FPS_DESKTOP))
-        : TOTAL_FRAMES;
-
-    return (
-        <div
-            ref={wrapperRef}
-            style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: `${COMP_W} / ${COMP_H}`,
-            }}
-        >
-            <Player
-                ref={playerRef}
-                component={GamifiedLearningComposition}
-                durationInFrames={scaledFrames}
-                fps={fps}
-                compositionWidth={COMP_W}
-                compositionHeight={COMP_H}
-                inputProps={inputProps}
-                loop
-                controls={false}
-                clickToPlay={false}
-                allowFullscreen={false}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "block",
-                    background: "transparent",
-                }}
-                acknowledgeRemotionLicense
-            />
-        </div>
-    );
-}
+import CompoundInterestRunner from "./CompoundInterestRunner";
 
 // ─── Section (drop-in replacement for the old solution section) ───────────────
 export function GamifiedLearningSection() {
     const { t } = useTranslation("landing");
-
-    // We need to know if we are in dark mode to pass it down to the Remotion composition
-    const [isDark, setIsDark] = useState(false);
-
-    useEffect(() => {
-        // Initial check
-        setIsDark(document.documentElement.classList.contains("dark"));
-
-        // Setup an observer to watch for class changes on the html element
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === "class") {
-                    setIsDark(document.documentElement.classList.contains("dark"));
-                }
-            });
-        });
-
-        observer.observe(document.documentElement, { attributes: true });
-        return () => observer.disconnect();
-    }, []);
 
     const benefits = [
         t("solution.benefit1"),
         t("solution.benefit2"),
         t("solution.benefit3"),
     ];
-
-    const inputProps: GamifiedLearningProps = {
-        step1_label: t("solution.animation.step1_label"),
-        step2_label: t("solution.animation.step2_label"),
-        step3_label: t("solution.animation.step3_label"),
-        step4_label: t("solution.animation.step4_label"),
-        step5_label: t("solution.animation.step5_label"),
-        challenge: t("solution.animation.challenge"),
-        option_a: t("solution.animation.option_a"),
-        option_b: t("solution.animation.option_b"),
-        option_c: t("solution.animation.option_c"),
-        xp_label: t("solution.animation.xp_label"),
-        level_label: t("solution.animation.level_label"),
-        coins_label: t("solution.animation.coins_label"),
-        games_title: t("solution.animation.games_title"),
-        sim_title: t("solution.animation.sim_title"),
-        ai_title: t("solution.animation.ai_title"),
-        bank_title: t("solution.animation.bank_title"),
-        ui_timeline: t("solution.animation.ui_timeline"),
-        ui_preview: t("solution.animation.ui_preview"),
-        ui_engine: t("solution.animation.ui_engine"),
-        isDarkMode: isDark,
-    };
 
     return (
         <section className="relative py-16 md:py-24 bg-gray-50 dark:bg-black text-gray-900 dark:text-white overflow-hidden transition-colors duration-500">
@@ -222,13 +74,9 @@ export function GamifiedLearningSection() {
                         </div>
                     </div>
 
-                    {/* ── Remotion Player ── */}
-                    <div className="flex-1 w-full order-2 relative min-h-[400px] md:min-h-[600px] pointer-events-none">
-                        {/* We use an absolutely positioned wrapper that deliberately overflows its parent container 
-                            so the isometric canvas can be large enough that no 3D elements hit the edge and look "cropped" */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] sm:w-[130%] md:w-[180%] lg:w-[160%]">
-                            <AnimPlayer inputProps={inputProps} />
-                        </div>
+                    {/* ── Mini-Game Container ── */}
+                    <div className="flex-1 w-full order-2 relative min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4 lg:p-0">
+                        <CompoundInterestRunner />
                     </div>
 
                 </div>
