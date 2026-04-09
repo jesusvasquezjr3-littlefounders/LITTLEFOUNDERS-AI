@@ -137,7 +137,7 @@ export function GamifiedSidebar({ collapsed, onToggle, className }: GamifiedSide
                         "hover:bg-white/60 dark:hover:bg-slate-800/60",
                         !collapsed && "bg-blue-50/80 dark:bg-blue-900/40"
                     )}
-                    title={!collapsed ? "Contraer barra" : "Expandir barra"}
+                    title={!collapsed ? t('sidebar.collapse') : t('sidebar.expand')}
                 >
                     <ChevronsLeftRight className={cn(
                         "w-5 h-5 text-slate-500 transition-transform duration-300",

@@ -193,9 +193,7 @@ const LandingPage = () => {
               </h1>
 
               <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed transition-colors">
-                <Trans i18nKey="hero.subtitle" ns="landing">
-                  Aprende <strong>finanzas reales</strong> construyendo un negocio virtual. Sin teoría aburrida, solo diversión práctica.
-                </Trans>
+                <Trans i18nKey="hero.subtitle" ns="landing" />
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
@@ -283,9 +281,7 @@ const LandingPage = () => {
               <span className="text-gray-400 dark:text-gray-500 decoration-gray-300 dark:decoration-gray-600 line-through decoration-4">{t('problem.title_part2')}</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed transition-colors">
-              <Trans i18nKey="problem.subtitle" ns="landing">
-                Es la historia de siempre: graduarse sabiendo resolver <i>trinomios cuadrados perfectos</i>, pero sin saber cómo funciona una tarjeta de crédito, un presupuesto o una inversión.
-              </Trans>
+              <Trans i18nKey="problem.subtitle" ns="landing" />
             </p>
           </div>
 
@@ -393,9 +389,7 @@ const LandingPage = () => {
             <AccordionItem value="item-1" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
               <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q1')}</AccordionTrigger>
               <AccordionContent className="text-gray-600 dark:text-gray-400">
-                <Trans i18nKey="faq.a1" ns="landing">
-                  Está diseñado principalmente para niños y adolescentes de <strong>5 a 17 años</strong>. Sin embargo, muchos adultos nos han dicho que también aprenden mucho con las bases.
-                </Trans>
+                <Trans i18nKey="faq.a1" ns="landing" />
               </AccordionContent>
             </AccordionItem>
 
@@ -409,9 +403,7 @@ const LandingPage = () => {
             <AccordionItem value="item-3" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
               <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q3')}</AccordionTrigger>
               <AccordionContent className="text-gray-600 dark:text-gray-400">
-                <Trans i18nKey="faq.a3" ns="landing">
-                  Actualmente estamos en una <strong>Beta Abierta Gratuita</strong>. Puedes registrarte y usar todas las funciones sin costo. En el futuro tendremos planes premium, pero siempre habrá una capa gratuita.
-                </Trans>
+                <Trans i18nKey="faq.a3" ns="landing" />
               </AccordionContent>
             </AccordionItem>
 
