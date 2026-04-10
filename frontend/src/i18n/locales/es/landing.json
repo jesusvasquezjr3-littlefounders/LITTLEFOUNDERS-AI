@@ -1,8 +1,8 @@
 {
     "nav": {
-        "why": "¿Por qué?",
-        "lessons": "Lecciones",
+        "families": "Familias",
         "faq": "Dudas",
+        "pricing": "Precios",
         "login": "Iniciar Sesión",
         "register": "Registrate Gratis"
     },
@@ -136,5 +136,30 @@
         "powerup_4": "Ahorro Automático",
         "powerup_5": "Presupuesto",
         "powerup_6": "Inversión Temprana"
+    },
+    "pricing": {
+        "title": "Precios",
+        "subtitle": "Comienza gratis hoy. Mejora tu experiencia conforme tu familia crece.",
+        "freemium_title": "Freemium",
+        "freemium_badge": "Ahora Disponible",
+        "freemium_price": "$0",
+        "freemium_period": "/ mes",
+        "freemium_desc": "Acceso completo e ilimitado a todas las funcionalidades",
+        "freemium_feature_1": "Acceso a todas las lecciones interactivas",
+        "freemium_feature_2": "Acceso a todo el catalogo de videojuegos",
+        "freemium_feature_3": "Acceso Ilimitado al Tutor Inteligente",
+        "freemium_feature_4": "Acceso a funcionalidades familiares",
+        "freemium_feature_5": "Sin anuncios",
+        "freemium_btn": "Plan Actual",
+        "coming_soon": "Próximamente",
+        "very_soon": "Muy Pronto",
+        "tier2_title": "Pro Family",
+        "tier2_feature_1": "Múltiples perfiles de niños",
+        "tier2_feature_2": "Tarjetas de débito reales",
+        "tier2_feature_3": "Análisis avanzado tutor",
+        "tier3_title": "Ultra Family",
+        "tier3_feature_1": "API & Integraciones LMS",
+        "tier3_feature_2": "Panel para Maestros",
+        "tier3_feature_3": "Soporte Dedicado"
     }
 }

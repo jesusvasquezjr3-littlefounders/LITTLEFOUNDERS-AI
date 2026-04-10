@@ -5,9 +5,9 @@
         "notes": "English translations pending. Using Spanish fallback."
     },
     "nav": {
-        "why": "Why?",
-        "lessons": "Lessons",
+        "families": "Families",
         "faq": "FAQ",
+        "pricing": "Pricing",
         "login": "Log In",
         "register": "Sign Up Free"
     },
@@ -141,5 +141,30 @@
         "powerup_4": "Auto Savings",
         "powerup_5": "Budgeting",
         "powerup_6": "Early Investing"
+    },
+    "pricing": {
+        "title": "Pricing",
+        "subtitle": "Start for free today. Upgrade your experience as your family grows.",
+        "freemium_title": "Freemium",
+        "freemium_badge": "Now Available",
+        "freemium_price": "$0",
+        "freemium_period": "/ month",
+        "freemium_desc": "Full and unlimited access to all features",
+        "freemium_feature_1": "Access to all interactive lessons",
+        "freemium_feature_2": "Access to the entire game catalog",
+        "freemium_feature_3": "Unlimited Access to the AI Tutor",
+        "freemium_feature_4": "Access to family features",
+        "freemium_feature_5": "Ad-free experience",
+        "freemium_btn": "Current Plan",
+        "coming_soon": "Coming Soon",
+        "very_soon": "Very Soon",
+        "tier2_title": "Pro Family",
+        "tier2_feature_1": "Multiple child profiles",
+        "tier2_feature_2": "Real debit cards",
+        "tier2_feature_3": "Advanced tutor analytics",
+        "tier3_title": "Ultra Family",
+        "tier3_feature_1": "API & LMS Integrations",
+        "tier3_feature_2": "Teacher Dashboard",
+        "tier3_feature_3": "Dedicated Support"
     }
 }

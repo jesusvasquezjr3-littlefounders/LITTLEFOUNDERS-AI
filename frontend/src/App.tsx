@@ -12,6 +12,9 @@ import { Analytics } from '@vercel/analytics/react';
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import LandingPage from "./pages/LandingPage";
+import FamiliesPage from "./pages/landing/FamiliesPage";
+import FaqPage from "./pages/landing/FaqPage";
+import PricingPage from "./pages/landing/PricingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bye from "./pages/Bye";
@@ -82,6 +85,9 @@ const App = () => (
               <ReportFAB />
               <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/families" element={<FamiliesPage />} />
+                <Route path="/faq" element={<FaqPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Index />

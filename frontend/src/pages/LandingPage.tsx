@@ -13,18 +13,13 @@ import {
   Layers
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LandingLayout } from "../components/landing/LandingLayout";
 
 import { DinoCharacter } from "../components/demo/DinoCharacter";
 import { DinaCharacter } from "../components/demo/DinaCharacter";
 import DrRhoCharacter from "../components/demo/DrRhoCharacter";
 import ZaraVexCharacter from "../components/demo/ZaraVexCharacter";
 import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useUserLanguage } from "@/hooks/useUserLanguage";
@@ -35,16 +30,6 @@ const LandingPage = () => {
   const { t } = useTranslation('landing');
   const { languages, isCurrentLanguage } = useLanguage();
   const { saveLanguagePreference } = useUserLanguage();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const [ctaWordIndex, setCtaWordIndex] = useState(0);
   const ctaWords = t('cta.rotating_words', { returnObjects: true }) as string[];
@@ -76,56 +61,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 font-sans selection:bg-pink-100 selection:text-pink-900 dark:selection:bg-pink-900 dark:selection:text-pink-100 transition-colors duration-300">
-
-      {/* --- NAVIGATION --- */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen
-        ? 'liquid-glass-subtle py-3'
-        : 'bg-transparent py-5'
-        }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <img src="/logo-sized.png" alt="LittleFounders" className="h-10 w-auto object-contain dark:brightness-110" />
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#problem" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.why')}</a>
-              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.lessons')}</a>
-              <a href="#faq" className="text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 font-medium transition-colors">{t('nav.faq')}</a>
-
-              <div className="flex items-center gap-2 ml-4">
-                <ThemeToggle />
-                <LanguageSelector variant="simple" />
-              </div>
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <button className="md:hidden text-gray-700 dark:text-gray-200" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-xl">
-            <a href="#problem" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.why')}</a>
-            <a href="#features" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.lessons')}</a>
-            <a href="#faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('faq.title')}</a>
-
-            <div className="flex flex-col gap-3 mt-2">
-              <div className="flex items-center justify-center py-2 gap-4">
-                <ThemeToggle />
-                <LanguageSelector variant="simple" />
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <LandingLayout>
       {/* --- HERO SECTION --- */}
       <header className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
 
@@ -356,86 +292,8 @@ const LandingPage = () => {
 
 
 
-      {/* --- FAQ SECTION --- */}
-      <section id="faq" className="py-24 bg-pink-50/50 dark:bg-slate-950 transition-colors duration-500">
-        <div className="max-w-2xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-gray-900 dark:text-white transition-colors">{t('faq.title')}</h2>
 
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            <AccordionItem value="item-1" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
-              <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q1')}</AccordionTrigger>
-              <AccordionContent className="text-gray-600 dark:text-gray-400">
-                <Trans i18nKey="faq.a1" ns="landing" />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
-              <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q2')}</AccordionTrigger>
-              <AccordionContent className="text-gray-600 dark:text-gray-400">
-                {t('faq.a2')}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
-              <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q3')}</AccordionTrigger>
-              <AccordionContent className="text-gray-600 dark:text-gray-400">
-                <Trans i18nKey="faq.a3" ns="landing" />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="bg-white dark:bg-slate-900 border-none rounded-2xl shadow-sm px-4 dark:shadow-none transition-colors">
-              <AccordionTrigger className="text-lg font-medium text-gray-800 dark:text-gray-200 hover:no-underline hover:text-pink-600 dark:hover:text-pink-400">{t('faq.q4')}</AccordionTrigger>
-              <AccordionContent className="text-gray-600 dark:text-gray-400">
-                {t('faq.a4')}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </section>
-
-
-      {/* --- CTA / FOOTER --- */}
-      <section className="py-24 bg-white dark:bg-slate-950 text-center transition-colors duration-500">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-8 transition-colors">
-            {t('cta.title_part1')} <br />
-            <span className="inline-block relative">
-              <span key={ctaWordIndex} className="animate-fade-in-up inline-block text-pink-600 dark:text-pink-400">
-                {ctaWords[ctaWordIndex]}.
-              </span>
-            </span>
-          </h2>
-          <p className="text-xl text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto transition-colors">
-            {t('cta.subtitle')}
-          </p>
-          <Button asChild size="lg" className="px-12 py-8 text-2xl rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-2xl hover:shadow-pink-500/25 transition-all transform hover:scale-105">
-            <Link to="/register">
-              {t('cta.button')}
-            </Link>
-          </Button>
-          <p className="mt-6 text-sm text-gray-400 dark:text-gray-500">{t('cta.disclaimer')}</p>
-        </div>
-      </section>
-
-      <footer className="bg-gray-900 dark:bg-black border-t border-gray-800 dark:border-slate-800 py-12 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2 opacity-80 grayscale hover:grayscale-0 transition-all">
-            <img src="/logo-sized.png" alt="LittleFounders" className="h-8 w-auto object-contain dark:invert dark:brightness-200" />
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
-              <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.terms')}</Link>
-              <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.privacy')}</Link>
-              <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-200">{t('footer.contact')}</Link>
-            </div>
-          </div>
-          <div className="text-sm text-gray-400 dark:text-gray-600">
-            {t('footer.copyright')}
-          </div>
-        </div>
-      </footer>
-
-    </div>
+    </LandingLayout>
   );
 };
 
