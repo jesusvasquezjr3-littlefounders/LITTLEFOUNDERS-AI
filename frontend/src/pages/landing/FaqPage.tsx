@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import { DemoShowreelPlayer } from '@/components/demo/DemoShowreelPlayer';
 import { useTranslation, Trans } from 'react-i18next';
-import { useSound } from '@/contexts/SoundContext';
 
 import {
   Accordion,
@@ -15,17 +14,7 @@ import { ChevronDown, Bot, Sparkles, Globe, ShieldCheck } from "lucide-react";
 export default function FaqPage() {
     const { t } = useTranslation('landing');
     const playerRef = useRef<any>(null);
-    const { playBGM, stopBGM } = useSound();
 
-    useEffect(() => {
-        // Play the same background music used in lessons for consistency
-        playBGM('/sounds/edu/background.mp3', { volume: 0.2 });
-
-        return () => {
-            // Stop BGM with a fade out when leaving the demo page
-            stopBGM({ fade: true, fadeDuration: 1000 });
-        };
-    }, [playBGM, stopBGM]);
 
     return (
         <LandingLayout>

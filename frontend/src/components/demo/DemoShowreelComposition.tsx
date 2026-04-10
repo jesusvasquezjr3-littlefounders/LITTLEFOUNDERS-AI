@@ -5,7 +5,6 @@ import {
     spring,
     useCurrentFrame,
     useVideoConfig,
-    Easing,
     Img,
 } from "remotion";
 import { DinoCharacter } from "@/components/demo/DinoCharacter";
@@ -13,604 +12,619 @@ import { DinaCharacter } from "@/components/demo/DinaCharacter";
 import { DrRhoCharacter } from "@/components/demo/DrRhoCharacter";
 import { ZaraVexCharacter } from "@/components/demo/ZaraVexCharacter";
 
+// ─── Props ────────────────────────────────────────────────────────────────────
 export interface DemoShowreelProps {
     isDarkMode: boolean;
     isMobile?: boolean;
-    s_hook_title: string; s_hook_subtitle: string;
-    s_lesson_title: string; s_lesson_question: string; s_lesson_opt_a: string; s_lesson_opt_b: string; s_lesson_opt_c: string; s_lesson_opt_d: string; s_lesson_badge_xp: string; s_lesson_badge_level: string;
-    s_games_title: string; s_games_badge_1: string; s_games_badge_2: string; s_games_badge_3: string;
-    s_bank_title: string; s_bank_balance_label: string; s_bank_limit_1: string; s_bank_limit_2: string; s_bank_badge: string;
-    s_ai_title: string; s_ai_user_msg: string; s_ai_bot_msg: string;
-    s_char_liruf: string; s_char_dina: string; s_char_rho: string; s_char_zara: string;
-    s_cta_headline: string; s_cta_sub: string; s_cta_button: string;
-    s_stat_lessons: string; s_stat_games: string; s_stat_ai: string; s_stat_bank: string;
-    s_ai_typing: string; s_game_lemonade: string; s_game_market: string;
-    s_game_stocks: string; s_game_factory: string; s_game_farm: string;
-    s_game_risk: string; s_badge_win: string; s_badge_money: string;
-    s_badge_parental: string; s_card_name: string; s_card_number: string;
-    s_social_title: string; s_social_streak: string; s_social_incentive: string; s_social_privacy: string;
-    s_dash_lessons: string; s_dash_minutes: string; s_dash_points: string; s_dash_streak: string;
-    s_ai_feature_custom: string; s_ai_feature_guided: string; s_ai_feature_adaptive: string; s_ai_feature_modern: string;
-    s_lesson_feature_analogies: string; s_lesson_sub_analogies: string;
-    s_lesson_feature_interactive: string; s_lesson_sub_interactive: string;
-    s_lesson_feature_logic: string; s_lesson_sub_logic: string;
-    s_lesson_feature_progress: string; s_lesson_sub_progress: string;
-    s_lesson_analogy_1: string; s_lesson_analogy_2: string;
-    s_games_feature_edu: string; s_games_sub_edu: string;
-    s_games_feature_strategy: string; s_games_sub_strategy: string;
-    s_games_feature_rewards: string; s_games_sub_rewards: string;
-    s_games_feature_family: string; s_games_sub_family: string;
+    s_phase1_q1: string; s_phase1_q2: string; s_phase1_q3: string; s_phase1_glitch: string;
+    s_phase2_line1: string; s_phase2_line2: string; s_phase2_highlight2: string;
+    s_phase2_line3: string; s_phase2_line4: string; s_phase2_highlight4: string; s_phase2_line4b: string;
+    s_phase3_line1: string; s_phase3_line2: string; s_phase3_highlight2: string;
+    s_phase3_line3: string; s_phase3_highlight3: string;
+    s_phase3_line4: string; s_phase3_line5: string; s_phase3_highlight5: string;
+    s_phase4_line1: string; s_phase4_line2: string; s_phase4_highlight2: string;
+    s_phase4_line3: string; s_phase4_line4: string; s_phase4_brand: string;
+    s_cta_button: string; s_cta_headline: string; s_cta_sub: string;
     onCtaClick?: () => void;
 }
 
-const LF = { primary: "#5b6cf8", purple: "#9333ea", pink: "#ec4899", green: "#22c55e", gold: "#f59e0b", cyan: "#06b6d4" };
+// 5 phases × 300 frames each = 1500 total @ 30fps = 50s
+export const TOTAL_FRAMES_SHOWREEL = 1500;
+
+// ─── Phase boundaries (global frames) ─────────────────────────────────────────
+const P1 = 0;
+const P2 = 300;
+const P3 = 600;
+const P4 = 900;
+const P5 = 1200;
+
+// ─── Brand Colors ─────────────────────────────────────────────────────────────
+const LF = {
+    primary:  "#5b6cf8",
+    purple:   "#9333ea",
+    pink:     "#ec4899",
+    green:    "#22c55e",
+    gold:     "#f59e0b",
+    cyan:     "#06b6d4",
+};
 const C = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
-const EZ = Easing.bezier(0.8, 0, 0.2, 1); // Aggressive Apple-style easing (slow start, lightning fast middle, slow end)
 
-// Theme helpers
-function bg(d: boolean, m?: boolean) {
-    if (m) return d ? `rgba(20, 24, 40, 0.92)` : `rgba(248, 250, 252, 0.94)`;
-    return d
-        ? "linear-gradient(165deg, rgba(30, 41, 59, 0.4), rgba(91, 108, 248, 0.18), rgba(147, 51, 234, 0.15), rgba(15, 23, 42, 0.6))"
-        : "linear-gradient(165deg, rgba(255, 255, 255, 0.7), rgba(91, 108, 248, 0.12), rgba(219, 39, 119, 0.1), rgba(255, 255, 255, 0.8))";
-}
-function txt(d: boolean) { return d ? "#fff" : "#000"; }
-function border(d: boolean) { return d ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.5)"; }
-function shadow(d: boolean, m?: boolean) {
-    if (m) return d ? `0 10px 20px rgba(0,0,0,0.8)` : `0 10px 20px rgba(0,0,0,0.1)`;
-    return d
-        ? `0 50px 100px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.1), 0 0 50px rgba(91, 108, 248, 0.2)`
-        : `0 50px 100px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.5), 0 0 50px rgba(91, 108, 248, 0.1)`;
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function tc(dark: boolean) { return dark ? "#f1f5f9" : "#1e1b4b"; }
+
+// Highlight span with gradient text
+function HL({ text, g }: { text: string; g: [string, string] }) {
+    return (
+        <span style={{
+            background: `linear-gradient(135deg, ${g[0]}, ${g[1]})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 900, fontStyle: "italic",
+        }}>{text}</span>
+    );
 }
 
-// ─── APPLE-STYLE PANEL ──────────────────────────────────────────────────────
-const PromoPanel: React.FC<{
-    children: React.ReactNode; width: number; height: number;
-    delayIn: number; delayOut: number; actT: number; dark: boolean;
-    isMobile?: boolean;
-}> = ({ children, width, height, delayIn, delayOut, actT, dark, isMobile }) => {
+// ─── Ambient Color Blob — provides color for backdrop-filter to blur ───────────
+const Blob: React.FC<{
+    x: number; y: number; w: number; h: number;
+    color: string; blur?: number; opacity?: number; z?: number;
+}> = ({ x, y, w, h, color, blur = 120, opacity = 1, z = 0 }) => (
+    <div style={{
+        position: "absolute",
+        left: x, top: y, width: w, height: h,
+        background: `radial-gradient(ellipse at 50% 50%, ${color} 0%, transparent 70%)`,
+        filter: `blur(${blur}px)`,
+        opacity,
+        pointerEvents: "none",
+        zIndex: z,
+    }} />
+);
+
+// ─── Ultra Premium Liquid Glass Card ─────────────────────────────────────────
+// NOTE: all startFrame values passed here MUST be global (absolute) frame numbers.
+const GlassCard: React.FC<{
+    children: React.ReactNode;
+    globalStart: number;     // ← global frame at which this card enters
+    dark: boolean;
+    accent: string;          // hex color for left bar
+    accentRgb: string;       // "r,g,b" for glow
+}> = ({ children, globalStart, dark, accent, accentRgb }) => {
+    const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
 
-    // Aggressive Spring In
-    const sprIn = spring({ frame: actT - delayIn, fps, config: { damping: 14, stiffness: 120, mass: 1 } });
+    // localT is frame distance FROM this card's own start — always correct
+    const localT = frame - globalStart;
+    if (localT < 0) return null;
 
-    // Smooth Ease Out (zoom past camera)
-    const outT = Math.max(0, actT - delayOut);
-    const zOut = interpolate(outT, [0, 30], [0, 2000], { easing: Easing.in(Easing.exp), ...C });
-    const opOut = interpolate(outT, [10, 25], [1, 0], C);
+    const spr = spring({ frame: localT, fps, config: { damping: 24, stiffness: 220, mass: 0.8 } });
+    const yIn  = interpolate(spr, [0, 1], [32, 0]);
+    const opIn = interpolate(localT, [0, 10], [0, 1], C);
+    const sc   = interpolate(spr, [0, 1], [0.96, 1]);
 
-    // Initial fly-in from deep Z space, rotating into place
-    const zIn = interpolate(sprIn, [0, 1], [-2000, 0]);
-    const rotX = interpolate(sprIn, [0, 1], [60, 0]);
-    const rotY = interpolate(sprIn, [0, 1], [-40, 0]);
+    // Dark mode: near-opaque dark glass, light mode: semi-transparent white
+    const bg = dark
+        ? "linear-gradient(135deg, rgba(20,14,50,0.6) 0%, rgba(30,20,70,0.45) 100%)"
+        : "linear-gradient(135deg, rgba(255,255,255,0.68) 0%, rgba(255,255,255,0.48) 100%)";
 
-    // Continuous subtle breathing while clamped
-    const breath = Math.sin(actT * 0.05) * 10;
-    const breathRot = Math.cos(actT * 0.03) * 2;
+    const shadow = dark
+        ? `
+            0 0 0 1px rgba(255,255,255,0.06),
+            0 1px 2px rgba(0,0,0,0.5),
+            0 6px 16px rgba(0,0,0,0.5),
+            0 20px 40px rgba(0,0,0,0.45),
+            0 0 60px rgba(${accentRgb},0.18),
+            inset 0 1px 0 rgba(255,255,255,0.14),
+            inset 0 -1px 0 rgba(0,0,0,0.3)
+          `
+        : `
+            0 0 0 1px rgba(255,255,255,0.55),
+            0 1px 2px rgba(0,0,0,0.05),
+            0 6px 16px rgba(0,0,0,0.07),
+            0 20px 40px rgba(0,0,0,0.09),
+            0 0 50px rgba(${accentRgb},0.1),
+            inset 0 1px 0 rgba(255,255,255,0.95),
+            inset 0 -1px 0 rgba(0,0,0,0.05)
+          `;
 
     return (
         <div style={{
-            position: "absolute", width, height,
-            left: "50%", top: "50%", marginLeft: -width / 2, marginTop: -height / 2,
-            transformStyle: "preserve-3d",
-            transform: `translateZ(${zIn + zOut + breath}px) rotateX(${rotX + breathRot}deg) rotateY(${rotY - breathRot}deg)`,
-            opacity: interpolate(sprIn, [0, 0.2], [0, 1], C) * opOut,
-            background: bg(dark, isMobile),
-            backdropFilter: isMobile ? "none" : "blur(50px) saturate(200%)",
-            border: `1.5px solid ${border(dark)}`, borderRadius: 32, padding: 40,
-            boxShadow: shadow(dark, isMobile), color: txt(dark),
-            willChange: "transform, opacity, filter",
-            display: "flex", flexDirection: "column"
+            transform: `translateY(${yIn}px) scale(${sc})`,
+            opacity: opIn,
+            width: "100%",
+            willChange: "transform, opacity",
+        }}>
+            <div style={{
+                position: "relative",
+                borderRadius: 18,
+                padding: "18px 28px 18px 32px",
+                background: bg,
+                backdropFilter: "blur(40px) saturate(180%)",
+                WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                borderTop: dark ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.9)",
+                borderLeft: `3px solid ${accent}`,
+                boxShadow: shadow,
+                overflow: "hidden",
+            }}>
+                {/* Top specular reflection line */}
+                <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: 1,
+                    background: dark
+                        ? `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 40%, rgba(255,255,255,0.12) 70%, transparent 100%)`
+                        : `linear-gradient(90deg, transparent 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, transparent 100%)`,
+                    pointerEvents: "none",
+                }} />
+                {/* Diagonal shimmer overlay  */}
+                <div style={{
+                    position: "absolute", inset: 0, borderRadius: 18,
+                    background: dark
+                        ? "linear-gradient(115deg, rgba(255,255,255,0.05) 0%, transparent 45%, rgba(255,255,255,0.03) 100%)"
+                        : "linear-gradient(115deg, rgba(255,255,255,0.55) 0%, transparent 45%, rgba(255,255,255,0.25) 100%)",
+                    pointerEvents: "none",
+                }} />
+                {/* Colored left glow */}
+                <div style={{
+                    position: "absolute", left: -40, top: "50%", transform: "translateY(-50%)",
+                    width: 100, height: 140, borderRadius: "50%",
+                    background: `radial-gradient(ellipse, ${accent}50 0%, transparent 70%)`,
+                    filter: "blur(18px)", pointerEvents: "none",
+                }} />
+                {/* Content */}
+                <div style={{ position: "relative", zIndex: 1 }}>
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ─── Glitch Card ──────────────────────────────────────────────────────────────
+const GlitchCard: React.FC<{ text: string; globalStart: number; dark: boolean }> = ({ text, globalStart, dark }) => {
+    const frame = useCurrentFrame();
+    const { fps } = useVideoConfig();
+    const localT = frame - globalStart;
+    if (localT < 0) return null;
+
+    const spr = spring({ frame: localT, fps, config: { damping: 10, stiffness: 250, mass: 0.6 } });
+    const op = interpolate(localT, [0, 6], [0, 1], C);
+    const gx = Math.sin(frame * 2.2) * 4;
+    const gy = Math.cos(frame * 2.8) * 2;
+
+    const bg = dark
+        ? "linear-gradient(135deg, rgba(20,10,60,0.7) 0%, rgba(10,5,40,0.55) 100%)"
+        : "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.45) 100%)";
+
+    return (
+        <div style={{ transform: `scale(${interpolate(spr, [0, 1], [0.9, 1])})`, opacity: op, width: "100%" }}>
+            <div style={{
+                position: "relative", borderRadius: 18, padding: "20px 28px",
+                background: bg,
+                backdropFilter: "blur(40px) saturate(180%)",
+                WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                border: `1.5px solid ${LF.primary}55`,
+                borderTop: `1.5px solid ${LF.primary}99`,
+                boxShadow: `
+                    0 0 0 1px rgba(91,108,248,0.15),
+                    0 8px 24px rgba(91,108,248,0.25),
+                    0 20px 40px rgba(0,0,0,0.35),
+                    0 0 80px rgba(91,108,248,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.15)
+                `,
+                overflow: "hidden", textAlign: "center",
+            }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${LF.primary}cc, transparent)` }} />
+                <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 50%, ${LF.primary}15 0%, transparent 70%)`, pointerEvents: "none" }} />
+                <div style={{ position: "relative", height: 50 }}>
+                    <p style={{ position: "absolute", inset: 0, margin: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,40,100,0.55)", transform: `translate(${gx + 3}px, ${gy}px)` }}>{text}</p>
+                    <p style={{ position: "absolute", inset: 0, margin: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase", color: "rgba(0,210,255,0.55)", transform: `translate(${-gx - 3}px, ${-gy}px)` }}>{text}</p>
+                    <p style={{ position: "relative", margin: 0, fontSize: 30, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase", color: dark ? "#ffffff" : "#1e1b4b", lineHeight: "50px" }}>{text}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ─── Floating Character ───────────────────────────────────────────────────────
+// ALL frame values here MUST be GLOBAL (absolute) frame numbers — never phase-relative.
+const FloatingChar: React.FC<{
+    children: React.ReactNode;
+    globalStart: number;
+    globalExit: number;
+    left: string;   // CSS left (px or %)
+    top: string;    // CSS top (px or %)
+    size: number;
+    ampX?: number; ampY?: number; speed?: number; phase?: number;
+    glow?: string;
+    enterFrom?: "left" | "right" | "top" | "bottom";
+    rotate?: number;
+    baseOpacity?: number;
+}> = ({
+    children, globalStart, globalExit, left, top, size,
+    ampX = 12, ampY = 18, speed = 0.05, phase = 0,
+    glow, enterFrom = "bottom", rotate = 0, baseOpacity = 0.9,
+}) => {
+    const frame = useCurrentFrame();
+    const { fps } = useVideoConfig();
+    const localT = frame - globalStart;
+    const exitT  = Math.max(0, frame - globalExit);
+
+    if (localT < 0 || frame > globalExit + 20) return null;
+
+    const spr   = spring({ frame: localT, fps, config: { damping: 14, stiffness: 85, mass: 1.1 } });
+    const opOut = interpolate(exitT, [0, 20], [1, 0], C);
+
+    const d = 350;
+    const ex = enterFrom === "left" ? -d : enterFrom === "right" ? d : 0;
+    const ey = enterFrom === "top"  ? -d : enterFrom === "bottom" ? d : 0;
+
+    const fx = Math.sin(frame * speed + phase) * ampX;
+    const fy = Math.cos(frame * speed * 0.8 + phase) * ampY;
+
+    return (
+        <div style={{
+            position: "absolute",
+            left, top,
+            width: size, height: size,
+            transform: `
+                translate(
+                    ${interpolate(spr, [0, 1], [ex, 0]) + fx}px,
+                    ${interpolate(spr, [0, 1], [ey, 0]) + fy}px
+                )
+                scale(${spr})
+                rotate(${rotate}deg)
+            `,
+            opacity: interpolate(spr, [0, 0.4], [0, baseOpacity]) * opOut,
+            filter: glow ? `drop-shadow(0 12px 35px ${glow}77)` : "drop-shadow(0 12px 35px rgba(0,0,0,0.5))",
+            zIndex: 3,
+            willChange: "transform, opacity",
         }}>
             {children}
         </div>
     );
 };
 
-// ─── APPLE-STYLE BADGE ──────────────────────────────────────────────────────
-const PromoBadge: React.FC<{
-    icon: string; text: string; sub?: string; color: string;
-    offsetX: number; offsetY: number; zSpace: number;
-    delayIn: number; delayOut: number; actT: number; dark: boolean; isMobile?: boolean;
-}> = ({ icon, text, sub, color, offsetX, offsetY, zSpace, delayIn, delayOut, actT, dark, isMobile }) => {
-    const { fps } = useVideoConfig();
-    const sprIn = spring({ frame: actT - delayIn, fps, config: { damping: 12, stiffness: 150 } });
-    const outT = Math.max(0, actT - delayOut);
-    const zOut = interpolate(outT, [0, 20], [0, 1500], { easing: Easing.in(Easing.exp), ...C });
-    const floater = Math.sin(actT * 0.08) * 20;
-
-    return (
-        <div style={{
-            position: "absolute", left: "50%", top: "50%",
-            marginLeft: offsetX, marginTop: offsetY,
-            transformStyle: "preserve-3d",
-            transform: `translateZ(${zSpace + zOut + floater}px) scale(${sprIn}) rotateZ(${interpolate(sprIn, [0, 1], [-20, 0])}deg)`,
-            opacity: interpolate(outT, [10, 20], [1, 0], C),
-            background: dark
-                ? `linear-gradient(135deg, rgba(20, 25, 35, 0.3), rgba(91, 108, 248, 0.2))`
-                : `linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(91, 108, 248, 0.1))`,
-            backdropFilter: isMobile ? "none" : "blur(35px) saturate(160%)", border: `1.5px solid rgba(255, 255, 255, 0.4)`,
-            borderRadius: 99, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
-            boxShadow: shadow(dark, isMobile), color: txt(dark),
-            willChange: "transform, opacity, filter"
-        }}>
-            <div style={{ fontSize: 28, filter: `drop-shadow(0 0 10px ${color}88)` }}>{icon}</div>
-            <div>
-                <div style={{ fontSize: 18, fontWeight: 900 }}>{text}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color }}>{sub}</div>
-            </div>
-        </div>
-    );
-};
-
-// ─── DYNAMIC TITLE TEXT ─────────────────────────────────────────────────────
-const PromoTitle: React.FC<{ text: string; actT: number; delay: number; color1: string; color2: string }> = ({ text, actT, delay, color1, color2 }) => {
-    const spr = spring({ frame: actT - delay, fps: 30, config: { damping: 14, stiffness: 100 } });
-    const chars = text.split("");
-    return (
-        <div style={{ display: "flex", justifyContent: "center", transform: `scale(${interpolate(spr, [0, 1], [0.8, 1])})`, opacity: interpolate(spr, [0, 0.5], [0, 1], C) }}>
-            <h1 style={{
-                fontSize: 84, fontWeight: 900, letterSpacing: -3, margin: 0,
-                background: `linear-gradient(135deg, ${color1}, ${color2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            }}>{text}</h1>
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 1: APERTURA (0 - 220)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act1Intro: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 150) return null;
-    const { fps } = useVideoConfig();
-    const spr = spring({ frame: t, fps, config: { damping: 20, stiffness: 100 } });
-    const outT = Math.max(0, t - 130);
-    const zOut = interpolate(outT, [0, 20], [0, 2000], { easing: Easing.in(Easing.exp), ...C });
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center", paddingBottom: 120 }}>
-            <div style={{ transform: `scale(${spr}) translateZ(${zOut}px)`, opacity: interpolate(outT, [10, 25], [1, 0], C), textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", marginTop: -60 }}>
-                <Img src="/logo-main.png" style={{ height: 400, filter: `drop-shadow(0 0 70px ${LF.primary}AA)`, transform: `translateY(${Math.sin(t * 0.05) * 20}px)`, marginBottom: -60 }} />
-                <div style={{
-                    fontSize: 36,
-                    fontWeight: 900,
-                    color: txt(p.isDarkMode),
-                    opacity: interpolate(t, [30, 45], [0, 1], C),
-                    background: bg(p.isDarkMode, p.isMobile),
-                    backdropFilter: p.isMobile ? "none" : "blur(50px) saturate(200%)",
-                    padding: "20px 50px",
-                    borderRadius: "32px",
-                    border: `1.5px solid ${border(p.isDarkMode)}`,
-                    boxShadow: shadow(p.isDarkMode, p.isMobile),
-                    display: "inline-block",
-                    marginTop: -55,
-                    transform: `translateZ(50px)`,
-                    willChange: "transform, opacity"
-                }}>
-                    {p.s_hook_title}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 2: LECCIONES (220 - 440)
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 2: LECCIONES (Longer Duration: 350 frames)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act2Lessons: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 350) return null;
-    const d = p.isDarkMode;
-    const fill = interpolate(t, [40, 150], [0, 65], C);
-    const lessonDuration = 350;
-    const fadeOutStart = lessonDuration - 20;
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={460} delayIn={0} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile}>
-                <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_lesson_title}</div>
-                <div style={{ height: 16, background: border(d), borderRadius: 8, overflow: "hidden", marginBottom: 40 }}>
-                    <div style={{ width: `${fill}%`, height: "100%", background: LF.primary }} />
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, flex: 1 }}>
-                    {[{ e: "🏠", t: p.s_lesson_opt_a, c: false }, { e: "🚗", t: p.s_lesson_opt_b, c: true }, { e: "💳", t: p.s_lesson_opt_c, c: false }, { e: "📱", t: p.s_lesson_opt_d, c: false }].map((opt, i) => {
-                        const act = opt.c && t > 120;
-                        return (
-                            <div key={i} style={{
-                                background: act ? `${LF.green}22` : "transparent",
-                                border: `3px solid ${act ? LF.green : border(d)}`,
-                                borderRadius: 16, display: "flex", alignItems: "center", gap: 20, padding: 20,
-                                transform: act ? `scale(1.05)` : "scale(1)", transition: "all 0.3s"
-                            }}>
-                                <div style={{ fontSize: 40 }}>{opt.e}</div>
-                                <div style={{ fontSize: 20, fontWeight: 800 }}>{opt.t}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </PromoPanel>
-
-            <div style={{
-                position: "absolute", left: "50%", top: "50%", marginLeft: 300, marginTop: -100, width: 250, height: 250,
-                transformStyle: "preserve-3d",
-                transform: `translateX(${interpolate(t, [0, 80], [800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - fadeOutStart), [0, 20], [200, 1500], { easing: Easing.in(Easing.exp), ...C })}px)
-                            rotateY(-20deg)`,
-                opacity: interpolate(Math.max(0, t - fadeOutStart), [10, 20], [1, 0], C)
-            }}>
-                <DinoCharacter mood="excited" showBubble={false} />
-            </div>
-
-            {/* Pair 1 (frames 55-140): Gamification */}
-            <PromoBadge icon="🌟" text={p.s_lesson_badge_xp} sub="+50 XP" color={LF.gold} offsetX={390} offsetY={160} zSpace={300} delayIn={55} delayOut={145} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🔥" text={p.s_lesson_badge_level} sub="Level Up" color={LF.pink} offsetX={-390} offsetY={160} zSpace={400} delayIn={65} delayOut={145} actT={t} dark={d} isMobile={p.isMobile} />
-
-            {/* Pair 2 (frames 135-220): Analogy Method */}
-            <PromoBadge icon="💡" text={p.s_lesson_feature_analogies} sub={p.s_lesson_sub_analogies} color={LF.gold} offsetX={-380} offsetY={-180} zSpace={350} delayIn={135} delayOut={225} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🎮" text={p.s_lesson_feature_interactive} sub={p.s_lesson_sub_interactive} color={LF.primary} offsetX={380} offsetY={-180} zSpace={450} delayIn={145} delayOut={225} actT={t} dark={d} isMobile={p.isMobile} />
-
-            {/* Pair 3 (frames 215-300): Logic + Progress */}
-            <PromoBadge icon="🧠" text={p.s_lesson_feature_logic} sub={p.s_lesson_sub_logic} color={LF.cyan} offsetX={-370} offsetY={190} zSpace={500} delayIn={215} delayOut={305} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="📈" text={p.s_lesson_feature_progress} sub={p.s_lesson_sub_progress} color={LF.green} offsetX={370} offsetY={190} zSpace={300} delayIn={225} delayOut={305} actT={t} dark={d} isMobile={p.isMobile} />
-
-            {/* Pair 4 (frames 295-fadeOut): Analogies */}
-            <PromoBadge icon="🛡️" text={p.s_lesson_analogy_1} sub="Como un escudo" color={LF.pink} offsetX={-375} offsetY={-170} zSpace={300} delayIn={295} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🌱" text={p.s_lesson_analogy_2} sub="Como plantar semillas" color={LF.gold} offsetX={375} offsetY={-170} zSpace={350} delayIn={305} delayOut={fadeOutStart} actT={t} dark={d} isMobile={p.isMobile} />
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 3: JUEGOS (440 - 660)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act3Games: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 300) return null;
-    const d = p.isDarkMode;
-    const fadeOut = 280;
-    const games = [{ e: "🍋", t: p.s_game_lemonade, c: LF.gold }, { e: "🏪", t: p.s_game_market, c: LF.pink }, { e: "📈", t: p.s_game_stocks, c: LF.primary }, { e: "🏭", t: p.s_game_factory, c: LF.purple }, { e: "🚜", t: p.s_game_farm, c: LF.green }, { e: "🎲", t: p.s_game_risk, c: LF.cyan }];
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={760} height={600} delayIn={0} delayOut={fadeOut} actT={t} dark={d} isMobile={p.isMobile}>
-                <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30 }}>{p.s_games_title}</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-                    {games.map((g, i) => {
-                        const spr = spring({ frame: t - (30 + i * 10), fps: 30, config: { damping: 12, stiffness: 150 } });
-                        return (
-                            <div key={i} style={{
-                                aspectRatio: "1", borderRadius: 20, background: `${g.c}11`, border: `2px solid ${g.c}44`,
-                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
-                                transform: `scale(${spr})`, opacity: interpolate(spr, [0, 0.5], [0, 1], C)
-                            }}>
-                                <div style={{ fontSize: 50, filter: `drop-shadow(0 10px 20px ${g.c}88)` }}>{g.e}</div>
-                                <div style={{ fontSize: 16, fontWeight: 900 }}>{g.t}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </PromoPanel>
-
-            <div style={{
-                position: "absolute", left: "50%", top: "50%", marginLeft: -500, marginTop: 50, width: 220, height: 220,
-                transformStyle: "preserve-3d",
-                transform: `translateX(${interpolate(t, [20, 90], [-800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - fadeOut), [0, 20], [300, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
-                            rotateZ(10deg)`,
-                opacity: interpolate(Math.max(0, t - fadeOut), [5, 15], [1, 0], C)
-            }}>
-                <DinaCharacter expression="happy" enableMouseTracking={false} />
-            </div>
-
-            {/* Sequential badge pairs for Games */}
-            <PromoBadge icon="🎯" text={p.s_games_feature_edu} sub={p.s_games_sub_edu} color={LF.gold} offsetX={-370} offsetY={-180} zSpace={300} delayIn={50} delayOut={140} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🗺️" text={p.s_games_feature_strategy} sub={p.s_games_sub_strategy} color={LF.primary} offsetX={370} offsetY={-180} zSpace={350} delayIn={60} delayOut={140} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🎁" text={p.s_games_feature_rewards} sub={p.s_games_sub_rewards} color={LF.pink} offsetX={370} offsetY={190} zSpace={250} delayIn={130} delayOut={220} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="👨‍👩‍👧‍👦" text={p.s_games_feature_family} sub={p.s_games_sub_family} color={LF.green} offsetX={-370} offsetY={190} zSpace={400} delayIn={140} delayOut={220} actT={t} dark={d} isMobile={p.isMobile} />
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 4: BANCA (660 - 880)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act4Bank: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
-    const d = p.isDarkMode;
-    const bal = interpolate(t, [40, 150], [1250, 1850], C);
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={800} height={420} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
-                <div style={{ fontSize: 20, color: p.isDarkMode ? "#aaa" : "#666" }}>{p.s_bank_balance_label}</div>
-                <div style={{ fontSize: 64, fontWeight: 900, color: LF.green, marginBottom: 30 }}>${Math.floor(bal)}</div>
-
-                {/* 3D Spinning Card inside the panel! */}
-                <div style={{
-                    position: "absolute", right: 20, top: 10, width: 280, height: 170, borderRadius: 24,
-                    background: `linear-gradient(135deg, rgba(91, 108, 248, 0.85), rgba(147, 51, 234, 0.75), rgba(236, 72, 153, 0.85))`,
-                    padding: 24,
-                    backdropFilter: "blur(25px)",
-                    border: "1px solid rgba(255,255,255,0.4)",
-                    boxShadow: `0 40px 70px rgba(0,0,0,0.4), 0 0 40px rgba(147, 51, 234, 0.4)`,
-                    display: "flex", flexDirection: "column", justifyContent: "space-between",
-                    transformStyle: "preserve-3d",
-                    transform: `translateZ(${interpolate(Math.sin(t * 0.05), [-1, 1], [120, 180])}px) translateY(${Math.sin(t * 0.04) * 15}px) rotateY(${Math.sin(t * 0.03) * 10}deg)`
-                }}>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: "#1e293b", textShadow: "0 1px 2px rgba(255,255,255,0.5)" }}>{p.s_card_name}</div>
-                    <div style={{ fontSize: 18, color: "#334155", letterSpacing: 4, fontWeight: "bold" }}>{p.s_card_number}</div>
-                </div>
-
-                <div style={{ display: "flex", alignItems: "flex-end", gap: 10, flex: 1 }}>
-                    {[3, 5, 2, 7, 4, 8, 6, 9, 3, 5].map((h, i) => (
-                        <div key={i} style={{ flex: 1, background: LF.primary, height: `${interpolate(t, [60 + i * 5, 100 + i * 5], [0, h * 10], C)}%`, borderRadius: "8px 8px 0 0" }} />
-                    ))}
-                </div>
-            </PromoPanel>
-
-            <div style={{
-                position: "absolute", left: "50%", top: "50%", marginLeft: -400, marginTop: -150, width: 160, height: 160,
-                transformStyle: "preserve-3d",
-                transform: `translateX(${interpolate(t, [20, 90], [800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 210), [0, 30], [400, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
-                            rotateY(-15deg)`,
-                opacity: interpolate(Math.max(0, t - 215), [0, 15], [1, 0], C)
-            }}>
-                <DrRhoCharacter mood="wise" showBubble={false} />
-            </div>
-
-            <PromoBadge icon="🔒" text={p.s_bank_badge} sub={p.s_badge_parental} color={LF.purple} offsetX={300} offsetY={160} zSpace={250} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 5: IA (880 - 1100)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act5AI: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
-    const d = p.isDarkMode;
-    const typing = Math.floor(t / 10) % 4;
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={640} height={400} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
-                <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 20 }}>{p.s_ai_title}</div>
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20, opacity: interpolate(t, [30, 50], [0, 1], C) }}>
-                    <div style={{ background: `${LF.primary}22`, borderRadius: "20px 20px 4px 20px", padding: 20, maxWidth: "80%", fontSize: 18, fontWeight: 600 }}>{p.s_ai_user_msg}</div>
-                </div>
-                <div style={{ display: "flex", gap: 14, opacity: interpolate(t, [60, 80], [0, 1], C) }}>
-                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${LF.pink}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>🤖</div>
-                    <div style={{ background: border(d), borderRadius: "20px 20px 20px 4px", padding: 20, maxWidth: "80%", fontSize: 18, fontWeight: 600, lineHeight: 1.5 }}>
-                        {t < 110 ? `${p.s_ai_typing}${".".repeat(typing)}` : p.s_ai_bot_msg}
-                    </div>
-                </div>
-            </PromoPanel>
-
-            <div style={{
-                position: "absolute", left: "50%", top: "50%", marginLeft: 300, marginTop: -200, width: 160, height: 160,
-                transformStyle: "preserve-3d",
-                transform: `translateX(${interpolate(t, [20, 90], [800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 180), [0, 30], [200, 2000], { easing: Easing.in(Easing.exp), ...C })}px)`,
-                opacity: interpolate(Math.max(0, t - 185), [0, 15], [1, 0], C)
-            }}>
-                <ZaraVexCharacter mood="curious" showBubble={false} />
-            </div>
-
-            {/* Sequential pairs for AI badges */}
-            <PromoBadge icon="🤖" text={p.s_stat_ai} sub="24/7" color={LF.pink} offsetX={-370} offsetY={160} zSpace={300} delayIn={60} delayOut={150} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🎨" text={p.s_ai_feature_custom} sub="AI Generated" color={LF.primary} offsetX={370} offsetY={160} zSpace={350} delayIn={70} delayOut={150} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🧭" text={p.s_ai_feature_guided} sub="Mentorship" color={LF.gold} offsetX={-370} offsetY={-170} zSpace={250} delayIn={140} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="👶" text={p.s_ai_feature_adaptive} sub="For Everyone" color={LF.cyan} offsetX={370} offsetY={-170} zSpace={400} delayIn={150} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
-            <PromoBadge icon="🚀" text={p.s_ai_feature_modern} sub="Next-Gen" color={LF.purple} offsetX={-370} offsetY={35} zSpace={300} delayIn={185} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 6: SOCIAL (1100 - 1320)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act6Social: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 220) return null;
-    const d = p.isDarkMode;
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
-            <PromoPanel width={820} height={460} delayIn={0} delayOut={215} actT={t} dark={d} isMobile={p.isMobile}>
-                <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 30, color: LF.cyan }}>{p.s_social_title}</div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, flex: 1, height: "100%" }}>
-                    {[
-                        { title: p.s_dash_lessons, value: "12", lottie: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie", color: LF.primary, b: `${LF.primary}11` },
-                        { title: p.s_dash_minutes, value: "120", lottie: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie", color: LF.green, b: `${LF.green}11` },
-                        { title: p.s_dash_points, value: "1500", lottie: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", color: LF.gold, b: `${LF.gold}11` },
-                        { title: p.s_dash_streak, value: "🔥 7", lottie: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", color: LF.purple, b: `${LF.purple}11` }
-                    ].map((s, i) => {
-                        const cellSpr = spring({ frame: t - (30 + i * 15), fps: 30, config: { damping: 12, stiffness: 120 } });
-                        return (
-                            <div key={i} style={{
-                                background: s.b, borderRadius: 16, border: `1px solid ${s.color}44`,
-                                display: "flex", alignItems: "center", gap: 15, padding: "10px 20px",
-                                transform: `scale(${interpolate(cellSpr, [0, 1], [0.8, 1])})`, opacity: cellSpr
-                            }}>
-                                <div style={{ width: 100, height: 100, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    {/* @ts-ignore */}
-                                    <dotlottie-wc src={s.lottie} autoplay loop style={{ width: "100%", height: "100%" }} />
-                                </div>
-                                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                                    <div style={{ fontSize: 16, fontWeight: 700, color: d ? "#ccc" : "#666" }}>{s.title}</div>
-                                    <div style={{ fontSize: 36, fontWeight: 900, color: s.color }}>{s.value}</div>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-
-                {/* Privacy Disclaimer */}
-                <div style={{ marginTop: 20, paddingTop: 20, borderTop: `1px solid ${border(d)}`, fontSize: 12, color: d ? "#888" : "#888", display: "flex", alignItems: "center", gap: 8, lineHeight: 1.4 }}>
-                    <span style={{ fontSize: 16 }}>🛡️</span>
-                    <span>{p.s_social_privacy}</span>
-                </div>
-            </PromoPanel>
-
-            <div style={{
-                position: "absolute", left: "50%", top: "50%", marginLeft: -380, marginTop: 150, width: 160, height: 160,
-                transformStyle: "preserve-3d",
-                transform: `translateX(${interpolate(t, [20, 90], [-800, 0], { easing: EZ, ...C })}px) 
-                            translateZ(${interpolate(Math.max(0, t - 210), [0, 30], [200, 2000], { easing: Easing.in(Easing.exp), ...C })}px)
-                            rotateZ(-10deg)`,
-                opacity: interpolate(Math.max(0, t - 215), [0, 15], [1, 0], C)
-            }}>
-                <DinaCharacter expression="happy" enableMouseTracking={false} />
-            </div>
-
-            <PromoBadge icon="🤝" text={p.s_social_title} sub={p.s_social_streak} color={LF.cyan} offsetX={340} offsetY={-120} zSpace={300} delayIn={80} delayOut={215} actT={t} dark={d} isMobile={p.isMobile} />
-        </div>
-    );
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-// ACT 7: CTA (1320 - 1570)
-// ──────────────────────────────────────────────────────────────────────────────
-const Act7CTA: React.FC<{ p: DemoShowreelProps; t: number }> = ({ p, t }) => {
-    if (t < 0 || t > 450) return null;
-    const { fps } = useVideoConfig();
-    const spr = spring({ frame: t, fps, config: { damping: 14, stiffness: 100 } });
-
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", width: "150%", height: "150%", background: `radial-gradient(circle at 50% 50%, ${LF.primary}30 0%, transparent 80%)`, filter: "blur(100px)", transform: "translateZ(-800px)" }} />
-
-            {/* Characters exploding outwards */}
-            <div style={{ display: "flex", gap: 30, transform: `translateZ(100px) scale(${spr})`, marginBottom: 300 }}>
-                {[
-                    <DinoCharacter mood="excited" showBubble={false} />,
-                    <DinaCharacter expression="happy" enableMouseTracking={false} />,
-                    <DrRhoCharacter mood="wise" showBubble={false} />,
-                    <ZaraVexCharacter mood="excited" showBubble={false} />,
-                ].map((comp, i) => (
-                    <div key={i} style={{ width: 140, height: 140, transform: `translateY(${Math.sin((t + i * 20) * 0.1) * 15}px)`, filter: `drop-shadow(0 20px 40px rgba(0,0,0,0.5))` }}>{comp}</div>
-                ))}
-            </div>
-
-            <div style={{ position: "absolute", transform: `translateZ(250px) scale(${spr})`, textAlign: "center", marginTop: 100 }}>
-                <div style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, lineHeight: 1.1, background: `linear-gradient(135deg, ${LF.primary}, ${LF.pink})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{p.s_cta_headline}</div>
-                <div style={{ fontSize: 28, fontWeight: 600, color: p.isDarkMode ? "#aaa" : "#555", marginTop: 20 }}>{p.s_cta_sub}</div>
-                <div style={{ marginTop: 40 }}>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log("CTA Clicked!");
-                            if (p.onCtaClick) {
-                                p.onCtaClick();
-                            } else {
-                                window.location.href = '/demo/lessons';
-                            }
-                        }}
-                        style={{
-                            background: `linear-gradient(135deg, ${LF.primary}, ${LF.purple})`,
-                            border: "none",
-                            borderRadius: "16px",
-                            cursor: "pointer",
-                            fontSize: 32,
-                            fontWeight: 900,
-                            color: "white",
-                            letterSpacing: 2,
-                            textTransform: "uppercase",
-                            boxShadow: `0 10px 25px ${LF.primary}66`,
-                            padding: "16px 40px",
-                            outline: "none",
-                            transition: "all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                            pointerEvents: "auto",
-                            display: "inline-block",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = "scale(1.08) translateY(-5px)";
-                            e.currentTarget.style.boxShadow = `0 15px 35px ${LF.primary}88`;
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = "scale(1) translateY(0)";
-                            e.currentTarget.style.boxShadow = `0 10px 25px ${LF.primary}66`;
-                        }}
-                    >
-                        {p.s_cta_button}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// ─── Main Composition ─────────────────────────────────────────────────────────
-export const TOTAL_FRAMES_SHOWREEL = 1910;
-
-const BackgroundParticles: React.FC<{ frame: number, isDark: boolean, isMobile?: boolean }> = ({ frame, isDark, isMobile }) => {
-    if (isMobile) return null;
-    return (
-        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", pointerEvents: "none" }}>
-            {[...Array(15)].map((_, i) => {
-                // Pseudo-random generation for particles
-                const seedX = Math.sin(i * 123.45);
-                const seedY = Math.cos(i * 678.9);
-                const x = seedX * 800;
-                const y = seedY * 400;
-                const z = (Math.sin(i) * 300) - 200;
-                const speed = 0.5 + (i % 3) * 0.2;
-
-                // Slowly float upwards and rotate
-                const animatedY = y - (frame * speed) % 800 + (seedY > 0 ? 400 : -400);
-                const opacity = 0.2 + Math.sin(frame * 0.05 + i) * 0.1;
-                const size = 20 + (i % 15);
-
-                const icons = ["✨", "💰", "🚀", "🌟"];
-                const icon = icons[i % icons.length];
-
-                return (
-                    <div key={i} style={{
-                        position: "absolute", left: "50%", top: "50%",
-                        transform: `translate3d(${x}px, ${animatedY}px, ${z}px) rotateZ(${frame * (i % 2 === 0 ? 0.2 : -0.2)}deg)`,
-                        opacity: isDark ? opacity * 1.5 : opacity,
-                        fontSize: size,
-                        filter: `drop-shadow(0 0 10px rgba(255,255,255,0.2))`,
-                        willChange: "transform, opacity"
-                    }}>
-                        {icon}
-                    </div>
-                )
-            })}
-        </div>
-    );
-};
-
-export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => {
+// ─── Phase background wrapper with crossfade ──────────────────────────────────
+const PhaseWrap: React.FC<{
+    globalStart: number;
+    globalEnd: number;
+    background: string;
+    children: React.ReactNode;
+}> = ({ globalStart, globalEnd, background, children }) => {
     const frame = useCurrentFrame();
-
-    // Marketing Enhancement: Continuous, subtle cinematic camera drift
-    const isStatic = frame < 150 || frame > 1460;
-    const pitch = props.isMobile || isStatic ? 0 : Math.sin(frame / 120) * 5;
-    const yaw = props.isMobile || isStatic ? 0 : Math.cos(frame / 150) * 6;
-    const roll = props.isMobile || isStatic ? 0 : Math.sin(frame / 200) * 1.5;
-    const globalZ = props.isMobile || isStatic ? 0 : Math.sin(frame / 80) * 60;
-
+    const fadeIn  = interpolate(frame, [globalStart, globalStart + 22], [0, 1], C);
+    const fadeOut = interpolate(frame, [globalEnd - 22, globalEnd],   [1, 0], C);
+    if (frame < globalStart || frame > globalEnd) return null;
     return (
-        <AbsoluteFill style={{ fontFamily: "'Inter', sans-serif", background: "transparent", perspective: 1400, overflow: "hidden" }}>
-            <div style={{ position: "absolute", width: "120%", height: "120%", left: "-10%", top: "-10%", background: `radial-gradient(circle at 50% 50%, ${LF.primary}15 0%, transparent 80%)`, filter: "blur(120px)" }} />
+        <AbsoluteFill style={{ background, opacity: fadeIn * fadeOut }}>
+            {children}
+        </AbsoluteFill>
+    );
+};
+
+// ─── Shared text props ────────────────────────────────────────────────────────
+const tp = (dark: boolean, size = 28): React.CSSProperties => ({
+    fontSize: size, fontWeight: 700, margin: 0,
+    lineHeight: 1.45, color: tc(dark), letterSpacing: -0.5,
+});
+
+// ─── Phase 1 — El Gancho (frames 0–300) ──────────────────────────────────────
+const Phase1: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+    const d = p.isDarkMode;
+    return (
+        <PhaseWrap globalStart={P1} globalEnd={P1 + 300}
+            background={d
+                ? "linear-gradient(160deg,#030210 0%,#0c0822 55%,#10081c 100%)"
+                : "linear-gradient(160deg,#f1f5f9 0%,#e8eaf6 50%,#f0e8ff 100%)"}>
+
+            {/* Rich color blobs — backdrop-filter will blur these */}
+            <Blob x={700}  y={-80}  w={600} h={600} color={`${LF.primary}44`}  blur={120} z={1} />
+            <Blob x={1200} y={400}  w={500} h={500} color={`${LF.purple}44`}   blur={100} z={1} />
+            <Blob x={100}  y={300}  w={450} h={450} color={`${LF.pink}33`}     blur={110} z={1} />
+
+            {/* Floating Dino — top right */}
+            <FloatingChar globalStart={P1 + 20} globalExit={P1 + 285}
+                left="1380px" top="80px" size={310}
+                ampX={14} ampY={20} phase={0.6} glow={LF.gold} enterFrom="right" rotate={-6}>
+                <DinoCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
+
+            {/* Text column */}
+            <div style={{
+                position: "absolute", left: 80, top: 0, bottom: 0, width: 1200,
+                display: "flex", flexDirection: "column", justifyContent: "center", gap: 18,
+            }}>
+                <GlassCard globalStart={P1 + 0}   dark={d} accent={LF.primary} accentRgb="91,108,248">
+                    <p style={tp(d)}>{p.s_phase1_q1}</p>
+                </GlassCard>
+                <GlassCard globalStart={P1 + 75}  dark={d} accent={LF.pink}    accentRgb="236,72,153">
+                    <p style={tp(d)}>{p.s_phase1_q2}</p>
+                </GlassCard>
+                <GlassCard globalStart={P1 + 150} dark={d} accent={LF.gold}    accentRgb="245,158,11">
+                    <p style={tp(d)}>{p.s_phase1_q3}</p>
+                </GlassCard>
+                <GlitchCard globalStart={P1 + 222} dark={d} text={p.s_phase1_glitch} />
+            </div>
+        </PhaseWrap>
+    );
+};
+
+// ─── Phase 2 — Mini Adulto (frames 300–600) ───────────────────────────────────
+const Phase2: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+    const d = p.isDarkMode;
+    return (
+        <PhaseWrap globalStart={P2} globalEnd={P2 + 300}
+            background={d
+                ? "linear-gradient(160deg,#0f0520 0%,#1e0838 30%,#280a4e 60%,#120620 100%)"
+                : "linear-gradient(160deg,#fdf4ff 0%,#f3e8ff 40%,#ede9fe 100%)"}>
+
+            <Blob x={-80}  y={100}  w={700} h={600} color={`${LF.pink}40`}   blur={130} z={1} />
+            <Blob x={1400} y={300}  w={550} h={550} color={`${LF.purple}44`} blur={110} z={1} />
+            <Blob x={700}  y={500}  w={500} h={500} color={`${LF.cyan}30`}   blur={120} z={1} />
+
+            {/* Floating Zara — top right */}
+            <FloatingChar globalStart={P2 + 15} globalExit={P2 + 285}
+                left="1380px" top="50px" size={320}
+                ampX={12} ampY={22} phase={1.3} glow={LF.purple} enterFrom="right" rotate={-7}>
+                <ZaraVexCharacter mood="curious" showBubble={false} />
+            </FloatingChar>
+
+            {/* Floating Dino — bottom left */}
+            <FloatingChar globalStart={P2 + 35} globalExit={P2 + 285}
+                left="60px" top="620px" size={280}
+                ampX={14} ampY={16} phase={2.8} glow={LF.pink} enterFrom="left" rotate={8}>
+                <DinoCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
 
             <div style={{
-                position: "absolute", inset: 0, transformStyle: "preserve-3d",
-                transform: `rotateX(${pitch}deg) rotateY(${yaw}deg) rotateZ(${roll}deg) translateZ(${globalZ}px)`,
-                willChange: "transform"
+                position: "absolute", left: 380, top: 0, bottom: 0, width: 1160,
+                display: "flex", flexDirection: "column", justifyContent: "center", gap: 18,
             }}>
-                <BackgroundParticles frame={frame} isDark={props.isDarkMode} isMobile={props.isMobile} />
-                <Act1Intro p={props} t={frame} />
-                <Act2Lessons p={props} t={frame - 150} />
-                <Act3Games p={props} t={frame - 500} />
-                <Act4Bank p={props} t={frame - 800} />
-                <Act5AI p={props} t={frame - 1020} />
-                <Act6Social p={props} t={frame - 1240} />
-                <Act7CTA p={props} t={frame - 1460} />
+                <GlassCard globalStart={P2 + 0}   dark={d} accent={LF.purple} accentRgb="147,51,234">
+                    <p style={tp(d)}>{p.s_phase2_line1}</p>
+                </GlassCard>
+                <GlassCard globalStart={P2 + 72}  dark={d} accent={LF.pink}   accentRgb="236,72,153">
+                    <p style={tp(d, 28)}>
+                        {p.s_phase2_line2} <HL text={p.s_phase2_highlight2} g={[LF.pink, LF.gold]} />
+                    </p>
+                </GlassCard>
+                <GlassCard globalStart={P2 + 150} dark={d} accent={LF.cyan}   accentRgb="6,182,212">
+                    <p style={tp(d)}>{p.s_phase2_line3}</p>
+                </GlassCard>
+                <GlassCard globalStart={P2 + 222} dark={d} accent={LF.primary} accentRgb="91,108,248">
+                    <p style={tp(d, 30)}>
+                        {p.s_phase2_line4} <HL text={p.s_phase2_highlight4} g={[LF.primary, LF.cyan]} /> {p.s_phase2_line4b}
+                    </p>
+                </GlassCard>
+            </div>
+        </PhaseWrap>
+    );
+};
+
+// ─── Phase 3 — La Solución (frames 600–900) ───────────────────────────────────
+const Phase3: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+    const d = p.isDarkMode;
+    return (
+        <PhaseWrap globalStart={P3} globalEnd={P3 + 300}
+            background={d
+                ? "linear-gradient(160deg,#040c26 0%,#0c185e 30%,#100840 70%,#040a18 100%)"
+                : "linear-gradient(160deg,#eff6ff 0%,#edf0ff 40%,#f0eeff 100%)"}>
+
+            <Blob x={1200} y={-60}  w={700} h={600} color={`${LF.primary}48`} blur={130} z={1} />
+            <Blob x={-80}  y={420}  w={600} h={600} color={`${LF.cyan}38`}    blur={120} z={1} />
+            <Blob x={600}  y={600}  w={500} h={400} color={`${LF.gold}30`}    blur={110} z={1} />
+
+            {/* Floating Dr. Rho — top right */}
+            <FloatingChar globalStart={P3 + 10} globalExit={P3 + 285}
+                left="1380px" top="60px" size={310}
+                ampX={10} ampY={22} phase={0.3} glow={LF.cyan} enterFrom="top" rotate={-5}>
+                <DrRhoCharacter mood="wise" showBubble={false} />
+            </FloatingChar>
+
+            {/* Floating Dina — bottom left */}
+            <FloatingChar globalStart={P3 + 28} globalExit={P3 + 285}
+                left="50px" top="600px" size={290}
+                ampX={14} ampY={18} phase={3.5} glow={LF.pink} enterFrom="left" rotate={6}>
+                <DinaCharacter expression="happy" enableMouseTracking={false} />
+            </FloatingChar>
+
+            <div style={{
+                position: "absolute", left: 370, top: 0, bottom: 0, width: 1170,
+                display: "flex", flexDirection: "column", justifyContent: "center", gap: 18,
+            }}>
+                <GlassCard globalStart={P3 + 0}   dark={d} accent={LF.gold}    accentRgb="245,158,11">
+                    <p style={tp(d)}>{p.s_phase3_line1}</p>
+                </GlassCard>
+                <GlassCard globalStart={P3 + 62}  dark={d} accent={LF.primary} accentRgb="91,108,248">
+                    <p style={tp(d, 30)}>
+                        {p.s_phase3_line2} <HL text={p.s_phase3_highlight2} g={[LF.primary, LF.cyan]} />
+                    </p>
+                </GlassCard>
+                <GlassCard globalStart={P3 + 130} dark={d} accent={LF.pink}    accentRgb="236,72,153">
+                    <p style={tp(d, 30)}>
+                        {p.s_phase3_line3} <HL text={p.s_phase3_highlight3} g={[LF.gold, LF.pink]} />
+                    </p>
+                </GlassCard>
+                <GlassCard globalStart={P3 + 200} dark={d} accent={LF.green}   accentRgb="34,197,94">
+                    <p style={tp(d)}>{p.s_phase3_line4}</p>
+                </GlassCard>
+                <GlassCard globalStart={P3 + 258} dark={d} accent={LF.cyan}    accentRgb="6,182,212">
+                    <p style={tp(d, 30)}>
+                        {p.s_phase3_line5} <HL text={p.s_phase3_highlight5} g={[LF.green, LF.cyan]} />
+                    </p>
+                </GlassCard>
+            </div>
+        </PhaseWrap>
+    );
+};
+
+// ─── Phase 4 — La Promesa (frames 900–1200) ───────────────────────────────────
+const Phase4: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+    const d = p.isDarkMode;
+    return (
+        <PhaseWrap globalStart={P4} globalEnd={P4 + 300}
+            background={d
+                ? "linear-gradient(180deg,#060410 0%,#0e0a20 50%,#080618 100%)"
+                : "linear-gradient(180deg,#f8faff 0%,#eef2ff 50%,#f5f0ff 100%)"}>
+
+            <Blob x={200}  y={-80}  w={700} h={600} color={`${LF.primary}40`} blur={130} z={1} />
+            <Blob x={1300} y={500}  w={600} h={500} color={`${LF.pink}38`}    blur={110} z={1} />
+            <Blob x={600}  y={400}  w={500} h={400} color={`${LF.purple}30`}  blur={120} z={1} />
+
+            {/* Floating Dino — top left */}
+            <FloatingChar globalStart={P4 + 10} globalExit={P4 + 285}
+                left="60px" top="80px" size={300}
+                ampX={12} ampY={20} phase={1.7} glow={LF.gold} enterFrom="left" rotate={-8}>
+                <DinoCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
+
+            {/* Floating Zara — bottom right */}
+            <FloatingChar globalStart={P4 + 30} globalExit={P4 + 285}
+                left="1380px" top="640px" size={270}
+                ampX={14} ampY={16} phase={0.4} glow={LF.purple} enterFrom="right" rotate={7}>
+                <ZaraVexCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
+
+            <div style={{
+                position: "absolute", left: 380, top: 0, bottom: 0, width: 1160,
+                display: "flex", flexDirection: "column", justifyContent: "center", gap: 18,
+            }}>
+                <GlassCard globalStart={P4 + 0}   dark={d} accent={LF.primary} accentRgb="91,108,248">
+                    <p style={tp(d)}>{p.s_phase4_line1}</p>
+                </GlassCard>
+                <GlassCard globalStart={P4 + 72}  dark={d} accent={LF.purple}  accentRgb="147,51,234">
+                    <p style={tp(d, 30)}>
+                        {p.s_phase4_line2} <HL text={p.s_phase4_highlight2} g={[LF.primary, LF.purple]} />
+                    </p>
+                </GlassCard>
+                <GlassCard globalStart={P4 + 148} dark={d} accent={LF.gold}    accentRgb="245,158,11">
+                    <p style={tp(d)}>{p.s_phase4_line3}</p>
+                </GlassCard>
+                <GlassCard globalStart={P4 + 220} dark={d} accent={LF.green}   accentRgb="34,197,94">
+                    <p style={tp(d)}>{p.s_phase4_line4}</p>
+                </GlassCard>
+            </div>
+        </PhaseWrap>
+    );
+};
+
+// ─── Phase 5 — CTA (frames 1200–1500) ────────────────────────────────────────
+const Phase5: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+    const frame = useCurrentFrame();
+    const { fps } = useVideoConfig();
+    const d = p.isDarkMode;
+    const fadeIn  = interpolate(frame, [P5, P5 + 25], [0, 1], C);
+    const fadeOut = interpolate(frame, [P5 + 285, P5 + 300], [1, 0], C);
+    if (frame < P5 || frame > P5 + 300) return null;
+
+    const logoSpr  = spring({ frame: frame - (P5 + 20),  fps, config: { damping: 22, stiffness: 140 } });
+    const brandSpr = spring({ frame: frame - (P5 + 60),  fps, config: { damping: 18, stiffness: 110 } });
+    const subSpr   = spring({ frame: frame - (P5 + 100), fps, config: { damping: 20, stiffness: 120 } });
+    const ctaSpr   = spring({ frame: frame - (P5 + 145), fps, config: { damping: 14, stiffness: 100 } });
+    const ctaPulse = 1 + Math.sin(Math.max(0, frame - (P5 + 160)) * 0.12) * 0.018;
+
+    const bg = d
+        ? "linear-gradient(180deg,#060410 0%,#100824 50%,#080618 100%)"
+        : "linear-gradient(180deg,#f8faff 0%,#eef2ff 50%,#f5f0ff 100%)";
+
+    return (
+        <AbsoluteFill style={{ background: bg, opacity: fadeIn * fadeOut }}>
+            <Blob x={500}  y={0}    w={900} h={700} color={`${LF.primary}30`} blur={150} z={1} />
+            <Blob x={300}  y={600}  w={700} h={500} color={`${LF.pink}28`}    blur={130} z={1} />
+            <Blob x={1200} y={200}  w={600} h={600} color={`${LF.purple}28`}  blur={140} z={1} />
+
+            {/* All 4 characters floating at corners */}
+            <FloatingChar globalStart={P5 + 25} globalExit={P5 + 295} left="60px"   top="60px"  size={260} ampX={10} ampY={18} phase={0.3} glow={LF.gold}   enterFrom="left"   rotate={-5} baseOpacity={0.82}>
+                <DinoCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
+            <FloatingChar globalStart={P5 + 35} globalExit={P5 + 295} left="1610px" top="60px"  size={250} ampX={12} ampY={16} phase={2.0} glow={LF.pink}   enterFrom="right"  rotate={6}  baseOpacity={0.78}>
+                <DinaCharacter expression="happy" enableMouseTracking={false} />
+            </FloatingChar>
+            <FloatingChar globalStart={P5 + 45} globalExit={P5 + 295} left="60px"   top="750px" size={250} ampX={10} ampY={20} phase={3.5} glow={LF.cyan}   enterFrom="left"   rotate={8}  baseOpacity={0.75}>
+                <DrRhoCharacter mood="wise" showBubble={false} />
+            </FloatingChar>
+            <FloatingChar globalStart={P5 + 55} globalExit={P5 + 295} left="1610px" top="750px" size={250} ampX={14} ampY={14} phase={1.5} glow={LF.purple} enterFrom="right"  rotate={-8} baseOpacity={0.75}>
+                <ZaraVexCharacter mood="excited" showBubble={false} />
+            </FloatingChar>
+
+            {/* Center content */}
+            <div style={{
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center", gap: 28,
+                zIndex: 10,
+            }}>
+                {/* Logo */}
+                {frame >= P5 + 20 && (
+                    <div style={{
+                        transform: `translateY(${interpolate(logoSpr, [0, 1], [28, 0])}px) scale(${logoSpr})`,
+                        opacity: interpolate(frame, [P5 + 20, P5 + 38], [0, 1], C),
+                    }}>
+                        <Img src="/logo-sized.png" style={{ height: 56, filter: `drop-shadow(0 4px 18px ${LF.primary}88)` }} />
+                    </div>
+                )}
+
+                {/* Subtitle */}
+                {frame >= P5 + 100 && (
+                    <div style={{
+                        transform: `translateY(${interpolate(subSpr, [0, 1], [20, 0])}px)`,
+                        opacity: interpolate(frame, [P5 + 100, P5 + 115], [0, 1], C),
+                    }}>
+                        <p style={{
+                            fontSize: 24, fontWeight: 500, margin: 0, letterSpacing: 0.5,
+                            color: d ? "rgba(148,163,184,0.9)" : "rgba(100,116,139,0.9)",
+                            textAlign: "center",
+                        }}>{p.s_cta_sub}</p>
+                    </div>
+                )}
+
+                {/* CTA Button */}
+                {frame >= P5 + 145 && (
+                    <div style={{
+                        transform: `translateY(${interpolate(ctaSpr, [0, 1], [28, 0])}px) scale(${ctaSpr * ctaPulse})`,
+                        opacity: interpolate(frame, [P5 + 145, P5 + 162], [0, 1], C),
+                    }}>
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault(); e.stopPropagation();
+                                if (p.onCtaClick) p.onCtaClick();
+                                else window.location.href = "/register";
+                            }}
+                            style={{
+                                background: `linear-gradient(135deg, ${LF.primary} 0%, ${LF.purple} 100%)`,
+                                border: "none", borderRadius: 18, cursor: "pointer",
+                                fontSize: 30, fontWeight: 900, color: "white",
+                                letterSpacing: 3, textTransform: "uppercase",
+                                boxShadow: `
+                                    0 0 0 1px ${LF.primary}55,
+                                    0 18px 45px ${LF.primary}55,
+                                    0 0 80px ${LF.primary}22,
+                                    inset 0 1px 0 rgba(255,255,255,0.25)
+                                `,
+                                padding: "22px 64px", outline: "none",
+                                pointerEvents: "auto", fontFamily: "'Inter', sans-serif",
+                                position: "relative", overflow: "hidden",
+                                backdropFilter: "blur(10px)",
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 0 0 1px ${LF.primary}99, 0 24px 55px ${LF.primary}77, 0 0 100px ${LF.primary}44, inset 0 1px 0 rgba(255,255,255,0.3)`; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = `0 0 0 1px ${LF.primary}55, 0 18px 45px ${LF.primary}55, 0 0 80px ${LF.primary}22, inset 0 1px 0 rgba(255,255,255,0.25)`; }}
+                        >
+                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)", borderRadius: 18 }} />
+                            <span style={{ position: "relative" }}>{p.s_cta_button}</span>
+                        </button>
+                    </div>
+                )}
             </div>
         </AbsoluteFill>
     );
 };
+
+// ─── Main Composition ─────────────────────────────────────────────────────────
+export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => (
+    <AbsoluteFill style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", overflow: "hidden" }}>
+        <Phase1 p={props} />
+        <Phase2 p={props} />
+        <Phase3 p={props} />
+        <Phase4 p={props} />
+        <Phase5 p={props} />
+    </AbsoluteFill>
+);

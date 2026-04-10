@@ -17,7 +17,7 @@ export function CompoundInterestRunner() {
     // Game State
     const [gameState, setGameState] = useState<'idle' | 'playing' | 'gameover'>('idle');
     const [score, setScore] = useState(1000); // Capital inicial
-    const [timeElapsed, setTimeElapsed] = useState(0);
+    const [timeElapsed, setTimeElapsed] = useState(60);
 
     // Refs for animation
     const requestRef = useRef<number>();
@@ -41,7 +41,7 @@ export function CompoundInterestRunner() {
         setGameState('playing');
         setScore(1000);
         scoreRef.current = 1000;
-        setTimeElapsed(0);
+        setTimeElapsed(60);
         objectsRef.current = [];
         lastTimeRef.current = performance.now();
         requestRef.current = requestAnimationFrame(gameLoop);
@@ -65,7 +65,7 @@ export function CompoundInterestRunner() {
         const containerH = containerRef.current?.offsetHeight || 600;
         
         // Base speed increases over time
-        const difficultyMultiplier = 1 + (timeElapsed / 60); // Takes 1 minute to double speed
+        const difficultyMultiplier = 1 + ((60 - timeElapsed) / 60); // Takes 1 minute to double speed
         const baseSpeed = 180 * difficultyMultiplier; // pixels per second, much slower for readability
 
         // Spawn logic
@@ -105,11 +105,11 @@ export function CompoundInterestRunner() {
                 if (obj.type === 'powerup') {
                     const gain = Math.floor(scoreRef.current * 0.05) + 100; // Compounding gain
                     scoreRef.current += gain;
-                    addFloatingText(obj.x, (obj.y / containerH) * 100, `+$${gain}`, 'positive');
+                    addFloatingText(obj.x, (obj.y / containerH) * 100, t('minigame.gain', { amount: gain.toLocaleString() }), 'positive');
                 } else {
                     const loss = Math.floor(scoreRef.current * 0.1) + 50; // Penalty
                     scoreRef.current -= loss;
-                    addFloatingText(obj.x, (obj.y / containerH) * 100, `-$${loss}`, 'negative');
+                    addFloatingText(obj.x, (obj.y / containerH) * 100, t('minigame.loss', { amount: loss.toLocaleString() }), 'negative');
                 }
                 
                 objectsRef.current.splice(i, 1);
@@ -130,12 +130,12 @@ export function CompoundInterestRunner() {
 
         // Auto-increment capital slightly over time (passive interest)
         setTimeElapsed(prev => {
-            const newTime = prev + deltaTime;
-            if (Math.floor(newTime) > Math.floor(prev)) {
+            const newTime = Math.max(0, prev - deltaTime);
+            if (Math.floor(prev) > Math.floor(newTime) && newTime > 0) {
                 scoreRef.current += 10;
                 setScore(scoreRef.current);
             }
-            if (newTime >= 60) { // 1 minute win
+            if (newTime <= 0) { // Time's up!
                  setGameState('gameover');
             }
             return newTime;
@@ -191,14 +191,14 @@ export function CompoundInterestRunner() {
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
                 <div className="liquid-glass px-4 py-2 rounded-xl border border-white/20 flex flex-col justify-center">
                     <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.time_label')}</span>
-                    <span className="text-lg font-black text-gray-900 dark:text-white">{Math.floor(timeElapsed)}s</span>
+                    <span className="text-lg font-black text-gray-900 dark:text-white">{t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}</span>
                 </div>
                 <div className="liquid-glass px-4 py-2 rounded-xl border border-pink-500/30 flex items-center gap-2">
                     <Coins className="w-5 h-5 text-yellow-500" />
                     <div className="flex flex-col">
                         <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.score_label')}</span>
                         <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
-                            {Math.floor(score).toLocaleString()}
+                            {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                         </span>
                     </div>
                 </div>
@@ -275,7 +275,7 @@ export function CompoundInterestRunner() {
                             {t('minigame.title')}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm">
-                            Move tu cursor 🖱️ para esquivar los gastos y aumentar tu capital a través del tiempo.
+                            {t('minigame.instruction')}
                         </p>
                         <button 
                             onClick={startGame}
@@ -306,10 +306,10 @@ export function CompoundInterestRunner() {
                                 {t('minigame.final_capital')}
                             </p>
                             <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-400 dark:from-green-400 dark:to-emerald-300">
-                                ${Math.floor(score).toLocaleString()}
+                                {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                             </p>
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
-                                {t('minigame.time_label')} {Math.floor(timeElapsed)}s
+                                {t('minigame.time_label')} {t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}
                             </p>
                         </div>
                         

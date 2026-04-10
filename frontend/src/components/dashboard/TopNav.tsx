@@ -5,6 +5,7 @@ import {
   Check, CheckCheck, X,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -182,13 +183,54 @@ export function TopNav() {
 
   return (
     <>
-    <header className="relative flex items-center justify-end px-6 py-3 bg-card border-b border-border">
-      {/* Centered Logo - Hidden on mobile to prevent overlap */}
-      <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+    <header className="relative flex items-center justify-between px-4 md:px-6 py-3 bg-card border-b border-border">
+      {/* Left Section: Stats */}
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        {/* Points Stat */}
+        <div className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
+          user?.points_earned > 0 
+            ? "border-amber-500/20 shadow-sm shadow-amber-500/5 group hover:scale-105" 
+            : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
+        )}>
+          <div className="w-8 h-8 flex items-center justify-center">
+            {/* @ts-ignore */}
+            <dotlottie-wc src="https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie" autoplay loop style={{ width: '100%', height: '100%' }} />
+          </div>
+          <span className={cn(
+            "text-base font-black leading-none",
+            user?.points_earned > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"
+          )}>
+            {user?.points_earned?.toLocaleString() || 0}
+          </span>
+        </div>
+
+        {/* Streak Stat */}
+        <div className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
+          user?.current_streak > 0 
+            ? "border-rose-500/20 shadow-sm shadow-rose-500/5 group hover:scale-105" 
+            : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
+        )}>
+          <div className="w-8 h-8 flex items-center justify-center">
+            {/* @ts-ignore */}
+            <dotlottie-wc src="https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie" autoplay loop style={{ width: '105%', height: '105%' }} />
+          </div>
+          <span className={cn(
+            "text-base font-black leading-none",
+            user?.current_streak > 0 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"
+          )}>
+            {user?.current_streak || 0}
+          </span>
+        </div>
+      </div>
+
+      {/* Centered Logo - Hidden on smaller screens to prevent overlap */}
+      <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform pointer-events-none">
         <img
           src="/logo-sized.png"
           alt="LittleFounders"
-          className="h-8 w-auto object-contain"
+          className="h-7 w-auto object-contain opacity-80"
         />
       </div>
 

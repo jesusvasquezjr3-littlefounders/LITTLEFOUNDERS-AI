@@ -15,12 +15,13 @@ export function ThemeToggle() {
     const activeIndex = options.findIndex(opt => opt.id === theme);
 
     return (
-        <div className="relative flex items-center p-1 liquid-glass-subtle rounded-full border border-white/20 dark:border-white/10 shadow-sm h-10 group">
+        <div className="relative flex items-center p-1 liquid-glass-subtle rounded-full border border-white/20 dark:border-white/10 shadow-sm h-10 w-[120px] group">
             {/* Sliding Indicator */}
             <div 
-                className="absolute h-[calc(100%-8px)] w-[calc(33.33%-4px)] bg-white dark:bg-white/20 rounded-full shadow-sm transition-all duration-300 ease-in-out z-0"
+                className="absolute inset-y-1 bg-white dark:bg-white/20 rounded-full shadow-sm transition-all duration-300 ease-in-out z-0"
                 style={{ 
                     left: '4px',
+                    width: 'calc((100% - 8px) / 3)',
                     transform: `translateX(${activeIndex * 100}%)` 
                 }}
             />
@@ -34,7 +35,7 @@ export function ThemeToggle() {
                         key={opt.id}
                         onClick={() => setTheme(opt.id as any)}
                         className={cn(
-                            "relative z-10 w-9 h-full rounded-full transition-all duration-300 flex items-center justify-center",
+                            "relative z-10 flex-1 h-full rounded-full transition-all duration-300 flex items-center justify-center",
                             isActive 
                                 ? cn("scale-110", opt.color) 
                                 : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
@@ -42,7 +43,7 @@ export function ThemeToggle() {
                         title={opt.label}
                         aria-label={opt.label}
                     >
-                        <Icon className={cn("w-3.5 h-3.5", isActive && "drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]")} />
+                        <Icon className={cn("w-4 h-4", isActive && "drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]")} />
                     </button>
                 );
             })}
