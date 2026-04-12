@@ -71,7 +71,7 @@ const LandingPage = () => {
   return (
     <LandingLayout>
       {/* --- HERO SECTION --- */}
-      <header className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
+      <header className="relative min-h-[100svh] flex flex-col pt-20 lg:pt-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
 
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
@@ -79,8 +79,8 @@ const LandingPage = () => {
           <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-pink-200/20 dark:bg-pink-900/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+        <div className="flex-1 flex w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative items-center pb-8 lg:pb-12">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 w-full">
 
             {/* Copy (Left) */}
             <div className="flex-1 text-center lg:text-left space-y-5 max-w-2xl">
@@ -158,38 +158,38 @@ const LandingPage = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce text-gray-400 hidden lg:block">
-          <ChevronDown className="w-8 h-8 opacity-50" />
+        <div className="w-full flex justify-center pb-4 animate-bounce text-gray-400 hidden lg:flex">
+          <ChevronDown className="w-6 h-6 opacity-50" />
         </div>
-      </header>
 
-      {/* --- LANGUAGE SWITCHER BAR --- */}
-      <section className="py-8 bg-gray-50 dark:bg-black transition-colors duration-500 border-y border-gray-200 dark:border-slate-800 z-10 relative overflow-hidden">
-        {/* Ambient glows behind the languages */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full bg-pink-500/10 dark:bg-pink-500/5 blur-3xl pointer-events-none" />
+        {/* --- LANGUAGE SWITCHER BAR --- */}
+        <div className="w-full py-4 lg:py-5 border-t border-gray-200/60 dark:border-slate-800/60 bg-white/40 dark:bg-black/20 backdrop-blur-xl z-20 relative overflow-hidden mt-auto">
+          {/* Ambient glows behind the languages */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full bg-pink-500/10 dark:bg-pink-500/5 blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
-          <h3 className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-500 mb-4 uppercase tracking-[0.2em] text-center">
-            {t('language.title')}
-          </h3>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            {languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
-                className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${
-                  isCurrentLanguage(lang.code) 
-                    ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white border-pink-200 dark:border-pink-500/50 shadow-lg shadow-pink-500/10 scale-105" 
-                    : "bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-800 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-slate-700"
-                }`}
-              >
-                <span className="text-xl sm:text-2xl leading-none drop-shadow-md">{lang.flag}</span>
-                {lang.name}
-              </button>
-            ))}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center">
+            <h3 className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-500 mb-2 sm:mb-3 uppercase tracking-[0.2em] text-center">
+              {t('language.title')}
+            </h3>
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
+                  className={`flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                    isCurrentLanguage(lang.code) 
+                      ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white border-pink-200 dark:border-pink-500/50 shadow-lg shadow-pink-500/10 scale-105" 
+                      : "bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-800 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-slate-700"
+                  }`}
+                >
+                  <span className="text-lg sm:text-xl leading-none drop-shadow-md">{lang.flag}</span>
+                  {lang.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </section>
+      </header>
 
       {/* --- SCAR TISSUE / PROBLEM SECTION --- */}
       <section id="problem" className="py-24 bg-white dark:bg-slate-950 transition-colors duration-500">
