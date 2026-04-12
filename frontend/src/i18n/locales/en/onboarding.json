@@ -1,0 +1,90 @@
+{
+    "progress": {
+        "step_of": "Step {{current}} of {{total}}"
+    },
+    "welcome": {
+        "liruf_greeting": "Hi! I'm Liruf 👋",
+        "liruf_intro": "I'll be your guide in this world of finance. Together we'll learn to manage money in a fun way!",
+        "start_button": "Let's go!",
+        "characters_intro": "My friends will also be here to help you."
+    },
+    "name": {
+        "question": "What's your name?",
+        "subtitle": "So I can address you correctly.",
+        "placeholder": "Your name or nickname...",
+        "liruf_typing": "Hmm, let me think...",
+        "liruf_done": "Awesome, {{name}}! That's an incredible name!",
+        "continue": "That's me!"
+    },
+    "age": {
+        "question": "How old are you?",
+        "subtitle": "So we can personalize the perfect experience for you.",
+        "placeholder": "Enter your age...",
+        "dina_done": "{{age}} years old! Perfect, Dina has everything ready for you.",
+        "continue": "That's my age!"
+    },
+    "interests": {
+        "title": "What do you want to learn?",
+        "subtitle": "Choose one or more topics that interest you.",
+        "min_select": "Select at least one",
+        "options": {
+            "saving": {
+                "title": "Saving",
+                "icon": "💰"
+            },
+            "investing": {
+                "title": "Investing",
+                "icon": "📈"
+            },
+            "entrepreneurship": {
+                "title": "Entrepreneurship",
+                "icon": "🚀"
+            },
+            "budgeting": {
+                "title": "Budgeting",
+                "icon": "📊"
+            },
+            "banking": {
+                "title": "Digital Banking",
+                "icon": "💳"
+            },
+            "security": {
+                "title": "Goals",
+                "icon": "🎯"
+            }
+        }
+    },
+    "experience": {
+        "title": "How much do you know about finance?",
+        "subtitle": "Be honest — there's no wrong answer!",
+        "beginner": {
+            "title": "Beginner",
+            "description": "I'm just starting out. Money is still a mystery to me."
+        },
+        "some_knowledge": {
+            "title": "Some knowledge",
+            "description": "I know some basics about saving and spending."
+        },
+        "experienced": {
+            "title": "Experienced",
+            "description": "I already know quite a bit about personal finance."
+        }
+    },
+    "celebration": {
+        "title": "Ready for liftoff! 🚀",
+        "subtitle": "You have completed the first part of the journey. Now comes the best part!",
+        "xp_earned": "+{{amount}} XP earned",
+        "xp_label": "points",
+        "streak_started": "1-day streak started! 🔥",
+        "streak_label": "streak",
+        "explore_button": "Go explore!",
+        "save_progress_link": "Create an account",
+        "save_progress_rest": " to save your progress permanently."
+    },
+    "errors": {
+        "name_required": "Please enter your name",
+        "age_required": "Please enter your age",
+        "age_range": "Age must be between 8 and 100",
+        "interest_required": "Select at least one interest"
+    }
+}

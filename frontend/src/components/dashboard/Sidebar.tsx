@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from "@/contexts/SoundContext";
+import { isGuest } from "@/lib/guestProfile";
 
 const getUser = () => {
   try {
@@ -32,8 +33,10 @@ const getUser = () => {
 // Menu items with translation keys
 const getMenuItems = (t: (key: string) => string) => {
   const user = getUser();
+  // Guests (no auth but completed onboarding) get the universal menu
+  const effectiveType = user.user_type || (isGuest() ? 'universal' : 'tutor');
 
-  if (user.user_type === 'child') {
+  if (effectiveType === 'child') {
     return [
       { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
       { title: t('dashboard:sidebar.lessons'), url: "/lessons", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
@@ -44,11 +47,12 @@ const getMenuItems = (t: (key: string) => string) => {
       { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, color: "from-pink-400 to-rose-600", shadow: "shadow-pink-500/40", id: "nav-banking" },
       { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, color: "from-purple-400 to-violet-600", shadow: "shadow-purple-500/40", id: "nav-store" },
     ];
-  } else if (user.user_type === 'universal') {
+  } else if (effectiveType === 'universal') {
     return [
       { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
       { title: t('dashboard:sidebar.lessons'), url: "/lessons", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
-      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
+      // AI is locked for guests — flagged with requiresAuth, handled in handleItemClick
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai", requiresAuth: !localStorage.getItem('user') },
       { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-orange-400 to-red-500", shadow: "shadow-orange-500/40", id: "nav-games" },
       { title: t('dashboard:sidebar.my_tasks'), url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-tasks", locked: true },
       { title: t('dashboard:sidebar.my_savings'), url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-savings", locked: true },
@@ -99,6 +103,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       toast({
         title: t('sidebar.locked_title'),
         description: t('sidebar.locked_description'),
+        variant: "default",
+      });
+      return;
+    }
+    if (item.requiresAuth) {
+      e.preventDefault();
+      toast({
+        title: t('guest.feature_requires_account_title'),
+        description: t('guest.create_account'),
         variant: "default",
       });
     }

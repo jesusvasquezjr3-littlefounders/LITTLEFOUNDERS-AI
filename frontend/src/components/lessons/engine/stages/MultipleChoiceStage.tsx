@@ -2,7 +2,7 @@
  * MultipleChoiceStage - Pregunta con opciones múltiples
  */
 import { useState } from 'react';
-import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
+import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
 import { Button } from '@/components/ui/button';
 import { Check, X, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';

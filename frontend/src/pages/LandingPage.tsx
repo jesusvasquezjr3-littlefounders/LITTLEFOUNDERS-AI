@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation, Trans } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { hasSession } from "@/lib/guestProfile";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -15,10 +17,10 @@ import {
 import { Link } from "react-router-dom";
 import { LandingLayout } from "../components/landing/LandingLayout";
 
-import { DinoCharacter } from "../components/demo/DinoCharacter";
-import { DinaCharacter } from "../components/demo/DinaCharacter";
-import DrRhoCharacter from "../components/demo/DrRhoCharacter";
-import ZaraVexCharacter from "../components/demo/ZaraVexCharacter";
+import { DinoCharacter } from "../components/characters/DinoCharacter";
+import { DinaCharacter } from "../components/characters/DinaCharacter";
+import DrRhoCharacter from "../components/characters/DrRhoCharacter";
+import ZaraVexCharacter from "../components/characters/ZaraVexCharacter";
 import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -30,6 +32,12 @@ const LandingPage = () => {
   const { t } = useTranslation('landing');
   const { languages, isCurrentLanguage } = useLanguage();
   const { saveLanguagePreference } = useUserLanguage();
+  const navigate = useNavigate();
+
+  // Redirect to dashboard if user already has a session
+  useEffect(() => {
+    if (hasSession()) navigate('/dashboard');
+  }, [navigate]);
 
   const [ctaWordIndex, setCtaWordIndex] = useState(0);
   const ctaWords = t('cta.rotating_words', { returnObjects: true }) as string[];
@@ -101,7 +109,7 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-4">
                 {/* Main Adventure Button - Improved contrast in Light Mode */}
                 <Button asChild size="lg" className="h-16 px-10 text-lg rounded-full border border-slate-900/10 dark:border-white/40 bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.08)] hover:bg-white/40 hover:scale-105 transition-all duration-300 group overflow-hidden border-t-white/60">
-                  <Link to="/demo">
+                  <Link to="/onboarding">
                     <span className="relative z-10 flex items-center font-bold text-gray-900 dark:text-white">
                       {t('hero.cta_button')}
                       <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -13,10 +13,10 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getGestureLabels } from '@/utils/gestureMapper';
-import { DinoCharacter } from '@/components/demo/DinoCharacter';
-import { DinaCharacter } from '@/components/demo/DinaCharacter';
-import DrRhoCharacter from '@/components/demo/DrRhoCharacter';
-import ZaraVexCharacter from '@/components/demo/ZaraVexCharacter';
+import { DinoCharacter } from '@/components/characters/DinoCharacter';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
+import ZaraVexCharacter from '@/components/characters/ZaraVexCharacter';
 
 // ── Exercise types configuration ──
 

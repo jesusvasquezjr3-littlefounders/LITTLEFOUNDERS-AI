@@ -8,13 +8,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
-import { DemoBanner } from "@/components/demo/DemoBanner";
 import { cn } from "@/lib/utils";
-
-interface LessonsProps {
-  isDemo?: boolean;
-  Layout?: React.ComponentType<{ children: React.ReactNode }>;
-}
 
 // Navigation states
 type ViewState =
@@ -22,8 +16,9 @@ type ViewState =
   | { type: 'sagas'; adventureId: number }
   | { type: 'lessons'; adventureId: number; sagaId: number; sagaTitle: string };
 
-export default function Lessons({ isDemo = false, Layout = DashboardLayout }: LessonsProps) {
-  const { t } = useTranslation(['lessons', 'common', 'demo']);
+export default function Lessons() {
+  const Layout = DashboardLayout;
+  const { t } = useTranslation(['lessons', 'common']);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewState, setViewState] = useState<ViewState>({ type: 'adventures' });
@@ -125,7 +120,7 @@ export default function Lessons({ isDemo = false, Layout = DashboardLayout }: Le
     return (
       <Layout>
         <div className={contentWrapperClass}>
-          {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
+
           {/* Premium Page Header */}
           <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 border border-white/10 shadow-2xl">
               {/* Ambient Glows */}
@@ -168,7 +163,7 @@ export default function Lessons({ isDemo = false, Layout = DashboardLayout }: Le
     return (
       <Layout>
         <div className={cn(contentWrapperClass, "space-y-0")}>
-          {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
+
           <SagaView
             adventureId={viewState.adventureId}
             onBack={handleBack}
@@ -183,7 +178,7 @@ export default function Lessons({ isDemo = false, Layout = DashboardLayout }: Le
   return (
     <Layout>
       <div className={contentWrapperClass}>
-        {isDemo && <DemoBanner message={t('demo:demo_banner.lessons')} />}
+
         
         {/* Development Notice Bar */}
         <div className="bg-yellow-400/10 dark:bg-yellow-400/5 border border-yellow-400/20 h-10 px-4 rounded-xl flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">

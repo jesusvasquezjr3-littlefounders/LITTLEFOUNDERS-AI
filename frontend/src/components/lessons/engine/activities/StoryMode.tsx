@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
-import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
-import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
-import { DinaCharacter } from '@/components/demo/DinaCharacter';
-import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
+import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
+import DrRhoCharacter, { RhoMood } from '@/components/characters/DrRhoCharacter';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import ZaraVexCharacter, { ZaraMood } from '@/components/characters/ZaraVexCharacter';
 import { normalizeGesture } from '@/utils/gestureMapper';
 
 interface StoryPage {

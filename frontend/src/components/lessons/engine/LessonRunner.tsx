@@ -12,10 +12,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
-import { DinaCharacter } from '@/components/demo/DinaCharacter';
-import DrRhoCharacter, { RhoMood } from '@/components/demo/DrRhoCharacter';
-import ZaraVexCharacter, { ZaraMood } from '@/components/demo/ZaraVexCharacter';
+import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import DrRhoCharacter, { RhoMood } from '@/components/characters/DrRhoCharacter';
+import ZaraVexCharacter, { ZaraMood } from '@/components/characters/ZaraVexCharacter';
 import { useLessonData, useLessonState, useLessonAudio, completeLesson, fetchNextLessonCode } from './hooks';
 import { useSound } from "@/contexts/SoundContext";
 import { MultipleChoice } from './activities/MultipleChoice';

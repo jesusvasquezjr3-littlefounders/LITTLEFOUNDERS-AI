@@ -137,5 +137,13 @@
         "verification_banking": "Verificando estado de activación...",
         "verification_savings": "Cargando tus metas de ahorro..."
     },
-    "whatItTeaches": "Enseña"
+    "whatItTeaches": "Enseña",
+    "characters": {
+        "dino": {
+            "default_greeting": "¡Hola, soy Liruf!"
+        }
+    },
+    "status": {
+        "verifying_auth": "Verificando autenticación..."
+    }
 }

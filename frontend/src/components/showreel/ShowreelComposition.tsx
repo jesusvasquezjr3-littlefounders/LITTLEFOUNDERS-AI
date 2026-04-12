@@ -7,13 +7,13 @@ import {
     useVideoConfig,
     Img,
 } from "remotion";
-import { DinoCharacter } from "@/components/demo/DinoCharacter";
-import { DinaCharacter } from "@/components/demo/DinaCharacter";
-import { DrRhoCharacter } from "@/components/demo/DrRhoCharacter";
-import { ZaraVexCharacter } from "@/components/demo/ZaraVexCharacter";
+import { DinoCharacter } from "@/components/characters/DinoCharacter";
+import { DinaCharacter } from "@/components/characters/DinaCharacter";
+import { DrRhoCharacter } from "@/components/characters/DrRhoCharacter";
+import { ZaraVexCharacter } from "@/components/characters/ZaraVexCharacter";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
-export interface DemoShowreelProps {
+export interface ShowreelProps {
     isDarkMode: boolean;
     isMobile?: boolean;
     s_phase1_q1: string; s_phase1_q2: string; s_phase1_q3: string; s_phase1_glitch: string;
@@ -308,7 +308,7 @@ const tp = (dark: boolean, size = 28): React.CSSProperties => ({
 });
 
 // ─── Phase 1 — El Gancho (frames 0–300) ──────────────────────────────────────
-const Phase1: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+const Phase1: React.FC<{ p: ShowreelProps }> = ({ p }) => {
     const d = p.isDarkMode;
     return (
         <PhaseWrap globalStart={P1} globalEnd={P1 + 300}
@@ -349,7 +349,7 @@ const Phase1: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
 };
 
 // ─── Phase 2 — Mini Adulto (frames 300–600) ───────────────────────────────────
-const Phase2: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+const Phase2: React.FC<{ p: ShowreelProps }> = ({ p }) => {
     const d = p.isDarkMode;
     return (
         <PhaseWrap globalStart={P2} globalEnd={P2 + 300}
@@ -401,7 +401,7 @@ const Phase2: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
 };
 
 // ─── Phase 3 — La Solución (frames 600–900) ───────────────────────────────────
-const Phase3: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+const Phase3: React.FC<{ p: ShowreelProps }> = ({ p }) => {
     const d = p.isDarkMode;
     return (
         <PhaseWrap globalStart={P3} globalEnd={P3 + 300}
@@ -458,7 +458,7 @@ const Phase3: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
 };
 
 // ─── Phase 4 — La Promesa (frames 900–1200) ───────────────────────────────────
-const Phase4: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+const Phase4: React.FC<{ p: ShowreelProps }> = ({ p }) => {
     const d = p.isDarkMode;
     return (
         <PhaseWrap globalStart={P4} globalEnd={P4 + 300}
@@ -508,7 +508,7 @@ const Phase4: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
 };
 
 // ─── Phase 5 — CTA (frames 1200–1500) ────────────────────────────────────────
-const Phase5: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
+const Phase5: React.FC<{ p: ShowreelProps }> = ({ p }) => {
     const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
     const d = p.isDarkMode;
@@ -619,7 +619,7 @@ const Phase5: React.FC<{ p: DemoShowreelProps }> = ({ p }) => {
 };
 
 // ─── Main Composition ─────────────────────────────────────────────────────────
-export const DemoShowreelComposition: React.FC<DemoShowreelProps> = (props) => (
+export const ShowreelComposition: React.FC<ShowreelProps> = (props) => (
     <AbsoluteFill style={{ fontFamily: "'Inter', 'Helvetica Neue', sans-serif", overflow: "hidden" }}>
         <Phase1 p={props} />
         <Phase2 p={props} />

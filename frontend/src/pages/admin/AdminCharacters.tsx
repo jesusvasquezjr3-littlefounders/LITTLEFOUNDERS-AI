@@ -11,10 +11,10 @@ import { normalizeGesture } from '@/utils/gestureMapper';
 import { GlassPanel } from '@/components/ui/GlassPanel';
 
 // Character Components
-import { DinoCharacter } from '@/components/demo/DinoCharacter';
-import { DinaCharacter } from '@/components/demo/DinaCharacter';
-import DrRhoCharacter from '@/components/demo/DrRhoCharacter';
-import ZaraVexCharacter from '@/components/demo/ZaraVexCharacter';
+import { DinoCharacter } from '@/components/characters/DinoCharacter';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
+import ZaraVexCharacter from '@/components/characters/ZaraVexCharacter';
 
 export const AdminCharacters: React.FC = () => {
   const { t } = useTranslation('admin');

@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Rocket, ChevronRight, X, Sparkles, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ZaraVexCharacter from "@/components/demo/ZaraVexCharacter";
-import DrRhoCharacter from "@/components/demo/DrRhoCharacter";
+import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
+import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 
 interface TourStep {
     targetId?: string;
@@ -17,7 +17,7 @@ interface TourStep {
 
 // Hardcoded step arrays have been removed in favor of i18n
 export function UserTour() {
-    const { t } = useTranslation('demo');
+    const { t } = useTranslation('dashboard');
     const [currentStep, setCurrentStep] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [userRole, setUserRole] = useState<'child' | 'parent'>('child'); // Default to child just in case

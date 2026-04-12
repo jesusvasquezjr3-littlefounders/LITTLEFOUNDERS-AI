@@ -16,7 +16,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
-    const { t } = useTranslation('demo');
+    const { t } = useTranslation('common');
 
     // Blinking logic
     useEffect(() => {

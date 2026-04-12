@@ -3,10 +3,10 @@ import { Player, PlayerRef } from "@remotion/player";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-    DemoShowreelComposition,
+    ShowreelComposition,
     TOTAL_FRAMES_SHOWREEL,
-    type DemoShowreelProps,
-} from "./DemoShowreelComposition";
+    type ShowreelProps,
+} from "./ShowreelComposition";
 
 // 1920x1080 cinematic canvas
 const COMP_W = 1920;
@@ -21,10 +21,10 @@ const FPS_MOBILE = 15;
  *  - Offscreen Pause: Player pauses entirely when scrolled out of viewport
  *  - Adjusts durationInFrames proportionally so animation speed stays constant
  */
-const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer({ playerRef: externalRef }: { playerRef?: React.RefObject<any> }) {
+const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalRef }: { playerRef?: React.RefObject<any> }) {
     const playerRef = useRef<PlayerRef>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const { t } = useTranslation("demo");
+    const { t } = useTranslation("landing");
     const navigate = useNavigate();
 
     // Sync internal playerRef to external so parent can poll getCurrentFrame
@@ -105,7 +105,7 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer({ playerRef: e
         ? Math.round(TOTAL_FRAMES_SHOWREEL * (FPS_MOBILE / FPS_DESKTOP))
         : TOTAL_FRAMES_SHOWREEL;
 
-    const inputProps: DemoShowreelProps = {
+    const inputProps: ShowreelProps = {
         isDarkMode: isDark,
         isMobile: isMobile,
         // Phase 1
@@ -151,7 +151,7 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer({ playerRef: e
         >
             <Player
                 ref={playerRef}
-                component={DemoShowreelComposition}
+                component={ShowreelComposition}
                 durationInFrames={scaledFrames}
                 fps={fps}
                 compositionWidth={COMP_W}
@@ -172,4 +172,4 @@ const DemoShowreelPlayer = React.memo(function DemoShowreelPlayer({ playerRef: e
     );
 });
 
-export { DemoShowreelPlayer };
+export { ShowreelPlayer };

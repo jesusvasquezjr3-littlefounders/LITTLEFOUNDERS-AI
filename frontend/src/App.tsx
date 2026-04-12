@@ -10,7 +10,7 @@ import { Analytics } from '@vercel/analytics/react';
 
 // Pages
 import Index from "./pages/Index";
-import Welcome from "./pages/Welcome";
+import Onboarding from "./pages/Onboarding";
 import LandingPage from "./pages/LandingPage";
 import FamiliesPage from "./pages/landing/FamiliesPage";
 import FaqPage from "./pages/landing/FaqPage";
@@ -33,8 +33,6 @@ import { Navigate } from "react-router-dom";
 // Social
 import UserProfile from "./pages/social/UserProfile";
 
-import Demo from "./pages/demo/Demo";
-import { DemoDashboardLayout } from "@/components/demo/DemoDashboardLayout";
 
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 // Nuevo Motor de Lecciones
@@ -85,15 +83,16 @@ const App = () => (
               <ReportFAB />
               <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/families" element={<FamiliesPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
+                {/* Guest-accessible routes (requireAuth omitted = false) */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Index />
                   </ProtectedRoute>
                 } />
-                <Route path="/welcome" element={<Welcome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/bye" element={<Bye />} />
@@ -101,18 +100,27 @@ const App = () => (
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* Lessons */}
+                {/* Lessons — guest-accessible */}
                 <Route path="/lessons" element={
                   <ProtectedRoute>
                     <Lessons />
                   </ProtectedRoute>
                 } />
 
-                <Route path="/ai" element={
+                {/* Games — guest-accessible */}
+                <Route path="/games" element={
                   <ProtectedRoute>
+                    <GamesPage />
+                  </ProtectedRoute>
+                } />
+
+                {/* Auth-only: AI assistant requires a real account */}
+                <Route path="/ai" element={
+                  <ProtectedRoute requireAuth>
                     <PageUnderConstruction />
                   </ProtectedRoute>
                 } />
+                {/* Guest-accessible: profile, avatar, settings, help */}
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
@@ -147,11 +155,6 @@ const App = () => (
                 <Route path="/store" element={
                   <ProtectedRoute>
                     <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/games" element={
-                  <ProtectedRoute>
-                    <GamesPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/investment-games" element={<Navigate to="/games" replace />} />
@@ -203,22 +206,6 @@ const App = () => (
                     <Help />
                   </ProtectedRoute>
                 } />
-
-                <Route path="/demo" element={<Demo />} />
-                <Route path="/demo/lessons" element={<Lessons isDemo Layout={DemoDashboardLayout} />} />
-                <Route path="/demo/games" element={<GamesPage isDemo Layout={DemoDashboardLayout} />} />
-                
-                {/* Game Demo Routes — require auth (bucket is private, assets need signed URLs) */}
-                <Route path="/demo/games/nam-vs-yum" element={<ProtectedRoute><NamVsYumPage /></ProtectedRoute>} />
-                <Route path="/demo/games/nectar-of-shadows" element={<ProtectedRoute><NectarOfShadowsPage /></ProtectedRoute>} />
-                <Route path="/demo/games/paper-detective" element={<ProtectedRoute><PaperDetectivePage /></ProtectedRoute>} />
-                <Route path="/demo/games/paper-coin" element={<ProtectedRoute><PaperCoinPage /></ProtectedRoute>} />
-                <Route path="/demo/games/hacker-defense" element={<ProtectedRoute><HackerDefensePage /></ProtectedRoute>} />
-                <Route path="/demo/games/chronobloom" element={<ProtectedRoute><ChronoBloomPage /></ProtectedRoute>} />
-
-                {/* Removed unused Demo routes or pointed them to Under Construction if needed for consistency, 
-                    though Sidebar has them locked with '#' */}
-
 
                 {/* Admin Panel Routes */}
                 <Route path="/admin" element={

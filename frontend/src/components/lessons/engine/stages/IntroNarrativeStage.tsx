@@ -1,7 +1,7 @@
 /**
  * IntroNarrativeStage - Muestra una narración con el personaje
  */
-import { DinoCharacter, DinoMood } from '@/components/demo/DinoCharacter';
+import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { ExerciseData } from '../hooks/useLessonData';

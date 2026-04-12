@@ -25,6 +25,7 @@ from admin.endpoints import router as admin_router
 from reports.endpoints import router as reports_router
 from social.endpoints import router as social_router
 from notifications.endpoints import router as notifications_router
+from assets.endpoints import router as assets_router
 
 # Create database tables
 # DISABLED for Vercel: Tables should already exist in Supabase
@@ -100,6 +101,7 @@ app.include_router(reports_router)
 
 app.include_router(social_router)
 app.include_router(notifications_router)
+app.include_router(assets_router)
 
 @app.get("/")
 async def root():

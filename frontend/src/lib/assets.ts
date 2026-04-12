@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { API_URL } from '@/config/api';
 
 const BUCKET = 'game-assets';
 const TTL_SECONDS = 3600; // 1 hour
@@ -6,28 +7,37 @@ const TTL_SECONDS = 3600; // 1 hour
 // ─── Signed URL cache (path → { url, expiresAt }) ────────────────────────────
 const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
 
+/** Get a signed URL for a game asset.
+ *  For authenticated users: uses Supabase JS client directly.
+ *  For guests (no token): falls back to the backend proxy endpoint which uses service_role.
+ */
 export async function getSignedUrl(path: string): Promise<string> {
   const now = Date.now();
   const cached = signedUrlCache.get(path);
-  // Return cached URL if it won't expire in the next 60 seconds
   if (cached && cached.expiresAt > now + 60_000) {
     return cached.url;
   }
 
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, TTL_SECONDS);
+  const token = localStorage.getItem('token');
 
-  if (error || !data?.signedUrl) {
-    throw error ?? new Error(`Failed to sign asset: ${path}`);
+  // Authenticated path: use Supabase client directly
+  if (token) {
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(path, TTL_SECONDS);
+
+    if (!error && data?.signedUrl) {
+      signedUrlCache.set(path, { url: data.signedUrl, expiresAt: now + TTL_SECONDS * 1000 });
+      return data.signedUrl;
+    }
   }
 
-  signedUrlCache.set(path, {
-    url: data.signedUrl,
-    expiresAt: now + TTL_SECONDS * 1000,
-  });
-
-  return data.signedUrl;
+  // Guest / fallback path: backend proxy
+  const res = await fetch(`${API_URL}/assets/signed-url?path=${encodeURIComponent(path)}`);
+  if (!res.ok) throw new Error(`Failed to sign asset via proxy: ${path} (${res.status})`);
+  const json = await res.json() as { url: string; expires_in: number };
+  signedUrlCache.set(path, { url: json.url, expiresAt: now + (json.expires_in ?? TTL_SECONDS) * 1000 });
+  return json.url;
 }
 
 // ─── Blob URL cache (path → blob:// URL) ─────────────────────────────────────

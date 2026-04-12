@@ -467,6 +467,269 @@
   animation: celebrate 0.6s ease-in-out;
 }
 
+/* ─── Onboarding: drifting ambient orbs ─────────────────────────────────── */
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(45px, -35px) scale(1.07); }
+  66%       { transform: translate(-28px, 22px) scale(0.93); }
+}
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%      { transform: translate(-55px, 38px) scale(1.11); }
+  80%      { transform: translate(32px, -22px) scale(0.94); }
+}
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(38px, 45px) scale(1.08); }
+}
+.animate-orb-1 { animation: orb-drift-1 16s ease-in-out infinite; }
+.animate-orb-2 { animation: orb-drift-2 20s ease-in-out infinite; }
+.animate-orb-3 { animation: orb-drift-3 13s ease-in-out infinite; }
+
+/* ─── Streak Celebration overlay ─────────────────────────────────────────── */
+@keyframes streak-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes streak-card-in {
+  0%   { opacity: 0; transform: scale(0.72) translateY(28px); }
+  65%  { transform: scale(1.04) translateY(-5px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes streak-card-out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.88) translateY(12px); }
+}
+@keyframes streak-number-pop {
+  0%   { transform: scale(0.3) rotate(-12deg); opacity: 0; }
+  55%  { transform: scale(1.22) rotate(4deg);  opacity: 1; }
+  78%  { transform: scale(0.94) rotate(-2deg); }
+  100% { transform: scale(1)    rotate(0deg);  opacity: 1; }
+}
+@keyframes countdown-shrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+@keyframes shimmer-once {
+  0%   { transform: translateX(-120%) skewX(-12deg); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(220%)  skewX(-12deg); opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* STREAK CELEBRATION — CINEMATIC FULL-SCREEN                                 */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Screen shake on entry */
+@keyframes streak-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10%      { transform: translate(-8px, -6px) rotate(-0.5deg); }
+  20%      { transform: translate(6px, -8px) rotate(0.3deg); }
+  30%      { transform: translate(-6px, 7px) rotate(-0.3deg); }
+  40%      { transform: translate(5px, -5px) rotate(0.2deg); }
+  50%      { transform: translate(-4px, 4px) rotate(-0.1deg); }
+  60%      { transform: translate(3px, -3px) rotate(0.1deg); }
+  70%      { transform: translate(-2px, 2px) rotate(0); }
+  80%      { transform: translate(1px, -1px) rotate(0); }
+  90%      { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Animated gradient background */
+@keyframes streak-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating orbs in background */
+@keyframes streak-orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-40px, 50px) scale(1.15); }
+  66%      { transform: translate(30px, -30px) scale(0.9); }
+}
+@keyframes streak-orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%      { transform: translate(50px, -40px) scale(1.1); }
+  80%      { transform: translate(-30px, 35px) scale(0.95); }
+}
+@keyframes streak-orb-float-3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-45%, -55%) scale(1.08); }
+}
+
+/* Light rays pulsing */
+@keyframes streak-ray-pulse {
+  0%, 100% { opacity: 0.2; stroke-width: 2; }
+  50%      { opacity: 0.5; stroke-width: 3; }
+}
+
+/* Content zoom entrance */
+@keyframes streak-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4) translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Content zoom exit */
+@keyframes streak-zoom-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.7) translateY(80px);
+  }
+}
+
+/* Pulsing ring from center */
+@keyframes streak-ring-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Glowing corona pulse */
+@keyframes streak-glow-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* Flame pop entrance */
+@keyframes streak-flame-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-45deg);
+  }
+  70% {
+    transform: scale(1.12) rotate(8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Large streak number scale */
+@keyframes streak-number-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-30deg);
+  }
+  65% {
+    transform: scale(1.18) rotate(6deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Character-by-character text entrance */
+@keyframes streak-char-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.5) rotateY(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateY(0deg);
+  }
+}
+
+/* Subtitle fade in */
+@keyframes streak-subtitle-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badge entrance */
+@keyframes streak-badge-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  70% {
+    transform: scale(1.1) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Button entrance */
+@keyframes streak-button-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(30px);
+  }
+  70% {
+    transform: scale(1.08) translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Button shine sweep */
+@keyframes streak-shine {
+  0% {
+    transform: translateX(-300%) skewX(-20deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(300%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.streak-overlay-in  { animation: streak-overlay-in  0.3s ease-out    forwards; }
+.streak-card-in     { animation: streak-card-in     0.55s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.streak-card-out    { animation: streak-card-out    0.28s ease-in     forwards; }
+.streak-number-pop  { animation: streak-number-pop  0.75s cubic-bezier(0.34,1.56,0.64,1) 0.25s both; }
+
+/* Glass shimmer sweep (runs once after card enters) */
+.streak-shimmer-once {
+  position: relative;
+  overflow: hidden;
+}
+.streak-shimmer-once::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.09) 50%, transparent 65%);
+  animation: shimmer-once 1.2s ease-out 0.6s 1 forwards;
+  pointer-events: none;
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }

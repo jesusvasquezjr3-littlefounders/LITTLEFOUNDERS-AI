@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Rocket, Star, Zap, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
+import { savePendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
@@ -116,13 +117,56 @@ const Register = () => {
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
+        // Merge guest profile data into account if it exists
+        const guestRaw = localStorage.getItem('lf_guest_profile');
+        if (guestRaw) {
+          try {
+            const guestProfile = JSON.parse(guestRaw);
+            // 1. Save backup BEFORE touching the main key
+            savePendingMerge(guestProfile);
+            // 2. Remove the guest key — user is now registered
+            localStorage.removeItem('lf_guest_profile');
+            // 3. Attempt the merge
+            try {
+              const mergeRes = await fetch(`${API_URL}/auth/merge-guest`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.access_token}` },
+                body: JSON.stringify({
+                  name: guestProfile.name,
+                  age: guestProfile.age,
+                  interests: guestProfile.interests,
+                  experience_level: guestProfile.experience_level,
+                  preferred_language: guestProfile.preferred_language,
+                  xp: guestProfile.xp,
+                  current_streak: guestProfile.current_streak ?? 1,
+                  steps_completed: 5,
+                }),
+              });
+              if (mergeRes.ok) {
+                // 4. Success — clear the backup and apply an optimistic update to the
+                //    locally stored user so the dashboard shows the earned XP/streak
+                //    immediately without waiting for an API refetch.
+                clearPendingMerge();
+                const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                localStorage.setItem('user', JSON.stringify({
+                  ...storedUser,
+                  points_earned: (storedUser.points_earned || 0) + (guestProfile.xp || 0),
+                  current_streak: Math.max(storedUser.current_streak || 0, guestProfile.current_streak || 1),
+                  max_streak: Math.max(storedUser.max_streak || 0, guestProfile.max_streak || 1),
+                }));
+              }
+              // If merge returns non-OK: backup key stays, retry on next dashboard load
+            } catch { /* network error — backup key stays for retry */ }
+          } catch { /* JSON parse failed — skip merge */ }
+        }
+
         playSound('auth_success');
         toast({
           title: t('auth:messages.register_success'),
           description: t('auth:messages.register_success_subtitle'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
-        setTimeout(() => navigate('/welcome'), 500);
+        setTimeout(() => navigate('/dashboard'), 500);
       } else {
         playSound('auth_error');
         toast({

@@ -10,6 +10,7 @@ from auth.schemas import (
     UserUpdate,
     UserResponse,
     SupabaseAuthRequest,
+    GuestMergeRequest,
 )
 import requests
 from auth.utils import create_access_token, verify_token, get_token_issued_at
@@ -353,4 +354,74 @@ async def update_language_preference(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update language preference"
+        )
+
+
+@router.post("/merge-guest")
+async def merge_guest_data(
+    payload: GuestMergeRequest,
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Merge onboarding data collected from a guest session into the authenticated user's account.
+    Called once after registration or OAuth login when lf_guest_profile exists in localStorage.
+    Non-destructive: only fills missing fields; never overwrites existing user data.
+    """
+    try:
+        # Only update name if user doesn't already have one
+        if payload.name and not getattr(current_user, 'name', None):
+            current_user.name = payload.name
+
+        # Store language preference if set by onboarding
+        if payload.preferred_language and payload.preferred_language in ('es', 'en'):
+            current_user.preferred_language = payload.preferred_language
+
+        # Apply XP — non-destructive: only when user has 0 points (fresh account)
+        if payload.xp and payload.xp > 0:
+            if not getattr(current_user, 'points_earned', None):
+                current_user.points_earned = payload.xp
+
+        # Apply streak — non-destructive: only when user has no active streak
+        if payload.current_streak and payload.current_streak > 0:
+            if not getattr(current_user, 'current_streak', None):
+                current_user.current_streak = payload.current_streak
+                current_user.max_streak = max(
+                    getattr(current_user, 'max_streak', 0) or 0,
+                    payload.current_streak,
+                )
+
+        db.commit()
+
+        # Log analytics (best-effort, non-blocking)
+        try:
+            db.execute(
+                """
+                INSERT INTO onboarding_analytics
+                    (user_id, name_provided, age, interests, experience_level, preferred_language,
+                     onboarding_completed_at, steps_completed, converted_to_user)
+                VALUES
+                    (:uid, :name, :age, :interests::jsonb, :exp, :lang, NOW(), :steps, TRUE)
+                """,
+                {
+                    "uid": current_user.id,
+                    "name": payload.name,
+                    "age": payload.age,
+                    "interests": __import__('json').dumps(payload.interests or []),
+                    "exp": payload.experience_level,
+                    "lang": payload.preferred_language,
+                    "steps": payload.steps_completed or 0,
+                }
+            )
+            db.commit()
+        except Exception:
+            db.rollback()  # Non-critical — analytics failure should not fail the request
+
+        return {"status": "merged"}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to merge guest data: {str(e)}"
         )

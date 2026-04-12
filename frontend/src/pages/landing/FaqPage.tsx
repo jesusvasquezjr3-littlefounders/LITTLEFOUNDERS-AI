@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { LandingLayout } from '@/components/landing/LandingLayout';
-import { DemoShowreelPlayer } from '@/components/demo/DemoShowreelPlayer';
+import { ShowreelPlayer } from '@/components/showreel/ShowreelPlayer';
 import { useTranslation, Trans } from 'react-i18next';
 
 import {
@@ -34,7 +34,7 @@ export default function FaqPage() {
                         minWidth: "calc(100vh * 16 / 9)",
                     }}
                 >
-                    <DemoShowreelPlayer playerRef={playerRef} />
+                    <ShowreelPlayer playerRef={playerRef} />
                 </div>
                 
                 {/* Scroll Indicator */}

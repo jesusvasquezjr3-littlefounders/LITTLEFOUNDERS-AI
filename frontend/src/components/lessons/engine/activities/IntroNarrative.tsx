@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { DinoCharacter } from '@/components/demo/DinoCharacter';
-import { DinaCharacter } from '@/components/demo/DinaCharacter';
-import DrRhoCharacter from '@/components/demo/DrRhoCharacter';
-import ZaraVexCharacter from '@/components/demo/ZaraVexCharacter';
+import { DinoCharacter } from '@/components/characters/DinoCharacter';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
+import ZaraVexCharacter from '@/components/characters/ZaraVexCharacter';
 
 interface IntroNarrativeProps {
     exercise?: any;

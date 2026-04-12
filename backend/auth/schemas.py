@@ -57,3 +57,14 @@ class UserResponse(BaseModel):
 
 class SupabaseAuthRequest(BaseModel):
     access_token: str
+
+
+class GuestMergeRequest(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    interests: Optional[list] = None
+    experience_level: Optional[str] = None
+    preferred_language: Optional[str] = None
+    xp: Optional[int] = 0
+    current_streak: Optional[int] = 0
+    steps_completed: Optional[int] = 0

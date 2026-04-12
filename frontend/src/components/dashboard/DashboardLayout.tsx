@@ -4,6 +4,9 @@ import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import { GuestBanner } from "@/components/auth/GuestBanner";
+import { isGuest } from "@/lib/guestProfile";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -11,6 +14,9 @@ interface DashboardLayoutProps {
 
 // Layout principal del panel de Littlefounders
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { t } = useTranslation('dashboard');
+  const showGuestBanner = isGuest() && !localStorage.getItem('user');
+
   // Initialize from localStorage or default to true (collapsed by default)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Check if running in browser
@@ -47,7 +53,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             "flex-1 p-6 overflow-y-auto transition-all duration-300",
             // Desktop: dynamic margin for sidebar
             !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
-          )} aria-label="Contenido principal">
+          )} aria-label={t('layout.main_content_aria')}>
+            {/* Guest banner — appears on every page for non-authenticated guests */}
+            {showGuestBanner && <GuestBanner />}
             {children}
           </main>
         </div>

@@ -31,7 +31,7 @@ import esAdventures from './locales/es/adventures.json';
 import esSettings from './locales/es/settings.json';
 import esAvatar from './locales/es/avatar.json';
 import esAdmin from './locales/es/admin.json';
-import esDemo from './locales/es/demo.json';
+import esOnboarding from './locales/es/onboarding.json';
 import esGames from './locales/es/games.json';
 import esHackerDefense from './locales/es/hackerDefense.json';
 import esChronoBloom from './locales/es/chronoBloom.json';
@@ -48,7 +48,7 @@ import enAdventures from './locales/en/adventures.json';
 import enSettings from './locales/en/settings.json';
 import enAvatar from './locales/en/avatar.json';
 import enAdmin from './locales/en/admin.json';
-import enDemo from './locales/en/demo.json';
+import enOnboarding from './locales/en/onboarding.json';
 import enGames from './locales/en/games.json';
 import enHackerDefense from './locales/en/hackerDefense.json';
 import enChronoBloom from './locales/en/chronoBloom.json';
@@ -84,7 +84,7 @@ const resources = {
         settings: esSettings,
         avatar: esAvatar,
         admin: esAdmin,
-        demo: esDemo,
+        onboarding: esOnboarding,
         games: esGames,
         hackerDefense: esHackerDefense,
         chronoBloom: esChronoBloom,
@@ -102,7 +102,7 @@ const resources = {
         settings: enSettings,
         avatar: enAvatar,
         admin: enAdmin,
-        demo: enDemo,
+        onboarding: enOnboarding,
         games: enGames,
         hackerDefense: enHackerDefense,
         chronoBloom: enChronoBloom,

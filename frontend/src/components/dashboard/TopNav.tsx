@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSound } from "@/contexts/SoundContext";
 import { notificationsApi, type NotificationItem } from "@/lib/api/notifications";
+import { isGuest, getGuestProfile } from "@/lib/guestProfile";
 
 const NOTIFICATION_TYPE_CONFIG: Record<string, { icon: any; bgClass: string }> = {
   follow_request: { icon: UserPlus, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
@@ -56,6 +57,8 @@ export function TopNav() {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { playSound } = useSound();
+  const guestMode = isGuest() && !localStorage.getItem('user');
+  const guestProfile = guestMode ? getGuestProfile() : null;
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -189,8 +192,8 @@ export function TopNav() {
         {/* Points Stat */}
         <div className={cn(
           "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
-          user?.points_earned > 0 
-            ? "border-amber-500/20 shadow-sm shadow-amber-500/5 group hover:scale-105" 
+          (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0))
+            ? "border-amber-500/20 shadow-sm shadow-amber-500/5 group hover:scale-105"
             : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
         )}>
           <div className="w-8 h-8 flex items-center justify-center">
@@ -199,17 +202,17 @@ export function TopNav() {
           </div>
           <span className={cn(
             "text-base font-black leading-none",
-            user?.points_earned > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"
+            (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0)) ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"
           )}>
-            {user?.points_earned?.toLocaleString() || 0}
+            {guestMode ? (guestProfile?.xp ?? 0) : (user?.points_earned?.toLocaleString() || 0)}
           </span>
         </div>
 
         {/* Streak Stat */}
         <div className={cn(
           "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
-          user?.current_streak > 0 
-            ? "border-rose-500/20 shadow-sm shadow-rose-500/5 group hover:scale-105" 
+          (user?.current_streak > 0 || (guestMode && (guestProfile?.current_streak ?? 0) > 0))
+            ? "border-rose-500/20 shadow-sm shadow-rose-500/5 group hover:scale-105"
             : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
         )}>
           <div className="w-8 h-8 flex items-center justify-center">
@@ -218,9 +221,9 @@ export function TopNav() {
           </div>
           <span className={cn(
             "text-base font-black leading-none",
-            user?.current_streak > 0 ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"
+            (user?.current_streak > 0 || (guestMode && (guestProfile?.current_streak ?? 0) > 0)) ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"
           )}>
-            {user?.current_streak || 0}
+            {guestMode ? (guestProfile?.current_streak ?? 0) : (user?.current_streak || 0)}
           </span>
         </div>
       </div>
@@ -239,8 +242,15 @@ export function TopNav() {
         {/* Theme Toggle */}
         <ThemeToggle />
 
-        {/* Notifications */}
-        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        {/* Guest CTA — shown instead of bell + avatar */}
+        {guestMode && (
+          <Button asChild size="sm" className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold shadow-lg shadow-purple-500/20 text-xs h-9 px-3">
+            <Link to="/register">{t('guest.create_account')}</Link>
+          </Button>
+        )}
+
+        {/* Notifications — only for authenticated users */}
+        {!guestMode && <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
@@ -341,9 +351,10 @@ export function TopNav() {
               )}
             </div>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu>}
 
-        {/* User Menu */}
+        {/* User Menu — only for authenticated users */}
+        {!guestMode && <>{/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm transition-transform hover:scale-105 ring-2 ring-indigo-500/70 ring-offset-2 dark:ring-offset-slate-900">
@@ -450,7 +461,7 @@ export function TopNav() {
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu></>}
       </div>
     </header>
 

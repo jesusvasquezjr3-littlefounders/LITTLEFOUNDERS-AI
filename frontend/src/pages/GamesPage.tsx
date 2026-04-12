@@ -3,16 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play, BookOpen, Users, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DemoBanner } from "@/components/demo/DemoBanner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { AssetImg } from "@/components/ui/AssetImg";
-
-interface GamesPageProps {
-  isDemo?: boolean;
-  Layout?: React.ComponentType<{ children: React.ReactNode }>;
-}
 
 interface GameCard {
   id: string;
@@ -22,7 +16,6 @@ interface GameCard {
   gif: string;
   fallbackEmojis: string[];
   accentColor: string;
-  isDemo: boolean;
   ageGroup: '5-7' | '8-9' | '10-12';
   descriptionKey: string;
 }
@@ -44,7 +37,7 @@ const ALL_GAMES: GameCard[] = [
     gif: NAM_VS_YUM_GIF,
     fallbackEmojis: ['🦎', 'VS', '👾'],
     accentColor: 'green',
-    isDemo: true,
+  
     ageGroup: '5-7',
     descriptionKey: 'namVsYum',
   },
@@ -56,7 +49,7 @@ const ALL_GAMES: GameCard[] = [
     gif: NECTAR_GIF,
     fallbackEmojis: ['🍋', '&', '💎'],
     accentColor: 'indigo',
-    isDemo: true,
+  
     ageGroup: '5-7',
     descriptionKey: 'nectar',
   },
@@ -68,7 +61,7 @@ const ALL_GAMES: GameCard[] = [
     gif: PAPER_DETECTIVE_GIF,
     fallbackEmojis: ['🔍', '&', '💰'],
     accentColor: 'amber',
-    isDemo: true,
+  
     ageGroup: '5-7',
     descriptionKey: 'paperDetective',
   },
@@ -80,7 +73,7 @@ const ALL_GAMES: GameCard[] = [
     gif: PAPER_COIN_GIF,
     fallbackEmojis: ['🪙', '⚔️', '🏪'],
     accentColor: 'yellow',
-    isDemo: true,
+  
     ageGroup: '8-9',
     descriptionKey: 'paperCoin',
   },
@@ -92,7 +85,7 @@ const ALL_GAMES: GameCard[] = [
     gif: HACKER_DEFENSE_GIF,
     fallbackEmojis: ['🔐', '🛡️', '💻'],
     accentColor: 'green',
-    isDemo: true,
+  
     ageGroup: '10-12',
     descriptionKey: 'hackerDefense',
   },
@@ -104,14 +97,15 @@ const ALL_GAMES: GameCard[] = [
     gif: CHRONO_BLOOM_GIF,
     fallbackEmojis: ['🌱', '⏳', '💰'],
     accentColor: 'emerald',
-    isDemo: true,
+  
     ageGroup: '8-9',
     descriptionKey: 'chronoBloom',
   },
 ];
 
-export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: GamesPageProps) {
-  const { t } = useTranslation(['games', 'common', 'demo']);
+export default function GamesPage() {
+  const Layout = DashboardLayout;
+  const { t } = useTranslation(['games', 'common']);
   const navigate = useNavigate();
   // Group games by age group
   const gamesByAge = ALL_GAMES.reduce((acc, game) => {
@@ -145,7 +139,6 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
   return (
     <Layout>
       <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
-        {isDemo && <DemoBanner message={t('demo:demo_banner.games')} />}
         {/* Premium Header Section */}
         <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-orange-500/10 dark:border-orange-500/5 shadow-2xl">
           {/* Ambient Glows */}
@@ -183,12 +176,12 @@ export default function GamesPage({ isDemo = false, Layout = DashboardLayout }: 
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-              {games.filter(g => !isDemo || g.isDemo).map((game) => (
+              {games.map((game) => (
                 <div key={game.id} className="group relative">
                   <HoverCard openDelay={200}>
                     <HoverCardTrigger asChild>
                       <button
-                        onClick={() => navigate(isDemo ? `/demo${game.path}` : game.path)}
+                        onClick={() => navigate(game.path)}
                         className={cn(
                           "relative overflow-hidden rounded-3xl w-full",
                           "liquid-glass",
