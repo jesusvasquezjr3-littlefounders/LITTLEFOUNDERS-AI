@@ -1,0 +1,261 @@
+{
+  "version": "1.0",
+  "description": "Reglas pedagógicas absolutas por aventura. El generador DEBE cumplirlas sin excepción.",
+
+  "characters": {
+    "liruf": {
+      "name": "Liruf",
+      "species": "Dinosaurio amigable",
+      "personality": "Curioso, juguetón, entusiasta. Habla en frases simples y con mucho cariño. Celebra cada logro.",
+      "moods": ["happy", "excited", "thinking", "sad"],
+      "adventures": [1, 2]
+    },
+    "dina": {
+      "name": "Dina",
+      "species": "Exploradora joven",
+      "personality": "Aventurera, inteligente, práctica. Le gustan los retos y los números.",
+      "moods": ["neutral", "happy", "surprised", "wink"],
+      "adventures": [2, 3]
+    },
+    "dr_rho": {
+      "name": "Dr. Rho",
+      "species": "Científico sabio",
+      "personality": "Analítico, paciente, didáctico. Usa analogías y ejemplos del mundo real.",
+      "moods": ["wise", "surprised", "curious"],
+      "adventures": [3, 4, 5]
+    },
+    "zara_vex": {
+      "name": "Zara Vex",
+      "species": "Emprendedora cósmica",
+      "personality": "Estratégica, apasionada, visionaria. Habla de metas grandes y posibilidades.",
+      "moods": ["happy", "excited", "curious"],
+      "adventures": [4, 5, 6]
+    }
+  },
+
+  "lesson_structure_template": {
+    "description": "Patrón pedagógico obligatorio: Conectar → Enseñar → Practicar → Reforzar → Cerrar",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Conectar",
+        "activity_types": ["intro_narrative"],
+        "purpose": "Activar conocimiento previo. Introducir el escenario de la lección con una micro-historia. El personaje habla directamente al niño.",
+        "rules": ["Incluir el nombre del concepto de forma natural", "Conectar con algo que el niño ya conoce", "Generar curiosidad o intriga"]
+      },
+      {
+        "phase": 2,
+        "name": "Enseñar",
+        "activity_types": ["intro_narrative", "true_false", "tap_action", "multiple_choice"],
+        "purpose": "Introducción guiada del concepto. Actividad de reconocimiento con feedback inmediato.",
+        "rules": ["Presentar UNA sola idea", "Usar ejemplos concretos y cotidianos", "No asumir conocimiento previo del concepto"]
+      },
+      {
+        "phase": 3,
+        "name": "Practicar",
+        "activity_types": "VARIES_BY_ADVENTURE",
+        "purpose": "Actividad principal de la lección. El niño aplica el concepto aprendido.",
+        "rules": ["La actividad principal debe coincidir con el tipo de habilidad que se practica", "Dar opciones claras y no ambiguas", "El feedback de error debe sugerir la respuesta correcta sin darla directamente"]
+      },
+      {
+        "phase": 4,
+        "name": "Reforzar",
+        "activity_types": "VARIES_BY_ADVENTURE",
+        "purpose": "Variación o extensión de la actividad principal. Consolida el aprendizaje.",
+        "rules": ["Diferente presentación del mismo concepto", "Puede ser más desafiante que la fase 3", "Siempre con feedback motivador"]
+      },
+      {
+        "phase": 5,
+        "name": "Cerrar",
+        "activity_types": ["intro_narrative"],
+        "purpose": "El personaje celebra el logro, resume lo aprendido en UNA frase, y genera expectativa para la siguiente lección.",
+        "rules": ["Celebrar el esfuerzo, no solo el resultado", "Resumir en máximo 2 oraciones", "Terminar con emoción positiva"]
+      }
+    ]
+  },
+
+  "adventures": {
+    "1": {
+      "age_range": "5-7",
+      "title": "El Archipiélago del Trueque",
+      "reading_level": "Pre-lector a lector inicial. Puede no saber leer. Las instrucciones deben entenderse con imágenes.",
+      "cognitive_stage": "Pensamiento concreto. No puede manejar abstracciones. Todo debe ser tangible y visual.",
+      "primary_character": "liruf",
+      "secondary_character": "dina",
+      "language_rules": {
+        "max_words_per_sentence": 10,
+        "max_syllables_per_word": 3,
+        "forbidden_words": ["porcentaje", "interés", "crédito", "inflación", "inversión", "deuda", "dividendo", "activo", "pasivo"],
+        "required_style": "Oraciones simples. Sujeto + verbo + objeto. Nada de subordinadas.",
+        "use_emojis": true,
+        "emoji_in_all_options": true,
+        "vocabulary_examples": ["moneda", "billete", "alcancía", "dinero", "comprar", "guardar", "precio", "caro", "barato", "necesito", "quiero"]
+      },
+      "activity_constraints": {
+        "allowed_types": ["intro_narrative", "tap_action", "multiple_choice", "true_false", "matching_pairs", "coin_counter", "sequencing"],
+        "forbidden_types": ["math_challenge", "estimation_slider", "budget_builder", "credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "interest_calculator", "salary_comparison"],
+        "max_options_per_question": 3,
+        "max_items_to_sequence": 3,
+        "max_matching_pairs": 3,
+        "exercises_per_lesson": {"min": 4, "max": 5}
+      },
+      "content_rules": {
+        "numbers": {"max_value": 20, "use_whole_numbers_only": true},
+        "money_denominations": ["$1", "$2", "$5", "$10", "moneda de 1 peso", "moneda de 5 pesos", "billete de 10 pesos"],
+        "scenarios_must_be": ["familiares", "cotidianos", "del hogar o escuela", "con personajes animales o fantásticos amigables"],
+        "feedback_error_tone": "Amable, nunca crítico. 'Casi lo tienes', '¡Inténtalo de nuevo!', 'Mira bien...'",
+        "feedback_success_tone": "Entusiasta, celebratorio. '¡Perfecto!', '¡Lo lograste!', '¡Eres increíble!'"
+      },
+      "progression_within_adventure": "Cada saga introduce UN concepto nuevo. Cada topic introduce UNA sub-habilidad. Cada lección enseña UNA micro-habilidad. Nunca saltar niveles."
+    },
+
+    "2": {
+      "age_range": "8-9",
+      "title": "El Bosque de la Abundancia",
+      "reading_level": "Lector funcional. Puede leer frases cortas sin apoyo de imagen.",
+      "cognitive_stage": "Operaciones concretas. Puede manejar sumas y restas, comparaciones, lógica básica.",
+      "primary_character": "dina",
+      "secondary_character": "liruf",
+      "language_rules": {
+        "max_words_per_sentence": 15,
+        "max_syllables_per_word": 4,
+        "forbidden_words": ["crédito", "inflación", "derivados", "portafolio", "hipoteca", "dividendo"],
+        "required_style": "Frases claras. Puede haber una subordinada simple. Usar vocabulario del mundo real.",
+        "use_emojis": true,
+        "emoji_in_all_options": false,
+        "vocabulary_examples": ["presupuesto", "ahorro", "gasto", "ingreso", "precio", "descuento", "cambio", "ticket", "meta", "negocio"]
+      },
+      "activity_constraints": {
+        "allowed_types": ["intro_narrative", "tap_action", "multiple_choice", "true_false", "matching_pairs", "coin_counter", "sequencing", "math_challenge", "classification", "fill_blank", "shop_sim", "price_detective", "word_scramble", "estimation_slider", "story_mode"],
+        "forbidden_types": ["credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "market_reaction", "salary_comparison", "quiz_battle"],
+        "max_options_per_question": 4,
+        "max_items_to_sequence": 4,
+        "max_matching_pairs": 4,
+        "exercises_per_lesson": {"min": 4, "max": 6}
+      },
+      "content_rules": {
+        "numbers": {"max_value": 1000, "use_whole_numbers_only": true, "decimals_allowed": false},
+        "math_operations": ["suma", "resta", "multiplicación simple (2x, 5x, 10x)", "comparar precios"],
+        "scenarios_must_be": ["escuela", "hogar", "tienda del barrio", "mercado", "viaje corto"],
+        "feedback_error_tone": "Constructivo. '¿Recuerdas cuando...?', 'Inténtalo otra vez', 'Mira el número'",
+        "feedback_success_tone": "Motivador. '¡Exacto!', '¡Bien calculado!', '¡Genial!'"
+      }
+    },
+
+    "3": {
+      "age_range": "10-12",
+      "title": "La Ciudad Digital",
+      "reading_level": "Lector competente. Puede leer párrafos cortos.",
+      "cognitive_stage": "Operaciones formales iniciales. Puede manejar hipótesis simples, porcentajes, gráficas básicas.",
+      "primary_character": "dr_rho",
+      "secondary_character": "dina",
+      "language_rules": {
+        "max_words_per_sentence": 20,
+        "max_syllables_per_word": 6,
+        "forbidden_words": ["derivados financieros", "opciones y futuros", "apalancamiento", "short selling"],
+        "required_style": "Lenguaje claro y preciso. Introduce términos técnicos explicándolos inmediatamente. Puede usar metáforas.",
+        "use_emojis": false,
+        "vocabulary_examples": ["banco", "cuenta", "tarjeta de débito", "transferencia", "oferta", "demanda", "impuesto", "costo", "ganancia", "pérdida", "interés simple", "presupuesto mensual"]
+      },
+      "activity_constraints": {
+        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "shop_sim", "price_detective", "estimation_slider", "story_mode", "roleplay_chat", "budget_builder", "savings_race", "risk_reward", "spot_trap", "interest_calculator", "concept_builder"],
+        "forbidden_types": ["credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "salary_comparison", "debt_strategy"],
+        "max_options_per_question": 4,
+        "max_items_to_sequence": 5,
+        "exercises_per_lesson": {"min": 3, "max": 6}
+      },
+      "content_rules": {
+        "numbers": {"max_value": 100000, "decimals_allowed": true, "max_decimal_places": 2},
+        "math_operations": ["porcentajes", "interés simple", "proporciones", "estadística básica"],
+        "scenarios_must_be": ["ciudad moderna", "plataformas digitales", "banco", "startup", "mercado local"],
+        "introduce_real_concepts": true
+      }
+    },
+
+    "4": {
+      "age_range": "13-14",
+      "title": "El Valle de los Inventores",
+      "reading_level": "Lector avanzado. Puede manejar textos complejos.",
+      "cognitive_stage": "Pensamiento formal. Puede razonar sobre escenarios hipotéticos, causa-efecto complejo.",
+      "primary_character": "dr_rho",
+      "secondary_character": "zara_vex",
+      "language_rules": {
+        "max_words_per_sentence": 25,
+        "required_style": "Lenguaje técnico apropiado con explicaciones. Puede usar datos reales. Argumentativo.",
+        "use_emojis": false,
+        "vocabulary_examples": ["margen", "punto de equilibrio", "flujo de caja", "capital", "inversión", "rendimiento", "riesgo", "demanda elástica", "marca", "diferenciación"]
+      },
+      "activity_constraints": {
+        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "budget_builder", "risk_reward", "spot_trap", "market_reaction", "concept_builder", "roleplay_chat", "story_mode", "quiz_battle", "bill_splitter", "opportunity_cost", "mindset_comparison", "goal_roadmap", "expense_timeline"],
+        "forbidden_types": ["coin_counter", "tap_action"],
+        "max_options_per_question": 5,
+        "exercises_per_lesson": {"min": 3, "max": 7}
+      },
+      "content_rules": {
+        "scenarios_must_be": ["negocios reales o realistas", "decisiones financieras de jóvenes", "emprendimiento escolar o juvenil"],
+        "use_real_world_data": true,
+        "encourage_critical_thinking": true
+      }
+    },
+
+    "5": {
+      "age_range": "15-17",
+      "title": "El Reino de los Titanes",
+      "reading_level": "Adulto joven. Maneja textos complejos sin problema.",
+      "cognitive_stage": "Pensamiento adulto complejo. Puede integrar múltiples variables, evaluar riesgo, planificar a largo plazo.",
+      "primary_character": "zara_vex",
+      "secondary_character": "dr_rho",
+      "language_rules": {
+        "max_words_per_sentence": 30,
+        "required_style": "Lenguaje profesional. Terminología financiera real con precisión. Puede citar leyes o conceptos legales básicos.",
+        "use_emojis": false,
+        "vocabulary_examples": ["historial crediticio", "tasa de interés anual", "amortización", "cartera diversificada", "capital de riesgo", "valuación", "EBITDA básico", "ISR", "IMSS", "SAR"]
+      },
+      "activity_constraints": {
+        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "budget_builder", "risk_reward", "spot_trap", "market_reaction", "concept_builder", "roleplay_chat", "story_mode", "quiz_battle", "bill_splitter", "opportunity_cost", "credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "interest_calculator", "salary_comparison", "subscription_tracker", "emergency_fund", "passive_income", "mystery_investment", "savings_race", "impact_meter", "goal_roadmap", "expense_timeline", "mindset_comparison"],
+        "forbidden_types": ["coin_counter", "tap_action", "word_scramble"],
+        "exercises_per_lesson": {"min": 3, "max": 8}
+      },
+      "content_rules": {
+        "scenarios_must_be": ["vida adulta real", "primer empleo", "independencia económica", "Mexico y Latinoamérica"],
+        "use_real_world_data": true,
+        "use_real_laws_and_institutions": true,
+        "challenge_level": "high"
+      }
+    },
+
+    "6": {
+      "age_range": "18+",
+      "title": "Proyecto Omega",
+      "reading_level": "Adulto. Sin restricciones.",
+      "cognitive_stage": "Síntesis y aplicación. Integra todos los conceptos aprendidos en escenarios complejos del mundo real.",
+      "primary_character": "zara_vex",
+      "secondary_character": "dr_rho",
+      "language_rules": {
+        "required_style": "Lenguaje experto. Sin simplificaciones. Datos y terminología del mundo financiero real.",
+        "use_emojis": false
+      },
+      "activity_constraints": {
+        "allowed_types": "ALL",
+        "exercises_per_lesson": {"min": 3, "max": 10}
+      },
+      "content_rules": {
+        "scenarios_must_be": ["casos de estudio reales o basados en eventos reales", "integración de múltiples conceptos", "decisiones de alto impacto"],
+        "challenge_level": "expert",
+        "require_justification": true
+      }
+    }
+  },
+
+  "universal_rules": {
+    "json_schema": "Todo ejercicio DEBE tener: type, character_code, content (con instruction o statement), feedback (success + error) cuando hay correct_answer. Los campos deben seguir exactamente el schema del Lesson Engine.",
+    "feedback": {
+      "success_must": "Ser específico al concepto aprendido, no genérico. No solo '¡Bien!' sino '¡Correcto! Las monedas son redondas.'",
+      "error_must": "Ser amable y orientador. Nunca decir 'equivocado' o 'incorrecto' sin una pista. Siempre dejar la puerta abierta."
+    },
+    "character_voice": "El character_code en el intro_narrative define quién habla. La voz debe ser coherente con la personalidad del personaje.",
+    "bilingual": "content_es y content_en deben ser traducciones fieles y naturales entre sí. No es traducción literal, es adaptación natural.",
+    "no_repetition": "Dentro de una misma lección, no repetir el mismo tipo de actividad dos veces seguidas.",
+    "quality_threshold": "Si el contenido de una lección no pasaría una revisión pedagógica de un experto en educación infantil financiera, no es aceptable."
+  }
+}
