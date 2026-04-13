@@ -32,7 +32,7 @@ const Register = () => {
     const user = localStorage.getItem('user');
 
     if (token || user) {
-      navigate('/dashboard');
+      navigate('/learn');
     }
   }, [navigate]);
 
@@ -166,7 +166,7 @@ const Register = () => {
           description: t('auth:messages.register_success_subtitle'),
           className: "bg-green-50 border-green-200 text-green-800"
         });
-        setTimeout(() => navigate('/dashboard'), 500);
+        setTimeout(() => navigate('/learn'), 500);
       } else {
         playSound('auth_error');
         toast({

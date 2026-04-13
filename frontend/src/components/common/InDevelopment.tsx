@@ -27,7 +27,7 @@ export const InDevelopment = () => {
             </div>
             <div className="flex flex-col items-center gap-4">
                 <Button
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate('/learn')}
                     size="lg"
                     className="rounded-full px-8 shadow-lg hover:shadow-blue-500/25 transition-all"
                 >

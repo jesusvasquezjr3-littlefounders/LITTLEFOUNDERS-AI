@@ -22,8 +22,8 @@ export function ParentProtectedRoute({ children }: ParentProtectedRouteProps) {
       if (user.user_type === 'child') {
         return <Navigate to="/tasks" replace />;
       }
-      // Para otros tipos de usuario, redirigir al dashboard
-      return <Navigate to="/dashboard" replace />;
+      // Para otros tipos de usuario, redirigir a /learn
+      return <Navigate to="/learn" replace />;
     }
 
     return <>{children}</>;

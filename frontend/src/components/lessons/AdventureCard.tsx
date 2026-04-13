@@ -6,6 +6,7 @@ interface AdventureCardProps {
     status: 'available' | 'locked' | 'completed';
     progress?: number;
     ageRange?: string;
+    hideTitle?: boolean;
 }
 
 export const AdventureCard: React.FC<AdventureCardProps> = ({
@@ -14,6 +15,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     status,
     progress = 0,
     ageRange,
+    hideTitle = false,
 }) => {
     const themeClasses: Record<string, string> = {
         archipelago: 'adventure-archipelago',
@@ -25,13 +27,15 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     };
 
     return (
-        <article className={`wallpaper-card ${themeClasses[theme]} relative w-full h-[350px] rounded-[32px] overflow-hidden shadow-[0_20px_0_rgba(0,0,0,0.08)] dark:shadow-[0_20px_0_#000000] border-4 border-black/5 dark:border-white/5`}>
+        <article className={`wallpaper-card ${themeClasses[theme]} relative w-full h-full rounded-[32px] overflow-hidden shadow-[0_20px_0_rgba(0,0,0,0.08)] dark:shadow-[0_20px_0_#000000] border-4 border-black/5 dark:border-white/5`}>
             {/* Label */}
-            <div className="label absolute top-6 left-6 z-50 pointer-events-none transition-opacity duration-300">
-                <span className="text-white text-2xl font-black drop-shadow-lg">
-                    {title}
-                </span>
-            </div>
+            {!hideTitle && (
+                <div className="label absolute top-6 left-6 z-50 pointer-events-none transition-opacity duration-300">
+                    <span className="text-white text-2xl font-black drop-shadow-lg">
+                        {title}
+                    </span>
+                </div>
+            )}
 
             {/* Progress Bar */}
             {status !== 'locked' && progress > 0 && (

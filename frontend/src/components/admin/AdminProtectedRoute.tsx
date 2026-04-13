@@ -17,7 +17,7 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
     const user = JSON.parse(userStr);
 
     if (user.user_type !== 'admin') {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to="/learn" replace />;
     }
 
     return (

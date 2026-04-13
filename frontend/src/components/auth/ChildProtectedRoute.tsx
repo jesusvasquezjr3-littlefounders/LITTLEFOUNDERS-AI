@@ -21,8 +21,8 @@ export function ChildProtectedRoute({ children }: ChildProtectedRouteProps) {
       // Si es padre/tutor, redirigir a la página de gestión de tareas
       if (user.user_type === 'tutor') {
         return <Navigate to="/admin/dashboard" replace />;
-      }// Para otros tipos de usuario, redirigir al dashboard
-      return <Navigate to="/dashboard" replace />;
+      }// Para otros tipos de usuario, redirigir a /learn
+      return <Navigate to="/learn" replace />;
     }
 
     return <>{children}</>;

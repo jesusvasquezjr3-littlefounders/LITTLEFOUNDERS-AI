@@ -36,7 +36,7 @@ const LandingPage = () => {
 
   // Redirect to dashboard if user already has a session
   useEffect(() => {
-    if (hasSession()) navigate('/dashboard');
+    if (hasSession()) navigate('/learn');
   }, [navigate]);
 
   const [ctaWordIndex, setCtaWordIndex] = useState(0);

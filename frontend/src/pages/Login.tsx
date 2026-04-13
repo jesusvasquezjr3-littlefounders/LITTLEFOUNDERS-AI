@@ -27,7 +27,9 @@ const Login = () => {
     const user = localStorage.getItem('user');
 
     if (token || user) {
-      navigate('/dashboard');
+      // Tutor/parent stays on dashboard; everyone else goes to /learn
+      const userType = JSON.parse(localStorage.getItem('user') || '{}')?.user_type;
+      navigate(userType === 'tutor' || userType === 'parent' ? '/dashboard' : '/learn');
     }
   }, [navigate]);
 
@@ -72,7 +74,8 @@ const Login = () => {
           className: "bg-green-50 border-green-200 text-green-800"
         });
 
-        navigate('/dashboard');
+        const userType = JSON.parse(localStorage.getItem('user') || '{}')?.user_type;
+        navigate(userType === 'tutor' || userType === 'parent' ? '/dashboard' : '/learn');
       } else {
         playSound('auth_error');
         toast({

@@ -56,18 +56,31 @@ const LessonNode: React.FC<LessonNodeProps> = ({
         }
     };
 
-    // Calculate winding position (sine wave approx)
-    // 0 -> 0, 1 -> -40, 2 -> 0, 3 -> +40
-    // Actually let's do a smoother curve: 0, -30, -40, -30, 0, 30, 40, 30
+    // Self-scrolling capability
+    React.useEffect(() => {
+        if (isCurrentLesson) {
+            // Short delay to let the DOM paint completely in accordion
+            const timer = setTimeout(() => {
+                const node = document.getElementById('current-lesson-node');
+                if (node) {
+                    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [isCurrentLesson]);
+
     const wavePattern = [0, -50, 0, 50];
     const xOffset = wavePattern[index % 4];
 
     return (
         <div
-            className="relative flex items-center justify-center py-4 z-10"
+            id={isCurrentLesson ? 'current-lesson-node' : undefined}
+            className="relative flex items-center justify-center py-4 z-10 outline-none"
             style={{
                 transform: `translateX(${xOffset}px)`
             }}
+            tabIndex={-1}
         >
             <HoverCard openDelay={200}>
                 <HoverCardTrigger asChild>

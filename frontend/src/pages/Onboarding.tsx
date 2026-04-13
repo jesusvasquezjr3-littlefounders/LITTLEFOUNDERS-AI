@@ -407,9 +407,9 @@ export default function Onboarding() {
   // ── Guard: redirect if session already exists ─────────────────────────
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) { navigate("/dashboard"); return; }
+    if (user) { navigate("/learn"); return; }
     const guest = getGuestProfile();
-    if (guest?.onboarding_completed) { navigate("/dashboard"); return; }
+    if (guest?.onboarding_completed) { navigate("/learn"); return; }
 
     // Restore in-progress from sessionStorage
     const saved = sessionStorage.getItem("onboarding_progress");
@@ -512,7 +512,7 @@ export default function Onboarding() {
 
   const handleExplore = () => {
     sessionStorage.removeItem("onboarding_progress");
-    navigate("/dashboard");
+    navigate("/learn");
   };
 
   // ── Render ────────────────────────────────────────────────────────────

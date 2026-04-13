@@ -22,6 +22,7 @@ import AuthCallback from "./pages/AuthCallback";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Lessons from "./pages/Lessons";
+import LearnPage from "./pages/LearnPage";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";
 import Settings from "./pages/Settings";
@@ -88,6 +89,7 @@ const App = () => (
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 {/* Guest-accessible routes (requireAuth omitted = false) */}
+                {/* /dashboard — only for tutor / parent / admin users; others redirect to /learn */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Index />
@@ -100,12 +102,15 @@ const App = () => (
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* Lessons — guest-accessible */}
-                <Route path="/lessons" element={
+                {/* /learn — main home for universal / child / guest (zero-click learning) */}
+                <Route path="/learn" element={
                   <ProtectedRoute>
-                    <Lessons />
+                    <LearnPage />
                   </ProtectedRoute>
                 } />
+
+                {/* /lessons — legacy redirect to /learn */}
+                <Route path="/lessons" element={<Navigate to="/learn" replace />} />
 
                 {/* Games — guest-accessible */}
                 <Route path="/games" element={

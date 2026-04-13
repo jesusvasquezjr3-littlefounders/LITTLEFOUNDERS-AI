@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { ChildDashboard } from "@/components/dashboard/ChildDashboard";
 import { ParentDashboard } from "@/components/dashboard/ParentDashboard";
-import { UniversalDashboard } from "@/components/dashboard/UniversalDashboard";
-import { isGuest, getGuestProfile, getPendingMerge, clearPendingMerge } from "@/lib/guestProfile";
+import { isGuest, getPendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { API_URL } from "@/config/api";
 
 const Index = () => {
@@ -59,24 +57,9 @@ const Index = () => {
     retryPendingMerge();
   }, []);
 
-  // Guest users (no auth but completed onboarding) →
-  // Same full UniversalDashboard experience with a virtual user built from their profile.
+  // Guest users (no auth but completed onboarding) → /learn
   if (!user && isGuest()) {
-    const gp = getGuestProfile();
-    const virtualUser = {
-      name: gp?.name || '',
-      user_type: 'universal',
-      points_earned: gp?.xp ?? 0,
-      current_streak: gp?.current_streak ?? 0,
-      lessons_completed: gp?.lessons_completed ?? 0,
-      minutes_studied: 0,
-      avatar_config: null,
-    };
-    return (
-      <DashboardLayout>
-        <UniversalDashboard user={virtualUser} />
-      </DashboardLayout>
-    );
+    return <Navigate to="/learn" replace />;
   }
 
   // Admin users get redirected to their own panel
@@ -84,25 +67,17 @@ const Index = () => {
     return <Navigate to="/admin" replace />;
   }
 
-  // If user is a child, show the child dashboard
+  // Child users → /learn (their dashboard is under construction)
   if (user?.user_type === 'child') {
-    return (
-      <DashboardLayout>
-        <ChildDashboard user={user} />
-      </DashboardLayout>
-    );
+    return <Navigate to="/learn" replace />;
   }
 
-  // If user is universal, show the universal dashboard
+  // Universal users → /learn
   if (user?.user_type === 'universal') {
-    return (
-      <DashboardLayout>
-        <UniversalDashboard user={user} />
-      </DashboardLayout>
-    );
+    return <Navigate to="/learn" replace />;
   }
 
-  // For tutor, show the parent dashboard
+  // Tutor / Parent users — keep the dashboard for management features
   return (
     <DashboardLayout>
       <ParentDashboard user={user} />

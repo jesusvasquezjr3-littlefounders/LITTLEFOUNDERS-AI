@@ -332,5 +332,25 @@
   },
   "notices": {
     "beta_improvement": "We're working daily to bring you the best lessons; current content may evolve to be more engaging and effective."
+  },
+  "learn": {
+    "page_title": "Learn",
+    "continue_button": "Continue learning",
+    "all_completed_title": "You did it all!",
+    "all_completed_desc": "You've completed every available adventure. You're a true Expert Founder!",
+    "adventure": {
+      "expand": "View lessons",
+      "collapse": "Hide lessons",
+      "locked_cta": "Complete the previous adventure to unlock",
+      "progress": "{{completed}} of {{total}} completed",
+      "completed_badge": "Adventure Complete!"
+    },
+    "saga": {
+      "lessons_count": "{{count}} lessons",
+      "expand": "View lessons",
+      "collapse": "Hide"
+    },
+    "scroll_to_current": "Go to my lesson",
+    "beta_notice": "We're working daily to bring you the best lessons."
   }
 }

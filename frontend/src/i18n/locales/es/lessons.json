@@ -327,5 +327,25 @@
   },
   "notices": {
     "beta_improvement": "Trabajamos a diario para ofrecerte las mejores lecciones; el contenido actual llegará a cambiar para ser más atractivo y eficaz."
+  },
+  "learn": {
+    "page_title": "Aprende",
+    "continue_button": "Continuar aprendiendo",
+    "all_completed_title": "¡Lo lograste todo!",
+    "all_completed_desc": "Has completado todas las aventuras disponibles. ¡Eres un Fundador Experto!",
+    "adventure": {
+      "expand": "Ver lecciones",
+      "collapse": "Ocultar lecciones",
+      "locked_cta": "Completa la aventura anterior para desbloquear",
+      "progress": "{{completed}} de {{total}} completadas",
+      "completed_badge": "¡Aventura Completa!"
+    },
+    "saga": {
+      "lessons_count": "{{count}} lecciones",
+      "expand": "Ver lecciones",
+      "collapse": "Ocultar"
+    },
+    "scroll_to_current": "Ir a mi lección",
+    "beta_notice": "Trabajamos a diario para ofrecerte las mejores lecciones."
   }
 }
