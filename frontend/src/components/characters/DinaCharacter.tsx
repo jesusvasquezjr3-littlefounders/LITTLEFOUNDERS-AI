@@ -220,7 +220,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
             .dina-face-element { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         `}</style>
 
-            <svg id="dina-svg" viewBox="0 0 550 500" xmlns="http://www.w3.org/2000/svg" className="w-full h-full object-contain drop-shadow-2xl">
+            <svg id="dina-svg" viewBox="0 0 550 550" xmlns="http://www.w3.org/2000/svg" className="w-full h-full object-contain drop-shadow-2xl">
                 <defs>
                     <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#fb923c" }} />

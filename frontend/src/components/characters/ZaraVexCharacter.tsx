@@ -76,7 +76,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             {/* SVG - Cuerpo Completo (Delgada y Alta) */}
             <svg
                 id="zara-svg"
-                viewBox="0 0 140 340"
+                viewBox="-180 -100 500 500"
                 className="w-full h-full object-contain"
                 xmlns="http://www.w3.org/2000/svg"
             >

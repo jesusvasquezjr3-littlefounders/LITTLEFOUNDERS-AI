@@ -80,9 +80,41 @@ const LandingPage = () => {
         </div>
 
         <div className="flex-1 flex w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative items-center pb-8 lg:pb-12">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 w-full">
+          <div className="flex flex-col lg:flex-row items-center gap-3 lg:gap-8 w-full">
 
-            {/* Copy (Left) */}
+            {/* ==========================================
+                VISUAL BLOCK — first in HTML = top on mobile
+                overflow-visible so animate-float transforms aren't clipped
+                ========================================== */}
+            <div className="w-full relative h-[290px] lg:h-[600px] overflow-visible">
+              {/* Decorative Circle Background */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-pink-100 to-purple-100 dark:from-slate-800 dark:to-purple-900/30 opacity-40 dark:opacity-25 transition-colors lg:scale-125 lg:translate-x-20" style={{ borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' }}></div>
+
+              {/* Dina - large centered backdrop. Desktop: back-right */}
+              <div className="absolute bottom-0 z-0 opacity-90 animate-float left-1/2 -ml-[160px] w-[320px] h-[320px] lg:left-auto lg:ml-0 lg:-right-24 lg:w-[700px] lg:h-[700px]" style={{ animationDelay: '1.5s' }}>
+                <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
+              </div>
+
+              {/* Liruf - overlaps Dina from left */}
+              <div className="absolute bottom-0 z-20 animate-float left-0 w-[210px] h-[210px] lg:left-auto lg:right-[15rem] lg:w-[420px] lg:h-[420px]" style={{ animationDelay: '0s' }}>
+                <DinoCharacter mood="happy" className="drop-shadow-2xl" />
+              </div>
+
+              {/* Dr. Rho - closer to Dina, overlapping her right side */}
+              <div className="absolute bottom-0 z-10 animate-float right-[90px] w-[145px] h-[145px] lg:right-20 lg:bottom-10 lg:w-[300px] lg:h-[300px]" style={{ animationDelay: '2s' }}>
+                <DrRhoCharacter mood="wise" className="drop-shadow-2xl" />
+              </div>
+
+              {/* Zara - beside Rho, framing the right */}
+              <div className="absolute bottom-0 z-[15] animate-float right-[35px] w-[160px] h-[160px] lg:bottom-12 lg:right-[-5rem] lg:w-[350px] lg:h-[350px]" style={{ animationDelay: '2.5s' }}>
+                <ZaraVexCharacter mood="happy" className="drop-shadow-2xl" />
+              </div>
+            </div>
+
+            {/* ==========================================
+                COPY BLOCK — comes second in HTML, renders
+                below Visual on mobile naturally.
+                ========================================== */}
             <div className="flex-1 text-center lg:text-left space-y-5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 text-sm font-bold animate-fade-in-up">
                 <span className="relative flex h-3 w-3">
@@ -107,7 +139,7 @@ const LandingPage = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-4">
-                {/* Main Adventure Button - Improved contrast in Light Mode */}
+                {/* Main Adventure Button */}
                 <Button asChild size="lg" className="h-16 px-10 text-lg rounded-full border border-slate-900/10 dark:border-white/40 bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.08)] hover:bg-white/40 hover:scale-105 transition-all duration-300 group overflow-hidden border-t-white/60">
                   <Link to="/onboarding">
                     <span className="relative z-10 flex items-center font-bold text-gray-900 dark:text-white">
@@ -117,41 +149,14 @@ const LandingPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
                 </Button>
-                
-                {/* Secondary Login Button - Added shadow for depth */}
+
+                {/* Secondary Login Button */}
                 <Button asChild variant="ghost" size="lg" className="h-16 px-10 text-lg rounded-full border border-gray-200/60 dark:border-white/10 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md shadow-[0_4px_20px_0_rgba(0,0,0,0.04)] hover:bg-gray-100/50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300">
                   <Link to="/login" className="font-bold text-gray-700 dark:text-gray-200">
                     {t('hero.login_link')}
                   </Link>
                 </Button>
               </div>
-            </div>
-
-            {/* Visual (Right) - Characters */}
-            <div className="hidden lg:flex flex-1 w-full relative h-[600px] items-center justify-end pointer-events-none">
-              {/* Decorative Circle Background */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-pink-100 to-purple-100 dark:from-slate-800 dark:to-purple-900/30 rounded-full scale-125 translate-x-20 opacity-50 dark:opacity-30 transition-colors" style={{ borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' }}></div>
-
-              {/* Dina - BACK (Larger, Z-0) */}
-              <div className="absolute bottom-0 -right-20 w-[650px] h-[650px] z-0 animate-float pointer-events-auto opacity-90" style={{ animationDelay: '1.5s' }}>
-                <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
-              </div>
-
-              {/* Dr. Rho - MIDDLE (Next to Dina, Z-10) */}
-              <div className="absolute bottom-32 -right-5 w-[280px] h-[280px] z-10 animate-float pointer-events-auto" style={{ animationDelay: '2s' }}>
-                <DrRhoCharacter mood="wise" className="drop-shadow-2xl" />
-              </div>
-
-              {/* Zara Vex - Al otro lado de Dr. Rho */}
-              <div className="absolute bottom-36 -right-20 w-[140px] h-[300px] z-15 animate-float pointer-events-auto" style={{ animationDelay: '2.5s' }}>
-                <ZaraVexCharacter mood="happy" className="drop-shadow-2xl" />
-              </div>
-
-              {/* Dinosaur (Liruf) - FRONT (Smaller, Z-20) - Grounded */}
-              <div className="absolute bottom-0 right-64 w-[400px] h-[400px] z-20 animate-float pointer-events-auto" style={{ animationDelay: '0s' }}>
-                <DinoCharacter mood="happy" className="drop-shadow-2xl" />
-              </div>
-
             </div>
 
           </div>

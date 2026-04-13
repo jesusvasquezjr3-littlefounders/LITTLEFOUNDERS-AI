@@ -818,6 +818,9 @@
 .lesson-character {
   width: 140px;
   height: 140px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 /* Speech bubble - readable on mobile */

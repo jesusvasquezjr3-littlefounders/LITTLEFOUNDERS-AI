@@ -116,7 +116,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             {/* --- SVG del Personaje --- */}
             <svg
                 id="drrho-svg"
-                viewBox="0 0 400 500"
+                viewBox="-175 -125 750 750"
                 className="w-full h-full object-contain transition-transform duration-500"
                 xmlns="http://www.w3.org/2000/svg"
                 strokeLinecap="round"
