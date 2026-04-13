@@ -6,7 +6,7 @@
  * de actividad NO deben validar por su cuenta - deben enviar la respuesta
  * cruda a submitAnswer() y usar el valor de retorno para determinar feedback.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { ExerciseData, LessonData } from './useLessonData';
 
 export type LessonState =
@@ -360,6 +360,14 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
     const totalExercises = timeline.length;
     const currentExercise = timeline[currentExerciseIndex] || null;
     const progress = totalExercises > 0 ? Math.round((currentExerciseIndex / totalExercises) * 100) : 0;
+
+    // Reset state machine when lesson data changes (navigating to a new lesson)
+    useEffect(() => {
+        setState('IDLE');
+        setCurrentExerciseIndex(0);
+        setResults([]);
+        setAttempts(0);
+    }, [lessonData]);
 
     const startLesson = useCallback(() => {
         setState('PLAYING');

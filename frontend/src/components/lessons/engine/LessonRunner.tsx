@@ -385,6 +385,22 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         setLocalFeedback('none');
     }, [currentExerciseIndex]);
 
+    // ─── CRITICAL: Reset ALL state when lesson code changes ───
+    // When navigating to the next lesson via navigate(`/lesson/${nextCode}`),
+    // React reuses the same LessonRunner component instance. Without this reset,
+    // the component keeps stale state (showSuccess=true, state='COMPLETED', etc.)
+    // which causes the next lesson to appear at the bottom / completion screen.
+    useEffect(() => {
+        setShowSuccess(false);
+        setCompletionResult(null);
+        setIsCompletingLesson(false);
+        setNextLessonCode(undefined);
+        setShowGameOver(false);
+        setLocalFeedback('none');
+        setLives(5);
+        window.scrollTo(0, 0);
+    }, [code]);
+
     // Close lesson
     const handleClose = () => navigate(-1);
 
@@ -1030,6 +1046,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 onNext={() => {
                     if (nextLessonCode) {
                         setShowSuccess(false);
+                        window.scrollTo(0, 0);
                         navigate(`/lesson/${nextLessonCode}`);
                     } else {
                         handleClose();
