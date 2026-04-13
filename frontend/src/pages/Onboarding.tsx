@@ -452,15 +452,33 @@ export default function Onboarding() {
   const handleNameContinue = () => {
     const trimmed = nameInput.trim();
     if (!trimmed) { setError(t("errors.name_required")); return; }
+    
+    // Check for valid characters: letters, spaces, hyphens, and apostrophes (plus accents) to prevent script injection
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
+    if (!nameRegex.test(trimmed)) { 
+      setError(t("errors.name_invalid")); 
+      return; 
+    }
+
     setError("");
     setData((d) => ({ ...d, name: trimmed }));
     goNext();
   };
 
   const handleAgeContinue = () => {
-    const parsed = parseInt(ageInput.trim(), 10);
-    if (!ageInput.trim() || isNaN(parsed)) { setError(t("errors.age_required")); return; }
+    const trimmedAge = ageInput.trim();
+    if (!trimmedAge) { setError(t("errors.age_required")); return; }
+    
+    // Ensure only digits are passed to prevent "12e3" or similar inputs that technically parse to numbers
+    if (!/^\d+$/.test(trimmedAge)) {
+      setError(t("errors.age_invalid"));
+      return;
+    }
+
+    const parsed = parseInt(trimmedAge, 10);
+    if (isNaN(parsed)) { setError(t("errors.age_required")); return; }
     if (parsed < 8 || parsed > 100) { setError(t("errors.age_range")); return; }
+
     setError("");
     setData((d) => ({ ...d, age: parsed }));
     goNext();

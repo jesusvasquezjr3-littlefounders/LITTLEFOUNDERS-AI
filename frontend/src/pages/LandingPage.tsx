@@ -92,25 +92,25 @@ const LandingPage = () => {
 
               {/* Dina - large centered backdrop. Desktop: back-right */}
               <div className="absolute bottom-0 z-0 opacity-90 animate-float left-1/2 -ml-[160px] w-[320px] h-[320px] lg:left-auto lg:ml-0 lg:-right-24 lg:w-[700px] lg:h-[700px] isolate" style={{ animationDelay: '1.5s' }}>
-                <div className="absolute inset-10 lg:inset-24 rounded-full bg-pink-400/30 dark:bg-pink-500/20 blur-[50px] lg:blur-[80px] z-[-1]" />
+                <div className="absolute inset-10 lg:inset-24 rounded-full bg-pink-400/15 dark:bg-pink-500/10 blur-[50px] lg:blur-[80px] z-[-1]" />
                 <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
               </div>
 
               {/* Liruf - overlaps Dina from left */}
               <div className="absolute bottom-0 z-20 animate-float left-0 w-[210px] h-[210px] lg:left-auto lg:right-[15rem] lg:w-[420px] lg:h-[420px] isolate" style={{ animationDelay: '0s' }}>
-                <div className="absolute inset-8 lg:inset-16 rounded-full bg-emerald-400/40 dark:bg-emerald-500/30 blur-[40px] lg:blur-[60px] z-[-1]" />
+                <div className="absolute inset-8 lg:inset-16 rounded-full bg-emerald-400/20 dark:bg-emerald-500/15 blur-[40px] lg:blur-[60px] z-[-1]" />
                 <DinoCharacter mood="happy" className="drop-shadow-2xl" />
               </div>
 
               {/* Dr. Rho - closer to Dina, overlapping her right side */}
               <div className="absolute bottom-0 z-10 animate-float right-[90px] w-[145px] h-[145px] lg:right-20 lg:bottom-10 lg:w-[300px] lg:h-[300px] isolate" style={{ animationDelay: '2s' }}>
-                <div className="absolute inset-6 lg:inset-12 rounded-full bg-cyan-400/40 dark:bg-cyan-500/30 blur-[30px] lg:blur-[50px] z-[-1]" />
+                <div className="absolute inset-6 lg:inset-12 rounded-full bg-cyan-400/20 dark:bg-cyan-500/15 blur-[30px] lg:blur-[50px] z-[-1]" />
                 <DrRhoCharacter mood="wise" className="drop-shadow-2xl" />
               </div>
 
               {/* Zara - beside Rho, framing the right */}
               <div className="absolute bottom-0 z-[15] animate-float right-[35px] w-[160px] h-[160px] lg:bottom-12 lg:right-[-5rem] lg:w-[350px] lg:h-[350px] isolate" style={{ animationDelay: '2.5s' }}>
-                <div className="absolute inset-6 lg:inset-12 rounded-full bg-purple-400/40 dark:bg-purple-500/30 blur-[30px] lg:blur-[50px] z-[-1]" />
+                <div className="absolute inset-6 lg:inset-12 rounded-full bg-purple-400/20 dark:bg-purple-500/15 blur-[30px] lg:blur-[50px] z-[-1]" />
                 <ZaraVexCharacter mood="happy" className="drop-shadow-2xl" />
               </div>
             </div>
@@ -119,7 +119,7 @@ const LandingPage = () => {
                 COPY BLOCK — comes second in HTML, renders
                 below Visual on mobile naturally.
                 ========================================== */}
-            <div className="flex-1 text-center lg:text-left space-y-5 max-w-2xl">
+            <div className="relative z-30 flex-1 text-center lg:text-left space-y-5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 text-sm font-bold animate-fade-in-up">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
