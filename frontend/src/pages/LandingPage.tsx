@@ -91,22 +91,26 @@ const LandingPage = () => {
               <div className="absolute inset-0 bg-gradient-to-tr from-pink-100 to-purple-100 dark:from-slate-800 dark:to-purple-900/30 opacity-40 dark:opacity-25 transition-colors lg:scale-125 lg:translate-x-20" style={{ borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' }}></div>
 
               {/* Dina - large centered backdrop. Desktop: back-right */}
-              <div className="absolute bottom-0 z-0 opacity-90 animate-float left-1/2 -ml-[160px] w-[320px] h-[320px] lg:left-auto lg:ml-0 lg:-right-24 lg:w-[700px] lg:h-[700px]" style={{ animationDelay: '1.5s' }}>
+              <div className="absolute bottom-0 z-0 opacity-90 animate-float left-1/2 -ml-[160px] w-[320px] h-[320px] lg:left-auto lg:ml-0 lg:-right-24 lg:w-[700px] lg:h-[700px] isolate" style={{ animationDelay: '1.5s' }}>
+                <div className="absolute inset-10 lg:inset-24 rounded-full bg-pink-400/30 dark:bg-pink-500/20 blur-[50px] lg:blur-[80px] z-[-1]" />
                 <DinaCharacter expression={dinaExpr} className="drop-shadow-2xl" />
               </div>
 
               {/* Liruf - overlaps Dina from left */}
-              <div className="absolute bottom-0 z-20 animate-float left-0 w-[210px] h-[210px] lg:left-auto lg:right-[15rem] lg:w-[420px] lg:h-[420px]" style={{ animationDelay: '0s' }}>
+              <div className="absolute bottom-0 z-20 animate-float left-0 w-[210px] h-[210px] lg:left-auto lg:right-[15rem] lg:w-[420px] lg:h-[420px] isolate" style={{ animationDelay: '0s' }}>
+                <div className="absolute inset-8 lg:inset-16 rounded-full bg-emerald-400/40 dark:bg-emerald-500/30 blur-[40px] lg:blur-[60px] z-[-1]" />
                 <DinoCharacter mood="happy" className="drop-shadow-2xl" />
               </div>
 
               {/* Dr. Rho - closer to Dina, overlapping her right side */}
-              <div className="absolute bottom-0 z-10 animate-float right-[90px] w-[145px] h-[145px] lg:right-20 lg:bottom-10 lg:w-[300px] lg:h-[300px]" style={{ animationDelay: '2s' }}>
+              <div className="absolute bottom-0 z-10 animate-float right-[90px] w-[145px] h-[145px] lg:right-20 lg:bottom-10 lg:w-[300px] lg:h-[300px] isolate" style={{ animationDelay: '2s' }}>
+                <div className="absolute inset-6 lg:inset-12 rounded-full bg-cyan-400/40 dark:bg-cyan-500/30 blur-[30px] lg:blur-[50px] z-[-1]" />
                 <DrRhoCharacter mood="wise" className="drop-shadow-2xl" />
               </div>
 
               {/* Zara - beside Rho, framing the right */}
-              <div className="absolute bottom-0 z-[15] animate-float right-[35px] w-[160px] h-[160px] lg:bottom-12 lg:right-[-5rem] lg:w-[350px] lg:h-[350px]" style={{ animationDelay: '2.5s' }}>
+              <div className="absolute bottom-0 z-[15] animate-float right-[35px] w-[160px] h-[160px] lg:bottom-12 lg:right-[-5rem] lg:w-[350px] lg:h-[350px] isolate" style={{ animationDelay: '2.5s' }}>
+                <div className="absolute inset-6 lg:inset-12 rounded-full bg-purple-400/40 dark:bg-purple-500/30 blur-[30px] lg:blur-[50px] z-[-1]" />
                 <ZaraVexCharacter mood="happy" className="drop-shadow-2xl" />
               </div>
             </div>

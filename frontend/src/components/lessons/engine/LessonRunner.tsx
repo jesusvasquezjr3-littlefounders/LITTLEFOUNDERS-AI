@@ -58,6 +58,7 @@ import { GoalRoadmap } from './activities/GoalRoadmap';
 import { MindsetComparison } from './activities/MindsetComparison';
 import { PassiveIncome } from './activities/PassiveIncome';
 import { QuizBattle } from './activities/QuizBattle';
+import { LessonCelebration } from './LessonCelebration';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -1018,110 +1019,30 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             </div>
 
             {/* ===== SUCCESS DIALOG ===== */}
-            {/* Note: We prevent closing on overlay click to avoid inconsistent state */}
-            <Dialog
-                open={showSuccess}
-                onOpenChange={(open) => {
-                    // Only allow closing via explicit button actions, not overlay click
-                    if (!open) {
-                        // If user tries to close by clicking outside, redirect them
+            {/* ===== SUCCESS SCREEN ===== */}
+            <LessonCelebration
+                isVisible={showSuccess}
+                completionResult={completionResult}
+                basePoints={data.meta.points_reward}
+                durationSeconds={data.meta.estimated_duration_seconds}
+                nextLessonCode={nextLessonCode}
+                characterCode={getCharacterCode()}
+                onNext={() => {
+                    if (nextLessonCode) {
+                        setShowSuccess(false);
+                        navigate(`/lesson/${nextLessonCode}`);
+                    } else {
                         handleClose();
                     }
                 }}
-            >
-                <DialogContent
-                    className="w-[90vw] max-w-sm mx-auto liquid-glass-strong border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl p-4 sm:p-6"
-                    onPointerDownOutside={(e) => e.preventDefault()}
-                    onEscapeKeyDown={(e) => e.preventDefault()}
-                >
-                    <div className="text-center py-4">
-                        {/* Celebration Icon */}
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-full flex items-center justify-center mx-auto mb-3 animate-celebrate">
-                            <PartyPopper className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-500" />
-                        </div>
-
-                        <DialogTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-1">
-                            {t('status.great_job')}
-                        </DialogTitle>
-                        <DialogDescription className="text-base sm:text-lg text-muted-foreground mb-4">
-                            {t('completion.subtitle')}
-                        </DialogDescription>
-
-                        {/* Stats - Responsive grid */}
-                        <div className="flex justify-center gap-3 mb-5">
-                            <div className="bg-gradient-to-br from-yellow-400/20 to-orange-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
-                                <Star className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-500 fill-yellow-500 mx-auto mb-1" />
-                                <p className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-400">
-                                    +{completionResult?.points_earned || data.meta.points_reward}
-                                </p>
-                                <p className="text-xs text-muted-foreground">{t('common:dashboard.stats.points')}</p>
-                            </div>
-                            {completionResult?.new_streak ? (
-                                <div className="bg-gradient-to-br from-orange-400/20 to-red-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
-                                    <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-orange-500 mx-auto mb-1" />
-                                    <p className="text-lg sm:text-xl font-bold text-orange-600 dark:text-orange-400">
-                                        🔥 {completionResult.new_streak}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">{t('completion.streak')}</p>
-                                </div>
-                            ) : (
-                                <div className="bg-gradient-to-br from-blue-400/20 to-cyan-400/20 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl min-w-[80px]">
-                                    <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 mx-auto mb-1" />
-                                    <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
-                                        {data.meta.estimated_duration_seconds}s
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">{t('completion.time')}</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Action Buttons - Full width, stacked on small mobile */}
-                        <div className="flex flex-col gap-2 w-full">
-                            {/* Primary CTA: navigate to next lesson (or back to map if last lesson) */}
-                            <Button
-                                onClick={() => {
-                                    if (nextLessonCode) {
-                                        setShowSuccess(false);
-                                        navigate(`/lesson/${nextLessonCode}`);
-                                    } else {
-                                        handleClose();
-                                    }
-                                }}
-                                disabled={nextLessonCode === undefined}
-                                className="relative overflow-hidden w-full h-12 rounded-xl font-semibold text-base bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/30 disabled:opacity-60"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                                <span className="relative flex items-center justify-center">
-                                    {nextLessonCode === undefined ? (
-                                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                    ) : nextLessonCode ? (
-                                        <ArrowRight className="w-5 h-5 mr-2" />
-                                    ) : null}
-                                    {nextLessonCode === undefined
-                                        ? t('loading')
-                                        : nextLessonCode
-                                            ? t('completion.next_lesson')
-                                            : t('completion.back_to_map', { defaultValue: '¡Aventura completada! Volver al mapa' })}
-                                </span>
-                            </Button>
-                            <div className="flex gap-2">
-                                <Button
-                                    onClick={handleClose}
-                                    className="flex-1 h-11 rounded-xl font-semibold text-sm liquid-glass-subtle border border-white/20 dark:border-white/10 text-foreground hover:liquid-glass"
-                                >
-                                    {t('game_over.exit_button')}
-                                </Button>
-                                <Button
-                                    onClick={() => { setShowSuccess(false); setIsCompletingLesson(false); setNextLessonCode(undefined); startLesson(); }}
-                                    className="flex-1 h-11 rounded-xl font-semibold text-sm liquid-glass-subtle border border-white/20 dark:border-white/10 text-foreground hover:liquid-glass"
-                                >
-                                    🎮 {t('actions.retry')}
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                onExit={handleClose}
+                onRetry={() => {
+                    setShowSuccess(false);
+                    setIsCompletingLesson(false);
+                    setNextLessonCode(undefined);
+                    startLesson();
+                }}
+            />
 
             {/* ===== GAME OVER DIALOG (No Energy) ===== */}
             <Dialog
