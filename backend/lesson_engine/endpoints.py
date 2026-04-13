@@ -593,7 +593,14 @@ async def complete_lesson(
     # Update user streak
     user.current_streak = current_streak
     user.max_streak = max(user.max_streak, current_streak)
-    
+
+    # Update user aggregate stats
+    if first_time:
+        user.lessons_completed = (user.lessons_completed or 0) + 1
+        user.points_earned = (user.points_earned or 0) + points_earned
+    minutes_this_session = (request.time_spent_seconds // 60) if request.time_spent_seconds else 0
+    user.minutes_studied = (user.minutes_studied or 0) + minutes_this_session
+
     db.commit()
     
     return {
@@ -601,7 +608,10 @@ async def complete_lesson(
         "points_earned": points_earned,
         "xp_earned": xp_earned,
         "new_streak": current_streak,
-        "streak_extended": first_time # Simple approximation
+        "streak_extended": current_streak > 0,
+        "lessons_completed": user.lessons_completed,
+        "minutes_studied": user.minutes_studied,
+        "total_points": user.points_earned,
     }
 
 # =====================================================

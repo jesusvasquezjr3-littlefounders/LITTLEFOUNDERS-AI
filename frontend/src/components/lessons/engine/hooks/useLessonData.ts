@@ -266,6 +266,9 @@ export async function completeLesson(
     xp_earned: number;
     new_streak: number;
     streak_extended: boolean;
+    lessons_completed?: number;
+    minutes_studied?: number;
+    total_points?: number;
 } | null> {
     try {
         const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/complete?user_public_id=${userId}`;

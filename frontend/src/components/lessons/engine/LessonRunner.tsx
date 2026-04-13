@@ -9,7 +9,7 @@
  * - Modo claro/oscuro 100% compatible
  * - Mobile-first responsive
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
@@ -59,6 +59,8 @@ import { MindsetComparison } from './activities/MindsetComparison';
 import { PassiveIncome } from './activities/PassiveIncome';
 import { QuizBattle } from './activities/QuizBattle';
 import { LessonCelebration } from './LessonCelebration';
+import { StreakCelebration } from '@/components/ui/StreakCelebration';
+import { getGuestProfile, updateGuestProfile } from '@/lib/guestProfile';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -132,12 +134,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Energy system (lives)
     const [lives, setLives] = useState(5);
 
+    // Track lesson start time to calculate real duration
+    const lessonStartTimeRef = useRef<number>(Date.now());
+
     // UI states
     const [showSuccess, setShowSuccess] = useState(false);
-    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number } | null>(null);
+    const [showStreakCelebration, setShowStreakCelebration] = useState(false);
+    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number; streak_extended: boolean; lessons_completed?: number; minutes_studied?: number } | null>(null);
     const [isCompletingLesson, setIsCompletingLesson] = useState(false);
     // null = last lesson (no next), undefined = still loading, string = ready to navigate
     const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
+    const [realDurationSeconds, setRealDurationSeconds] = useState(0);
     const [showGameOver, setShowGameOver] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
 
@@ -349,24 +356,81 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             setNextLessonCode(undefined); // reset to loading state
             stopBGM({ fade: true, fadeDuration: 1500 });
 
-            // Mark lesson complete AND fetch next code concurrently
+            // Calculate real time spent in this lesson
+            const realTimeSeconds = Math.round((Date.now() - lessonStartTimeRef.current) / 1000);
+            setRealDurationSeconds(realTimeSeconds);
+
             const markComplete = async () => {
                 try {
                     const userStr = localStorage.getItem('user');
                     const user = userStr ? JSON.parse(userStr) : null;
                     const userId = user?.public_id;
+                    const guestProfile = getGuestProfile();
+                    const isAuth = !!(user && userId);
 
+                    // Fetch next lesson code in parallel with completion
+                    // Only call backend for authenticated users — guests have no DB record
                     const [result, nextCode] = await Promise.all([
-                        userId && code ? completeLesson(code, userId, 100, 180) : Promise.resolve(null),
+                        isAuth && code
+                            ? completeLesson(code, userId, 100, realTimeSeconds)
+                            : Promise.resolve(null),
                         fetchNextLessonCode(code),
                     ]);
 
-                    if (result) setCompletionResult(result);
-                    // null = last lesson, string = has next
+                    if (isAuth && result) {
+                        // ── Authenticated user: persist backend-returned stats ──
+                        setCompletionResult(result);
+                        const updatedUser = {
+                            ...user,
+                            current_streak: result.new_streak,
+                            lessons_completed: result.lessons_completed ?? user.lessons_completed,
+                            minutes_studied: result.minutes_studied ?? user.minutes_studied,
+                            points_earned: result.total_points ?? user.points_earned,
+                        };
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+                        if (result.streak_extended && result.new_streak > 1) {
+                            setTimeout(() => setShowStreakCelebration(true), 1200);
+                        }
+                    } else if (guestProfile) {
+                        // ── Guest user: compute stats locally, no backend call ──
+                        const today = new Date().toDateString();
+                        const lastStudied = guestProfile.updated_at
+                            ? new Date(guestProfile.updated_at).toDateString()
+                            : null;
+                        const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+                        let newStreak = guestProfile.current_streak || 0;
+                        if (today !== lastStudied) {
+                            // First lesson of the day
+                            newStreak = (lastStudied === yesterday) ? newStreak + 1 : 1;
+                        }
+
+                        const guestPoints = data?.meta?.points_reward || 10;
+                        const guestResult = {
+                            points_earned: guestPoints,
+                            xp_earned: 25,
+                            new_streak: newStreak,
+                            streak_extended: newStreak > 0,
+                        };
+                        setCompletionResult(guestResult);
+
+                        updateGuestProfile({
+                            lessons_completed: (guestProfile.lessons_completed || 0) + 1,
+                            xp: (guestProfile.xp || 0) + guestResult.xp_earned,
+                            current_streak: newStreak,
+                            max_streak: Math.max(guestProfile.max_streak || 0, newStreak),
+                        });
+
+                        if (newStreak > 1) {
+                            setTimeout(() => setShowStreakCelebration(true), 1200);
+                        }
+                    }
+
                     setNextLessonCode(nextCode);
                 } catch (err) {
                     console.error('Error completing lesson:', err);
-                    setNextLessonCode(null); // fall back gracefully
+                    setNextLessonCode(null);
                 }
             };
 
@@ -1034,13 +1098,20 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
             </div>
 
-            {/* ===== SUCCESS DIALOG ===== */}
+            {/* ===== STREAK CELEBRATION (shown before success screen when streak extended) ===== */}
+            <StreakCelebration
+                isVisible={showStreakCelebration}
+                streakCount={completionResult?.new_streak ?? 0}
+                xpGained={completionResult?.xp_earned ?? 25}
+                onComplete={() => setShowStreakCelebration(false)}
+            />
+
             {/* ===== SUCCESS SCREEN ===== */}
             <LessonCelebration
                 isVisible={showSuccess}
                 completionResult={completionResult}
                 basePoints={data.meta.points_reward}
-                durationSeconds={data.meta.estimated_duration_seconds}
+                durationSeconds={realDurationSeconds || data.meta.estimated_duration_seconds}
                 nextLessonCode={nextLessonCode}
                 characterCode={getCharacterCode()}
                 onNext={() => {
@@ -1057,6 +1128,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     setShowSuccess(false);
                     setIsCompletingLesson(false);
                     setNextLessonCode(undefined);
+                    lessonStartTimeRef.current = Date.now();
                     startLesson();
                 }}
             />
