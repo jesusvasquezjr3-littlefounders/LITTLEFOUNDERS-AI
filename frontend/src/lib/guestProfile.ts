@@ -12,6 +12,16 @@ export interface GuestProfile {
     onboarding_completed: boolean;
     created_at: string;
     updated_at: string;
+    /** List of lesson codes the guest has completed — used to show progress on /learn */
+    completed_lesson_codes: string[];
+    /** The next lesson code to resume — mirrors what auth users get from /next-lesson API */
+    next_lesson_code: string | null;
+    /**
+     * YYYY-MM-DD (user's LOCAL date) of the most recent lesson completion.
+     * Used to compute streak visual state: 'zero' | 'inactive' | 'active'.
+     * null = no activity yet.
+     */
+    last_activity_date: string | null;
 }
 
 const GUEST_KEY = 'lf_guest_profile';

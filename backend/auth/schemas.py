@@ -47,6 +47,9 @@ class UserResponse(BaseModel):
     auth_provider: Optional[str] = 'email'
     birth_date: Optional[datetime] = None
     gender: Optional[str] = None
+    # YYYY-MM-DD of the user's most recent streak activity.
+    # Used by the frontend to derive streak visual state: zero / inactive / active.
+    last_activity_date: Optional[str] = None
 
     @field_serializer('public_id')
     def serialize_public_id(self, v: UUID) -> str:

@@ -147,12 +147,32 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // UI states
     const [showSuccess, setShowSuccess] = useState(false);
     const [showStreakCelebration, setShowStreakCelebration] = useState(false);
-    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number; max_streak?: number; streak_extended: boolean; lessons_completed?: number; minutes_studied?: number; total_points?: number } | null>(null);
+    const [completionResult, setCompletionResult] = useState<{
+        points_earned: number;
+        xp_earned: number;
+        new_streak: number;
+        max_streak?: number;
+        streak_extended: boolean;
+        lessons_completed?: number;
+        minutes_studied?: number;
+        total_points?: number;
+        was_first_today?: boolean;
+        last_activity_date?: string;
+    } | null>(null);
     // null = last lesson (no next), undefined = still loading, string = ready to navigate
     const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
     const [realDurationSeconds, setRealDurationSeconds] = useState(0);
     const [showGameOver, setShowGameOver] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
+
+    // ─── Show the lesson celebration screen ───────────────────────────────────
+    // Called either directly (no streak activation) or from StreakCelebration.onComplete
+    // (streak animation played first). Extracted here so both the effect and the
+    // StreakCelebration JSX callback share the same stable reference.
+    const showCelebrationScreen = useCallback(() => {
+        playSound('edu_complete');
+        setShowSuccess(true);
+    }, [playSound]);
 
     // ─── Submit/Next/Retry handlers with narrative audio integration ───
     // These helpers encapsulate the common onSubmit/onNext/onRetry pattern
@@ -355,121 +375,168 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // It auto-plays on exercise load and provides playFeedback() for answer responses.
     // The old audioRef/setIsAudioPlaying pattern is replaced by lessonAudio.isNarrativeAudioPlaying.
 
-    // ─── COMPLETION EFFECT ───
-    // CRITICAL: deps are [state] only. Do NOT add showSuccess or code.
-    // Adding those causes the effect to re-fire during lesson navigation transitions
-    // (when code changes but state is still stale 'COMPLETED' from previous lesson).
-    // celebrationShownRef prevents double-firing within the same completion cycle.
-    // hasCompletedOnceRef prevents duplicate API calls on retry.
+    // ─── COMPLETION EFFECT ───────────────────────────────────────────────────
+    //
+    // CRITICAL RULES:
+    //  • deps = [state] ONLY — never add showSuccess or code (causes re-fire on
+    //    navigation between lessons while state is still stale 'COMPLETED')
+    //  • celebrationShownRef: prevents double-fire within the same cycle
+    //  • hasCompletedOnceRef: prevents duplicate API calls on retry
+    //
+    // SEQUENCE (as required by product spec):
+    //  1. Lesson completes → stop BGM, call API
+    //  2a. If THIS IS THE FIRST LESSON OF THE DAY (was_first_today=true):
+    //      → show StreakCelebration (cinematic flame) FIRST
+    //      → StreakCelebration.onComplete → THEN show LessonCelebration (summary)
+    //  2b. If streak already active today (2nd+ lesson) or API failed:
+    //      → show LessonCelebration directly
+    //  3. On retry (no API call): show LessonCelebration directly
+    //
+    // This guarantees:
+    //  • The summary (completionResult) is ALWAYS fully populated when it appears
+    //  • The streak animation always plays BEFORE the summary
+    //  • No double API calls
+    // ─────────────────────────────────────────────────────────────────────────
     useEffect(() => {
         if (state !== 'COMPLETED' || celebrationShownRef.current) return;
         celebrationShownRef.current = true;
 
         stopBGM({ fade: true, fadeDuration: 1500 });
-
         const realTimeSeconds = Math.round((Date.now() - lessonStartTimeRef.current) / 1000);
         setRealDurationSeconds(realTimeSeconds);
 
-        // Show celebration (fires on first completion AND retries)
-        const celebrationTimeout = setTimeout(() => {
-            playSound('edu_complete');
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
-            setShowSuccess(true);
-        }, 1000);
-
-        // Persist progress only on FIRST completion of this lesson code
-        if (!hasCompletedOnceRef.current) {
-            hasCompletedOnceRef.current = true;
-            setNextLessonCode(undefined); // loading state for button
-
-            const localDate = new Date().toISOString().split('T')[0]; // User's local YYYY-MM-DD
-
-            const markComplete = async () => {
-                try {
-                    const userStr = localStorage.getItem('user');
-                    const user = userStr ? JSON.parse(userStr) : null;
-                    const userId = user?.public_id;
-                    const guestProfile = getGuestProfile();
-                    const isAuth = !!(user && userId);
-
-                    // Step 1: Complete lesson (auth users only)
-                    let result = null;
-                    if (isAuth && code) {
-                        result = await completeLesson(code, userId, 100, realTimeSeconds, localDate);
-                    }
-
-                    // Step 2: Fetch next lesson code
-                    const nextCode = await fetchNextLessonCode(code);
-
-                    if (isAuth && result) {
-                        setCompletionResult(result);
-                        const updatedUser = {
-                            ...user,
-                            current_streak: result.new_streak,
-                            max_streak: result.max_streak ?? Math.max(user.max_streak || 0, result.new_streak),
-                            lessons_completed: result.lessons_completed ?? user.lessons_completed,
-                            minutes_studied: result.minutes_studied ?? user.minutes_studied,
-                            points_earned: result.total_points ?? user.points_earned,
-                        };
-                        localStorage.setItem('user', JSON.stringify(updatedUser));
-                        window.dispatchEvent(new CustomEvent('lf:user-updated'));
-
-                        if (result.streak_extended && result.new_streak > 1) {
-                            setTimeout(() => setShowStreakCelebration(true), 1200);
-                        }
-                    } else if (isAuth && !result) {
-                        // API failed — show fallback stats from lesson meta
-                        setCompletionResult({
-                            points_earned: data?.meta?.points_reward || 10,
-                            xp_earned: 25,
-                            new_streak: 0,
-                            streak_extended: false,
-                        });
-                    } else if (guestProfile) {
-                        const today = localDate;
-                        const lastStudied = guestProfile.updated_at
-                            ? new Date(guestProfile.updated_at).toISOString().split('T')[0]
-                            : null;
-                        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-                        const oldStreak = guestProfile.current_streak || 0;
-                        let newStreak = oldStreak;
-                        if (today !== lastStudied) {
-                            newStreak = (lastStudied === yesterday) ? oldStreak + 1 : 1;
-                        }
-
-                        const guestPoints = data?.meta?.points_reward || 10;
-                        const streakWasExtended = newStreak > oldStreak;
-                        setCompletionResult({
-                            points_earned: guestPoints,
-                            xp_earned: 25,
-                            new_streak: newStreak,
-                            streak_extended: streakWasExtended,
-                        });
-
-                        updateGuestProfile({
-                            lessons_completed: (guestProfile.lessons_completed || 0) + 1,
-                            xp: (guestProfile.xp || 0) + 25,
-                            current_streak: newStreak,
-                            max_streak: Math.max(guestProfile.max_streak || 0, newStreak),
-                        });
-
-                        if (streakWasExtended && newStreak > 1) {
-                            setTimeout(() => setShowStreakCelebration(true), 1200);
-                        }
-                    }
-
-                    setNextLessonCode(nextCode);
-                } catch (err) {
-                    console.error('Error completing lesson:', err);
-                    setNextLessonCode(null);
-                }
-            };
-
-            markComplete();
+        if (hasCompletedOnceRef.current) {
+            // ── RETRY path: no API call, just show celebration after a short pause ──
+            const t = setTimeout(showCelebrationScreen, 800);
+            return () => clearTimeout(t);
         }
 
-        return () => clearTimeout(celebrationTimeout);
+        // ── FIRST COMPLETION path ─────────────────────────────────────────────
+        hasCompletedOnceRef.current = true;
+        setNextLessonCode(undefined); // show loading spinner on "Next" button
+
+        // 'sv' locale gives YYYY-MM-DD in the user's LOCAL timezone (not UTC)
+        const localDate = new Date().toLocaleDateString('sv');
+
+        const markComplete = async () => {
+            let pendingShowCelebration: ReturnType<typeof setTimeout> | null = null;
+            try {
+                const userStr = localStorage.getItem('user');
+                const user = userStr ? JSON.parse(userStr) : null;
+                const userId = user?.public_id;
+                const guestProfile = getGuestProfile();
+                const isAuth = !!(user && userId);
+
+                // ── Step 1: Record completion in DB (auth only) ───────────────
+                let result: Awaited<ReturnType<typeof completeLesson>> = null;
+                if (isAuth && code) {
+                    result = await completeLesson(code, userId, 100, realTimeSeconds, localDate);
+                }
+
+                // ── Step 2: Fetch next lesson code (independent of step 1) ───
+                const nextCode = await fetchNextLessonCode(code);
+
+                // ── Step 3: Process result and decide presentation sequence ───
+                let wasFirstToday = false;
+                let newStreakValue = 0;
+
+                if (isAuth && result) {
+                    setCompletionResult(result);
+
+                    const updatedUser = {
+                        ...user,
+                        current_streak: result.new_streak,
+                        max_streak: result.max_streak ?? Math.max(user.max_streak || 0, result.new_streak),
+                        lessons_completed: result.lessons_completed ?? user.lessons_completed,
+                        minutes_studied: result.minutes_studied ?? user.minutes_studied,
+                        points_earned: result.total_points ?? user.points_earned,
+                        // last_activity_date used by TopNav to derive streak state
+                        last_activity_date: result.last_activity_date ?? localDate,
+                    };
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    window.dispatchEvent(new CustomEvent('lf:user-updated'));
+
+                    // was_first_today: explicit flag from backend (preferred).
+                    // Fallback: streak_extended covers older backend versions
+                    // (streak_extended = current_streak > old_streak, true on first activation of day).
+                    wasFirstToday = result.was_first_today ?? result.streak_extended ?? false;
+                    newStreakValue = result.new_streak ?? 0;
+
+                } else if (isAuth && !result) {
+                    // API failed — show summary with lesson-meta fallback (no streak info)
+                    setCompletionResult({
+                        points_earned: data?.meta?.points_reward || 10,
+                        xp_earned: 25,
+                        new_streak: 0,
+                        streak_extended: false,
+                    });
+
+                } else if (guestProfile) {
+                    const today = localDate;
+                    const lastStudied = guestProfile.last_activity_date ?? null;
+                    const yesterday = new Date(Date.now() - 86_400_000).toLocaleDateString('sv');
+                    const oldStreak = guestProfile.current_streak || 0;
+                    let newStreak = oldStreak;
+
+                    wasFirstToday = lastStudied !== today; // first lesson of this calendar day
+                    if (wasFirstToday) {
+                        newStreak = (lastStudied === yesterday) ? oldStreak + 1 : 1;
+                    }
+                    newStreakValue = newStreak;
+
+                    setCompletionResult({
+                        points_earned: data?.meta?.points_reward || 10,
+                        xp_earned: 25,
+                        new_streak: newStreak,
+                        streak_extended: newStreak > oldStreak,
+                    });
+
+                    const existingCodes = guestProfile.completed_lesson_codes || [];
+                    const updatedCodes = code
+                        ? Array.from(new Set([...existingCodes, code]))
+                        : existingCodes;
+
+                    updateGuestProfile({
+                        lessons_completed: (guestProfile.lessons_completed || 0) + 1,
+                        xp: (guestProfile.xp || 0) + 25,
+                        current_streak: newStreak,
+                        max_streak: Math.max(guestProfile.max_streak || 0, newStreak),
+                        completed_lesson_codes: updatedCodes,
+                        last_activity_date: today,
+                    });
+                }
+
+                setNextLessonCode(nextCode);
+                if (!isAuth && nextCode) {
+                    updateGuestProfile({ next_lesson_code: nextCode });
+                }
+
+                // ── Step 4: Show screens in correct order ─────────────────────
+                // Brief pause after API resolves so BGM fade + lesson-end animation settles.
+                pendingShowCelebration = setTimeout(() => {
+                    if (wasFirstToday && newStreakValue > 0) {
+                        // First activation of the day:
+                        // StreakCelebration fires FIRST.
+                        // LessonCelebration fires from StreakCelebration.onComplete (see JSX below).
+                        setShowStreakCelebration(true);
+                    } else {
+                        // Streak already active today, or API failed, or new_streak = 0:
+                        // Go straight to the lesson summary.
+                        showCelebrationScreen();
+                    }
+                }, 500);
+
+            } catch (err) {
+                console.error('Error completing lesson:', err);
+                setNextLessonCode(null);
+                // Always show celebration even if everything fails
+                pendingShowCelebration = setTimeout(showCelebrationScreen, 500);
+            }
+            return pendingShowCelebration;
+        };
+
+        markComplete();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state]);
 
@@ -1129,12 +1196,20 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
             </div>
 
-            {/* ===== STREAK CELEBRATION (shown before success screen when streak extended) ===== */}
+            {/* ===== STREAK CELEBRATION ==============================================
+              Shows BEFORE the lesson summary when the user activates their streak
+              for the first time today (State 1→3 or State 2→3 transition).
+              onComplete: dismiss streak animation THEN show the lesson summary.
+            ===================================================================== */}
             <StreakCelebration
                 isVisible={showStreakCelebration}
                 streakCount={completionResult?.new_streak ?? 0}
                 xpGained={completionResult?.xp_earned ?? 25}
-                onComplete={() => setShowStreakCelebration(false)}
+                onComplete={() => {
+                    setShowStreakCelebration(false);
+                    // Show lesson summary immediately after streak animation finishes
+                    showCelebrationScreen();
+                }}
             />
 
             {/* ===== SUCCESS SCREEN ===== */}

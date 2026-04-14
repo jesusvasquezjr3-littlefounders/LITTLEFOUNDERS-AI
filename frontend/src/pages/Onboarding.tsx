@@ -523,6 +523,9 @@ export default function Onboarding() {
         onboarding_completed: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        completed_lesson_codes: [],
+        next_lesson_code: null,
+        last_activity_date: null,
       });
       goNext();
     }, 300);

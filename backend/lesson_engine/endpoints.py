@@ -2,7 +2,7 @@
 Enduntos del Nuevo Motor de Lecciones (v2 - Flat i18n)
 LittleFounders - 2026
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session, defer
 from sqlalchemy import func
 from typing import List, Optional, Dict
@@ -481,11 +481,31 @@ async def get_next_lesson(code: str, db: Session = Depends(get_db)):
 
 
 
+def _get_token_user_optional(http_request: Request, db: Session) -> Optional[User]:
+    """
+    Extracts the authenticated User from the Bearer token if present and valid.
+    Returns None if no token or token is invalid — never raises.
+    """
+    auth_header = http_request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.split(" ", 1)[1]
+    try:
+        from auth.utils import verify_token
+        email = verify_token(token, None)
+        if not email:
+            return None
+        return db.query(User).filter(User.email == email).first()
+    except Exception:
+        return None
+
+
 @router.post("/lessons/{code}/complete")
 async def complete_lesson(
     code: str,
     user_public_id: str,
     request: LessonCompleteRequest,
+    http_request: Request,
     db: Session = Depends(get_db)
 ):
     """Marcar lección completada y actualizar racha"""
@@ -493,6 +513,18 @@ async def complete_lesson(
     from datetime import date, timedelta
 
     user = _resolve_user(db, user_public_id)
+
+    # ── Bearer token cross-verification ──────────────────────────────────────
+    # If the frontend sent an Authorization header, confirm the token identifies
+    # the same user as `user_public_id`. This closes the race where a stale
+    # public_id in localStorage (left over from a previous user's session that
+    # didn't call signOut()) could record progress on the wrong account.
+    token_user = _get_token_user_optional(http_request, db)
+    if token_user is not None and str(token_user.public_id) != str(user.public_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Token user does not match user_public_id — request rejected"
+        )
     user_id = user.id
 
     lesson = db.query(Lesson).filter(Lesson.lesson_code == code).first()
@@ -554,6 +586,11 @@ async def complete_lesson(
         func.date(UserLearningStreak.date) == today
     ).first()
 
+    # was_first_today = True when this is the user's FIRST completion of the current day.
+    # The frontend uses this flag to decide whether to show the streak celebration animation.
+    # (Subsequent completions the same day keep the streak but don't re-trigger the animation.)
+    was_first_today = streak_entry is None
+
     if not streak_entry:
         streak_entry = UserLearningStreak(
             user_id=user_id,
@@ -563,6 +600,11 @@ async def complete_lesson(
             points_earned=points_earned
         )
         db.add(streak_entry)
+        # CRITICAL: flush immediately so the new row is visible to the activity_dates query
+        # below. The session is configured with autoflush=False (database.py), so without
+        # an explicit flush the newly-added entry is not yet in the DB transaction and
+        # today would be missing from activity_dates → current_streak = 0.
+        db.flush()
     else:
         streak_entry.lessons_completed += 1
         streak_entry.minutes_studied += request.time_spent_seconds // 60 if request.time_spent_seconds else 3
@@ -608,6 +650,12 @@ async def complete_lesson(
         "new_streak": current_streak,
         "max_streak": user.max_streak or 0,
         "streak_extended": streak_was_extended,
+        # was_first_today: True only on the first lesson of the calendar day (user's local date).
+        # Frontend shows streak celebration animation only when this is True.
+        "was_first_today": was_first_today,
+        # last_activity_date: the user's local YYYY-MM-DD date for this activity.
+        # Frontend stores this to compute the correct streak visual state (zero/inactive/active).
+        "last_activity_date": today.isoformat(),
         "lessons_completed": user.lessons_completed or 0,
         "minutes_studied": user.minutes_studied or 0,
         "total_points": user.points_earned or 0,

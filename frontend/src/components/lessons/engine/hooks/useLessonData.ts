@@ -266,22 +266,39 @@ export async function completeLesson(
     points_earned: number;
     xp_earned: number;
     new_streak: number;
+    max_streak?: number;
     streak_extended: boolean;
     lessons_completed?: number;
     minutes_studied?: number;
     total_points?: number;
+    // Added in streak-system v2:
+    // True if this is the user's FIRST lesson of the calendar day.
+    // Triggers the streak celebration animation (State 2→3 or State 1→3 transition).
+    // Fallback: undefined on older backend versions — use streak_extended as substitute.
+    was_first_today?: boolean;
+    // YYYY-MM-DD (user's local date) of this activity — stored in localStorage
+    // so TopNav can compute streak visual state without a round-trip to /auth/me.
+    last_activity_date?: string;
 } | null> {
     try {
+        // The Bearer token is included so the backend can cross-verify that
+        // the request really comes from the user identified by user_public_id.
+        // This prevents a stale public_id in localStorage (e.g. from a previous
+        // user session that didn't call signOut()) from recording progress on
+        // the wrong account.
+        const appToken = localStorage.getItem('token');
         const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/complete?user_public_id=${userId}`;
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...(appToken ? { Authorization: `Bearer ${appToken}` } : {}),
             },
             body: JSON.stringify({
                 score,
                 time_spent_seconds: timeSpentSeconds,
-                local_date: localDate || new Date().toISOString().split('T')[0],
+                // 'sv' locale gives YYYY-MM-DD in the user's LOCAL timezone (not UTC)
+                local_date: localDate || new Date().toLocaleDateString('sv'),
             })
         });
 

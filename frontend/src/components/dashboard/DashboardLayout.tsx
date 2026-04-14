@@ -43,6 +43,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           avatar_config: freshUser.avatar_config ?? stored.avatar_config,
           username: freshUser.username ?? stored.username,
           preferred_language: freshUser.preferred_language ?? stored.preferred_language,
+          // last_activity_date drives the 3-state streak display (zero / inactive / active).
+          // /auth/me also resets stale streaks in DB when user missed 2+ days.
+          last_activity_date: freshUser.last_activity_date ?? stored.last_activity_date ?? null,
         };
         localStorage.setItem('user', JSON.stringify(merged));
         window.dispatchEvent(new CustomEvent('lf:user-updated'));

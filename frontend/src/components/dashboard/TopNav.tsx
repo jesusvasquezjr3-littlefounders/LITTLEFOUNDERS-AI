@@ -24,6 +24,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useSound } from "@/contexts/SoundContext";
 import { notificationsApi, type NotificationItem } from "@/lib/api/notifications";
 import { isGuest, getGuestProfile } from "@/lib/guestProfile";
+import { getStreakState, getDisplayStreak } from "@/lib/streakUtils";
+import { supabase } from "@/lib/supabase";
 
 const NOTIFICATION_TYPE_CONFIG: Record<string, { icon: any; bgClass: string }> = {
   follow_request: { icon: UserPlus, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
@@ -59,6 +61,20 @@ export function TopNav() {
   const { playSound } = useSound();
   const guestMode = isGuest() && !localStorage.getItem('user');
   const guestProfile = guestMode ? getGuestProfile() : null;
+
+  // ── Streak state (zero / inactive / active) ──────────────────────────────
+  // Computed from current_streak + last_activity_date (user's local date of last lesson).
+  // State 1 (zero):     gray flame + "0"         — no activity in 2+ days or never started
+  // State 2 (inactive): gray flame + streak num  — activity yesterday, not yet today
+  // State 3 (active):   colored flame + streak num — already completed something today
+  const rawStreak = guestMode
+    ? (guestProfile?.current_streak ?? 0)
+    : (user?.current_streak ?? 0);
+  const lastActivityDate = guestMode
+    ? (guestProfile?.last_activity_date ?? null)
+    : (user?.last_activity_date ?? null);
+  const streakState = getStreakState(rawStreak, lastActivityDate);
+  const displayStreak = getDisplayStreak(rawStreak, streakState);
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -163,8 +179,17 @@ export function TopNav() {
     setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     playSound('auth_bye');
+    // Sign out of Supabase first — this clears the 'sb-*-auth-token' key from
+    // localStorage. Without this, the Supabase session survives and the NEXT
+    // user who logs in via OAuth on the same browser can inherit this session,
+    // causing their lessons to be recorded under the previous user's account.
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // If signOut fails (network error, already expired), still clear local storage.
+    }
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/bye');
@@ -215,22 +240,47 @@ export function TopNav() {
           </span>
         </div>
 
-        {/* Streak Stat */}
-        <div className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
-          (user?.current_streak > 0 || (guestMode && (guestProfile?.current_streak ?? 0) > 0))
-            ? "border-rose-500/20 shadow-sm shadow-rose-500/5 group hover:scale-105"
-            : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
-        )}>
-          <div className="w-8 h-8 flex items-center justify-center">
+        {/* ── Streak Stat ───────────────────────────────────────────────────
+          State 1 — zero:     gray flame, "0"        (no activity 2+ days or never)
+          State 2 — inactive: gray flame, streak #   (activity yesterday, not yet today)
+          State 3 — active:   colored flame, streak # (already active today 🔥)
+        ──────────────────────────────────────────────────────────────────── */}
+        <div
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
+            streakState === 'active'
+              ? "border-rose-500/20 shadow-sm shadow-rose-500/5 group hover:scale-105"
+              : "border-slate-300 dark:border-slate-700 opacity-60"
+          )}
+          title={
+            streakState === 'active'   ? `🔥 Racha activa: ${displayStreak} días` :
+            streakState === 'inactive' ? `⚠️ ¡Activa tu racha hoy! ${displayStreak} días en riesgo` :
+                                         '❄️ Sin racha activa'
+          }
+        >
+          <div
+            className={cn(
+              "w-8 h-8 flex items-center justify-center transition-all duration-300",
+              streakState !== 'active' && "grayscale"
+            )}
+          >
             {/* @ts-ignore */}
-            <dotlottie-wc src="https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie" autoplay loop style={{ width: '105%', height: '105%' }} />
+            <dotlottie-wc
+              src="https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie"
+              autoplay
+              loop
+              style={{ width: '105%', height: '105%' }}
+            />
           </div>
-          <span className={cn(
-            "text-base font-black leading-none",
-            (user?.current_streak > 0 || (guestMode && (guestProfile?.current_streak ?? 0) > 0)) ? "text-rose-500 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"
-          )}>
-            {guestMode ? (guestProfile?.current_streak ?? 0) : (user?.current_streak || 0)}
+          <span
+            className={cn(
+              "text-base font-black leading-none transition-colors duration-300",
+              streakState === 'active'
+                ? "text-rose-500 dark:text-rose-400"
+                : "text-slate-500 dark:text-slate-400"
+            )}
+          >
+            {displayStreak}
           </span>
         </div>
       </div>

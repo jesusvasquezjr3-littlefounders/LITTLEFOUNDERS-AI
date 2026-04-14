@@ -21,6 +21,17 @@ const AuthCallback = () => {
         processedRef.current = true;
 
         const handleCallback = async () => {
+            // ── Clear any stale Supabase session from a previous user ──────────
+            // When User X logs out without calling signOut(), their Supabase session
+            // key ('sb-*-auth-token') stays in localStorage. On this same browser,
+            // if User Y starts an OAuth login, supabase.auth.getSession() may return
+            // User X's cached session, causing User Y to be logged in as User X.
+            //
+            // scope: 'local' clears only localStorage — no network request, no
+            // server-side token revocation — so it's safe to call here before we
+            // even know what the new session is.
+            await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+
             // Guard against both onAuthStateChange AND getSession fallback running simultaneously.
             // Only the first path to reach the exchange wins.
             let sessionProcessed = false;

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from sqlalchemy import func as sa_func
+from datetime import datetime, timedelta, date
 from typing import Optional
 
 from database import get_db
-from models import User, UserType
+from models import User, UserType, UserLearningStreak
 from auth.schemas import (
     UserUpdate,
     UserResponse,
@@ -22,6 +23,47 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def _get_limiter():
     from main import limiter
     return limiter
+
+
+def _get_last_activity_date(db: Session, user_id: int) -> Optional[str]:
+    """
+    Returns the user's most recent streak activity date as a YYYY-MM-DD string,
+    or None if the user has never completed a lesson.
+    """
+    raw = db.query(sa_func.max(UserLearningStreak.date)).filter(
+        UserLearningStreak.user_id == user_id
+    ).scalar()
+    if raw is None:
+        return None
+    # raw may be a datetime or a date object depending on the DB driver
+    d = raw.date() if hasattr(raw, "date") and callable(raw.date) else raw
+    return d.isoformat() if hasattr(d, "isoformat") else str(d)[:10]
+
+
+def _reset_stale_streak_if_needed(db: Session, user: User) -> None:
+    """
+    Resets current_streak to 0 in the DB if the user has not had any activity
+    in the last 2 days (missed a full calendar day without completing anything).
+    Called on login / /auth/me so the DB value is always fresh after a user returns.
+    """
+    if not user.current_streak:
+        return  # already 0 — nothing to do
+
+    last_activity = _get_last_activity_date(db, user.id)
+    if not last_activity:
+        # No activity ever recorded but streak > 0 (data inconsistency) — reset
+        user.current_streak = 0
+        db.commit()
+        return
+
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    last_date = date.fromisoformat(last_activity)
+
+    if last_date < yesterday:
+        # Missed 2+ days — streak is broken
+        user.current_streak = 0
+        db.commit()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/supabase")
 
@@ -138,6 +180,14 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
         # Refresh user from DB to ensure we have the latest stats
         db.refresh(user)
 
+        # On login: reset stale streak if the user missed 2+ days
+        # This ensures the DB value is correct from the moment they sign in.
+        _reset_stale_streak_if_needed(db, user)
+        db.refresh(user)  # Re-read in case streak was just reset
+
+        # Compute last activity date for frontend streak-state display
+        last_activity_date = _get_last_activity_date(db, user.id)
+
         user_data = {
             "public_id": str(user.public_id),
             "name": user.name,
@@ -156,6 +206,10 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
             "current_streak": getattr(user, "current_streak", 0) or 0,
             "max_streak": getattr(user, "max_streak", 0) or 0,
             "minutes_studied": getattr(user, "minutes_studied", 0) or 0,
+            # last_activity_date: YYYY-MM-DD of most recent streak entry.
+            # Frontend uses this + current_streak to derive the 3 visual states:
+            # 'zero' (no activity 2+ days), 'inactive' (yesterday only), 'active' (today).
+            "last_activity_date": last_activity_date,
         }
 
         return {
@@ -178,12 +232,42 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
         )
 
 
-@router.get("/me", response_model=UserResponse)
-async def get_current_user(current_user: User = Depends(get_current_user_from_token)):
+@router.get("/me")
+async def get_current_user(
+    current_user: User = Depends(get_current_user_from_token),
+    db: Session = Depends(get_db),
+):
     """
-    Get current user information
+    Get current user information.
+    Also resets stale streaks and returns last_activity_date so the frontend
+    can correctly render the three streak states (zero / inactive / active).
     """
-    return current_user
+    # Reset streak if user missed 2+ days (best-effort DB correction on each app load)
+    _reset_stale_streak_if_needed(db, current_user)
+    db.refresh(current_user)
+
+    last_activity_date = _get_last_activity_date(db, current_user.id)
+
+    return {
+        "public_id": str(current_user.public_id),
+        "name": current_user.name,
+        "email": current_user.email,
+        "user_type": current_user.user_type,
+        "created_at": current_user.created_at.isoformat(),
+        "avatar_config": current_user.avatar_config,
+        "username": current_user.username,
+        "preferred_language": current_user.preferred_language,
+        "auth_provider": current_user.auth_provider,
+        "birth_date": current_user.birth_date.isoformat() if current_user.birth_date else None,
+        "gender": current_user.gender,
+        "lessons_completed": current_user.lessons_completed or 0,
+        "points_earned": current_user.points_earned or 0,
+        "balance": current_user.balance or 0.0,
+        "current_streak": current_user.current_streak or 0,
+        "max_streak": current_user.max_streak or 0,
+        "minutes_studied": current_user.minutes_studied or 0,
+        "last_activity_date": last_activity_date,
+    }
 
 
 @router.patch("/me", response_model=UserResponse)

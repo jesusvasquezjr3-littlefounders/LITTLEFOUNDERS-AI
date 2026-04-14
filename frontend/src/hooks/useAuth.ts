@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { getGuestProfile, clearGuestProfile, isGuest as checkIsGuest, type GuestProfile } from '@/lib/guestProfile';
+import { supabase } from '@/lib/supabase';
 
 interface AuthUser {
     email: string;
@@ -46,11 +47,15 @@ export function useAuth() {
           };
 
     const logout = useCallback(() => {
+        // Sign out of Supabase to clear the 'sb-*-auth-token' key.
+        // Fire-and-forget — don't block UI on network response.
+        supabase.auth.signOut().catch(() => {});
         localStorage.removeItem('user');
         localStorage.removeItem('token');
     }, []);
 
     const clearAll = useCallback(() => {
+        supabase.auth.signOut().catch(() => {});
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         clearGuestProfile();
