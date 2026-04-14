@@ -137,11 +137,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Track lesson start time to calculate real duration
     const lessonStartTimeRef = useRef<number>(Date.now());
 
+    // Prevents duplicate API calls on retry — only call completeLesson() once per lesson code
+    const hasCompletedOnceRef = useRef(false);
+
+    // Prevents celebration from re-firing during the same completion cycle
+    // Reset on: code change (new lesson), retry (allow re-celebration)
+    const celebrationShownRef = useRef(false);
+
     // UI states
     const [showSuccess, setShowSuccess] = useState(false);
     const [showStreakCelebration, setShowStreakCelebration] = useState(false);
-    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number; streak_extended: boolean; lessons_completed?: number; minutes_studied?: number } | null>(null);
-    const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+    const [completionResult, setCompletionResult] = useState<{ points_earned: number; xp_earned: number; new_streak: number; max_streak?: number; streak_extended: boolean; lessons_completed?: number; minutes_studied?: number; total_points?: number } | null>(null);
     // null = last lesson (no next), undefined = still loading, string = ready to navigate
     const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
     const [realDurationSeconds, setRealDurationSeconds] = useState(0);
@@ -349,16 +355,34 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // It auto-plays on exercise load and provides playFeedback() for answer responses.
     // The old audioRef/setIsAudioPlaying pattern is replaced by lessonAudio.isNarrativeAudioPlaying.
 
-    // Celebration on complete + API call
+    // ─── COMPLETION EFFECT ───
+    // CRITICAL: deps are [state] only. Do NOT add showSuccess or code.
+    // Adding those causes the effect to re-fire during lesson navigation transitions
+    // (when code changes but state is still stale 'COMPLETED' from previous lesson).
+    // celebrationShownRef prevents double-firing within the same completion cycle.
+    // hasCompletedOnceRef prevents duplicate API calls on retry.
     useEffect(() => {
-        if (state === 'COMPLETED' && !isCompletingLesson) {
-            setIsCompletingLesson(true);
-            setNextLessonCode(undefined); // reset to loading state
-            stopBGM({ fade: true, fadeDuration: 1500 });
+        if (state !== 'COMPLETED' || celebrationShownRef.current) return;
+        celebrationShownRef.current = true;
 
-            // Calculate real time spent in this lesson
-            const realTimeSeconds = Math.round((Date.now() - lessonStartTimeRef.current) / 1000);
-            setRealDurationSeconds(realTimeSeconds);
+        stopBGM({ fade: true, fadeDuration: 1500 });
+
+        const realTimeSeconds = Math.round((Date.now() - lessonStartTimeRef.current) / 1000);
+        setRealDurationSeconds(realTimeSeconds);
+
+        // Show celebration (fires on first completion AND retries)
+        const celebrationTimeout = setTimeout(() => {
+            playSound('edu_complete');
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
+            setShowSuccess(true);
+        }, 1000);
+
+        // Persist progress only on FIRST completion of this lesson code
+        if (!hasCompletedOnceRef.current) {
+            hasCompletedOnceRef.current = true;
+            setNextLessonCode(undefined); // loading state for button
+
+            const localDate = new Date().toISOString().split('T')[0]; // User's local YYYY-MM-DD
 
             const markComplete = async () => {
                 try {
@@ -368,61 +392,69 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     const guestProfile = getGuestProfile();
                     const isAuth = !!(user && userId);
 
-                    // Fetch next lesson code in parallel with completion
-                    // Only call backend for authenticated users — guests have no DB record
-                    const [result, nextCode] = await Promise.all([
-                        isAuth && code
-                            ? completeLesson(code, userId, 100, realTimeSeconds)
-                            : Promise.resolve(null),
-                        fetchNextLessonCode(code),
-                    ]);
+                    // Step 1: Complete lesson (auth users only)
+                    let result = null;
+                    if (isAuth && code) {
+                        result = await completeLesson(code, userId, 100, realTimeSeconds, localDate);
+                    }
+
+                    // Step 2: Fetch next lesson code
+                    const nextCode = await fetchNextLessonCode(code);
 
                     if (isAuth && result) {
-                        // ── Authenticated user: persist backend-returned stats ──
                         setCompletionResult(result);
                         const updatedUser = {
                             ...user,
                             current_streak: result.new_streak,
+                            max_streak: result.max_streak ?? Math.max(user.max_streak || 0, result.new_streak),
                             lessons_completed: result.lessons_completed ?? user.lessons_completed,
                             minutes_studied: result.minutes_studied ?? user.minutes_studied,
                             points_earned: result.total_points ?? user.points_earned,
                         };
                         localStorage.setItem('user', JSON.stringify(updatedUser));
+                        window.dispatchEvent(new CustomEvent('lf:user-updated'));
 
                         if (result.streak_extended && result.new_streak > 1) {
                             setTimeout(() => setShowStreakCelebration(true), 1200);
                         }
+                    } else if (isAuth && !result) {
+                        // API failed — show fallback stats from lesson meta
+                        setCompletionResult({
+                            points_earned: data?.meta?.points_reward || 10,
+                            xp_earned: 25,
+                            new_streak: 0,
+                            streak_extended: false,
+                        });
                     } else if (guestProfile) {
-                        // ── Guest user: compute stats locally, no backend call ──
-                        const today = new Date().toDateString();
+                        const today = localDate;
                         const lastStudied = guestProfile.updated_at
-                            ? new Date(guestProfile.updated_at).toDateString()
+                            ? new Date(guestProfile.updated_at).toISOString().split('T')[0]
                             : null;
-                        const yesterday = new Date(Date.now() - 86400000).toDateString();
+                        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-                        let newStreak = guestProfile.current_streak || 0;
+                        const oldStreak = guestProfile.current_streak || 0;
+                        let newStreak = oldStreak;
                         if (today !== lastStudied) {
-                            // First lesson of the day
-                            newStreak = (lastStudied === yesterday) ? newStreak + 1 : 1;
+                            newStreak = (lastStudied === yesterday) ? oldStreak + 1 : 1;
                         }
 
                         const guestPoints = data?.meta?.points_reward || 10;
-                        const guestResult = {
+                        const streakWasExtended = newStreak > oldStreak;
+                        setCompletionResult({
                             points_earned: guestPoints,
                             xp_earned: 25,
                             new_streak: newStreak,
-                            streak_extended: newStreak > 0,
-                        };
-                        setCompletionResult(guestResult);
+                            streak_extended: streakWasExtended,
+                        });
 
                         updateGuestProfile({
                             lessons_completed: (guestProfile.lessons_completed || 0) + 1,
-                            xp: (guestProfile.xp || 0) + guestResult.xp_earned,
+                            xp: (guestProfile.xp || 0) + 25,
                             current_streak: newStreak,
                             max_streak: Math.max(guestProfile.max_streak || 0, newStreak),
                         });
 
-                        if (newStreak > 1) {
+                        if (streakWasExtended && newStreak > 1) {
                             setTimeout(() => setShowStreakCelebration(true), 1200);
                         }
                     }
@@ -435,14 +467,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             };
 
             markComplete();
-
-            setTimeout(() => {
-                playSound('edu_complete');
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 100 });
-                setShowSuccess(true);
-            }, 1000);
         }
-    }, [state, playSound, stopBGM, isCompletingLesson, code]);
+
+        return () => clearTimeout(celebrationTimeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [state]);
 
     // Reset local feedback when exercise changes
     useEffect(() => {
@@ -456,17 +485,19 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // which causes the next lesson to appear at the bottom / completion screen.
     useEffect(() => {
         setShowSuccess(false);
+        setShowStreakCelebration(false);
         setCompletionResult(null);
-        setIsCompletingLesson(false);
         setNextLessonCode(undefined);
         setShowGameOver(false);
         setLocalFeedback('none');
         setLives(5);
+        hasCompletedOnceRef.current = false;
+        celebrationShownRef.current = false;
         window.scrollTo(0, 0);
     }, [code]);
 
-    // Close lesson
-    const handleClose = () => navigate(-1);
+    // Close lesson — always go to /learn (not navigate(-1) which could go to a previous lesson)
+    const handleClose = () => navigate('/learn');
 
     // ============ LOADING STATE ============
     if (loading) {
@@ -1126,10 +1157,12 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 onExit={handleClose}
                 onRetry={() => {
                     setShowSuccess(false);
-                    setIsCompletingLesson(false);
-                    setNextLessonCode(undefined);
+                    setShowStreakCelebration(false);
+                    celebrationShownRef.current = false; // Allow celebration to fire again on re-completion
                     lessonStartTimeRef.current = Date.now();
                     startLesson();
+                    // hasCompletedOnceRef stays true — retry won't re-call API
+                    // completionResult & nextLessonCode preserved for the next celebration
                 }}
             />
 

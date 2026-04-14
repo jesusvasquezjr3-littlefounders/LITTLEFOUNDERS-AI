@@ -491,24 +491,24 @@ async def complete_lesson(
     """Marcar lección completada y actualizar racha"""
     from models import UserLearningStreak
     from datetime import date, timedelta
-    
+
     user = _resolve_user(db, user_public_id)
     user_id = user.id
-    
+
     lesson = db.query(Lesson).filter(Lesson.lesson_code == code).first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
-        
+
     # Check progress
     progress = db.query(UserLessonProgress).filter(
         UserLessonProgress.user_id == user_id,
         UserLessonProgress.lesson_id == lesson.id
     ).first()
-    
+
     first_time = not progress or not progress.completed
     points_earned = 0
     xp_earned = 0
-    
+
     if not progress:
         progress = UserLessonProgress(
             user_id=user_id,
@@ -517,35 +517,43 @@ async def complete_lesson(
             completed=False
         )
         db.add(progress)
-        
+
     # Update progress
     progress.progress = 100
     progress.completed = True
     progress.completed_at = datetime.now()
     progress.score = max(progress.score or 0, request.score)
-    
-    # Calculate rewards (mock logic)
+
+    # Calculate rewards
     if first_time:
         points_earned = lesson.points_reward or 10
         xp_earned = 25
-        # Update user balance/xp if those fields exist (User model doesn't have XP yet, but has balance?)
-        # user.balance += points_earned
         progress.points_earned = points_earned
-        
+
     # Update time spent
     progress.time_spent_seconds = (progress.time_spent_seconds or 0) + (request.time_spent_seconds or 0)
-    
+
     # ---------------------------------------------------------
-    # STREAK LOGIC
+    # STREAK LOGIC (timezone-aware via local_date from frontend)
     # ---------------------------------------------------------
-    today = date.today()
-    
+    # Use client's local date if provided, fallback to server date
+    if request.local_date:
+        try:
+            today = date.fromisoformat(request.local_date)
+        except (ValueError, TypeError):
+            today = date.today()
+    else:
+        today = date.today()
+
+    # Save old streak BEFORE recalculating to determine if it was extended
+    old_streak = user.current_streak or 0
+
     # 1. Record activity for today
     streak_entry = db.query(UserLearningStreak).filter(
         UserLearningStreak.user_id == user_id,
         func.date(UserLearningStreak.date) == today
     ).first()
-    
+
     if not streak_entry:
         streak_entry = UserLearningStreak(
             user_id=user_id,
@@ -556,43 +564,31 @@ async def complete_lesson(
         )
         db.add(streak_entry)
     else:
-        # Update existing entry
         streak_entry.lessons_completed += 1
         streak_entry.minutes_studied += request.time_spent_seconds // 60 if request.time_spent_seconds else 3
         streak_entry.points_earned += points_earned
-    
-    # 2. Calculate Streak
-    # Get all distinct activity dates
+
+    # 2. Calculate current streak from activity history
     activity_dates = db.query(func.date(UserLearningStreak.date)).filter(
         UserLearningStreak.user_id == user_id
     ).distinct().order_by(func.date(UserLearningStreak.date).desc()).all()
-    
-    activity_dates = [d[0] for d in activity_dates] # Convert tuples to dates
-    
+
+    activity_dates = [d[0] for d in activity_dates]
+
     current_streak = 0
-    if activity_dates:
-        # Check if studied today
-        if today in activity_dates:
-            current_streak = 1
-            check_date = today - timedelta(days=1)
-            
-            # Count backwards
-            while check_date in activity_dates:
-                current_streak += 1
-                check_date -= timedelta(days=1)
-        else:
-            # Check if studied yesterday
-            yesterday = today - timedelta(days=1)
-            if yesterday in activity_dates:
-                current_streak = 1
-                check_date = yesterday - timedelta(days=1)
-                while check_date in activity_dates:
-                    current_streak += 1
-                    check_date -= timedelta(days=1)
-                    
-    # Update user streak
+    if activity_dates and today in activity_dates:
+        current_streak = 1
+        check_date = today - timedelta(days=1)
+        while check_date in activity_dates:
+            current_streak += 1
+            check_date -= timedelta(days=1)
+
+    # 3. Update user streak
     user.current_streak = current_streak
-    user.max_streak = max(user.max_streak, current_streak)
+    user.max_streak = max(user.max_streak or 0, current_streak)
+
+    # streak_extended = streak actually increased (not just maintained by doing more lessons same day)
+    streak_was_extended = current_streak > old_streak
 
     # Update user aggregate stats
     if first_time:
@@ -602,16 +598,19 @@ async def complete_lesson(
     user.minutes_studied = (user.minutes_studied or 0) + minutes_this_session
 
     db.commit()
-    
+
+    db.refresh(user)  # Ensure we return the freshest values after commit
+
     return {
         "success": True,
         "points_earned": points_earned,
         "xp_earned": xp_earned,
         "new_streak": current_streak,
-        "streak_extended": current_streak > 0,
-        "lessons_completed": user.lessons_completed,
-        "minutes_studied": user.minutes_studied,
-        "total_points": user.points_earned,
+        "max_streak": user.max_streak or 0,
+        "streak_extended": streak_was_extended,
+        "lessons_completed": user.lessons_completed or 0,
+        "minutes_studied": user.minutes_studied or 0,
+        "total_points": user.points_earned or 0,
     }
 
 # =====================================================

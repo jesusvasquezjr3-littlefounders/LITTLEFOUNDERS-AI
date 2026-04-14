@@ -39,6 +39,7 @@ class UserResponse(BaseModel):
     minutes_studied: Optional[int] = 0
     points_earned: Optional[int] = 0
     current_streak: Optional[int] = 0
+    max_streak: Optional[int] = 0
     balance: Optional[float] = 0.0
     avatar_config: Optional[dict] = None
     username: Optional[str] = None

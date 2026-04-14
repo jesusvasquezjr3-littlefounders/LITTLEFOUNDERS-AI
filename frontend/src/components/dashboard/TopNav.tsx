@@ -66,11 +66,18 @@ export function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
+  const refreshUser = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
     }
+  };
+
+  useEffect(() => {
+    refreshUser();
+    // Re-read user from localStorage whenever lesson completion or profile update stores new stats
+    window.addEventListener('lf:user-updated', refreshUser);
+    return () => window.removeEventListener('lf:user-updated', refreshUser);
   }, []);
 
   // Fetch unread count

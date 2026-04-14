@@ -135,6 +135,9 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
             data={"sub": user.email}, expires_delta=access_token_expires
         )
 
+        # Refresh user from DB to ensure we have the latest stats
+        db.refresh(user)
+
         user_data = {
             "public_id": str(user.public_id),
             "name": user.name,
@@ -147,9 +150,12 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
             "auth_provider": user.auth_provider,
             "birth_date": user.birth_date.isoformat() if user.birth_date else None,
             "gender": user.gender,
-            "lessons_completed": getattr(user, "lessons_completed", 0),
-            "points_earned": getattr(user, "points_earned", 0),
-            "balance": getattr(user, "balance", 0.0),
+            "lessons_completed": getattr(user, "lessons_completed", 0) or 0,
+            "points_earned": getattr(user, "points_earned", 0) or 0,
+            "balance": getattr(user, "balance", 0.0) or 0.0,
+            "current_streak": getattr(user, "current_streak", 0) or 0,
+            "max_streak": getattr(user, "max_streak", 0) or 0,
+            "minutes_studied": getattr(user, "minutes_studied", 0) or 0,
         }
 
         return {

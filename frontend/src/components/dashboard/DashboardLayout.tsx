@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
 import { isGuest } from "@/lib/guestProfile";
 
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
+
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -16,6 +18,37 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation('dashboard');
   const showGuestBanner = isGuest() && !localStorage.getItem('user');
+
+  // On mount: refresh user stats from /auth/me so streak/points are always fresh
+  // This ensures cross-device consistency — stats stored in DB are fetched on each session
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (!token || !userStr) return;
+
+    fetch(`${API_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => (res.ok ? res.json() : null))
+      .then(freshUser => {
+        if (!freshUser) return;
+        const stored = JSON.parse(userStr);
+        const merged = {
+          ...stored,
+          current_streak: freshUser.current_streak ?? stored.current_streak ?? 0,
+          max_streak: freshUser.max_streak ?? stored.max_streak ?? 0,
+          lessons_completed: freshUser.lessons_completed ?? stored.lessons_completed ?? 0,
+          minutes_studied: freshUser.minutes_studied ?? stored.minutes_studied ?? 0,
+          points_earned: freshUser.points_earned ?? stored.points_earned ?? 0,
+          avatar_config: freshUser.avatar_config ?? stored.avatar_config,
+          username: freshUser.username ?? stored.username,
+          preferred_language: freshUser.preferred_language ?? stored.preferred_language,
+        };
+        localStorage.setItem('user', JSON.stringify(merged));
+        window.dispatchEvent(new CustomEvent('lf:user-updated'));
+      })
+      .catch(() => {/* silently fail — user keeps cached data */});
+  }, []);
 
   // Initialize from localStorage or default to true (collapsed by default)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {

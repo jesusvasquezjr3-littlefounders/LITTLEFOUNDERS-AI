@@ -259,7 +259,8 @@ export async function completeLesson(
     lessonCode: string,
     userId: string,
     score: number = 100,
-    timeSpentSeconds: number = 180
+    timeSpentSeconds: number = 180,
+    localDate?: string // User's local YYYY-MM-DD for timezone-aware streak tracking
 ): Promise<{
     success: boolean;
     points_earned: number;
@@ -279,7 +280,8 @@ export async function completeLesson(
             },
             body: JSON.stringify({
                 score,
-                time_spent_seconds: timeSpentSeconds
+                time_spent_seconds: timeSpentSeconds,
+                local_date: localDate || new Date().toISOString().split('T')[0],
             })
         });
 

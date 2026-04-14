@@ -152,6 +152,7 @@ class LessonCompleteRequest(BaseModel):
     score: int = 100  # User's score (0-100)
     time_spent_seconds: int = 180  # Time spent on lesson
     exercises_results: Optional[List[dict]] = None  # [{exercise_id, status, attempts}]
+    local_date: Optional[str] = None  # User's local YYYY-MM-DD for timezone-aware streak tracking
 
 
 # User Stats for Dashboard
