@@ -56,49 +56,7 @@ const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalR
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    // Offscreen Pause/Resume: stop ALL computation when not visible
-    const isVisibleRef = useRef(false);
-    useEffect(() => {
-        const el = wrapperRef.current;
-        if (!el) return;
-        const obs = new IntersectionObserver(
-            ([entry]) => {
-                isVisibleRef.current = entry.isIntersecting;
-                try {
-                    if (entry.isIntersecting) {
-                        playerRef.current?.play();
-                    } else {
-                        playerRef.current?.pause();
-                    }
-                } catch (_) { }
-            },
-            { threshold: 0.05 }
-        );
-        obs.observe(el);
-        return () => obs.disconnect();
-    }, []);
-
-    // Scroll Pause: pause rendering while the user is actively scrolling
-    useEffect(() => {
-        let scrollTimeout: NodeJS.Timeout;
-        const handleScroll = () => {
-            if (!isVisibleRef.current) return;
-            try { playerRef.current?.pause(); } catch (_) { }
-
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                if (isVisibleRef.current) {
-                    try { playerRef.current?.play(); } catch (_) { }
-                }
-            }, 150); // Resume 150ms after scroll stops
-        };
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            clearTimeout(scrollTimeout);
-        };
-    }, []);
-
+    // Scroll Pause/Play features removed: The component now acts as an interactive video
     const fps = isMobile ? FPS_MOBILE : FPS_DESKTOP;
     // Scale duration proportionally so animation plays at same real-time speed
     const scaledFrames = isMobile
@@ -117,8 +75,8 @@ const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalR
         s_phase2_line1: t("showreel.phase2_line1"),
         s_phase2_line2: t("showreel.phase2_line2"),
         s_phase2_highlight2: t("showreel.phase2_highlight2"),
-        s_phase2_line3: t("showreel.phase2_line3"),
-        s_phase2_line4: t("showreel.phase2_line4"),
+        s_phase2_line3: t("showreel.showPhase2Line3") || t("showreel.phase2_line3"),
+        s_phase2_line4: t("showreel.showPhase2Line4") || t("showreel.phase2_line4"),
         s_phase2_highlight4: t("showreel.phase2_highlight4"),
         s_phase2_line4b: t("showreel.phase2_line4b"),
         // Phase 3
@@ -148,6 +106,7 @@ const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalR
         <div
             ref={wrapperRef}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+            className="rounded-[1.5rem] overflow-hidden shadow-2xl border border-white/20 dark:border-white/10"
         >
             <Player
                 ref={playerRef}
@@ -158,9 +117,9 @@ const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalR
                 compositionHeight={COMP_H}
                 inputProps={inputProps}
                 loop
-                controls={false}
-                clickToPlay={false}
-                allowFullscreen={false}
+                controls={true}
+                clickToPlay={true}
+                allowFullscreen={true}
                 style={{
                     width: "100%",
                     height: "100%",

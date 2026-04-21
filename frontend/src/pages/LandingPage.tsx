@@ -129,7 +129,7 @@ const LandingPage = () => {
                 {t('hero.badge')}
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-[1.15] tracking-tight transition-colors max-w-4xl">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white leading-[1.15] tracking-tight transition-colors max-w-4xl">
                 {t('hero.title_part1')}{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
                   {t('hero.title_highlight')}
