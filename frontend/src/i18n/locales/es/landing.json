@@ -17,27 +17,27 @@
         "cta_subtext": "✨ No requiere tarjeta • Acceso inmediato"
     },
     "problem": {
-        "title_part1": "La escuela enseña Álgebra...",
-        "title_part2": "pero nadie enseña Dinero.",
-        "subtitle": "Es la historia de siempre: graduarse sabiendo resolver <i>trinomios cuadrados perfectos</i>, pero sin saber cómo funciona una tarjeta de crédito, un presupuesto o una inversión.",
-        "card1_title": "Desinformación",
-        "card1_text": "Los niños aprenden sobre dinero de TikTok o amigos, llenándose de mitos peligrosos.",
-        "card2_title": "Estrés Futuro",
-        "card2_text": "El dinero es la causa #1 de estrés en adultos. No dejes que sea el de tus hijos.",
-        "card3_title": "Clases Aburridas",
-        "card3_text": "Los cursos tradicionales son PDFs aburridos que los niños odian leer.",
-        "card4_title": "Errores Costosos",
-        "card4_text": "Aprender a prueba y error en la vida real es la forma más cara de educarse."
+        "title_part1": "La escuela enseña álgebra...",
+        "title_part2": "pero no enseña a manejar dinero.",
+        "subtitle": "Tus hijos se gradúan sabiendo resolver ecuaciones, pero sin entender cómo funciona una tarjeta de crédito, un presupuesto o el ahorro.",
+        "card1_title": "Mala Influencia",
+        "card1_text": "Tus hijos aprenden de dinero en TikTok llenándose de mitos peligrosos.",
+        "card2_title": "Dependencia",
+        "card2_text": "Sin educación financiera, tardarán años en independizarse.",
+        "card3_title": "Cero Interés",
+        "card3_text": "Las pláticas serias sobre dinero los aburren y no prestan atención.",
+        "card4_title": "Errores Caros",
+        "card4_text": "Aprender a prueba y error en la vida real significa deudas reales."
     },
     "solution": {
-        "badge": "La Solución LittleFounders",
+        "badge": "La Solución Práctica",
         "title_part1": "No es una clase.",
-        "title_part2": "Es una",
-        "title_highlight": "Aventura",
-        "subtitle": "Utilizamos el \"Aprendizaje Basado en Simulación\". Aprende finanzas jugando con simuladores interactivos y desafíos emocionantes.",
-        "benefit1": "Aprende cometiendo errores virtuales (no reales)",
-        "benefit2": "Descubre el poder del ahorro con herramientas visuales y metas alcanzables",
-        "benefit3": "Contenido educativo diseñado específicamente para cada edad y nivel",
+        "title_part2": "Es pura",
+        "title_highlight": "Práctica",
+        "subtitle": "Aprenderán a gestionar el dinero mediante simulaciones interactivas en un entorno 100% seguro.",
+        "benefit1": "Evita errores reales equivocándose en el simulador.",
+        "benefit2": "Desarrollan el hábito de ahorrar mediante recompensas.",
+        "benefit3": "Plan de estudios sin que necesites ser un experto en finanzas.",
         "play_label": "Aprender Jugando",
         "interactive_label": "100% Interactivo",
         "animation": {
@@ -63,24 +63,24 @@
         }
     },
     "features": {
-        "title": "Funcionalidades",
-        "subtitle": "Descubre todo lo que ofrecemos para el aprendizaje financiero.",
+        "title": "Control para ti, Diversión para ellos",
+        "subtitle": "Herramientas diseñadas para resultados reales.",
         "interactive_lessons": {
-            "title": "Lecciones Interactivas",
-            "description": "Explora temas financieros con lecciones visuales y participativas."
+            "title": "Lecciones Directas",
+            "description": "Explicaciones visuales que captan su atención cuando no tienes tiempo."
         },
         "video_games": {
-            "title": "Videojuegos Educativos",
-            "description": "Aprende jugando con misiones y desafíos divertidos."
+            "title": "Misiones Prácticas",
+            "description": "Se divierten jugando y asimilan conceptos vitales para su futuro."
         },
         "ai_functionality": {
-            "title": "Tutor Inteligente",
-            "description": "Aprendizaje inteligente que te enseña a tu ritmo, a tu edad y personalizado para ti.",
-            "badge": "IA"
+            "title": "Tutor de IA",
+            "description": "Un guía inteligente supervisado que resuelve sus dudas de forma segura.",
+            "badge": "IA Educativa"
         },
         "more_stuff": {
-            "title": "Y mucho más...",
-            "description": "Herramientas de ahorro, simuladores y retos semanales."
+            "title": "Reportes para Padres",
+            "description": "Dashboard con progreso, logros y sugerencias para hablar de dinero en familia."
         }
     },
     "faq": {
@@ -106,6 +106,13 @@
         "subtitle": "Dale las herramientas que la escuela no le da. Empieza hoy, es gratis y toma 30 segundos.",
         "button": "Registrate Gratis",
         "disclaimer": "Sin compromiso. Cancela cuando quieras."
+    },
+    "cta_parents": {
+        "title": "Prepara a tu hijo para el futuro financiero",
+        "subtitle": "Únete a las familias que están transformando la forma en que sus hijos aprenden sobre el dinero. La educación de hoy es su libertad mañana.",
+        "button": "Comenzar Aventura",
+        "login_link": "Ya tengo cuenta",
+        "disclaimer": "✨ No requiere tarjeta • Acceso inmediato"
     },
     "footer": {
         "terms": "Términos",
