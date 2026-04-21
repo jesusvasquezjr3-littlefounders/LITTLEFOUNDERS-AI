@@ -1,0 +1,19 @@
+{
+  "intro": {
+    "title": "Hey, {{name}}! 🧭",
+    "body": "Before opening your adventure map, want to take a quick 3-minute challenge? It helps us place you right where you'll learn and enjoy the most.",
+    "later_hint": "You can also do it later from your profile.",
+    "accept_button": "Let's go!",
+    "skip_link": "Skip for now"
+  },
+  "closing": {
+    "title": "Your map is ready, {{name}}! 🗺️",
+    "saga_start": "You'll start at: Adventure {{adventure}} · Saga {{saga}}",
+    "body": "We've personalized your learning path. Everything is ready for you to start your adventure!",
+    "streak_label": "STREAK",
+    "cta": "Start my adventure!"
+  },
+  "quiz": {
+    "exit_aria": "Exit quiz"
+  }
+}

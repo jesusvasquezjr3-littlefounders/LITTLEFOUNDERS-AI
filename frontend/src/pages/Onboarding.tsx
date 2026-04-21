@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Check, Sparkles, Star, Zap } from "lucide-react";
@@ -8,11 +8,10 @@ import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { setGuestProfile, getGuestProfile } from "@/lib/guestProfile";
-import { StreakCelebration } from "@/components/ui/StreakCelebration";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-type Step = 0 | 1 | 2 | 3 | 4 | 5;
+type Step = 0 | 1 | 2 | 3 | 4;
 type Interest = "saving" | "investing" | "entrepreneurship" | "budgeting" | "banking" | "security";
 type ExperienceLevel = "beginner" | "some_knowledge" | "experienced";
 
@@ -23,7 +22,7 @@ interface OnboardingData {
   experience_level: ExperienceLevel | "";
 }
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 4;
 const INTERESTS: Interest[] = ["saving", "investing", "entrepreneurship", "budgeting", "banking", "security"];
 const EXP_LEVELS: ExperienceLevel[] = ["beginner", "some_knowledge", "experienced"];
 const EXP_ICONS: Record<ExperienceLevel, string> = {
@@ -50,7 +49,7 @@ interface StepTheme {
   orb2Dark: string;
 }
 
-const STEP_THEMES: Record<Step, StepTheme> = {
+const STEP_THEMES: Record<number, StepTheme> = {
   0: {
     lightBg: "from-violet-100 via-indigo-50 to-blue-100",
     darkBg: "dark:from-[#1a0938] dark:via-[#1e0f5c] dark:to-[#0d1b4b]",
@@ -399,8 +398,6 @@ export default function Onboarding() {
   const [nameInput, setNameInput] = useState("");
   const [ageInput, setAgeInput] = useState("");
   const [error, setError] = useState("");
-  const [showStreakCelebration, setShowStreakCelebration] = useState(false);
-
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
 
@@ -409,7 +406,10 @@ export default function Onboarding() {
     const user = localStorage.getItem("user");
     if (user) { navigate("/learn"); return; }
     const guest = getGuestProfile();
-    if (guest?.onboarding_completed) { navigate("/learn"); return; }
+    if (guest?.onboarding_completed) {
+      navigate(guest.placement ? "/learn" : "/placement");
+      return;
+    }
 
     // Restore in-progress from sessionStorage
     const saved = sessionStorage.getItem("onboarding_progress");
@@ -438,15 +438,8 @@ export default function Onboarding() {
     if (step === 2) setTimeout(() => ageRef.current?.focus(), 420);
   }, [step]);
 
-  // ── Trigger streak celebration when reaching step 5 ───────────────────
-  useEffect(() => {
-    if (step === 5) {
-      setShowStreakCelebration(true);
-    }
-  }, [step]);
-
   // ── Navigation ────────────────────────────────────────────────────────
-  const goNext = () => setStep((s) => Math.min(s + 1, 5) as Step);
+  const goNext = () => setStep((s) => Math.min(s + 1, 4) as Step);
 
   // ── Step handlers ─────────────────────────────────────────────────────
   const handleNameContinue = () => {
@@ -515,7 +508,7 @@ export default function Onboarding() {
         interests: finalInterests,
         experience_level: level,
         preferred_language: lang,
-        xp: 50,
+        xp: 0,
         current_streak: 1,
         max_streak: 1,
         lessons_completed: 0,
@@ -526,14 +519,12 @@ export default function Onboarding() {
         completed_lesson_codes: [],
         next_lesson_code: null,
         last_activity_date: null,
+        placement: null,
+        placement_adventure: null,
       });
-      goNext();
+      sessionStorage.removeItem("onboarding_progress");
+      navigate("/placement");
     }, 300);
-  };
-
-  const handleExplore = () => {
-    sessionStorage.removeItem("onboarding_progress");
-    navigate("/learn");
   };
 
   // ── Render ────────────────────────────────────────────────────────────
@@ -829,81 +820,11 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* ── STEP 5: Celebration ─────────────────────────────────────── */}
-          {step === 5 && (
-            <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
-              {/* Solo Liruf celebrating */}
-              <div className="relative w-full flex justify-center mt-2 mb-6 pointer-events-none">
-                {/* Central glow */}
-                <div
-                  className="absolute bottom-4 w-48 h-48 rounded-full z-0"
-                  style={{
-                    background:
-                      "radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%)",
-                    filter: "blur(28px)",
-                  }}
-                />
-                <div className="relative w-48 h-48 drop-shadow-2xl z-10">
-                  <DinoCharacter mood="excited" />
-                </div>
-              </div>
-
-              <div className="w-full px-6 flex flex-col items-center animate-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">
-                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
-                  {t("celebration.title")}
-                </h2>
-                <p className="text-gray-600 dark:text-white/75 text-sm font-medium mb-8 leading-relaxed max-w-xs">
-                  {t("celebration.subtitle")}
-                </p>
-
-                {/* Aesthetic mini streak badge */}
-                <div className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500/10 to-amber-500/10 dark:from-orange-500/10 dark:to-amber-500/10 border border-orange-500/20 dark:border-orange-500/10 rounded-full py-1.5 px-6 mb-8 w-max">
-                  <div className="w-12 h-12 flex items-center justify-center -ml-3 -my-2 overflow-visible">
-                    {/* @ts-ignore */}
-                    <dotlottie-wc
-                      src="https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie"
-                      autoplay
-                      loop
-                      style={{ width: "56px", height: "56px", flexShrink: 0, pointerEvents: "none" }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5 -ml-1">
-                    <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-[#FFD060] to-[#FF8C00] drop-shadow-sm">
-                      1
-                    </span>
-                    <span className="text-orange-600/90 dark:text-orange-400/90 font-bold uppercase tracking-widest text-[11px] mt-0.5">
-                      {t("celebration.streak_label", { defaultValue: "RACHA" })}
-                    </span>
-                  </div>
-                </div>
-
-                <CtaButton onClick={handleExplore} step={step} className="text-lg w-full max-w-sm mb-4">
-                  {t("celebration.explore_button")}
-                  <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                </CtaButton>
-              </div>
-
-              <p className="text-gray-500 dark:text-white/50 font-medium text-[11px] mt-1 px-4 leading-relaxed max-w-[260px] mx-auto animate-in fade-in duration-1000 delay-500 fill-mode-both">
-                <Link to="/register" className="font-bold underline decoration-orange-500/40 underline-offset-2 text-gray-700 dark:text-white/70 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
-                  {t("celebration.save_progress_link")}
-                </Link>
-                {t("celebration.save_progress_rest")}
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Bottom safe-area spacer */}
         <div className="h-6 shrink-0" />
       </div>
-
-      {/* ── Streak celebration overlay (portal) ─────────────────────────── */}
-      <StreakCelebration
-        isVisible={showStreakCelebration}
-        streakCount={1}
-        xpGained={50}
-        onComplete={() => setShowStreakCelebration(false)}
-      />
     </>
   );
 }
