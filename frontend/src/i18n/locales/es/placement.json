@@ -1,0 +1,19 @@
+{
+  "intro": {
+    "title": "¡Hola, {{name}}! 🧭",
+    "body": "Antes de abrir tu mapa de aventuras, ¿quieres hacer un mini-reto de unos 3 minutos? Con él te ubicamos justo en el lugar donde más vas a aprender y disfrutar.",
+    "later_hint": "También puedes hacerlo más tarde desde tu perfil.",
+    "accept_button": "¡Vamos al reto!",
+    "skip_link": "Saltar por ahora"
+  },
+  "closing": {
+    "title": "¡Tu mapa está listo, {{name}}! 🗺️",
+    "saga_start": "Empezarás en: Aventura {{adventure}} · Saga {{saga}}",
+    "body": "Hemos personalizado tu camino de aprendizaje. ¡Todo está listo para comenzar tu aventura!",
+    "streak_label": "RACHA",
+    "cta": "¡Comenzar mi aventura!"
+  },
+  "quiz": {
+    "exit_aria": "Salir del cuestionario"
+  }
+}

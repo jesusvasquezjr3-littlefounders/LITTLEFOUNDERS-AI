@@ -22,6 +22,7 @@ import { DinaCharacter } from "../components/characters/DinaCharacter";
 import DrRhoCharacter from "../components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "../components/characters/ZaraVexCharacter";
 import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
+import { LandingParentCTA } from "../components/landing/LandingParentCTA";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useUserLanguage } from "@/hooks/useUserLanguage";
@@ -69,7 +70,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <LandingLayout>
+    <LandingLayout hideCTA={true}>
       {/* --- HERO SECTION --- */}
       <header className="relative min-h-[100svh] flex flex-col pt-20 lg:pt-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-500">
 
@@ -128,7 +129,7 @@ const LandingPage = () => {
                 {t('hero.badge')}
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-[1.15] tracking-tight transition-colors max-w-4xl">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white leading-[1.15] tracking-tight transition-colors max-w-4xl">
                 {t('hero.title_part1')}{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
                   {t('hero.title_highlight')}
@@ -144,19 +145,18 @@ const LandingPage = () => {
 
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-4">
                 {/* Main Adventure Button */}
-                <Button asChild size="lg" className="h-16 px-10 text-lg rounded-full border border-slate-900/10 dark:border-white/40 bg-white/30 dark:bg-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(31,38,135,0.08)] hover:bg-white/40 hover:scale-105 transition-all duration-300 group overflow-hidden border-t-white/60">
+                <Button asChild size="lg" className="h-16 px-10 text-xl rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-xl hover:shadow-pink-500/25 transition-all transform hover:scale-105 w-full sm:w-auto">
                   <Link to="/onboarding">
-                    <span className="relative z-10 flex items-center font-bold text-gray-900 dark:text-white">
+                    <span className="flex items-center font-bold">
                       {t('hero.cta_button')}
                       <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
                 </Button>
 
                 {/* Secondary Login Button */}
-                <Button asChild variant="ghost" size="lg" className="h-16 px-10 text-lg rounded-full border border-gray-200/60 dark:border-white/10 bg-white/40 dark:bg-slate-900/20 backdrop-blur-md shadow-[0_4px_20px_0_rgba(0,0,0,0.04)] hover:bg-gray-100/50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300">
-                  <Link to="/login" className="font-bold text-gray-700 dark:text-gray-200">
+                <Button asChild variant="ghost" size="lg" className="h-16 px-10 text-xl rounded-full border-2 border-gray-200 dark:border-slate-800 bg-transparent hover:bg-gray-50 dark:hover:bg-slate-900 transition-all transform hover:scale-105 w-full sm:w-auto">
+                  <Link to="/login" className="font-bold text-gray-700 dark:text-gray-300">
                     {t('hero.login_link')}
                   </Link>
                 </Button>
@@ -306,9 +306,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-
-
-
+      {/* --- PARENT SPECIFIC CTA --- */}
+      <LandingParentCTA />
 
     </LandingLayout>
   );

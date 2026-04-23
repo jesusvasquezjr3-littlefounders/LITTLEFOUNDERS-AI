@@ -16,33 +16,33 @@
         "title_part1": "From Gamer to",
         "title_highlight": "Entrepreneur:",
         "title_part2": "Financial Education that Works",
-        "subtitle": "Learn <strong>real finances</strong>. No boring theory, just practical fun.",
+        "subtitle": "Your kid learns to save and invest by playing. Zero theory, real results.",
         "cta_button": "Start Adventure",
         "login_link": "Already have an account?",
         "cta_subtext": "✨ No credit card required • Instant access"
     },
     "problem": {
-        "title_part1": "School teaches Algebra...",
-        "title_part2": "but nobody teaches Money.",
-        "subtitle": "It's always the same story: graduating knowing how to solve <i>quadratic equations</i>, but not knowing how a credit card, budget, or investment works.",
-        "card1_title": "Misinformation",
-        "card1_text": "Kids learn about money from TikTok or friends, filling themselves with dangerous myths.",
-        "card2_title": "Future Stress",
-        "card2_text": "Money is the #1 cause of stress in adults. Don't let it be your children's.",
-        "card3_title": "Boring Classes",
-        "card3_text": "Traditional courses are boring PDFs that kids hate to read.",
-        "card4_title": "Expensive Mistakes",
-        "card4_text": "Trial and error is the most expensive way to learn finance in the real world."
+        "title_part1": "School teaches algebra...",
+        "title_part2": "but not how to manage money.",
+        "subtitle": "Your kids graduate knowing how to solve equations, but without understanding credit cards, budgets, or savings.",
+        "card1_title": "Bad Influence",
+        "card1_text": "Your kids learn about money on TikTok, absorbing dangerous myths.",
+        "card2_title": "Dependency",
+        "card2_text": "Without financial education, it will take them years to become independent.",
+        "card3_title": "Zero Interest",
+        "card3_text": "Serious talks about money bore them, so they tune out completely.",
+        "card4_title": "Costly Mistakes",
+        "card4_text": "Learning by trial and error in the real world means real-world debt."
     },
     "solution": {
-        "badge": "The LittleFounders Solution",
+        "badge": "The Practical Solution",
         "title_part1": "It's not a class.",
-        "title_part2": "It's an",
-        "title_highlight": "Adventure",
-        "subtitle": "We use \"Simulation-Based Learning\". Learn finances by playing with interactive simulators and exciting challenges.",
-        "benefit1": "Learn by making virtual mistakes (not real ones)",
-        "benefit2": "Discover the power of saving with visual tools and achievable goals",
-        "benefit3": "Educational content designed specifically for each age and level",
+        "title_part2": "It's pure",
+        "title_highlight": "Practice",
+        "subtitle": "They will learn to manage money through interactive simulations in a 100% safe environment.",
+        "benefit1": "Avoid real mistakes by messing up in the simulator.",
+        "benefit2": "Build savings habits through clear reward systems.",
+        "benefit3": "Ready-to-use curriculum without needing to be a finance expert.",
         "play_label": "Learn by Playing",
         "interactive_label": "100% Interactive",
         "animation": {
@@ -68,24 +68,24 @@
         }
     },
     "features": {
-        "title": "Features",
-        "subtitle": "Discover everything we offer for financial learning.",
+        "title": "Control for you, Fun for them",
+        "subtitle": "Tools designed for real-world results.",
         "interactive_lessons": {
-            "title": "Interactive Lessons",
-            "description": "Explore financial topics with visual and participatory lessons."
+            "title": "Direct Lessons",
+            "description": "Visual explanations that grab their attention when you don't have time."
         },
         "video_games": {
-            "title": "Educational Video Games",
-            "description": "Learn by playing with fun missions and challenges."
+            "title": "Practical Missions",
+            "description": "They have fun playing while naturally absorbing vital concepts like budgeting."
         },
         "ai_functionality": {
-            "title": "Intelligent Tutor",
-            "description": "Intelligent learning that teaches at your own pace, for your age, and personalized for you.",
-            "badge": "AI"
+            "title": "Smart Tutor",
+            "description": "A supervised AI that adapts to your child's pace safely.",
+            "badge": "Ed-Tech AI"
         },
         "more_stuff": {
-            "title": "And much more...",
-            "description": "Savings tools, simulators, and weekly challenges."
+            "title": "Transparent Tracking",
+            "description": "Parent Dashboard with progress, achievements, and dialogue guides."
         }
     },
     "faq": {
@@ -111,6 +111,13 @@
         "subtitle": "Give them the tools that school doesn't. Start today, it's free and takes 30 seconds.",
         "button": "Sign Up Free",
         "disclaimer": "No commitment. Cancel anytime."
+    },
+    "cta_parents": {
+        "title": "Prepare your child for a financial future",
+        "subtitle": "Join the families transforming how their kids learn about money. Today's education is their freedom tomorrow.",
+        "button": "Start Adventure",
+        "login_link": "Already have an account?",
+        "disclaimer": "✨ No credit card required • Instant access"
     },
     "footer": {
         "terms": "Terms",

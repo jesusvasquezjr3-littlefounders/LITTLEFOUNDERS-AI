@@ -297,56 +297,128 @@ ESTRUCTURA: intro_narrative → tap_action → true_false → intro_narrative
 === FIN EJEMPLO ===
 """
 
-def build_system_prompt(adventure_rules: dict, character_info: dict) -> str:
+def build_system_prompt(adventure_rules: dict, character_info: dict, rules_md_principles: dict) -> str:
     char_name = adventure_rules.get("primary_character", "liruf")
     char = character_info.get(char_name, {})
     lang_rules = adventure_rules.get("language_rules", {})
     content_rules = adventure_rules.get("content_rules", {})
     activity_constraints = adventure_rules.get("activity_constraints", {})
     allowed_types = activity_constraints.get("allowed_types", [])
+    ex_range = activity_constraints.get("exercises_per_lesson", {"min": 8, "max": 12})
+    min_objectives = activity_constraints.get("required_objectives_min", 3)
+    phases_required = activity_constraints.get("required_phases_coverage", [])
+
+    non_negotiables = "\n".join(f"  • {x}" for x in rules_md_principles.get("non_negotiables", []))
+    forbidden_principles = "\n".join(f"  • {x}" for x in rules_md_principles.get("forbidden", []))
+    cognitive_steps = "\n".join(
+        f"  {s['step']}. {s['name']} — {s['purpose']}"
+        for s in rules_md_principles.get("cognitive_structure_per_concept", [])
+    )
+    objectives_list = rules_md_principles.get("required_exercise_objectives", {}).get("objectives", [])
+    objectives_formatted = "\n".join(
+        f"  • {o['name']} ({o['id']}): usar tipos como {', '.join(o['example_types'])}"
+        for o in objectives_list
+    )
 
     return f"""Eres un experto en diseño curricular de educación financiera para niños y jóvenes. Trabajas para LittleFounders, la app que enseña educación financiera de forma progresiva, desde los 5 años hasta la vida adulta.
 
-TU ROL: Generar lecciones de la MÁXIMA calidad pedagógica posible. Cada lección debe ser digna de ser usada en un aula real, sin modificaciones.
+TU ROL: Generar lecciones de la MÁXIMA calidad pedagógica posible, al nivel de Duolingo o Khan Academy. Cada lección debe ser digna de ser usada en un aula real, sin modificaciones. Cantidad: {ex_range['min']}–{ex_range['max']} ejercicios por lección (NO menos). La lección entera toma 4–8 minutos al estudiante.
 
-PERSONAJE NARRADOR para esta aventura: {char_name.upper()}
+==========================================================================
+PRINCIPIOS NO NEGOCIABLES (Estándar RULES.md v1.2)
+==========================================================================
+Cada lección DEBE:
+{non_negotiables}
+
+Cada lección NUNCA debe:
+{forbidden_principles}
+
+==========================================================================
+ESTRUCTURA COGNITIVA DE CADA CONCEPTO NUEVO (las 5 preguntas)
+==========================================================================
+Todo concepto nuevo en la lección DEBE cubrir estas 5 preguntas mediante los ejercicios (no necesariamente en uno solo — distribuido entre varios):
+
+{cognitive_steps}
+
+Los intro_narrative y los feedback son los principales vehículos para 1, 2 y 5.
+Las actividades interactivas cubren 3 y 4.
+
+==========================================================================
+DIVERSIDAD DE OBJETIVOS DE EJERCICIO (mínimo {min_objectives} de estos 5 por lección)
+==========================================================================
+{objectives_formatted}
+
+==========================================================================
+PERSONAJE NARRADOR DE ESTA AVENTURA: {char_name.upper()}
+==========================================================================
 - Nombre: {char.get('name', char_name)}
 - Personalidad: {char.get('personality', '')}
 - Tono: siempre coherente con la personalidad del personaje
+- Aparece en character_code de intro_narratives y en feedback
 
-REGLAS DE LENGUAJE (ABSOLUTAS - NO NEGOCIABLES):
+==========================================================================
+REGLAS DE LENGUAJE (ABSOLUTAS - NO NEGOCIABLES)
+==========================================================================
 - Máximo {lang_rules.get('max_words_per_sentence', 15)} palabras por oración
 - Estilo: {lang_rules.get('required_style', 'Claro y apropiado para la edad')}
 - Emojis: {"OBLIGATORIO en cada opción y en los narrativos" if lang_rules.get('use_emojis') else "No usar emojis"}
 - Palabras PROHIBIDAS: {', '.join(lang_rules.get('forbidden_words', []))}
+- Términos técnicos: SIEMPRE definirlos en contexto la primera vez que aparecen. Jerga sin definición = ERROR GRAVE.
 
-TIPOS DE ACTIVIDAD PERMITIDOS en esta aventura:
+==========================================================================
+TIPOS DE ACTIVIDAD PERMITIDOS EN ESTA AVENTURA
+==========================================================================
 {json.dumps(allowed_types, ensure_ascii=False, indent=2)}
 
-REGLAS DE CONTENIDO:
-- Feedback de error: {content_rules.get('feedback_error_tone', 'Amable y constructivo')}
-- Feedback de éxito: {content_rules.get('feedback_success_tone', 'Celebratorio y específico')}
-- El feedback SIEMPRE debe mencionar el concepto aprendido, no solo "¡Bien!" o "¡Incorrecto!"
+==========================================================================
+CALIDAD DEL FEEDBACK (crítico)
+==========================================================================
+Feedback de error:
+  • {rules_md_principles.get('feedback_quality', {}).get('error_feedback_must', '')}
+  • Tono: {content_rules.get('feedback_error_tone', 'Constructivo')}
+  • NUNCA decir solo "incorrecto", "equivocado" o "mal". Siempre explicar CONCEPTUALMENTE por qué.
 
-ESTRUCTURA OBLIGATORIA DE LECCIÓN (5 fases):
-1. CONECTAR (intro_narrative): Micro-historia que introduce el contexto. Max 3 oraciones.
-2. ENSEÑAR (actividad sencilla): Reconocimiento o verificación básica del concepto.
-3. PRACTICAR (actividad principal): El niño aplica el concepto aprendido.
-4. REFORZAR (actividad de variación): Otra perspectiva del mismo concepto.
-5. CERRAR (intro_narrative): El personaje celebra, resume en 1 oración, genera expectativa.
+Feedback de éxito:
+  • {rules_md_principles.get('feedback_quality', {}).get('success_feedback_must', '')}
+  • Tono: {content_rules.get('feedback_success_tone', 'Motivador')}
+  • Reforzar el concepto aprendido citándolo explícitamente. NO solo "¡Bien!".
+
+==========================================================================
+ESTRUCTURA DE LECCIÓN (DUOLINGO-STYLE, {ex_range['min']}–{ex_range['max']} EJERCICIOS)
+==========================================================================
+La lección debe combinar estas fases. Ejemplo de secuencia completa:
+
+1. CONECTAR (intro_narrative): El personaje presenta el escenario. 1 bloque.
+2. ¿POR QUÉ IMPORTA? (intro_narrative O multiple_choice reflexivo): Motivación del concepto. 1 bloque.
+3. ¿QUÉ ES? (intro_narrative O matching_pairs O classification): Definición operativa. 1–2 bloques.
+4. ¿CÓMO SE USA? (multiple_choice, tap_action, math_challenge, etc.): Aplicación guiada. 2–3 bloques.
+5. PRACTICAR (actividades varias cumpliendo objetivos Calcular/Comparar/Decidir): 2–4 bloques.
+6. REFORZAR (variación del concepto con ejercicio distinto a los previos): 1–2 bloques.
+7. ¿QUÉ ERROR EVITAR? (true_false con malentendido común O spot_trap): 1 bloque.
+8. APLICAR EN CONTEXTO NUEVO (story_mode O roleplay_chat O budget_builder): 1–2 bloques para A3+.
+9. ¿CON QUÉ SE RELACIONA? (intro_narrative de conexión con conceptos previos/siguientes): 1 bloque para A3+.
+10. CERRAR (intro_narrative): El personaje celebra, resume en 1 oración, genera expectativa.
+
+Fases obligatorias para esta aventura: {', '.join(phases_required) if phases_required else 'todas las anteriores'}
 
 CALIDAD EXIGIDA:
-- El concepto debe ser UNO solo y muy específico. No intentar enseñar dos cosas a la vez.
-- Las opciones de respuesta deben ser CLARAMENTE distintas (sin ambigüedad).
-- El escenario debe ser CONCRETO y COTIDIANO para el rango de edad.
-- Nunca usar "Lorem ipsum" ni placeholders. Todo debe ser contenido real y pedagógico.
-- Las traducciones al inglés deben ser NATURALES, no literales.
+- Foco: UN concepto central específico. Pueden derivarse sub-ideas, pero todo gira en torno al concepto central.
+- Las opciones de respuesta deben ser CLARAMENTE distintas entre sí. Sin ambigüedad.
+- Los escenarios deben ser CONCRETOS y COTIDIANOS para la edad objetivo.
+- Nunca usar "Lorem ipsum" ni placeholders. Todo contenido real y pedagógico.
+- Las traducciones al inglés deben ser NATURALES, no literales (adaptación cultural cuando aplique).
+- Los IDs de opciones/items deben ser únicos dentro de la lección (i1, i2, a, b, c, p1, p2, s1, s2, etc.).
+- Evitar dos ejercicios idénticos del mismo tipo seguidos (ej: no dos true_false consecutivos a menos que uno sea "¿qué error evitar?").
+- Al menos 1 ejercicio debe forzar al estudiante a DECIDIR entre alternativas con criterios (no solo reconocer).
 
-FORMATO DE SALIDA:
+==========================================================================
+FORMATO DE SALIDA
+==========================================================================
 - Responder ÚNICAMENTE con el JSON de la lección.
 - Sin markdown, sin bloques ```, sin explicaciones adicionales.
 - El JSON debe ser válido y parseable directamente.
 - Usar comillas dobles siempre.
+- content_es y content_en: MISMA cantidad de ejercicios, MISMOS tipos, MISMO orden.
 
 {LESSON_JSON_SCHEMA}
 
@@ -376,10 +448,13 @@ def build_lesson_prompt(
 
     age_range = adventure_rules.get("age_range", "5-7")
     lang_rules = adventure_rules.get("language_rules", {})
+    activity_constraints = adventure_rules.get("activity_constraints", {})
     use_emojis = lang_rules.get("use_emojis", False)
     max_words = lang_rules.get("max_words_per_sentence", 15)
+    ex_range = activity_constraints.get("exercises_per_lesson", {"min": 8, "max": 12})
+    min_objectives = activity_constraints.get("required_objectives_min", 3)
 
-    return f"""Genera la siguiente lección para LittleFounders.
+    return f"""Genera la siguiente lección para LittleFounders con calidad Duolingo.
 
 DATOS DE LA LECCIÓN:
 - lesson_code: "{adventure}-{saga}-{topic_number}-{lesson_num}"
@@ -400,17 +475,35 @@ ESTA LECCIÓN ESPECÍFICA:
 - Objetivo micro (LO QUE SE APRENDE EN ESTA LECCIÓN ÚNICAMENTE): "{micro_objective}"
 - Escenario / contexto narrativo: "{scenario}"
 - Interacción principal: "{key_interaction}"
-- Secuencia de actividades: {json.dumps(activity_sequence)}
+- Secuencia de actividades sugerida (puedes expandirla): {json.dumps(activity_sequence)}
 - Personaje narrador: "{character}"
 
-RECORDATORIOS CRÍTICOS:
-1. Esta lección enseña SOLO la micro-habilidad: "{micro_objective}". Nada más.
-2. Oraciones de MÁXIMO {max_words} palabras.
-3. {"OBLIGATORIO usar emojis en opciones y narrativos." if use_emojis else "NO usar emojis."}
-4. El feedback de error NUNCA dice "incorrecto" o "equivocado". Siempre redirige amablemente.
-5. El cierre (último intro_narrative) celebra el logro Y menciona qué viene después.
-6. Generar TANTO content_es COMO content_en. El inglés debe sonar natural para niños americanos.
-7. Los IDs de opciones/items deben ser únicos dentro de la lección.
+=== REQUISITOS CUANTITATIVOS (NO negociables) ===
+1. CANTIDAD DE EJERCICIOS: mínimo {ex_range['min']}, máximo {ex_range['max']}. Menos = rechazo.
+2. DIVERSIDAD DE OBJETIVOS: mínimo {min_objectives} objetivos distintos cubiertos (Reconocer, Calcular, Comparar, Decidir, Aplicar).
+3. La lección DEBE empezar con intro_narrative (Conectar) y terminar con intro_narrative (Cerrar).
+4. Al menos UN ejercicio debe requerir DECISIÓN con criterios múltiples (no solo reconocimiento).
+5. Al menos UN ejercicio debe cubrir "¿qué error evitar?" — un malentendido común del concepto.
+
+=== REQUISITOS CUALITATIVOS (NO negociables) ===
+6. Esta lección enseña la micro-habilidad: "{micro_objective}". Todo contenido gira en torno a esto.
+7. Oraciones de MÁXIMO {max_words} palabras. Sin excepciones.
+8. {"OBLIGATORIO usar emojis en opciones y narrativos." if use_emojis else "NO usar emojis."}
+9. Feedback de ERROR: NUNCA dice solo "incorrecto" o "equivocado". SIEMPRE explica CONCEPTUALMENTE por qué la respuesta elegida no funciona, con una pista orientativa.
+10. Feedback de SUCCESS: cita el concepto explícitamente, no solo "¡Bien!".
+11. Términos técnicos: si aparece cualquiera, DEFINIRLO en contexto la primera vez (una frase que lo explique).
+12. El cierre (último intro_narrative) celebra el logro Y menciona qué viene después.
+13. Generar TANTO content_es COMO content_en. El inglés debe sonar natural, no traducción literal.
+14. Los IDs de opciones/items deben ser únicos dentro de la lección (i1, i2, a, b, c, p1, etc.).
+15. content_es y content_en: MISMA cantidad de ejercicios, MISMOS tipos, MISMO orden.
+
+=== ESTRUCTURA COGNITIVA EXIGIDA ===
+La lección debe cubrir estas 5 preguntas sobre el concepto (distribuidas entre los ejercicios):
+  a. ¿POR QUÉ IMPORTA? → en intro_narrative o pregunta reflexiva
+  b. ¿QUÉ ES? → en definición explícita o matching/classification
+  c. ¿CÓMO SE USA? → en la actividad principal de aplicación
+  d. ¿QUÉ ERROR EVITAR? → en true_false o spot_trap sobre malentendido común
+  e. ¿CON QUÉ SE RELACIONA? → en intro_narrative de conexión con otros conceptos (A3+)
 
 Genera el JSON completo de la lección ahora:"""
 
@@ -440,7 +533,7 @@ def call_deepseek(
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 0.7,
-        "max_tokens": 4096,
+        "max_tokens": 8192,
         "stream": False,
     }
 
@@ -449,7 +542,7 @@ def call_deepseek(
     for attempt in range(1, max_retries + 1):
         try:
             req = urllib.request.Request(DEEPSEEK_API_URL, data=data, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=60) as response:
+            with urllib.request.urlopen(req, timeout=300) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 return result["choices"][0]["message"]["content"]
         except urllib.error.HTTPError as e:
@@ -610,8 +703,9 @@ def generate_lesson(
 
     adventure_rules = rules["adventures"][str(adventure_num)]
     character_info = rules["characters"]
+    rules_md_principles = rules.get("rules_md_principles", {})
 
-    system_prompt = build_system_prompt(adventure_rules, character_info)
+    system_prompt = build_system_prompt(adventure_rules, character_info, rules_md_principles)
     user_prompt = build_lesson_prompt(
         adventure_num, saga_num, topic_data, lesson_blueprint, lesson_num, adventure_rules
     )
@@ -636,7 +730,7 @@ def generate_lesson(
     lesson_data["saga_level"] = saga_num
     lesson_data["topic_level"] = topic_number
     lesson_data["lesson_number"] = lesson_num
-    lesson_data["age_rate"] = adventure_rules.get("age_rate", "")
+    lesson_data["age_rate"] = adventure_rules.get("age_range", adventure_rules.get("age_rate", ""))
 
     saved_path = save_lesson(lesson_data)
     update_manifest(lesson_data)

@@ -60,8 +60,8 @@ AUDITORIA_LESSON_ENGINE.md
 database.sql
 
 # Componentes para generar las lecciones mediante automatización
-# Nota: Agente usado para generar las lecciones: Kimi's Computer (K2.5 Agent) (https://www.kimi.com/)
 littlefounders_lessons/
+backend/lesson_engine/littlefounders_lessons_v1_backup_20260416_144555
 
 *.backup
 .claude/

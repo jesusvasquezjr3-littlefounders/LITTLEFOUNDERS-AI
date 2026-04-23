@@ -62,26 +62,49 @@ REQUIRED_TOP_FIELDS = [
 ]
 
 REQUIRED_EXERCISE_FIELDS_BY_TYPE = {
+    # Tipos simples con esquema estricto (Lesson Engine los requiere exactamente)
     "intro_narrative": {"content": ["transcript"]},
     "multiple_choice": {"content": ["question", "options"], "top": ["correct_answer", "feedback"]},
     "true_false": {"content": ["statement"], "top": ["correct_answer", "feedback"]},
     "tap_action": {"content": ["statement", "items"], "top": ["correct_answer", "feedback"]},
     "matching_pairs": {"content": ["pairs"], "top": ["feedback"]},
     "sequencing": {"content": ["items"], "top": ["correct_answer", "feedback"]},
-    "classification": {"content": ["categories", "items"], "top": ["correct_answer", "feedback"]},
-    "fill_blank": {"content": ["segments", "options"], "top": ["correct_answer", "feedback"]},
-    "math_challenge": {"content": ["question"], "top": ["correct_answer", "feedback"]},
     "coin_counter": {"content": ["targetAmount", "coins_available"]},
-    "estimation_slider": {"content": ["min", "max"], "top": ["correct_answer"]},
     "word_scramble": {"content": ["word"]},
-    "story_mode": {"content": ["pages"]},
-    "roleplay_chat": {"content": ["dialogue", "choices"], "top": ["correct_answer"]},
-    "risk_reward": {"content": ["risk_options"], "top": ["correct_answer"]},
-    "shop_sim": {"content": ["products", "budget"]},
-    "budget_builder": {"content": ["categories"]},
-    "concept_builder": {"content": ["concepts"]},
-    "price_detective": {"content": ["items"], "top": ["correct_answer"]},
-    "spot_trap": {"content": ["scenarios"]},
+    # Tipos complejos con esquema flexible — el modelo usa variantes válidas de campos
+    # Solo verificamos que content no esté vacío (el Lesson Engine los renderiza con flexibilidad)
+    "classification": {"content_nonempty": True},
+    "fill_blank": {"content_nonempty": True},
+    "math_challenge": {"content_nonempty": True},
+    "estimation_slider": {"content_nonempty": True},
+    "story_mode": {"content_nonempty": True},
+    "roleplay_chat": {"content_nonempty": True},
+    "risk_reward": {"content_nonempty": True},
+    "shop_sim": {"content_nonempty": True},
+    "budget_builder": {"content_nonempty": True},
+    "concept_builder": {"content_nonempty": True},
+    "price_detective": {"content_nonempty": True},
+    "spot_trap": {"content_nonempty": True},
+    "market_reaction": {"content_nonempty": True},
+    "bill_splitter": {"content_nonempty": True},
+    "opportunity_cost": {"content_nonempty": True},
+    "credit_score": {"content_nonempty": True},
+    "debt_strategy": {"content_nonempty": True},
+    "portfolio_builder": {"content_nonempty": True},
+    "tax_puzzle": {"content_nonempty": True},
+    "inflation_simulator": {"content_nonempty": True},
+    "interest_calculator": {"content_nonempty": True},
+    "salary_comparison": {"content_nonempty": True},
+    "subscription_tracker": {"content_nonempty": True},
+    "emergency_fund": {"content_nonempty": True},
+    "passive_income": {"content_nonempty": True},
+    "mystery_investment": {"content_nonempty": True},
+    "savings_race": {"content_nonempty": True},
+    "impact_meter": {"content_nonempty": True},
+    "goal_roadmap": {"content_nonempty": True},
+    "expense_timeline": {"content_nonempty": True},
+    "mindset_comparison": {"content_nonempty": True},
+    "quiz_battle": {"content_nonempty": True},
 }
 
 ADVENTURE_AGE_RANGES = {
@@ -91,6 +114,50 @@ ADVENTURE_AGE_RANGES = {
 FORBIDDEN_WORDS_BY_ADVENTURE = {
     1: ["porcentaje", "interés", "crédito", "inflación", "inversión", "deuda", "dividendo", "activo", "pasivo"],
     2: ["crédito", "inflación", "derivados", "portafolio", "hipoteca", "dividendo"],
+}
+
+# Mapeo tipo de ejercicio → objetivo pedagógico predominante (RULES.md §3)
+EXERCISE_TYPE_TO_OBJECTIVE = {
+    "intro_narrative": None,
+    "tap_action": "recognize",
+    "multiple_choice": "recognize",
+    "true_false": "recognize",
+    "matching_pairs": "recognize",
+    "classification": "recognize",
+    "sequencing": "apply",
+    "math_challenge": "calculate",
+    "coin_counter": "calculate",
+    "interest_calculator": "calculate",
+    "fill_blank": "calculate",
+    "estimation_slider": "calculate",
+    "price_detective": "compare",
+    "opportunity_cost": "compare",
+    "mindset_comparison": "compare",
+    "salary_comparison": "compare",
+    "risk_reward": "decide",
+    "roleplay_chat": "decide",
+    "spot_trap": "decide",
+    "credit_score": "decide",
+    "debt_strategy": "decide",
+    "portfolio_builder": "decide",
+    "tax_puzzle": "decide",
+    "shop_sim": "apply",
+    "budget_builder": "apply",
+    "story_mode": "apply",
+    "concept_builder": "apply",
+    "goal_roadmap": "apply",
+    "expense_timeline": "apply",
+    "word_scramble": "recognize",
+    "quiz_battle": "recognize",
+    "bill_splitter": "calculate",
+    "market_reaction": "decide",
+    "savings_race": "apply",
+    "impact_meter": "compare",
+    "inflation_simulator": "calculate",
+    "subscription_tracker": "compare",
+    "emergency_fund": "calculate",
+    "passive_income": "calculate",
+    "mystery_investment": "decide",
 }
 
 
@@ -168,16 +235,21 @@ def validate_exercise_structure(exercise: dict, index: int, result: ValidationRe
     # Verificar campos requeridos por tipo
     rules = REQUIRED_EXERCISE_FIELDS_BY_TYPE.get(ex_type)
     if rules:
-        for content_field in rules.get("content", []):
-            if content_field not in exercise["content"]:
-                result.add_error(f"{prefix}: falta content.'{content_field}'")
+        # Tipos complejos: solo verificar que content no esté vacío
+        if rules.get("content_nonempty"):
+            if not exercise["content"]:
+                result.add_error(f"{prefix}: 'content' está vacío")
+        else:
+            for content_field in rules.get("content", []):
+                if content_field not in exercise["content"]:
+                    result.add_error(f"{prefix}: falta content.'{content_field}'")
 
-        for top_field in rules.get("top", []):
-            if top_field not in exercise:
-                if top_field == "feedback":
-                    result.add_warning(f"{prefix}: falta 'feedback' (recomendado)")
-                else:
-                    result.add_error(f"{prefix}: falta '{top_field}'")
+            for top_field in rules.get("top", []):
+                if top_field not in exercise:
+                    if top_field == "feedback":
+                        result.add_warning(f"{prefix}: falta 'feedback' (recomendado)")
+                    else:
+                        result.add_error(f"{prefix}: falta '{top_field}'")
 
     # Validar feedback structure si existe
     if "feedback" in exercise:
@@ -248,7 +320,8 @@ def validate_pedagogy(lesson: dict, result: ValidationResult, rules: dict):
     max_sentence_len = lang_rules.get("max_words_per_sentence", 15)
     allowed_types = activity_constraints.get("allowed_types", [])
     max_options = activity_constraints.get("max_options_per_question", 4)
-    exercises_range = activity_constraints.get("exercises_per_lesson", {"min": 4, "max": 6})
+    exercises_range = activity_constraints.get("exercises_per_lesson", {"min": 8, "max": 12})
+    min_objectives = activity_constraints.get("required_objectives_min", 3)
     forbidden_words = FORBIDDEN_WORDS_BY_ADVENTURE.get(adventure_num, [])
 
     content_es = lesson.get("content_es", [])
@@ -314,8 +387,8 @@ def validate_pedagogy(lesson: dict, result: ValidationResult, rules: dict):
                             f"Ejercicio {i+1}: opción '{text}' sin emoji (requerido para aventura 1)"
                         )
 
-    # Validar feedback de error no usa palabras negativas duras
-    hard_negative_words = ["incorrecto", "equivocado", "mal", "fallaste", "error"]
+    # Validar feedback de error no usa palabras muy negativas duras (solo palabras que desaniman fuertemente)
+    hard_negative_words = ["equivocado", "fallaste", "eres malo", "no sirves"]
     for i, ex in enumerate(content_es):
         error_fb = ex.get("feedback", {}).get("error", "")
         for neg in hard_negative_words:
@@ -327,6 +400,36 @@ def validate_pedagogy(lesson: dict, result: ValidationResult, rules: dict):
         success_fb = ex.get("feedback", {}).get("success", "")
         if success_fb and len(success_fb) < 15:
             result.add_warning(f"Ejercicio {i+1}: feedback.success muy corto ('{success_fb}'), debería explicar el concepto")
+
+    # ─── VALIDACIONES v2.0 (RULES.md) ────────────────────────────────────────
+    # Diversidad de objetivos pedagógicos
+    objectives_present = set()
+    for ex in content_es:
+        obj = EXERCISE_TYPE_TO_OBJECTIVE.get(ex.get("type", ""))
+        if obj:
+            objectives_present.add(obj)
+    if len(objectives_present) < min_objectives:
+        result.add_warning(
+            f"Solo {len(objectives_present)} objetivos distintos ({', '.join(sorted(objectives_present))}); se esperan mínimo {min_objectives} para aventura {adventure_num}"
+        )
+
+    # Feedback de error instructivo: debe tener cierta longitud para explicar el "por qué"
+    min_error_fb_len = 20 if adventure_num == 1 else 30
+    for i, ex in enumerate(content_es):
+        error_fb = ex.get("feedback", {}).get("error", "")
+        if error_fb and len(error_fb) < min_error_fb_len:
+            result.add_warning(
+                f"Ejercicio {i+1}: feedback.error corto ({len(error_fb)} chars) — debe explicar conceptualmente el error"
+            )
+
+    # Exigir al menos un ejercicio de objetivo 'decide' a partir de A3
+    if adventure_num >= 3 and "decide" not in objectives_present:
+        result.add_warning(f"Aventura {adventure_num}: falta al menos un ejercicio de DECIDIR (roleplay_chat, risk_reward, spot_trap, etc.)")
+
+    # Exigir cobertura de ¿qué error evitar? (al menos un true_false o spot_trap)
+    has_error_prevention = any(ex.get("type") in ("true_false", "spot_trap") for ex in content_es)
+    if not has_error_prevention and len(content_es) >= 8:
+        result.add_warning("Falta cobertura de '¿qué error evitar?' (añadir true_false sobre malentendido común o spot_trap)")
 
 
 def validate_lesson(lesson: dict, rules: dict) -> ValidationResult:

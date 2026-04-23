@@ -11,6 +11,7 @@ import { Analytics } from '@vercel/analytics/react';
 // Pages
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
+import PlacementPage from "./pages/PlacementPage";
 import LandingPage from "./pages/LandingPage";
 import FamiliesPage from "./pages/landing/FamiliesPage";
 import FaqPage from "./pages/landing/FaqPage";
@@ -85,6 +86,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/placement" element={<PlacementPage />} />
                 <Route path="/families" element={<FamiliesPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />

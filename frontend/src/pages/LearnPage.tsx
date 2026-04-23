@@ -16,7 +16,8 @@ import { useResumeLesson } from '@/components/lessons/hooks/useResumeLesson';
 import { useSagaData, type SagaData } from '@/components/lessons/hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '@/components/ui/LoadingScreen';
-import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap } from 'lucide-react';
+import { getGuestProfile } from '@/lib/guestProfile';
 import { cn } from '@/lib/utils';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -241,7 +242,20 @@ export default function LearnPage() {
   // Selected adventure for desktop view (and mobile expansion sync)
   const [activeAdventureId, setActiveAdventureId] = useState<number | null>(null);
 
-  const { adventures, isLoading: adventuresLoading } = useAdventuresAPI(userId || undefined);
+  const rawAdventures = useAdventuresAPI(userId || undefined);
+  const { isLoading: adventuresLoading } = rawAdventures;
+
+  // For guest users, unlock adventures up to the placement level
+  const placementAdventure = !userId
+    ? (getGuestProfile()?.placement_adventure ?? null)
+    : null;
+
+  const adventures: typeof rawAdventures.adventures = rawAdventures.adventures.map(adv => {
+    if (placementAdventure && adv.id <= placementAdventure && adv.status === 'locked') {
+      return { ...adv, status: 'available' };
+    }
+    return adv;
+  });
   const { nextLessonCode, isFinished } = useResumeLesson(userId || undefined);
   const { adventure1Sagas, adventure6Sagas } = useSagaData();
 

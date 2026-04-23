@@ -1,3 +1,20 @@
+export interface PlacementResult {
+    version: 1;
+    takenAt: string;
+    durationSec: number;
+    ageDeclared: number;
+    baseAdventure: number;
+    finalAdventure: number;
+    finalSaga: number;
+    /** First lesson of the assigned saga — e.g. "3-2-1-1" */
+    targetLessonCode: string;
+    overallScore: number;
+    confidence: number;
+    skipped: boolean;
+    itemsServed: string[];
+    itemsCorrect: string[];
+}
+
 export interface GuestProfile {
     name: string;
     age: number;
@@ -22,6 +39,13 @@ export interface GuestProfile {
      * null = no activity yet.
      */
     last_activity_date: string | null;
+    /** Placement quiz result — null = not yet taken, undefined = field absent (legacy profiles) */
+    placement?: PlacementResult | null;
+    /**
+     * Highest adventure level unlocked via placement.
+     * Adventures up to this ID are shown as available even without completing prior adventures.
+     */
+    placement_adventure?: number | null;
 }
 
 const GUEST_KEY = 'lf_guest_profile';

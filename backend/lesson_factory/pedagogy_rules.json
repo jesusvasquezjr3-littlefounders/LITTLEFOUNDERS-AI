@@ -1,79 +1,246 @@
 {
-  "version": "1.0",
-  "description": "Reglas pedagógicas absolutas por aventura. El generador DEBE cumplirlas sin excepción.",
-
+  "version": "2.0",
+  "description": "Reglas pedagógicas absolutas por aventura. Versión 2.0 integra el estándar RULES.md v1.2: estructura cognitiva de 5 fases por concepto (¿POR QUÉ IMPORTA? → ¿QUÉ ES? → ¿CÓMO SE USA? → ¿QUÉ ERROR EVITAR? → ¿CON QUÉ SE RELACIONA?), diversidad obligatoria de objetivos (Reconocer, Calcular, Comparar, Decidir, Aplicar), feedback instructivo que explica el 'por qué' del error, y lecciones estilo Duolingo con 8–15 ejercicios.",
+  "rules_md_principles": {
+    "non_negotiables": [
+      "Enseñar mediante acción (decidir, calcular, analizar), no solo lectura pasiva",
+      "Limitarse a 5-7 conceptos nuevos máximo por lección",
+      "Anclar cada concepto a una situación real comprensible para la edad objetivo",
+      "El feedback de error DEBE explicar el 'por qué' del error, no solo marcarlo",
+      "La lección debe requerir ≥80% de precisión conceptual para considerarse válida"
+    ],
+    "forbidden": [
+      "Usar jerga sin definición contextual inmediata",
+      "Presentar fórmulas sin unidades, rango típico o propósito claro",
+      "Asumir conocimientos previos no declarados como prerrequisito",
+      "Priorizar entretenimiento sobre comprensión verificable"
+    ],
+    "cognitive_structure_per_concept": [
+      {
+        "step": 1,
+        "name": "¿POR QUÉ IMPORTA?",
+        "purpose": "Anclaje motivacional contextualizado por edad"
+      },
+      {
+        "step": 2,
+        "name": "¿QUÉ ES?",
+        "purpose": "Definición operativa en lenguaje apropiado al grupo etario"
+      },
+      {
+        "step": 3,
+        "name": "¿CÓMO SE USA?",
+        "purpose": "Mecanismo, fórmula o criterio de aplicación con ejemplo guiado"
+      },
+      {
+        "step": 4,
+        "name": "¿QUÉ ERROR EVITAR?",
+        "purpose": "Malentendido común + corrección clara"
+      },
+      {
+        "step": 5,
+        "name": "¿CON QUÉ SE RELACIONA?",
+        "purpose": "Conexión con 1-2 conceptos previos o siguientes"
+      }
+    ],
+    "required_exercise_objectives": {
+      "description": "Cada lección DEBE incluir al menos 3 de estos 5 objetivos diferentes. A partir de A3, las 5 deben aparecer.",
+      "objectives": [
+        {
+          "id": "recognize",
+          "name": "Reconocer",
+          "example_types": [
+            "tap_action",
+            "multiple_choice",
+            "classification",
+            "matching_pairs"
+          ]
+        },
+        {
+          "id": "calculate",
+          "name": "Calcular",
+          "example_types": [
+            "math_challenge",
+            "coin_counter",
+            "interest_calculator",
+            "fill_blank"
+          ]
+        },
+        {
+          "id": "compare",
+          "name": "Comparar",
+          "example_types": [
+            "multiple_choice",
+            "price_detective",
+            "risk_reward",
+            "opportunity_cost"
+          ]
+        },
+        {
+          "id": "decide",
+          "name": "Decidir",
+          "example_types": [
+            "roleplay_chat",
+            "risk_reward",
+            "budget_builder",
+            "spot_trap"
+          ]
+        },
+        {
+          "id": "apply",
+          "name": "Aplicar",
+          "example_types": [
+            "shop_sim",
+            "budget_builder",
+            "story_mode",
+            "concept_builder"
+          ]
+        }
+      ]
+    },
+    "spaced_repetition": {
+      "description": "Cada concepto reaparece en 3 momentos dentro del mismo topic o topics cercanos",
+      "pattern": [
+        "Momento 1: Práctica inicial (misma lección)",
+        "Momento 2: Revisión en las 3-5 lecciones posteriores (con formato variado)",
+        "Momento 3: Aplicación integrada en contexto nuevo (8-12 lecciones después)"
+      ]
+    },
+    "feedback_quality": {
+      "error_feedback_must": "Explicar CONCEPTUALMENTE por qué la respuesta elegida es incorrecta, no solo decir 'inténtalo de nuevo'. Debe incluir una pista orientativa que lleve al estudiante a reflexionar sobre el concepto. Ejemplo: 'Las monedas son redondas para que rueden fácilmente. Un cuadrado no rueda — ¿qué forma rueda mejor?'",
+      "success_feedback_must": "Reforzar el concepto aprendido citándolo explícitamente. Ejemplo: '¡Correcto! Las monedas son redondas porque esa forma facilita contarlas y diferenciarlas de los billetes.'"
+    }
+  },
   "characters": {
     "liruf": {
       "name": "Liruf",
       "species": "Dinosaurio amigable",
       "personality": "Curioso, juguetón, entusiasta. Habla en frases simples y con mucho cariño. Celebra cada logro.",
-      "moods": ["happy", "excited", "thinking", "sad"],
-      "adventures": [1, 2]
+      "moods": [
+        "happy",
+        "excited",
+        "thinking",
+        "sad"
+      ],
+      "adventures": [
+        1,
+        2
+      ]
     },
     "dina": {
       "name": "Dina",
       "species": "Exploradora joven",
       "personality": "Aventurera, inteligente, práctica. Le gustan los retos y los números.",
-      "moods": ["neutral", "happy", "surprised", "wink"],
-      "adventures": [2, 3]
+      "moods": [
+        "neutral",
+        "happy",
+        "surprised",
+        "wink"
+      ],
+      "adventures": [
+        2,
+        3
+      ]
     },
     "dr_rho": {
       "name": "Dr. Rho",
       "species": "Científico sabio",
       "personality": "Analítico, paciente, didáctico. Usa analogías y ejemplos del mundo real.",
-      "moods": ["wise", "surprised", "curious"],
-      "adventures": [3, 4, 5]
+      "moods": [
+        "wise",
+        "surprised",
+        "curious"
+      ],
+      "adventures": [
+        3,
+        4,
+        5
+      ]
     },
     "zara_vex": {
       "name": "Zara Vex",
       "species": "Emprendedora cósmica",
       "personality": "Estratégica, apasionada, visionaria. Habla de metas grandes y posibilidades.",
-      "moods": ["happy", "excited", "curious"],
-      "adventures": [4, 5, 6]
+      "moods": [
+        "happy",
+        "excited",
+        "curious"
+      ],
+      "adventures": [
+        4,
+        5,
+        6
+      ]
     }
   },
-
   "lesson_structure_template": {
     "description": "Patrón pedagógico obligatorio: Conectar → Enseñar → Practicar → Reforzar → Cerrar",
     "phases": [
       {
         "phase": 1,
         "name": "Conectar",
-        "activity_types": ["intro_narrative"],
+        "activity_types": [
+          "intro_narrative"
+        ],
         "purpose": "Activar conocimiento previo. Introducir el escenario de la lección con una micro-historia. El personaje habla directamente al niño.",
-        "rules": ["Incluir el nombre del concepto de forma natural", "Conectar con algo que el niño ya conoce", "Generar curiosidad o intriga"]
+        "rules": [
+          "Incluir el nombre del concepto de forma natural",
+          "Conectar con algo que el niño ya conoce",
+          "Generar curiosidad o intriga"
+        ]
       },
       {
         "phase": 2,
         "name": "Enseñar",
-        "activity_types": ["intro_narrative", "true_false", "tap_action", "multiple_choice"],
+        "activity_types": [
+          "intro_narrative",
+          "true_false",
+          "tap_action",
+          "multiple_choice"
+        ],
         "purpose": "Introducción guiada del concepto. Actividad de reconocimiento con feedback inmediato.",
-        "rules": ["Presentar UNA sola idea", "Usar ejemplos concretos y cotidianos", "No asumir conocimiento previo del concepto"]
+        "rules": [
+          "Presentar UNA sola idea",
+          "Usar ejemplos concretos y cotidianos",
+          "No asumir conocimiento previo del concepto"
+        ]
       },
       {
         "phase": 3,
         "name": "Practicar",
         "activity_types": "VARIES_BY_ADVENTURE",
         "purpose": "Actividad principal de la lección. El niño aplica el concepto aprendido.",
-        "rules": ["La actividad principal debe coincidir con el tipo de habilidad que se practica", "Dar opciones claras y no ambiguas", "El feedback de error debe sugerir la respuesta correcta sin darla directamente"]
+        "rules": [
+          "La actividad principal debe coincidir con el tipo de habilidad que se practica",
+          "Dar opciones claras y no ambiguas",
+          "El feedback de error debe sugerir la respuesta correcta sin darla directamente"
+        ]
       },
       {
         "phase": 4,
         "name": "Reforzar",
         "activity_types": "VARIES_BY_ADVENTURE",
         "purpose": "Variación o extensión de la actividad principal. Consolida el aprendizaje.",
-        "rules": ["Diferente presentación del mismo concepto", "Puede ser más desafiante que la fase 3", "Siempre con feedback motivador"]
+        "rules": [
+          "Diferente presentación del mismo concepto",
+          "Puede ser más desafiante que la fase 3",
+          "Siempre con feedback motivador"
+        ]
       },
       {
         "phase": 5,
         "name": "Cerrar",
-        "activity_types": ["intro_narrative"],
+        "activity_types": [
+          "intro_narrative"
+        ],
         "purpose": "El personaje celebra el logro, resume lo aprendido en UNA frase, y genera expectativa para la siguiente lección.",
-        "rules": ["Celebrar el esfuerzo, no solo el resultado", "Resumir en máximo 2 oraciones", "Terminar con emoción positiva"]
+        "rules": [
+          "Celebrar el esfuerzo, no solo el resultado",
+          "Resumir en máximo 2 oraciones",
+          "Terminar con emoción positiva"
+        ]
       }
     ]
   },
-
   "adventures": {
     "1": {
       "age_range": "5-7",
@@ -85,30 +252,98 @@
       "language_rules": {
         "max_words_per_sentence": 10,
         "max_syllables_per_word": 3,
-        "forbidden_words": ["porcentaje", "interés", "crédito", "inflación", "inversión", "deuda", "dividendo", "activo", "pasivo"],
+        "forbidden_words": [
+          "porcentaje",
+          "interés",
+          "crédito",
+          "inflación",
+          "inversión",
+          "deuda",
+          "dividendo",
+          "activo",
+          "pasivo"
+        ],
         "required_style": "Oraciones simples. Sujeto + verbo + objeto. Nada de subordinadas.",
         "use_emojis": true,
         "emoji_in_all_options": true,
-        "vocabulary_examples": ["moneda", "billete", "alcancía", "dinero", "comprar", "guardar", "precio", "caro", "barato", "necesito", "quiero"]
+        "vocabulary_examples": [
+          "moneda",
+          "billete",
+          "alcancía",
+          "dinero",
+          "comprar",
+          "guardar",
+          "precio",
+          "caro",
+          "barato",
+          "necesito",
+          "quiero"
+        ]
       },
       "activity_constraints": {
-        "allowed_types": ["intro_narrative", "tap_action", "multiple_choice", "true_false", "matching_pairs", "coin_counter", "sequencing"],
-        "forbidden_types": ["math_challenge", "estimation_slider", "budget_builder", "credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "interest_calculator", "salary_comparison"],
+        "allowed_types": [
+          "intro_narrative",
+          "tap_action",
+          "multiple_choice",
+          "true_false",
+          "matching_pairs",
+          "coin_counter",
+          "sequencing"
+        ],
+        "forbidden_types": [
+          "math_challenge",
+          "estimation_slider",
+          "budget_builder",
+          "credit_score",
+          "debt_strategy",
+          "portfolio_builder",
+          "tax_puzzle",
+          "inflation_simulator",
+          "interest_calculator",
+          "salary_comparison"
+        ],
         "max_options_per_question": 3,
         "max_items_to_sequence": 3,
         "max_matching_pairs": 3,
-        "exercises_per_lesson": {"min": 4, "max": 5}
+        "exercises_per_lesson": {
+          "min": 8,
+          "max": 10
+        },
+        "required_objectives_min": 2,
+        "required_phases_coverage": [
+          "conectar",
+          "ensenar",
+          "practicar",
+          "reforzar",
+          "aplicar_variante",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "numbers": {"max_value": 20, "use_whole_numbers_only": true},
-        "money_denominations": ["$1", "$2", "$5", "$10", "moneda de 1 peso", "moneda de 5 pesos", "billete de 10 pesos"],
-        "scenarios_must_be": ["familiares", "cotidianos", "del hogar o escuela", "con personajes animales o fantásticos amigables"],
+        "numbers": {
+          "max_value": 20,
+          "use_whole_numbers_only": true
+        },
+        "money_denominations": [
+          "$1",
+          "$2",
+          "$5",
+          "$10",
+          "moneda de 1 peso",
+          "moneda de 5 pesos",
+          "billete de 10 pesos"
+        ],
+        "scenarios_must_be": [
+          "familiares",
+          "cotidianos",
+          "del hogar o escuela",
+          "con personajes animales o fantásticos amigables"
+        ],
         "feedback_error_tone": "Amable, nunca crítico. 'Casi lo tienes', '¡Inténtalo de nuevo!', 'Mira bien...'",
         "feedback_success_tone": "Entusiasta, celebratorio. '¡Perfecto!', '¡Lo lograste!', '¡Eres increíble!'"
       },
       "progression_within_adventure": "Cada saga introduce UN concepto nuevo. Cada topic introduce UNA sub-habilidad. Cada lección enseña UNA micro-habilidad. Nunca saltar niveles."
     },
-
     "2": {
       "age_range": "8-9",
       "title": "El Bosque de la Abundancia",
@@ -119,29 +354,115 @@
       "language_rules": {
         "max_words_per_sentence": 15,
         "max_syllables_per_word": 4,
-        "forbidden_words": ["crédito", "inflación", "derivados", "portafolio", "hipoteca", "dividendo"],
+        "forbidden_words": [
+          "crédito",
+          "inflación",
+          "derivados",
+          "portafolio",
+          "hipoteca",
+          "dividendo"
+        ],
         "required_style": "Frases claras. Puede haber una subordinada simple. Usar vocabulario del mundo real.",
         "use_emojis": true,
         "emoji_in_all_options": false,
-        "vocabulary_examples": ["presupuesto", "ahorro", "gasto", "ingreso", "precio", "descuento", "cambio", "ticket", "meta", "negocio"]
+        "vocabulary_examples": [
+          "presupuesto",
+          "ahorro",
+          "gasto",
+          "ingreso",
+          "precio",
+          "descuento",
+          "cambio",
+          "ticket",
+          "meta",
+          "negocio"
+        ]
       },
       "activity_constraints": {
-        "allowed_types": ["intro_narrative", "tap_action", "multiple_choice", "true_false", "matching_pairs", "coin_counter", "sequencing", "math_challenge", "classification", "fill_blank", "shop_sim", "price_detective", "word_scramble", "estimation_slider", "story_mode"],
-        "forbidden_types": ["credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "market_reaction", "salary_comparison", "quiz_battle"],
+        "allowed_types": [
+          "intro_narrative",
+          "tap_action",
+          "multiple_choice",
+          "true_false",
+          "matching_pairs",
+          "coin_counter",
+          "sequencing",
+          "math_challenge",
+          "classification",
+          "fill_blank",
+          "shop_sim",
+          "price_detective",
+          "word_scramble",
+          "estimation_slider",
+          "story_mode",
+          "comparison",
+          "case_study",
+          "comparison_chart",
+          "compare",
+          "comparison_table",
+          "case_real",
+          "decision_challenge",
+          "comparison_slider",
+          "decision_matrix",
+          "comparison_matrix",
+          "comparison_challenge",
+          "roleplay_chat",
+          "concept_builder",
+          "spot_trap",
+          "budget_builder",
+          "risk_reward",
+          "quiz_battle"
+        ],
+        "forbidden_types": [
+          "credit_score",
+          "debt_strategy",
+          "portfolio_builder",
+          "tax_puzzle",
+          "inflation_simulator",
+          "market_reaction",
+          "salary_comparison",
+          "quiz_battle"
+        ],
         "max_options_per_question": 4,
         "max_items_to_sequence": 4,
         "max_matching_pairs": 4,
-        "exercises_per_lesson": {"min": 4, "max": 6}
+        "exercises_per_lesson": {
+          "min": 10,
+          "max": 12
+        },
+        "required_objectives_min": 3,
+        "required_phases_coverage": [
+          "conectar",
+          "ensenar",
+          "practicar",
+          "reforzar",
+          "aplicar_variante",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "numbers": {"max_value": 1000, "use_whole_numbers_only": true, "decimals_allowed": false},
-        "math_operations": ["suma", "resta", "multiplicación simple (2x, 5x, 10x)", "comparar precios"],
-        "scenarios_must_be": ["escuela", "hogar", "tienda del barrio", "mercado", "viaje corto"],
+        "numbers": {
+          "max_value": 1000,
+          "use_whole_numbers_only": true,
+          "decimals_allowed": false
+        },
+        "math_operations": [
+          "suma",
+          "resta",
+          "multiplicación simple (2x, 5x, 10x)",
+          "comparar precios"
+        ],
+        "scenarios_must_be": [
+          "escuela",
+          "hogar",
+          "tienda del barrio",
+          "mercado",
+          "viaje corto"
+        ],
         "feedback_error_tone": "Constructivo. '¿Recuerdas cuando...?', 'Inténtalo otra vez', 'Mira el número'",
         "feedback_success_tone": "Motivador. '¡Exacto!', '¡Bien calculado!', '¡Genial!'"
       }
     },
-
     "3": {
       "age_range": "10-12",
       "title": "La Ciudad Digital",
@@ -152,26 +473,115 @@
       "language_rules": {
         "max_words_per_sentence": 20,
         "max_syllables_per_word": 6,
-        "forbidden_words": ["derivados financieros", "opciones y futuros", "apalancamiento", "short selling"],
+        "forbidden_words": [
+          "derivados financieros",
+          "opciones y futuros",
+          "apalancamiento",
+          "short selling"
+        ],
         "required_style": "Lenguaje claro y preciso. Introduce términos técnicos explicándolos inmediatamente. Puede usar metáforas.",
         "use_emojis": false,
-        "vocabulary_examples": ["banco", "cuenta", "tarjeta de débito", "transferencia", "oferta", "demanda", "impuesto", "costo", "ganancia", "pérdida", "interés simple", "presupuesto mensual"]
+        "vocabulary_examples": [
+          "banco",
+          "cuenta",
+          "tarjeta de débito",
+          "transferencia",
+          "oferta",
+          "demanda",
+          "impuesto",
+          "costo",
+          "ganancia",
+          "pérdida",
+          "interés simple",
+          "presupuesto mensual"
+        ]
       },
       "activity_constraints": {
-        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "shop_sim", "price_detective", "estimation_slider", "story_mode", "roleplay_chat", "budget_builder", "savings_race", "risk_reward", "spot_trap", "interest_calculator", "concept_builder"],
-        "forbidden_types": ["credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "salary_comparison", "debt_strategy"],
+        "allowed_types": [
+          "intro_narrative",
+          "multiple_choice",
+          "true_false",
+          "matching_pairs",
+          "sequencing",
+          "math_challenge",
+          "classification",
+          "fill_blank",
+          "shop_sim",
+          "price_detective",
+          "estimation_slider",
+          "story_mode",
+          "roleplay_chat",
+          "budget_builder",
+          "savings_race",
+          "risk_reward",
+          "spot_trap",
+          "interest_calculator",
+          "concept_builder",
+          "comparison",
+          "case_study",
+          "comparison_chart",
+          "compare",
+          "comparison_table",
+          "case_real",
+          "decision_challenge",
+          "comparison_slider",
+          "decision_matrix",
+          "comparison_matrix",
+          "comparison_challenge",
+          "quiz_battle",
+          "mindset_comparison",
+          "opportunity_cost",
+          "goal_roadmap"
+        ],
+        "forbidden_types": [
+          "credit_score",
+          "debt_strategy",
+          "portfolio_builder",
+          "tax_puzzle",
+          "salary_comparison",
+          "debt_strategy"
+        ],
         "max_options_per_question": 4,
         "max_items_to_sequence": 5,
-        "exercises_per_lesson": {"min": 3, "max": 6}
+        "exercises_per_lesson": {
+          "min": 11,
+          "max": 14
+        },
+        "required_objectives_min": 4,
+        "required_phases_coverage": [
+          "conectar",
+          "por_que_importa",
+          "que_es",
+          "como_se_usa",
+          "practicar",
+          "reforzar",
+          "que_error_evitar",
+          "aplicar",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "numbers": {"max_value": 100000, "decimals_allowed": true, "max_decimal_places": 2},
-        "math_operations": ["porcentajes", "interés simple", "proporciones", "estadística básica"],
-        "scenarios_must_be": ["ciudad moderna", "plataformas digitales", "banco", "startup", "mercado local"],
+        "numbers": {
+          "max_value": 100000,
+          "decimals_allowed": true,
+          "max_decimal_places": 2
+        },
+        "math_operations": [
+          "porcentajes",
+          "interés simple",
+          "proporciones",
+          "estadística básica"
+        ],
+        "scenarios_must_be": [
+          "ciudad moderna",
+          "plataformas digitales",
+          "banco",
+          "startup",
+          "mercado local"
+        ],
         "introduce_real_concepts": true
       }
     },
-
     "4": {
       "age_range": "13-14",
       "title": "El Valle de los Inventores",
@@ -183,21 +593,87 @@
         "max_words_per_sentence": 25,
         "required_style": "Lenguaje técnico apropiado con explicaciones. Puede usar datos reales. Argumentativo.",
         "use_emojis": false,
-        "vocabulary_examples": ["margen", "punto de equilibrio", "flujo de caja", "capital", "inversión", "rendimiento", "riesgo", "demanda elástica", "marca", "diferenciación"]
+        "vocabulary_examples": [
+          "margen",
+          "punto de equilibrio",
+          "flujo de caja",
+          "capital",
+          "inversión",
+          "rendimiento",
+          "riesgo",
+          "demanda elástica",
+          "marca",
+          "diferenciación"
+        ]
       },
       "activity_constraints": {
-        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "budget_builder", "risk_reward", "spot_trap", "market_reaction", "concept_builder", "roleplay_chat", "story_mode", "quiz_battle", "bill_splitter", "opportunity_cost", "mindset_comparison", "goal_roadmap", "expense_timeline"],
-        "forbidden_types": ["coin_counter", "tap_action"],
+        "allowed_types": [
+          "intro_narrative",
+          "multiple_choice",
+          "true_false",
+          "matching_pairs",
+          "sequencing",
+          "math_challenge",
+          "classification",
+          "fill_blank",
+          "budget_builder",
+          "risk_reward",
+          "spot_trap",
+          "market_reaction",
+          "concept_builder",
+          "roleplay_chat",
+          "story_mode",
+          "quiz_battle",
+          "bill_splitter",
+          "opportunity_cost",
+          "mindset_comparison",
+          "goal_roadmap",
+          "expense_timeline",
+          "comparison",
+          "case_study",
+          "comparison_chart",
+          "compare",
+          "comparison_table",
+          "case_real",
+          "decision_challenge",
+          "comparison_slider",
+          "decision_matrix",
+          "comparison_matrix",
+          "comparison_challenge"
+        ],
+        "forbidden_types": [
+          "coin_counter",
+          "tap_action"
+        ],
         "max_options_per_question": 5,
-        "exercises_per_lesson": {"min": 3, "max": 7}
+        "exercises_per_lesson": {
+          "min": 12,
+          "max": 15
+        },
+        "required_objectives_min": 4,
+        "required_phases_coverage": [
+          "conectar",
+          "por_que_importa",
+          "que_es",
+          "como_se_usa",
+          "practicar",
+          "reforzar",
+          "que_error_evitar",
+          "aplicar",
+          "con_que_se_relaciona",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "scenarios_must_be": ["negocios reales o realistas", "decisiones financieras de jóvenes", "emprendimiento escolar o juvenil"],
+        "scenarios_must_be": [
+          "negocios reales o realistas",
+          "decisiones financieras de jóvenes",
+          "emprendimiento escolar o juvenil"
+        ],
         "use_real_world_data": true,
         "encourage_critical_thinking": true
       }
     },
-
     "5": {
       "age_range": "15-17",
       "title": "El Reino de los Titanes",
@@ -209,21 +685,103 @@
         "max_words_per_sentence": 30,
         "required_style": "Lenguaje profesional. Terminología financiera real con precisión. Puede citar leyes o conceptos legales básicos.",
         "use_emojis": false,
-        "vocabulary_examples": ["historial crediticio", "tasa de interés anual", "amortización", "cartera diversificada", "capital de riesgo", "valuación", "EBITDA básico", "ISR", "IMSS", "SAR"]
+        "vocabulary_examples": [
+          "historial crediticio",
+          "tasa de interés anual",
+          "amortización",
+          "cartera diversificada",
+          "capital de riesgo",
+          "valuación",
+          "EBITDA básico",
+          "ISR",
+          "IMSS",
+          "SAR"
+        ]
       },
       "activity_constraints": {
-        "allowed_types": ["intro_narrative", "multiple_choice", "true_false", "matching_pairs", "sequencing", "math_challenge", "classification", "fill_blank", "budget_builder", "risk_reward", "spot_trap", "market_reaction", "concept_builder", "roleplay_chat", "story_mode", "quiz_battle", "bill_splitter", "opportunity_cost", "credit_score", "debt_strategy", "portfolio_builder", "tax_puzzle", "inflation_simulator", "interest_calculator", "salary_comparison", "subscription_tracker", "emergency_fund", "passive_income", "mystery_investment", "savings_race", "impact_meter", "goal_roadmap", "expense_timeline", "mindset_comparison"],
-        "forbidden_types": ["coin_counter", "tap_action", "word_scramble"],
-        "exercises_per_lesson": {"min": 3, "max": 8}
+        "allowed_types": [
+          "intro_narrative",
+          "multiple_choice",
+          "true_false",
+          "matching_pairs",
+          "sequencing",
+          "math_challenge",
+          "classification",
+          "fill_blank",
+          "budget_builder",
+          "risk_reward",
+          "spot_trap",
+          "market_reaction",
+          "concept_builder",
+          "roleplay_chat",
+          "story_mode",
+          "quiz_battle",
+          "bill_splitter",
+          "opportunity_cost",
+          "credit_score",
+          "debt_strategy",
+          "portfolio_builder",
+          "tax_puzzle",
+          "inflation_simulator",
+          "interest_calculator",
+          "salary_comparison",
+          "subscription_tracker",
+          "emergency_fund",
+          "passive_income",
+          "mystery_investment",
+          "savings_race",
+          "impact_meter",
+          "goal_roadmap",
+          "expense_timeline",
+          "mindset_comparison",
+          "comparison",
+          "case_study",
+          "comparison_chart",
+          "compare",
+          "comparison_table",
+          "case_real",
+          "decision_challenge",
+          "comparison_slider",
+          "decision_matrix",
+          "comparison_matrix",
+          "comparison_challenge"
+        ],
+        "forbidden_types": [
+          "coin_counter",
+          "tap_action",
+          "word_scramble"
+        ],
+        "exercises_per_lesson": {
+          "min": 13,
+          "max": 16
+        },
+        "required_objectives_min": 4,
+        "required_phases_coverage": [
+          "conectar",
+          "por_que_importa",
+          "que_es",
+          "como_se_usa",
+          "practicar",
+          "reforzar",
+          "que_error_evitar",
+          "aplicar",
+          "con_que_se_relaciona",
+          "caso_real",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "scenarios_must_be": ["vida adulta real", "primer empleo", "independencia económica", "Mexico y Latinoamérica"],
+        "scenarios_must_be": [
+          "vida adulta real",
+          "primer empleo",
+          "independencia económica",
+          "Mexico y Latinoamérica"
+        ],
         "use_real_world_data": true,
         "use_real_laws_and_institutions": true,
         "challenge_level": "high"
       }
     },
-
     "6": {
       "age_range": "18+",
       "title": "Proyecto Omega",
@@ -237,16 +795,37 @@
       },
       "activity_constraints": {
         "allowed_types": "ALL",
-        "exercises_per_lesson": {"min": 3, "max": 10}
+        "exercises_per_lesson": {
+          "min": 14,
+          "max": 18
+        },
+        "required_objectives_min": 4,
+        "required_phases_coverage": [
+          "conectar",
+          "por_que_importa",
+          "que_es",
+          "como_se_usa",
+          "practicar",
+          "reforzar",
+          "que_error_evitar",
+          "aplicar",
+          "con_que_se_relaciona",
+          "caso_real",
+          "sintesis",
+          "cerrar"
+        ]
       },
       "content_rules": {
-        "scenarios_must_be": ["casos de estudio reales o basados en eventos reales", "integración de múltiples conceptos", "decisiones de alto impacto"],
+        "scenarios_must_be": [
+          "casos de estudio reales o basados en eventos reales",
+          "integración de múltiples conceptos",
+          "decisiones de alto impacto"
+        ],
         "challenge_level": "expert",
         "require_justification": true
       }
     }
   },
-
   "universal_rules": {
     "json_schema": "Todo ejercicio DEBE tener: type, character_code, content (con instruction o statement), feedback (success + error) cuando hay correct_answer. Los campos deben seguir exactamente el schema del Lesson Engine.",
     "feedback": {
