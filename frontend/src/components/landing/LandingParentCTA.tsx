@@ -18,11 +18,11 @@ export const LandingParentCTA: React.FC = () => {
                     {t('cta_parents.disclaimer')}
                 </div>
 
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-8 transition-colors leading-tight">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-8 transition-colors leading-tight">
                     {t('cta_parents.title')}
                 </h2>
                 
-                <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 mb-12 max-w-2xl mx-auto transition-colors">
+                <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 mb-12 max-w-2xl mx-auto transition-colors">
                     {t('cta_parents.subtitle')}
                 </p>
 
