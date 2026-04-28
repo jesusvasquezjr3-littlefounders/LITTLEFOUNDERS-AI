@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { updateGuestProfile } from '@/lib/guestProfile';
+import { trackEvent } from '@/lib/analytics';
 import type { PlacementState } from './types';
 import { ageToAdventure, selectNextItem, shouldStop, computePlacementResult } from './scoring/engine';
 import { PlacementIntroScreen } from './components/PlacementIntroScreen';
@@ -66,6 +67,18 @@ export function PlacementEngine({ name, age }: Props) {
         currentState.startedAt,
       );
       saveResult(result, false);
+      trackEvent('placement_quiz_completed', {
+        items_served: currentState.servedIds.length,
+        items_correct: result.itemsCorrect.length,
+        overall_score: result.overallScore,
+        confidence: result.confidence,
+        base_adventure: result.baseAdventure,
+        final_adventure: result.finalAdventure,
+        final_saga: result.finalSaga,
+        target_lesson_code: result.targetLessonCode,
+        duration_sec: result.durationSec,
+        age_declared: result.ageDeclared,
+      });
       setState(prev => ({ ...prev, phase: 'closing', result, currentItem: null }));
     } else {
       setState(prev => ({
@@ -88,6 +101,10 @@ export function PlacementEngine({ name, age }: Props) {
 
   // ── Handle intro actions ─────────────────────────────────────────────────
   function handleAccept() {
+    trackEvent('placement_started', {
+      base_adventure: baseAdventure,
+      age,
+    });
     setState(prev => {
       const next = selectNextItem([], [], prev.baseAdventure);
       if (!next) {
@@ -104,7 +121,7 @@ export function PlacementEngine({ name, age }: Props) {
     });
   }
 
-  function handleSkip() {
+  function handleSkip(source: 'intro' | 'exit' = 'intro') {
     // Skip: save a skipped result pointing to saga 1 of base adventure
     const skippedResult: import('@/lib/guestProfile').PlacementResult = {
       version: 1,
@@ -122,6 +139,11 @@ export function PlacementEngine({ name, age }: Props) {
       itemsCorrect: [],
     };
     saveResult(skippedResult, true);
+    trackEvent('placement_skipped', {
+      source,
+      base_adventure: baseAdventure,
+      age,
+    });
     setState(prev => ({ ...prev, phase: 'closing', skipped: true, result: skippedResult }));
   }
 
@@ -141,6 +163,18 @@ export function PlacementEngine({ name, age }: Props) {
           newState.startedAt,
         );
         saveResult(result, false);
+        trackEvent('placement_quiz_completed', {
+          items_served: newState.servedIds.length,
+          items_correct: result.itemsCorrect.length,
+          overall_score: result.overallScore,
+          confidence: result.confidence,
+          base_adventure: result.baseAdventure,
+          final_adventure: result.finalAdventure,
+          final_saga: result.finalSaga,
+          target_lesson_code: result.targetLessonCode,
+          duration_sec: result.durationSec,
+          age_declared: result.ageDeclared,
+        });
         return { ...newState, phase: 'closing', result };
       }
 
@@ -161,11 +195,22 @@ export function PlacementEngine({ name, age }: Props) {
 
   // ── Exit during quiz → treat as skip ────────────────────────────────────
   function handleExit() {
-    handleSkip();
+    trackEvent('placement_exited_early', {
+      items_answered: state.responses.length,
+      items_served: state.servedIds.length,
+      base_adventure: baseAdventure,
+    });
+    handleSkip('exit');
   }
 
   // ── Navigate after closing ───────────────────────────────────────────────
   function handleContinue() {
+    trackEvent('placement_continue_to_learn', {
+      skipped: state.skipped,
+      target_lesson_code: state.result?.targetLessonCode ?? null,
+      final_adventure: state.result?.finalAdventure ?? baseAdventure,
+      final_saga: state.result?.finalSaga ?? 1,
+    });
     navigate('/learn');
   }
 
