@@ -1,20 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-declare global {
-  interface Window {
-    gtag: (
-      command: string,
-      targetId: string,
-      config?: {
-        page_path?: string;
-        page_title?: string;
-      }
-    ) => void;
-    dataLayer: unknown[];
-  }
-}
-
 const GA_TRACKING_ID = 'G-0XH7S80QG2';
 
 export function GoogleAnalytics() {
