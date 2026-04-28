@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { trackEvent } from '@/lib/analytics';
 import type { PlacementItem } from '../types';
 
 // Neutral feedback phrases — pooled to avoid repetition
@@ -68,6 +69,15 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
     } else {
       isCorrect = value === item.correct_bool;
     }
+
+    trackEvent('placement_question_answered', {
+      item_id: item.id,
+      item_number: itemNumber,
+      item_type: item.type,
+      correct: isCorrect,
+      time_sec: Math.round(timeSec * 100) / 100,
+      selected_value: typeof value === 'boolean' ? String(value) : value,
+    });
 
     setSelected(value);
     setFeedbackMsg(getNextFeedback(lang));

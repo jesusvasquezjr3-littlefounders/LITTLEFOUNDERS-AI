@@ -8,6 +8,15 @@ import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { setGuestProfile, getGuestProfile } from "@/lib/guestProfile";
+import { trackEvent } from "@/lib/analytics";
+
+const STEP_NAMES: Record<number, string> = {
+  0: "welcome",
+  1: "name",
+  2: "age",
+  3: "interests",
+  4: "experience",
+};
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -438,46 +447,80 @@ export default function Onboarding() {
     if (step === 2) setTimeout(() => ageRef.current?.focus(), 420);
   }, [step]);
 
+  // ── Track step views (GA4 custom event) ───────────────────────────────
+  useEffect(() => {
+    trackEvent("onboarding_step_viewed", {
+      step_index: step,
+      step_name: STEP_NAMES[step] ?? `step_${step}`,
+    });
+  }, [step]);
+
   // ── Navigation ────────────────────────────────────────────────────────
   const goNext = () => setStep((s) => Math.min(s + 1, 4) as Step);
+
+  const handleStartFromWelcome = () => {
+    trackEvent("onboarding_started", { source: "welcome_cta" });
+    goNext();
+  };
 
   // ── Step handlers ─────────────────────────────────────────────────────
   const handleNameContinue = () => {
     const trimmed = nameInput.trim();
-    if (!trimmed) { setError(t("errors.name_required")); return; }
-    
+    if (!trimmed) {
+      setError(t("errors.name_required"));
+      trackEvent("onboarding_name_submitted", { success: false, error: "required" });
+      return;
+    }
+
     // Check for valid characters: letters, spaces, hyphens, and apostrophes (plus accents) to prevent script injection
     const nameRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
-    if (!nameRegex.test(trimmed)) { 
-      setError(t("errors.name_invalid")); 
-      return; 
+    if (!nameRegex.test(trimmed)) {
+      setError(t("errors.name_invalid"));
+      trackEvent("onboarding_name_submitted", { success: false, error: "invalid" });
+      return;
     }
 
     setError("");
     setData((d) => ({ ...d, name: trimmed }));
+    trackEvent("onboarding_name_submitted", { success: true, name_length: trimmed.length });
     goNext();
   };
 
   const handleAgeContinue = () => {
     const trimmedAge = ageInput.trim();
-    if (!trimmedAge) { setError(t("errors.age_required")); return; }
-    
+    if (!trimmedAge) {
+      setError(t("errors.age_required"));
+      trackEvent("onboarding_age_submitted", { success: false, error: "required" });
+      return;
+    }
+
     // Ensure only digits are passed to prevent "12e3" or similar inputs that technically parse to numbers
     if (!/^\d+$/.test(trimmedAge)) {
       setError(t("errors.age_invalid"));
+      trackEvent("onboarding_age_submitted", { success: false, error: "invalid" });
       return;
     }
 
     const parsed = parseInt(trimmedAge, 10);
-    if (isNaN(parsed)) { setError(t("errors.age_required")); return; }
-    if (parsed < 8 || parsed > 100) { setError(t("errors.age_range")); return; }
+    if (isNaN(parsed)) {
+      setError(t("errors.age_required"));
+      trackEvent("onboarding_age_submitted", { success: false, error: "nan" });
+      return;
+    }
+    if (parsed < 8 || parsed > 100) {
+      setError(t("errors.age_range"));
+      trackEvent("onboarding_age_submitted", { success: false, error: "out_of_range", age: parsed });
+      return;
+    }
 
     setError("");
     setData((d) => ({ ...d, age: parsed }));
+    trackEvent("onboarding_age_submitted", { success: true, age: parsed });
     goNext();
   };
 
   const toggleInterest = (interest: Interest) => {
+    const wasSelected = data.interests.includes(interest);
     setData((d) => ({
       ...d,
       interests: d.interests.includes(interest)
@@ -485,11 +528,25 @@ export default function Onboarding() {
         : [...d.interests, interest],
     }));
     setError("");
+    trackEvent("onboarding_interest_toggled", {
+      interest,
+      action: wasSelected ? "removed" : "added",
+      total_after: wasSelected ? data.interests.length - 1 : data.interests.length + 1,
+    });
   };
 
   const handleInterestContinue = () => {
-    if (data.interests.length === 0) { setError(t("errors.interest_required")); return; }
+    if (data.interests.length === 0) {
+      setError(t("errors.interest_required"));
+      trackEvent("onboarding_interests_submitted", { success: false, error: "none_selected" });
+      return;
+    }
     setError("");
+    trackEvent("onboarding_interests_submitted", {
+      success: true,
+      count: data.interests.length,
+      interests: data.interests,
+    });
     goNext();
   };
 
@@ -499,6 +556,19 @@ export default function Onboarding() {
     const finalAge = typeof data.age === "number" ? data.age : parseInt(ageInput.trim(), 10) || 0;
     const finalInterests = [...data.interests];
     const lang = i18n.language?.split("-")[0] === "en" ? "en" : "es";
+
+    trackEvent("onboarding_experience_selected", {
+      experience_level: level,
+      age: finalAge,
+      interests_count: finalInterests.length,
+      preferred_language: lang,
+    });
+    trackEvent("onboarding_completed", {
+      experience_level: level,
+      age: finalAge,
+      interests: finalInterests,
+      preferred_language: lang,
+    });
 
     setData((d) => ({ ...d, experience_level: level }));
     setTimeout(() => {
@@ -605,7 +675,7 @@ export default function Onboarding() {
               </GlassCard>
 
               {/* Start CTA */}
-              <CtaButton onClick={goNext} step={step} className="max-w-xs w-full py-5 text-lg">
+              <CtaButton onClick={handleStartFromWelcome} step={step} className="max-w-xs w-full py-5 text-lg">
                 {t("welcome.start_button")}
                 <Sparkles className="w-5 h-5 group-hover:rotate-12 group-hover:scale-110 transition-transform" />
               </CtaButton>
