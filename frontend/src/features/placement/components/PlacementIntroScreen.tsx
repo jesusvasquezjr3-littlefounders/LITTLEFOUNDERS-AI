@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,7 +11,22 @@ interface Props {
 }
 
 export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
-  const { t } = useTranslation('placement');
+  const { t, i18n } = useTranslation('placement');
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const lang = i18n.language?.startsWith('en') ? 'EN' : 'ES';
+    const src = `/sounds/onboarding/${lang}/5-pre-quiz_${lang}.mp3`;
+    const audio = new Audio(src);
+    audio.volume = 0.7;
+    audio.play().catch(() => { /* ignore autoplay errors */ });
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      if (audioRef.current === audio) audioRef.current = null;
+    };
+  }, [i18n.language]);
 
   return (
     <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
