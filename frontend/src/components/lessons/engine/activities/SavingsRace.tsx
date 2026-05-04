@@ -68,7 +68,15 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setSelectedStrategy(null);
+            setProgress(0);
+            setIsRacing(false);
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     return (
@@ -152,8 +160,8 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg mb-3 text-green-500">
-                            {t('savings_race.goal_reached')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('savings_race.goal_reached') : t('feedback.error')}
                         </p>
                         <Button
                             onClick={handleContinue}

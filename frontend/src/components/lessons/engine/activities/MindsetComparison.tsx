@@ -40,6 +40,16 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         setFeedback(isCorrect ? 'success' : 'error');
     };
 
+    const handleContinue = () => {
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setSelectedMindset(null);
+            setFeedback('none');
+            onRetry();
+        }
+    };
+
     return (
         <div className="w-full max-w-5xl animate-slide-in-bottom">
             {/* Scenario */}
@@ -160,6 +170,9 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
+                        </p>
                         <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-950/30 border-2 border-purple-300 dark:border-purple-700 rounded-xl max-w-2xl">
                             <p className="text-sm text-purple-900 dark:text-purple-100 text-center">
                                 {selectedMindset === 'abundance'
@@ -169,7 +182,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                         </div>
 
                         <Button
-                            onClick={onNext}
+                            onClick={handleContinue}
                             className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />

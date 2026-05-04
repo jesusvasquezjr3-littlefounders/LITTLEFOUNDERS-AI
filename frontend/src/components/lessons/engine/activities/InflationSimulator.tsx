@@ -46,7 +46,14 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setYearStart(exercise.content.defaultYearStart || 2000);
+            setYearEnd(exercise.content.defaultYearEnd || 2024);
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     const minYear = exercise.content.minYear || 1990;
@@ -164,8 +171,8 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg mb-3 text-green-500">
-                            {t('inflation.compared')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('inflation.compared') : t('feedback.error')}
                         </p>
                         <Button
                             onClick={handleContinue}

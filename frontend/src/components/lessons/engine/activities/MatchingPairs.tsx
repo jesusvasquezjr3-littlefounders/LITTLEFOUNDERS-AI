@@ -61,15 +61,17 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                 // Match!
                 playSound('ui_tap');
                 setTimeout(() => {
-                    setMatchedIndices(prev => new Set([...prev, newSelected[0], newSelected[1]]));
+                    setMatchedIndices(prev => {
+                        const next = new Set([...prev, newSelected[0], newSelected[1]]);
+                        // Check if all matched using the updated set
+                        if (next.size === cards.length) {
+                            const isCorrect = onSubmit(true);
+                            setFeedback(isCorrect ? 'success' : 'error');
+                        }
+                        return next;
+                    });
                     setSelectedCards([]);
                     setIsChecking(false);
-
-                    // Check if all matched
-                    if (matchedIndices.size + 2 === cards.length) {
-                        const isCorrect = onSubmit(true);
-                        setFeedback(isCorrect ? 'success' : 'error');
-                    }
                 }, 500);
             } else {
                 // No match

@@ -84,6 +84,17 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         }, 2000);
     };
 
+    const handleContinue = () => {
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setSelectedStrategy('snowball');
+            setIsSimulating(false);
+            setFeedback('none');
+            onRetry();
+        }
+    };
+
     return (
         <div className="w-full max-w-5xl animate-slide-in-bottom">
             {/* Explanation Card */}
@@ -235,6 +246,9 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
+                        </p>
                         <div className="mb-4 p-4 bg-green-50 dark:bg-green-950/30 border-2 border-green-300 dark:border-green-700 rounded-xl max-w-2xl">
                             <p className="text-sm text-green-900 dark:text-green-100 text-center mb-2">
                                 <strong>{t('debt_strategy.result_title')}</strong>
@@ -250,7 +264,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                             )}
                         </div>
                         <Button
-                            onClick={onNext}
+                            onClick={handleContinue}
                             className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />

@@ -42,7 +42,7 @@ REQUIRED_CONTENT_FIELDS = {
     "story_mode": ["pages"],
     "math_challenge": ["question"],
     "word_scramble": ["word"],
-    "roleplay_chat": ["dialogue", "choices"],
+    "roleplay_chat": ["scenario", "options"],
     "estimation_slider": ["min", "max"],
     "risk_reward": ["question", "risk_options"],
     "concept_builder": ["question", "concepts"],

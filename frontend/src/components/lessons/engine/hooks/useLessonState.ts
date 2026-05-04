@@ -104,6 +104,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── MATCHING PAIRS ───
         // Component sends true when all pairs are matched (self-validating)
         case 'matching_pairs':
+        case 'match_pairs':
             return answer === true;
 
         // ─── TAP ACTION ───
@@ -120,6 +121,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             if (legacyTargets) {
                 legacyTargets.forEach((id: string) => targetIds.add(id));
             }
+            if (targetIds.size === 0) return false;
             return tappedIds.size === targetIds.size &&
                 [...tappedIds].every(id => targetIds.has(id));
         }
@@ -185,6 +187,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── COIN COUNTER ───
         // Component sends number (counted amount)
         case 'coin_counter': {
+            if (answer == null) return false;
             const targetAmount = content?.targetAmount;
             return Math.abs(Number(answer) - Number(targetAmount)) < 0.01;
         }
@@ -341,6 +344,15 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'story_mode':
             return true;
 
+        // ─── UNMAPPED TYPES (defensive) ───
+        case 'drag_drop':
+        case 'sorting_buckets':
+        case 'comparison':
+        case 'image_hotspot':
+        case 'balance_scale':
+            console.warn(`[LessonEngine] validateAnswer: unmapped exercise type '${type}'`);
+            return false;
+
         // ─── DEFAULT FALLBACK ───
         // For any unknown type or components that pass explicit boolean results
         default:
@@ -373,6 +385,7 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
         setState('PLAYING');
         setCurrentExerciseIndex(0);
         setResults([]);
+        setAttempts(0);
     }, []);
 
     const submitAnswer = useCallback((answer: string | Record<string, string> | string[] | boolean | any): boolean => {

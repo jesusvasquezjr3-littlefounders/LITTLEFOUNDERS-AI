@@ -21,7 +21,8 @@
     "create_roadmap": "CREAR HOJA DE RUTA",
     "build_income": "CONSTRUIR INGRESO",
     "finish_quiz": "TERMINAR QUIZ",
-    "compare": "COMPARAR"
+    "compare": "COMPARAR",
+    "skip": "Saltar ejercicio"
   },
   "economy": {
     "budget": "PRESUPUESTO",
@@ -34,7 +35,8 @@
     "incorrect": "Incorrecto",
     "great_job": "¡Excelente!",
     "found": "Encontrado:",
-    "chat_header": "Chat Financiero"
+    "chat_header": "Chat Financiero",
+    "system": "Sistema"
   },
   "feedback": {
     "success": "🎉 CONTINUAR",
@@ -42,6 +44,11 @@
     "exact": "¡Exacto!",
     "lower": "Más bajo",
     "higher": "Más alto"
+  },
+  "errors": {
+    "unsupported_exercise": "Ejercicio en desarrollo",
+    "unsupported_exercise_desc": "Este tipo de ejercicio aún no está disponible. Puedes saltarlo para continuar.",
+    "no_options": "No hay opciones disponibles"
   },
   "completion": {
     "title": "¡Lección Completada!",

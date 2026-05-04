@@ -46,7 +46,15 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setPrincipal(exercise.content.defaultPrincipal || 1000);
+            setRate(exercise.content.defaultRate || 5);
+            setTime(exercise.content.defaultTime || 1);
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     const maxPrincipal = exercise.content.maxPrincipal || 10000;
@@ -275,8 +283,8 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg mb-3 text-green-500">
-                            {t('interest_calculator.calculated')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('interest_calculator.calculated') : t('feedback.error')}
                         </p>
                         <Button
                             onClick={handleContinue}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Send } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 
@@ -32,16 +32,33 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
 
     useEffect(() => {
-        // Init logic: Load initial context messages
-        const initialMessages = exercise.content.dialogue || [];
-        setMessages([]); // Start empty and stream them in? Or show all history? 
-        // Let's show history immediately for now, or stream it.
-        // Simple version: Show history.
-        setMessages(initialMessages);
+        // Build initial messages from scenario + instruction
+        const initialMessages: ChatMessage[] = [];
+        const content = exercise.content || {};
 
-        setChoices(exercise.content.choices || []);
+        if (content.scenario) {
+            initialMessages.push({
+                id: 'scenario',
+                sender: 'npc',
+                name: 'NPC',
+                text: content.scenario,
+                avatar: '🤖'
+            });
+        }
+        if (content.instruction) {
+            initialMessages.push({
+                id: 'instruction',
+                sender: 'system',
+                name: t('status.system', { defaultValue: 'Sistema' }),
+                text: content.instruction,
+                avatar: '💡'
+            });
+        }
+
+        setMessages(initialMessages);
+        setChoices(content.options || []);
         setOutputState();
-    }, [exercise]);
+    }, [exercise, t]);
 
     const setOutputState = () => {
         setFeedback('none');
@@ -101,6 +118,8 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
         }
     };
 
+    const contextText = exercise.content?.scenario || exercise.content?.instruction || "...";
+
     return (
         <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col liquid-glass-strong rounded-3xl overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
 
@@ -111,7 +130,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                 </div>
                 <div>
                     <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">{t('status.chat_header')}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{exercise.content.context || "..."}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">{contextText}</p>
                 </div>
             </div>
 
@@ -154,6 +173,19 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
             <div className="p-4 bg-white dark:bg-slate-900 border-t dark:border-slate-800">
                 {feedback === 'none' ? (
                     <div className="flex flex-col gap-2">
+                        {choices.length === 0 && (
+                            <div className="text-center space-y-3 py-4">
+                                <p className="text-sm text-muted-foreground">
+                                    {t('errors.no_options', { defaultValue: 'No hay opciones disponibles' })}
+                                </p>
+                                <button
+                                    onClick={onNext}
+                                    className="w-full py-3 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition-colors"
+                                >
+                                    {t('actions.skip', { defaultValue: 'Saltar ejercicio' })} →
+                                </button>
+                            </div>
+                        )}
                         {choices.map((choice) => (
                             <button
                                 key={choice.id}

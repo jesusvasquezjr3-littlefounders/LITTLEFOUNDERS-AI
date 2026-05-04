@@ -81,7 +81,19 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            const initial: Record<string, number> = {};
+            boxes.forEach((box: any) => {
+                initial[box.id] = 0;
+            });
+            setAllocation(initial);
+            setShowResults(false);
+            setResults({});
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     const totalReturn = Object.values(results).reduce((sum, val) => sum + val, 0);
@@ -237,8 +249,8 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", totalReturn >= totalCoins ? "text-green-500" : "text-orange-500")}>
-                            {totalReturn >= totalCoins ? t('mystery_investment.profit') : t('mystery_investment.loss')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? (totalReturn >= totalCoins ? "text-green-500" : "text-orange-500") : "text-red-500")}>
+                            {feedback === 'success' ? (totalReturn >= totalCoins ? t('mystery_investment.profit') : t('mystery_investment.loss')) : t('feedback.error')}
                         </p>
                         <Button
                             onClick={handleContinue}

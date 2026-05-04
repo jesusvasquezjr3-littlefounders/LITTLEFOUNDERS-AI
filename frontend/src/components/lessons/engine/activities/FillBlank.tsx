@@ -42,6 +42,8 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
             setWordBank(shuffled);
+        } else {
+            setWordBank([]);
         }
     }, [exercise]);
 

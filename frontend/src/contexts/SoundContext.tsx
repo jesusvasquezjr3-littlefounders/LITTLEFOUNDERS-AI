@@ -88,6 +88,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const src = SOUND_MAP[type];
         if (src) {
             const sound = getHowl(src);
+            sound.volume(0.15);
             sound.play();
         }
     }, [mute, getHowl]);

@@ -29,6 +29,8 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
     const questions = exercise.content.questions || [];
     const question = questions[currentQuestion];
 
+    if (questions.length === 0) return null;
+
     useEffect(() => {
         setCurrentQuestion(0);
         setSelectedAnswer(null);
@@ -103,7 +105,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         }
     };
 
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom">

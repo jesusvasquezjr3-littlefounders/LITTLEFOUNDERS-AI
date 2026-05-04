@@ -57,7 +57,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
         const splits: Record<string, number> = {};
 
         if (mode === 'equitable') {
-            const perPerson = grandTotal / people.length;
+            const perPerson = people.length > 0 ? grandTotal / people.length : 0;
             people.forEach((person: any) => {
                 splits[person.id] = perPerson;
             });

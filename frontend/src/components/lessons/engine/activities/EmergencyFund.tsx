@@ -31,6 +31,8 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
     const events = exercise.content.events || [];
     const event = events[currentEvent];
 
+    if (events.length === 0) return null;
+
     const handleDecision = (decisionId: string) => {
         if (feedback !== 'none') return;
 
@@ -45,7 +47,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
         setFundBalance(newBalance);
 
         if (currentEvent < events.length - 1) {
-            setTimeout(() => setCurrentEvent(currentEvent + 1), 1000);
+            setTimeout(() => setCurrentEvent(prev => prev + 1), 1000);
         } else {
             setTimeout(() => {
                 const isCorrect = onSubmit(newDecisions);

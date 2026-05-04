@@ -26,17 +26,19 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
     }, [exercise]);
 
     const resetGame = () => {
+        if (!targetWord) return;
         const chars = targetWord.split('');
-        const letterObj = chars.map((c: string, i: number) => ({ id: `${i}-${c}`, char: c }));
+        const letterObjs = chars.map((c: string, i: number) => ({ id: `${i}-${c}`, char: c }));
 
         // Shuffle
-        for (let i = letterObj.length - 1; i > 0; i--) {
+        const initialScramble = [...letterObjs];
+        for (let i = initialScramble.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [letterObj[i], letterObj[j]] = [letterObj[j], letterObj[i]];
+            [initialScramble[i], initialScramble[j]] = [initialScramble[j], initialScramble[i]];
         }
 
-        setScrambledLetters(letterObj);
-        setPlacedLetters(new Array(targetWord.length).fill(null));
+        setSlots(new Array(targetWord.length).fill(null));
+        setAvailableIds(initialScramble.map(l => l.id));
         setFeedback('none');
     };
 

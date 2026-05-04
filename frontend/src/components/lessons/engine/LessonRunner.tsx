@@ -1193,6 +1193,38 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     />
                 )}
 
+                {/* ===== FALLBACK: Unsupported / Unmapped Exercise Type ===== */}
+                {currentExercise && ![
+                    'story_mode', 'intro_narrative', 'multiple_choice', 'true_false',
+                    'fill_blank', 'classification', 'matching_pairs', 'match_pairs', 'sequencing',
+                    'tap_action', 'math_challenge', 'word_scramble', 'roleplay_chat',
+                    'estimation_slider', 'risk_reward', 'concept_builder', 'quiz_battle',
+                    'shop_sim', 'coin_counter', 'price_detective', 'bill_splitter',
+                    'budget_builder', 'expense_timeline', 'subscription_tracker',
+                    'savings_race', 'emergency_fund', 'goal_roadmap', 'interest_calculator',
+                    'portfolio_builder', 'mystery_investment', 'passive_income',
+                    'opportunity_cost', 'market_reaction', 'inflation_simulator',
+                    'credit_score', 'debt_strategy', 'tax_puzzle', 'salary_comparison',
+                    'spot_trap', 'impact_meter', 'mindset_comparison'
+                ].includes(currentExercise.type) && (
+                    <div className="w-full max-w-md mx-auto animate-slide-in-bottom">
+                        <div className="liquid-glass-strong rounded-3xl p-8 text-center space-y-4 border border-white/20 dark:border-white/10 shadow-xl">
+                            <div className="text-4xl">🛠️</div>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                                {t('errors.unsupported_exercise', { defaultValue: 'Ejercicio en desarrollo' })}
+                            </h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {t('errors.unsupported_exercise_desc', { defaultValue: 'Este tipo de ejercicio aún no está disponible. Puedes saltarlo para continuar.' })}
+                            </p>
+                            <button
+                                onClick={handleNext}
+                                className="w-full py-3 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition-colors"
+                            >
+                                {t('actions.skip', { defaultValue: 'Saltar ejercicio' })} →
+                            </button>
+                        </div>
+                    </div>
+                )}
 
             </div>
 

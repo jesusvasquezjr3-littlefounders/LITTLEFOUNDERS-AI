@@ -58,7 +58,16 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            const initial = new Set<string>((exercise.content.subscriptions || [])
+                .filter((sub: any) => sub.initiallyActive)
+                .map((sub: any) => String(sub.id)));
+            setActiveSubscriptions(initial);
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     return (
@@ -140,8 +149,8 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg mb-3 text-green-500">
-                            {t('subscription.optimized')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('subscription.optimized') : t('feedback.error')}
                         </p>
                         <Button
                             onClick={handleContinue}

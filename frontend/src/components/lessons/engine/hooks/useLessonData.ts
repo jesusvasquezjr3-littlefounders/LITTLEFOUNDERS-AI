@@ -2,7 +2,7 @@
  * Hook para obtener datos de lección desde el backend
  * Soporte para internacionalización (i18n)
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
@@ -78,9 +78,9 @@ export interface ExerciseData {
         // Batch 2: Math, Roleplay, WordScramble
         word?: string; // WordScramble target
         hint?: string;
-        dialogue?: Array<{ id: string; sender: 'system' | 'hero' | 'npc' | 'user'; text: string; name?: string }>; // Roleplay history
-        context?: string; // Roleplay context
-        choices?: Array<{ id: string; text: string; next_page?: string }>; // General choices (Roleplay, Story)
+        dialogue?: Array<{ id: string; sender: 'system' | 'hero' | 'npc' | 'user'; text: string; name?: string }>; // Roleplay history (legacy)
+        context?: string; // Roleplay context (legacy)
+        choices?: Array<{ id: string; text: string; next_page?: string }>; // General choices (Story)
         // Batch 3: Slider, RiskReward, Hotspot
         min?: number;
         max?: number;
@@ -191,33 +191,56 @@ export function useLessonData(lessonCode: string, language?: string): UseLessonD
     // Usar idioma pasado o el idioma actual de i18n
     const currentLanguage = language || i18n.language || 'es';
 
-    const fetchLesson = async () => {
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false;
+            abortControllerRef.current?.abort();
+        };
+    }, []);
+
+    const fetchLesson = useCallback(async () => {
+        // Cancel any in-flight request
+        abortControllerRef.current?.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
         try {
-            setLoading(true);
-            setError(null);
+            if (isMountedRef.current) {
+                setLoading(true);
+                setError(null);
+            }
 
             // Agregar parámetro de idioma a la URL
             const url = `${API_BASE}/lesson-engine/lessons/${lessonCode}/play?lang=${currentLanguage}`;
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: controller.signal });
 
             if (!response.ok) {
                 throw new Error(t('lesson.not_found_error', { status: response.status }));
             }
 
             const lessonData = await response.json();
-            setData(lessonData);
+            if (isMountedRef.current) {
+                setData(lessonData);
+            }
         } catch (err) {
-            setError(err instanceof Error ? err.message : t('lesson.load_error'));
+            if (isMountedRef.current && !controller.signal.aborted) {
+                setError(err instanceof Error ? err.message : t('lesson.load_error'));
+            }
         } finally {
-            setLoading(false);
+            if (isMountedRef.current && !controller.signal.aborted) {
+                setLoading(false);
+            }
         }
-    };
+    }, [lessonCode, currentLanguage, t]);
 
     useEffect(() => {
         if (lessonCode) {
             fetchLesson();
         }
-    }, [lessonCode, currentLanguage]); // Re-fetch cuando cambie el idioma
+    }, [lessonCode, currentLanguage, fetchLesson]);
 
     return { data, loading, error, refetch: fetchLesson };
 }

@@ -47,7 +47,14 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
     };
 
     const handleContinue = () => {
-        onNext();
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            setSelectedCause(null);
+            setShowImpact(false);
+            setFeedback('none');
+            onRetry();
+        }
     };
 
     return (
@@ -135,9 +142,15 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg text-green-500 mb-3">
-                            <Sparkles className="w-5 h-5 inline-block mr-1" />
-                            {t('impact_meter.thank_you')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? (
+                                <>
+                                    <Sparkles className="w-5 h-5 inline-block mr-1" />
+                                    {t('impact_meter.thank_you')}
+                                </>
+                            ) : (
+                                t('feedback.error')
+                            )}
                         </p>
                         <Button
                             onClick={handleContinue}

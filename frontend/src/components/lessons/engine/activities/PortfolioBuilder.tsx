@@ -66,6 +66,20 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
         setFeedback(isCorrect ? 'success' : 'error');
     };
 
+    const handleContinue = () => {
+        if (feedback === 'success') {
+            onNext();
+        } else {
+            const init: Record<string, number> = {};
+            assets.forEach((asset: any) => {
+                init[asset.id] = 0;
+            });
+            setAllocation(init);
+            setFeedback('none');
+            onRetry();
+        }
+    };
+
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom">
             {/* Pie Chart Visualization */}
@@ -177,11 +191,11 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className="font-bold text-lg mb-3 text-green-500">
-                            {t('feedback.success')}
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                            {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
                         </p>
                         <Button
-                            onClick={onNext}
+                            onClick={handleContinue}
                             className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                         >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />

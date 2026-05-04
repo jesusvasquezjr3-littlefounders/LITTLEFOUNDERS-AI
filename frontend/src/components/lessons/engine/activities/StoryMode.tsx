@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen } from 'lucide-react';
@@ -40,6 +40,16 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
         setPageIndex(0);
         setHistory([0]);
     }, [exercise]);
+
+    // Guard against empty pages array — auto-advance
+    // Use a ref to avoid infinite loop if onNext changes reference
+    const onNextRef = useRef(onNext);
+    onNextRef.current = onNext;
+    useEffect(() => {
+        if (pages.length === 0) {
+            onNextRef.current();
+        }
+    }, [pages.length]);
 
     const handleChoice = (nextPageId?: string) => {
         playSound('ui_tap');
@@ -88,6 +98,15 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
             setPageIndex(prevIndex);
         }
     };
+
+    // Guard: if no pages, auto-advance (useEffect above handles the navigation)
+    if (pages.length === 0) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="animate-pulse text-muted-foreground">{t('loading') || 'Cargando...'}</div>
+            </div>
+        );
+    }
 
     // Determine Character
     const characterCode = exercise.character_code || 'dr_rho';

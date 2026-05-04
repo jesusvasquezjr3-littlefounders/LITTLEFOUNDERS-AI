@@ -31,6 +31,8 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
     const scenarios = exercise.content.scenarios || [];
     const scenario = scenarios[currentScenario];
 
+    if (scenarios.length === 0) return null;
+
     const handleDecision = (decisionId: string) => {
         if (feedback !== 'none') return;
 
@@ -45,7 +47,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         setScore(newScore);
 
         if (currentScenario < scenarios.length - 1) {
-            setTimeout(() => setCurrentScenario(currentScenario + 1), 800);
+            setTimeout(() => setCurrentScenario(prev => prev + 1), 800);
         } else {
             setTimeout(() => {
                 const isCorrect = onSubmit(newDecisions);

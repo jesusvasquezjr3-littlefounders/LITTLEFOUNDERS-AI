@@ -26,7 +26,8 @@
     "create_roadmap": "CREATE ROADMAP",
     "build_income": "BUILD INCOME",
     "finish_quiz": "FINISH QUIZ",
-    "compare": "COMPARE"
+    "compare": "COMPARE",
+    "skip": "Skip exercise"
   },
   "economy": {
     "budget": "BUDGET",
@@ -39,7 +40,8 @@
     "incorrect": "Incorrect",
     "great_job": "Excellent!",
     "found": "Found:",
-    "chat_header": "Financial Chat"
+    "chat_header": "Financial Chat",
+    "system": "System"
   },
   "feedback": {
     "success": "🎉 CONTINUE",
@@ -47,6 +49,11 @@
     "exact": "Exact!",
     "lower": "Lower",
     "higher": "Higher"
+  },
+  "errors": {
+    "unsupported_exercise": "Exercise under development",
+    "unsupported_exercise_desc": "This exercise type is not yet available. You can skip it to continue.",
+    "no_options": "No options available"
   },
   "completion": {
     "title": "Lesson Complete!",
