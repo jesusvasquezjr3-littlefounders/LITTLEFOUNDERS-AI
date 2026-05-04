@@ -12,14 +12,14 @@
         "register": "Sign Up Free"
     },
     "hero": {
-        "badge": "✨ No credit card required • Instant access",
+        "badge": "No credit card required • Instant access",
         "title_part1": "From Gamer to",
         "title_highlight": "Entrepreneur:",
         "title_part2": "Financial Education that Works",
         "subtitle": "Your kid learns to save and invest by playing. Zero theory, real results.",
         "cta_button": "Start Adventure",
         "login_link": "Already have an account?",
-        "cta_subtext": "✨ No credit card required • Instant access"
+        "cta_subtext": "No credit card required • Instant access"
     },
     "problem": {
         "title_part1": "School teaches algebra...",
@@ -117,7 +117,7 @@
         "subtitle": "Join the families transforming how their kids learn about money. Today's education is their freedom tomorrow.",
         "button": "Start Adventure",
         "login_link": "Already have an account?",
-        "disclaimer": "✨ No credit card required • Instant access"
+        "disclaimer": "No credit card required • Instant access"
     },
     "footer": {
         "terms": "Terms",

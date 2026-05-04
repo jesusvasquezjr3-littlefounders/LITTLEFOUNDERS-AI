@@ -507,7 +507,7 @@ export default function Onboarding() {
       trackEvent("onboarding_age_submitted", { success: false, error: "nan" });
       return;
     }
-    if (parsed < 8 || parsed > 100) {
+    if (parsed < 6 || parsed > 100) {
       setError(t("errors.age_range"));
       trackEvent("onboarding_age_submitted", { success: false, error: "out_of_range", age: parsed });
       return;
@@ -750,11 +750,26 @@ export default function Onboarding() {
                 </div>
               </Spotlight>
 
-              {ageInput.trim() !== "" && !isNaN(parseInt(ageInput.trim(), 10)) && (
-                <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-pink-600 dark:text-pink-300">
-                  {t("age.dina_done", { age: ageInput.trim() })} 🎂
-                </p>
-              )}
+              {(() => {
+                const parsedAge = parseInt(ageInput.trim(), 10);
+                const isValidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && parsedAge >= 6 && parsedAge <= 100;
+                const isInvalidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && (parsedAge < 6 || parsedAge > 100);
+                if (isValidAge) {
+                  return (
+                    <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-pink-600 dark:text-pink-300">
+                      {t("age.dina_done", { age: ageInput.trim() })} 🎂
+                    </p>
+                  );
+                }
+                if (isInvalidAge) {
+                  return (
+                    <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-red-500 dark:text-red-400">
+                      {t("errors.age_range")}
+                    </p>
+                  );
+                }
+                return null;
+              })()}
 
               <GlassCard className="w-full p-7">
                 <h2 className="text-xl font-black text-gray-900 dark:text-white mb-1">
@@ -768,7 +783,7 @@ export default function Onboarding() {
                   ref={ageRef}
                   type="number"
                   inputMode="numeric"
-                  min={8}
+                  min={6}
                   max={100}
                   value={ageInput}
                   onChange={(e) => { setAgeInput(e.target.value); setError(""); }}

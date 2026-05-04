@@ -86,7 +86,7 @@
         "name_invalid": "Solo se permiten letras, espacios, guiones y apostrofes",
         "age_required": "Por favor escribe tu edad",
         "age_invalid": "Por favor ingresa una edad válida usando solo números",
-        "age_range": "La edad debe estar entre 8 y 100 años",
+        "age_range": "La edad debe estar entre 6 y 100 años",
         "interest_required": "Selecciona al menos un interés"
     }
 }

@@ -7,14 +7,14 @@
         "register": "Registrate Gratis"
     },
     "hero": {
-        "badge": "✨ No requiere tarjeta • Acceso inmediato",
+        "badge": "No requiere tarjeta • Acceso inmediato",
         "title_part1": "De Jugador a",
         "title_highlight": "Emprendedor:",
         "title_part2": "Educación Financiera que Funciona",
         "subtitle": "Tu hijo aprende a ahorrar e invertir jugando. Cero teoría, resultados reales.",
         "cta_button": "Comenzar Aventura",
         "login_link": "Ya tengo cuenta",
-        "cta_subtext": "✨ No requiere tarjeta • Acceso inmediato"
+        "cta_subtext": "No requiere tarjeta • Acceso inmediato"
     },
     "problem": {
         "title_part1": "La escuela enseña álgebra...",
@@ -112,7 +112,7 @@
         "subtitle": "Únete a las familias que están transformando la forma en que sus hijos aprenden sobre el dinero. La educación de hoy es su libertad mañana.",
         "button": "Comenzar Aventura",
         "login_link": "Ya tengo cuenta",
-        "disclaimer": "✨ No requiere tarjeta • Acceso inmediato"
+        "disclaimer": "No requiere tarjeta • Acceso inmediato"
     },
     "footer": {
         "terms": "Términos",

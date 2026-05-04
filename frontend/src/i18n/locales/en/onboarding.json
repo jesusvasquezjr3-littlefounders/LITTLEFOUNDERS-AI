@@ -86,7 +86,7 @@
         "name_invalid": "Only letters, spaces, hyphens and apostrophes are allowed",
         "age_required": "Please enter your age",
         "age_invalid": "Please enter a valid age using only numbers",
-        "age_range": "Age must be between 8 and 100",
+        "age_range": "Age must be between 6 and 100",
         "interest_required": "Select at least one interest"
     }
 }
