@@ -28,10 +28,28 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         setFeedback('none');
     }, [exercise]);
 
-    const scenarios = exercise.content.scenarios || [];
+    const content = exercise?.content || {};
+    const scenarios = content.scenarios || [];
     const scenario = scenarios[currentScenario];
 
-    if (scenarios.length === 0) return null;
+    if (scenarios.length === 0) {
+        // Graceful degradation: no real data exists for this exercise type
+        return (
+            <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-4xl mb-4">💳</div>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    {t('credit_score.title', { defaultValue: 'Construye tu Score Crediticio' })}
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 text-center max-w-md">
+                    {content.instruction || content.scenario || t('credit_score.no_data', { defaultValue: 'Ejercicio educativo sobre manejo del crédito.' })}
+                </p>
+                <Button onClick={onNext} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-2xl">
+                    {t('actions.continue', { defaultValue: 'Continuar' })}
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+            </div>
+        );
+    }
 
     const handleDecision = (decisionId: string) => {
         if (feedback !== 'none') return;
@@ -85,7 +103,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
     if (!scenario && feedback === 'none') return null;
 
     return (
-        <div className="w-full max-w-3xl animate-slide-in-bottom">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Credit Score Meter */}
             <div className="mb-6">

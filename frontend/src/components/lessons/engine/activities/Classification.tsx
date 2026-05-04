@@ -83,7 +83,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                             className={`${catColor.bg} px-4 py-2 rounded-xl text-center shadow-md min-w-[120px]`}
                         >
                             <span className={`font-bold ${catColor.text} text-lg shadow-sm`}>
-                                {catColor.emoji} {category.label}
+                                {catColor.emoji} {category.name || category.label}
                             </span>
                         </div>
                     );
@@ -140,7 +140,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                                                         : `${color.inactive} hover:scale-105 border-2 border-transparent`
                                                 )}
                                             >
-                                                {cat.label}
+                                                {cat.name || cat.label}
                                             </button>
                                         );
                                     })}

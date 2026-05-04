@@ -16,8 +16,9 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    const budget = exercise.content.budget || 20;
-    const products = exercise.content.products || [];
+    const content = exercise?.content || {};
+    const budget = content.budget || 20;
+    const products = content.products || content.items || [];
 
     const [cart, setCart] = useState<string[]>([]); // Product IDs
     const [totalSpent, setTotalSpent] = useState(0);
@@ -29,25 +30,35 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
         setFeedback('none');
     }, [exercise]);
 
+    const parsePrice = (price: any): number => {
+        if (typeof price === 'number') return price;
+        if (typeof price === 'string') {
+            const cleaned = price.replace(/[$,\s]/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+        return 0;
+    };
+
     const addToCart = (product: any) => {
         if (feedback !== 'none') return;
+        const price = parsePrice(product.price);
 
         // If already in cart, remove it (toggle)
         if (cart.includes(product.id)) {
             playSound('ui_tap');
             const newCart = cart.filter(id => id !== product.id);
             setCart(newCart);
-            setTotalSpent(prev => prev - product.price);
+            setTotalSpent(prev => prev - price);
         } else {
             // Check budget
-            if (totalSpent + product.price > budget) {
+            if (totalSpent + price > budget) {
                 playSound('edu_error');
-                // Maybe shake animation on total?
                 return;
             }
             playSound('ui_tap');
             setCart([...cart, product.id]);
-            setTotalSpent(prev => prev + product.price);
+            setTotalSpent(prev => prev + price);
         }
     };
 
@@ -69,7 +80,7 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
     };
 
     return (
-        <div className="w-full max-w-2xl animate-slide-in-bottom flex flex-col items-center">
+        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Header / HUD */}
             <div className="w-full flex justify-between items-center mb-6 bg-slate-900 text-white p-4 rounded-2xl shadow-lg">

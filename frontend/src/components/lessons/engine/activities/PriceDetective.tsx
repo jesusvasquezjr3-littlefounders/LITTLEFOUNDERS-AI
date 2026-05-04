@@ -26,7 +26,17 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
         setFeedback('none');
     }, [exercise]);
 
-    const products = exercise.content.products || [];
+    const content = exercise?.content || {};
+    const rawProducts = content.products || content.items || [];
+    // Normalize items to product shape
+    const products = rawProducts.map((p: any) => ({
+        id: p.id,
+        name: p.name || p.label || '',
+        price: typeof p.price === 'number' ? p.price : parseFloat(String(p.price).replace(/[^0-9.]/g, '')) || 0,
+        quantity: p.quantity || 1,
+        unit: p.unit || 'unidad',
+        icon: p.icon || '🔍',
+    }));
 
     const calculateUnitPrice = (product: any) => {
         return (product.price / product.quantity).toFixed(2);
@@ -63,7 +73,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
     };
 
     return (
-        <div className="w-full max-w-4xl animate-slide-in-bottom">
+        <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Detective Tool */}
             {!showUnitPrices && feedback === 'none' && (

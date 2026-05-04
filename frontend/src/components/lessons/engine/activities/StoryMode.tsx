@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen } from 'lucide-react';
@@ -15,7 +15,7 @@ interface StoryPage {
     text: string;
     image?: string;
     character_mood?: string;
-    choices?: Array<{ id: string; text: string; next_page?: string }>; // Creating interactions
+    choices?: Array<{ id: string; text: string; next_page?: string }>;
 }
 
 interface StoryModeProps {
@@ -27,22 +27,58 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    // State
     const [pageIndex, setPageIndex] = useState(0);
-    const [history, setHistory] = useState<number[]>([0]); // Track path
+    const [history, setHistory] = useState<number[]>([0]);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    const pages: StoryPage[] = exercise.content.pages || [];
+    // Build virtual pages from real JSON schema if legacy 'pages' is absent
+    const pages: StoryPage[] = useMemo(() => {
+        const content = exercise?.content || {};
+        // Legacy format: content.pages exists
+        if (content.pages && Array.isArray(content.pages) && content.pages.length > 0) {
+            return content.pages;
+        }
+        // Real JSON format: scenario + question + choices
+        const built: StoryPage[] = [];
+        if (content.scenario) {
+            built.push({
+                id: 'page-scenario',
+                text: content.scenario,
+                character_mood: 'neutral',
+            });
+        }
+        if (content.question || content.instruction) {
+            const questionText = content.question || content.instruction || '';
+            const choices = content.choices || content.options || [];
+            built.push({
+                id: 'page-question',
+                text: questionText,
+                character_mood: 'thinking',
+                choices: choices.map((c: any, idx: number) => ({
+                    id: c.id || `choice-${idx}`,
+                    text: c.text || c.label || '',
+                    next_page: undefined,
+                })),
+            });
+        }
+        // Fallback: if there's nothing, create a single page from any available text field
+        if (built.length === 0) {
+            const fallbackText = content.transcript || content.description || content.text || content.statement || '';
+            if (fallbackText) {
+                built.push({ id: 'page-fallback', text: fallbackText, character_mood: 'neutral' });
+            }
+        }
+        return built;
+    }, [exercise]);
+
     const currentPage = pages[pageIndex] || pages[0];
 
     useEffect(() => {
-        // Reset on new exercise
         setPageIndex(0);
         setHistory([0]);
     }, [exercise]);
 
     // Guard against empty pages array — auto-advance
-    // Use a ref to avoid infinite loop if onNext changes reference
     const onNextRef = useRef(onNext);
     onNextRef.current = onNext;
     useEffect(() => {
@@ -61,7 +97,6 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                     setPageIndex(nextIdx);
                     setHistory(prev => [...prev, nextIdx]);
                 } else {
-                    // Fallback to next index
                     handleNext();
                 }
             } else {
@@ -84,7 +119,6 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                 setIsAnimating(false);
             }, 300);
         } else {
-            // End of story
             onNext();
         }
     };
@@ -99,29 +133,21 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
         }
     };
 
-    // Guard: if no pages, auto-advance (useEffect above handles the navigation)
     if (pages.length === 0) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground">{t('loading') || 'Cargando...'}</div>
+                <div className="animate-pulse text-muted-foreground">{t('loading', { defaultValue: 'Cargando...' })}</div>
             </div>
         );
     }
 
-    // Determine Character
     const characterCode = exercise.character_code || 'dr_rho';
-    const rawMood = currentPage.character_mood || 'neutral';
-
-    // Normalize character code
+    const rawMood = currentPage?.character_mood || 'neutral';
     const normalizedCharCode = characterCode.toLowerCase().trim();
-
-    // Normalize mood/expression using gesture mapper for backward compatibility
     const normalizedMood = normalizeGesture(normalizedCharCode, rawMood);
 
     const renderCharacter = () => {
         const className = "w-[200px] sm:w-[280px] mx-auto filter drop-shadow-xl transition-all duration-500 hover:scale-105";
-
-        // Render character with normalized mood/expression
         if (normalizedCharCode === 'dina') return <DinaCharacter className={className} expression={normalizedMood as any} />;
         if (normalizedCharCode === 'dr_rho' || normalizedCharCode === 'drrho') return <DrRhoCharacter className={className} mood={normalizedMood as any} />;
         if (normalizedCharCode === 'zara_vex' || normalizedCharCode === 'zaravex') return <ZaraVexCharacter className={className} mood={normalizedMood as any} />;
@@ -129,27 +155,18 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center animate-fade-in relative px-4">
-            {/* Story Book Container */}
+        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in duration-500 relative px-4">
             <div className="w-full max-w-4xl liquid-glass-strong rounded-3xl shadow-xl border border-white/20 dark:border-white/10 overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
-
-                {/* Book Decoration */}
                 <div className="absolute top-0 left-0 w-full h-4 bg-amber-300 dark:bg-amber-800 z-10" />
 
-                {/* Visual Side (Left on Desktop, Top on Mobile) */}
                 <div className="w-full md:w-1/2 bg-gradient-to-b from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 flex items-end justify-center p-6 relative overflow-hidden">
-                    {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-multiply dark:mix-blend-screen" />
-
-                    {/* Character */}
                     <div className={cn("relative z-10 transition-all duration-500 transform", isAnimating ? "opacity-0 translate-y-10" : "opacity-100 translate-y-0")}>
                         {renderCharacter()}
                     </div>
                 </div>
 
-                {/* Text Side (Right on Desktop, Bottom on Mobile) */}
                 <div className="w-full md:w-1/2 p-8 flex flex-col relative bg-paper-texture">
-                    {/* Page Number */}
                     <div className="absolute top-6 right-8 text-muted-foreground font-mono text-xs border border-muted px-2 py-1 rounded-md">
                         PAGE {pageIndex + 1} / {pages.length}
                     </div>
@@ -159,13 +176,11 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
 
                         <div className={cn("transition-all duration-500 delay-100", isAnimating ? "opacity-0 translate-x-10" : "opacity-100 translate-x-0")}>
                             <p className="text-xl md:text-2xl font-medium leading-relaxed font-serif text-slate-800 dark:text-slate-200 mb-8">
-                                "{currentPage.text}"
+                                "{currentPage?.text || ''}"
                             </p>
 
-
-                            {/* Choices or Next Button */}
                             <div className="space-y-3">
-                                {currentPage.choices && currentPage.choices.length > 0 ? (
+                                {currentPage?.choices && currentPage.choices.length > 0 ? (
                                     currentPage.choices.map((choice, idx) => (
                                         <Button
                                             key={choice.id}
@@ -190,7 +205,7 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                                                 onClick={handleBack}
                                                 className="text-muted-foreground"
                                             >
-                                                {t('common:buttons.back')}
+                                                {t('common:buttons.back', { defaultValue: 'Atrás' })}
                                             </Button>
                                         )}
                                         <Button
@@ -199,7 +214,7 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                                         >
                                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                                             <span className="relative flex items-center justify-center">
-                                                {pageIndex === pages.length - 1 ? t('actions.finish') : t('actions.continue')} <ArrowRight className="ml-2 w-5 h-5" />
+                                                {pageIndex === pages.length - 1 ? t('actions.finish', { defaultValue: 'Finalizar' }) : t('actions.continue', { defaultValue: 'Continuar' })} <ArrowRight className="ml-2 w-5 h-5" />
                                             </span>
                                         </Button>
                                     </div>

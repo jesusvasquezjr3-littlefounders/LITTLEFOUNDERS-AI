@@ -19,9 +19,31 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     const [selectedMindset, setSelectedMindset] = useState<'scarcity' | 'abundance' | null>(null);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
-    const scenario = exercise.content.scenario || {};
-    const scarcityResponse = exercise.content.scarcity || {};
-    const abundanceResponse = exercise.content.abundance || {};
+    const content = exercise?.content || {};
+
+    // Support both formats:
+    // Legacy: scenario.description, scarcity.thought/consequences, abundance.thought/consequences
+    // Real JSON: instruction, pair.left/right {id, text}
+
+    const hasLegacyFormat = content.scenario && (content.scarcity || content.abundance);
+    const hasPairFormat = content.pair && (content.pair.left || content.pair.right);
+
+    // Normalize data structures
+    const scenarioText = hasLegacyFormat
+        ? content.scenario?.description
+        : (content.instruction || content.scenario || '');
+
+    const scarcityData = hasLegacyFormat
+        ? content.scarcity
+        : (hasPairFormat
+            ? { thought: content.pair.left?.text || '', consequences: [] }
+            : { thought: '', consequences: [] });
+
+    const abundanceData = hasLegacyFormat
+        ? content.abundance
+        : (hasPairFormat
+            ? { thought: content.pair.right?.text || '', consequences: [] }
+            : { thought: '', consequences: [] });
 
     useEffect(() => {
         setSelectedMindset(null);
@@ -35,7 +57,6 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
     const handleSubmit = () => {
         if (!selectedMindset) return;
-
         const isCorrect = onSubmit(selectedMindset);
         setFeedback(isCorrect ? 'success' : 'error');
     };
@@ -51,28 +72,32 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     };
 
     return (
-        <div className="w-full max-w-5xl animate-slide-in-bottom">
-            {/* Scenario */}
-            <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
-                <div className="flex items-center gap-2 mb-3">
-                    <Brain className="w-6 h-6 text-blue-600" />
-                    <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
-                        {t('mindset_comparison.scenario')}
-                    </h3>
+        <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Scenario / Instruction */}
+            {scenarioText && (
+                <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Brain className="w-6 h-6 text-blue-600" />
+                        <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
+                            {t('mindset_comparison.scenario', { defaultValue: 'Escenario' })}
+                        </h3>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300">
+                        {scenarioText}
+                    </p>
                 </div>
-                <p className="text-slate-700 dark:text-slate-300">
-                    {scenario.description}
-                </p>
-            </div>
+            )}
 
             {/* Mindset Comparison */}
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Scarcity Mindset */}
-                <button
+                <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleSelect('scarcity')}
-                    disabled={feedback === 'success'}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect('scarcity'); }}
                     className={cn(
-                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden",
+                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
                         selectedMindset === 'scarcity' && "bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-xl",
                         selectedMindset === 'abundance' && "opacity-50",
                         !selectedMindset && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-red-300"
@@ -84,38 +109,44 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                         <div className="flex items-center gap-2 mb-4">
                             <span className="text-3xl">😰</span>
                             <h3 className="text-xl font-black text-red-700 dark:text-red-400">
-                                {t('mindset_comparison.scarcity')}
+                                {t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' })}
                             </h3>
                         </div>
 
-                        <div className="mb-4">
-                            <div className="text-sm font-bold text-red-600 mb-2">
-                                {t('mindset_comparison.response')}:
+                        {scarcityData.thought && (
+                            <div className="mb-4">
+                                <div className="text-sm font-bold text-red-600 mb-2">
+                                    {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
+                                </div>
+                                <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                                    "{scarcityData.thought}"
+                                </p>
                             </div>
-                            <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                                "{scarcityResponse.thought}"
-                            </p>
-                        </div>
+                        )}
 
-                        <div className="mb-4">
-                            <div className="text-sm font-bold text-red-600 mb-2">
-                                {t('mindset_comparison.consequences')}:
+                        {Array.isArray(scarcityData.consequences) && scarcityData.consequences.length > 0 && (
+                            <div className="mb-4">
+                                <div className="text-sm font-bold text-red-600 mb-2">
+                                    {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
+                                </div>
+                                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                                    {scarcityData.consequences.map((consequence: string, idx: number) => (
+                                        <li key={idx}>❌ {consequence}</li>
+                                    ))}
+                                </ul>
                             </div>
-                            <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                                {scarcityResponse.consequences?.map((consequence: string, idx: number) => (
-                                    <li key={idx}>❌ {consequence}</li>
-                                ))}
-                            </ul>
-                        </div>
+                        )}
                     </div>
-                </button>
+                </div>
 
                 {/* Abundance Mindset */}
-                <button
+                <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleSelect('abundance')}
-                    disabled={feedback === 'success'}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect('abundance'); }}
                     className={cn(
-                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden",
+                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
                         selectedMindset === 'abundance' && "bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-xl",
                         selectedMindset === 'scarcity' && "opacity-50",
                         !selectedMindset && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300"
@@ -127,31 +158,35 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                         <div className="flex items-center gap-2 mb-4">
                             <span className="text-3xl">😊</span>
                             <h3 className="text-xl font-black text-green-700 dark:text-green-400">
-                                {t('mindset_comparison.abundance')}
+                                {t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' })}
                             </h3>
                         </div>
 
-                        <div className="mb-4">
-                            <div className="text-sm font-bold text-green-600 mb-2">
-                                {t('mindset_comparison.response')}:
+                        {abundanceData.thought && (
+                            <div className="mb-4">
+                                <div className="text-sm font-bold text-green-600 mb-2">
+                                    {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
+                                </div>
+                                <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                                    "{abundanceData.thought}"
+                                </p>
                             </div>
-                            <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                                "{abundanceResponse.thought}"
-                            </p>
-                        </div>
+                        )}
 
-                        <div className="mb-4">
-                            <div className="text-sm font-bold text-green-600 mb-2">
-                                {t('mindset_comparison.consequences')}:
+                        {Array.isArray(abundanceData.consequences) && abundanceData.consequences.length > 0 && (
+                            <div className="mb-4">
+                                <div className="text-sm font-bold text-green-600 mb-2">
+                                    {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
+                                </div>
+                                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                                    {abundanceData.consequences.map((consequence: string, idx: number) => (
+                                        <li key={idx}>✅ {consequence}</li>
+                                    ))}
+                                </ul>
                             </div>
-                            <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                                {abundanceResponse.consequences?.map((consequence: string, idx: number) => (
-                                    <li key={idx}>✅ {consequence}</li>
-                                ))}
-                            </ul>
-                        </div>
+                        )}
                     </div>
-                </button>
+                </div>
             </div>
 
             {/* Action Buttons */}
@@ -164,20 +199,20 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                         <span className="relative flex items-center justify-center">
-                            {t('actions.compare')}
+                            {t('actions.compare', { defaultValue: 'Comparar' })}
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
                         <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
-                            {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
+                            {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-950/30 border-2 border-purple-300 dark:border-purple-700 rounded-xl max-w-2xl">
                             <p className="text-sm text-purple-900 dark:text-purple-100 text-center">
                                 {selectedMindset === 'abundance'
-                                    ? t('mindset_comparison.feedback_abundance')
-                                    : t('mindset_comparison.feedback_scarcity')}
+                                    ? t('mindset_comparison.feedback_abundance', { defaultValue: '¡Mentalidad de abundancia! Piensa en largo plazo.' })
+                                    : t('mindset_comparison.feedback_scarcity', { defaultValue: 'La mentalidad de escasez limita tu potencial.' })}
                             </p>
                         </div>
 
@@ -187,7 +222,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                         >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                             <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
+                                {t('actions.continue', { defaultValue: 'Continuar' })}
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </span>
                         </Button>

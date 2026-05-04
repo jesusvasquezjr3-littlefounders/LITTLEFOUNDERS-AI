@@ -178,8 +178,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // These helpers encapsulate the common onSubmit/onNext/onRetry pattern
     // and add lessonAudio.playFeedback() for narrative audio segments.
 
+    /** Double-submit protection ref */
+    const isSubmittingRef = useRef(false);
+
     /** Standard submit handler: validates, plays SFX + narrative audio, manages lives */
     const handleStandardSubmit = useCallback((answer: any): boolean => {
+        if (isSubmittingRef.current) return false;
+        isSubmittingRef.current = true;
         const isCorrect = submitAnswer(answer);
         if (isCorrect) {
             playSound('edu_success');
@@ -212,6 +217,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
     /** Standard next: reset feedback, stop narrative audio, advance */
     const handleNext = useCallback(() => {
+        isSubmittingRef.current = false;
         setLocalFeedback('none');
         stopNarrativeAudio();
         nextExercise();
@@ -219,6 +225,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
     /** Standard retry: reset feedback, stop narrative audio, retry */
     const handleRetry = useCallback(() => {
+        isSubmittingRef.current = false;
         setLocalFeedback('none');
         stopNarrativeAudio();
         retryExercise();
@@ -792,21 +799,6 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     />
                 )}
 
-                {/* GLOBAL INSTRUCTION FOOTER */}
-                {localFeedback === 'none' && currentExercise?.content?.instruction && (
-                    <div className="w-full max-w-md mx-auto mt-4 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-500">
-                        <div className="bg-muted/50 dark:bg-muted/30 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 flex items-center justify-center gap-2">
-                            <span className="text-xs font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                {t('tip')}
-                            </span>
-                            <p className="text-sm font-medium text-muted-foreground text-center">
-                                {currentExercise.content.instruction}
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-
                 {/* ===== SEQUENCING ===== */}
                 {currentExercise?.type === 'sequencing' && (
                     <Sequencing
@@ -1226,6 +1218,20 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     </div>
                 )}
 
+                {/* GLOBAL INSTRUCTION FOOTER — moved to end so it appears below ALL exercise types */}
+                {localFeedback === 'none' && currentExercise?.content?.instruction && (
+                    <div className="w-full max-w-md mx-auto mt-4 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-500">
+                        <div className="bg-muted/50 dark:bg-muted/30 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 flex items-center justify-center gap-2">
+                            <span className="text-xs font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                {t('tip', { defaultValue: 'Tip' })}
+                            </span>
+                            <p className="text-sm font-medium text-muted-foreground text-center">
+                                {currentExercise.content.instruction}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
             </div>
 
             {/* ===== STREAK CELEBRATION ==============================================
@@ -1265,11 +1271,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 onRetry={() => {
                     setShowSuccess(false);
                     setShowStreakCelebration(false);
-                    celebrationShownRef.current = false; // Allow celebration to fire again on re-completion
+                    celebrationShownRef.current = false;
                     lessonStartTimeRef.current = Date.now();
                     startLesson();
-                    // hasCompletedOnceRef stays true — retry won't re-call API
-                    // completionResult & nextLessonCode preserved for the next celebration
+                    playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
                 }}
             />
 
@@ -1309,6 +1314,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                     setShowGameOver(false);
                                     setLives(5);
                                     startLesson();
+                                    playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
                                 }}
                                 className="relative overflow-hidden flex-1 h-12 rounded-xl font-semibold bg-purple-600 hover:bg-purple-700 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                             >

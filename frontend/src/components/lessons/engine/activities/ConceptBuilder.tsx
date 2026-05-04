@@ -26,14 +26,17 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
 
     useEffect(() => {
         setFeedback('none');
-        if (exercise.content.concepts) {
+        const source = exercise.content.concepts || exercise.content.items || [];
+        if (source.length > 0) {
             // Shuffle
-            const shuffled = [...exercise.content.concepts];
+            const shuffled = [...source];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
             setBlocks(shuffled);
+        } else {
+            setBlocks([]);
         }
     }, [exercise]);
 
@@ -76,7 +79,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom flex flex-col items-center">
 
-            <h3 className="text-xl font-bold mb-8 text-center">{exercise.content.question || t('instructions.concept_builder')}</h3>
+            <h3 className="text-xl font-bold mb-8 text-center">{exercise.content.instruction || exercise.content.question || t('instructions.concept_builder', { defaultValue: 'Ordena los elementos' })}</h3>
 
             {/* Blocks Row */}
             <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-2 mb-10 w-full">
@@ -91,7 +94,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
                                 : "bg-white dark:bg-slate-800 border-purple-200 dark:border-purple-900 shadow-sm text-lg",
                             feedback === 'success' && "border-green-400 bg-green-50 dark:bg-green-900/20"
                         )}>
-                            {block.label}
+                            {block.label || block.text}
 
                             {/* Controls (Hidden if done) */}
                             {feedback === 'none' && (

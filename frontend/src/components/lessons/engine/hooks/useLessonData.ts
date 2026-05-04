@@ -67,7 +67,7 @@ export interface ExerciseData {
         options?: Array<{ id: string; text: string; image?: string | null }>;
         // Classification specific
         items?: Array<{ id: string; text: string; emoji?: string; category?: string; isTarget?: boolean; type?: string }>;
-        categories?: Array<{ id: string; label: string }>;
+        categories?: Array<{ id: string; name?: string; label?: string }>;
         // Story Mode specific
         pages?: Array<{ id: string; text: string; image?: string; character_mood?: string; choices?: Array<{ id: string; text: string; next_page?: string }> }>;
         // Batch 1: Matching and FillBlank

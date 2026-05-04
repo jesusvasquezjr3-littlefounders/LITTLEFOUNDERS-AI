@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 
@@ -16,27 +16,37 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    // Sentence structure: "The [blank] is blue."
-    // We need to parse the sentence text to find blanks. 
-    // Format convention: "The {{blank}} is blue." or use splits.
-    // For simplicity, let's assume `segments` array in content: ["The ", null, " is blue."]
-
-    const [selectedWords, setSelectedWords] = useState<Record<number, string>>({}); // valid blank index -> wordId
+    const [textInput, setTextInput] = useState('');
+    const [selectedWords, setSelectedWords] = useState<Record<number, string>>({});
     const [wordBank, setWordBank] = useState<any[]>([]);
     const [isChecked, setIsChecked] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
-    const segments = exercise.content.segments || []; // ["Text", "BLANK", "Text"]
-    // Or simpler: text with placeholders {0}, {1} etc.
+    const content = exercise?.content || {};
+
+    // Detect which format we have:
+    // Legacy: segments + options (word bank drag-and-drop)
+    // Real JSON: statement + hint (free text input)
+    const hasLegacyFormat = Array.isArray(content.segments) && content.segments.length > 0;
+    const hasWordBank = Array.isArray(content.options) && content.options.length > 0;
+    const statement = content.statement || '';
+    const hint = content.hint || '';
+
+    // Build segments from statement if using real JSON format
+    const segments = hasLegacyFormat
+        ? content.segments
+        : (statement
+            ? parseStatementToSegments(statement)
+            : []);
 
     useEffect(() => {
-        // Reset
+        setTextInput('');
         setSelectedWords({});
         setIsChecked(false);
         setFeedback('none');
 
-        if (exercise.content.options) {
-            const shuffled = [...exercise.content.options];
+        if (hasWordBank) {
+            const shuffled = [...content.options];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -45,15 +55,34 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
         } else {
             setWordBank([]);
         }
-    }, [exercise]);
+    }, [exercise, hasWordBank, content.options]);
+
+    // Parse a statement like "La gran ________ entre Ana y Ben fue de 40 monedas."
+    // into segments array [{type:'text', text:'La gran '}, {type:'blank'}, {type:'text', text:' entre...'}]
+    function parseStatementToSegments(stmt: string): Array<{ type: 'text' | 'blank'; text?: string; id?: string }> {
+        const result: Array<{ type: 'text' | 'blank'; text?: string; id?: string }> = [];
+        const regex = /(_{2,})/g;
+        let lastIndex = 0;
+        let match;
+        let blankIndex = 0;
+        while ((match = regex.exec(stmt)) !== null) {
+            if (match.index > lastIndex) {
+                result.push({ type: 'text', text: stmt.slice(lastIndex, match.index) });
+            }
+            result.push({ type: 'blank', id: `blank-${blankIndex}` });
+            blankIndex++;
+            lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < stmt.length) {
+            result.push({ type: 'text', text: stmt.slice(lastIndex) });
+        }
+        return result;
+    }
 
     const handleWordSelect = (word: any) => {
         if (isChecked) return;
         playSound('ui_tap');
-
-        // Find first empty blank
         const firstEmptyIndex = segments.findIndex((seg: any, idx: number) => seg.type === 'blank' && !selectedWords[idx]);
-
         if (firstEmptyIndex !== -1) {
             setSelectedWords(prev => ({ ...prev, [firstEmptyIndex]: word.id }));
         }
@@ -68,18 +97,33 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     };
 
     const handleCheck = () => {
-        // Build answer map using segment IDs as keys (matching correct_answer.blank_ids format)
-        const answerMap: Record<string, string> = {};
-        segments.forEach((seg: any, idx: number) => {
-            if (seg.type === 'blank' && selectedWords[idx]) {
-                // Use segment.id as key if available, otherwise use index
-                const key = seg.id || String(idx);
-                answerMap[key] = selectedWords[idx];
-            }
-        });
+        let answer: any;
+        if (hasWordBank && hasLegacyFormat) {
+            // Legacy format: map of blank index -> word id
+            const answerMap: Record<string, string> = {};
+            segments.forEach((seg: any, idx: number) => {
+                if (seg.type === 'blank' && selectedWords[idx]) {
+                    const key = seg.id || String(idx);
+                    answerMap[key] = selectedWords[idx];
+                }
+            });
+            answer = answerMap;
+        } else if (hasWordBank) {
+            // Real JSON with word bank
+            const answerMap: Record<string, string> = {};
+            segments.forEach((seg: any, idx: number) => {
+                if (seg.type === 'blank' && selectedWords[idx]) {
+                    const key = seg.id || String(idx);
+                    answerMap[key] = selectedWords[idx];
+                }
+            });
+            answer = answerMap;
+        } else {
+            // Free text input
+            answer = textInput.trim();
+        }
 
-        // Delegate validation to useLessonState via onSubmit (single source of truth)
-        const isCorrect = onSubmit(answerMap);
+        const isCorrect = onSubmit(answer);
         setIsChecked(true);
         setFeedback(isCorrect ? 'success' : 'error');
     };
@@ -88,7 +132,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
         if (feedback === 'success') {
             onNext();
         } else {
-            // Retry
+            setTextInput('');
             setSelectedWords({});
             setIsChecked(false);
             setFeedback('none');
@@ -96,31 +140,30 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
         }
     };
 
-    const isBankWordUsed = (wordId: string) => {
-        return Object.values(selectedWords).includes(wordId);
-    };
+    const isBankWordUsed = (wordId: string) => Object.values(selectedWords).includes(wordId);
+    const blankCount = segments.filter((s: any) => s.type === 'blank').length;
+    const allBlanksFilled = Object.keys(selectedWords).length >= blankCount;
+    const canCheck = hasWordBank ? allBlanksFilled : textInput.trim().length > 0;
 
     return (
-        <div className="w-full max-w-2xl animate-slide-in-bottom flex flex-col items-center">
-            {/* Sentence Area */}
-            <div className="liquid-glass-strong p-6 rounded-3xl shadow-xl border border-white/20 dark:border-white/10 mb-8 w-full">
+        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
+            {/* Statement Area */}
+            <div className="liquid-glass-strong p-6 rounded-3xl shadow-xl border border-white/20 dark:border-white/10 mb-6 w-full">
                 <div className="flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl font-medium leading-loose">
                     {segments.map((segment: any, idx: number) => {
                         if (segment.type === 'text') {
                             return <span key={idx}>{segment.text}</span>;
                         } else {
-                            // Blank
                             const filledWordId = selectedWords[idx];
-                            const filledWord = wordBank.find(w => w.id === filledWordId);
-
+                            const filledWord = wordBank.find((w: any) => w.id === filledWordId);
                             return (
                                 <button
                                     key={idx}
-                                    onClick={() => handleRemoveWord(idx)}
+                                    onClick={() => filledWord && handleRemoveWord(idx)}
                                     className={cn(
                                         "min-w-[80px] h-10 px-3 rounded-lg border-b-4 transition-all mx-1 mb-1 font-bold text-center",
                                         filledWord
-                                            ? "bg-purple-100 text-purple-700 border-purple-300 hover:bg-red-100 hover:text-red-600 hover:border-red-300" // Click to remove
+                                            ? "bg-purple-100 text-purple-700 border-purple-300 hover:bg-red-100 hover:text-red-600 hover:border-red-300"
                                             : "bg-slate-100 border-slate-300 animate-pulse"
                                     )}
                                 >
@@ -129,50 +172,78 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                             );
                         }
                     })}
+                    {/* If no segments parsed (no blanks in statement), show the statement as text */}
+                    {segments.length === 0 && statement && (
+                        <p className="text-center">{statement}</p>
+                    )}
                 </div>
             </div>
+
+            {/* Hint */}
+            {hint && !isChecked && (
+                <div className="mb-4 flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm">
+                    <Lightbulb className="w-4 h-4" />
+                    <span>{hint}</span>
+                </div>
+            )}
+
+            {/* Free text input when no word bank */}
+            {!hasWordBank && (
+                <div className="w-full mb-6">
+                    <input
+                        type="text"
+                        value={textInput}
+                        onChange={(e) => setTextInput(e.target.value)}
+                        disabled={isChecked}
+                        placeholder={content.placeholder || t('fill_blank.placeholder', { defaultValue: 'Escribe tu respuesta...' })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg font-medium text-center focus:border-purple-400 focus:outline-none transition-colors disabled:opacity-50"
+                    />
+                </div>
+            )}
 
             {/* Checked Feedback */}
             {isChecked && (
                 <div className="mb-6 text-center animate-in zoom-in">
                     <span className="text-4xl block mb-2">{feedback === 'success' ? '🎉' : '🤔'}</span>
                     <p className={cn("font-bold text-xl", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
-                        {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
+                        {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                     </p>
                 </div>
             )}
 
             {/* Word Bank */}
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-                {wordBank.map((word) => {
-                    const isUsed = isBankWordUsed(word.id);
-                    return (
-                        <button
-                            key={word.id}
-                            onClick={() => handleWordSelect(word)}
-                            disabled={isUsed || isChecked}
-                            className={cn(
-                                "px-6 py-3 rounded-xl font-bold shadow-sm transition-all border-b-4 text-lg",
-                                isUsed
-                                    ? "opacity-0 scale-50 pointer-events-none"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none bg-gradient-to-br from-indigo-50 to-white dark:from-slate-800 dark:to-slate-900"
-                            )}
-                        >
-                            {word.text}
-                        </button>
-                    );
-                })}
-            </div>
+            {hasWordBank && (
+                <div className="flex flex-wrap justify-center gap-3 mb-8">
+                    {wordBank.map((word: any) => {
+                        const isUsed = isBankWordUsed(word.id);
+                        return (
+                            <button
+                                key={word.id}
+                                onClick={() => handleWordSelect(word)}
+                                disabled={isUsed || isChecked}
+                                className={cn(
+                                    "px-6 py-3 rounded-xl font-bold shadow-sm transition-all border-b-4 text-lg",
+                                    isUsed
+                                        ? "opacity-0 scale-50 pointer-events-none"
+                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none bg-gradient-to-br from-indigo-50 to-white dark:from-slate-800 dark:to-slate-900"
+                                )}
+                            >
+                                {word.text}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* Actions */}
             {!isChecked ? (
                 <Button
                     onClick={handleCheck}
-                    disabled={Object.keys(selectedWords).length < segments.filter((s: any) => s.type === 'blank').length}
+                    disabled={!canCheck}
                     className="relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
                 >
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
+                    <span className="relative flex items-center justify-center">{t('actions.verify', { defaultValue: 'Verificar' })}</span>
                 </Button>
             ) : (
                 <Button
@@ -187,7 +258,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                 >
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </span>
                 </Button>

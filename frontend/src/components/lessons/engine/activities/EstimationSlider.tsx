@@ -17,10 +17,11 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    const min = exercise.content.min || 0;
-    const max = exercise.content.max || 100;
-    const step = exercise.content.step || 1;
-    const unit = exercise.content.unit || '';
+    const content = exercise?.content || {};
+    const min = content.min ?? content.range?.min ?? 0;
+    const max = content.max ?? content.range?.max ?? 100;
+    const step = content.step ?? content.range?.step ?? 1;
+    const unit = content.unit || '';
 
     // Initial value: middle
     const [value, setValue] = useState<number[]>([Math.floor((max - min) / 2) + min]);
@@ -40,7 +41,7 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
     };
 
     const handleCheck = () => {
-        const correctVal = exercise.correct_answer?.correctValue ?? exercise.content?.correctValue ?? 0;
+        const correctVal = exercise.correct_answer?.correctValue ?? exercise.correct_answer?.value ?? exercise.correct_answer?.numericAnswer ?? content.correctValue ?? content.value ?? 0;
         const tolerance = exercise.correct_answer?.tolerance ?? exercise.content?.tolerance ?? 10;
         const userVal = value[0];
         const diff = userVal - correctVal;
@@ -72,12 +73,12 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
     };
 
     return (
-        <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
+        <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Question Card */}
             <div className="liquid-glass-strong p-8 rounded-3xl shadow-xl border border-white/20 dark:border-white/10 mb-10 w-full text-center">
                 <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
-                    {exercise.content.question || t('instructions.estimation_slider')}
+                    {content.problem || content.question || t('instructions.estimation_slider', { defaultValue: 'Estima el valor' })}
                 </h3>
                 <div className="text-5xl font-black text-purple-600 dark:text-purple-400">
                     {value[0]}<span className="text-2xl ml-1 text-slate-400 font-medium">{unit}</span>

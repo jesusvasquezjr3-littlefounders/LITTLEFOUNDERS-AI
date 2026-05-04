@@ -50,15 +50,19 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
         }
     };
 
+    const content = exercise?.content || {};
+    const riskOptions = content.risk_options || content.options || [];
+    const decisionText = content.decision || content.question || content.scenario || t('instructions.risk_reward', { defaultValue: 'Evalúa el riesgo' });
+
     return (
-        <div className="w-full max-w-4xl animate-slide-in-bottom">
+        <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             <h3 className="text-2xl font-bold text-center mb-10 text-slate-800 dark:text-slate-100">
-                {exercise.content.question || t('instructions.risk_reward')}
+                {decisionText}
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-stretch mb-10">
-                {(exercise.content.risk_options || []).map((option: any) => {
+                {riskOptions.map((option: any) => {
                     const isSelected = selectedId === option.id;
                     const isOtherSelected = selectedId !== null && !isSelected;
                     const isRisk = option.type === 'risk';
@@ -85,7 +89,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
 
                             {/* Title */}
                             <h4 className="text-2xl font-black uppercase tracking-wider mb-2 text-center text-shadow-sm">
-                                {option.text}
+                                {option.text || option.label || ''}
                             </h4>
 
                             {/* Hidden Reward (Revealed on Select) */}

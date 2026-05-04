@@ -67,6 +67,12 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends Record<number|string, string> mapping blank index/id to word id
         // correct_answer.blank_ids maps blank identifiers to correct word ids
         case 'fill_blank': {
+            // If answer is a string (free text input), compare directly
+            if (typeof answer === 'string') {
+                const correctValue = correctAnswer?.correctValue ?? correctAnswer?.value ?? correctAnswer?.correctOptionId ?? content?.correctValue;
+                if (correctValue === undefined || correctValue === null) return false;
+                return String(answer).trim().toLowerCase() === String(correctValue).trim().toLowerCase();
+            }
             const correctBlanks = correctAnswer?.blank_ids || {};
             const userBlanks = answer as Record<string, string>;
 
@@ -130,7 +136,17 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends Record<string, string> mapping item ID to category ID
         // correct_answer.classifications maps item IDs to correct category IDs
         case 'classification': {
-            const correctClassifications = correctAnswer?.classifications || {};
+            let correctClassifications = correctAnswer?.classifications || {};
+            // Fallback: build from items.correctCategory if classifications missing
+            if (Object.keys(correctClassifications).length === 0 && Array.isArray(content?.items)) {
+                const built: Record<string, string> = {};
+                content.items.forEach((item: any) => {
+                    if (item.id && item.correctCategory) {
+                        built[item.id] = item.correctCategory;
+                    }
+                });
+                correctClassifications = built;
+            }
             const userClassifications = answer as Record<string, string>;
             const items = content?.items || [];
             return items.every((item: any) =>
@@ -143,7 +159,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // correct_answer has correctValue (number/string) or correctOptionId as fallback
         case 'math_challenge': {
             const userStr = String(answer).trim();
-            const correctValue = correctAnswer?.correctValue ?? correctAnswer?.correctOptionId;
+            const correctValue = correctAnswer?.correctValue ?? correctAnswer?.value ?? correctAnswer?.numericAnswer ?? correctAnswer?.correctOptionId ?? content?.correctValue ?? content?.value;
             if (correctValue === undefined || correctValue === null) return false;
             // Compare as strings first (exact match)
             if (userStr === String(correctValue).trim()) return true;
@@ -168,7 +184,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // correct_answer has correctValue and tolerance
         case 'estimation_slider': {
             const userVal = Number(answer);
-            const correctVal = correctAnswer?.correctValue ?? content?.correctValue;
+            const correctVal = correctAnswer?.correctValue ?? correctAnswer?.value ?? correctAnswer?.numericAnswer ?? content?.correctValue ?? content?.value ?? content?.numericAnswer;
             const tolerance = correctAnswer?.tolerance ?? content?.tolerance ?? 10;
             if (correctVal === undefined || correctVal === null) return false;
             return Math.abs(userVal - Number(correctVal)) <= Number(tolerance);
@@ -179,7 +195,18 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // correct_answer.trapIds is the expected set
         case 'spot_trap': {
             const selectedTraps = new Set(answer as string[]);
-            const correctTraps = new Set(correctAnswer?.trapIds || []);
+            let correctTraps = new Set(correctAnswer?.trapIds || []);
+            // Fallback: build trap IDs from scenarios if messages not present
+            if (correctTraps.size === 0 && Array.isArray(content?.scenarios)) {
+                content.scenarios.forEach((s: any) => {
+                    if (s.isTrap && s.id) correctTraps.add(s.id);
+                });
+            }
+            if (correctTraps.size === 0 && Array.isArray(content?.messages)) {
+                content.messages.forEach((m: any) => {
+                    if (m.isTrap && m.id) correctTraps.add(m.id);
+                });
+            }
             return selectedTraps.size === correctTraps.size &&
                 [...selectedTraps].every(id => correctTraps.has(id));
         }
@@ -204,7 +231,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             }
             // Otherwise, validate budget constraint
             const budget = content?.budget || 0;
-            const products = content?.products || [];
+            const products = content?.products || content?.items || [];
             let totalSpent = 0;
             let itemsFound = 0;
             userItems.forEach(id => {
@@ -371,7 +398,7 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
     const timeline = lessonData?.timeline || [];
     const totalExercises = timeline.length;
     const currentExercise = timeline[currentExerciseIndex] || null;
-    const progress = totalExercises > 0 ? Math.round((currentExerciseIndex / totalExercises) * 100) : 0;
+    const progress = totalExercises > 0 ? Math.round(((currentExerciseIndex + 1) / totalExercises) * 100) : 0;
 
     // Reset state machine when lesson data changes (navigating to a new lesson)
     useEffect(() => {

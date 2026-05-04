@@ -459,6 +459,10 @@
   animation: fade-in 0.3s ease-out;
 }
 
+.animate-slide-in-bottom {
+  animation: slide-up 0.5s ease-out;
+}
+
 .animate-pulse-scale {
   animation: pulse-scale 2s ease-in-out infinite;
 }

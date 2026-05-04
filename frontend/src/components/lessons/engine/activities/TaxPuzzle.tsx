@@ -18,6 +18,8 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 
     const [pieces, setPieces] = useState<Record<string, number>>({});
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [fb, setFb] = useState<'none' | 'success' | 'error'>('none');
 
     useEffect(() => {
         const initial: Record<string, number> = {};
@@ -26,9 +28,13 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
         });
         setPieces(initial);
         setFeedback('none');
+        setSelectedOption(null);
+        setFb('none');
     }, [exercise]);
 
-    const puzzlePieces = exercise.content.pieces || [];
+    const content = exercise?.content || {};
+    const puzzlePieces = content.pieces || [];
+    const hasPieces = puzzlePieces.length > 0;
     const income = pieces.income || 0;
     const deductions = pieces.deductions || 0;
     const taxRate = pieces.taxRate || 0;
@@ -64,15 +70,85 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
         }
     };
 
+    // Fallback: if no pieces but has options, render as multiple choice
+    if (!hasPieces && Array.isArray(content.options) && content.options.length > 0) {
+        const handleSelect = (id: string) => {
+            if (fb !== 'none') return;
+            playSound('ui_tap');
+            setSelectedOption(id);
+        };
+
+        const handleCheckFallback = () => {
+            if (!selectedOption) return;
+            const isCorrect = onSubmit({ [selectedOption]: 1 });
+            setFb(isCorrect ? 'success' : 'error');
+        };
+
+        const handleContinueFallback = () => {
+            if (fb === 'success') {
+                onNext();
+            } else {
+                setSelectedOption(null);
+                setFb('none');
+                onRetry();
+            }
+        };
+
+        return (
+            <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="mb-6 text-center">
+                    <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-950/30 border-2 border-purple-400 dark:border-purple-700 rounded-xl px-4 py-3">
+                        <Calculator className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        <span className="text-sm font-bold text-purple-800 dark:text-purple-200">
+                            {content.puzzle || content.instruction || t('tax_puzzle.title', { defaultValue: 'Puzzle Fiscal' })}
+                        </span>
+                    </div>
+                </div>
+                <div className="space-y-3 mb-8">
+                    {content.options.map((option: any) => (
+                        <button
+                            key={option.id}
+                            onClick={() => handleSelect(option.id)}
+                            disabled={fb !== 'none'}
+                            className={cn(
+                                "w-full text-left p-4 rounded-xl border-2 transition-all",
+                                selectedOption === option.id
+                                    ? "bg-purple-100 dark:bg-purple-950 border-purple-500"
+                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-purple-300"
+                            )}
+                        >
+                            <span className="font-medium text-slate-800 dark:text-slate-100">{option.text}</span>
+                        </button>
+                    ))}
+                </div>
+                {fb === 'none' ? (
+                    <Button onClick={handleCheckFallback} disabled={!selectedOption} className="w-full max-w-md mx-auto block h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] disabled:opacity-50">
+                        {t('actions.verify', { defaultValue: 'Verificar' })}
+                    </Button>
+                ) : (
+                    <div className="flex flex-col items-center">
+                        <p className={cn("font-bold text-lg mb-3", fb === 'success' ? "text-green-500" : "text-orange-500")}>
+                            {fb === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                        </p>
+                        <Button onClick={handleContinueFallback} className={cn("w-full max-w-md h-12 text-base font-bold rounded-2xl", fb === 'success' ? "bg-green-500 hover:bg-green-600" : "bg-orange-500 hover:bg-orange-600")}>
+                            {fb === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </Button>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
-        <div className="w-full max-w-3xl animate-slide-in-bottom">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Title */}
             <div className="mb-6 text-center">
                 <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-950/30 border-2 border-purple-400 dark:border-purple-700 rounded-xl px-4 py-3">
                     <Calculator className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     <span className="text-sm font-bold text-purple-800 dark:text-purple-200">
-                        {t('tax_puzzle.title')}
+                        {content.puzzle || t('tax_puzzle.title', { defaultValue: 'Puzzle Fiscal' })}
                     </span>
                 </div>
             </div>

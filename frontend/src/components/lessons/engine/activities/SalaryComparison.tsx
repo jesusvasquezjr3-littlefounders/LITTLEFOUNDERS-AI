@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Briefcase } from 'lucide-react';
+import { ArrowRight, Briefcase, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 
@@ -12,6 +12,12 @@ interface SalaryComparisonProps {
     onRetry: () => void;
 }
 
+const normalizeDescription = (details: any): string => {
+    if (typeof details === 'string') return details;
+    if (Array.isArray(details)) return details.join('\n');
+    return String(details || '');
+};
+
 export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: SalaryComparisonProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
@@ -19,8 +25,32 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
     const [selected, setSelected] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
-    const offers = exercise.content.offers || [];
-    const factors = exercise.content.factors || ['salary', 'benefits', 'location', 'growth'];
+    // Determine format and normalize data safely
+    const content = exercise?.content || {};
+    const isLegacy = Array.isArray(content.offers) && content.offers.length > 0;
+    const isNewFormat = content.optionA && content.optionB;
+
+    // Normalize offers for unified rendering
+    let offers: any[] = [];
+    let factors: string[] = ['salary', 'benefits', 'location', 'growth'];
+
+    if (isLegacy) {
+        offers = content.offers;
+        factors = content.factors || factors;
+    } else if (isNewFormat) {
+        offers = [
+            {
+                id: content.optionA.id || 'A',
+                company: content.optionA.name || '',
+                description: normalizeDescription(content.optionA.details),
+            },
+            {
+                id: content.optionB.id || 'B',
+                company: content.optionB.name || '',
+                description: normalizeDescription(content.optionB.details),
+            },
+        ];
+    }
 
     useEffect(() => {
         setSelected(null);
@@ -28,6 +58,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
     }, [exercise]);
 
     const calculateScore = (offer: any): number => {
+        if (!isLegacy) return 0;
         let score = 0;
         score += (offer.salary / 1000) * 0.4; // 40% weight on salary
         score += (offer.benefits || 0) * 0.3; // 30% weight on benefits
@@ -58,10 +89,53 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
         }
     };
 
+    // Graceful fallback if no recognizable data
+    if (!isLegacy && !isNewFormat) {
+        return (
+            <div className={cn(
+                "w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500",
+                "flex flex-col items-center justify-center py-12 text-center"
+            )}>
+                <AlertCircle className="w-12 h-12 text-slate-400 mb-4" />
+                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
+                    {t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="w-full max-w-5xl animate-slide-in-bottom">
+        <div className={cn(
+            "w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500"
+        )}>
+            {/* Scenario / Question / Instruction for new format */}
+            {!isLegacy && (
+                <div className="mb-6 space-y-3 text-center">
+                    {content.scenario && (
+                        <p className="text-base text-slate-700 dark:text-slate-300">
+                            {content.scenario}
+                        </p>
+                    )}
+                    {content.question && (
+                        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">
+                            {content.question}
+                        </h2>
+                    )}
+                    {content.instruction && (
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            {content.instruction}
+                        </p>
+                    )}
+                </div>
+            )}
+
             {/* Offers Grid */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={cn(
+                "mb-6 grid gap-4",
+                offers.length <= 2
+                    ? "grid-cols-1 md:grid-cols-2"
+                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            )}>
                 {offers.map((offer: any) => {
                     const score = calculateScore(offer);
                     const isSelected = selected === offer.id;
@@ -84,45 +158,55 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                                 </h3>
                             </div>
 
-                            <div className="space-y-2 mb-4">
-                                <div className="flex justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                                        {t('salary_comparison.salary')}
-                                    </span>
-                                    <span className="font-bold text-green-600">
-                                        ${offer.salary.toLocaleString()}
-                                    </span>
+                            {isLegacy ? (
+                                <div className="space-y-2 mb-4">
+                                    <div className="flex justify-between">
+                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                            {t('salary_comparison.salary', { defaultValue: 'Salary' })}
+                                        </span>
+                                        <span className="font-bold text-green-600">
+                                            ${offer.salary.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                            {t('salary_comparison.benefits', { defaultValue: 'Benefits' })}
+                                        </span>
+                                        <span className="font-bold">{offer.benefits}/10</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                            {t('salary_comparison.location', { defaultValue: 'Location' })}
+                                        </span>
+                                        <span className="font-bold">{offer.location}/10</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                            {t('salary_comparison.growth', { defaultValue: 'Growth' })}
+                                        </span>
+                                        <span className="font-bold">{offer.growth}/10</span>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                                        {t('salary_comparison.benefits')}
-                                    </span>
-                                    <span className="font-bold">{offer.benefits}/10</span>
+                            ) : (
+                                <div className="mb-4">
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
+                                        {offer.description}
+                                    </p>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                                        {t('salary_comparison.location')}
-                                    </span>
-                                    <span className="font-bold">{offer.location}/10</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                                        {t('salary_comparison.growth')}
-                                    </span>
-                                    <span className="font-bold">{offer.growth}/10</span>
-                                </div>
-                            </div>
+                            )}
 
-                            <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-slate-600 dark:text-slate-400">
-                                        {t('salary_comparison.score')}
-                                    </span>
-                                    <span className="text-xl font-black text-blue-600">
-                                        {score.toFixed(1)}
-                                    </span>
+                            {isLegacy && (
+                                <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-600 dark:text-slate-400">
+                                            {t('salary_comparison.score', { defaultValue: 'Score' })}
+                                        </span>
+                                        <span className="text-xl font-black text-blue-600">
+                                            {score.toFixed(1)}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </button>
                     );
                 })}
@@ -138,14 +222,16 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                         <span className="relative flex items-center justify-center">
-                            {t('actions.select_offer')}
+                            {t('actions.select_offer', { defaultValue: 'Select Offer' })}
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </span>
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
                         <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
-                            {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
+                            {feedback === 'success'
+                                ? t('feedback.success', { defaultValue: 'Great job!' })
+                                : t('feedback.error', { defaultValue: 'Not quite right.' })}
                         </p>
                         <Button
                             onClick={handleContinue}
@@ -153,7 +239,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                         >
                             <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                             <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
+                                {t('actions.continue', { defaultValue: 'Continue' })}
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </span>
                         </Button>

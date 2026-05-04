@@ -21,12 +21,15 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     const [time, setTime] = useState(1);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
+    const content = exercise?.content || {};
+    const params = content.parameters || {};
+
     useEffect(() => {
-        setPrincipal(exercise.content.defaultPrincipal || 1000);
-        setRate(exercise.content.defaultRate || 5);
-        setTime(exercise.content.defaultTime || 1);
+        setPrincipal(content.defaultPrincipal || params.principal || 1000);
+        setRate(content.defaultRate || params.annualRate || 5);
+        setTime(content.defaultTime || 1);
         setFeedback('none');
-    }, [exercise]);
+    }, [exercise, content, params]);
 
     const calculateInterest = () => {
         const isCompound = exercise.content.type === 'compound';
@@ -49,20 +52,20 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
         if (feedback === 'success') {
             onNext();
         } else {
-            setPrincipal(exercise.content.defaultPrincipal || 1000);
-            setRate(exercise.content.defaultRate || 5);
-            setTime(exercise.content.defaultTime || 1);
+            setPrincipal(content.defaultPrincipal || params.principal || 1000);
+            setRate(content.defaultRate || params.annualRate || 5);
+            setTime(content.defaultTime || 1);
             setFeedback('none');
             onRetry();
         }
     };
 
-    const maxPrincipal = exercise.content.maxPrincipal || 10000;
-    const maxRate = exercise.content.maxRate || 20;
-    const maxTime = exercise.content.maxTime || 30;
+    const maxPrincipal = content.maxPrincipal || 10000;
+    const maxRate = content.maxRate || params.annualRate ? params.annualRate * 2 : 20;
+    const maxTime = content.maxTime || 30;
 
     return (
-        <div className="w-full max-w-3xl animate-slide-in-bottom">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Title */}
             <div className="mb-6 text-center">
