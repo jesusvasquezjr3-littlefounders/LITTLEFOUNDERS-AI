@@ -12,7 +12,7 @@ interface Props {
   day: number;
   onFinish: (lemons: number, sugar: number) => void;
   hasSqueezer: boolean;
-  playSound: (path: string) => void;
+  playSfx: (name: string) => void;
   paused?: boolean;
 }
 
@@ -60,7 +60,7 @@ const DUCK_INSET_X = 0.12;      // extra side inset while ducking
 const BOOST_FACTOR = 1.55;      // right arrow: 55 % faster
 const SLOW_FACTOR = 0.65;      // left  arrow: 35 % slower
 
-export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = false }: Props) {
+export function RunnerPhase({ day, onFinish, hasSqueezer, playSfx, paused = false }: Props) {
   const { t } = useTranslation('games');
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -125,8 +125,8 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
     p.isJumping = true;
     p.jumpHolding = true;
     p.jumpHoldStart = performance.now();
-    playSound('jump');
-  }, [playSound]);
+    playSfx('jump');
+  }, [playSfx]);
 
   const handleJumpRelease = useCallback(() => {
     const p = playerRef.current;
@@ -441,7 +441,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
             sugarRef.current++;
             setSugar(sugarRef.current);
           }
-          playSound('coinCollect');
+          playSfx('coinCollect');
         }
       });
       if (collected) {
@@ -467,7 +467,7 @@ export function RunnerPhase({ day, onFinish, hasSqueezer, playSound, paused = fa
             sugarRef.current = Math.max(0, sugarRef.current - 1);
             setLemons(lemonsRef.current);
             setSugar(sugarRef.current);
-            playSound('hit');
+            playSfx('hit');
             setHitFlash(true);
             timeoutsRef.current.push(setTimeout(() => setHitFlash(false), 350));
             timeoutsRef.current.push(setTimeout(() => { hitCooldownRef.current = false; }, 1200));

@@ -16,7 +16,7 @@ interface Props {
   hasAwning: boolean;
   hasSign: boolean;
   onFinish: (result: DayResult) => void;
-  playSound: (path: string) => void;
+  playSfx: (name: string) => void;
   paused?: boolean;
 }
 
@@ -36,7 +36,7 @@ const LEAVE_SPEED = 1.0;       // exit quickly
 const STAND_POSITION = 48;     // customers stop just before center
 const REACT_DURATION_MS = 900; // how long they react before leaving
 
-export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, onFinish, playSound, paused = false }: Props) {
+export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, onFinish, playSfx, paused = false }: Props) {
   const { t } = useTranslation('games');
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -132,10 +132,10 @@ export function MarketPhase({ recipe, weather, day, coins, hasAwning, hasSign, o
           if (newX >= STAND_POSITION) {
             // Arrive at stand — play sound & trigger reaction
             if (c.bought) {
-              playSound('customerHappy');
+              playSfx('customerHappy');
               setEarnedCoins((prev) => prev + GAME_CONFIG.pricePerCup);
             } else {
-              playSound('customerSad');
+              playSfx('customerSad');
             }
             return {
               ...c,

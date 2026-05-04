@@ -9,6 +9,7 @@ import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { setGuestProfile, getGuestProfile } from "@/lib/guestProfile";
 import { trackEvent } from "@/lib/analytics";
+import { useSound } from "@/contexts/SoundContext";
 
 const STEP_NAMES: Record<number, string> = {
   0: "welcome",
@@ -409,6 +410,41 @@ export default function Onboarding() {
   const [error, setError] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
+
+  const { playFile, mute } = useSound();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // ── Onboarding narration audio ────────────────────────────────────────
+  useEffect(() => {
+    // Clean up previous audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (mute) return;
+
+    const lang = i18n.language?.startsWith('en') ? 'EN' : 'ES';
+    const audioFiles: Record<number, string> = {
+      0: `/sounds/onboarding/${lang}/0-step_${lang}.mp3`,
+      1: `/sounds/onboarding/${lang}/1-name_${lang}.mp3`,
+      2: `/sounds/onboarding/${lang}/2-age_${lang}.mp3`,
+      3: `/sounds/onboarding/${lang}/3-learn_${lang}.mp3`,
+      4: `/sounds/onboarding/${lang}/4-knowledge_${lang}.mp3`,
+    };
+
+    const src = audioFiles[step];
+    if (!src) return;
+
+    const audio = new Audio(src);
+    audio.volume = 0.7; // Narration volume (higher than SFX)
+    audio.play().catch(() => { /* ignore autoplay errors */ });
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      if (audioRef.current === audio) audioRef.current = null;
+    };
+  }, [step, i18n.language, mute]);
 
   // ── Guard: redirect if session already exists ─────────────────────────
   useEffect(() => {

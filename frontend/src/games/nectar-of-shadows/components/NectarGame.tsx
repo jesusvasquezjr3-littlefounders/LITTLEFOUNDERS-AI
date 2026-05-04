@@ -218,7 +218,7 @@ export function NectarGame() {
             day={state.day}
             onFinish={handleRunnerFinish}
             hasSqueezer={hasSqueezer}
-            playSound={playSfxByName}
+            playSfx={playSfxByName}
             paused={isPaused}
           />
         </div>
@@ -247,7 +247,7 @@ export function NectarGame() {
             hasAwning={hasAwning}
             hasSign={hasSign}
             onFinish={handleMarketFinish}
-            playSound={playSfxByName}
+            playSfx={playSfxByName}
             paused={isPaused}
           />
         </div>
