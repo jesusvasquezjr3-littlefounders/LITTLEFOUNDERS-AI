@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface MindsetComparisonProps {
     exercise: any;
-    onSubmit: (mindset: string) => boolean;
+    onSubmit: (choiceId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -16,48 +16,60 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    const [selectedMindset, setSelectedMindset] = useState<'scarcity' | 'abundance' | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     const content = exercise?.content || {};
 
-    // Support both formats:
-    // Legacy: scenario.description, scarcity.thought/consequences, abundance.thought/consequences
-    // Real JSON: instruction, pair.left/right {id, text}
+    // Detect format and build normalized mindsets with real IDs
+    let mindsets: { id: string; label: string; text: string; consequences: string[]; color: 'red' | 'green' }[] = [];
 
-    const hasLegacyFormat = content.scenario && (content.scarcity || content.abundance);
-    const hasPairFormat = content.pair && (content.pair.left || content.pair.right);
+    // Format 1: pair.left / pair.right
+    if (content.pair?.left && content.pair?.right) {
+        mindsets = [
+            { id: String(content.pair.left.id || 'left'), label: t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' }), text: content.pair.left.text || '', consequences: [], color: 'red' },
+            { id: String(content.pair.right.id || 'right'), label: t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' }), text: content.pair.right.text || '', consequences: [], color: 'green' },
+        ];
+    }
+    // Format 2: mindsetA / mindsetB
+    else if (content.mindsetA && content.mindsetB) {
+        mindsets = [
+            { id: 'A', label: content.mindsetA.name || 'A', text: content.mindsetA.description || '', consequences: [], color: 'red' },
+            { id: 'B', label: content.mindsetB.name || 'B', text: content.mindsetB.description || '', consequences: [], color: 'green' },
+        ];
+    }
+    // Format 3: mindset_a / mindset_b with IDs
+    else if (content.mindset_a && content.mindset_b) {
+        mindsets = [
+            { id: String(content.mindset_a.id || 'ma'), label: content.mindset_a.name || 'A', text: content.mindset_a.description || '', consequences: [], color: 'red' },
+            { id: String(content.mindset_b.id || 'mb'), label: content.mindset_b.name || 'B', text: content.mindset_b.description || '', consequences: [], color: 'green' },
+        ];
+    }
+    // Format 4: legacy scenario with scarcity/abundance
+    else {
+        const scarcity = content.scarcity || { thought: '', consequences: [] };
+        const abundance = content.abundance || { thought: '', consequences: [] };
+        mindsets = [
+            { id: 'scarcity', label: t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' }), text: scarcity.thought || '', consequences: scarcity.consequences || [], color: 'red' },
+            { id: 'abundance', label: t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' }), text: abundance.thought || '', consequences: abundance.consequences || [], color: 'green' },
+        ];
+    }
 
-    // Normalize data structures
-    const scenarioText = hasLegacyFormat
-        ? content.scenario?.description
-        : (content.instruction || content.scenario || '');
-
-    const scarcityData = hasLegacyFormat
-        ? content.scarcity
-        : (hasPairFormat
-            ? { thought: content.pair.left?.text || '', consequences: [] }
-            : { thought: '', consequences: [] });
-
-    const abundanceData = hasLegacyFormat
-        ? content.abundance
-        : (hasPairFormat
-            ? { thought: content.pair.right?.text || '', consequences: [] }
-            : { thought: '', consequences: [] });
+    const scenarioText = content.instruction || content.scenario || content.question || '';
 
     useEffect(() => {
-        setSelectedMindset(null);
+        setSelectedId(null);
         setFeedback('none');
     }, [exercise]);
 
-    const handleSelect = (mindset: 'scarcity' | 'abundance') => {
-        setSelectedMindset(mindset);
+    const handleSelect = (id: string) => {
+        setSelectedId(id);
         playSound('ui_tap');
     };
 
     const handleSubmit = () => {
-        if (!selectedMindset) return;
-        const isCorrect = onSubmit(selectedMindset);
+        if (!selectedId) return;
+        const isCorrect = onSubmit(selectedId);
         setFeedback(isCorrect ? 'success' : 'error');
     };
 
@@ -65,10 +77,25 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         if (feedback === 'success') {
             onNext();
         } else {
-            setSelectedMindset(null);
+            setSelectedId(null);
             setFeedback('none');
             onRetry();
         }
+    };
+
+    const colorClasses: Record<string, { selected: string; unselected: string; label: string; badge: string }> = {
+        red: {
+            selected: 'bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-xl',
+            unselected: 'opacity-50',
+            label: 'text-red-700 dark:text-red-400',
+            badge: 'text-red-600',
+        },
+        green: {
+            selected: 'bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-xl',
+            unselected: 'opacity-50',
+            label: 'text-green-700 dark:text-green-400',
+            badge: 'text-green-600',
+        },
     };
 
     return (
@@ -90,103 +117,62 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
             {/* Mindset Comparison */}
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Scarcity Mindset */}
-                <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleSelect('scarcity')}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect('scarcity'); }}
-                    className={cn(
-                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
-                        selectedMindset === 'scarcity' && "bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-xl",
-                        selectedMindset === 'abundance' && "opacity-50",
-                        !selectedMindset && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-red-300"
-                    )}
-                >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full -mr-16 -mt-16"></div>
+                {mindsets.map((mindset) => {
+                    const isSelected = selectedId === mindset.id;
+                    const otherSelected = selectedId !== null && selectedId !== mindset.id;
+                    const colors = colorClasses[mindset.color] || colorClasses.red;
 
-                    <div className="relative">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="text-3xl">😰</span>
-                            <h3 className="text-xl font-black text-red-700 dark:text-red-400">
-                                {t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' })}
-                            </h3>
+                    return (
+                        <div
+                            key={mindset.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleSelect(mindset.id)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(mindset.id); }}
+                            className={cn(
+                                "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
+                                isSelected && colors.selected,
+                                otherSelected && colors.unselected,
+                                !selectedId && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300"
+                            )}
+                        >
+                            <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 ${mindset.color === 'green' ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>
+
+                            <div className="relative">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-3xl">{mindset.color === 'green' ? '😊' : '😰'}</span>
+                                    <h3 className={`text-xl font-black ${colors.label}`}>
+                                        {mindset.label}
+                                    </h3>
+                                </div>
+
+                                {mindset.text && (
+                                    <div className="mb-4">
+                                        <div className={`text-sm font-bold mb-2 ${colors.badge}`}>
+                                            {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
+                                        </div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                                            "{mindset.text}"
+                                        </p>
+                                    </div>
+                                )}
+
+                                {mindset.consequences.length > 0 && (
+                                    <div className="mb-4">
+                                        <div className={`text-sm font-bold mb-2 ${colors.badge}`}>
+                                            {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
+                                        </div>
+                                        <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                                            {mindset.consequences.map((consequence: string, idx: number) => (
+                                                <li key={idx}>{mindset.color === 'green' ? '✅' : '❌'} {consequence}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-
-                        {scarcityData.thought && (
-                            <div className="mb-4">
-                                <div className="text-sm font-bold text-red-600 mb-2">
-                                    {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
-                                </div>
-                                <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                                    "{scarcityData.thought}"
-                                </p>
-                            </div>
-                        )}
-
-                        {Array.isArray(scarcityData.consequences) && scarcityData.consequences.length > 0 && (
-                            <div className="mb-4">
-                                <div className="text-sm font-bold text-red-600 mb-2">
-                                    {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
-                                </div>
-                                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                                    {scarcityData.consequences.map((consequence: string, idx: number) => (
-                                        <li key={idx}>❌ {consequence}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Abundance Mindset */}
-                <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleSelect('abundance')}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect('abundance'); }}
-                    className={cn(
-                        "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
-                        selectedMindset === 'abundance' && "bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-xl",
-                        selectedMindset === 'scarcity' && "opacity-50",
-                        !selectedMindset && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300"
-                    )}
-                >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -mr-16 -mt-16"></div>
-
-                    <div className="relative">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="text-3xl">😊</span>
-                            <h3 className="text-xl font-black text-green-700 dark:text-green-400">
-                                {t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' })}
-                            </h3>
-                        </div>
-
-                        {abundanceData.thought && (
-                            <div className="mb-4">
-                                <div className="text-sm font-bold text-green-600 mb-2">
-                                    {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
-                                </div>
-                                <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                                    "{abundanceData.thought}"
-                                </p>
-                            </div>
-                        )}
-
-                        {Array.isArray(abundanceData.consequences) && abundanceData.consequences.length > 0 && (
-                            <div className="mb-4">
-                                <div className="text-sm font-bold text-green-600 mb-2">
-                                    {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
-                                </div>
-                                <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                                    {abundanceData.consequences.map((consequence: string, idx: number) => (
-                                        <li key={idx}>✅ {consequence}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                    );
+                })}
             </div>
 
             {/* Action Buttons */}
@@ -194,7 +180,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        disabled={!selectedMindset}
+                        disabled={!selectedId}
                         className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
@@ -210,9 +196,10 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                         </p>
                         <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-950/30 border-2 border-purple-300 dark:border-purple-700 rounded-xl max-w-2xl">
                             <p className="text-sm text-purple-900 dark:text-purple-100 text-center">
-                                {selectedMindset === 'abundance'
+                                {feedback === 'success'
                                     ? t('mindset_comparison.feedback_abundance', { defaultValue: '¡Mentalidad de abundancia! Piensa en largo plazo.' })
-                                    : t('mindset_comparison.feedback_scarcity', { defaultValue: 'La mentalidad de escasez limita tu potencial.' })}
+                                    : t('mindset_comparison.feedback_scarcity', { defaultValue: 'La mentalidad de escasez limita tu potencial.' })
+                                }
                             </p>
                         </div>
 

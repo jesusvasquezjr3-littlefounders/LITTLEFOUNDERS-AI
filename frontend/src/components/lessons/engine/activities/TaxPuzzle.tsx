@@ -7,7 +7,7 @@ import { useSound } from "@/contexts/SoundContext";
 
 interface TaxPuzzleProps {
     exercise: any;
-    onSubmit: (pieces: Record<string, number>) => boolean;
+    onSubmit: (answer: Record<string, number> | string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -80,7 +80,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 
         const handleCheckFallback = () => {
             if (!selectedOption) return;
-            const isCorrect = onSubmit({ [selectedOption]: 1 });
+            const isCorrect = onSubmit(selectedOption);
             setFb(isCorrect ? 'success' : 'error');
         };
 
