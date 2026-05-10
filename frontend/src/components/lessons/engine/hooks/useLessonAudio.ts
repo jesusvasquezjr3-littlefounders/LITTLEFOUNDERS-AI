@@ -117,7 +117,8 @@ export interface UseLessonAudioReturn {
 
 export function useLessonAudio(
     currentExercise: ExerciseData | null,
-    audioMuted: boolean
+    audioMuted: boolean,
+    isActive: boolean = true  // false durante IDLE/COMPLETED — evita autoplay antes de interacción
 ): UseLessonAudioReturn {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     // Signal ref: set to true by stopAudio to cancel any in-progress queue
@@ -169,8 +170,15 @@ export function useLessonAudio(
                 audio.removeEventListener('ended', handleEnded);
                 audio.removeEventListener('error', handleError);
             };
-            const handleEnded = () => { cleanup(); resolve(); };
+            const handleEnded = () => {
+                // Guard: component may have unmounted while segment was playing
+                if (!mountedRef.current) { cleanup(); return; }
+                cleanup();
+                resolve();
+            };
             const handleError = () => {
+                // Guard: component may have unmounted while segment was playing
+                if (!mountedRef.current) { cleanup(); return; }
                 cleanup();
                 // Log but do NOT rethrow — lesson must continue without audio
                 console.warn('[LessonAudio] Could not play audio segment (skipping):', segment.url);
@@ -278,25 +286,44 @@ export function useLessonAudio(
     }, [audioMuted, stopAudio]);
 
     // ─── Auto-play on exercise change ───
-    // Fires when the exercise changes (by id). The 300ms delay lets the UI render
-    // the exercise before audio starts. The cleanup cancels the timeout if the
-    // exercise changes again before it fires (e.g., user clicks next very fast).
+    // Fires when:
+    //   - currentExercise?.id changes (moved to a new exercise), OR
+    //   - isActive changes from false→true (user clicked "Start" — first exercise)
+    //
+    // The isActive flag prevents autoplay during IDLE/COMPLETED state, which would
+    // fire before the user has interacted with the page, causing browsers to block
+    // the audio (autoplay policy). Without this, the first exercise's audio fires
+    // and fails silently, then never retries because currentExercise?.id stays the same.
+    //
+    // The 300ms delay lets the UI render the exercise before audio starts.
+    //
+    // Stale closure guard: capture the exercise ID at schedule time and re-verify
+    // at fire time — prevents playing audio for a previous exercise if the user
+    // navigates quickly within the 300ms window.
     useEffect(() => {
-        if (!currentExercise || !hasAudio || audioMuted) return;
+        if (!currentExercise || !hasAudio || audioMuted || !isActive) return;
+
+        const exerciseIdAtSchedule = currentExercise.id;
 
         const timer = setTimeout(() => {
-            // Guard: check again at fire time in case state changed in the 300ms window
-            if (mountedRef.current && !audioMutedRef.current) {
+            // Guard: re-check at fire time in case state changed in the 300ms window.
+            // Also verify the exercise hasn't changed (stale closure protection).
+            if (
+                mountedRef.current &&
+                !audioMutedRef.current &&
+                currentExercise?.id === exerciseIdAtSchedule
+            ) {
                 playOnLoad();
             }
         }, 300);
 
         return () => clearTimeout(timer);
-    // Depend on exercise id so this fires on each new exercise.
-    // playOnLoad is excluded intentionally — it's always fresh via its own memo chain,
-    // and including it would cause an infinite loop since playOnLoad changes with audioMap.
+    // Both currentExercise?.id AND isActive in deps:
+    // - id changes → new exercise loaded
+    // - isActive false→true → lesson started (first exercise, same id)
+    // playOnLoad excluded intentionally — adding it would cause infinite loops.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentExercise?.id]);
+    }, [currentExercise?.id, isActive]);
 
     return {
         isNarrativeAudioPlaying: isPlaying,

@@ -125,11 +125,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Handles on-load audio queue and feedback audio playback.
     // Note: LF Audio Engine is currently off — this operates with pre-existing audio URLs in the DB.
     // Methods are destructured so useCallback deps reference stable function refs, not the object.
+    //
+    // isLessonActive: false during IDLE/COMPLETED so the hook doesn't attempt autoplay
+    // before the user has interacted (browser autoplay policy would block it silently,
+    // and then the first exercise would never replay because its id doesn't change).
+    const isLessonActive = state !== 'IDLE' && state !== 'COMPLETED';
     const {
         isNarrativeAudioPlaying,
+        playOnLoad: playNarrativeOnLoad,
         playFeedback: playNarrativeFeedback,
         stopAudio: stopNarrativeAudio,
-    } = useLessonAudio(currentExercise, audioMuted);
+    } = useLessonAudio(currentExercise, audioMuted, isLessonActive);
 
     // Energy system (lives)
     const [lives, setLives] = useState(5);
