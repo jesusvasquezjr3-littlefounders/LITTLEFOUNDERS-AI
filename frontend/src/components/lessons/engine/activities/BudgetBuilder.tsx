@@ -267,6 +267,10 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                         'w-full h-2 rounded-lg appearance-none cursor-pointer accent-green-600 dark:accent-green-500',
                                         feedback !== 'none' && 'opacity-60 cursor-not-allowed'
                                     )}
+                                    aria-label={category.name}
+                                    aria-valuemin={0}
+                                    aria-valuemax={totalIncome}
+                                    aria-valuenow={allocated}
                                 />
 
                                 {isDca && typeof minDca === 'number' && (
@@ -408,6 +412,22 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                         ${item.cost}
                                     </div>
                                 </div>
+                                <div className="sm:hidden flex gap-1 mt-2 justify-center flex-wrap">
+                                    {categories.map((category: string) => (
+                                        <button
+                                            key={category}
+                                            onClick={() => {
+                                                if (feedback === 'none') {
+                                                    playSound('ui_tap');
+                                                    setAllocation(prev => ({ ...prev, [item.id]: category }));
+                                                }
+                                            }}
+                                            className="text-[10px] px-2 py-1 rounded bg-slate-100 dark:bg-slate-700 font-bold uppercase"
+                                        >
+                                            {t(`budget_builder.${category}`, { defaultValue: category })}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -458,7 +478,17 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                 {categoryItems.map((item: any) => (
                                     <div
                                         key={item.id}
-                                        className="bg-white dark:bg-slate-800 rounded-lg p-2 shadow-sm"
+                                        onClick={() => {
+                                            if (feedback === 'none') {
+                                                playSound('ui_tap');
+                                                setAllocation(prev => {
+                                                    const next = { ...prev };
+                                                    delete next[item.id];
+                                                    return next;
+                                                });
+                                            }
+                                        }}
+                                        className="bg-white dark:bg-slate-800 rounded-lg p-2 shadow-sm cursor-pointer"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">

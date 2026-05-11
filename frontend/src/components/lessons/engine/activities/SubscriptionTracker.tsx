@@ -126,9 +126,9 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                                         </div>
                                     </div>
                                     {isActive ? (
-                                        <ToggleRight className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                                        <ToggleRight aria-hidden="true" className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                                     ) : (
-                                        <ToggleLeft className="w-10 h-10 text-slate-400" />
+                                        <ToggleLeft aria-hidden="true" className="w-10 h-10 text-slate-400" />
                                     )}
                                 </div>
                             </div>

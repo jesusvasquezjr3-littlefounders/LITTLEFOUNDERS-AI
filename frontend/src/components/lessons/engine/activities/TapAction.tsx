@@ -12,6 +12,15 @@ interface TapActionProps {
     onRetry: () => void;
 }
 
+const BG_COLORS = [
+    { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]' },
+    { bg: 'bg-pink-500', hover: 'hover:bg-pink-600', shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]' },
+    { bg: 'bg-orange-500', hover: 'hover:bg-orange-600', shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]' },
+    { bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600', shadow: 'shadow-[0_4px_0_rgb(16,185,129)] hover:shadow-[0_2px_0_rgb(16,185,129)]' },
+    { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]' },
+    { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-600', shadow: 'shadow-[0_4px_0_rgb(202,138,4)] hover:shadow-[0_2px_0_rgb(202,138,4)]' },
+];
+
 export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
@@ -87,16 +96,7 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                     else if (item.shape === 'circle') content = item.color === 'gold' ? '🪙' : '⭕';
                     else if (item.shape === 'rectangle') content = item.color === 'green' ? '💵' : '📄';
 
-                    // Colors
-                    const bgColors = [
-                        { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]' },
-                        { bg: 'bg-pink-500', hover: 'hover:bg-pink-600', shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]' },
-                        { bg: 'bg-orange-500', hover: 'hover:bg-orange-600', shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]' },
-                        { bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600', shadow: 'shadow-[0_4px_0_rgb(16,185,129)] hover:shadow-[0_2px_0_rgb(16,185,129)]' },
-                        { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]' },
-                        { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-600', shadow: 'shadow-[0_4px_0_rgb(202,138,4)] hover:shadow-[0_2px_0_rgb(202,138,4)]' },
-                    ];
-                    const color = bgColors[idx % bgColors.length];
+                    const color = BG_COLORS[idx % BG_COLORS.length];
 
                     return (
                         <button

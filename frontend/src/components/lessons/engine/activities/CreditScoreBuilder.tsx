@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CreditCard } from 'lucide-react';
@@ -20,12 +20,16 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
     const [decisions, setDecisions] = useState<string[]>([]);
     const [score, setScore] = useState(650);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         setCurrentScenario(0);
         setDecisions([]);
-        setScore(exercise.content.initialScore || 650);
+        setScore(exercise?.content?.initialScore || 650);
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     const content = exercise?.content || {};
@@ -36,7 +40,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         // Graceful degradation: no real data exists for this exercise type
         return (
             <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
-                <div className="text-4xl mb-4">💳</div>
+                <div className="text-4xl mb-4" aria-hidden="true">💳</div>
                 <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
                     {t('credit_score.title', { defaultValue: 'Construye tu Score Crediticio' })}
                 </h3>
@@ -65,9 +69,9 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         setScore(newScore);
 
         if (currentScenario < scenarios.length - 1) {
-            setTimeout(() => setCurrentScenario(prev => prev + 1), 800);
+            timeoutRef.current = setTimeout(() => setCurrentScenario(prev => prev + 1), 800);
         } else {
-            setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
                 const isCorrect = onSubmit(newDecisions);
                 setFeedback(isCorrect ? 'success' : 'error');
             }, 800);
@@ -100,7 +104,16 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         return t('credit_score.poor');
     };
 
-    if (!scenario && feedback === 'none') return null;
+    if (!scenario && feedback === 'none') {
+        return (
+            <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-4xl mb-4" aria-hidden="true">💳</div>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    {t('credit_score.loading', { defaultValue: 'Cargando escenarios...' })}
+                </h3>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -157,12 +170,15 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                                     <p className="text-sm sm:text-base font-bold text-foreground flex-1 leading-snug">
                                         {option.text}
                                     </p>
+                                    {/* Score change hidden until after selection to avoid spoiling the challenge */}
                                     <div className={cn(
-                                        "text-sm sm:text-base font-black shrink-0 px-3 py-1.5 rounded-xl border-2 shadow-sm bg-background",
-                                        option.scoreChange > 0 ? "text-green-600 dark:text-green-400 border-green-200 dark:border-green-800" :
-                                            option.scoreChange < 0 ? "text-red-600 dark:text-red-400 border-red-200 dark:border-red-800" :
-                                                "text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800"
-                                    )}>
+                                        "text-sm sm:text-base font-black shrink-0 px-3 py-1.5 rounded-xl border-2 shadow-sm bg-background transition-opacity duration-300",
+                                        feedback !== 'none'
+                                            ? option.scoreChange > 0 ? "text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 opacity-100" :
+                                                option.scoreChange < 0 ? "text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 opacity-100" :
+                                                    "text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 opacity-100"
+                                            : "opacity-0"
+                                    )} aria-hidden={feedback === 'none'}>
                                         {option.scoreChange > 0 && '+'}
                                         {option.scoreChange}
                                     </div>

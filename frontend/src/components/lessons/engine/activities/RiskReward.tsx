@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -17,13 +17,15 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
     const { playSound } = useSound();
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [result, setResult] = useState<'win' | 'loss' | null>(null); // For risk outcomes
     const [feedback, setFeedback] = useState<'none' | 'success' | 'warning' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         setSelectedId(null);
-        setResult(null);
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     const handleChoice = (option: any) => {
@@ -35,7 +37,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
         const isCorrect = onSubmit(option.id);
 
         // Reveal animation with delay
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             setFeedback(isCorrect ? 'success' : 'error');
         }, 1000);
     };
@@ -72,10 +74,11 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                             key={option.id}
                             onClick={() => handleChoice(option)}
                             disabled={selectedId !== null}
+                            aria-pressed={isSelected}
                             className={cn(
                                 "flex-1 min-h-[240px] rounded-[2rem] p-6 flex flex-col items-center justify-between border-4 shadow-[0_8px_0_hsl(var(--border))] transition-all duration-300 transform relative overflow-hidden group",
                                 isOtherSelected && "opacity-50 scale-90 grayscale blur-[2px] shadow-none translate-y-[8px]",
-                                isSelected && "scale-105 z-10 ring-4 ring-offset-4 ring-foreground shadow-none translate-y-[8px] skew-y-1",
+                                isSelected && "scale-105 z-10 ring-4 ring-offset-4 ring-foreground shadow-none translate-y-[8px]",
                                 !isSelected && !isOtherSelected && "hover:-translate-y-2 hover:shadow-[0_12px_0_hsl(var(--border))] active:translate-y-[8px] active:shadow-none",
                                 isRisk
                                     ? "bg-orange-500 hover:bg-orange-400 border-orange-700 text-white"
@@ -88,7 +91,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                             </div>
 
                             {/* Title */}
-                            <h4 className="text-2xl font-black uppercase tracking-wider mb-2 text-center text-shadow-sm">
+                            <h4 className="text-2xl font-black uppercase tracking-wider mb-2 text-center drop-shadow-sm">
                                 {option.text || option.label || ''}
                             </h4>
 

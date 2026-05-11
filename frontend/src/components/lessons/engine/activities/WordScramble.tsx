@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, RotateCw } from 'lucide-react';
@@ -12,91 +12,47 @@ interface WordScrambleProps {
     onRetry: () => void;
 }
 
+/** Fisher-Yates shuffle (unbiased) */
+function shuffleArray<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScrambleProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
-    const targetWord = (exercise.content.word || "").toUpperCase();
-    const [scrambledLetters, setScrambledLetters] = useState<{ id: string, char: string }[]>([]);
-    const [placedLetters, setPlacedLetters] = useState<(string | null)[]>([]); // Array of chars at positions
+    const targetWord = String(exercise?.content?.word || "").toUpperCase();
+    const [availableIds, setAvailableIds] = useState<string[]>([]);
+    const [slots, setSlots] = useState<(string | null)[]>([]);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
-    useEffect(() => {
-        resetGame();
-    }, [exercise]);
-
-    const resetGame = () => {
+    const resetGame = useCallback(() => {
         if (!targetWord) return;
         const chars = targetWord.split('');
-        const letterObjs = chars.map((c: string, i: number) => ({ id: `${i}-${c}`, char: c }));
-
-        // Shuffle
-        const initialScramble = [...letterObjs];
-        for (let i = initialScramble.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [initialScramble[i], initialScramble[j]] = [initialScramble[j], initialScramble[i]];
-        }
-
+        const letterObjs = chars.map((c: string, i: number) => `${i}-${c}`);
         setSlots(new Array(targetWord.length).fill(null));
-        setAvailableIds(initialScramble.map(l => l.id));
-        setFeedback('none');
-    };
-
-    const handleLetterClick = (letterObj: { id: string, char: string }) => {
-        if (feedback !== 'none') return;
-
-        // Check if letter is already placed. If not, place in first empty slot.
-        // If already placed, remove it (return to pool).
-
-        const currentIdx = placedLetters.indexOf(letterObj.id); // Storing IDs in placed array? No, simpler to store ID.
-        // Let's store IDs in placedLetters to track exactly which tile is where.
-
-    };
-
-    // Actually let's restart logic: 
-    // Two pools: Available and Placed.
-    const [availableIds, setAvailableIds] = useState<string[]>([]);
-    const [slots, setSlots] = useState<(string | null)[]>([]); // Array of IDs or Null
-
-    useEffect(() => {
-        if (!targetWord) return;
-        const chars = targetWord.split('');
-        const letterObjs = chars.map((c: string, i: number) => ({ id: `${i}-${c}`, char: c }));
-
-        // Shuffle for scramble
-        const initialScramble = [...letterObjs];
-        for (let i = initialScramble.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [initialScramble[i], initialScramble[j]] = [initialScramble[j], initialScramble[i]];
-        }
-
-        // Store the LETTER OBJECTS in state so we can render them by ID lookup?
-        // Let's just store the full object array as "Bank" and IDs in lists.
-        // Actually, let's keep it simple: 
-        // 1. Bank of letters (Objects).
-        // 2. Slots (Array of Objects or Null).
-        setSlots(new Array(targetWord.length).fill(null));
-        setAvailableIds(initialScramble.map(l => l.id)); // All available initially
+        setAvailableIds(shuffleArray(letterObjs));
         setFeedback('none');
     }, [targetWord]);
 
-    const getLetterById = (id: string) => {
-        const idx = parseInt(id.split('-')[0]);
-        const char = id.split('-')[1];
-        return { id, char }; // Simple reconstruction or lookup if we kept map
-    }
+    useEffect(() => {
+        resetGame();
+    }, [resetGame]);
 
     const handleBankClick = (id: string) => {
         if (feedback !== 'none') return;
         playSound('ui_tap');
 
-        // Find first empty slot
         const emptyIndex = slots.indexOf(null);
         if (emptyIndex !== -1) {
             const newSlots = [...slots];
             newSlots[emptyIndex] = id;
             setSlots(newSlots);
-
             setAvailableIds(prev => prev.filter(pid => pid !== id));
         }
     };
@@ -107,19 +63,14 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
         if (!id) return;
 
         playSound('ui_tap');
-
-        // Return to bank
         const newSlots = [...slots];
         newSlots[index] = null;
         setSlots(newSlots);
-
         setAvailableIds(prev => [...prev, id]);
     };
 
     const handleCheck = () => {
-        // Construct word from slots
         const currentWord = slots.map(id => id ? id.split('-')[1] : '').join('');
-        // Delegate validation to useLessonState via onSubmit (single source of truth)
         const isCorrect = onSubmit(currentWord);
         setFeedback(isCorrect ? 'success' : 'error');
     };
@@ -128,13 +79,7 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
         if (feedback === 'success') {
             onNext();
         } else {
-            // Reset
-            // Shuffle available again? Or just clear slots.
-            const chars = targetWord.split('');
-            const letterIds = chars.map((c: string, i: number) => `${i}-${c}`);
-            setAvailableIds(letterIds.sort(() => Math.random() - 0.5));
-            setSlots(new Array(targetWord.length).fill(null));
-            setFeedback('none');
+            resetGame();
             onRetry();
         }
     };
@@ -144,20 +89,31 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
 
             {/* Hint / Question */}
             <div className="mb-8 text-center">
-                <p className="text-muted-foreground font-medium mb-2">{exercise.content.question || t('instructions.word_scramble')}</p>
-                {exercise.content.hint && (
+                <p className="text-muted-foreground font-medium mb-2">
+                    {exercise?.content?.question || t('instructions.word_scramble')}
+                </p>
+                {exercise?.content?.hint && (
                     <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-4 py-2 rounded-full text-sm inline-block">
-                        💡 {exercise.content.hint}
+                        <span aria-hidden="true">💡 </span>
+                        {exercise.content.hint}
                     </div>
                 )}
             </div>
 
             {/* Answer Slots */}
-            <div className="flex flex-wrap justify-center gap-2 mb-10 min-h-[80px]">
+            <div
+                className="flex flex-wrap justify-center gap-2 mb-10 min-h-[80px]"
+                role="group"
+                aria-label={t('word_scramble.answer_slots', { defaultValue: 'Espacios para la palabra' })}
+            >
                 {slots.map((id, idx) => (
                     <button
                         key={idx}
                         onClick={() => handleSlotClick(idx)}
+                        aria-label={id
+                            ? t('word_scramble.letter_slot', { letter: id.split('-')[1], position: idx + 1 })
+                            : t('word_scramble.empty_slot', { position: idx + 1 })
+                        }
                         className={cn(
                             "w-12 h-14 sm:w-14 sm:h-16 rounded-xl border-b-4 text-2xl font-bold flex items-center justify-center transition-all",
                             id
@@ -171,11 +127,16 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
             </div>
 
             {/* Letter Bank */}
-            <div className="flex flex-wrap justify-center gap-3 mb-8 min-h-[100px]">
+            <div
+                className="flex flex-wrap justify-center gap-3 mb-8 min-h-[100px]"
+                role="group"
+                aria-label={t('word_scramble.letter_bank', { defaultValue: 'Banco de letras' })}
+            >
                 {availableIds.map((id) => (
                     <button
                         key={id}
                         onClick={() => handleBankClick(id)}
+                        aria-label={t('word_scramble.letter_tile', { letter: id.split('-')[1] })}
                         className="w-12 h-14 sm:w-14 sm:h-16 rounded-xl bg-white dark:bg-slate-700 border-b-4 border-slate-200 dark:border-slate-600 shadow-sm text-2xl font-bold text-slate-700 dark:text-slate-200 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none transition-all"
                     >
                         {id.split('-')[1]}
@@ -190,7 +151,8 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
                         variant="ghost"
                         onClick={resetGame}
                         className="h-14 sm:h-16 px-4 rounded-2xl"
-                        title="Reset"
+                        title={t('actions.reset', { defaultValue: 'Reiniciar' })}
+                        aria-label={t('actions.reset', { defaultValue: 'Reiniciar' })}
                     >
                         <RotateCw className="w-6 h-6" />
                     </Button>

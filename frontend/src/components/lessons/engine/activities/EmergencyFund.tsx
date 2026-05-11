@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, AlertTriangle, Wallet } from 'lucide-react';
@@ -20,18 +20,31 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
     const [currentEvent, setCurrentEvent] = useState(0);
     const [decisions, setDecisions] = useState<Record<string, string>>({});
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        setFundBalance(exercise.content.initialFund || 5000);
+        setFundBalance(exercise?.content?.initialFund || 5000);
         setCurrentEvent(0);
         setDecisions({});
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
-    const events = exercise.content.events || [];
+    const events = exercise?.content?.events || [];
     const event = events[currentEvent];
 
-    if (events.length === 0) return null;
+    if (events.length === 0) {
+        return (
+            <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-4xl mb-4" aria-hidden="true">🚨</div>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    {t('emergency_fund.loading', { defaultValue: 'Cargando emergencias...' })}
+                </h3>
+            </div>
+        );
+    }
 
     const handleDecision = (decisionId: string) => {
         if (feedback !== 'none') return;
@@ -47,9 +60,9 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
         setFundBalance(newBalance);
 
         if (currentEvent < events.length - 1) {
-            setTimeout(() => setCurrentEvent(prev => prev + 1), 1000);
+            timeoutRef.current = setTimeout(() => setCurrentEvent(prev => prev + 1), 1000);
         } else {
-            setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
                 const isCorrect = onSubmit(newDecisions);
                 setFeedback(isCorrect ? 'success' : 'error');
             }, 1000);
@@ -68,7 +81,16 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
         }
     };
 
-    if (!event && feedback === 'none') return null;
+    if (!event && feedback === 'none') {
+        return (
+            <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-4xl mb-4" aria-hidden="true">🚨</div>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    {t('emergency_fund.loading', { defaultValue: 'Cargando emergencias...' })}
+                </h3>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-3xl animate-slide-in-bottom">

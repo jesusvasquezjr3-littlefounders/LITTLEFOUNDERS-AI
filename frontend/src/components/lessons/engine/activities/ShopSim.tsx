@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowRight } from 'lucide-react';
@@ -23,10 +23,17 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
     const [cart, setCart] = useState<string[]>([]); // Product IDs
     const [totalSpent, setTotalSpent] = useState(0);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error' | 'over_budget'>('none');
+    // Ref to track latest totalSpent without stale closure
+    const totalRef = useRef(0);
+
+    useEffect(() => {
+        totalRef.current = totalSpent;
+    }, [totalSpent]);
 
     useEffect(() => {
         setCart([]);
         setTotalSpent(0);
+        totalRef.current = 0;
         setFeedback('none');
     }, [exercise]);
 
@@ -44,22 +51,23 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
         if (feedback !== 'none') return;
         const price = parsePrice(product.price);
 
-        // If already in cart, remove it (toggle)
-        if (cart.includes(product.id)) {
-            playSound('ui_tap');
-            const newCart = cart.filter(id => id !== product.id);
-            setCart(newCart);
-            setTotalSpent(prev => prev - price);
-        } else {
-            // Check budget
-            if (totalSpent + price > budget) {
-                playSound('edu_error');
-                return;
+        setCart(prevCart => {
+            if (prevCart.includes(product.id)) {
+                // Remove from cart
+                playSound('ui_tap');
+                setTotalSpent(prev => prev - price);
+                return prevCart.filter(id => id !== product.id);
+            } else {
+                // Check budget using ref to avoid stale closure
+                if (totalRef.current + price > budget) {
+                    playSound('edu_error');
+                    return prevCart;
+                }
+                playSound('ui_tap');
+                setTotalSpent(prev => prev + price);
+                return [...prevCart, product.id];
             }
-            playSound('ui_tap');
-            setCart([...cart, product.id]);
-            setTotalSpent(prev => prev + price);
-        }
+        });
     };
 
     const handleCheck = () => {

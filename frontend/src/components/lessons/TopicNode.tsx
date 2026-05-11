@@ -37,7 +37,6 @@ interface TopicNodeProps {
 
 export const TopicNode: React.FC<TopicNodeProps> = ({ topic, index, totalInSaga, x, y, colorTheme, onClick }) => {
     const colors = topic.isLocked ? THEME_COLORS.slate : THEME_COLORS[colorTheme];
-    const isStart = !topic.isLocked && !topic.isCompleted && (index === 0 || index > 0); // Logic can be refined for "current"
 
     return (
         <div

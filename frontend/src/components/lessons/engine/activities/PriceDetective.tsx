@@ -101,7 +101,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                             onClick={() => handleSelectProduct(product.id)}
                             disabled={feedback !== 'none'}
                             className={cn(
-                                "relative p-4 rounded-2xl border-3 transition-all duration-300 transform",
+                                "relative p-4 rounded-2xl border-[3px] transition-all duration-300 transform",
                                 "bg-white dark:bg-slate-800",
                                 isSelected && feedback === 'none' && "ring-4 ring-purple-400 dark:ring-purple-600 scale-105 shadow-sm",
                                 !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-lg hover:-translate-y-1",

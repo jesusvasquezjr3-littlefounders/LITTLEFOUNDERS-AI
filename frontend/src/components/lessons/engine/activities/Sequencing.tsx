@@ -76,7 +76,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
 
     return (
         <div className="w-full max-w-lg animate-slide-in-bottom">
-            <div className="space-y-3 mb-8">
+            <div role="list" className="space-y-3 mb-8">
                 {items.map((item, index) => {
                     const isFirst = index === 0;
                     const isLast = index === items.length - 1;
@@ -86,6 +86,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                     // Let's use a nice neutral card with vibrant accent
                     return (
                         <div
+                            role="listitem"
                             key={item.id}
                             className={cn(
                                 "flex items-center gap-3 p-4 bg-card border-2 rounded-2xl shadow-sm transition-all duration-300",
@@ -107,6 +108,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                             {!isChecked && (
                                 <div className="flex flex-col gap-1">
                                     <button
+                                        aria-label="Mover arriba"
                                         onClick={() => handleSwap(index, 'up')}
                                         disabled={isFirst}
                                         className={cn(
@@ -117,6 +119,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                                         <ArrowUp className="w-5 h-5" />
                                     </button>
                                     <button
+                                        aria-label="Mover abajo"
                                         onClick={() => handleSwap(index, 'down')}
                                         disabled={isLast}
                                         className={cn(

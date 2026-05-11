@@ -24,6 +24,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
     const [isAnswered, setIsAnswered] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'complete'>('none');
     const [quizPassed, setQuizPassed] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const content = exercise?.content || {};
 
@@ -74,6 +75,9 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         setIsAnswered(false);
         setFeedback('none');
         setQuizPassed(false);
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     useEffect(() => {
@@ -95,7 +99,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
     const handleTimeout = () => {
         setIsAnswered(true);
         playSound('edu_error');
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             moveToNext();
         }, 1500);
     };
@@ -123,7 +127,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
             playSound('edu_error');
         }
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             moveToNext();
         }, 1500);
     };

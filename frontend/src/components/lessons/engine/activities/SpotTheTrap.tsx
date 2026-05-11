@@ -215,7 +215,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                     )}
                     <div className="space-y-3">
                         {fallbackOptions.map((opt: any) => {
-                            const optId = opt.id || opt.value || opt.label || String(opt);
+                            const optId = opt?.id || opt?.value || opt?.label || JSON.stringify(opt);
                             const optLabel = opt.label || opt.text || opt.value || String(opt);
                             const isSelected = fallbackSelection === optId;
                             const isRevealed = feedback !== 'none';

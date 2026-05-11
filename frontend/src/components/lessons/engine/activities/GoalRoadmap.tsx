@@ -142,7 +142,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs sm:text-sm font-bold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded-lg">
+                                                <div className="text-xs sm:text-sm font-bold text-red-500 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded-lg">
                                                     {t('goal_roadmap.remove')}
                                                 </div>
                                             </div>

@@ -98,9 +98,9 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
 
                             {/* Controls (Hidden if done) */}
                             {feedback === 'none' && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 opacity-0 hover:opacity-100 transition-opacity bg-white shadow-sm rounded-full px-1">
-                                    <button onClick={() => moveBlock(index, 'left')} className="p-1 hover:text-purple-600" disabled={index === 0}>←</button>
-                                    <button onClick={() => moveBlock(index, 'right')} className="p-1 hover:text-purple-600" disabled={index === blocks.length - 1}>→</button>
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:opacity-0 sm:hover:opacity-100 opacity-100 transition-opacity bg-white shadow-sm rounded-full px-1">
+                                    <button onClick={() => moveBlock(index, 'left')} className="p-1 hover:text-purple-600" disabled={index === 0} aria-label={t('actions.move_left', { defaultValue: 'Mover izquierda' })}>←</button>
+                                    <button onClick={() => moveBlock(index, 'right')} className="p-1 hover:text-purple-600" disabled={index === blocks.length - 1} aria-label={t('actions.move_right', { defaultValue: 'Mover derecha' })}>→</button>
                                 </div>
                             )}
                         </div>

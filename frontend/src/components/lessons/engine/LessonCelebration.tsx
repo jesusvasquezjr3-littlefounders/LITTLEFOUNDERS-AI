@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, ArrowRight, Loader2, Sparkles } from "lucide-react";
@@ -9,6 +9,17 @@ import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
+
+// Extracted OUTSIDE component to prevent remount on every render
+function CelebrationCharacter({ characterCode }: { characterCode: string }) {
+  switch (characterCode) {
+    case "dina": return <DinaCharacter expression="happy" />;
+    case "dr_rho": return <DrRhoCharacter mood="explaining" />;
+    case "zara_vex": return <ZaraVexCharacter mood="excited" />;
+    case "liruf":
+    default: return <DinoCharacter mood="excited" showBubble={false} />;
+  }
+}
 
 export interface LessonCelebrationProps {
   isVisible: boolean;
@@ -35,6 +46,7 @@ export function LessonCelebration({
 }: LessonCelebrationProps) {
   const { t } = useTranslation("lessons");
   const [phase, setPhase] = useState<"entering" | "visible" | "exiting">("entering");
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     if (!isVisible) {
@@ -43,8 +55,8 @@ export function LessonCelebration({
     }
     setPhase("entering");
     const enterTimeout = setTimeout(() => setPhase("visible"), 100);
-    
-    setTimeout(() => {
+
+    const confettiTimeout = setTimeout(() => {
       confetti({
         particleCount: 150,
         spread: 120,
@@ -55,25 +67,24 @@ export function LessonCelebration({
       });
     }, 300);
 
-    return () => clearTimeout(enterTimeout);
+    timeoutsRef.current.push(enterTimeout, confettiTimeout);
+
+    return () => {
+      clearTimeout(enterTimeout);
+      clearTimeout(confettiTimeout);
+      timeoutsRef.current = [];
+    };
   }, [isVisible]);
 
   if (!isVisible) return null;
-
-  const RenderCharacter = () => {
-    switch (characterCode) {
-        case "dina": return <DinaCharacter expression="happy" />;
-        case "dr_rho": return <DrRhoCharacter mood="explaining" />;
-        case "zara_vex": return <ZaraVexCharacter mood="excited" />;
-        case "liruf":
-        default: return <DinoCharacter mood="excited" showBubble={false} />;
-    }
-  };
 
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
       style={{ background: "rgba(0,0,0,0)" }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="celebration-title"
     >
       <div className="absolute inset-0 z-0 bg-emerald-50 dark:bg-emerald-950/20 animate-in fade-in duration-1000" />
       
@@ -97,14 +108,14 @@ export function LessonCelebration({
             <div className="absolute bottom-4 w-56 h-56 rounded-full z-[-1]" style={{ background: "radial-gradient(circle,rgba(16,185,129,0.3) 0%,transparent 70%)", filter: "blur(28px)" }} />
             
             <div className="relative w-56 h-56 drop-shadow-2xl z-10 animate-bounce-in">
-              <RenderCharacter />
+              <CelebrationCharacter characterCode={characterCode} />
             </div>
 
             {/* Sparkle particle */}
             <div className="absolute top-0 right-10 animate-pulse text-yellow-400 z-10"><Sparkles size={32} /></div>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 mb-2 drop-shadow-sm">
+          <h2 id="celebration-title" className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 mb-2 drop-shadow-sm">
             {t("status.great_job")}
           </h2>
           <p className="text-gray-600 dark:text-white/80 text-lg font-medium mb-8">
@@ -124,7 +135,7 @@ export function LessonCelebration({
                     style={{ width: "100%", height: "100%", pointerEvents: "none" }}
                   />
                </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">+{completionResult?.points_earned || basePoints}</span>
+               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">+{completionResult?.points_earned ?? basePoints}</span>
                <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.points_earned", { defaultValue: "Points" })}</span>
             </div>
 
@@ -139,12 +150,17 @@ export function LessonCelebration({
                      style={{ width: "100%", height: "100%", pointerEvents: "none" }}
                    />
                </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{durationSeconds}s</span>
+               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                    {durationSeconds >= 60
+                        ? `${Math.floor(durationSeconds / 60)}:${String(durationSeconds % 60).padStart(2, '0')}`
+                        : `${durationSeconds}s`
+                    }
+               </span>
                <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.time")}</span>
             </div>
 
             {/* Streak Box (Only if streak is updated) */}
-            {completionResult?.new_streak && (
+            {(completionResult?.new_streak ?? 0) > 0 && (
               <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
                  <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                     {/* @ts-ignore */}

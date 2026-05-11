@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check } from 'lucide-react';
@@ -21,10 +21,11 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
     const [matchedIndices, setMatchedIndices] = useState<Set<number>>(new Set());
     const [isChecking, setIsChecking] = useState(false); // Validating a pair
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Setup cards on load
     useEffect(() => {
-        if (!exercise.content.pairs) return;
+        if (!exercise?.content?.pairs) return;
 
         const pairs: Array<{ id: string, text: string, pairId: string }> = [];
         exercise.content.pairs.forEach((pair: any) => {
@@ -43,6 +44,9 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
         setMatchedIndices(new Set());
         setSelectedCards([]);
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     const handleCardClick = (index: number) => {
@@ -60,7 +64,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
             if (card1.pairId === card2.pairId) {
                 // Match!
                 playSound('ui_tap');
-                setTimeout(() => {
+                timeoutRef.current = setTimeout(() => {
                     setMatchedIndices(prev => {
                         const next = new Set([...prev, newSelected[0], newSelected[1]]);
                         // Check if all matched using the updated set
@@ -76,7 +80,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
             } else {
                 // No match
                 playSound('ui_tap');
-                setTimeout(() => {
+                timeoutRef.current = setTimeout(() => {
                     setSelectedCards([]);
                     setIsChecking(false);
                 }, 1000);
@@ -107,7 +111,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                                         : "bg-card border-border shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >
-                            <span className={cn("transition-opacity duration-300", isMatched ? "opacity-100" : isSelected ? "opacity-100" : "opacity-100")}>
+                            <span className="transition-opacity duration-300 opacity-100">
                                 {card.text} {/* Could be Image or Icon too */}
                             </span>
                             {isMatched && <Check className="absolute top-1 right-1 w-4 h-4 text-green-600" />}

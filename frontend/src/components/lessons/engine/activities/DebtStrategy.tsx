@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, TrendingDown } from 'lucide-react';
@@ -20,6 +20,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
     const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
     const [isSimulating, setIsSimulating] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const content = exercise?.content || {};
     const debts = content.debts;
@@ -37,51 +38,59 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         setSelectedOptionId(null);
         setIsSimulating(false);
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     /* ─────────────── Legacy simulator helpers ─────────────── */
 
-    const simulateStrategy = (strategy: 'snowball' | 'avalanche') => {
-        const sortedDebts = [...debts].sort((a: any, b: any) => {
-            if (strategy === 'snowball') {
-                return a.balance - b.balance;
-            } else {
-                return b.rate - a.rate;
-            }
-        });
-
-        let totalMonths = 0;
-        let totalInterest = 0;
-        let remaining = [...sortedDebts];
-
-        while (remaining.length > 0) {
-            totalMonths++;
-            let payment = monthlyPayment;
-
-            remaining = remaining.map((debt: any) => {
-                const minPayment = Math.min(debt.minPayment, debt.balance);
-                payment -= minPayment;
-                const interest = (debt.balance * debt.rate) / 1200;
-                totalInterest += interest;
-                return {
-                    ...debt,
-                    balance: debt.balance - minPayment + interest
-                };
+    const simulateStrategy = useMemo(() => {
+        if (!isLegacy) return null;
+        return (strategy: 'snowball' | 'avalanche') => {
+            const sortedDebts = [...debts].sort((a: any, b: any) => {
+                if (strategy === 'snowball') {
+                    return a.balance - b.balance;
+                } else {
+                    return b.rate - a.rate;
+                }
             });
 
-            if (remaining.length > 0 && payment > 0) {
-                const extraPayment = Math.min(payment, remaining[0].balance);
-                remaining[0].balance -= extraPayment;
+            let totalMonths = 0;
+            let totalInterest = 0;
+            let remaining = [...sortedDebts];
+            // Safety cap to prevent infinite loops if payment doesn't cover interest
+            const MAX_MONTHS = 1200;
+
+            while (remaining.length > 0 && totalMonths < MAX_MONTHS) {
+                totalMonths++;
+                let payment = monthlyPayment;
+
+                remaining = remaining.map((debt: any) => {
+                    const minPayment = Math.min(debt.minPayment || 0, debt.balance);
+                    payment -= minPayment;
+                    const interest = (debt.balance * (debt.rate || 0)) / 1200;
+                    totalInterest += interest;
+                    return {
+                        ...debt,
+                        balance: debt.balance - minPayment + interest
+                    };
+                });
+
+                if (remaining.length > 0 && payment > 0) {
+                    const extraPayment = Math.min(payment, remaining[0].balance);
+                    remaining[0].balance -= extraPayment;
+                }
+
+                remaining = remaining.filter((d: any) => d.balance > 0.01);
             }
 
-            remaining = remaining.filter((d: any) => d.balance > 0.01);
-        }
+            return { months: totalMonths, interest: totalInterest };
+        };
+    }, [debts, monthlyPayment, isLegacy]);
 
-        return { months: totalMonths, interest: totalInterest };
-    };
-
-    const snowballResult = isLegacy ? simulateStrategy('snowball') : { months: 0, interest: 0 };
-    const avalancheResult = isLegacy ? simulateStrategy('avalanche') : { months: 0, interest: 0 };
+    const snowballResult = simulateStrategy ? simulateStrategy('snowball') : { months: 0, interest: 0 };
+    const avalancheResult = simulateStrategy ? simulateStrategy('avalanche') : { months: 0, interest: 0 };
 
     /* ─────────────── Handlers ─────────────── */
 
@@ -89,7 +98,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         setIsSimulating(true);
         playSound('ui_tap');
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const isCorrect = onSubmit(selectedStrategy);
             setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);
@@ -100,7 +109,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         setIsSimulating(true);
         playSound('ui_tap');
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const isCorrect = onSubmit(selectedOptionId);
             setFeedback(isCorrect ? 'success' : 'error');
             setIsSimulating(false);

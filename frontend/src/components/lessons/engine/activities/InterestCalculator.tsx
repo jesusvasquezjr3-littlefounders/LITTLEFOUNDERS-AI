@@ -25,11 +25,13 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     const params = content.parameters || {};
 
     useEffect(() => {
-        setPrincipal(content.defaultPrincipal || params.principal || 1000);
-        setRate(content.defaultRate || params.annualRate || 5);
-        setTime(content.defaultTime || 1);
+        const c = exercise?.content || {};
+        const p = c.parameters || {};
+        setPrincipal(c.defaultPrincipal || p.principal || 1000);
+        setRate(c.defaultRate || p.annualRate || 5);
+        setTime(c.defaultTime || 1);
         setFeedback('none');
-    }, [exercise, content, params]);
+    }, [exercise]);
 
     const calculateInterest = () => {
         const isCompound = exercise.content.type === 'compound';
@@ -61,7 +63,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
     };
 
     const maxPrincipal = content.maxPrincipal || 10000;
-    const maxRate = content.maxRate || params.annualRate ? params.annualRate * 2 : 20;
+    const maxRate = content.maxRate ?? (params.annualRate ? params.annualRate * 2 : 20);
     const maxTime = content.maxTime || 30;
 
     return (
@@ -99,6 +101,10 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                             setPrincipal(Number(e.target.value));
                             playSound('ui_tap');
                         }}
+                        aria-label={t('interest_calculator.principal')}
+                        aria-valuemin={100}
+                        aria-valuemax={maxPrincipal}
+                        aria-valuenow={principal}
                         className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-600"
                     />
                 </div>
@@ -123,6 +129,10 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                             setRate(Number(e.target.value));
                             playSound('ui_tap');
                         }}
+                        aria-label={t('interest_calculator.rate')}
+                        aria-valuemin={0}
+                        aria-valuemax={maxRate}
+                        aria-valuenow={rate}
                         className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
                     />
                 </div>
@@ -147,6 +157,10 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                             setTime(Number(e.target.value));
                             playSound('ui_tap');
                         }}
+                        aria-label={t('interest_calculator.time')}
+                        aria-valuemin={1}
+                        aria-valuemax={maxTime}
+                        aria-valuenow={time}
                         className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
                     />
                 </div>
@@ -180,13 +194,13 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-1 bg-blue-500 rounded"></div>
                             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                Interés Simple
+                                {t('interest_calculator.simple_interest')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-1 bg-green-500 rounded"></div>
                             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                Interés Compuesto
+                                {t('interest_calculator.compound_interest')}
                             </span>
                         </div>
                     </div>
@@ -265,8 +279,8 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
                     {/* Axis labels */}
                     <div className="flex justify-between items-center mt-8">
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Años</span>
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 -rotate-90 origin-center">Monto</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{t('interest_calculator.years')}</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 -rotate-90 origin-center">{t('interest_calculator.amount')}</span>
                     </div>
                 </div>
             </div>

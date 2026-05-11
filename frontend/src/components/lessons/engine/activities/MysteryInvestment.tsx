@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Minus, Gift, Sparkles } from 'lucide-react';
@@ -23,6 +23,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<Record<string, number>>({});
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         // Initialize allocation
@@ -34,6 +35,9 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
         setShowResults(false);
         setResults({});
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     const allocatedCoins = Object.values(allocation).reduce((sum, val) => sum + val, 0);
@@ -74,7 +78,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
         setResults(newResults);
         setShowResults(true);
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const isCorrect = onSubmit(allocation);
             setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);

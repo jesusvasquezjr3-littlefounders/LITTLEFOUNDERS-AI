@@ -1,7 +1,7 @@
 /**
  * MultipleChoiceStage - Pregunta con opciones múltiples
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
 import { Button } from '@/components/ui/button';
 import { Check, X, ArrowRight } from 'lucide-react';
@@ -23,6 +23,12 @@ export function MultipleChoiceStage({
 }: MultipleChoiceStageProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isChecked, setIsChecked] = useState(false);
+
+    // Reset local state when exercise changes to avoid stale selections
+    useEffect(() => {
+        setSelectedId(null);
+        setIsChecked(false);
+    }, [exercise.id]);
 
     const content = exercise.content;
     const options = content.options || [];
@@ -120,7 +126,7 @@ export function MultipleChoiceStage({
                         disabled={!selectedId}
                         className="gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full max-w-md"
                     >
-                        Verificar
+                        {(exercise.content as any)?.checkLabel || 'Verificar'}
                         <Check className="w-5 h-5" />
                     </Button>
                 )}
@@ -135,7 +141,10 @@ export function MultipleChoiceStage({
                             feedbackState === 'error' && "bg-orange-500 hover:bg-orange-600 shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]"
                         )}
                     >
-                        {feedbackState === 'success' ? 'Continuar' : 'Intentar de nuevo'}
+                        {feedbackState === 'success'
+                            ? ((exercise.content as any)?.nextLabel || 'Continuar')
+                            : ((exercise.content as any)?.retryLabel || 'Intentar de nuevo')
+                        }
                         <ArrowRight className="w-5 h-5" />
                     </Button>
                 )}

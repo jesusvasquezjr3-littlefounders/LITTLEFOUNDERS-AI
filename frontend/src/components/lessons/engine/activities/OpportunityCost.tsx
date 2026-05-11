@@ -78,12 +78,11 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                     const icon = option.icon || '💡';
 
                     return (
-                        <div
+                        <button
                             key={option.id}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
+                            aria-pressed={isSelected}
                             onClick={() => handleSelect(option.id)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(option.id); }}
                             className={cn(
                                 "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
                                 isSelected && "bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-[0_4px_0_rgb(34,197,94)]",
@@ -135,7 +134,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                                     )}
                                 </div>
                             )}
-                        </div>
+                        </button>
                     );
                 })}
             </div>

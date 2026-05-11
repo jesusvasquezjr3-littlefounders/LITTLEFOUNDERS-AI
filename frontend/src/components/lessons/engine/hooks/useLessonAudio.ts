@@ -171,14 +171,11 @@ export function useLessonAudio(
                 audio.removeEventListener('error', handleError);
             };
             const handleEnded = () => {
-                // Guard: component may have unmounted while segment was playing
-                if (!mountedRef.current) { cleanup(); return; }
                 cleanup();
+                // Always resolve — even if unmounted, so playQueue doesn't hang
                 resolve();
             };
             const handleError = () => {
-                // Guard: component may have unmounted while segment was playing
-                if (!mountedRef.current) { cleanup(); return; }
                 cleanup();
                 // Log but do NOT rethrow — lesson must continue without audio
                 console.warn('[LessonAudio] Could not play audio segment (skipping):', segment.url);
@@ -323,7 +320,7 @@ export function useLessonAudio(
     // - isActive false→true → lesson started (first exercise, same id)
     // playOnLoad excluded intentionally — adding it would cause infinite loops.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentExercise?.id, isActive]);
+    }, [currentExercise?.id, isActive, hasAudio]);
 
     return {
         isNarrativeAudioPlaying: isPlaying,

@@ -201,8 +201,16 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
                 {sagas.map((saga) => (
                     <div
                         key={saga.id}
+                        role="button"
+                        tabIndex={onSelectSaga ? 0 : undefined}
                         className={`mb-8 ${onSelectSaga ? 'cursor-pointer' : ''}`}
                         onClick={() => onSelectSaga?.(saga.id, saga.title)}
+                        onKeyDown={(e) => {
+                            if (onSelectSaga && (e.key === 'Enter' || e.key === ' ')) {
+                                e.preventDefault();
+                                onSelectSaga(saga.id, saga.title);
+                            }
+                        }}
                     >
                         <SagaHeader saga={saga} />
                         {!onSelectSaga && <SagaMap saga={saga} startTopicIndex={0} />}

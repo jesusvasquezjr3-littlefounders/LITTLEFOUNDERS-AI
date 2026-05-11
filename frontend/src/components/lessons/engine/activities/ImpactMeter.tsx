@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Sparkles } from 'lucide-react';
@@ -19,11 +19,15 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
     const [selectedCause, setSelectedCause] = useState<string | null>(null);
     const [showImpact, setShowImpact] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         setSelectedCause(null);
         setShowImpact(false);
         setFeedback('none');
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
     const causes = exercise.content.causes || [];
@@ -40,7 +44,7 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
 
         setShowImpact(true);
 
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const isCorrect = onSubmit(selectedCause);
             setFeedback(isCorrect ? 'success' : 'error');
         }, 2000);
@@ -78,8 +82,10 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                             key={cause.id}
                             onClick={() => handleSelectCause(cause.id)}
                             disabled={feedback !== 'none'}
+                            aria-pressed={isSelected}
+                            aria-label={cause.name}
                             className={cn(
-                                "p-4 rounded-2xl border-2 transition-all duration-300 transform",
+                                "relative p-4 rounded-2xl border-2 transition-all duration-300 transform",
                                 "bg-white dark:bg-slate-800",
                                 isSelected && feedback === 'none' && "ring-4 ring-pink-400 dark:ring-pink-600 scale-105 shadow-sm",
                                 !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-700 hover:shadow-lg hover:-translate-y-1",

@@ -200,7 +200,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             playSound('edu_error');
             setLives(l => {
                 const newLives = l - 1;
-                if (newLives <= 0) setTimeout(() => setShowGameOver(true), 1000);
+                if (newLives <= 0) {
+                    const gameOverTimer = setTimeout(() => setShowGameOver(true), 1000);
+                    // Store timer ref for cleanup (not strictly needed here since
+                    // handleNext/handleRetry clear it via code change effect, but good practice)
+                }
                 return newLives;
             });
             setLocalFeedback('error');
@@ -270,32 +274,35 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return 'happy'; // Friendly default
     };
 
-    // Character code mapping - normalize all variations to canonical codes
-    const CHARACTER_CODE_MAP: Record<string, string> = {
-        // Canonical codes
-        'liruf': 'liruf',
-        'dina': 'dina',
-        'dr_rho': 'dr_rho',
-        'zara_vex': 'zara_vex',
+// Character code mapping - normalize all variations to canonical codes
+// Defined OUTSIDE component to avoid recreation on every render
+const CHARACTER_CODE_MAP: Record<string, string> = {
+    // Canonical codes
+    'liruf': 'liruf',
+    'dina': 'dina',
+    'dr_rho': 'dr_rho',
+    'zara_vex': 'zara_vex',
 
-        // Variations without underscores (from DB)
-        'drrho': 'dr_rho',
-        'zaravex': 'zara_vex',
+    // Variations without underscores (from DB)
+    'drrho': 'dr_rho',
+    'zaravex': 'zara_vex',
 
-        // Camel case variations
-        'DrRho': 'dr_rho',
-        'ZaraVex': 'zara_vex',
+    // Camel case variations
+    'DrRho': 'dr_rho',
+    'ZaraVex': 'zara_vex',
 
-        // Lowercase variations
-        'dr rho': 'dr_rho',
-        'zara vex': 'zara_vex'
-    };
+    // Lowercase variations
+    'dr rho': 'dr_rho',
+    'zara vex': 'zara_vex'
+};
 
     // Get current character code from exercise with normalization
     const getCharacterCode = (): string => {
         const rawCode = currentExercise?.character_code || 'liruf';
         // Normalize the code using the mapping dictionary
-        return CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
+        // Safeguard: String() wrapper prevents crash if rawCode is somehow null/number
+        const normalized = String(rawCode ?? '').toLowerCase().trim();
+        return CHARACTER_CODE_MAP[normalized] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
     };
 
     // Get current text to display
@@ -434,8 +441,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         const markComplete = async () => {
             let pendingShowCelebration: ReturnType<typeof setTimeout> | null = null;
             try {
-                const userStr = localStorage.getItem('user');
-                const user = userStr ? JSON.parse(userStr) : null;
+                let user = null;
+                try {
+                    const userStr = localStorage.getItem('user');
+                    user = userStr ? JSON.parse(userStr) : null;
+                } catch {
+                    user = null;
+                }
                 const userId = user?.public_id;
                 const guestProfile = getGuestProfile();
                 const isAuth = !!(user && userId);
@@ -658,7 +670,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                             <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm">
                                 <Zap className="w-5 h-5 text-blue-500 fill-blue-500" />
                                 <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
-                                    {data.meta.estimated_duration_seconds}s
+                                    {data.meta.estimated_duration_seconds >= 60
+                                        ? `${Math.round(data.meta.estimated_duration_seconds / 60)} min`
+                                        : `${data.meta.estimated_duration_seconds}s`
+                                    }
                                 </span>
                             </div>
                         </div>
@@ -689,6 +704,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
+                    aria-label={t('actions.close', { defaultValue: 'Close lesson' })}
                     className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all flex-shrink-0 border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
                 >
                     <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -713,6 +729,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* Audio Toggle */}
                 <button
                     onClick={() => setAudioMuted()}
+                    aria-label={audioMuted ? t('actions.unmute', { defaultValue: 'Unmute audio' }) : t('actions.mute', { defaultValue: 'Mute audio' })}
+                    aria-pressed={audioMuted}
                     className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
                 >
                     {audioMuted ? (
@@ -724,14 +742,22 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             </div>
 
             {/* ===== MAIN CONTENT ===== */}
-            <div className="flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch">
+            <div
+                key={`exercise-${currentExerciseIndex}`}
+                className="flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
 
                 {/* Hide default Bubble/Character for StoryMode and IntroNarrative as they have their own */}
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
                         {/* Speech Bubble - ADAPTIVE */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in">
-                            <div className="relative bg-card rounded-2xl shadow-sm border-2 border-border lesson-speech mx-2 px-5 py-3">
+                            <div
+                                className="relative bg-card rounded-2xl shadow-sm border-2 border-border lesson-speech mx-2 px-5 py-3"
+                                role="status"
+                                aria-live="polite"
+                                aria-atomic="true"
+                            >
                                 <p className="text-center font-bold text-lg text-foreground leading-snug">
                                     {getCurrentText()}
                                 </p>
@@ -774,6 +800,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== STORY MODE ===== */}
                 {currentExercise?.type === 'story_mode' && (
                     <StoryMode
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onNext={handleNext}
                     />
@@ -783,6 +810,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== INTRO NARRATIVE ===== */}
                 {currentExercise?.type === 'intro_narrative' && (
                     <IntroNarrative
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onNext={handleNext}
                         isAudioPlaying={isNarrativeAudioPlaying}
@@ -792,6 +820,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== MULTIPLE CHOICE ===== */}
                 {currentExercise?.type === 'multiple_choice' && (
                     <MultipleChoice
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -802,6 +831,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== SEQUENCING ===== */}
                 {currentExercise?.type === 'sequencing' && (
                     <Sequencing
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -812,6 +842,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== CLASSIFICATION ===== */}
                 {currentExercise?.type === 'classification' && (
                     <Classification
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -824,6 +855,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== MATCHING PAIRS ===== */}
                 {(currentExercise?.type === 'match_pairs' || currentExercise?.type === 'matching_pairs') && (
                     <MatchingPairs
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -834,6 +866,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== FILL BLANK ===== */}
                 {currentExercise?.type === 'fill_blank' && (
                     <FillBlank
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -844,6 +877,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== TRUE / FALSE ===== */}
                 {currentExercise?.type === 'true_false' && (
                     <TrueFalse
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -854,6 +888,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== MATH CHALLENGE ===== */}
                 {currentExercise?.type === 'math_challenge' && (
                     <MathChallenge
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -864,6 +899,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== ROLEPLAY CHAT ===== */}
                 {currentExercise?.type === 'roleplay_chat' && (
                     <RoleplayChat
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -874,6 +910,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== WORD SCRAMBLE ===== */}
                 {currentExercise?.type === 'word_scramble' && (
                     <WordScramble
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -884,6 +921,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== ESTIMATION SLIDER ===== */}
                 {currentExercise?.type === 'estimation_slider' && (
                     <EstimationSlider
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -896,6 +934,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== RISK REWARD ===== */}
                 {currentExercise?.type === 'risk_reward' && (
                     <RiskReward
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -906,6 +945,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== SHOP SIM ===== */}
                 {currentExercise?.type === 'shop_sim' && (
                     <ShopSim
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -916,6 +956,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== COIN COUNTER ===== */}
                 {currentExercise?.type === 'coin_counter' && (
                     <CoinCounter
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -926,6 +967,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== CONCEPT BUILDER ===== */}
                 {currentExercise?.type === 'concept_builder' && (
                     <ConceptBuilder
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -939,6 +981,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== TAP ACTION ===== */}
                 {currentExercise?.type === 'tap_action' && (
                     <TapAction
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -949,6 +992,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== PRICE DETECTIVE ===== */}
                 {currentExercise?.type === 'price_detective' && (
                     <PriceDetective
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -959,6 +1003,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== SPOT THE TRAP ===== */}
                 {currentExercise?.type === 'spot_trap' && (
                     <SpotTheTrap
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -969,6 +1014,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== IMPACT METER ===== */}
                 {currentExercise?.type === 'impact_meter' && (
                     <ImpactMeter
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -979,6 +1025,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== MARKET REACTION ===== */}
                 {currentExercise?.type === 'market_reaction' && (
                     <MarketReaction
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -989,6 +1036,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== MYSTERY INVESTMENT ===== */}
                 {currentExercise?.type === 'mystery_investment' && (
                     <MysteryInvestment
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -999,6 +1047,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== BUDGET BUILDER ===== */}
                 {currentExercise?.type === 'budget_builder' && (
                     <BudgetBuilder
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1010,6 +1059,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'savings_race' && (
                     <SavingsRace
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1020,6 +1070,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== EXPENSE TIMELINE ===== */}
                 {currentExercise?.type === 'expense_timeline' && (
                     <ExpenseTimeline
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1031,6 +1082,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'interest_calculator' && (
                     <InterestCalculator
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1041,6 +1093,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== TAX PUZZLE ===== */}
                 {currentExercise?.type === 'tax_puzzle' && (
                     <TaxPuzzle
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1054,6 +1107,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'subscription_tracker' && (
                     <SubscriptionTracker
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1065,6 +1119,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'inflation_simulator' && (
                     <InflationSimulator
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1075,6 +1130,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== CREDIT SCORE BUILDER ===== */}
                 {currentExercise?.type === 'credit_score' && (
                     <CreditScoreBuilder
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1085,6 +1141,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== EMERGENCY FUND ===== */}
                 {currentExercise?.type === 'emergency_fund' && (
                     <EmergencyFund
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1095,6 +1152,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== BILL SPLITTER ===== */}
                 {currentExercise?.type === 'bill_splitter' && (
                     <BillSplitter
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1105,6 +1163,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== SALARY COMPARISON ===== */}
                 {currentExercise?.type === 'salary_comparison' && (
                     <SalaryComparison
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1116,6 +1175,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'debt_strategy' && (
                     <DebtStrategy
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1126,6 +1186,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== PORTFOLIO BUILDER ===== */}
                 {currentExercise?.type === 'portfolio_builder' && (
                     <PortfolioBuilder
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1137,6 +1198,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'opportunity_cost' && (
                     <OpportunityCost
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1147,6 +1209,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== GOAL ROADMAP ===== */}
                 {currentExercise?.type === 'goal_roadmap' && (
                     <GoalRoadmap
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1158,6 +1221,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'mindset_comparison' && (
                     <MindsetComparison
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleSimulatorSubmit}
                         onNext={handleNext}
@@ -1168,6 +1232,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== PASSIVE INCOME ===== */}
                 {currentExercise?.type === 'passive_income' && (
                     <PassiveIncome
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}
@@ -1178,6 +1243,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* ===== QUIZ BATTLE ===== */}
                 {currentExercise?.type === 'quiz_battle' && (
                     <QuizBattle
+                        key={currentExerciseIndex}
                         exercise={currentExercise}
                         onSubmit={handleStandardSubmit}
                         onNext={handleNext}

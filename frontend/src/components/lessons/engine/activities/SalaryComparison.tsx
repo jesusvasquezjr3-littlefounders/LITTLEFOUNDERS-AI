@@ -165,26 +165,26 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                                             {t('salary_comparison.salary', { defaultValue: 'Salary' })}
                                         </span>
                                         <span className="font-bold text-green-600">
-                                            ${offer.salary.toLocaleString()}
+                                            ${offer.salary?.toLocaleString() ?? '0'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm text-slate-600 dark:text-slate-400">
                                             {t('salary_comparison.benefits', { defaultValue: 'Benefits' })}
                                         </span>
-                                        <span className="font-bold">{offer.benefits}/10</span>
+                                        <span className="font-bold">{offer.benefits ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm text-slate-600 dark:text-slate-400">
                                             {t('salary_comparison.location', { defaultValue: 'Location' })}
                                         </span>
-                                        <span className="font-bold">{offer.location}/10</span>
+                                        <span className="font-bold">{offer.location ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm text-slate-600 dark:text-slate-400">
                                             {t('salary_comparison.growth', { defaultValue: 'Growth' })}
                                         </span>
-                                        <span className="font-bold">{offer.growth}/10</span>
+                                        <span className="font-bold">{offer.growth ?? '0'}/10</span>
                                     </div>
                                 </div>
                             ) : (

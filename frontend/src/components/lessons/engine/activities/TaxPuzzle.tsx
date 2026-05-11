@@ -160,7 +160,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                                 <span className="text-2xl">{piece.icon || '🧩'}</span>
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                <label htmlFor={`piece-${piece.id}`} className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                     {piece.name}
                                 </label>
                             </div>
@@ -169,6 +169,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                             </span>
                         </div>
                         <input
+                            id={`piece-${piece.id}`}
                             type="range"
                             min={piece.min || 0}
                             max={piece.max || 100}

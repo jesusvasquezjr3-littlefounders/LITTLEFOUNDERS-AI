@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy, TrendingUp } from 'lucide-react';
@@ -20,15 +20,21 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
     const [progress, setProgress] = useState(0);
     const [isRacing, setIsRacing] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         setSelectedStrategy(null);
         setProgress(0);
         setIsRacing(false);
         setFeedback('none');
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
-    const goal = exercise.content.goal || 1000;
+    const goal = exercise?.content?.goal || 1000;
     const strategies = exercise.content.strategies || [];
 
     const handleSelectStrategy = (strategyId: string) => {
@@ -53,15 +59,16 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
         const stepDuration = duration / steps;
 
         let currentProgress = 0;
-        const interval = setInterval(() => {
+        intervalRef.current = setInterval(() => {
             currentProgress += 1;
             setProgress(currentProgress);
 
             if (currentProgress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => {
+                if (intervalRef.current) clearInterval(intervalRef.current);
+                timeoutRef.current = setTimeout(() => {
                     const isCorrect = onSubmit(selectedStrategy);
                     setFeedback(isCorrect ? 'success' : 'error');
+                    setIsRacing(false);
                 }, 500);
             }
         }, stepDuration);

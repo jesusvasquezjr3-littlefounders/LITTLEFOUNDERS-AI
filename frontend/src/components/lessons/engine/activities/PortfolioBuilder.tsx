@@ -84,13 +84,15 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
     const updateAllocation = (assetId: string, value: number) => {
         const newValue = Math.max(0, Math.min(100, value));
-        const newAllocation = { ...allocation, [assetId]: newValue };
-        const newTotal = Object.values(newAllocation).reduce((sum, val) => sum + val, 0);
-
-        if (newTotal <= totalAmount) {
-            setAllocation(newAllocation);
-            playSound('ui_tap');
-        }
+        setAllocation(prev => {
+            const next = { ...prev, [assetId]: newValue };
+            const newTotal = Object.values(next).reduce((sum, val) => sum + val, 0);
+            if (newTotal <= totalAmount) {
+                playSound('ui_tap');
+                return next;
+            }
+            return prev;
+        });
     };
 
     const getRiskLevel = (): string => {
@@ -275,6 +277,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                                 onChange={(e) => updateAllocation(asset.id, Number(e.target.value))}
                                 className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
                                 style={{ accentColor: asset.color }}
+                                aria-label={asset.name}
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                                aria-valuenow={allocation[asset.id] || 0}
                             />
                         </div>
                     ))}

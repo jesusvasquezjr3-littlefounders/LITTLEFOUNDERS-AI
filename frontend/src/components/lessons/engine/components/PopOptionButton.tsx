@@ -15,6 +15,52 @@ interface PopOptionButtonProps {
     className?: string;
 }
 
+// Map theme to Tailwind utilities — defined OUTSIDE component to avoid recreation on every render
+const THEME_STYLES = {
+    purple: {
+        bg: 'bg-purple-500',
+        hover: 'hover:bg-purple-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    },
+    pink: {
+        bg: 'bg-pink-500',
+        hover: 'hover:bg-pink-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    },
+    blue: {
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    },
+    orange: {
+        bg: 'bg-orange-500',
+        hover: 'hover:bg-orange-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    },
+    green: {
+        bg: 'bg-green-500',
+        hover: 'hover:bg-green-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    },
+    amber: {
+        bg: 'bg-amber-500',
+        hover: 'hover:bg-amber-600',
+        text: 'text-white',
+        shadow: 'shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)]',
+        active: 'active:shadow-none active:translate-y-[4px]'
+    }
+};
+
 export const PopOptionButton: React.FC<PopOptionButtonProps> = ({
     text,
     colorTheme = 'purple',
@@ -26,53 +72,7 @@ export const PopOptionButton: React.FC<PopOptionButtonProps> = ({
     disabled = false,
     className
 }) => {
-    // Map theme to Tailwind utilities
-    const themeStyles = {
-        purple: {
-            bg: 'bg-purple-500',
-            hover: 'hover:bg-purple-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        },
-        pink: {
-            bg: 'bg-pink-500',
-            hover: 'hover:bg-pink-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        },
-        blue: {
-            bg: 'bg-blue-500',
-            hover: 'hover:bg-blue-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        },
-        orange: {
-            bg: 'bg-orange-500',
-            hover: 'hover:bg-orange-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        },
-        green: {
-            bg: 'bg-green-500',
-            hover: 'hover:bg-green-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        },
-        amber: {
-            bg: 'bg-amber-500',
-            hover: 'hover:bg-amber-600',
-            text: 'text-white',
-            shadow: 'shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)]',
-            active: 'active:shadow-none active:translate-y-[4px]'
-        }
-    };
-
-    const color = themeStyles[colorTheme] || themeStyles.purple;
+    const color = THEME_STYLES[colorTheme] || THEME_STYLES.purple;
 
     return (
         <button
@@ -93,9 +93,9 @@ export const PopOptionButton: React.FC<PopOptionButtonProps> = ({
                 showResult && feedback === 'success' && isSelected && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-100 z-10",
                 showResult && feedback === 'success' && !isSelected && "opacity-20 grayscale",
 
-                // Error
-                showResult && feedback === 'error' && isSelected && "bg-red-500 shadow-none ring-4 ring-red-300",
-                showResult && feedback === 'error' && !isSelected && "opacity-50",
+                // Error: selected wrong answer is red, correct unselected answer is highlighted green
+                showResult && feedback === 'error' && isSelected && !isCorrect && "bg-red-500 shadow-none ring-4 ring-red-300",
+                showResult && feedback === 'error' && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105 z-10",
                 
                 className
             )}
@@ -110,9 +110,14 @@ export const PopOptionButton: React.FC<PopOptionButtonProps> = ({
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 stroke-[3px]" />
                     </div>
                 )}
-                {showResult && feedback === 'error' && isSelected && (
+                {showResult && feedback === 'error' && isSelected && !isCorrect && (
                     <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shadow-sm animate-in zoom-in shrink-0">
                         <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 stroke-[3px]" />
+                    </div>
+                )}
+                {showResult && feedback === 'error' && isCorrect && (
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shadow-sm animate-in zoom-in shrink-0">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 stroke-[3px]" />
                     </div>
                 )}
             </div>

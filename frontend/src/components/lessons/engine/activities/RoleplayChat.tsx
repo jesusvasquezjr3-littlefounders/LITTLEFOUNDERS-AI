@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -30,11 +30,12 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     const [isTyping, setIsTyping] = useState(false);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
     const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         // Build initial messages from scenario + instruction
         const initialMessages: ChatMessage[] = [];
-        const content = exercise.content || {};
+        const content = exercise?.content || {};
 
         if (content.scenario) {
             initialMessages.push({
@@ -58,6 +59,9 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
         setMessages(initialMessages);
         setChoices(content.options || []);
         setOutputState();
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise, t]);
 
     const setOutputState = () => {
@@ -85,12 +89,12 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
         const isCorrect = onSubmit(choice.id);
 
         // Determine NPC response with delay for chat effect
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             setIsTyping(false);
 
             const npcResponseText = isCorrect
-                ? (exercise.feedback?.success || t('roleplay_chat.excellent_decision'))
-                : (exercise.feedback?.error || t('roleplay_chat.not_best_choice'));
+                ? (exercise?.feedback?.success || t('roleplay_chat.excellent_decision'))
+                : (exercise?.feedback?.error || t('roleplay_chat.not_best_choice'));
 
             const npcMsg: ChatMessage = {
                 id: `npc-${Date.now()}`,

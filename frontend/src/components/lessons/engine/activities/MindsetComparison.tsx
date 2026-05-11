@@ -123,12 +123,11 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                     const colors = colorClasses[mindset.color] || colorClasses.red;
 
                     return (
-                        <div
+                        <button
                             key={mindset.id}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
+                            aria-pressed={isSelected}
                             onClick={() => handleSelect(mindset.id)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(mindset.id); }}
                             className={cn(
                                 "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
                                 isSelected && colors.selected,
@@ -170,7 +169,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </button>
                     );
                 })}
             </div>

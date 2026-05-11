@@ -38,7 +38,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
 
     const priceStart = calculatePrice(yearStart);
     const priceEnd = calculatePrice(yearEnd);
-    const percentageChange = ((priceEnd - priceStart) / priceStart) * 100;
+    const percentageChange = priceStart === 0 ? 0 : ((priceEnd - priceStart) / priceStart) * 100;
 
     const handleSubmit = () => {
         const isCorrect = onSubmit({ yearStart, yearEnd });
@@ -92,6 +92,10 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                         }}
                         disabled={feedback !== 'none'}
                         className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600 mb-2"
+                        aria-label={t('inflation.start_year')}
+                        aria-valuemin={minYear}
+                        aria-valuemax={maxYear}
+                        aria-valuenow={yearStart}
                     />
                     <div className="text-center text-2xl font-black text-blue-600 dark:text-blue-400">
                         {yearStart}
@@ -115,6 +119,10 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                         }}
                         disabled={feedback !== 'none'}
                         className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600 mb-2"
+                        aria-label={t('inflation.end_year')}
+                        aria-valuemin={minYear}
+                        aria-valuemax={maxYear}
+                        aria-valuenow={yearEnd}
                     />
                     <div className="text-center text-2xl font-black text-purple-600 dark:text-purple-400">
                         {yearEnd}

@@ -207,6 +207,10 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                         playSound('ui_tap');
                     }}
                     className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-600"
+                    aria-label={t('bill_splitter.tip')}
+                    aria-valuemin={0}
+                    aria-valuemax={30}
+                    aria-valuenow={tip}
                 />
             </div>
 

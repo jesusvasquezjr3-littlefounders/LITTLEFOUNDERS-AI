@@ -30,6 +30,7 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
     const [pageIndex, setPageIndex] = useState(0);
     const [history, setHistory] = useState<number[]>([0]);
     const [isAnimating, setIsAnimating] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Build virtual pages from real JSON schema if legacy 'pages' is absent
     const pages: StoryPage[] = useMemo(() => {
@@ -76,21 +77,25 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
     useEffect(() => {
         setPageIndex(0);
         setHistory([0]);
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, [exercise]);
 
-    // Guard against empty pages array — auto-advance
+    // Guard against empty pages array — auto-advance (debounced to prevent loops)
     const onNextRef = useRef(onNext);
     onNextRef.current = onNext;
     useEffect(() => {
         if (pages.length === 0) {
-            onNextRef.current();
+            const t = setTimeout(() => onNextRef.current(), 100);
+            return () => clearTimeout(t);
         }
     }, [pages.length]);
 
     const handleChoice = (nextPageId?: string) => {
         playSound('ui_tap');
         setIsAnimating(true);
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             if (nextPageId) {
                 const nextIdx = pages.findIndex(p => p.id === nextPageId);
                 if (nextIdx !== -1) {
@@ -110,7 +115,7 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
         if (pageIndex < pages.length - 1) {
             playSound('ui_tap');
             setIsAnimating(true);
-            setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
                 setPageIndex(prev => {
                     const next = prev + 1;
                     setHistory(h => [...h, next]);

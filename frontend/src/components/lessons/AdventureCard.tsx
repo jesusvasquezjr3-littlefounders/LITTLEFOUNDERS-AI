@@ -27,7 +27,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     };
 
     return (
-        <article className={`wallpaper-card ${themeClasses[theme]} relative w-full h-full rounded-[32px] overflow-hidden shadow-sm border-2 border-border dark:border-white/10 transition-all hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none`}>
+        <article className={`group wallpaper-card ${themeClasses[theme]} relative w-full h-full rounded-[32px] overflow-hidden shadow-sm border-2 border-border dark:border-white/10 transition-all hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none`}>
             {/* Label */}
             {!hideTitle && (
                 <div className="label absolute top-6 left-6 z-50 pointer-events-none transition-opacity duration-300">

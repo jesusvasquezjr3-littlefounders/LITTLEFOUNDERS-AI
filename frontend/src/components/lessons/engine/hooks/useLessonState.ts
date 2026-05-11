@@ -6,7 +6,7 @@
  * de actividad NO deben validar por su cuenta - deben enviar la respuesta
  * cruda a submitAnswer() y usar el valor de retorno para determinar feedback.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { ExerciseData, LessonData } from './useLessonData';
 
 export type LessonState =
@@ -844,10 +844,12 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
     const [results, setResults] = useState<ExerciseResult[]>([]);
     const [attempts, setAttempts] = useState(0);
 
-    const timeline = lessonData?.timeline || [];
+    const timeline = useMemo(() => lessonData?.timeline || [], [lessonData?.timeline]);
     const totalExercises = timeline.length;
     const currentExercise = timeline[currentExerciseIndex] || null;
-    const progress = totalExercises > 0 ? Math.round(((currentExerciseIndex + 1) / totalExercises) * 100) : 0;
+    const progress = useMemo(() =>
+        totalExercises > 0 ? Math.round(((currentExerciseIndex + 1) / totalExercises) * 100) : 0,
+    [currentExerciseIndex, totalExercises]);
 
     // Reset state machine when lesson data changes (navigating to a new lesson)
     useEffect(() => {
@@ -925,6 +927,7 @@ export function useLessonState(lessonData: LessonData | null): UseLessonStateRet
     // Retry after error - reset state to allow new attempt
     const retryExercise = useCallback(() => {
         setState('WAITING_INPUT');
+        setAttempts(0);
     }, []);
 
     const pauseLesson = useCallback(() => {
