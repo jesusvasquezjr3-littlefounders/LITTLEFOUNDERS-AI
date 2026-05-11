@@ -217,11 +217,10 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                 .dina-neck-sway { animation: dinaNeckSway 5s ease-in-out infinite alternate; transform-origin: 280px 280px; }
                 @keyframes dinaNeckSway { 0% { transform: rotate(-2deg); } 100% { transform: rotate(4deg); } }
                 .dina-face-element { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .dina-mouth-talk { animation: dinaTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                .dina-mouth-talk { animation: dinaTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes dinaTalkAnim {
-                    0%, 100% { transform: scaleY(1) translateY(0); }
-                    30% { transform: scaleY(0.8) translateY(1px); }
-                    60% { transform: scaleY(1.15) translateY(-1px); }
+                    0%, 100% { transform: scaleY(1); }
+                    50% { transform: scaleY(1.25); }
                 }
                 .dina-spring-bounce { animation: dinaSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
                 @keyframes dinaSpring {

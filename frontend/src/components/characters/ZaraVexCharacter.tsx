@@ -124,11 +124,10 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
             <style>{`
                 .zara-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .zara-mouth-talk { animation: zaraTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                .zara-mouth-talk { animation: zaraTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes zaraTalkAnim {
-                    0%, 100% { transform: scaleY(1) translateY(0); }
-                    30% { transform: scaleY(0.85) translateY(1px); }
-                    60% { transform: scaleY(1.1) translateY(-1px); }
+                    0%, 100% { transform: scaleY(1); }
+                    50% { transform: scaleY(1.2); }
                 }
                 .zara-idle-float { animation: zaraFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes zaraFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }

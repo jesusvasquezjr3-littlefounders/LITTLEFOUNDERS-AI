@@ -118,11 +118,10 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
 
             <style>{`
                 .rho-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .rho-mouth-talk { animation: rhoTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                .rho-mouth-talk { animation: rhoTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes rhoTalkAnim {
-                    0%, 100% { transform: scaleY(1) translateY(0); }
-                    30% { transform: scaleY(0.85) translateY(1px); }
-                    60% { transform: scaleY(1.1) translateY(-1px); }
+                    0%, 100% { transform: scaleY(1); }
+                    50% { transform: scaleY(1.2); }
                 }
                 .rho-idle-float { animation: rhoFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes rhoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
