@@ -177,6 +177,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // StreakCelebration JSX callback share the same stable reference.
     const showCelebrationScreen = useCallback(() => {
         playSound('edu_complete');
+        setShowStreakCelebration(false); // Guarantee streak overlay is gone before summary appears
         setShowSuccess(true);
     }, [playSound]);
 
@@ -633,6 +634,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
                     {/* Character */}
                     <div className="mb-6 animate-bounce-in">
+                        <div className="animate-float">
                         {(() => {
                             const rawCode = data.timeline[0]?.character_code || 'liruf';
                             const normalizedCode = CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
@@ -648,6 +650,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                                     return <DinoCharacter className="w-full max-w-[280px]" showBubble={false} mood="excited" />;
                             }
                         })()}
+                        </div>
                     </div>
 
                     {/* Lesson Info Card */}
@@ -680,13 +683,16 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     </div>
 
                     {/* Start Button */}
-                    <Button
-                        onClick={startLesson}
-                        size="lg"
-                        className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
-                    >
-                        {t('start.button')}
-                    </Button>
+                    <div className="relative w-full max-w-sm overflow-hidden rounded-2xl">
+                        <Button
+                            onClick={startLesson}
+                            size="lg"
+                            className="w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
+                        >
+                            {t('start.button')}
+                        </Button>
+                        <div className="animate-shimmer-sweep rounded-2xl" />
+                    </div>
                 </div>
             </div>
         );
@@ -705,7 +711,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 <button
                     onClick={handleClose}
                     aria-label={t('actions.close', { defaultValue: 'Close lesson' })}
-                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all flex-shrink-0 border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
+                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all flex-shrink-0 border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 active:scale-95 active:translate-y-1 active:shadow-none"
                 >
                     <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 </button>
@@ -713,10 +719,11 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 {/* Progress Bar */}
                 <div className="flex-1 h-5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 relative shadow-inner">
                     <div
-                        className="h-full bg-green-500 rounded-full transition-all duration-500 ease-out relative"
+                        className="h-full bg-green-500 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
                         style={{ width: `${progress}%` }}
                     >
                         <div className="absolute top-1 left-2 right-2 h-1.5 bg-white/30 rounded-full" />
+                        <div className="animate-shimmer-sweep" />
                     </div>
                 </div>
 
@@ -731,7 +738,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     onClick={() => setAudioMuted()}
                     aria-label={audioMuted ? t('actions.unmute', { defaultValue: 'Unmute audio' }) : t('actions.mute', { defaultValue: 'Mute audio' })}
                     aria-pressed={audioMuted}
-                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
+                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 active:scale-95 active:translate-y-1 active:shadow-none"
                 >
                     {audioMuted ? (
                         <VolumeX className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -751,7 +758,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
                         {/* Speech Bubble - ADAPTIVE */}
-                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in">
+                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
                                 className="relative bg-card rounded-2xl shadow-sm border-2 border-border lesson-speech mx-2 px-5 py-3"
                                 role="status"

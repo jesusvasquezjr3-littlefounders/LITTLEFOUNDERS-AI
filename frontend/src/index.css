@@ -743,6 +743,22 @@
   animation: gradient-shift 3s ease infinite;
 }
 
+.animate-shimmer-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: streak-shine 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
 /* 3D Card Flip Animation Styles */
 .perspective-1000 {
   perspective: 1000px;

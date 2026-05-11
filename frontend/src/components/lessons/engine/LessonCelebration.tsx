@@ -122,10 +122,13 @@ export function LessonCelebration({
             {t("completion.subtitle")}
           </p>
 
-          {/* Stats Glass Row */}
+          {/* Stats Row - Staggered entrance */}
           <div className="flex justify-center gap-2 sm:gap-4 w-full mb-8">
             {/* Points Box */}
-            <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
+            <div
+              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
+              style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
+            >
                <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                   {/* @ts-ignore */}
                   <dotlottie-wc
@@ -140,7 +143,10 @@ export function LessonCelebration({
             </div>
 
             {/* Time Box */}
-            <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
+            <div
+              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
+              style={{ animationDelay: '350ms', animationFillMode: 'backwards' }}
+            >
                <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                    {/* @ts-ignore */}
                    <dotlottie-wc
@@ -161,7 +167,10 @@ export function LessonCelebration({
 
             {/* Streak Box (Only if streak is updated) */}
             {(completionResult?.new_streak ?? 0) > 0 && (
-              <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
+              <div
+                className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-orange-500/40 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
+                style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
+              >
                  <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                     {/* @ts-ignore */}
                     <dotlottie-wc
@@ -179,7 +188,7 @@ export function LessonCelebration({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-3 w-full animate-in slide-in-from-bottom-8 duration-700 delay-150">
+        <div className="flex flex-col gap-3 w-full animate-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '650ms', animationFillMode: 'backwards' }}>
            <button
                onClick={onNext}
                disabled={nextLessonCode === undefined}
