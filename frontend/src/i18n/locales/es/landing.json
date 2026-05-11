@@ -92,7 +92,10 @@
         "q3": "¿Tiene costo?",
         "a3": "Actualmente estamos en una <strong>Beta Abierta Gratuita</strong>. Puedes registrarte y usar todas las funciones sin costo. En el futuro tendremos planes premium, pero siempre habrá una capa gratuita.",
         "q4": "¿Necesito supervisar a mi hijo mientras juega?",
-        "a4": "No es necesario, la plataforma es autodidacta. Sin embargo, tenemos un \"Panel de Padres\" donde puedes ver su progreso y te damos tips para conversar sobre lo que aprendieron."
+        "a4": "No es necesario, la plataforma es autodidacta. Sin embargo, tenemos un \"Panel de Padres\" donde puedes ver su progreso y te damos tips para conversar sobre lo que aprendieron.",
+        "contact_title": "¿No encontraste lo que buscas?",
+        "contact_subtitle": "Nos encantaría escuchar tus preguntas, dudas, sugerencias o quejas. Contáctanos directamente.",
+        "contact_button": "Envíanos tus comentarios"
     },
     "cta": {
         "title_part1": "Tu hijo podría ser el próximo",

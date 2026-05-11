@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import { ShowreelPlayer } from '@/components/showreel/ShowreelPlayer';
 import { useTranslation, Trans } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 
 import {
   Accordion,
@@ -9,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDown, Bot, Sparkles, Globe, ShieldCheck } from "lucide-react";
+import { ChevronDown, Bot, Sparkles, Globe, ShieldCheck, Mail, Heart } from "lucide-react";
 
 export default function FaqPage() {
     const { t } = useTranslation('landing');
@@ -17,7 +18,7 @@ export default function FaqPage() {
 
 
     return (
-        <LandingLayout>
+        <LandingLayout hideCTA={true}>
             <div className="relative min-h-[calc(100vh-80px)] pt-24 pb-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-cyan-50/50 via-white to-purple-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 overflow-hidden">
                 
                 {/* Ultra Ambient Background Shapes */}
@@ -122,6 +123,31 @@ export default function FaqPage() {
                         </AccordionItem>
                     </Accordion>
                     </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="max-w-3xl mx-auto mt-20 pt-16 border-t border-gray-200 dark:border-gray-800">
+                  <div className="text-center space-y-6">
+                    <div className="flex justify-center mb-4">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg">
+                        <Heart className="w-7 h-7 text-white" />
+                      </div>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">
+                      {t('faq.contact_title')}
+                    </h2>
+                    <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                      {t('faq.contact_subtitle')}
+                    </p>
+                    <div className="pt-2">
+                      <a href="mailto:informame@littlefounders.com">
+                        <Button className="px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
+                          <Mail className="w-5 h-5" />
+                          {t('faq.contact_button')}
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
                 </div>
             </div>
         </LandingLayout>

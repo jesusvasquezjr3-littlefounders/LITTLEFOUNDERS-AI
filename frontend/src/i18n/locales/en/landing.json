@@ -97,7 +97,10 @@
         "q3": "Does it cost money?",
         "a3": "We're currently in a <strong>Free Open Beta</strong>. You can register and use all features at no cost. In the future we'll have premium plans, but there will always be a free tier.",
         "q4": "Do I need to supervise my child while they play?",
-        "a4": "It's not necessary, the platform is self-guided. However, we have a \"Parent Dashboard\" where you can see their progress and we give you tips to discuss what they learned."
+        "a4": "It's not necessary, the platform is self-guided. However, we have a \"Parent Dashboard\" where you can see their progress and we give you tips to discuss what they learned.",
+        "contact_title": "Didn't find what you're looking for?",
+        "contact_subtitle": "We'd love to hear your questions, feedback, or suggestions. Reach out to us directly.",
+        "contact_button": "Send us your thoughts"
     },
     "cta": {
         "title_part1": "Your child could be the next",
