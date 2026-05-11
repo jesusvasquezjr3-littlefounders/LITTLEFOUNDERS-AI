@@ -58,25 +58,25 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
         <div className="w-full max-w-5xl animate-slide-in-bottom">
             {/* Intro Explanation */}
             {/* Intro Explanation */}
-            <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/30 border-2 border-green-300 dark:border-green-700 rounded-xl">
-                <p className="text-sm text-green-900 dark:text-green-100 mb-2">
+            <div className="mb-6 p-4 sm:p-6 bg-card border-2 border-border shadow-sm rounded-2xl">
+                <p className="text-sm sm:text-base text-foreground mb-2">
                     {t('passive_income.intro_title')} <strong>{t('passive_income.intro_desc')}</strong>
                 </p>
-                <p className="text-xs text-green-800 dark:text-green-200">
+                <p className="text-xs sm:text-sm font-bold text-muted-foreground">
                     {t('passive_income.intro_goal', { amount: targetIncome })}
                 </p>
             </div>
 
             {/* Target Display */}
-            <div className="mb-6 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/30 dark:to-emerald-950/30 border-2 border-green-500 dark:border-green-700 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-3">
+            <div className="mb-6 bg-card border-2 border-border shadow-sm rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <TrendingUp className="w-6 h-6 text-green-600" />
-                        <h3 className="text-lg font-black text-green-900 dark:text-green-100">
+                        <TrendingUp className="w-6 h-6 text-green-500" />
+                        <h3 className="text-lg font-black text-foreground">
                             {t('passive_income.target')}
                         </h3>
                     </div>
-                    <div className="text-2xl font-black text-green-600">
+                    <div className="text-2xl font-black text-green-500 dark:text-green-400">
                         ${targetIncome}/mo
                     </div>
                 </div>
@@ -84,7 +84,7 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
                 {/* Progress Bar */}
                 <div className="relative h-8 bg-green-200 dark:bg-green-900 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-500 flex items-center justify-end pr-3"
+                        className="h-full bg-green-500 transition-all duration-500 flex items-center justify-end pr-3"
                         style={{ width: `${progress}%` }}
                     >
                         {progress > 20 && (
@@ -110,10 +110,10 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
                             key={stream.id}
                             onClick={() => toggleStream(stream.id)}
                             className={cn(
-                                "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden",
+                                "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px]",
                                 isSelected
-                                    ? "bg-green-100 dark:bg-green-950 border-green-500 shadow-lg"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300"
+                                    ? "bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-500"
+                                    : "bg-card border-border hover:border-green-400"
                             )}
                         >
                             {/* Pipeline Animation */}
@@ -154,12 +154,12 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
 
             {/* Pipeline Visualization */}
             {selectedStreams.length > 0 && (
-                <div className="mb-6 liquid-glass-strong rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-xl">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
+                <div className="mb-6 bg-card border-2 border-border rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5 text-green-500" />
                         {t('passive_income.your_streams')}
                     </h3>
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {selectedStreams.map((streamId) => {
                             const stream = streams.find((s: any) => s.id === streamId);
                             if (!stream) return null;
@@ -192,13 +192,10 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
                         <Button
                             onClick={handleSubmit}
                             disabled={selectedStreams.length === 0}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.build_income')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.build_income')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 ) : (
@@ -206,13 +203,10 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
 
                         <Button
                             onClick={onNext}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Check, X, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { PopOptionButton } from '../components/PopOptionButton';
 
 interface MultipleChoiceProps {
     exercise: any; // Type should be clearer in a real app
@@ -83,86 +84,29 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
                     const isCorrect = option.id === correctId;
                     const showResult = isChecked;
 
-                    // Solid Brand Colors
-                    const optionColors = [
-                        {
-                            bg: 'bg-purple-500',
-                            hover: 'hover:bg-purple-600',
-                            text: 'text-white',
-                            shadow: 'shadow-[0_6px_0_rgb(107,33,168)] hover:shadow-[0_3px_0_rgb(107,33,168)]',
-                            active: 'active:shadow-none active:translate-y-[3px]'
-                        },
-                        {
-                            bg: 'bg-pink-500',
-                            hover: 'hover:bg-pink-600',
-                            text: 'text-white',
-                            shadow: 'shadow-[0_6px_0_rgb(190,24,93)] hover:shadow-[0_3px_0_rgb(190,24,93)]',
-                            active: 'active:shadow-none active:translate-y-[3px]'
-                        },
-                        {
-                            bg: 'bg-blue-500',
-                            hover: 'hover:bg-blue-600',
-                            text: 'text-white',
-                            shadow: 'shadow-[0_6px_0_rgb(29,78,216)] hover:shadow-[0_3px_0_rgb(29,78,216)]',
-                            active: 'active:shadow-none active:translate-y-[3px]'
-                        },
-                        {
-                            bg: 'bg-orange-500',
-                            hover: 'hover:bg-orange-600',
-                            text: 'text-white',
-                            shadow: 'shadow-[0_6px_0_rgb(194,65,12)] hover:shadow-[0_3px_0_rgb(194,65,12)]',
-                            active: 'active:shadow-none active:translate-y-[3px]'
-                        },
+                    const optionColors: Array<'purple' | 'pink' | 'blue' | 'orange'> = [
+                        'purple',
+                        'pink',
+                        'blue',
+                        'orange'
                     ];
                     // Keep consistent color mapping based on INDEX in shuffled list 
                     // (Kahoot positions have fixed colors usually: TopLeft=Red, TopRight=Blue etc.)
-                    const color = optionColors[index % optionColors.length];
+                    const colorTheme = optionColors[index % optionColors.length];
 
                     return (
-                        <button
+                        <PopOptionButton
                             key={option.id}
+                            id={option.id}
+                            text={option.text}
+                            colorTheme={colorTheme}
+                            isSelected={isSelected}
+                            isCorrect={isCorrect}
+                            showResult={showResult}
+                            feedback={feedback}
                             onClick={() => handleSelectOption(option.id)}
                             disabled={isChecked}
-                            className={cn(
-                                "w-full p-4 rounded-2xl text-left transition-all duration-200 transform relative overflow-hidden h-full flex flex-col justify-center min-h-[80px] sm:min-h-[100px]",
-                                "font-bold text-base sm:text-lg leading-tight",
-                                color.text,
-                                // Default state
-                                !showResult && !isSelected && `${color.bg} ${color.hover} ${color.shadow} ${color.active} hover:translate-y-[2px]`,
-
-                                // Selected state
-                                !showResult && isSelected && `${color.bg} shadow-none translate-y-[4px] ring-4 ring-white/30`,
-
-                                // Success
-                                showResult && feedback === 'success' && isSelected && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-100 z-10",
-                                showResult && feedback === 'success' && !isSelected && "opacity-20 grayscale",
-
-                                // Error
-                                showResult && feedback === 'error' && isSelected && "bg-red-500 shadow-none ring-4 ring-red-300",
-                                showResult && feedback === 'error' && !isSelected && "opacity-50"
-                            )}
-                        >
-                            <div className="flex items-center justify-between gap-3 w-full z-10 relative">
-                                <span className="flex-1">
-                                    {option.text}
-                                </span>
-
-                                {showResult && feedback === 'success' && isSelected && isCorrect && (
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm animate-in zoom-in">
-                                        <Check className="w-5 h-5 text-green-600 stroke-[3px]" />
-                                    </div>
-                                )}
-                                {showResult && feedback === 'error' && isSelected && (
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm animate-in zoom-in">
-                                        <X className="w-5 h-5 text-red-600 stroke-[3px]" />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Glass Shine */}
-                            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 w-full h-px bg-black/10 pointer-events-none" />
-                        </button>
+                        />
                     );
                 })}
             </div>
@@ -172,26 +116,24 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
                 <Button
                     onClick={handleCheck}
                     disabled={!selectedOption}
-                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:bg-muted"
+                    className="w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                    <span className="relative">{t('actions.verify')}</span>
+                    {t('actions.verify')}
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
                         {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-6 h-6" />
                     </span>
                 </Button>
             )}

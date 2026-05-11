@@ -176,7 +176,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                         ></div>
                     </div>
 
-                    <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
+                    <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 shadow-sm">
                         <div className="text-sm text-blue-700 dark:text-blue-300 mb-2">
                             {t('quiz_battle.question', { defaultValue: 'Pregunta' })} {currentQuestion + 1}/{totalQuestions}
                         </div>
@@ -255,18 +255,15 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                             }
                         }}
                         className={cn(
-                            "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             quizPassed
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                            "hover:shadow-[0_2px_0] hover:translate-y-[2px] active:shadow-none active:translate-y-1"
+                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
+                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                            "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                         )}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {quizPassed ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {quizPassed ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
+                        <ArrowRight className="w-5 h-5" />
                     </Button>
                 </div>
             )}

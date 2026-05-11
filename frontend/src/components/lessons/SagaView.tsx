@@ -10,13 +10,13 @@ import { useSagaData, SagaData } from './hooks/useSagaData';
 
 const SagaHeader: React.FC<{ saga: SagaData }> = ({ saga }) => {
     const getThemeColor = (theme: string) => {
-        const baseGlass = "shadow-xl backdrop-blur-sm border border-white/20 dark:border-white/5";
+        const baseStyle = "border-2 shadow-sm";
         switch (theme) {
-            case 'amber': return `${baseGlass} bg-gradient-to-br from-amber-600/10 via-amber-500/5 to-orange-600/10 text-amber-800 dark:text-amber-300`;
-            case 'blue': return `${baseGlass} bg-gradient-to-br from-blue-600/10 via-blue-500/5 to-cyan-600/10 text-blue-800 dark:text-blue-300`;
-            case 'emerald': return `${baseGlass} bg-gradient-to-br from-emerald-600/10 via-emerald-500/5 to-teal-600/10 text-emerald-800 dark:text-emerald-300`;
-            case 'rose': return `${baseGlass} bg-gradient-to-br from-rose-600/10 via-rose-500/5 to-red-600/10 text-rose-800 dark:text-rose-300`;
-            default: return `${baseGlass} bg-gradient-to-br from-purple-600/10 via-purple-500/5 to-indigo-600/10 text-purple-800 dark:text-purple-300`;
+            case 'amber': return `${baseStyle} bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300`;
+            case 'blue': return `${baseStyle} bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-800 dark:text-blue-300`;
+            case 'emerald': return `${baseStyle} bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300`;
+            case 'rose': return `${baseStyle} bg-rose-100 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300`;
+            default: return `${baseStyle} bg-purple-100 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20 text-purple-800 dark:text-purple-300`;
         }
     };
 
@@ -177,7 +177,7 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
         <div className="w-full h-full relative">
 
             {/* Premium Header Title */}
-            <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 border border-purple-500/10 dark:border-purple-500/5 shadow-2xl mb-8">
+            <div className="relative rounded-3xl overflow-hidden bg-card border-2 border-border px-5 py-5 md:px-7 md:py-6 flex items-center gap-5 shadow-sm mb-8">
                 {/* Ambient Glows */}
                 <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-purple-500/15 to-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -186,7 +186,7 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
                     variant="ghost" 
                     size="icon" 
                     onClick={onBack} 
-                    className="relative z-10 rounded-full bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5"
+                    className="relative z-10 w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm border-2 border-slate-200 dark:border-slate-700 active:translate-y-1 active:shadow-none transition-all"
                 >
                     <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                 </Button>

@@ -75,7 +75,7 @@ export function LessonCelebration({
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
       style={{ background: "rgba(0,0,0,0)" }}
     >
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-emerald-100 via-teal-50 to-blue-100 dark:from-[#032b1a] dark:via-[#073b28] dark:to-[#0d1b4b] animate-in fade-in duration-1000" />
+      <div className="absolute inset-0 z-0 bg-emerald-50 dark:bg-emerald-950/20 animate-in fade-in duration-1000" />
       
       {/* Drifting Orbs - Premium Liquid Glass Effects */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none saturate-[120%] dark:saturate-[150%]">
@@ -104,7 +104,7 @@ export function LessonCelebration({
             <div className="absolute top-0 right-10 animate-pulse text-yellow-400 z-10"><Sparkles size={32} /></div>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 drop-shadow-sm">
+          <h2 className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 mb-2 drop-shadow-sm">
             {t("status.great_job")}
           </h2>
           <p className="text-gray-600 dark:text-white/80 text-lg font-medium mb-8">
@@ -114,7 +114,7 @@ export function LessonCelebration({
           {/* Stats Glass Row */}
           <div className="flex justify-center gap-2 sm:gap-4 w-full mb-8">
             {/* Points Box */}
-            <div className="relative rounded-3xl p-3 sm:p-4 bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-xl dark:shadow-2xl flex-1 flex flex-col items-center transition-transform hover:scale-105 saturate-[150%]">
+            <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
                <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                   {/* @ts-ignore */}
                   <dotlottie-wc
@@ -129,7 +129,7 @@ export function LessonCelebration({
             </div>
 
             {/* Time Box */}
-            <div className="relative rounded-3xl p-3 sm:p-4 bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-xl dark:shadow-2xl flex-1 flex flex-col items-center transition-transform hover:scale-105 saturate-[150%]">
+            <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
                <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                    {/* @ts-ignore */}
                    <dotlottie-wc
@@ -145,7 +145,7 @@ export function LessonCelebration({
 
             {/* Streak Box (Only if streak is updated) */}
             {completionResult?.new_streak && (
-              <div className="relative rounded-3xl p-3 sm:p-4 bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-xl dark:shadow-2xl flex-1 flex flex-col items-center transition-transform hover:scale-105 saturate-[150%]">
+              <div className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1">
                  <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
                     {/* @ts-ignore */}
                     <dotlottie-wc
@@ -155,7 +155,7 @@ export function LessonCelebration({
                         style={{ width: "100%", height: "100%", pointerEvents: "none" }}
                     />
                  </div>
-                 <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-br from-[#FFD060] to-[#FF8C00]">{completionResult.new_streak}</span>
+                 <span className="text-xl sm:text-2xl font-black text-orange-500">{completionResult.new_streak}</span>
                  <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.streak")}</span>
               </div>
             )}
@@ -167,15 +167,8 @@ export function LessonCelebration({
            <button
                onClick={onNext}
                disabled={nextLessonCode === undefined}
-               className="relative group w-full py-4 rounded-2xl font-black text-white text-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
-               style={{
-                   background: "linear-gradient(135deg,#10b981 0%,#0891b2 100%)",
-                   boxShadow: "0 12px 32px rgba(16,185,129,0.42)",
-                   border: "1px solid rgba(255,255,255,0.15)",
-               }}
+               className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2"
            >
-               <span className="absolute inset-0 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.14) 50%, transparent 70%)" }} />
-               <span className="relative flex items-center justify-center drop-shadow-sm gap-2">
                    {nextLessonCode === undefined ? (
                        <Loader2 className="w-5 h-5 animate-spin" />
                    ) : nextLessonCode ? (
@@ -186,19 +179,18 @@ export function LessonCelebration({
                        : nextLessonCode
                            ? t('completion.next_lesson')
                            : t('completion.back_to_map', { defaultValue: 'Back to Map' })}
-               </span>
            </button>
            
            <div className="flex gap-3">
                <button
                    onClick={onExit}
-                   className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 dark:text-white bg-white/50 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 backdrop-blur-lg border border-white/70 dark:border-white/10 shadow-lg text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+                   className="flex-1 h-12 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white shadow-[0_4px_0_rgb(148,163,184)] dark:shadow-[0_4px_0_rgb(51,65,85)] hover:shadow-[0_2px_0_rgb(148,163,184)] dark:hover:shadow-[0_2px_0_rgb(51,65,85)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] text-sm sm:text-base transition-all"
                >
                    {t('game_over.exit_button')}
                </button>
                <button
                    onClick={onRetry}
-                   className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 dark:text-white bg-white/50 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 backdrop-blur-lg border border-white/70 dark:border-white/10 shadow-lg text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+                   className="flex-1 h-12 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white shadow-[0_4px_0_rgb(148,163,184)] dark:shadow-[0_4px_0_rgb(51,65,85)] hover:shadow-[0_2px_0_rgb(148,163,184)] dark:hover:shadow-[0_2px_0_rgb(51,65,85)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] text-sm sm:text-base transition-all flex items-center justify-center gap-2"
                >
                    🎮 {t('actions.retry')}
                </button>

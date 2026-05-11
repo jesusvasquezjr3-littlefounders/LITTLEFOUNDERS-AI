@@ -148,7 +148,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     return (
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
             {/* Statement Area */}
-            <div className="liquid-glass-strong p-6 rounded-3xl shadow-xl border border-white/20 dark:border-white/10 mb-6 w-full">
+            <div className="bg-card p-6 rounded-3xl shadow-sm border-2 border-border mb-6 w-full">
                 <div className="flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl font-medium leading-loose">
                     {segments.map((segment: any, idx: number) => {
                         if (segment.type === 'text') {
@@ -161,10 +161,10 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                     key={idx}
                                     onClick={() => filledWord && handleRemoveWord(idx)}
                                     className={cn(
-                                        "min-w-[80px] h-10 px-3 rounded-lg border-b-4 transition-all mx-1 mb-1 font-bold text-center",
+                                        "min-w-[80px] h-10 px-3 rounded-xl border-2 transition-all mx-1 mb-1 font-bold text-center translate-y-[-2px] shadow-sm",
                                         filledWord
                                             ? "bg-purple-100 text-purple-700 border-purple-300 hover:bg-red-100 hover:text-red-600 hover:border-red-300"
-                                            : "bg-slate-100 border-slate-300 animate-pulse"
+                                            : "bg-slate-100 border-slate-300 animate-pulse text-transparent"
                                     )}
                                 >
                                     {filledWord ? filledWord.text : "____"}
@@ -222,10 +222,10 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                 onClick={() => handleWordSelect(word)}
                                 disabled={isUsed || isChecked}
                                 className={cn(
-                                    "px-6 py-3 rounded-xl font-bold shadow-sm transition-all border-b-4 text-lg",
+                                    "px-6 py-3 rounded-2xl font-bold transition-all border-2 text-lg",
                                     isUsed
                                         ? "opacity-0 scale-50 pointer-events-none"
-                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none bg-gradient-to-br from-indigo-50 to-white dark:from-slate-800 dark:to-slate-900"
+                                        : "bg-card text-foreground border-border shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                                 )}
                             >
                                 {word.text}
@@ -240,26 +240,24 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                 <Button
                     onClick={handleCheck}
                     disabled={!canCheck}
-                    className="relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                    className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">{t('actions.verify', { defaultValue: 'Verificar' })}</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
                         {feedback === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-6 h-6" />
                     </span>
                 </Button>
             )}

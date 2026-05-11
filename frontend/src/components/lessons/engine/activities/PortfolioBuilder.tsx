@@ -156,13 +156,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                 </p>
                 <Button
                     onClick={onNext}
-                    className="mt-6 relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                    className="mt-6 w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                    <span className="relative flex items-center justify-center">
-                        {t('actions.continue', { defaultValue: 'Continuar' })}
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                    </span>
+                    {t('actions.continue', { defaultValue: 'Continuar' })}
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
             </div>
         );
@@ -251,7 +248,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {isLegacy && (
                 <div className="mb-6 space-y-3">
                     {assets.map((asset) => (
-                        <div key={asset.id} className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
+                        <div key={asset.id} className="bg-card rounded-2xl p-4 border-2 border-border shadow-sm">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <div
@@ -334,7 +331,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
             {/* Legacy: Risk Indicator */}
             {isLegacy && (
-                <div className="mb-6 bg-gradient-to-r from-green-100 via-yellow-100 to-red-100 dark:from-green-950/30 dark:via-yellow-950/30 dark:to-red-950/30 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4">
+                <div className="mb-6 bg-slate-50 dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('portfolio_builder.risk_level', { defaultValue: 'Nivel de riesgo' })}
@@ -369,16 +366,13 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                     <Button
                         onClick={handleSubmit}
                         disabled={!canSubmit}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            <PieChart className="w-5 h-5 mr-2" />
-                            {isOptions
-                                ? t('actions.select_option', { defaultValue: 'Seleccionar opción' })
-                                : t('actions.build_portfolio', { defaultValue: 'Construir portfolio' })
-                            }
-                        </span>
+                        <PieChart className="w-5 h-5 sm:w-6 sm:h-6" />
+                        {isOptions
+                            ? t('actions.select_option', { defaultValue: 'Seleccionar opción' })
+                            : t('actions.build_portfolio', { defaultValue: 'Construir portfolio' })
+                        }
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -390,13 +384,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue', { defaultValue: 'Continuar' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue', { defaultValue: 'Continuar' })}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

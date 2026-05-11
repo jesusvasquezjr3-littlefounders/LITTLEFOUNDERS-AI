@@ -85,13 +85,13 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
     const colorClasses: Record<string, { selected: string; unselected: string; label: string; badge: string }> = {
         red: {
-            selected: 'bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-xl',
+            selected: 'bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-sm',
             unselected: 'opacity-50',
             label: 'text-red-700 dark:text-red-400',
             badge: 'text-red-600',
         },
         green: {
-            selected: 'bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-xl',
+            selected: 'bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-sm',
             unselected: 'opacity-50',
             label: 'text-green-700 dark:text-green-400',
             badge: 'text-green-600',
@@ -102,7 +102,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Scenario / Instruction */}
             {scenarioText && (
-                <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
+                <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
                         <Brain className="w-6 h-6 text-blue-600" />
                         <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
@@ -181,13 +181,10 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                     <Button
                         onClick={handleSubmit}
                         disabled={!selectedId}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.compare', { defaultValue: 'Comparar' })}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {t('actions.compare', { defaultValue: 'Comparar' })}
+                        <ArrowRight className="w-5 h-5" />
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -205,13 +202,10 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue', { defaultValue: 'Continuar' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue', { defaultValue: 'Continuar' })}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

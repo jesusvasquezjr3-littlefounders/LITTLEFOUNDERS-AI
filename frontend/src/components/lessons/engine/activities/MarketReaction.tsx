@@ -55,7 +55,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
         <div className="w-full max-w-3xl animate-slide-in-bottom">
 
             {/* Newspaper Headline */}
-            <div className="mb-8 liquid-glass-strong rounded-3xl p-8 border border-white/20 dark:border-white/10 shadow-xl">
+            <div className="mb-8 bg-card rounded-3xl p-6 sm:p-8 border-2 border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-400 dark:border-slate-600">
                     <Newspaper className="w-8 h-8 text-slate-700 dark:text-slate-300" />
                     <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">
@@ -85,14 +85,14 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                             onClick={() => handleSelectOption(option.id)}
                             disabled={feedback !== 'none'}
                             className={cn(
-                                "p-4 rounded-2xl border-2 transition-all duration-300 transform",
+                                "p-4 rounded-[2rem] border-2 transition-all duration-300 transform",
                                 "flex flex-col items-center justify-center gap-4 min-h-[120px]",
-                                "bg-white dark:bg-slate-800",
-                                isSelected && feedback === 'none' && "ring-4 ring-blue-400 dark:ring-blue-600 scale-105 shadow-xl",
-                                !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg hover:-translate-y-1",
-                                feedback === 'success' && isSelected && isCorrect && "border-green-500 ring-4 ring-green-300 scale-105",
-                                feedback === 'error' && isSelected && "border-red-500 ring-4 ring-red-300",
-                                feedback !== 'none' && !isSelected && "opacity-50 grayscale"
+                                "bg-card text-foreground",
+                                isSelected && feedback === 'none' && "border-blue-500 shadow-none ring-4 ring-blue-300 translate-y-[4px]",
+                                !isSelected && feedback === 'none' && "border-border shadow-[0_8px_0_hsl(var(--border))] hover:shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
+                                feedback === 'success' && isSelected && isCorrect && "bg-green-100 dark:bg-green-900/30 border-green-500 ring-4 ring-green-300 scale-105",
+                                feedback === 'error' && isSelected && "bg-red-100 dark:bg-red-900/30 border-red-500 ring-4 ring-red-300",
+                                feedback !== 'none' && !isSelected && "opacity-50 grayscale border-border shadow-none"
                             )}
                         >
                             <div className="text-center">
@@ -131,31 +131,24 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                     <Button
                         onClick={handleCheck}
                         disabled={!selectedOption}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
+                        {t('actions.verify')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
-                            {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
-                        </p>
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                "hover:-translate-y-[2px]"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

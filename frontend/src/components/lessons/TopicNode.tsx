@@ -15,12 +15,12 @@ export interface Topic {
 // ============== THEME COLORS ==============
 
 const THEME_COLORS = {
-    amber: { base: "bg-amber-500", border: "border-amber-600", shadow: "shadow-amber-900/20" },
-    purple: { base: "bg-purple-500", border: "border-purple-600", shadow: "shadow-purple-900/20" },
-    emerald: { base: "bg-emerald-500", border: "border-emerald-600", shadow: "shadow-emerald-900/20" },
-    blue: { base: "bg-blue-500", border: "border-blue-600", shadow: "shadow-blue-900/20" },
-    rose: { base: "bg-rose-500", border: "border-rose-600", shadow: "shadow-rose-900/20" },
-    slate: { base: "bg-slate-500", border: "border-slate-600", shadow: "shadow-slate-900/20" },
+    amber: { base: "bg-amber-500", shadow: "shadow-[0_6px_0_rgb(217,119,6)] hover:shadow-[0_4px_0_rgb(217,119,6)]" },
+    purple: { base: "bg-purple-500", shadow: "shadow-[0_6px_0_rgb(107,33,168)] hover:shadow-[0_4px_0_rgb(107,33,168)]" },
+    emerald: { base: "bg-emerald-500", shadow: "shadow-[0_6px_0_rgb(5,150,105)] hover:shadow-[0_4px_0_rgb(5,150,105)]" },
+    blue: { base: "bg-blue-500", shadow: "shadow-[0_6px_0_rgb(29,78,216)] hover:shadow-[0_4px_0_rgb(29,78,216)]" },
+    rose: { base: "bg-rose-500", shadow: "shadow-[0_6px_0_rgb(225,29,72)] hover:shadow-[0_4px_0_rgb(225,29,72)]" },
+    slate: { base: "bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400", shadow: "shadow-[0_6px_0_rgb(148,163,184)] dark:shadow-[0_6px_0_rgb(30,41,59)] hover:shadow-[0_4px_0_rgb(148,163,184)] dark:hover:shadow-[0_4px_0_rgb(30,41,59)]" },
 };
 
 // ============== COMPONENT ==============
@@ -62,12 +62,11 @@ export const TopicNode: React.FC<TopicNodeProps> = ({ topic, index, totalInSaga,
                 onClick={onClick}
                 disabled={topic.isLocked}
                 className={`
-          group relative w-[70px] h-[60px] rounded-[30px] flex items-center justify-center
-          transition-all duration-150 active:scale-95 outline-none
-          ${colors.base}
-          border-b-[6px] ${colors.border} active:border-b-0 active:translate-y-[6px]
-          ${topic.isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:brightness-110'}
-          shadow-xl
+          group relative w-[70px] h-[70px] rounded-[35px] flex items-center justify-center
+          transition-all duration-150 outline-none
+          ${colors.base} ${colors.shadow}
+          active:translate-y-[6px] active:shadow-none hover:-translate-y-[2px]
+          ${topic.isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer hover:brightness-110'}
         `}
             >
                 {/* Shine effect */}

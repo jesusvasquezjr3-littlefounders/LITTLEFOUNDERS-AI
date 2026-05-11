@@ -80,7 +80,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
             {/* Sliders */}
             <div className="space-y-6 mb-8">
                 {/* Principal */}
-                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
+                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.principal')}
@@ -104,7 +104,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Interest Rate */}
-                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
+                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.rate')}
@@ -128,7 +128,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Time */}
-                <div className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
+                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
                             {t('interest_calculator.time')}
@@ -154,7 +154,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Results */}
             <div className="mb-8">
-                <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-6 text-white shadow-xl">
+                <div className="bg-emerald-500 border-2 border-emerald-600 rounded-2xl p-6 text-white shadow-sm">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                         <div>
                             <div className="text-xs opacity-80 mb-1">{t('interest_calculator.initial')}</div>
@@ -174,7 +174,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Visual Chart - Comparative Line Chart */}
             <div className="mb-8">
-                <div className="liquid-glass-strong rounded-2xl p-6 border border-white/20 dark:border-white/10 shadow-xl">
+                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-6">
                     {/* Legend */}
                     <div className="flex justify-center gap-6 mb-4">
                         <div className="flex items-center gap-2">
@@ -276,13 +276,10 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 mr-2" />
-                            {t('interest_calculator.calculate')}
-                        </span>
+                        <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+                        {t('interest_calculator.calculate')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -291,13 +288,10 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

@@ -32,7 +32,7 @@ export function IntroNarrativeStage({ exercise, onComplete }: IntroNarrativeStag
             <Button
                 size="lg"
                 onClick={onComplete}
-                className="mt-4 gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                className="mt-4 gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
             >
                 Continuar
                 <ArrowRight className="w-5 h-5" />

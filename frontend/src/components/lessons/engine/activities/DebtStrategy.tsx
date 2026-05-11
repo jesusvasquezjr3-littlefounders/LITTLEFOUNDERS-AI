@@ -137,12 +137,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 </div>
                 <Button
                     onClick={onNext}
-                    className="mt-6 relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                    className="mt-6 w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                 >
-                    <span className="relative flex items-center justify-center">
-                        {t('actions.continue', { defaultValue: 'Continuar' })}
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                    </span>
+                    {t('actions.continue', { defaultValue: 'Continuar' })}
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
             </div>
         );
@@ -157,7 +155,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 "animate-in fade-in slide-in-from-bottom-4 duration-500"
             )}>
                 {/* Context Card */}
-                <div className="mb-6 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-950/30 dark:to-orange-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl">
+                <div className="mb-6 p-6 bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl shadow-sm">
                     {scenario && (
                         <p className="text-sm text-yellow-900 dark:text-yellow-100 mb-3 leading-relaxed">
                             {scenario}
@@ -212,15 +210,12 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                         <Button
                             onClick={handleOptionSubmit}
                             disabled={!selectedOptionId || isSimulating}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                <TrendingDown className="w-5 h-5 mr-2" />
-                                {isSimulating
-                                    ? t('debt_strategy.submitting', { defaultValue: 'Enviando...' })
-                                    : t('debt_strategy.submit', { defaultValue: 'Responder' })}
-                            </span>
+                            <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
+                            {isSimulating
+                                ? t('debt_strategy.submitting', { defaultValue: 'Enviando...' })
+                                : t('debt_strategy.submit', { defaultValue: 'Responder' })}
                         </Button>
                     ) : (
                         <div className="flex flex-col items-center w-full">
@@ -234,15 +229,12 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                             </p>
                             <Button
                                 onClick={handleContinue}
-                                className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                                className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                                <span className="relative flex items-center justify-center">
-                                    {feedback === 'success'
-                                        ? t('actions.continue', { defaultValue: 'Continuar' })
-                                        : t('actions.retry', { defaultValue: 'Reintentar' })}
-                                    <ArrowRight className="ml-2 w-5 h-5" />
-                                </span>
+                                {feedback === 'success'
+                                    ? t('actions.continue', { defaultValue: 'Continuar' })
+                                    : t('actions.retry', { defaultValue: 'Reintentar' })}
+                                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                             </Button>
                         </div>
                     )}
@@ -259,7 +251,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             "animate-in fade-in slide-in-from-bottom-4 duration-500"
         )}>
             {/* Explanation Card */}
-            <div className="mb-6 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-950/30 dark:to-orange-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl">
+            <div className="mb-6 p-6 bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl shadow-sm">
                 <h3 className="text-lg font-black text-yellow-900 dark:text-yellow-100 mb-2 flex items-center gap-2">
                     {t('debt_strategy.intro_title', { defaultValue: 'Estrategia de Pago de Deudas' })}
                 </h3>
@@ -326,10 +318,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Snowball */}
                 <div className={cn(
-                    "p-6 rounded-2xl border transition-all shadow-xl",
+                    "p-6 rounded-2xl border transition-all shadow-sm",
                     selectedStrategy === 'snowball'
                         ? "bg-blue-100 dark:bg-blue-950 border-blue-500"
-                        : "liquid-glass-strong border-white/20 dark:border-white/10"
+                        : "bg-card border-border shadow-sm"
                 )}>
                     <h3 className="text-lg font-black text-blue-600 mb-4 flex items-center gap-2">
                         ❄️ {t('debt_strategy.snowball', { defaultValue: 'Bola de Nieve' })}
@@ -363,10 +355,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 
                 {/* Avalanche */}
                 <div className={cn(
-                    "p-6 rounded-2xl border transition-all shadow-xl",
+                    "p-6 rounded-2xl border transition-all shadow-sm",
                     selectedStrategy === 'avalanche'
                         ? "bg-purple-100 dark:bg-purple-950 border-purple-500"
-                        : "liquid-glass-strong border-white/20 dark:border-white/10"
+                        : "bg-card border-border shadow-sm"
                 )}>
                     <h3 className="text-lg font-black text-purple-600 mb-4 flex items-center gap-2">
                         🏔️ {t('debt_strategy.avalanche', { defaultValue: 'Avalancha' })}
@@ -405,15 +397,12 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                     <Button
                         onClick={handleSimulate}
                         disabled={isSimulating}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            <TrendingDown className="w-5 h-5 mr-2" />
-                            {isSimulating
-                                ? t('debt_strategy.simulating', { defaultValue: 'Simulando...' })
-                                : t('debt_strategy.simulate', { defaultValue: 'Simular Estrategia' })}
-                        </span>
+                        <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
+                        {isSimulating
+                            ? t('debt_strategy.simulating', { defaultValue: 'Simulando...' })
+                            : t('debt_strategy.simulate', { defaultValue: 'Simular Estrategia' })}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -444,13 +433,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                         </div>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue', { defaultValue: 'Continuar' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue', { defaultValue: 'Continuar' })}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

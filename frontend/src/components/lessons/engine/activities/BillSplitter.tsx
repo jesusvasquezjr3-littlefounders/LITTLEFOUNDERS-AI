@@ -151,7 +151,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
 
             {/* Items List (only in proportional mode) */}
             {mode === 'proportional' && (
-                <div className="mb-6 liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
+                <div className="mb-6 bg-card border-2 border-border shadow-sm rounded-2xl p-4">
                     <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
                         {t('bill_splitter.assign_items')}
                     </h3>
@@ -211,7 +211,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
             </div>
 
             {/* Results */}
-            <div className="mb-6 bg-gradient-to-r from-blue-100 to-green-100 dark:from-blue-950/30 dark:to-green-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
+            <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 shadow-sm">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {people.map((person: any) => (
                         <div key={person.id} className="bg-white dark:bg-slate-800 rounded-xl p-4">
@@ -239,13 +239,10 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.split_bill')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {t('actions.split_bill')}
+                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -260,18 +257,15 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                "hover:-translate-y-[2px]"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

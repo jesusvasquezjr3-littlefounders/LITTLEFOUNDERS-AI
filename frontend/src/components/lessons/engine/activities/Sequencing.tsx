@@ -88,9 +88,9 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                         <div
                             key={item.id}
                             className={cn(
-                                "flex items-center gap-3 p-4 liquid-glass-strong border rounded-2xl shadow-xl transition-all duration-300",
-                                isChecked && feedback === 'success' ? "border-green-400 bg-green-50 dark:bg-green-900/20" : "border-white/20 dark:border-white/10",
-                                isChecked && feedback === 'error' ? "border-red-300" : ""
+                                "flex items-center gap-3 p-4 bg-card border-2 rounded-2xl shadow-sm transition-all duration-300",
+                                isChecked && feedback === 'success' ? "border-green-400 bg-green-50 dark:bg-green-900/20" : "border-border",
+                                isChecked && feedback === 'error' ? "border-red-400 bg-red-50 dark:bg-red-900/20" : ""
                             )}
                         >
                             {/* Order Badge */}
@@ -142,26 +142,24 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
             {!isChecked ? (
                 <Button
                     onClick={handleCheck}
-                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
                         {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
                     </span>
                 </Button>
             )}

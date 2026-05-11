@@ -612,7 +612,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // ============ IDLE STATE - START SCREEN ============
     if (state === 'IDLE') {
         return (
-            <div className="fixed inset-0 bg-gradient-to-b from-primary/10 via-background to-background flex flex-col overflow-hidden">
+            <div className="fixed inset-0 bg-background flex flex-col overflow-hidden">
                 {/* Decorative orbs */}
                 <div className="absolute -top-20 -left-20 w-72 h-72 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -639,26 +639,25 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     </div>
 
                     {/* Lesson Info Card */}
-                    <div className="relative liquid-glass-strong rounded-3xl border border-white/20 dark:border-white/10 px-6 py-6 text-center max-w-sm w-full mb-5 overflow-hidden">
-                        <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-                        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 relative">
+                    <div className="relative bg-card rounded-3xl border-2 border-border px-6 py-6 text-center max-w-sm w-full mb-5 shadow-sm">
+                        <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-2 relative tracking-tight">
                             {data.lesson.title}
                         </h1>
-                        <p className="text-muted-foreground mb-5 relative text-sm leading-relaxed">
+                        <p className="text-muted-foreground mb-5 relative text-base font-medium leading-relaxed">
                             {data.lesson.description}
                         </p>
 
                         {/* Rewards */}
-                        <div className="flex justify-center gap-3 relative">
-                            <div className="flex items-center gap-2 bg-yellow-500/10 dark:bg-yellow-500/20 px-4 py-2 rounded-full border border-yellow-500/20">
-                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                                <span className="font-bold text-yellow-600 dark:text-yellow-400 text-sm">
+                        <div className="flex justify-center gap-4 relative">
+                            <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-500/20 px-4 py-2 rounded-2xl border-2 border-yellow-400 dark:border-yellow-500/30 shadow-sm">
+                                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                                <span className="font-bold text-yellow-700 dark:text-yellow-400 text-base">
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 bg-blue-500/10 dark:bg-blue-500/20 px-4 py-2 rounded-full border border-blue-500/20">
-                                <Zap className="w-4 h-4 text-blue-500" />
-                                <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">
+                            <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm">
+                                <Zap className="w-5 h-5 text-blue-500 fill-blue-500" />
+                                <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
                                     {data.meta.estimated_duration_seconds}s
                                 </span>
                             </div>
@@ -669,10 +668,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     <Button
                         onClick={startLesson}
                         size="lg"
-                        className="relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative">{t('start.button')}</span>
+                        {t('start.button')}
                     </Button>
                 </div>
             </div>
@@ -691,41 +689,36 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
-                    className="w-9 h-9 rounded-full liquid-glass-subtle hover:liquid-glass flex items-center justify-center transition-all flex-shrink-0 border border-white/20 dark:border-white/10"
+                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all flex-shrink-0 border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
                 >
-                    <X className="w-4 h-4 text-muted-foreground" />
+                    <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 </button>
 
                 {/* Progress Bar */}
-                <div className="flex-1 h-4 liquid-glass-subtle rounded-full overflow-hidden border border-white/20 dark:border-white/10">
+                <div className="flex-1 h-5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 relative shadow-inner">
                     <div
-                        className="h-full bg-primary rounded-full transition-all duration-500 ease-out relative"
+                        className="h-full bg-green-500 rounded-full transition-all duration-500 ease-out relative"
                         style={{ width: `${progress}%` }}
                     >
-                        <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]" />
+                        <div className="absolute top-1 left-2 right-2 h-1.5 bg-white/30 rounded-full" />
                     </div>
                 </div>
 
-                {/* Exercise Counter */}
-                <span className="text-sm font-bold text-muted-foreground min-w-[40px] text-center">
-                    {exerciseNumber}
-                </span>
-
                 {/* Energy (formerly Lives) */}
-                <div className="flex items-center gap-1 bg-yellow-500/10 dark:bg-yellow-500/20 px-3 py-1.5 rounded-full border border-yellow-500/20">
-                    <Zap className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">{lives}</span>
+                <div className="flex items-center gap-1.5 bg-red-100 dark:bg-red-500/20 px-3 py-1.5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 shadow-sm">
+                    <Zap className="w-5 h-5 text-red-500 fill-red-500" />
+                    <span className="text-base font-bold text-red-600 dark:text-red-400">{lives}</span>
                 </div>
 
                 {/* Audio Toggle */}
                 <button
                     onClick={() => setAudioMuted()}
-                    className="w-9 h-9 rounded-full liquid-glass-subtle hover:liquid-glass flex items-center justify-center transition-all border border-white/20 dark:border-white/10"
+                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm active:translate-y-1 active:shadow-none"
                 >
                     {audioMuted ? (
-                        <VolumeX className="w-4 h-4 text-muted-foreground" />
+                        <VolumeX className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                     ) : (
-                        <Volume2 className="w-4 h-4 text-muted-foreground" />
+                        <Volume2 className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                     )}
                 </button>
             </div>
@@ -737,14 +730,15 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
                         {/* Speech Bubble - ADAPTIVE */}
-                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0">
-                            <div className="relative liquid-glass-subtle rounded-2xl shadow-sm border border-white/20 dark:border-white/10 lesson-speech mx-2">
-                                <p className="text-center font-medium text-foreground leading-snug">
+                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in">
+                            <div className="relative bg-card rounded-2xl shadow-sm border-2 border-border lesson-speech mx-2 px-5 py-3">
+                                <p className="text-center font-bold text-lg text-foreground leading-snug">
                                     {getCurrentText()}
                                 </p>
                                 {/* Tail */}
-                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
-                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white/80 dark:border-t-slate-800/80" />
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+                                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px] border-t-border" />
+                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-card absolute -top-[12px] -left-[8px]" />
                                 </div>
                             </div>
                         </div>
@@ -1206,17 +1200,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     'spot_trap', 'impact_meter', 'mindset_comparison'
                 ].includes(currentExercise.type) && (
                     <div className="w-full max-w-md mx-auto animate-slide-in-bottom">
-                        <div className="liquid-glass-strong rounded-3xl p-8 text-center space-y-4 border border-white/20 dark:border-white/10 shadow-xl">
+                        <div className="bg-card rounded-3xl p-8 text-center space-y-4 border-2 border-border shadow-sm">
                             <div className="text-4xl">🛠️</div>
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                            <h3 className="text-lg font-bold text-foreground">
                                 {t('errors.unsupported_exercise', { defaultValue: 'Ejercicio en desarrollo' })}
                             </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 {t('errors.unsupported_exercise_desc', { defaultValue: 'Este tipo de ejercicio aún no está disponible. Puedes saltarlo para continuar.' })}
                             </p>
                             <button
                                 onClick={handleNext}
-                                className="w-full py-3 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition-colors"
+                                className="w-full h-14 sm:h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white font-bold shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                             >
                                 {t('actions.skip', { defaultValue: 'Saltar ejercicio' })} →
                             </button>
@@ -1292,7 +1286,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 }}
             >
                 <DialogContent
-                    className="sm:max-w-md liquid-glass-strong border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl"
+                    className="sm:max-w-md bg-card border-2 border-border shadow-sm rounded-3xl"
                     onPointerDownOutside={(e) => e.preventDefault()}
                     onEscapeKeyDown={(e) => e.preventDefault()}
                 >
@@ -1311,7 +1305,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         <div className="flex gap-3">
                             <Button
                                 onClick={handleClose}
-                                className="flex-1 h-12 rounded-xl font-semibold liquid-glass-subtle border border-white/20 dark:border-white/10 text-foreground hover:liquid-glass"
+                                className="flex-1 h-14 sm:h-16 rounded-2xl font-bold bg-muted text-muted-foreground border-2 border-border shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                             >
                                 {t('game_over.exit_button')}
                             </Button>
@@ -1322,13 +1316,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                     startLesson();
                                     playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
                                 }}
-                                className="relative overflow-hidden flex-1 h-12 rounded-xl font-semibold bg-purple-600 hover:bg-purple-700 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                                className="flex-1 h-14 sm:h-16 rounded-2xl font-bold bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                                <span className="relative flex items-center justify-center">
-                                    <Zap className="w-4 h-4 mr-2 fill-current" />
-                                    {t('game_over.retry_button')}
-                                </span>
+                                <Zap className="w-4 h-4 fill-current" />
+                                {t('game_over.retry_button')}
                             </Button>
                         </div>
                     </div>

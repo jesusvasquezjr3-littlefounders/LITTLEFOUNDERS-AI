@@ -99,12 +99,12 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                             onClick={() => handleCardClick(index)}
                             disabled={isMatched || isChecking}
                             className={cn(
-                                "h-24 sm:h-32 rounded-xl border-b-4 p-2 flex items-center justify-center text-center font-bold text-lg transition-all transform duration-300 perspective-1000",
+                                "h-20 sm:h-24 rounded-2xl border-2 p-2 flex items-center justify-center text-center font-bold text-sm sm:text-base transition-all transform duration-300 perspective-1000",
                                 isMatched
                                     ? "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 opacity-50 scale-95"
                                     : isSelected
-                                        ? "bg-purple-500 border-purple-700 text-white rotate-y-180"
-                                        : "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md"
+                                        ? "bg-purple-500 border-purple-700 text-white shadow-none translate-y-[4px] rotate-y-180"
+                                        : "bg-card border-border shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >
                             <span className={cn("transition-opacity duration-300", isMatched ? "opacity-100" : isSelected ? "opacity-100" : "opacity-100")}>
@@ -130,17 +130,16 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                         }
                     }}
                     className={cn(
-                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:shadow-none active:translate-y-1"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
                         {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-6 h-6" />
                     </span>
                 </Button>
             )}

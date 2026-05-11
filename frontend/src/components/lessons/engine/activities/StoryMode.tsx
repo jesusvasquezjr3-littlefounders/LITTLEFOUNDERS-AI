@@ -156,10 +156,10 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in duration-500 relative px-4">
-            <div className="w-full max-w-4xl liquid-glass-strong rounded-3xl shadow-xl border border-white/20 dark:border-white/10 overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
+            <div className="w-full max-w-4xl bg-card rounded-3xl shadow-sm border-2 border-border overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
                 <div className="absolute top-0 left-0 w-full h-4 bg-amber-300 dark:bg-amber-800 z-10" />
 
-                <div className="w-full md:w-1/2 bg-gradient-to-b from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 flex items-end justify-center p-6 relative overflow-hidden">
+                <div className="w-full md:w-1/2 bg-blue-50 dark:bg-slate-900 flex items-end justify-center p-6 relative overflow-hidden">
                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-multiply dark:mix-blend-screen" />
                     <div className={cn("relative z-10 transition-all duration-500 transform", isAnimating ? "opacity-0 translate-y-10" : "opacity-100 translate-y-0")}>
                         {renderCharacter()}
@@ -186,9 +186,9 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                                             key={choice.id}
                                             onClick={() => handleChoice(choice.next_page)}
                                             className={cn(
-                                                "w-full h-auto py-4 text-left justify-start text-lg whitespace-normal rounded-xl border-2 transition-all",
-                                                "bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-foreground border-amber-200 dark:border-slate-700",
-                                                "shadow-sm hover:shadow-md hover:border-amber-400"
+                                                "w-full h-auto min-h-[3.5rem] py-3 text-left justify-start text-base sm:text-lg whitespace-normal rounded-2xl border-2 transition-all",
+                                                "bg-card border-border hover:border-amber-400 dark:hover:border-amber-500 text-foreground",
+                                                "shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px]"
                                             )}
                                         >
                                             <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-sm flex-shrink-0">
@@ -210,12 +210,10 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
                                         )}
                                         <Button
                                             onClick={handleNext}
-                                            className="relative overflow-hidden flex-1 h-14 text-lg font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                                            className="w-full flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-2xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                                         >
-                                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                                            <span className="relative flex items-center justify-center">
-                                                {pageIndex === pages.length - 1 ? t('actions.finish', { defaultValue: 'Finalizar' }) : t('actions.continue', { defaultValue: 'Continuar' })} <ArrowRight className="ml-2 w-5 h-5" />
-                                            </span>
+                                            {pageIndex === pages.length - 1 ? t('actions.finish', { defaultValue: 'Finalizar' }) : t('actions.continue', { defaultValue: 'Continuar' })} 
+                                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                                         </Button>
                                     </div>
                                 )}

@@ -121,7 +121,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     const contextText = exercise.content?.scenario || exercise.content?.instruction || "...";
 
     return (
-        <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col liquid-glass-strong rounded-3xl overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
+        <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col bg-card rounded-3xl overflow-hidden border-2 border-border shadow-sm">
 
             {/* Header */}
             <div className="bg-slate-100 dark:bg-slate-800 p-4 border-b dark:border-slate-700 flex items-center gap-3">
@@ -191,7 +191,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                                 key={choice.id}
                                 onClick={() => handleChoice(choice)}
                                 disabled={selectedChoiceId !== null}
-                                className="w-full text-left p-3 rounded-xl border-2 border-slate-100 dark:border-slate-700 hover:border-purple-200 dark:hover:border-purple-800 bg-slate-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors text-sm font-medium text-slate-800 dark:text-slate-200"
+                                className="w-full text-left p-4 rounded-2xl border-2 border-border hover:border-purple-400 dark:hover:border-purple-500 bg-card hover:bg-purple-50 dark:hover:bg-purple-900/20 shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-sm sm:text-base font-bold text-foreground disabled:opacity-50 disabled:translate-y-0 disabled:shadow-[0_4px_0_hsl(var(--border))]"
                             >
                                 {choice.text}
                             </button>
@@ -205,17 +205,15 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full h-12 text-lg font-bold rounded-xl transition-all",
+                                "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                "hover:-translate-y-[2px]"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

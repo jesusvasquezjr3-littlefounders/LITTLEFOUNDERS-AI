@@ -43,9 +43,9 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 text-center max-w-md">
                     {content.instruction || content.scenario || t('credit_score.no_data', { defaultValue: 'Ejercicio educativo sobre manejo del crédito.' })}
                 </p>
-                <Button onClick={onNext} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-2xl">
+                <Button onClick={onNext} className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(147,51,234)] hover:shadow-[0_2px_0_rgb(147,51,234)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2">
                     {t('actions.continue', { defaultValue: 'Continuar' })}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
             </div>
         );
@@ -87,10 +87,10 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
     };
 
     const getScoreColor = () => {
-        if (score >= 740) return 'from-green-500 to-emerald-600';
-        if (score >= 670) return 'from-yellow-500 to-amber-600';
-        if (score >= 580) return 'from-orange-500 to-red-500';
-        return 'from-red-600 to-rose-700';
+        if (score >= 740) return 'bg-green-500 border-2 border-green-600 text-white';
+        if (score >= 670) return 'bg-yellow-500 border-2 border-yellow-600 text-white';
+        if (score >= 580) return 'bg-orange-500 border-2 border-orange-600 text-white';
+        return 'bg-red-500 border-2 border-red-600 text-white';
     };
 
     const getScoreLabel = () => {
@@ -108,7 +108,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {/* Credit Score Meter */}
             <div className="mb-6">
                 <div className={cn(
-                    "bg-gradient-to-r text-white rounded-2xl p-6 shadow-xl text-center",
+                    "rounded-2xl p-6 shadow-sm text-center",
                     getScoreColor()
                 )}>
                     <div className="flex items-center justify-center gap-2 mb-2">
@@ -137,11 +137,11 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {/* Scenario */}
             {scenario && feedback === 'none' && (
                 <>
-                    <div className="mb-6 liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl">
-                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    <div className="mb-6 bg-card rounded-2xl p-4 border-2 border-border shadow-sm">
+                        <h3 className="text-sm font-bold text-foreground mb-2">
                             {t('credit_score.scenario')} {currentScenario + 1}/{scenarios.length}
                         </h3>
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <p className="text-sm sm:text-base text-muted-foreground">
                             {scenario.description}
                         </p>
                     </div>
@@ -151,17 +151,17 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                             <button
                                 key={option.id}
                                 onClick={() => handleDecision(option.id)}
-                                className="w-full text-left p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all"
+                                className="w-full text-left p-4 rounded-2xl border-2 border-border hover:border-purple-400 dark:hover:border-purple-500 bg-card hover:bg-purple-50 dark:hover:bg-purple-900/20 shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
                             >
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 flex-1">
+                                <div className="flex items-center justify-between gap-4">
+                                    <p className="text-sm sm:text-base font-bold text-foreground flex-1 leading-snug">
                                         {option.text}
                                     </p>
                                     <div className={cn(
-                                        "text-sm font-bold ml-3",
-                                        option.scoreChange > 0 && "text-green-600 dark:text-green-400",
-                                        option.scoreChange < 0 && "text-red-600 dark:text-red-400",
-                                        option.scoreChange === 0 && "text-slate-600 dark:text-slate-400"
+                                        "text-sm sm:text-base font-black shrink-0 px-3 py-1.5 rounded-xl border-2 shadow-sm bg-background",
+                                        option.scoreChange > 0 ? "text-green-600 dark:text-green-400 border-green-200 dark:border-green-800" :
+                                            option.scoreChange < 0 ? "text-red-600 dark:text-red-400 border-red-200 dark:border-red-800" :
+                                                "text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800"
                                     )}>
                                         {option.scoreChange > 0 && '+'}
                                         {option.scoreChange}
@@ -198,18 +198,15 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                            "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            "hover:-translate-y-[2px]"
                         )}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                     </Button>
                 </div>
             )}

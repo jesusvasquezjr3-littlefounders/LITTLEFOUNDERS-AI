@@ -147,8 +147,8 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                             className={cn(
                                 "p-6 rounded-2xl border-2 transition-all text-left",
                                 isSelected
-                                    ? "bg-blue-100 dark:bg-blue-950 border-blue-500 scale-105 shadow-xl"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300"
+                                    ? "bg-blue-100 dark:bg-blue-950 border-blue-500 scale-105 shadow-[0_4px_0_rgb(59,130,246)]"
+                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300 hover:-translate-y-1 hover:shadow-sm"
                             )}
                         >
                             <div className="flex items-center gap-2 mb-4">
@@ -218,13 +218,10 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                     <Button
                         onClick={handleSubmit}
                         disabled={!selected}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.select_offer', { defaultValue: 'Select Offer' })}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {t('actions.select_offer', { defaultValue: 'Select Offer' })}
+                        <ArrowRight className="w-5 h-5" />
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -235,13 +232,10 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue', { defaultValue: 'Continue' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue', { defaultValue: 'Continue' })}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

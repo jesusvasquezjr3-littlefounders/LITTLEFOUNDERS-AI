@@ -82,12 +82,12 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
 
             {/* Speech Bubble with Narrative */}
             <div className="w-full flex justify-center">
-                <div className="relative liquid-glass-strong rounded-xl shadow-xl border border-white/20 dark:border-white/10 px-6 py-4 max-w-md">
+                <div className="relative bg-card border-2 border-border rounded-xl shadow-sm px-6 py-4 max-w-md">
                     <p className="text-center font-medium text-foreground leading-snug">
                         {narrativeText}
                     </p>
                     {/* Speech bubble arrow */}
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-card border-l border-t border-border rotate-45" />
+                    <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-4 h-4 bg-card border-l-2 border-t-2 border-border rotate-45" />
                 </div>
             </div>
 
@@ -103,9 +103,8 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             <Button
                 onClick={onNext}
                 disabled={isAudioPlaying}
-                className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-[0_4px_0_rgb(107,33,168)]"
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                 <span className="relative flex items-center justify-center">{t('actions.continue')}</span>
             </Button>
         </div>

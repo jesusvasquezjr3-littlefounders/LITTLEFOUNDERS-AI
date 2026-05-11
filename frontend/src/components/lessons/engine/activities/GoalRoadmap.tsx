@@ -77,15 +77,15 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                             <button
                                 key={goal.id}
                                 onClick={() => addGoal(goal.id)}
-                                className="p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-400 transition-all text-left"
+                                className="p-4 bg-card border-2 border-border rounded-2xl hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-left"
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="text-2xl">{goal.icon}</span>
-                                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                                    <span className="font-bold text-foreground">
                                         {goal.title}
                                     </span>
                                 </div>
-                                <div className="text-xs text-slate-600 dark:text-slate-400">
+                                <div className="text-xs sm:text-sm text-muted-foreground">
                                     {goal.timeframe}
                                 </div>
                             </button>
@@ -95,10 +95,10 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
             )}
 
             {/* Roadmap Timeline */}
-            <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6">
+            <div className="mb-6 bg-card border-2 border-border shadow-sm rounded-2xl p-4 sm:p-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="w-5 h-5 text-blue-600" />
-                    <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
+                    <MapPin className="w-5 h-5 text-blue-500" />
+                    <h3 className="text-lg font-black text-foreground">
                         {t('goal_roadmap.your_roadmap')}
                     </h3>
                 </div>
@@ -128,21 +128,21 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                                         {/* Goal Card */}
                                         <button
                                             onClick={() => removeGoal(goalId)}
-                                            className="flex-1 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md hover:shadow-lg transition-all text-left group"
+                                            className="flex-1 p-4 bg-card border-2 border-border rounded-2xl shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:border-red-400 dark:hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-left group"
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <span className="text-3xl">{goal.icon}</span>
                                                     <div>
-                                                        <div className="font-bold text-slate-800 dark:text-slate-200">
+                                                        <div className="font-bold text-foreground">
                                                             {goal.title}
                                                         </div>
-                                                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                                                        <div className="text-xs sm:text-sm text-muted-foreground">
                                                             {goal.timeframe}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="text-xs sm:text-sm font-bold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded-lg">
                                                     {t('goal_roadmap.remove')}
                                                 </div>
                                             </div>
@@ -175,13 +175,10 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                     <Button
                         onClick={handleSubmit}
                         disabled={orderedGoals.length !== goals.length}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(59,130,246)] hover:shadow-[0_2px_0_rgb(59,130,246)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.create_roadmap')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {t('actions.create_roadmap')}
+                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -196,13 +193,10 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
 
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

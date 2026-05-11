@@ -103,7 +103,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
 
             {/* Coin Bank */}
             <div className="mb-8 flex justify-center">
-                <div className="bg-gradient-to-br from-yellow-400 to-amber-500 text-slate-900 rounded-3xl px-8 py-6 shadow-xl border-4 border-yellow-600">
+                <div className="bg-yellow-400 text-slate-900 rounded-3xl px-8 py-6 shadow-sm border-4 border-yellow-600">
                     <div className="text-center">
                         <span className="text-sm font-bold opacity-80 block mb-1">
                             {t('mystery_investment.your_coins')}
@@ -131,10 +131,10 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                         <div
                             key={box.id}
                             className={cn(
-                                "p-4 rounded-2xl border transition-all duration-300",
-                                "liquid-glass-strong",
+                                "p-4 rounded-3xl border-2 transition-all duration-300",
+                                "bg-card shadow-sm",
                                 invested > 0 && "ring-4 ring-purple-400 dark:ring-purple-600 shadow-xl",
-                                invested === 0 && "border-white/20 dark:border-white/10",
+                                invested === 0 && "border-border",
                                 showResults && "border-green-500"
                             )}
                         >
@@ -173,7 +173,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                     >
                                         <Minus className="w-4 h-4" />
                                     </button>
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-xl font-black text-slate-900 shadow-lg">
+                                    <div className="w-12 h-12 rounded-xl bg-amber-400 flex items-center justify-center text-xl font-black text-slate-900 shadow-sm border-2 border-amber-500">
                                         {invested}
                                     </div>
                                     <button
@@ -189,7 +189,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                             {/* Results */}
                             {showResults && invested > 0 && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                    <div className="bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-400 dark:border-green-700 rounded-xl p-3">
+                                    <div className="bg-green-50 dark:bg-green-950/30 border-2 border-green-400 dark:border-green-700 rounded-xl p-3 shadow-sm">
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-xs font-bold text-green-800 dark:text-green-200">
                                                 {t('mystery_investment.invested')}
@@ -218,7 +218,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
             {/* Total Results */}
             {showResults && (
                 <div className="mb-6 text-center animate-in fade-in zoom-in duration-700">
-                    <div className="inline-flex flex-col items-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl px-8 py-6 shadow-2xl">
+                    <div className="inline-flex flex-col items-center bg-purple-500 border-2 border-purple-600 text-white rounded-2xl px-8 py-6 shadow-sm">
                         <span className="text-base font-medium opacity-90 mb-1">
                             {t('mystery_investment.total_return')}
                         </span>
@@ -239,13 +239,10 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     <Button
                         onClick={handleInvest}
                         disabled={remainingCoins > 0}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            <Gift className="w-5 h-5 mr-2" />
-                            {t('mystery_investment.invest')}
-                        </span>
+                        <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
+                        {t('mystery_investment.invest')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -255,17 +252,15 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 totalReturn >= totalCoins
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none")}
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                "hover:-translate-y-[2px]"
+                            )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

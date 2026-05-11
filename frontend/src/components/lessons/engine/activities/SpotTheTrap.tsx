@@ -271,12 +271,9 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                     <Button
                         onClick={handleCheck}
                         disabled={!isFallbackMode && selectedTraps.size === 0}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-red-600 hover:bg-red-700 text-white rounded-2xl shadow-[0_4px_0_rgb(153,27,27)] hover:shadow-[0_2px_0_rgb(153,27,27)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white rounded-2xl shadow-[0_4px_0_rgb(153,27,27)] hover:shadow-[0_2px_0_rgb(153,27,27)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.verify', { defaultValue: 'Verificar' })}
-                        </span>
+                        {t('actions.verify', { defaultValue: 'Verificar' })}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -288,20 +285,17 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success'
-                                    ? t('actions.continue', { defaultValue: 'Continuar' })
-                                    : t('actions.retry', { defaultValue: 'Reintentar' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success'
+                                ? t('actions.continue', { defaultValue: 'Continuar' })
+                                : t('actions.retry', { defaultValue: 'Reintentar' })}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

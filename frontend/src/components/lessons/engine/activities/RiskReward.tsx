@@ -73,13 +73,13 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                             onClick={() => handleChoice(option)}
                             disabled={selectedId !== null}
                             className={cn(
-                                "flex-1 min-h-[240px] rounded-3xl p-6 flex flex-col items-center justify-between border-4 transition-all duration-500 transform relative overflow-hidden group",
-                                isOtherSelected && "opacity-50 scale-90 grayscale blur-[2px]",
-                                isSelected && "scale-105 z-10 ring-8 ring-offset-4 ring-purple-300 dark:ring-purple-900 shadow-2xl skew-y-1",
-                                !isSelected && !isOtherSelected && "hover:-translate-y-2 hover:shadow-xl",
+                                "flex-1 min-h-[240px] rounded-[2rem] p-6 flex flex-col items-center justify-between border-4 shadow-[0_8px_0_hsl(var(--border))] transition-all duration-300 transform relative overflow-hidden group",
+                                isOtherSelected && "opacity-50 scale-90 grayscale blur-[2px] shadow-none translate-y-[8px]",
+                                isSelected && "scale-105 z-10 ring-4 ring-offset-4 ring-foreground shadow-none translate-y-[8px] skew-y-1",
+                                !isSelected && !isOtherSelected && "hover:-translate-y-2 hover:shadow-[0_12px_0_hsl(var(--border))] active:translate-y-[8px] active:shadow-none",
                                 isRisk
-                                    ? "bg-gradient-to-br from-orange-500 to-red-600 border-red-700 text-white"
-                                    : "bg-gradient-to-br from-blue-400 to-indigo-600 border-indigo-700 text-white"
+                                    ? "bg-orange-500 hover:bg-orange-400 border-orange-700 text-white"
+                                    : "bg-blue-500 hover:bg-blue-400 border-blue-700 text-white"
                             )}
                         >
                             {/* Icon */}
@@ -116,18 +116,15 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "relative overflow-hidden w-full max-w-sm h-14 text-lg font-bold rounded-2xl transition-all",
+                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                            "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            "hover:-translate-y-[2px]"
                         )}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                     </Button>
                 </div>
             )}

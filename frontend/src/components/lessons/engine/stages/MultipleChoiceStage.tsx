@@ -118,7 +118,7 @@ export function MultipleChoiceStage({
                         size="lg"
                         onClick={handleCheck}
                         disabled={!selectedId}
-                        className="gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
+                        className="gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full max-w-md"
                     >
                         Verificar
                         <Check className="w-5 h-5" />
@@ -130,9 +130,9 @@ export function MultipleChoiceStage({
                         size="lg"
                         onClick={handleContinue}
                         className={cn(
-                            "gap-2 font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all",
-                            feedbackState === 'success' && "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600",
-                            feedbackState === 'error' && "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                            "gap-2 font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl transition-all hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] w-full max-w-md text-white",
+                            feedbackState === 'success' && "bg-green-500 hover:bg-green-600 shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]",
+                            feedbackState === 'error' && "bg-orange-500 hover:bg-orange-600 shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]"
                         )}
                     >
                         {feedbackState === 'success' ? 'Continuar' : 'Intentar de nuevo'}

@@ -75,13 +75,13 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-2xl p-4 shadow-xl">
+                <div className="bg-red-500 border-2 border-red-600 text-white rounded-2xl p-4 shadow-sm">
                     <div className="text-xs opacity-90 mb-1">{t('subscription.monthly_cost')}</div>
                     <div className="text-3xl font-black">${totalCost.toFixed(2)}</div>
                     <div className="text-xs opacity-80">{t('subscription.per_month')}</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-4 shadow-xl">
+                <div className="bg-green-500 border-2 border-green-600 text-white rounded-2xl p-4 shadow-sm">
                     <div className="text-xs opacity-90 mb-1">{t('subscription.annual_savings')}</div>
                     <div className="text-3xl font-black">${annualSavings.toFixed(2)}</div>
                     <div className="text-xs opacity-80">{t('subscription.if_cancelled')}</div>
@@ -142,10 +142,9 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleSubmit}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">{t('subscription.optimize')}</span>
+                        {t('subscription.optimize')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -154,13 +153,10 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

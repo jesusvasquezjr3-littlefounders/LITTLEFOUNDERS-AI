@@ -80,7 +80,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                 <div className="mb-8 flex justify-center">
                     <Button
                         onClick={handleInvestigate}
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                        className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-[0_4px_0_rgb(217,119,6)] hover:shadow-[0_2px_0_rgb(217,119,6)] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2"
                     >
                         <Search className="w-6 h-6 mr-2" />
                         {t('price_detective.investigate')}
@@ -103,7 +103,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                             className={cn(
                                 "relative p-4 rounded-2xl border-3 transition-all duration-300 transform",
                                 "bg-white dark:bg-slate-800",
-                                isSelected && feedback === 'none' && "ring-4 ring-purple-400 dark:ring-purple-600 scale-105 shadow-xl",
+                                isSelected && feedback === 'none' && "ring-4 ring-purple-400 dark:ring-purple-600 scale-105 shadow-sm",
                                 !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-lg hover:-translate-y-1",
                                 feedback === 'success' && isSelected && isCorrect && "border-green-500 ring-4 ring-green-300 scale-105",
                                 feedback === 'error' && isSelected && "border-red-500 ring-4 ring-red-300",
@@ -122,7 +122,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                             </div>
 
                             {/* Price Tag */}
-                            <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl p-3 mb-3">
+                            <div className="bg-emerald-500 border-2 border-emerald-600 text-white rounded-xl p-3 mb-3">
                                 <div className="text-xs font-medium opacity-90">{t('price_detective.total_price')}</div>
                                 <div className="text-2xl font-black">${product.price.toFixed(2)}</div>
                             </div>
@@ -162,10 +162,9 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                     <Button
                         onClick={handleCheck}
                         disabled={!selectedId || !showUnitPrices}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
+                        {t('actions.verify')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -175,18 +174,15 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

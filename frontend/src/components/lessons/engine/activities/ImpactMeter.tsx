@@ -62,7 +62,7 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
 
             {/* Budget Display */}
             <div className="mb-8 text-center">
-                <div className="inline-flex flex-col items-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-3xl px-8 py-6 shadow-xl">
+                <div className="inline-flex flex-col items-center bg-pink-500 border-2 border-pink-600 text-white rounded-3xl px-8 py-6 shadow-sm">
                     <span className="text-sm font-medium opacity-90 mb-1">{t('impact_meter.your_donation')}</span>
                     <div className="text-5xl font-black">${budget}</div>
                 </div>
@@ -81,7 +81,7 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                             className={cn(
                                 "p-4 rounded-2xl border-2 transition-all duration-300 transform",
                                 "bg-white dark:bg-slate-800",
-                                isSelected && feedback === 'none' && "ring-4 ring-pink-400 dark:ring-pink-600 scale-105 shadow-xl",
+                                isSelected && feedback === 'none' && "ring-4 ring-pink-400 dark:ring-pink-600 scale-105 shadow-sm",
                                 !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-700 hover:shadow-lg hover:-translate-y-1",
                                 feedback === 'success' && isSelected && "border-green-500 ring-4 ring-green-300 scale-105",
                                 feedback !== 'none' && !isSelected && "opacity-50"
@@ -132,13 +132,10 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                     <Button
                         onClick={handleDonate}
                         disabled={!selectedCause}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-pink-500 hover:bg-pink-600 text-white rounded-2xl shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            <Heart className="w-5 h-5 mr-2 fill-white" />
-                            {t('impact_meter.donate')}
-                        </span>
+                        <Heart className="w-5 h-5 fill-white" />
+                        {t('impact_meter.donate')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -154,13 +151,10 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue')}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}

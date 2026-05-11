@@ -59,7 +59,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
         <div className="w-full max-w-sm animate-slide-in-bottom flex flex-col items-center">
 
             {/* Display / Question */}
-            <div className="liquid-glass-strong p-6 rounded-3xl w-full mb-6 text-center shadow-xl border border-white/20 dark:border-white/10">
+            <div className="bg-card p-6 rounded-3xl w-full mb-6 text-center shadow-sm border-2 border-border">
                 <h3 className="text-xl font-medium text-slate-500 mb-2 uppercase tracking-wide">
                     {t('actions.calculate')}
                 </h3>
@@ -75,7 +75,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                         key={num}
                         onClick={() => handleKeyPress(num.toString())}
                         disabled={feedback !== 'none'}
-                        className="bg-white dark:bg-slate-700 h-16 rounded-2xl text-2xl font-bold shadow-sm border-b-4 border-slate-200 dark:border-slate-600 active:border-b-0 active:translate-y-1 transition-all hover:bg-slate-50 dark:hover:bg-slate-600"
+                        className="bg-card text-foreground h-16 rounded-2xl text-2xl font-bold border-2 border-border shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center"
                     >
                         {num}
                     </button>
@@ -85,21 +85,21 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                 <button
                     onClick={() => handleKeyPress('.')}
                     disabled={feedback !== 'none'}
-                    className="bg-slate-100 dark:bg-slate-800 h-16 rounded-2xl text-2xl font-bold shadow-sm border-b-4 border-slate-200 dark:border-slate-600 active:border-b-0 active:translate-y-1 transition-all"
+                    className="bg-muted text-muted-foreground h-16 rounded-2xl text-2xl font-bold border-2 border-border shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center"
                 >
                     .
                 </button>
                 <button
                     onClick={() => handleKeyPress('0')}
                     disabled={feedback !== 'none'}
-                    className="bg-white dark:bg-slate-700 h-16 rounded-2xl text-2xl font-bold shadow-sm border-b-4 border-slate-200 dark:border-slate-600 active:border-b-0 active:translate-y-1 transition-all hover:bg-slate-50 dark:hover:bg-slate-600"
+                    className="bg-card text-foreground h-16 rounded-2xl text-2xl font-bold border-2 border-border shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center"
                 >
                     0
                 </button>
                 <button
                     onClick={handleDelete}
                     disabled={feedback !== 'none'}
-                    className="bg-red-100 dark:bg-red-900/30 text-red-600 h-16 rounded-2xl flex items-center justify-center shadow-sm border-b-4 border-red-200 dark:border-red-900 active:border-b-0 active:translate-y-1 transition-all"
+                    className="bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 h-16 rounded-2xl flex items-center justify-center border-2 border-red-300 dark:border-red-800 shadow-[0_4px_0_rgb(252,165,165)] dark:shadow-[0_4px_0_rgb(153,27,27)] hover:shadow-[0_2px_0_rgb(252,165,165)] dark:hover:shadow-[0_2px_0_rgb(153,27,27)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
                 >
                     <Delete className="w-6 h-6" />
                 </button>
@@ -110,27 +110,23 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                 <Button
                     onClick={handleCheck}
                     disabled={input.length === 0}
-                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none"
+                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
+                    {t('actions.verify')}
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                         feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                    </span>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
             )}
         </div>

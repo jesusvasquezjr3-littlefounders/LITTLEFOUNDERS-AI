@@ -122,17 +122,14 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     ))}
                 </div>
                 {fb === 'none' ? (
-                    <Button onClick={handleCheckFallback} disabled={!selectedOption} className="w-full max-w-md mx-auto block h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] disabled:opacity-50">
+                    <Button onClick={handleCheckFallback} disabled={!selectedOption} className="w-full max-w-md mx-auto h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2">
                         {t('actions.verify', { defaultValue: 'Verificar' })}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center">
-                        <p className={cn("font-bold text-lg mb-3", fb === 'success' ? "text-green-500" : "text-orange-500")}>
-                            {fb === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
-                        </p>
-                        <Button onClick={handleContinueFallback} className={cn("w-full max-w-md h-12 text-base font-bold rounded-2xl", fb === 'success' ? "bg-green-500 hover:bg-green-600" : "bg-orange-500 hover:bg-orange-600")}>
+                        <Button onClick={handleContinueFallback} className={cn("w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2", fb === 'success' ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]" : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]")}>
                             {fb === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}
@@ -158,7 +155,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                 {puzzlePieces.map((piece: any) => (
                     <div
                         key={piece.id}
-                        className="liquid-glass-strong rounded-2xl p-4 border border-white/20 dark:border-white/10 shadow-xl"
+                        className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-border shadow-sm"
                     >
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
@@ -190,72 +187,72 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 
             {/* Calculation Flow */}
             <div className="mb-8 space-y-3">
-                <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/30 dark:to-emerald-950/30 rounded-xl p-4 border-2 border-green-400 dark:border-green-700">
+                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-green-400 dark:border-green-600 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-green-800 dark:text-green-200">
+                        <span className="text-sm font-bold text-foreground">
                             {t('tax_puzzle.gross_income')}
                         </span>
-                        <span className="text-xl font-black text-green-900 dark:text-green-100">
+                        <span className="text-xl font-black text-green-600 dark:text-green-400">
                             ${income.toLocaleString()}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex justify-center">
-                    <div className="text-2xl text-slate-400">−</div>
+                    <div className="text-2xl font-black text-muted-foreground">−</div>
                 </div>
 
-                <div className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-950/30 dark:to-amber-950/30 rounded-xl p-4 border-2 border-orange-400 dark:border-orange-700">
+                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-orange-400 dark:border-orange-600 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                        <span className="text-sm font-bold text-foreground">
                             {t('tax_puzzle.deductions')}
                         </span>
-                        <span className="text-xl font-black text-orange-900 dark:text-orange-100">
+                        <span className="text-xl font-black text-orange-600 dark:text-orange-400">
                             ${deductions.toLocaleString()}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex justify-center">
-                    <div className="text-2xl text-slate-400">=</div>
+                    <div className="text-2xl font-black text-muted-foreground">=</div>
                 </div>
 
-                <div className="bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-xl p-4 border-2 border-blue-400 dark:border-blue-700">
+                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-blue-400 dark:border-blue-600 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                        <span className="text-sm font-bold text-foreground">
                             {t('tax_puzzle.taxable_income')}
                         </span>
-                        <span className="text-xl font-black text-blue-900 dark:text-blue-100">
+                        <span className="text-xl font-black text-blue-600 dark:text-blue-400">
                             ${taxableIncome.toLocaleString()}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex justify-center">
-                    <div className="text-2xl text-slate-400">×</div>
+                    <div className="text-2xl font-black text-muted-foreground">×</div>
                 </div>
 
-                <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl p-4 border-2 border-purple-400 dark:border-purple-700">
+                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-purple-400 dark:border-purple-600 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-purple-800 dark:text-purple-200">
+                        <span className="text-sm font-bold text-foreground">
                             {t('tax_puzzle.tax_rate')}
                         </span>
-                        <span className="text-xl font-black text-purple-900 dark:text-purple-100">
+                        <span className="text-xl font-black text-purple-600 dark:text-purple-400">
                             {taxRate}%
                         </span>
                     </div>
                 </div>
 
                 <div className="flex justify-center">
-                    <div className="text-2xl text-slate-400">=</div>
+                    <div className="text-2xl font-black text-muted-foreground">=</div>
                 </div>
 
-                <div className="bg-gradient-to-r from-red-100 to-rose-100 dark:from-red-950/30 dark:to-rose-950/30 rounded-xl p-6 border-4 border-red-500 dark:border-red-700">
+                <div className="bg-card rounded-2xl p-6 border-4 border-red-500 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-base font-bold text-red-800 dark:text-red-200">
+                        <span className="text-base font-bold text-foreground">
                             {t('tax_puzzle.tax_owed')}
                         </span>
-                        <span className="text-3xl font-black text-red-900 dark:text-red-100">
+                        <span className="text-3xl font-black text-red-500">
                             ${taxOwed.toFixed(2)}
                         </span>
                     </div>
@@ -267,31 +264,24 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                 {feedback === 'none' ? (
                     <Button
                         onClick={handleCheck}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
+                        {t('actions.verify')}
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
-                            {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
-                        </p>
                         <Button
                             onClick={handleContinue}
                             className={cn(
-                                "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                                "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px]"
+                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
+                                "hover:-translate-y-[2px]"
                             )}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
                     </div>
                 )}

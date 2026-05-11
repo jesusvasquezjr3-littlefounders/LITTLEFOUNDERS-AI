@@ -76,10 +76,10 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             {/* Fund Balance */}
             <div className="mb-6">
                 <div className={cn(
-                    "bg-gradient-to-r text-white rounded-2xl p-6 shadow-xl text-center",
-                    fundBalance >= 3000 && "from-green-500 to-emerald-600",
-                    fundBalance >= 1000 && fundBalance < 3000 && "from-yellow-500 to-amber-600",
-                    fundBalance < 1000 && "from-red-500 to-rose-600"
+                    "text-white rounded-2xl p-6 border-2 text-center shadow-sm",
+                    fundBalance >= 3000 && "bg-green-500 border-green-600",
+                    fundBalance >= 1000 && fundBalance < 3000 && "bg-yellow-500 border-yellow-600",
+                    fundBalance < 1000 && "bg-red-500 border-red-600"
                 )}>
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <Wallet className="w-6 h-6" />
@@ -169,18 +169,15 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                     <Button
                         onClick={handleContinue}
                         className={cn(
-                            "relative overflow-hidden w-full max-w-md h-12 text-base font-bold rounded-2xl transition-all",
+                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                            "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
+                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                            "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                         )}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        <ArrowRight className="w-5 h-5" />
                     </Button>
                 </div>
             )}

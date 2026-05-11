@@ -71,18 +71,18 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
             <div className="flex flex-wrap justify-center gap-4 mb-6">
                 {categories.map((category: any, idx: number) => {
                     const categoryColors = [
-                        { bg: 'bg-gradient-to-r from-yellow-400 to-orange-400', text: 'text-white', emoji: '🌟' },
-                        { bg: 'bg-gradient-to-r from-purple-400 to-pink-400', text: 'text-white', emoji: '💎' },
-                        { bg: 'bg-gradient-to-r from-blue-400 to-cyan-400', text: 'text-white', emoji: '🌊' },
+                        { bg: 'bg-yellow-500', border: 'border-yellow-600', text: 'text-white', emoji: '🌟' },
+                        { bg: 'bg-pink-500', border: 'border-pink-600', text: 'text-white', emoji: '💎' },
+                        { bg: 'bg-blue-500', border: 'border-blue-600', text: 'text-white', emoji: '🌊' },
                     ];
                     const catColor = categoryColors[idx % categoryColors.length];
 
                     return (
                         <div
                             key={category.id}
-                            className={`${catColor.bg} px-4 py-2 rounded-xl text-center shadow-md min-w-[120px]`}
+                            className={`${catColor.bg} ${catColor.border} border-2 border-b-4 px-4 py-2 rounded-2xl text-center min-w-[120px]`}
                         >
-                            <span className={`font-bold ${catColor.text} text-lg shadow-sm`}>
+                            <span className={`font-bold ${catColor.text} text-lg`}>
                                 {catColor.emoji} {category.name || category.label}
                             </span>
                         </div>
@@ -122,9 +122,9 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
 
                                         // Button Styles
                                         const btnColors = [
-                                            { active: 'bg-yellow-500', inactive: 'bg-white/50 hover:bg-yellow-200 text-yellow-700' },
-                                            { active: 'bg-purple-500', inactive: 'bg-white/50 hover:bg-purple-200 text-purple-700' },
-                                            { active: 'bg-blue-500', inactive: 'bg-white/50 hover:bg-blue-200 text-blue-700' },
+                                            { active: 'bg-yellow-500 text-white shadow-none translate-y-[4px] ring-4 ring-yellow-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
+                                            { active: 'bg-pink-500 text-white shadow-none translate-y-[4px] ring-4 ring-pink-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
+                                            { active: 'bg-blue-500 text-white shadow-none translate-y-[4px] ring-4 ring-blue-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
                                         ];
                                         const color = btnColors[catIdx % btnColors.length];
 
@@ -134,10 +134,10 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                                                 onClick={() => handleClassificationClick(item.id, cat.id)}
                                                 disabled={isChecked}
                                                 className={cn(
-                                                    "px-4 py-2 rounded-lg font-bold transition-all duration-200",
+                                                    "px-4 py-2 rounded-xl font-bold transition-all duration-200 border-2",
                                                     isSelected
-                                                        ? `${color.active} text-white shadow-lg scale-105 ring-4 ring-white/50 border-2 border-white/30`
-                                                        : `${color.inactive} hover:scale-105 border-2 border-transparent`
+                                                        ? `${color.active} border-transparent`
+                                                        : `${color.inactive}`
                                                 )}
                                             >
                                                 {cat.name || cat.label}
@@ -156,26 +156,24 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                 <Button
                     onClick={handleCheck}
                     disabled={Object.keys(selectedClassifications).length < (exercise.content.items?.length || 0)}
-                    className="relative overflow-hidden w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:shadow-none disabled:from-gray-400 disabled:to-gray-400"
+                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">✨ {t('actions.verify')} ✨</span>
                 </Button>
             ) : (
                 <Button
                     onClick={handleContinue}
                     className={cn(
-                        "relative overflow-hidden w-full h-14 text-lg font-bold rounded-2xl transition-all",
+                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
-                            ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-[0_4px_0_rgb(22,101,52)]"
-                            : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-[0_4px_0_rgb(194,65,12)]",
-                        "hover:translate-y-[2px] active:translate-y-1 active:shadow-none"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
+                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                        "hover:-translate-y-[2px]"
                     )}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
                     <span className="relative flex items-center justify-center">
                         {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
                     </span>
                 </Button>
             )}

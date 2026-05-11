@@ -86,13 +86,13 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(option.id); }}
                             className={cn(
                                 "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
-                                isSelected && "bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-xl",
+                                isSelected && "bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-[0_4px_0_rgb(34,197,94)]",
                                 isNotSelected && "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-800 opacity-50",
-                                !selected && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300"
+                                !selected && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300 hover:shadow-sm hover:-translate-y-1"
                             )}
                         >
                             {isNotSelected && (
-                                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-red-500/20 animate-pulse"></div>
+                                <div className="absolute inset-0 bg-red-500/10 animate-pulse"></div>
                             )}
 
                             <h3 className="text-xl font-black text-slate-800 dark:text-slate-200 mb-3">
@@ -142,7 +142,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
 
             {/* Analysis (only for rich data) */}
             {showAnalysis && hasRichData && selectedOption && notSelectedOption && (
-                <div className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-950/30 dark:to-purple-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 animate-in fade-in slide-in-from-bottom-4">
+                <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 animate-in fade-in slide-in-from-bottom-4 shadow-sm">
                     <div className="flex items-center gap-3 mb-4">
                         <ArrowLeftRight className="w-6 h-6 text-blue-600" />
                         <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
@@ -180,13 +180,10 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                     <Button
                         onClick={handleSubmit}
                         disabled={!selected}
-                        className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                        <span className="relative flex items-center justify-center">
-                            {t('actions.analyze', { defaultValue: 'Analizar' })}
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </span>
+                        {t('actions.analyze', { defaultValue: 'Analizar' })}
+                        <ArrowRight className="w-5 h-5" />
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
@@ -195,13 +192,10 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                         </p>
                         <Button
                             onClick={handleContinue}
-                            className="relative overflow-hidden w-full max-w-md h-12 text-base font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                            <span className="relative flex items-center justify-center">
-                                {t('actions.continue', { defaultValue: 'Continuar' })}
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </span>
+                            {t('actions.continue', { defaultValue: 'Continuar' })}
+                            <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>
                 )}
