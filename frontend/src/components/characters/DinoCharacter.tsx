@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next';
 
@@ -12,80 +12,96 @@ interface DinoCharacterProps {
     bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
 }
 
+/**
+ * Dino — The cheerful green T-Rex mascot.
+ * Original SVG artwork preserved. Enhanced with Lottie-style animations:
+ * smooth blink, spring-physics mouse tracking, idle breathing, tail wag,
+ * squash-and-stretch bounce on click.
+ */
 export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard' }: DinoCharacterProps) {
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
+    const [clickPulse, setClickPulse] = useState(0);
     const { t } = useTranslation('common');
 
-    // Blinking logic
+    // ── Smooth mouse tracking (spring physics) ────────────────────────────
+    const targetPupil = useRef({ x: 0, y: 0 });
+    const currentPupil = useRef({ x: 0, y: 0 });
+    const targetHead = useRef({ rot: 0, x: 0, y: 0 });
+    const currentHead = useRef({ rot: 0, x: 0, y: 0 });
+    const rafId = useRef<number | null>(null);
+
+    // Blinking
     useEffect(() => {
         const blinkInterval = setInterval(() => {
             setIsBlinking(true);
-            setTimeout(() => setIsBlinking(false), 200);
-        }, 3000 + Math.random() * 2000); // Random blink every 3-5 seconds
-
+            setTimeout(() => setIsBlinking(false), 180);
+        }, 3000 + Math.random() * 2000);
         return () => clearInterval(blinkInterval);
     }, []);
 
+    // Mouse tracking with spring interpolation
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            if (!headGroupRef.current) return;
-
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
-
-            // Pupil movement
-            const pupils = document.querySelectorAll('.pupil-group');
-            const pupilX = (x - 0.5) * 15;
-            const pupilY = (y - 0.5) * 15;
-
-            pupils.forEach((pupil) => {
-                (pupil as HTMLElement).style.transform = `translate(${pupilX}px, ${pupilY}px)`;
-            });
-
-            // Head movement
-            const headRotate = (x - 0.5) * 20;
-            const headX = (x - 0.5) * 10;
-            const headY = (y - 0.5) * 10;
-
-            // Base transform: translate(200, 140)
-            headGroupRef.current.setAttribute('transform', `translate(${200 + headX}, ${140 + headY}) rotate(${headRotate})`);
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            const y = (e.clientY / window.innerHeight) - 0.5;
+            targetPupil.current = { x: x * 12, y: y * 12 };
+            targetHead.current = { rot: x * 15, x: x * 8, y: y * 6 };
         };
 
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
-    const handleClick = () => {
-        // Simple "jump" effect only - no message bubbles
-        const svg = document.getElementById('dino-svg');
-        if (svg) {
-            svg.style.transition = "transform 0.1s";
-            svg.style.transform = "scale(1.05)";
-            setTimeout(() => svg.style.transform = "scale(1)", 150);
-        }
-    };
+    // Animation loop
+    useEffect(() => {
+        const animate = () => {
+            const spring = 0.1;
+            currentPupil.current.x += (targetPupil.current.x - currentPupil.current.x) * spring;
+            currentPupil.current.y += (targetPupil.current.y - currentPupil.current.y) * spring;
+            currentHead.current.rot += (targetHead.current.rot - currentHead.current.rot) * spring;
+            currentHead.current.x += (targetHead.current.x - currentHead.current.x) * spring;
+            currentHead.current.y += (targetHead.current.y - currentHead.current.y) * spring;
+
+            const pupils = document.querySelectorAll('.pupil-group');
+            pupils.forEach((pupil) => {
+                (pupil as HTMLElement).style.transform = `translate(${currentPupil.current.x}px, ${currentPupil.current.y}px)`;
+            });
+
+            if (headGroupRef.current) {
+                headGroupRef.current.setAttribute('transform',
+                    `translate(${200 + currentHead.current.x}, ${140 + currentHead.current.y}) rotate(${currentHead.current.rot})`
+                );
+            }
+
+            rafId.current = requestAnimationFrame(animate);
+        };
+
+        rafId.current = requestAnimationFrame(animate);
+        return () => {
+            if (rafId.current) cancelAnimationFrame(rafId.current);
+        };
+    }, []);
+
+    const handleClick = useCallback(() => {
+        setClickPulse(p => p + 1);
+    }, []);
 
     return (
-        <div className={cn("relative w-full h-full flex justify-center items-center transition-opacity duration-500", className)}>
-            {/* Speech Bubble - Modern pill-shaped design (only shown when controlled externally) */}
+        <div className={cn("relative w-full h-full flex justify-center items-center transition-opacity duration-500 select-none", className)}>
+            {/* Speech Bubble */}
             <div
                 ref={bubbleRef}
                 className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    // Standard: Centered above (closer)
                     bubblePosition === 'standard' && "-top-10 md:-top-14 left-1/2 -translate-x-1/2",
-                    // Demo: Inside, Top-Center (very close)
                     bubblePosition === 'demo' && "-top-2 md:-top-4 left-1/2 -translate-x-1/2",
-                    // Tutorial: Top area (closer)
                     bubblePosition === 'tutorial' && "-top-12 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
-                    // Hero: Top-Left relative to head
                     bubblePosition === 'hero' && "top-[10%] left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
                     showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}
             >
-                {/* Main Bubble */}
                 <div className={cn(
                     "relative bg-white rounded-full shadow-lg px-6 py-3 md:px-8 md:py-4",
                     "max-w-[85vw] md:max-w-[320px] w-auto text-center"
@@ -93,26 +109,42 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <p className="text-slate-700 font-bold text-base md:text-lg leading-snug">
                         {currentText || t('characters.dino.default_greeting')}
                     </p>
-
-                    {/* Tail/Pointer - Smooth curved SVG pointing down */}
-                    <svg
-                        className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-6 h-3"
-                        viewBox="0 0 24 12"
-                        fill="none"
-                    >
-                        <path
-                            d="M0 0C4 0 8 8 12 12C16 8 20 0 24 0H0Z"
-                            fill="white"
-                        />
+                    <svg className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-6 h-3" viewBox="0 0 24 12" fill="none">
+                        <path d="M0 0C4 0 8 8 12 12C16 8 20 0 24 0H0Z" fill="white" />
                     </svg>
                 </div>
             </div>
+
+            <style>{`
+                .dino-breathe { animation: dinoBreatheAnim 3s ease-in-out infinite; transform-origin: bottom center; }
+                @keyframes dinoBreatheAnim { 0%, 100% { transform: scaleY(1) translateY(0); } 50% { transform: scaleY(1.02) translateY(-2px); } }
+                .dino-tail-anim { animation: dinoTailWag 3s ease-in-out infinite alternate; transform-origin: 150px 350px; }
+                @keyframes dinoTailWag { 0% { transform: rotate(0deg); } 100% { transform: rotate(10deg); } }
+                .dino-mouth-anim { animation: dinoTalkAnim 1.5s infinite; transform-origin: 20px 20px; }
+                @keyframes dinoTalkAnim {
+                    0%, 10% { transform: scaleY(1); } 20% { transform: scaleY(0.6); } 35% { transform: scaleY(1); }
+                    45% { transform: scaleY(1); } 55% { transform: scaleY(0.7); } 70% { transform: scaleY(1); } 100% { transform: scaleY(1); }
+                }
+                .dino-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+                .dino-spring-bounce { animation: dinoSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
+                @keyframes dinoSpring {
+                    0% { transform: scale(1, 1) translateY(0); }
+                    20% { transform: scale(1.12, 0.88) translateY(0); }
+                    45% { transform: scale(0.96, 1.04) translateY(-18px); }
+                    70% { transform: scale(1.02, 0.98) translateY(-6px); }
+                    100% { transform: scale(1, 1) translateY(0); }
+                }
+            `}</style>
 
             <svg
                 id="dino-svg"
                 viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full object-contain cursor-pointer overflow-visible"
+                className={cn(
+                    "w-full h-full object-contain cursor-pointer overflow-visible",
+                    "dino-breathe",
+                    clickPulse > 0 && "dino-spring-bounce"
+                )}
                 style={{ willChange: "transform" }}
                 onClick={handleClick}
             >
@@ -125,53 +157,33 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <stop offset="0%" style={{ stopColor: "#dcfce7", stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
                     </linearGradient>
-
-                    <style>{`
-                        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
-                        .font-fredoka { font-family: 'Fredoka', sans-serif; }
-                        .breathe { animation: breatheAnim 3s ease-in-out infinite; transform-origin: bottom center; }
-                        @keyframes breatheAnim { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.02); } }
-                        .tail-anim { animation: tailWag 3s ease-in-out infinite alternate; transform-origin: 150px 350px; }
-                        @keyframes tailWag { 0% { transform: rotate(0deg); } 100% { transform: rotate(10deg); } }
-                        .mouth-anim { animation: talk 1.5s infinite; transform-origin: 20px 20px; }
-                        @keyframes talk { 
-                            0%, 10% { transform: scaleY(1); } 
-                            20% { transform: scaleY(0.6); } 
-                            35% { transform: scaleY(1); } 
-                            45% { transform: scaleY(1); } 
-                            55% { transform: scaleY(0.7); } 
-                            70% { transform: scaleY(1); } 
-                            100% { transform: scaleY(1); } 
-                        }
-                        .blink { animation: blinkAnim 0.2s linear; }
-                    `}</style>
+                    <filter id="dinoShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="5" dy="7" result="offset" />
+                        <feGaussianBlur in="offset" stdDeviation="1.5" result="blur" />
+                        <feFlood floodColor="#14532D" floodOpacity="0.35" result="color" />
+                        <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                        <feMerge>
+                            <feMergeNode in="shadow" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
                 </defs>
 
-                <g className="breathe">
-
+                <g filter="url(#dinoShadow)">
                     {/* TAIL */}
-                    <path className="tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
-                    {/* Tail Spines */}
-                    <g className="tail-anim">
+                    <path className="dino-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
+                    <g className="dino-tail-anim">
                         <path d="M50 200 L60 190 L70 205 Z" fill="#15803d" />
                         <path d="M70 215 L80 205 L90 220 Z" fill="#15803d" />
                         <path d="M90 230 L100 220 L110 235 Z" fill="#15803d" />
                     </g>
-
 
                     {/* BACK LEG (Behind) */}
                     <ellipse cx="230" cy="330" rx="30" ry="20" fill="#16a34a" />
                     <path d="M200 330 Q 200 350 210 350 L 250 350 Q 260 350 260 330" fill="#16a34a" />
 
                     {/* BODY */}
-                    <path d="M130 200 
-                             Q 130 150 180 140 
-                             L 200 140
-                             Q 250 140 250 200
-                             Q 260 300 220 340
-                             Q 180 360 140 330
-                             Q 110 300 130 200 Z"
-                        fill="url(#bodyGradient)" />
+                    <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill="url(#bodyGradient)" />
 
                     {/* SPINES (Static) */}
                     <path d="M125 220 L110 210 L128 200 Z" fill="#15803d" />
@@ -179,11 +191,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M155 160 L145 145 L165 145 Z" fill="#15803d" />
 
                     {/* BELLY */}
-                    <path d="M170 180 
-                             Q 240 180 235 320 
-                             Q 190 345 155 320 
-                             Q 140 250 170 180 Z"
-                        fill="url(#bellyGradient)" opacity="0.9" />
+                    <path d="M170 180 Q 240 180 235 320 Q 190 345 155 320 Q 140 250 170 180 Z" fill="url(#bellyGradient)" opacity="0.9" />
 
                     {/* Belly Lines */}
                     <path d="M170 220 Q 200 230 220 220" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
@@ -194,7 +202,6 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <g transform="translate(140, 310)">
                         <ellipse cx="30" cy="10" rx="35" ry="35" fill="url(#bodyGradient)" />
                         <path d="M10 30 Q 10 45 20 45 L 50 45 Q 60 45 60 30" fill="#22C55E" />
-                        {/* Nails */}
                         <circle cx="20" cy="45" r="5" fill="#f0fdf4" />
                         <circle cx="35" cy="45" r="5" fill="#f0fdf4" />
                         <circle cx="50" cy="45" r="5" fill="#f0fdf4" />
@@ -209,26 +216,17 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
 
                     {/* HEAD GROUP */}
                     <g id="head-group" ref={headGroupRef} transform="translate(200, 140)">
-
                         {/* Neck */}
                         <path d="M-40 20 Q -20 50 10 40 L 10 0 L -40 0 Z" fill="#4ADE80" />
 
                         {/* Head Base */}
-                        <path d="M-60 -60 
-                                 L 40 -60 
-                                 Q 90 -60 90 0 
-                                 Q 90 60 20 60 
-                                 L -20 60 
-                                 Q -70 60 -70 0 
-                                 Q -70 -60 -60 -60 Z"
-                            fill="#4ADE80" />
+                        <path d="M-60 -60 L 40 -60 Q 90 -60 90 0 Q 90 60 20 60 L -20 60 Q -70 60 -70 0 Q -70 -60 -60 -60 Z" fill="#4ADE80" />
 
                         {/* Snout */}
                         <ellipse cx="20" cy="-10" rx="60" ry="45" fill="#4ADE80" />
 
                         {/* MOUTH GROUP */}
-                        <g className={cn("mouth-group", showBubble ? "mouth-anim" : "")}>
-                            {/* Standard Happy */}
+                        <g className={cn("dino-face-transition", showBubble ? "dino-mouth-anim" : "")}>
                             {mood === 'happy' && (
                                 <>
                                     <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />
@@ -236,24 +234,18 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                                     <path d="M40 5 L 45 15 L 50 5 Z" fill="white" />
                                 </>
                             )}
-
-                            {/* Sad / Disappointed */}
                             {mood === 'sad' && (
                                 <path d="M-30 40 Q 20 40 60 30 Q 60 10 0 10 Q -30 10 -30 40 Z" fill="#374151" />
                             )}
-
-                            {/* Excited / Talking */}
                             {mood === 'excited' && (
-                                <ellipse cx="15" cy="20" rx="25" ry="20" fill="#374151" />
+                                <>
+                                    <ellipse cx="15" cy="20" rx="25" ry="20" fill="#374151" />
+                                    <ellipse cx="15" cy="25" rx="15" ry="10" fill="#f87171" />
+                                </>
                             )}
-                            {mood === 'excited' && <ellipse cx="15" cy="25" rx="15" ry="10" fill="#f87171" />}
-
-                            {/* Thinking / Neutral */}
                             {mood === 'thinking' && (
                                 <path d="M-20 25 Q 20 25 50 20" stroke="#374151" strokeWidth="4" fill="none" />
                             )}
-
-                            {/* Shocked */}
                             {mood === 'shocked' && (
                                 <circle cx="15" cy="25" r="15" fill="#374151" />
                             )}
@@ -293,10 +285,11 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         {/* NOSTRILS */}
                         <ellipse cx="50" cy="-15" rx="3" ry="5" fill="#166534" />
                         <ellipse cx="60" cy="-12" rx="3" ry="5" fill="#166534" />
-
                     </g>
                 </g>
             </svg>
         </div>
     );
 }
+
+export default DinoCharacter;
