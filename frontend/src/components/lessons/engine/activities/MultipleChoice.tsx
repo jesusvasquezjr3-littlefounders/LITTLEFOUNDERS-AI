@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { extractCorrectId } from '../hooks/useLessonState';
 import { PopOptionButton } from '../components/PopOptionButton';
 
 interface MultipleChoiceProps {
@@ -63,7 +64,7 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
         }
     };
 
-    const correctId = exercise.correct_answer?.correctOptionId;
+    const correctId = extractCorrectId(exercise.correct_answer);
     const isOddCount = shuffledOptions.length % 2 !== 0;
 
     return (

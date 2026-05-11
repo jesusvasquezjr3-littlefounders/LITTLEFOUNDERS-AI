@@ -46,7 +46,7 @@ interface ExerciseResult {
 // ============================================================
 
 /** Intenta extraer un string ID de respuesta correcta de correct_answer */
-function extractCorrectId(correctAnswer: any): string | undefined {
+export function extractCorrectId(correctAnswer: any): string | undefined {
     if (!correctAnswer || typeof correctAnswer !== 'object') return undefined;
     return correctAnswer.correctOptionId
         ?? correctAnswer.correctChoiceId

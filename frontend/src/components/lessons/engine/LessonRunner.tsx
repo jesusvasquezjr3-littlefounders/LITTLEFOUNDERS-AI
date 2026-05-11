@@ -141,7 +141,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const [lives, setLives] = useState(5);
 
     // Track lesson start time to calculate real duration
-    const lessonStartTimeRef = useRef<number>(Date.now());
+    // Starts as null — only set when user presses "Start" (not on mount)
+    const lessonStartTimeRef = useRef<number | null>(null);
 
     // Prevents duplicate API calls on retry — only call completeLesson() once per lesson code
     const hasCompletedOnceRef = useRef(false);
@@ -149,6 +150,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // Prevents celebration from re-firing during the same completion cycle
     // Reset on: code change (new lesson), retry (allow re-celebration)
     const celebrationShownRef = useRef(false);
+
+    // Game over timeout ref — cleaned up on lesson change / retry
+    const gameOverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // UI states
     const [showSuccess, setShowSuccess] = useState(false);
@@ -164,6 +168,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         total_points?: number;
         was_first_today?: boolean;
         last_activity_date?: string;
+        is_fallback?: boolean;
     } | null>(null);
     // null = last lesson (no next), undefined = still loading, string = ready to navigate
     const [nextLessonCode, setNextLessonCode] = useState<string | null | undefined>(undefined);
@@ -177,7 +182,6 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // StreakCelebration JSX callback share the same stable reference.
     const showCelebrationScreen = useCallback(() => {
         playSound('edu_complete');
-        setShowStreakCelebration(false); // Guarantee streak overlay is gone before summary appears
         setShowSuccess(true);
     }, [playSound]);
 
@@ -202,9 +206,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             setLives(l => {
                 const newLives = l - 1;
                 if (newLives <= 0) {
-                    const gameOverTimer = setTimeout(() => setShowGameOver(true), 1000);
-                    // Store timer ref for cleanup (not strictly needed here since
-                    // handleNext/handleRetry clear it via code change effect, but good practice)
+                    gameOverTimerRef.current = setTimeout(() => setShowGameOver(true), 1000);
                 }
                 return newLives;
             });
@@ -423,8 +425,16 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
         celebrationShownRef.current = true;
 
         stopBGM({ fade: true, fadeDuration: 1500 });
-        const realTimeSeconds = Math.round((Date.now() - lessonStartTimeRef.current) / 1000);
+        // Compute real duration from lesson start (set when user pressed "Start")
+        // If null (shouldn't happen), fallback to 0 — NEVER show estimated as real
+        const startTime = lessonStartTimeRef.current;
+        const realTimeSeconds = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
         setRealDurationSeconds(realTimeSeconds);
+
+        // Compute real score from exercise results
+        const correctCount = results.filter(r => r.status === 'correct').length;
+        const totalAnswered = results.length;
+        const realScore = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 100;
 
         if (hasCompletedOnceRef.current) {
             // ── RETRY path: no API call, just show celebration after a short pause ──
@@ -456,7 +466,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 // ── Step 1: Record completion in DB (auth only) ───────────────
                 let result: Awaited<ReturnType<typeof completeLesson>> = null;
                 if (isAuth && code) {
-                    result = await completeLesson(code, userId, 100, realTimeSeconds, localDate);
+                    result = await completeLesson(code, userId, realScore, realTimeSeconds, localDate);
                 }
 
                 // ── Step 2: Fetch next lesson code (independent of step 1) ───
@@ -489,12 +499,16 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     newStreakValue = result.new_streak ?? 0;
 
                 } else if (isAuth && !result) {
-                    // API failed — show summary with lesson-meta fallback (no streak info)
+                    // API failed — show summary with computed fallback
+                    const fallbackPoints = data?.meta?.points_reward
+                        ? Math.round(data.meta.points_reward * (realScore / 100))
+                        : realScore;
                     setCompletionResult({
-                        points_earned: data?.meta?.points_reward || 10,
-                        xp_earned: 25,
+                        points_earned: fallbackPoints,
+                        xp_earned: Math.round(fallbackPoints * 0.5),
                         new_streak: 0,
                         streak_extended: false,
+                        is_fallback: true,
                     });
 
                 } else if (guestProfile) {
@@ -510,11 +524,15 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     }
                     newStreakValue = newStreak;
 
+                    const guestPoints = data?.meta?.points_reward
+                        ? Math.round(data.meta.points_reward * (realScore / 100))
+                        : Math.max(realScore, 10);
                     setCompletionResult({
-                        points_earned: data?.meta?.points_reward || 10,
-                        xp_earned: 25,
+                        points_earned: guestPoints,
+                        xp_earned: Math.round(guestPoints * 0.5),
                         new_streak: newStreak,
                         streak_extended: newStreak > oldStreak,
+                        is_fallback: true,
                     });
 
                     const existingCodes = guestProfile.completed_lesson_codes || [];
@@ -586,6 +604,11 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
         setLives(5);
         hasCompletedOnceRef.current = false;
         celebrationShownRef.current = false;
+        lessonStartTimeRef.current = null;
+        if (gameOverTimerRef.current) {
+            clearTimeout(gameOverTimerRef.current);
+            gameOverTimerRef.current = null;
+        }
         window.scrollTo(0, 0);
     }, [code]);
 
@@ -624,37 +647,41 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
 
     // ============ IDLE STATE - START SCREEN ============
     if (state === 'IDLE') {
+        const startCharacterCode = (() => {
+            const rawCode = data.timeline[0]?.character_code || 'liruf';
+            return CHARACTER_CODE_MAP[String(rawCode ?? '').toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
+        })();
+
         return (
             <div className="fixed inset-0 bg-background flex flex-col overflow-hidden">
-                {/* Decorative orbs */}
-                <div className="absolute -top-20 -left-20 w-72 h-72 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+                {/* Decorative orbs - subtle */}
+                <div className="absolute -top-20 -left-20 w-72 h-72 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-[streak-orb-float-1_12s_ease-in-out_infinite]" />
+                <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl pointer-events-none animate-[streak-orb-float-2_14s_ease-in-out_infinite]" />
 
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
-                    {/* Character */}
-                    <div className="mb-6 animate-bounce-in">
+                    {/* Character - with staggered entrance */}
+                    <div className="mb-6 animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
                         <div className="animate-float">
-                        {(() => {
-                            const rawCode = data.timeline[0]?.character_code || 'liruf';
-                            const normalizedCode = CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
-
-                            switch (normalizedCode) {
-                                case 'dina':
-                                    return <DinaCharacter className="w-full max-w-[280px]" expression="happy" />;
-                                case 'dr_rho':
-                                    return <DrRhoCharacter className="w-full max-w-[280px]" mood="wise" />;
-                                case 'zara_vex':
-                                    return <ZaraVexCharacter className="w-full max-w-[280px]" mood="happy" />;
-                                default:
-                                    return <DinoCharacter className="w-full max-w-[280px]" showBubble={false} mood="excited" />;
-                            }
-                        })()}
+                            <div className="animate-breathe">
+                                {startCharacterCode === 'dina' ? (
+                                    <DinaCharacter className="w-full max-w-[260px] sm:max-w-[280px]" expression="happy" />
+                                ) : startCharacterCode === 'dr_rho' ? (
+                                    <DrRhoCharacter className="w-full max-w-[260px] sm:max-w-[280px]" mood="wise" />
+                                ) : startCharacterCode === 'zara_vex' ? (
+                                    <ZaraVexCharacter className="w-full max-w-[260px] sm:max-w-[280px]" mood="happy" />
+                                ) : (
+                                    <DinoCharacter className="w-full max-w-[260px] sm:max-w-[280px]" showBubble={false} mood="excited" />
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Lesson Info Card */}
-                    <div className="relative bg-card rounded-3xl border-2 border-border px-6 py-6 text-center max-w-sm w-full mb-5 shadow-sm">
+                    {/* Lesson Info Card - staggered entrance */}
+                    <div
+                        className="relative bg-card rounded-3xl border-2 border-border px-6 py-6 text-center max-w-sm w-full mb-5 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-700"
+                        style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
+                    >
                         <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-2 relative tracking-tight">
                             {data.lesson.title}
                         </h1>
@@ -664,13 +691,13 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
 
                         {/* Rewards */}
                         <div className="flex justify-center gap-4 relative">
-                            <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-500/20 px-4 py-2 rounded-2xl border-2 border-yellow-400 dark:border-yellow-500/30 shadow-sm">
+                            <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-500/20 px-4 py-2 rounded-2xl border-2 border-yellow-400 dark:border-yellow-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}>
                                 <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                                 <span className="font-bold text-yellow-700 dark:text-yellow-400 text-base">
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm">
+                            <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '550ms', animationFillMode: 'backwards' }}>
                                 <Zap className="w-5 h-5 text-blue-500 fill-blue-500" />
                                 <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
                                     {data.meta.estimated_duration_seconds >= 60
@@ -682,16 +709,22 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                         </div>
                     </div>
 
-                    {/* Start Button */}
-                    <div className="relative w-full max-w-sm overflow-hidden rounded-2xl">
+                    {/* Start Button - with shimmer */}
+                    <div
+                        className="relative w-full max-w-sm animate-in fade-in slide-in-from-bottom-8 duration-700"
+                        style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}
+                    >
                         <Button
-                            onClick={startLesson}
+                            onClick={() => {
+                                lessonStartTimeRef.current = Date.now();
+                                startLesson();
+                            }}
                             size="lg"
-                            className="w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
+                            className="relative w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all overflow-hidden"
                         >
-                            {t('start.button')}
+                            <span className="relative z-10">{t('start.button')}</span>
+                            <div className="absolute inset-0 animate-shimmer-sweep pointer-events-none" />
                         </Button>
-                        <div className="animate-shimmer-sweep rounded-2xl" />
                     </div>
                 </div>
             </div>
@@ -699,7 +732,6 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
     }
 
     // ============ ACTIVE LESSON ============
-    const correctId = currentExercise?.correct_answer?.correctOptionId;
     const exerciseNumber = `${currentExerciseIndex + 1}/${totalExercises}`;
 
     return (
@@ -749,10 +781,26 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
             </div>
 
             {/* ===== MAIN CONTENT ===== */}
-            <div
-                key={`exercise-${currentExerciseIndex}`}
-                className="flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch animate-in fade-in slide-in-from-bottom-4 duration-500"
-            >
+            {/* CRITICAL: When lesson is completed, hide the exercise content completely
+                to prevent the "double vision" bug where the last exercise shows
+                underneath the celebration screen. Show a "finishing" state instead. */}
+            {state === 'COMPLETED' && !showSuccess && !showStreakCelebration ? (
+                <div className="flex-1 flex flex-col items-center justify-center px-4 pb-2 pt-4 min-h-0 w-full">
+                    <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
+                        <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+                        <p className="text-lg font-bold text-muted-foreground">
+                            {t('completion.finishing', { defaultValue: 'Guardando progreso...' })}
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <div
+                    key={`exercise-${currentExerciseIndex}`}
+                    className={cn(
+                        "flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch",
+                        state === 'COMPLETED' ? "opacity-0 pointer-events-none" : "animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    )}
+                >
 
                 {/* Hide default Bubble/Character for StoryMode and IntroNarrative as they have their own */}
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
@@ -1306,6 +1354,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 )}
 
             </div>
+            )}
 
             {/* ===== STREAK CELEBRATION ==============================================
               Shows BEFORE the lesson summary when the user activates their streak
@@ -1328,9 +1377,13 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 isVisible={showSuccess}
                 completionResult={completionResult}
                 basePoints={data.meta.points_reward}
-                durationSeconds={realDurationSeconds || data.meta.estimated_duration_seconds}
+                durationSeconds={realDurationSeconds}
                 nextLessonCode={nextLessonCode}
                 characterCode={getCharacterCode()}
+                exerciseStats={{
+                    correct: results.filter(r => r.status === 'correct').length,
+                    total: results.length
+                }}
                 onNext={() => {
                     if (nextLessonCode) {
                         setShowSuccess(false);
@@ -1345,7 +1398,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     setShowSuccess(false);
                     setShowStreakCelebration(false);
                     celebrationShownRef.current = false;
-                    lessonStartTimeRef.current = Date.now();
+                    lessonStartTimeRef.current = null;
                     startLesson();
                     playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
                 }}

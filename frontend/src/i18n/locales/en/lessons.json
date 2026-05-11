@@ -38,7 +38,10 @@
     "speaking": "Speaking...",
     "correct": "Correct!",
     "incorrect": "Incorrect",
-    "great_job": "Excellent!",
+    "great_job": "Great Job!",
+    "perfect": "Perfect!",
+    "good_job": "Good Job!",
+    "completed": "Completed!",
     "found": "Found:",
     "chat_header": "Financial Chat",
     "system": "System"
@@ -63,7 +66,14 @@
     "next_lesson": "Next lesson",
     "back_to_lessons": "Back to lessons",
     "streak": "Streak",
-    "time": "Time"
+    "time": "Time",
+    "accuracy": "Accuracy",
+    "finishing": "Saving progress..."
+  },
+  "badges": {
+    "perfect": "Perfect",
+    "streak": "Streak",
+    "estimated": "Estimated"
   },
   "game_over": {
     "title": "Out of energy!",

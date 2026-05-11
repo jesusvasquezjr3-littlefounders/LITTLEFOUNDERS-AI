@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DinoCharacter } from "@/components/characters/DinoCharacter";
 import { DinaCharacter } from "@/components/characters/DinaCharacter";
@@ -21,13 +21,54 @@ function CelebrationCharacter({ characterCode }: { characterCode: string }) {
   }
 }
 
+/** Animate a numeric value from 0 to target over `duration` ms */
+function useCountUp(target: number, duration: number = 1200, isVisible: boolean) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setValue(0);
+      return;
+    }
+    startTimeRef.current = null;
+
+    const step = (timestamp: number) => {
+      if (!startTimeRef.current) startTimeRef.current = timestamp;
+      const elapsed = timestamp - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isVisible, target, duration]);
+
+  return value;
+}
+
 export interface LessonCelebrationProps {
   isVisible: boolean;
-  completionResult?: { points_earned: number; xp_earned: number; new_streak: number } | null;
+  completionResult?: {
+    points_earned: number;
+    xp_earned: number;
+    new_streak: number;
+    is_fallback?: boolean;
+  } | null;
   basePoints: number;
   durationSeconds: number;
   nextLessonCode: string | null | undefined;
   characterCode: string; // 'liruf', 'dina', 'dr_rho', 'zara_vex'
+  exerciseStats?: { correct: number; total: number } | null;
   onNext: () => void;
   onExit: () => void;
   onRetry: () => void;
@@ -40,6 +81,7 @@ export function LessonCelebration({
   durationSeconds,
   nextLessonCode,
   characterCode,
+  exerciseStats,
   onNext,
   onExit,
   onRetry,
@@ -47,6 +89,38 @@ export function LessonCelebration({
   const { t } = useTranslation("lessons");
   const [phase, setPhase] = useState<"entering" | "visible" | "exiting">("entering");
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // Derived values
+  const pointsTarget = completionResult?.points_earned ?? basePoints;
+  const xpTarget = completionResult?.xp_earned ?? Math.round(basePoints * 0.5);
+  const streakValue = completionResult?.new_streak ?? 0;
+  const isFallback = completionResult?.is_fallback ?? false;
+  const correctCount = exerciseStats?.correct ?? 0;
+  const totalCount = exerciseStats?.total ?? 1;
+  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 100;
+
+  // Dynamic message based on performance
+  const getMessageKey = useCallback(() => {
+    if (accuracy >= 90) return "status.perfect";
+    if (accuracy >= 70) return "status.great_job";
+    if (accuracy >= 50) return "status.good_job";
+    return "status.completed";
+  }, [accuracy]);
+
+  // Count-up animations
+  const animatedPoints = useCountUp(pointsTarget, 1200, isVisible);
+  const animatedXP = useCountUp(xpTarget, 1000, isVisible);
+  const animatedStreak = useCountUp(streakValue, 800, isVisible);
+
+  // Format duration consistently: always MM:SS
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (mins > 0) {
+      return `${mins}:${String(secs).padStart(2, '0')}`;
+    }
+    return `0:${String(secs).padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     if (!isVisible) {
@@ -57,11 +131,16 @@ export function LessonCelebration({
     const enterTimeout = setTimeout(() => setPhase("visible"), 100);
 
     const confettiTimeout = setTimeout(() => {
+      const colors = accuracy >= 90
+        ? ["#fbbf24", "#f59e0b", "#fcd34d", "#ffffff"] // gold
+        : accuracy >= 70
+          ? ["#10b981", "#34d399", "#6ee7b7", "#ffffff"] // emerald
+          : ["#3b82f6", "#60a5fa", "#93c5fd", "#ffffff"]; // blue
       confetti({
         particleCount: 150,
         spread: 120,
         origin: { y: 0.4 },
-        colors: ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ffffff"],
+        colors,
         startVelocity: 45,
         gravity: 0.6,
       });
@@ -74,9 +153,13 @@ export function LessonCelebration({
       clearTimeout(confettiTimeout);
       timeoutsRef.current = [];
     };
-  }, [isVisible]);
+  }, [isVisible, accuracy]);
 
   if (!isVisible) return null;
+
+  const messageKey = getMessageKey();
+  const isPerfect = accuracy >= 90;
+  const hasErrors = correctCount < totalCount;
 
   return createPortal(
     <div
@@ -86,13 +169,17 @@ export function LessonCelebration({
       aria-modal="true"
       aria-labelledby="celebration-title"
     >
-      <div className="absolute inset-0 z-0 bg-emerald-50 dark:bg-emerald-950/20 animate-in fade-in duration-1000" />
+      {/* Background gradient */}
+      <div className={cn(
+        "absolute inset-0 z-0 animate-in fade-in duration-1000 backdrop-blur-sm",
+        isPerfect ? "bg-yellow-50/95 dark:bg-yellow-950/95" : "bg-emerald-50/95 dark:bg-emerald-950/95"
+      )} />
       
-      {/* Drifting Orbs - Premium Liquid Glass Effects */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none saturate-[120%] dark:saturate-[150%]">
-        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-[120px] bg-emerald-400 opacity-20 dark:bg-emerald-600 dark:opacity-30 animate-[streak-orb-float-1_8s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-40 -right-32 w-[420px] h-[420px] rounded-full blur-[100px] bg-teal-300 opacity-20 dark:bg-teal-500 dark:opacity-25 animate-[streak-orb-float-2_9s_ease-in-out_infinite]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[100px] bg-blue-300 opacity-20 dark:bg-blue-600 dark:opacity-20 animate-[streak-orb-float-3_7s_ease-in-out_infinite]" />
+      {/* Drifting Orbs - Subtle, less distracting */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-[120px] bg-emerald-400/10 dark:bg-emerald-600/20 animate-[streak-orb-float-1_10s_ease-in-out_infinite]" />
+        <div className="absolute -bottom-40 -right-32 w-[420px] h-[420px] rounded-full blur-[100px] bg-teal-300/10 dark:bg-teal-500/15 animate-[streak-orb-float-2_12s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[100px] bg-blue-300/10 dark:bg-blue-600/10 animate-[streak-orb-float-3_8s_ease-in-out_infinite]" />
       </div>
 
       <div className={cn(
@@ -103,87 +190,168 @@ export function LessonCelebration({
         <div className="flex flex-col items-center text-center w-full mt-4">
             
           {/* Character Spotlight */}
-          <div className="relative w-full flex justify-center mb-8 pointer-events-none isolate">
+          <div className="relative w-full flex justify-center mb-6 pointer-events-none isolate">
              {/* Central glow */}
-            <div className="absolute bottom-4 w-56 h-56 rounded-full z-[-1]" style={{ background: "radial-gradient(circle,rgba(16,185,129,0.3) 0%,transparent 70%)", filter: "blur(28px)" }} />
+            <div className={cn(
+              "absolute bottom-4 w-56 h-56 rounded-full z-[-1]",
+              isPerfect
+                ? "bg-yellow-400/20 dark:bg-yellow-500/30"
+                : "bg-emerald-400/20 dark:bg-emerald-500/30"
+            )} style={{ filter: "blur(28px)" }} />
             
-            <div className="relative w-56 h-56 drop-shadow-2xl z-10 animate-bounce-in">
-              <CelebrationCharacter characterCode={characterCode} />
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56 drop-shadow-2xl z-10 animate-bounce-in">
+              <CelebrationCharacter key={characterCode} characterCode={characterCode} />
             </div>
 
-            {/* Sparkle particle */}
-            <div className="absolute top-0 right-10 animate-pulse text-yellow-400 z-10"><Sparkles size={32} /></div>
+            {/* Sparkle particles */}
+            <div className="absolute top-0 right-10 animate-pulse text-yellow-400 z-10">
+              <Sparkles size={28} />
+            </div>
+            {isPerfect && (
+              <div className="absolute top-4 left-8 animate-pulse text-yellow-300 z-10" style={{ animationDelay: '0.3s' }}>
+                <Star size={20} className="fill-yellow-300" />
+              </div>
+            )}
           </div>
 
-          <h2 id="celebration-title" className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400 mb-2 drop-shadow-sm">
-            {t("status.great_job")}
+          {/* Dynamic Title */}
+          <h2 id="celebration-title" className={cn(
+            "text-3xl sm:text-4xl font-black mb-2 drop-shadow-sm",
+            isPerfect ? "text-yellow-500 dark:text-yellow-400" : "text-emerald-600 dark:text-emerald-400"
+          )}>
+            {t(messageKey, { defaultValue: "Great Job!" })}
           </h2>
-          <p className="text-gray-600 dark:text-white/80 text-lg font-medium mb-8">
+          <p className="text-gray-600 dark:text-white/80 text-base sm:text-lg font-medium mb-2">
             {t("completion.subtitle")}
           </p>
 
+          {/* Accuracy Bar */}
+          <div className="w-full max-w-xs mb-6 animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-bold text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                {t("completion.accuracy", { defaultValue: "Accuracy" })}
+              </span>
+              <span className={cn(
+                "text-sm font-black",
+                isPerfect ? "text-yellow-500" : "text-emerald-500"
+              )}>
+                {correctCount}/{totalCount}
+              </span>
+            </div>
+            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all duration-1000 ease-out",
+                  isPerfect ? "bg-yellow-400" : "bg-emerald-500"
+                )}
+                style={{
+                  width: phase === "visible" ? `${accuracy}%` : "0%",
+                  transitionDelay: "400ms",
+                }}
+              />
+            </div>
+            {/* Performance badges */}
+            <div className="flex justify-center gap-2 mt-2">
+              {isPerfect && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-[10px] font-bold uppercase tracking-wider">
+                  <Star size={10} className="fill-yellow-500 text-yellow-500" />
+                  {t("badges.perfect", { defaultValue: "Perfect" })}
+                </span>
+              )}
+              {completionResult?.new_streak && completionResult.new_streak >= 3 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 text-[10px] font-bold uppercase tracking-wider">
+                  <Flame size={10} className="text-orange-500" />
+                  {t("badges.streak", { defaultValue: "Streak" })}
+                </span>
+              )}
+              {isFallback && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                  <Target size={10} />
+                  {t("badges.estimated", { defaultValue: "Estimated" })}
+                </span>
+              )}
+            </div>
+          </div>
+
           {/* Stats Row - Staggered entrance */}
-          <div className="flex justify-center gap-2 sm:gap-4 w-full mb-8">
+          <div className="flex justify-center gap-2 sm:gap-4 w-full mb-6">
             {/* Points Box */}
             <div
               className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
               style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
             >
-               <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
-                  {/* @ts-ignore */}
-                  <dotlottie-wc
-                    src="https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie"
-                    autoplay
-                    loop
-                    style={{ width: "100%", height: "100%", pointerEvents: "none" }}
-                  />
+               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
+                  <div className="relative">
+                    <Star className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 fill-yellow-400 drop-shadow-md" />
+                    <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+                  </div>
                </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">+{completionResult?.points_earned ?? basePoints}</span>
-               <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.points_earned", { defaultValue: "Points" })}</span>
+               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                 +{animatedPoints}
+               </span>
+               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
+                 {t("completion.points_earned", { defaultValue: "Points" })}
+               </span>
+            </div>
+
+            {/* XP Box */}
+            <div
+              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
+              style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
+            >
+               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
+                  <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 fill-blue-400 drop-shadow-md" />
+               </div>
+               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                 +{animatedXP}
+               </span>
+               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
+                 XP
+               </span>
             </div>
 
             {/* Time Box */}
             <div
               className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
-              style={{ animationDelay: '350ms', animationFillMode: 'backwards' }}
+              style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
             >
-               <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
-                   {/* @ts-ignore */}
-                   <dotlottie-wc
-                     src="https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie"
-                     autoplay
-                     loop
-                     style={{ width: "100%", height: "100%", pointerEvents: "none" }}
-                   />
+               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
+                  <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 drop-shadow-md" />
                </div>
                <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                    {durationSeconds >= 60
-                        ? `${Math.floor(durationSeconds / 60)}:${String(durationSeconds % 60).padStart(2, '0')}`
-                        : `${durationSeconds}s`
-                    }
+                 {formatDuration(durationSeconds)}
                </span>
-               <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.time")}</span>
+               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
+                 {t("completion.time")}
+               </span>
             </div>
 
-            {/* Streak Box (Only if streak is updated) */}
-            {(completionResult?.new_streak ?? 0) > 0 && (
-              <div
-                className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-orange-500/40 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
-                style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
-              >
-                 <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1 drop-shadow-md">
-                    {/* @ts-ignore */}
-                    <dotlottie-wc
-                        src="https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie"
-                        autoplay
-                        loop
-                        style={{ width: "100%", height: "100%", pointerEvents: "none" }}
-                    />
-                 </div>
-                 <span className="text-xl sm:text-2xl font-black text-orange-500">{completionResult.new_streak}</span>
-                 <span className="text-[9px] sm:text-[10px] font-black text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">{t("completion.streak")}</span>
-              </div>
-            )}
+            {/* Streak Box — ALWAYS visible */}
+            <div
+              className={cn(
+                "relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500",
+                streakValue > 0
+                  ? "border-orange-200 dark:border-orange-500/40"
+                  : "border-slate-200 dark:border-slate-700 opacity-60"
+              )}
+              style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
+            >
+               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
+                  <Flame className={cn(
+                    "w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md",
+                    streakValue > 0 ? "text-orange-500 fill-orange-500" : "text-slate-300 dark:text-slate-600"
+                  )} />
+               </div>
+               <span className={cn(
+                 "text-xl sm:text-2xl font-black",
+                 streakValue > 0 ? "text-orange-500" : "text-gray-400 dark:text-slate-500"
+               )}>
+                 {animatedStreak}
+               </span>
+               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
+                 {t("completion.streak")}
+               </span>
+            </div>
           </div>
         </div>
 
@@ -192,7 +360,10 @@ export function LessonCelebration({
            <button
                onClick={onNext}
                disabled={nextLessonCode === undefined}
-               className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2"
+               className={cn(
+                 "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2",
+                 isPerfect ? "bg-yellow-500 hover:bg-yellow-600 shadow-[0_4px_0_rgb(161,98,7)] hover:shadow-[0_2px_0_rgb(161,98,7)]" : "bg-green-500 hover:bg-green-600"
+               )}
            >
                    {nextLessonCode === undefined ? (
                        <Loader2 className="w-5 h-5 animate-spin" />

@@ -90,12 +90,12 @@ export const PopOptionButton: React.FC<PopOptionButtonProps> = ({
                 !showResult && isSelected && `${color.bg} shadow-none translate-y-[4px] ring-4 ring-white/30`,
 
                 // Success
-                showResult && feedback === 'success' && isSelected && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-100 z-10",
+                showResult && feedback === 'success' && isSelected && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-100 z-10 animate-bounce-in-scale",
                 showResult && feedback === 'success' && !isSelected && "opacity-20 grayscale",
 
                 // Error: selected wrong answer is red, correct unselected answer is highlighted green
-                showResult && feedback === 'error' && isSelected && !isCorrect && "bg-red-500 shadow-none ring-4 ring-red-300",
-                showResult && feedback === 'error' && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105 z-10",
+                showResult && feedback === 'error' && isSelected && !isCorrect && "bg-red-500 shadow-none ring-4 ring-red-300 animate-shake",
+                showResult && feedback === 'error' && isCorrect && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105 z-10 animate-bounce-in-scale",
                 
                 className
             )}

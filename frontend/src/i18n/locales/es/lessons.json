@@ -34,6 +34,9 @@
     "correct": "¡Correcto!",
     "incorrect": "Incorrecto",
     "great_job": "¡Excelente!",
+    "perfect": "¡Perfecto!",
+    "good_job": "¡Bien hecho!",
+    "completed": "¡Completado!",
     "found": "Encontrado:",
     "chat_header": "Chat Financiero",
     "system": "Sistema"
@@ -58,7 +61,14 @@
     "next_lesson": "Siguiente lección",
     "back_to_lessons": "Volver a lecciones",
     "streak": "Racha",
-    "time": "Tiempo"
+    "time": "Tiempo",
+    "accuracy": "Precisión",
+    "finishing": "Guardando progreso..."
+  },
+  "badges": {
+    "perfect": "Perfecto",
+    "streak": "Racha",
+    "estimated": "Estimado"
   },
   "game_over": {
     "title": "¡Se acabó la energía!",
