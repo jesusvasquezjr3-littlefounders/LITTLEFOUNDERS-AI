@@ -74,12 +74,12 @@ function EmailWaitlistForm({ ctaLabel, placeholder, successMsg, language }: {
 }
 
 /* ─── Mock UI: Family Dashboard (Hero right column) ─────────────────────── */
-function HeroDashboardPreview() {
+function HeroDashboardPreview({ t }: { t: any }) {
   const tasks = [
-    { label: 'Limpiar habitación', coins: 30, done: true, color: 'pink' },
-    { label: 'Hacer la tarea', coins: 50, done: true, color: 'purple' },
-    { label: 'Lavar los platos', coins: 25, done: false, color: 'blue' },
-    { label: 'Leer 20 minutos', coins: 40, done: false, color: 'green' },
+    { label: t('families.mock_data.tidy_room'), coins: 30, done: true, color: 'pink' },
+    { label: t('families.mock_data.complete_lesson'), coins: 50, done: true, color: 'purple' },
+    { label: t('families.mock_data.water_plants'), coins: 25, done: false, color: 'blue' },
+    { label: t('families.mock_data.practice_piano'), coins: 40, done: false, color: 'green' },
   ];
   const completed = tasks.filter(t => t.done).length;
   const pct = Math.round((completed / tasks.length) * 100);
@@ -95,7 +95,7 @@ function HeroDashboardPreview() {
         <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-5">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Panel Familiar</p>
+              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">{t('families.mock_data.panel_header')}</p>
               <p className="text-white font-black text-lg">Sofía</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🦕</div>
@@ -105,7 +105,7 @@ function HeroDashboardPreview() {
             <span className="text-2xl">🪙</span>
             <div>
               <p className="text-white font-black text-xl leading-none">1,250</p>
-              <p className="text-white/70 text-xs">monedas acumuladas</p>
+              <p className="text-white/70 text-xs">{t('families.mock_data.accumulated_coins')}</p>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@ function HeroDashboardPreview() {
         {/* Progress */}
         <div className="px-5 pt-4 pb-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Progreso de hoy</span>
+            <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{t('families.mock_data.today_progress')}</span>
             <span className="text-xs font-black text-pink-600 dark:text-pink-400">{pct}%</span>
           </div>
           <div className="h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -144,20 +144,20 @@ function HeroDashboardPreview() {
 
       {/* Floating badge — streak */}
       <div className="absolute -top-3 -right-3 bg-gradient-to-br from-orange-400 to-red-500 text-white px-3 py-1.5 rounded-xl shadow-lg text-xs font-black flex items-center gap-1.5 z-10">
-        <Flame className="w-3.5 h-3.5" /> 7 días seguidos
+        <Flame className="w-3.5 h-3.5" /> {t('families.mock_data.streak_days', { count: 7 })}
       </div>
     </div>
   );
 }
 
 /* ─── Mock UI: Task Manager (section visual) ──────────────────────────── */
-function TaskManagerPreview() {
+function TaskManagerPreview({ t }: { t: any }) {
   const [activeTask, setActiveTask] = useState<number | null>(null);
   const tasks = [
-    { icon: '📚', label: 'Completar lección de ahorro', reward: 60, category: 'Aprendizaje', color: 'from-purple-400 to-blue-500' },
-    { icon: '🧹', label: 'Ordenar el cuarto', reward: 35, category: 'Hogar', color: 'from-pink-400 to-rose-500' },
-    { icon: '🌱', label: 'Regar las plantas', reward: 20, category: 'Hogar', color: 'from-green-400 to-emerald-500' },
-    { icon: '🎯', label: 'Practicar 30 min de piano', reward: 45, category: 'Habilidad', color: 'from-amber-400 to-orange-500' },
+    { icon: '📚', label: t('families.mock_data.complete_lesson'), reward: 60, category: t('families.mock_data.category_learning'), color: 'from-purple-400 to-blue-500' },
+    { icon: '🧹', label: t('families.mock_data.tidy_room'), reward: 35, category: t('families.mock_data.category_home'), color: 'from-pink-400 to-rose-500' },
+    { icon: '🌱', label: t('families.mock_data.water_plants'), reward: 20, category: t('families.mock_data.category_home'), color: 'from-green-400 to-emerald-500' },
+    { icon: '🎯', label: t('families.mock_data.practice_piano'), reward: 45, category: t('families.mock_data.category_skill'), color: 'from-amber-400 to-orange-500' },
   ];
 
   return (
@@ -167,8 +167,8 @@ function TaskManagerPreview() {
         <div className="p-5 border-b border-gray-100 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-black text-gray-900 dark:text-white">Tareas de Luna</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">4 tareas pendientes · 160 🪙 disponibles</p>
+              <h3 className="font-black text-gray-900 dark:text-white">{t('families.mock_data.tasks_title', { name: 'Luna' })}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('families.mock_data.pending_tasks', { count: 4 })} · {t('families.mock_data.available_coins', { count: 160 })}</p>
             </div>
             <button className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white flex items-center justify-center text-lg font-black shadow-md">+</button>
           </div>
@@ -193,8 +193,8 @@ function TaskManagerPreview() {
               </div>
               {activeTask === i && (
                 <div className="mt-3 pt-3 border-t border-pink-200 dark:border-pink-800/40 flex gap-2">
-                  <button className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold shadow-sm">Marcar como hecha</button>
-                  <button className="px-3 py-2 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 text-xs font-bold">Editar</button>
+                  <button className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold shadow-sm">{t('families.mock_data.mark_done')}</button>
+                  <button className="px-3 py-2 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 text-xs font-bold">{t('families.mock_data.edit')}</button>
                 </div>
               )}
             </div>
@@ -206,12 +206,12 @@ function TaskManagerPreview() {
 }
 
 /* ─── Mock UI: Marketplace ────────────────────────────────────────────── */
-function MarketplacePreview() {
+function MarketplacePreview({ t }: { t: any }) {
   const items = [
-    { emoji: '💰', label: 'Dinero de bolsillo', price: 500, desc: '≈ $2 USD', badge: 'Popular', badgeColor: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300' },
-    { emoji: '🎮', label: 'Tiempo de videojuego', price: 200, desc: '30 minutos extra', badge: 'Nuevo', badgeColor: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
-    { emoji: '🍕', label: 'Elegir la cena', price: 350, desc: 'Tú decides hoy', badge: null, badgeColor: '' },
-    { emoji: '⭐', label: 'Lección Premium', price: 150, desc: 'Contenido especial', badge: 'LF+', badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
+    { emoji: '💰', label: t('families.mock_data.pocket_money'), price: 500, desc: '≈ $2 USD', badge: 'Popular', badgeColor: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300' },
+    { emoji: '🎮', label: t('families.mock_data.game_time'), price: 200, desc: '30 minutos extra', badge: 'Nuevo', badgeColor: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
+    { emoji: '🍕', label: t('families.mock_data.choose_dinner'), price: 350, desc: 'Tú decides hoy', badge: null, badgeColor: '' },
+    { emoji: '⭐', label: t('families.mock_data.premium_lesson'), price: 150, desc: 'Contenido especial', badge: 'LF+', badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
   ];
 
   return (
@@ -222,7 +222,7 @@ function MarketplacePreview() {
         <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Tienda de Recompensas</p>
+              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">{t('families.mock_data.marketplace_header')}</p>
               <p className="text-white font-black text-lg">Marketplace</p>
             </div>
             <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
@@ -250,7 +250,7 @@ function MarketplacePreview() {
         </div>
         <div className="px-4 pb-4">
           <button className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-bold shadow-sm hover:shadow-md transition-all">
-            Ver catálogo completo →
+            {t('families.marketplace.feature_1')} →
           </button>
         </div>
       </div>
@@ -259,7 +259,7 @@ function MarketplacePreview() {
 }
 
 /* ─── Mock UI: Parent Analytics Dashboard ────────────────────────────── */
-function ParentDashboardPreview() {
+function ParentDashboardPreview({ t }: { t: any }) {
   const barData = [40, 65, 30, 80, 55, 90, 72];
   const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   const maxBar = Math.max(...barData);
@@ -270,12 +270,12 @@ function ParentDashboardPreview() {
       <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-5">
-          <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Panel de Padres</p>
-          <p className="text-white font-black text-lg">Progreso Semanal</p>
+          <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">{t('families.mock_data.parent_dashboard')}</p>
+          <p className="text-white font-black text-lg">{t('families.mock_data.weekly_progress')}</p>
           <div className="grid grid-cols-3 gap-3 mt-3">
             {[
-              { label: 'Tareas', value: '14', icon: '✅' },
-              { label: 'Monedas', value: '380', icon: '🪙' },
+              { label: t('families.mock_data.completed_tasks'), value: '14', icon: '✅' },
+              { label: t('families.mock_data.coins_earned'), value: '380', icon: '🪙' },
               { label: 'Racha', value: '7d', icon: '🔥' },
             ].map((stat, i) => (
               <div key={i} className="bg-white/15 rounded-xl p-2 text-center">
@@ -289,7 +289,7 @@ function ParentDashboardPreview() {
 
         {/* Bar chart */}
         <div className="p-5">
-          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Actividad diaria</p>
+          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{t('families.mock_data.daily_activity')}</p>
           <div className="flex items-end gap-2 h-20">
             {barData.map((val, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
@@ -305,10 +305,10 @@ function ParentDashboardPreview() {
 
         {/* Recent lessons */}
         <div className="px-5 pb-5 space-y-2">
-          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Últimas lecciones</p>
+          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('families.mock_data.recent_lessons')}</p>
           {[
-            { topic: 'Ahorro e inversión', score: 95, emoji: '💰' },
-            { topic: 'Presupuesto familiar', score: 82, emoji: '📊' },
+            { topic: t('families.mock_data.saving_investing'), score: 95, emoji: '💰' },
+            { topic: t('families.mock_data.family_budget'), score: 82, emoji: '📊' },
           ].map((lesson, i) => (
             <div key={i} className="flex items-center gap-3 p-2.5 bg-gray-50 dark:bg-slate-800 rounded-xl">
               <span className="text-lg">{lesson.emoji}</span>
@@ -438,7 +438,7 @@ export default function FamiliesPage() {
 
               {/* RIGHT — Dashboard mockup */}
               <div className="flex justify-center items-center pt-8 lg:pt-0">
-                <HeroDashboardPreview />
+                <HeroDashboardPreview t={t} />
               </div>
             </div>
           </div>
@@ -486,7 +486,7 @@ export default function FamiliesPage() {
 
               {/* Mockup */}
               <div className="flex justify-center lg:order-2">
-                <TaskManagerPreview />
+                <TaskManagerPreview t={t} />
               </div>
 
               {/* Character */}
@@ -535,7 +535,7 @@ export default function FamiliesPage() {
 
               {/* Mockup */}
               <div className="flex justify-center order-1 lg:order-2">
-                <MarketplacePreview />
+                <MarketplacePreview t={t} />
               </div>
 
               {/* Features */}
@@ -555,9 +555,9 @@ export default function FamiliesPage() {
 
                 {/* Coin flow graphic */}
                 <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200/60 dark:border-amber-800/30">
-                  <p className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-3">El ciclo del dinero</p>
+                  <p className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-3">{t('families.mock_data.cycle_label')}</p>
                   <div className="flex items-center gap-2 text-sm">
-                    {['Tarea ✅', '🪙 Monedas', '🎁 Recompensa'].map((step, i, arr) => (
+                    {[t('families.mock_data.task_step'), t('families.mock_data.coins_step'), t('families.mock_data.reward_step')].map((step, i, arr) => (
                       <React.Fragment key={i}>
                         <span className="font-bold text-gray-700 dark:text-gray-300 text-xs text-center flex-1">{step}</span>
                         {i < arr.length - 1 && <span className="text-gray-400 font-black">→</span>}
@@ -618,15 +618,15 @@ export default function FamiliesPage() {
                 <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200/60 dark:border-blue-800/30">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">💬</span>
-                    <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">Pregunta de la semana</span>
+                    <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">{t('families.mock_data.conversation_prompt')}</span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 italic">"Sofía aprendió sobre ahorro. Pregúntale: si tuvieras $100, ¿cómo los dividirías?"</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{t('families.mock_data.conversation_text', { child_name: 'Sofía', topic: 'ahorro' })}"</p>
                 </div>
               </div>
 
               {/* Mockup */}
               <div className="flex justify-center lg:order-2">
-                <ParentDashboardPreview />
+                <ParentDashboardPreview t={t} />
               </div>
 
               {/* Character */}
