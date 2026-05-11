@@ -9,6 +9,7 @@ interface ZaraVexCharacterProps {
     showBubble?: boolean;
     currentText?: string;
     bubblePosition?: 'top' | 'right';
+    isTalking?: boolean;
 }
 
 const COLORS = {
@@ -38,6 +39,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     mood = 'neutral',
     showBubble = false,
     currentText = "",
+    isTalking = false,
     bubblePosition = 'top'
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
@@ -108,20 +110,26 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "-top-4 left-1/2 -translate-x-1/2",
-                bubblePosition === 'right' && "top-10 -right-2",
+                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 pointer-events-none"
             )}>
-                <div className="bg-white border-[3px] border-slate-200 rounded-[2rem] px-6 py-4 shadow-lg relative">
-                    <p className="font-black text-slate-600 text-sm leading-snug text-center whitespace-pre-wrap">
+                <div className="bg-white border-2 border-slate-200 rounded-2xl px-4 py-2 shadow-lg relative min-w-[180px] max-w-[240px]">
+                    <p className="font-bold text-slate-600 text-xs leading-snug text-center">
                         {currentText}
                     </p>
-                    <div className="absolute w-4 h-4 bg-white border-b-[3px] border-r-[3px] border-slate-200 transform rotate-45 left-1/2 -translate-x-1/2 -bottom-2.5"></div>
+                    <div className="absolute w-3 h-3 bg-white border-b-2 border-r-2 border-slate-200 transform rotate-45 left-1/2 -translate-x-1/2 -bottom-[7px]"></div>
                 </div>
             </div>
 
             <style>{`
                 .zara-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+                .zara-mouth-talk { animation: zaraTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                @keyframes zaraTalkAnim {
+                    0%, 100% { transform: scaleY(1) translateY(0); }
+                    30% { transform: scaleY(0.85) translateY(1px); }
+                    60% { transform: scaleY(1.1) translateY(-1px); }
+                }
                 .zara-idle-float { animation: zaraFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes zaraFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
                 .zara-spring-bounce { animation: zaraSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
@@ -284,7 +292,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     <path d="M68 75 Q 70 78 72 75" fill="none" stroke={COLORS.skinShadow} strokeWidth="2" strokeLinecap="round" />
 
                     {/* Boca */}
-                    <g transform="translate(70, 85)" className="zara-face-transition">
+                    <g transform="translate(70, 85)" className={cn("zara-face-transition", isTalking ? "zara-mouth-talk" : "")}>
                         {c.mouth === 'smile' && (
                             <path d="M-6 -2 Q 0 4 6 -2" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
                         )}

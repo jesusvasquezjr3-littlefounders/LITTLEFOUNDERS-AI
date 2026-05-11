@@ -10,6 +10,7 @@ interface DinoCharacterProps {
     className?: string;
     mood?: DinoMood;
     bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
+    isTalking?: boolean;
 }
 
 /**
@@ -18,7 +19,7 @@ interface DinoCharacterProps {
  * smooth blink, spring-physics mouse tracking, idle breathing, tail wag,
  * squash-and-stretch bounce on click.
  */
-export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard' }: DinoCharacterProps) {
+export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false }: DinoCharacterProps) {
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
@@ -89,28 +90,28 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     }, []);
 
     return (
-        <div className={cn("relative w-full h-full flex justify-center items-center transition-opacity duration-500 select-none", className)}>
+        <div className={cn("relative w-full h-full flex flex-col justify-end items-center transition-opacity duration-500 select-none", className)}>
             {/* Speech Bubble */}
             <div
                 ref={bubbleRef}
                 className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    bubblePosition === 'standard' && "-top-10 md:-top-14 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
                     bubblePosition === 'demo' && "-top-2 md:-top-4 left-1/2 -translate-x-1/2",
-                    bubblePosition === 'tutorial' && "-top-12 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
-                    bubblePosition === 'hero' && "top-[10%] left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
+                    bubblePosition === 'tutorial' && "-top-16 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
+                    bubblePosition === 'hero' && "-top-14 left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
                     showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}
             >
                 <div className={cn(
-                    "relative bg-white rounded-full shadow-lg px-6 py-3 md:px-8 md:py-4",
-                    "max-w-[85vw] md:max-w-[320px] w-auto text-center"
+                    "relative bg-white rounded-2xl shadow-lg px-4 py-2",
+                    "min-w-[180px] max-w-[240px] w-auto text-center"
                 )}>
-                    <p className="text-slate-700 font-bold text-base md:text-lg leading-snug">
+                    <p className="text-slate-700 font-bold text-xs leading-snug">
                         {currentText || t('characters.dino.default_greeting')}
                     </p>
-                    <svg className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-6 h-3" viewBox="0 0 24 12" fill="none">
-                        <path d="M0 0C4 0 8 8 12 12C16 8 20 0 24 0H0Z" fill="white" />
+                    <svg className="absolute left-1/2 -translate-x-1/2 -bottom-[7px] w-4 h-2.5" viewBox="0 0 20 12" fill="none">
+                        <path d="M0 0C3.5 0 7 8 10 12C13 8 16.5 0 20 0H0Z" fill="white" />
                     </svg>
                 </div>
             </div>
@@ -226,7 +227,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <ellipse cx="20" cy="-10" rx="60" ry="45" fill="#4ADE80" />
 
                         {/* MOUTH GROUP */}
-                        <g className={cn("dino-face-transition", showBubble ? "dino-mouth-anim" : "")}>
+                        <g className={cn("dino-face-transition", isTalking ? "dino-mouth-anim" : "")}>
                             {mood === 'happy' && (
                                 <>
                                     <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />

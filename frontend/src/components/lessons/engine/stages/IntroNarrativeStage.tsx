@@ -9,9 +9,10 @@ import type { ExerciseData } from '../hooks/useLessonData';
 interface IntroNarrativeStageProps {
     exercise: ExerciseData;
     onComplete: () => void;
+    isTalking?: boolean;
 }
 
-export function IntroNarrativeStage({ exercise, onComplete }: IntroNarrativeStageProps) {
+export function IntroNarrativeStage({ exercise, onComplete, isTalking = false }: IntroNarrativeStageProps) {
     const content = exercise.content;
     const mood = (content.emotion || 'happy') as DinoMood;
     const text = content.transcript || '';
@@ -25,6 +26,7 @@ export function IntroNarrativeStage({ exercise, onComplete }: IntroNarrativeStag
                     showBubble={true}
                     mood={mood}
                     bubblePosition="standard"
+                    isTalking={isTalking}
                 />
             </div>
 

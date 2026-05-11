@@ -830,22 +830,26 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                                 <DinaCharacter
                                     className="lesson-character mx-auto"
                                     expression={getDinaExpression()}
+                                    isTalking={isNarrativeAudioPlaying}
                                 />
                             ) : getCharacterCode() === 'dr_rho' ? (
                                 <DrRhoCharacter
                                     className="lesson-character mx-auto"
                                     mood={getRhoMood()}
+                                    isTalking={isNarrativeAudioPlaying}
                                 />
                             ) : getCharacterCode() === 'zara_vex' ? (
                                 <ZaraVexCharacter
                                     className="lesson-character mx-auto"
                                     mood={getZaraMood()}
+                                    isTalking={isNarrativeAudioPlaying}
                                 />
                             ) : (
                                 <DinoCharacter
                                     className="lesson-character mx-auto"
                                     showBubble={false}
                                     mood={getMood()}
+                                    isTalking={isNarrativeAudioPlaying}
                                 />
                             )}
                         </div>
@@ -858,6 +862,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                         key={currentExerciseIndex}
                         exercise={currentExercise}
                         onNext={handleNext}
+                        isAudioPlaying={isNarrativeAudioPlaying}
                     />
                 )}
 

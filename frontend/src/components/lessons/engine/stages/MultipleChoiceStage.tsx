@@ -13,13 +13,15 @@ interface MultipleChoiceStageProps {
     onAnswer: (answerId: string) => boolean;
     onComplete: () => void;
     feedbackState: 'none' | 'success' | 'error';
+    isTalking?: boolean;
 }
 
 export function MultipleChoiceStage({
     exercise,
     onAnswer,
     onComplete,
-    feedbackState
+    feedbackState,
+    isTalking = false
 }: MultipleChoiceStageProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isChecked, setIsChecked] = useState(false);
@@ -67,6 +69,7 @@ export function MultipleChoiceStage({
                     showBubble={true}
                     mood={mood}
                     bubblePosition="standard"
+                    isTalking={isTalking}
                 />
             </div>
 

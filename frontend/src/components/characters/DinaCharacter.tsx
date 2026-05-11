@@ -5,6 +5,10 @@ interface DinaCharacterProps {
     expression?: 'neutral' | 'happy' | 'surprised' | 'wink';
     className?: string;
     enableMouseTracking?: boolean;
+    showBubble?: boolean;
+    currentText?: string;
+    bubblePosition?: 'top' | 'standard';
+    isTalking?: boolean;
 }
 
 /**
@@ -15,7 +19,11 @@ interface DinaCharacterProps {
 export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     expression = 'neutral',
     className = '',
-    enableMouseTracking = true
+    enableMouseTracking = true,
+    showBubble = false,
+    currentText = '',
+    bubblePosition = 'top',
+    isTalking = false
 }) => {
     const headRef = useRef<SVGGElement>(null);
     const pupilLRef = useRef<SVGGElement>(null);
@@ -178,10 +186,29 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
 
     return (
         <div
-            className={cn("scene relative w-full h-full flex justify-center items-center cursor-pointer select-none", className)}
+            className={cn("scene relative w-full h-full flex flex-col justify-end items-center cursor-pointer select-none", className)}
             style={{ willChange: "transform" }}
             onClick={handleClick}
         >
+            {/* Speech Bubble */}
+            {showBubble && (
+                <div className={cn(
+                    "absolute z-20 transition-all duration-300 ease-out",
+                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                    showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
+                )}>
+                    <div className="relative bg-white rounded-2xl shadow-lg px-4 py-2 border border-slate-100 min-w-[180px] max-w-[240px] w-auto text-center">
+                        <p className="text-slate-700 font-bold text-xs leading-snug">
+                            {currentText}
+                        </p>
+                        <svg className="absolute left-1/2 -translate-x-1/2 -bottom-[7px] w-4 h-2.5" viewBox="0 0 20 12" fill="none">
+                            <path d="M0 0C3.5 0 7 8 10 12C13 8 16.5 0 20 0H0Z" fill="white" />
+                            <path d="M0 0C3.5 0 7 8 10 12C13 8 16.5 0 20 0" stroke="#e2e8f0" strokeWidth="2" />
+                        </svg>
+                    </div>
+                </div>
+            )}
             <style>{`
                 .dina-breathe { animation: dinaBreatheAnim 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes dinaBreatheAnim { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.015) translateY(-2px); } }
@@ -190,6 +217,12 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                 .dina-neck-sway { animation: dinaNeckSway 5s ease-in-out infinite alternate; transform-origin: 280px 280px; }
                 @keyframes dinaNeckSway { 0% { transform: rotate(-2deg); } 100% { transform: rotate(4deg); } }
                 .dina-face-element { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+                .dina-mouth-talk { animation: dinaTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                @keyframes dinaTalkAnim {
+                    0%, 100% { transform: scaleY(1) translateY(0); }
+                    30% { transform: scaleY(0.8) translateY(1px); }
+                    60% { transform: scaleY(1.15) translateY(-1px); }
+                }
                 .dina-spring-bounce { animation: dinaSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
                 @keyframes dinaSpring {
                     0% { transform: scale(1) translateY(0); }
@@ -337,7 +370,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                             </g>
 
                             {/* BOCA */}
-                            <path id="mouth-path" d={config.mouthPath} stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className="dina-face-element" />
+                            <path id="mouth-path" d={config.mouthPath} stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className={cn("dina-face-element", isTalking ? "dina-mouth-talk" : "")} />
 
                             {/* NARIZ */}
                             <circle cx="25" cy="15" r="2" fill="#7c2d12" opacity="0.2" />

@@ -46,6 +46,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
                     <DinaCharacter
                         className="w-full max-w-[280px] mx-auto"
                         expression="happy"
+                        isTalking={isAudioPlaying}
                     />
                 );
             case 'dr_rho':
@@ -53,6 +54,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
                     <DrRhoCharacter
                         className="w-full max-w-[280px] mx-auto"
                         mood="wise"
+                        isTalking={isAudioPlaying}
                     />
                 );
             case 'zara_vex':
@@ -60,6 +62,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
                     <ZaraVexCharacter
                         className="w-full max-w-[280px] mx-auto"
                         mood="happy"
+                        isTalking={isAudioPlaying}
                     />
                 );
             default:
@@ -68,6 +71,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
                         className="w-full max-w-[280px] mx-auto"
                         showBubble={false}
                         mood="excited"
+                        isTalking={isAudioPlaying}
                     />
                 );
         }

@@ -9,6 +9,7 @@ interface DrRhoCharacterProps {
     showBubble?: boolean;
     currentText?: string;
     bubblePosition?: 'top' | 'right';
+    isTalking?: boolean;
 }
 
 const COLORS = {
@@ -32,7 +33,8 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     mood = 'neutral',
     showBubble = false,
     currentText = "",
-    bubblePosition = 'top'
+    bubblePosition = 'top',
+    isTalking = false
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [clickPulse, setClickPulse] = useState(0);
@@ -102,20 +104,26 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "-top-4 left-1/2 -translate-x-1/2",
-                bubblePosition === 'right' && "top-10 -right-2",
-                showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 translate-y-8 pointer-events-none"
+                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                bubblePosition === 'right' && "top-8 -right-2",
+                showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 translate-y-4 pointer-events-none"
             )}>
-                <div className="bg-white border-[3px] border-slate-200 rounded-[2rem] px-6 py-4 shadow-lg relative">
-                    <p className="font-black text-slate-600 text-sm leading-snug text-center whitespace-pre-wrap">
+                <div className="bg-white border-2 border-slate-200 rounded-2xl px-4 py-2 shadow-lg relative min-w-[180px] max-w-[240px]">
+                    <p className="font-bold text-slate-600 text-xs leading-snug text-center">
                         {currentText}
                     </p>
-                    <div className="absolute w-4 h-4 bg-white border-b-[3px] border-r-[3px] border-slate-200 transform rotate-45 left-1/2 -translate-x-1/2 -bottom-2.5 rounded-br-sm"></div>
+                    <div className="absolute w-3 h-3 bg-white border-b-2 border-r-2 border-slate-200 transform rotate-45 left-1/2 -translate-x-1/2 -bottom-[7px] rounded-br-sm"></div>
                 </div>
             </div>
 
             <style>{`
                 .rho-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+                .rho-mouth-talk { animation: rhoTalkAnim 0.45s ease-in-out infinite; transform-origin: center; }
+                @keyframes rhoTalkAnim {
+                    0%, 100% { transform: scaleY(1) translateY(0); }
+                    30% { transform: scaleY(0.85) translateY(1px); }
+                    60% { transform: scaleY(1.1) translateY(-1px); }
+                }
                 .rho-idle-float { animation: rhoFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes rhoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
                 .rho-spring-bounce { animation: rhoSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
@@ -254,7 +262,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                             </g>
 
                             {/* Boca */}
-                            <g transform="translate(200, 260)">
+                            <g transform="translate(200, 260)" className={cn(isTalking ? "rho-mouth-talk" : "")}>
                                 {current.mouth === 'smile' && <path d="M-10 0 Q 0 10 10 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
                                 {current.mouth === 'soft_smile' && <path d="M-8 0 Q 0 5 8 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
                                 {current.mouth === 'open' && <path d="M-8 0 Q 0 8 8 0 Z" fill="#4B3621" />}

@@ -5,6 +5,10 @@
     "welcome": {
         "liruf_greeting": "¡Hola! Soy Liruf 👋",
         "liruf_intro": "Voy a ser tu guía en este mundo de finanzas. ¡Juntos aprenderemos a manejar el dinero de forma divertida!",
+        "liruf_bubble": "¡Yuhuu! ¿Eres nuevo? 🎉 ¡Vamos a aprender finanzas de forma divertida!",
+        "dina_bubble": "¡Hola! Soy Dina 🧡 ¿Listo para tu primera aventura?",
+        "rho_bubble": "Dr. Rho 🧭 Dibujaré tu mapa de aprendizaje.",
+        "zara_bubble": "Zara aquí 💅 A pensar como un fundador.",
         "start_button": "¡Comenzar!",
         "characters_intro": "Mis amigos también estarán aquí para ayudarte."
     },
@@ -14,6 +18,10 @@
         "placeholder": "Tu nombre o apodo...",
         "liruf_typing": "Hmm, déjame pensar...",
         "liruf_done": "¡Genial, {{name}}! ¡Ese es un nombre increíble!",
+        "liruf_bubble": "Antes de empezar, necesito saber cómo gritarte ¡cuando ganes tu primera lección! 🏆\n\n¿Cómo te llamas?",
+        "liruf_typing_bubble": "Mmm, buenas letras... 🧐",
+        "liruf_error_empty_bubble": "¡Eh! ¿Y tu nombre? 🤨 ¡No puedo gritar \"eh, tú\"!",
+        "liruf_error_invalid_bubble": "¿Runas de Dr. Rho? 🙏 Solo letras, por favor.",
         "continue": "¡Ese soy yo!"
     },
     "age": {
@@ -21,11 +29,19 @@
         "subtitle": "Así te personalizamos la experiencia perfecta.",
         "placeholder": "Escribe tu edad...",
         "dina_done": "¡{{age}} años! Perfecto, Dina ya tiene todo listo para ti.",
+        "dina_bubble": "¡Hola {{name}}! 🧡 ¿Cuántos años tienes? ¡Secreto entre nosotras! 🤫",
+        "dina_typing_bubble": "Ya veo... 📋",
+        "dina_error_empty_bubble": "{{name}}, ¿tu edad? Mi antena no adivina 🙃",
+        "dina_error_range_bubble": "¿{{age}} años? 😲 ¡Solo de 6 a 100, como los humanos! 🦕",
         "continue": "¡Esa es mi edad!"
     },
     "interests": {
         "title": "¿Qué quieres aprender?",
         "subtitle": "Elige uno o más temas que te interesen.",
+        "rho_bubble": "¿Qué tesoros buscas, {{name}}? 💰📈 Elige los que quieras.",
+        "rho_first_selection_bubble": "¡Buena elección! 🗺️ Buenas recompensas ahí.",
+        "rho_multiple_bubble": "¡Explorador de rutas! 🗺️ Más territorio = más XP.",
+        "rho_error_bubble": "{{name}}, elige al menos un tesoro. 🧭",
         "min_select": "Selecciona al menos uno",
         "options": {
             "saving": {
@@ -57,6 +73,11 @@
     "experience": {
         "title": "¿Cuánto sabes sobre finanzas?",
         "subtitle": "Sé honesto, ¡no hay respuesta incorrecta!",
+        "zara_bubble": "¿Cuánto sabes de finanzas, {{name}}? 📋 No mientas 😉",
+        "zara_hover_beginner": "Todos empezamos. 💪 Lo importante es dar el primer paso.",
+        "zara_hover_some": "Ya sabes lo básico. ✨ Vamos a pulirlo.",
+        "zara_hover_expert": "¿Un experto? 😏 Me encanta un buen reto.",
+        "zara_selected_bubble": "Sin remordimientos. 👑 Así me gusta.",
         "beginner": {
             "title": "Principiante",
             "description": "Apenas estoy empezando. El dinero es misterioso para mí."

@@ -36,8 +36,8 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
           className="absolute inset-0 rounded-full blur-3xl pointer-events-none"
           style={{ background: 'rgba(99,102,241,0.18)' }}
         />
-        <div className="relative w-40 h-40 drop-shadow-2xl">
-          <DrRhoCharacter mood="explaining" />
+        <div className="relative w-40 h-52 drop-shadow-2xl">
+          <DrRhoCharacter mood="explaining" showBubble currentText={t('intro.rho_bubble', { name })} bubblePosition="top" />
         </div>
       </div>
 

@@ -1,19 +1,23 @@
 {
-  "intro": {
-    "title": "¡Hola, {{name}}! 🧭",
-    "body": "Antes de abrir tu mapa de aventuras, ¿quieres hacer un mini-reto de unos 3 minutos? Con él te ubicamos justo en el lugar donde más vas a aprender y disfrutar.",
-    "later_hint": "También puedes hacerlo más tarde desde tu perfil.",
-    "accept_button": "¡Vamos al reto!",
-    "skip_link": "Saltar por ahora"
-  },
-  "closing": {
-    "title": "¡Tu mapa está listo, {{name}}! 🗺️",
-    "saga_start": "Empezarás en: Aventura {{adventure}} · Saga {{saga}}",
-    "body": "Hemos personalizado tu camino de aprendizaje. ¡Todo está listo para comenzar tu aventura!",
-    "streak_label": "RACHA",
-    "cta": "¡Comenzar mi aventura!"
-  },
-  "quiz": {
-    "exit_aria": "Salir del cuestionario"
-  }
+    "intro": {
+        "title": "¡Hola, {{name}}! 🧭",
+        "body": "Antes de abrir tu mapa de aventuras, ¿quieres hacer un mini-reto de unos 3 minutos? Con él te ubicamos justo en el lugar donde más vas a aprender y disfrutar.",
+        "later_hint": "También puedes hacerlo más tarde desde tu perfil.",
+        "accept_button": "¡Vamos al reto!",
+        "skip_link": "Saltar por ahora",
+        "rho_bubble": "{{name}}, ¿un mini-reto de 3 minutos? 🧭 Te ubicaré en el mejor lugar.",
+        "rho_skip_bubble": "Comprendo. El mapa puede esperar.\nPuedes hacer el reto más tarde\ndesde tu perfil."
+    },
+    "closing": {
+        "title": "¡Tu mapa está listo, {{name}}! 🗺️",
+        "saga_start": "Empezarás en: Aventura {{adventure}} · Saga {{saga}}",
+        "body": "Hemos personalizado tu camino de aprendizaje. ¡Todo está listo para comenzar tu aventura!",
+        "streak_label": "RACHA",
+        "cta": "¡Comenzar mi aventura!",
+        "liruf_bubble": "¡{{name}}, tu mapa está listo! 🗺️🎉 Empiezas en: Aventura {{adventure}} · Saga {{saga}}",
+        "liruf_streak_bubble": "Y como regalo de bienvenida...\n¡1 día de racha! 🔥\nMantén el momentum."
+    },
+    "quiz": {
+        "exit_aria": "Salir del cuestionario"
+    }
 }

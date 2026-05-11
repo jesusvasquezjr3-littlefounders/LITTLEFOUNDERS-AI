@@ -32,8 +32,8 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
               filter: 'blur(28px)',
             }}
           />
-          <div className="relative w-44 h-44 drop-shadow-2xl z-10">
-            <DinoCharacter mood="excited" />
+          <div className="relative w-44 h-56 drop-shadow-2xl z-10">
+            <DinoCharacter mood="excited" showBubble currentText={t('closing.liruf_bubble', { name, adventure: result?.finalAdventure ?? '-', saga: result?.finalSaga ?? '-' })} bubblePosition="standard" />
           </div>
         </div>
 

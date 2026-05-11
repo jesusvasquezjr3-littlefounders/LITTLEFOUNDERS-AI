@@ -21,9 +21,10 @@ interface StoryPage {
 interface StoryModeProps {
     exercise: any;
     onNext: () => void;
+    isAudioPlaying?: boolean;
 }
 
-export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
+export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryModeProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
@@ -153,10 +154,10 @@ export const StoryMode = ({ exercise, onNext }: StoryModeProps) => {
 
     const renderCharacter = () => {
         const className = "w-[200px] sm:w-[280px] mx-auto filter drop-shadow-xl transition-all duration-500 hover:scale-105";
-        if (normalizedCharCode === 'dina') return <DinaCharacter className={className} expression={normalizedMood as any} />;
-        if (normalizedCharCode === 'dr_rho' || normalizedCharCode === 'drrho') return <DrRhoCharacter className={className} mood={normalizedMood as any} />;
-        if (normalizedCharCode === 'zara_vex' || normalizedCharCode === 'zaravex') return <ZaraVexCharacter className={className} mood={normalizedMood as any} />;
-        return <DinoCharacter className={className} mood={normalizedMood as any} showBubble={false} />;
+        if (normalizedCharCode === 'dina') return <DinaCharacter className={className} expression={normalizedMood as any} isTalking={isAudioPlaying} />;
+        if (normalizedCharCode === 'dr_rho' || normalizedCharCode === 'drrho') return <DrRhoCharacter className={className} mood={normalizedMood as any} isTalking={isAudioPlaying} />;
+        if (normalizedCharCode === 'zara_vex' || normalizedCharCode === 'zaravex') return <ZaraVexCharacter className={className} mood={normalizedMood as any} isTalking={isAudioPlaying} />;
+        return <DinoCharacter className={className} mood={normalizedMood as any} showBubble={false} isTalking={isAudioPlaying} />;
     };
 
     return (

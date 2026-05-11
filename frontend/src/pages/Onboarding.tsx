@@ -276,16 +276,22 @@ function SelectableCard({
   onClick,
   children,
   className,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
   className?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
         "relative rounded-2xl p-4 text-center transition-all duration-200 cursor-pointer border-2",
         "backdrop-blur-xl",
@@ -411,8 +417,18 @@ export default function Onboarding() {
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
 
+  // ── Character bubble states ───────────────────────────────────────────
+  const [nameBubble, setNameBubble] = useState("");
+  const [ageBubble, setAgeBubble] = useState("");
+  const [interestsBubble, setInterestsBubble] = useState("");
+  const [experienceBubble, setExperienceBubble] = useState("");
+  const [expHovered, setExpHovered] = useState<ExperienceLevel | null>(null);
+  const [expSelected, setExpSelected] = useState(false);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const { playFile, mute } = useSound();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isNarrationPlaying, setIsNarrationPlaying] = useState(false);
 
   // ── Onboarding narration audio ────────────────────────────────────────
   useEffect(() => {
@@ -421,6 +437,7 @@ export default function Onboarding() {
       audioRef.current.pause();
       audioRef.current = null;
     }
+    setIsNarrationPlaying(false);
     if (mute) return;
 
     const lang = i18n.language?.startsWith('en') ? 'EN' : 'ES';
@@ -437,11 +454,23 @@ export default function Onboarding() {
 
     const audio = new Audio(src);
     audio.volume = 0.7; // Narration volume (higher than SFX)
+
+    const handlePlay = () => setIsNarrationPlaying(true);
+    const handleEnded = () => setIsNarrationPlaying(false);
+    const handlePause = () => setIsNarrationPlaying(false);
+
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('pause', handlePause);
+
     audio.play().catch(() => { /* ignore autoplay errors */ });
     audioRef.current = audio;
 
     return () => {
       audio.pause();
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('pause', handlePause);
       if (audioRef.current === audio) audioRef.current = null;
     };
   }, [step, i18n.language, mute]);
@@ -482,6 +511,84 @@ export default function Onboarding() {
     if (step === 1) setTimeout(() => nameRef.current?.focus(), 420);
     if (step === 2) setTimeout(() => ageRef.current?.focus(), 420);
   }, [step]);
+
+  // ── Character bubble logic ────────────────────────────────────────────
+
+  // Step 1: Name bubble
+  useEffect(() => {
+    if (step !== 1) { setNameBubble(""); return; }
+    const trimmed = nameInput.trim();
+    if (error === t("errors.name_required")) {
+      setNameBubble(t("name.liruf_error_empty_bubble"));
+    } else if (error === t("errors.name_invalid")) {
+      setNameBubble(t("name.liruf_error_invalid_bubble"));
+    } else if (trimmed.length > 0) {
+      setNameBubble(t("name.liruf_done", { name: trimmed }));
+    } else {
+      setNameBubble(t("name.liruf_bubble"));
+    }
+  }, [step, nameInput, error, t]);
+
+  // Step 1: Typing bubble (debounced)
+  useEffect(() => {
+    if (step !== 1) return;
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    const trimmed = nameInput.trim();
+    if (trimmed.length > 0 && !error) {
+      typingTimerRef.current = setTimeout(() => {
+        setNameBubble(t("name.liruf_typing_bubble"));
+      }, 1800);
+    }
+    return () => { if (typingTimerRef.current) clearTimeout(typingTimerRef.current); };
+  }, [nameInput, step, error, t]);
+
+  // Step 2: Age bubble
+  useEffect(() => {
+    if (step !== 2) { setAgeBubble(""); return; }
+    const trimmed = ageInput.trim();
+    const parsed = parseInt(trimmed, 10);
+    if (error === t("errors.age_required")) {
+      setAgeBubble(t("age.dina_error_empty_bubble", { name: data.name || t("name.placeholder") }));
+    } else if (error === t("errors.age_range")) {
+      setAgeBubble(t("age.dina_error_range_bubble", { age: trimmed }));
+    } else if (!isNaN(parsed) && parsed >= 6 && parsed <= 100) {
+      setAgeBubble(t("age.dina_done", { age: trimmed }));
+    } else if (trimmed.length > 0 && !error) {
+      setAgeBubble(t("age.dina_typing_bubble"));
+    } else {
+      setAgeBubble(t("age.dina_bubble", { name: data.name || t("name.placeholder") }));
+    }
+  }, [step, ageInput, error, data.name, t]);
+
+  // Step 3: Interests bubble
+  useEffect(() => {
+    if (step !== 3) { setInterestsBubble(""); return; }
+    if (error === t("errors.interest_required")) {
+      setInterestsBubble(t("interests.rho_error_bubble", { name: data.name || t("name.placeholder") }));
+    } else if (data.interests.length === 1) {
+      setInterestsBubble(t("interests.rho_first_selection_bubble"));
+    } else if (data.interests.length >= 2) {
+      setInterestsBubble(t("interests.rho_multiple_bubble"));
+    } else {
+      setInterestsBubble(t("interests.rho_bubble", { name: data.name || t("name.placeholder") }));
+    }
+  }, [step, data.interests.length, error, data.name, t]);
+
+  // Step 4: Experience bubble
+  useEffect(() => {
+    if (step !== 4) { setExperienceBubble(""); setExpSelected(false); return; }
+    if (expSelected) {
+      setExperienceBubble(t("experience.zara_selected_bubble"));
+    } else if (expHovered === "beginner") {
+      setExperienceBubble(t("experience.zara_hover_beginner"));
+    } else if (expHovered === "some_knowledge") {
+      setExperienceBubble(t("experience.zara_hover_some"));
+    } else if (expHovered === "experienced") {
+      setExperienceBubble(t("experience.zara_hover_expert"));
+    } else {
+      setExperienceBubble(t("experience.zara_bubble", { name: data.name || t("name.placeholder") }));
+    }
+  }, [step, expHovered, expSelected, data.name, t]);
 
   // ── Track step views (GA4 custom event) ───────────────────────────────
   useEffect(() => {
@@ -669,31 +776,31 @@ export default function Onboarding() {
           {step === 0 && (
             <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
               {/* Characters cluster */}
-              <div className="relative w-72 h-72 mb-3">
+              <div className="relative w-72 h-80 mb-3">
                 {/* Central glow ring */}
                 <div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full pointer-events-none"
+                  className="absolute left-1/2 bottom-[18%] -translate-x-1/2 w-44 h-44 rounded-full pointer-events-none"
                   style={{
                     background:
                       "radial-gradient(circle,rgba(139,92,246,0.22) 0%,transparent 70%)",
                     filter: "blur(24px)",
                   }}
                 />
-                {/* Liruf — center */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 drop-shadow-2xl z-10">
-                  <DinoCharacter mood="excited" />
+                {/* Liruf — center, lowered to make room for bubble */}
+                <div className="absolute left-1/2 bottom-4 -translate-x-1/2 w-44 h-44 drop-shadow-2xl z-10">
+                  <DinoCharacter mood="excited" showBubble currentText={t("welcome.liruf_bubble")} bubblePosition="standard" isTalking={isNarrationPlaying} />
                 </div>
                 {/* Dina — bottom-left */}
                 <div className="absolute bottom-4 left-2 w-20 h-20 drop-shadow-xl z-0 opacity-85">
-                  <DinaCharacter expression="happy" />
+                  <DinaCharacter expression="happy" showBubble={false} />
                 </div>
                 {/* Dr. Rho — bottom-right */}
                 <div className="absolute bottom-4 right-2 w-20 h-20 drop-shadow-xl z-0 opacity-85">
-                  <DrRhoCharacter mood="explaining" />
+                  <DrRhoCharacter mood="explaining" showBubble={false} />
                 </div>
                 {/* Zara — top-right */}
                 <div className="absolute top-2 right-6 w-16 h-16 drop-shadow-xl z-0 opacity-75">
-                  <ZaraVexCharacter mood="excited" />
+                  <ZaraVexCharacter mood="excited" showBubble={false} />
                 </div>
               </div>
 
@@ -722,8 +829,14 @@ export default function Onboarding() {
           {step === 1 && (
             <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
               <Spotlight color="rgba(37,99,235,0.15)">
-                <div className="w-36 h-36 mb-2 relative z-10">
-                  <DinoCharacter mood={nameInput.trim().length > 0 ? "excited" : "happy"} />
+                <div className="w-36 h-48 mb-2 relative z-10">
+                  <DinoCharacter
+                    mood={nameInput.trim().length > 0 ? "excited" : "happy"}
+                    showBubble={!!nameBubble}
+                    currentText={nameBubble}
+                    bubblePosition="standard"
+                    isTalking={isNarrationPlaying}
+                  />
                 </div>
               </Spotlight>
 
@@ -781,8 +894,14 @@ export default function Onboarding() {
           {step === 2 && (
             <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
               <Spotlight color="rgba(236,72,153,0.15)">
-                <div className="w-36 h-36 mb-2 relative z-10">
-                  <DinaCharacter expression="happy" />
+                <div className="w-36 h-48 mb-2 relative z-10">
+                  <DinaCharacter
+                    expression="happy"
+                    showBubble={!!ageBubble}
+                    currentText={ageBubble}
+                    bubblePosition="standard"
+                    isTalking={isNarrationPlaying}
+                  />
                 </div>
               </Spotlight>
 
@@ -857,8 +976,14 @@ export default function Onboarding() {
           {step === 3 && (
             <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
               <Spotlight color="rgba(147,51,234,0.15)">
-                <div className="w-28 h-28 mb-2 relative z-10">
-                  <DrRhoCharacter mood="explaining" />
+                <div className="w-28 h-40 mb-2 relative z-10">
+                  <DrRhoCharacter
+                    mood="explaining"
+                    showBubble={!!interestsBubble}
+                    currentText={interestsBubble}
+                    bubblePosition="top"
+                    isTalking={isNarrationPlaying}
+                  />
                 </div>
               </Spotlight>
 
@@ -906,8 +1031,14 @@ export default function Onboarding() {
           {step === 4 && (
             <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
               <Spotlight color="rgba(245,158,11,0.15)">
-                <div className="w-28 h-28 mb-2 relative z-10">
-                  <ZaraVexCharacter mood="excited" />
+                <div className="w-28 h-40 mb-2 relative z-10">
+                  <ZaraVexCharacter
+                    mood={expSelected ? "flirty" : "excited"}
+                    showBubble={!!experienceBubble}
+                    currentText={experienceBubble}
+                    bubblePosition="top"
+                    isTalking={isNarrationPlaying}
+                  />
                 </div>
               </Spotlight>
 
@@ -923,8 +1054,10 @@ export default function Onboarding() {
                   <SelectableCard
                     key={level}
                     selected={data.experience_level === level}
-                    onClick={() => handleExperienceSelect(level)}
+                    onClick={() => { setExpSelected(true); handleExperienceSelect(level); }}
                     className="!text-left flex flex-row items-center gap-4 p-4"
+                    onMouseEnter={() => setExpHovered(level)}
+                    onMouseLeave={() => setExpHovered(null)}
                   >
                     <span className="text-3xl shrink-0">{EXP_ICONS[level]}</span>
                     <div>
