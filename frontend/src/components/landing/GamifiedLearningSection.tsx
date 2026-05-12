@@ -74,11 +74,19 @@ export function GamifiedLearningSection() {
               <br />
               {t("solution.title_part2")}{" "}
               <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-600 dark:from-violet-400 dark:to-cyan-400">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-cyan-600 dark:from-violet-400 dark:to-cyan-400">
                   {t("solution.title_highlight")}
                 </span>
-                {/* Underline glow */}
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-violet-500 to-cyan-400 rounded-full opacity-60" />
+                {/* Underline squiggle */}
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                  <path d="M2 8 C40 2, 80 12, 120 6 C160 0, 185 10, 198 6" stroke="url(#squiggle-grad-solution)" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+                  <defs>
+                    <linearGradient id="squiggle-grad-solution" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#7c3aed"/>
+                      <stop offset="100%" stopColor="#0891b2"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
               </span>
               .
             </h2>

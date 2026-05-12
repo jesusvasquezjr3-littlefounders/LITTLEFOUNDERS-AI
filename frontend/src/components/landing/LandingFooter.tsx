@@ -55,10 +55,21 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               {t("cta.title_part1")}
               <br />
               <span className="relative inline-block min-w-[4ch]">
-                <span key={ctaWordIndex} className="animate-fade-in-up inline-block text-transparent bg-clip-text"
+                <span key={ctaWordIndex} className="relative z-10 animate-fade-in-up inline-block text-transparent bg-clip-text"
                   style={{ backgroundImage: 'linear-gradient(135deg, #f97316, #ec4899, #a855f7)' }}>
                   {ctaWords[ctaWordIndex]}.
                 </span>
+                {/* Underline squiggle */}
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                  <path d="M2 8 C40 2, 80 12, 120 6 C160 0, 185 10, 198 6" stroke="url(#squiggle-grad-cta)" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+                  <defs>
+                    <linearGradient id="squiggle-grad-cta" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#f97316"/>
+                      <stop offset="50%" stopColor="#ec4899"/>
+                      <stop offset="100%" stopColor="#a855f7"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
               </span>
             </h2>
 
