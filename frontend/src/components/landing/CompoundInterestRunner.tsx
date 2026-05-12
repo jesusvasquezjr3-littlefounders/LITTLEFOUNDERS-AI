@@ -279,7 +279,7 @@ export function CompoundInterestRunner() {
                         </p>
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all"
+                            className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-orange-500/25 transition-all transform hover:-translate-y-1"
                         >
                             {t('minigame.start')}
                         </button>

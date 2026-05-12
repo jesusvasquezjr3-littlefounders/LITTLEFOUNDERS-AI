@@ -1,137 +1,216 @@
 import React from 'react';
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Link } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CheckCircle2, ArrowRight, Zap, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+/* ── Active tier card ──────────────────────────────────────────────────────── */
+function ActiveCard({ t }: { t: any }) {
+  const features = [
+    t('pricing.freemium_feature_1'),
+    t('pricing.freemium_feature_2'),
+    t('pricing.freemium_feature_3'),
+    t('pricing.freemium_feature_4'),
+    t('pricing.freemium_feature_5'),
+  ];
+
+  return (
+    <div className="relative flex flex-col rounded-3xl overflow-hidden shadow-2xl border border-orange-200/60 dark:border-transparent bg-white dark:bg-[#1a0d3d]">
+      {/* Rainbow top strip */}
+      <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #f97316, #ec4899, #a855f7, #3b82f6)' }} />
+
+      {/* Light-mode glow / dark-mode glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-64 rounded-full pointer-events-none opacity-30 dark:opacity-100"
+        style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, rgba(139,92,246,0.10) 50%, transparent 75%)' }} />
+
+      {/* Badge */}
+      <div className="relative z-10 pt-8 px-8 flex justify-center">
+        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-white"
+          style={{ background: 'linear-gradient(135deg, #ff6b6b, #7048e8)' }}>
+          <Zap className="w-3 h-3" /> {t('pricing.freemium_badge')}
+        </span>
+      </div>
+
+      <div className="relative z-10 px-8 pt-6 pb-8 flex flex-col flex-1">
+        <h3 className="landing-heading text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-1">
+          {t('pricing.freemium_title')}
+        </h3>
+        <div className="flex items-baseline gap-2 mb-3">
+          <span className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">{t('pricing.freemium_price')}</span>
+          <span className="text-gray-400 dark:text-white/40 text-xs font-bold uppercase tracking-widest">{t('pricing.freemium_period')}</span>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-white/55 mb-6 leading-relaxed">{t('pricing.freemium_desc')}</p>
+
+        <ul className="space-y-3 mb-8 flex-1">
+          {features.map((feat, i) => (
+            <li key={i} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #ff6b6b, #7048e8)' }}>
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 dark:text-white/80">{feat}</span>
+            </li>
+          ))}
+        </ul>
+
+        <Button asChild size="lg"
+          className="btn-press w-full h-12 rounded-2xl font-black text-white border-0 shadow-none"
+          style={{ background: 'linear-gradient(135deg, #ff6b6b, #7048e8)' }}>
+          <Link to="/onboarding" className="flex items-center justify-center gap-2">
+            {t('pricing.freemium_btn')} <ArrowRight className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Ghost tier card ───────────────────────────────────────────────────────── */
+function GhostCard({ titleKey, t }: { titleKey: string; t: any }) {
+  return (
+    <div className="relative flex flex-col rounded-3xl overflow-hidden border border-gray-200/80 dark:border-white/8 bg-gray-50 dark:bg-white/[0.03] transition-all duration-700 group hover:border-gray-300 dark:hover:border-white/15 hover:shadow-md">
+
+      {/* Coming soon watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+        <span className="text-gray-300/60 dark:text-white/[0.04] font-black text-3xl uppercase tracking-[0.5em] -rotate-12 group-hover:text-gray-300/80 dark:group-hover:text-white/[0.06] transition-colors leading-none text-center">
+          {t('pricing.coming_soon')}
+        </span>
+      </div>
+
+      {/* Lock icon */}
+      <div className="relative z-10 pt-8 px-8 flex justify-center">
+        <div className="w-10 h-10 rounded-full border border-gray-300 dark:border-white/10 bg-gray-200/60 dark:bg-white/5 flex items-center justify-center">
+          <Lock className="w-4 h-4 text-gray-400 dark:text-white/30" />
+        </div>
+      </div>
+
+      <div className="relative z-10 px-8 pt-6 pb-8 flex flex-col flex-1">
+        <h3 className="landing-heading text-xl font-black text-gray-400 dark:text-white/40 uppercase tracking-tight mb-2">
+          {t(titleKey)}
+        </h3>
+
+        <div className="mb-4 blur-sm select-none">
+          <span className="text-4xl font-black text-gray-300 dark:text-white/20 tracking-tighter">???</span>
+        </div>
+
+        <ul className="space-y-3 mb-8 flex-1 opacity-30 blur-[2px] group-hover:opacity-40 group-hover:blur-[1px] transition-all duration-700">
+          {[1, 2, 3].map(i => (
+            <li key={i} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-lg bg-gray-200 dark:bg-white/10 flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-3 h-3 text-gray-400 dark:text-white/40" />
+              </div>
+              <span className="text-sm font-semibold text-gray-400 dark:text-white/50">{'· · · · · · · · ·'}</span>
+            </li>
+          ))}
+        </ul>
+
+        <Button variant="outline"
+          className="w-full h-12 rounded-2xl font-bold border border-gray-200 dark:border-white/10 bg-transparent text-gray-400 dark:text-white/25 pointer-events-none uppercase tracking-widest text-xs hover:bg-transparent">
+          {t('pricing.very_soon')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ──────────────────────────────────────────────────────────────────── */
 export default function PricingPage() {
-    const { t } = useTranslation('landing');
+  const { t } = useTranslation('landing');
 
-    // Features from i18n
-    const freemiumFeatures = [
-        t('pricing.freemium_feature_1'),
-        t('pricing.freemium_feature_2'),
-        t('pricing.freemium_feature_3'),
-        t('pricing.freemium_feature_4'),
-        t('pricing.freemium_feature_5'),
-    ];
+  return (
+    <LandingLayout>
 
-    return (
-        <LandingLayout>
-            <div className="relative min-h-screen pt-32 pb-20 px-4 bg-white dark:bg-slate-950 transition-colors duration-700 overflow-hidden">
-                
-                {/* Ultra Ambient Background Shapes */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                    <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] bg-purple-400/15 dark:bg-purple-900/10 rounded-full blur-[150px] animate-float opacity-70"></div>
-                    <div className="absolute bottom-[-10%] left-[-15%] w-[900px] h-[900px] bg-pink-400/15 dark:bg-pink-900/10 rounded-full blur-[150px] animate-float opacity-70" style={{ animationDelay: '3s' }}></div>
-                </div>
+      <section className="relative pt-28 pb-24 px-4 overflow-hidden text-gray-900 dark:text-white hero-sunburst">
 
-                <div className="max-w-6xl mx-auto relative">
-                    <div className="text-center mb-16 space-y-4 animate-fade-in">
-                        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white transition-colors tracking-tight">
-                            {t('pricing.title')}
-                        </h1>
-                        <p className="text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto leading-relaxed font-semibold">
-                            {t('pricing.subtitle')}
-                        </p>
-                        <div className="flex items-center justify-center gap-3 mt-4">
-                            <div className="h-1 w-8 bg-pink-500 rounded-full opacity-50"></div>
-                            <div className="h-1 w-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full opacity-50"></div>
-                            <div className="h-1 w-8 bg-purple-600 rounded-full opacity-50"></div>
-                        </div>
-                    </div>
+        {/* Dot-grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch pt-4">
-                        
-                        {/* Tier 1: Freemium (Active) - Ultra Glass Edition */}
-                        <div className="liquid-glass p-6 lg:p-7 rounded-[2rem] border-white/20 dark:border-white/5 border-t-white/40 dark:border-t-white/10 border-l-white/40 dark:border-l-white/10 shadow-lg relative transform transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl flex flex-col group mt-4">
-                            {/* Inner Glow - Wrapped in its own overflow-hidden container if necessary, but here we can just let it bleed or clip it internally */}
-                            <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
-                                <div className="absolute -top-12 -left-12 w-32 h-32 bg-pink-500/10 rounded-full blur-[40px] group-hover:bg-pink-500/15 transition-colors"></div>
-                            </div>
-                            
-                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 bg-[length:200%_auto] animate-gradient-x text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md whitespace-nowrap z-10 border border-white/20 backdrop-blur-md">
-                                {t('pricing.freemium_badge')}
-                            </div>
-                            
-                            <div className="mb-6 relative">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 uppercase tracking-tight">{t('pricing.freemium_title')}</h3>
-                                <div className="flex items-baseline gap-1.5">
-                                    <span className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{t('pricing.freemium_price')}</span>
-                                    <span className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[9px] tracking-widest opacity-60">{t('pricing.freemium_period')}</span>
-                                </div>
-                            </div>
-                            
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 font-semibold leading-relaxed relative">
-                                {t('pricing.freemium_desc')}
-                            </p>
+        {/* Glows */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)' }} />
+          <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }} />
+        </div>
 
-                            <ul className="space-y-3 mb-8 flex-grow relative">
-                                {freemiumFeatures.map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 group/item">
-                                        <div className="w-5 h-5 rounded-lg bg-pink-100/50 dark:bg-pink-900/20 flex items-center justify-center flex-shrink-0 shadow-sm transition-transform group-hover/item:scale-105">
-                                            <CheckCircle2 className="w-3 h-3 text-pink-600 dark:text-pink-400" />
-                                        </div>
-                                        <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm">{feat}</span>
-                                    </li>
-                                ))}
-                            </ul>
+        {/* Floating decos */}
+        <div className="absolute top-16 left-[7%]  text-3xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>🪙</div>
+        <div className="absolute top-20 right-[8%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '1.4s' }}>⭐</div>
+        <div className="absolute bottom-12 left-[20%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '0.8s' }}>🎁</div>
+        <div className="absolute bottom-8  right-[15%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '2s' }}>🚀</div>
 
-                            <Button className="w-full py-4 text-base rounded-xl bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 pointer-events-none opacity-40 font-bold tracking-tight transition-all shadow-sm">
-                                {t('pricing.freemium_btn')}
-                            </Button>
-                        </div>
+        <div className="relative z-10 max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-300 text-sm font-bold mb-6 animate-fade-in-up">
+            <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+            {t('pricing.title')}
+          </div>
+          <h1 className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-4 animate-fade-in-up-delay-1">
+            {t('pricing.title')}
+          </h1>
+          <div className="flex justify-center mb-4">
+            <svg viewBox="0 0 260 14" fill="none" className="w-52" preserveAspectRatio="none">
+              <path d="M2 9 C60 2, 130 13, 200 6 C225 3, 248 10, 258 7" stroke="url(#pricing-sq)" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+              <defs>
+                <linearGradient id="pricing-sq" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#f97316"/><stop offset="100%" stopColor="#a855f7"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <p className="text-lg text-gray-600 dark:text-white/55 leading-relaxed animate-fade-in-up-delay-2 max-w-xl mx-auto">
+            {t('pricing.subtitle')}
+          </p>
+        </div>
 
-                        {/* Tier 2: Ghost - Ultra Subtlety */}
-                        <div className="liquid-glass-subtle p-6 lg:p-7 rounded-[2rem] border-gray-200 dark:border-slate-800/40 border-t-white/10 border-l-white/10 opacity-60 filter grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative group flex flex-col hover:-translate-y-1.5 overflow-hidden shadow-sm hover:shadow-lg">
-                            <div className="mb-6 relative">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 uppercase tracking-tight">{t('pricing.tier2_title')}</h3>
-                                <div className="flex items-baseline gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 duration-500">
-                                    <span className="text-4xl font-black text-gray-400 tracking-tighter italic">? ? ?</span>
-                                </div>
-                            </div>
-                            
-                            <div className="absolute inset-0 flex items-center justify-center font-bold text-lg text-gray-400/10 uppercase tracking-[0.4em] transform -rotate-[12deg] pointer-events-none group-hover:text-gray-400/5 transition-colors leading-none text-center">
-                                {t('pricing.coming_soon')}
-                            </div>
+        {/* Wave bottom — light: #FFF7ED, dark: slate-900 */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 60 }}>
+          <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M0,30 C360,60 720,8 1080,45 C1260,58 1380,18 1440,32 L1440,60 L0,60 Z"
+              fill="#FFF7ED" className="dark:hidden" />
+            <path d="M0,30 C360,60 720,8 1080,45 C1260,58 1380,18 1440,32 L1440,60 L0,60 Z"
+              className="hidden dark:block" style={{ fill: '#0f172a' }} />
+          </svg>
+        </div>
+      </section>
 
-                            <ul className="space-y-3 mb-8 opacity-10 group-hover:opacity-100 transition-all blur-[2px] group-hover:blur-none flex-grow duration-700 relative">
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                            </ul>
-                            
-                            <Button variant="outline" className="w-full py-4 text-base rounded-xl border-gray-200 text-gray-400 dark:border-slate-800 pointer-events-none uppercase font-bold tracking-widest bg-transparent transition-colors">
-                                {t('pricing.very_soon')}
-                            </Button>
-                        </div>
+      {/* ══════════════════════════════════════════════════════
+          PRICING CARDS — light bg in light mode
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative py-20 px-4 overflow-hidden bg-amber-50 dark:bg-slate-900">
 
-                        {/* Tier 3: Ghost - Ultra Institutions */}
-                        <div className="liquid-glass-subtle p-6 lg:p-7 rounded-[2rem] border-gray-200 dark:border-slate-800/40 border-t-white/10 border-l-white/10 opacity-60 filter grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative group flex flex-col hover:-translate-y-1.5 overflow-hidden shadow-sm hover:shadow-lg">
-                            <div className="mb-6 relative">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 uppercase tracking-tight">{t('pricing.tier3_title')}</h3>
-                                <div className="flex items-baseline gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 duration-500">
-                                    <span className="text-4xl font-black text-gray-400 tracking-tighter italic">! ! !</span>
-                                </div>
-                            </div>
-                            
-                            <div className="absolute inset-0 flex items-center justify-center font-bold text-lg text-gray-400/10 uppercase tracking-[0.4em] transform -rotate-[12deg] pointer-events-none group-hover:text-gray-400/5 transition-colors leading-none text-center">
-                                {t('pricing.coming_soon')}
-                            </div>
+        {/* Ambient glow (subtle in light, stronger in dark) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-100"
+            style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%)' }} />
+          <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-100"
+            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)' }} />
+        </div>
 
-                            <ul className="space-y-3 mb-8 opacity-10 group-hover:opacity-100 transition-all blur-[2px] group-hover:blur-none flex-grow duration-700 relative">
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                                <li className="flex items-center gap-3"><div className="w-5 h-5 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-gray-400" /></div> <span className="text-sm font-semibold italic opacity-40">???</span></li>
-                            </ul>
+        {/* Wave top */}
+        <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 60 }}>
+          <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M0,30 C360,0 720,52 1080,15 C1260,2 1380,42 1440,28 L1440,0 L0,0 Z"
+              fill="#FFF7ED" className="dark:hidden" />
+            <path d="M0,30 C360,0 720,52 1080,15 C1260,2 1380,42 1440,28 L1440,0 L0,0 Z"
+              className="hidden dark:block" style={{ fill: '#0f172a' }} />
+          </svg>
+        </div>
 
-                            <Button variant="outline" className="w-full py-4 text-base rounded-xl border-gray-200 text-gray-400 dark:border-slate-800 pointer-events-none uppercase font-bold tracking-widest bg-transparent transition-colors">
-                                {t('pricing.very_soon')}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </LandingLayout>
-    );
+        <div className="relative z-10 max-w-5xl mx-auto pt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            <ActiveCard t={t} />
+            <GhostCard titleKey="pricing.tier2_title" t={t} />
+            <GhostCard titleKey="pricing.tier3_title" t={t} />
+          </div>
+
+          <p className="text-center text-sm text-gray-400 dark:text-white/25 mt-10 font-medium">
+            {t('hero.cta_subtext')}
+          </p>
+        </div>
+      </section>
+
+    </LandingLayout>
+  );
 }
