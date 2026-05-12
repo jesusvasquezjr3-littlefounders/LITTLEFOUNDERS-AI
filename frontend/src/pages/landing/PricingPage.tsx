@@ -120,32 +120,24 @@ export default function PricingPage() {
 
   return (
     <LandingLayout>
+      <div className="min-h-screen">
 
-      <section className="relative pt-28 pb-24 px-4 overflow-hidden text-gray-900 dark:text-white hero-sunburst">
+      <section className="relative pt-24 pb-10 px-4 overflow-hidden text-gray-900 dark:text-white hero-sunburst dark:bg-[#16112a]">
 
-        {/* Dot-grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-
-        {/* Glows */}
+        {/* Ambient glow orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)' }} />
-          <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }} />
+          <div className="absolute -top-20 right-[5%] w-[400px] h-[400px] bg-orange-300/25 dark:bg-orange-700/18 rounded-full blur-[90px] animate-orb-1" />
+          <div className="absolute -bottom-20 left-[8%] w-[350px] h-[350px] bg-pink-300/25 dark:bg-pink-700/18 rounded-full blur-[90px] animate-orb-2" style={{ animationDelay: '3s' }} />
         </div>
 
         {/* Floating decos */}
-        <div className="absolute top-16 left-[7%]  text-3xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>🪙</div>
-        <div className="absolute top-20 right-[8%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '1.4s' }}>⭐</div>
-        <div className="absolute bottom-12 left-[20%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '0.8s' }}>🎁</div>
-        <div className="absolute bottom-8  right-[15%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '2s' }}>🚀</div>
+        <div className="absolute top-16 left-[7%]  text-3xl opacity-40 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>🪙</div>
+        <div className="absolute top-20 right-[8%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '1.4s' }}>⭐</div>
+        <div className="absolute bottom-8 left-[20%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '0.8s' }}>🎁</div>
+        <div className="absolute bottom-8 right-[15%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '2s' }}>🚀</div>
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-300 text-sm font-bold mb-6 animate-fade-in-up">
-            <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            {t('pricing.title')}
-          </div>
+
           <h1 className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-4 animate-fade-in-up-delay-1">
             {t('pricing.title')}
           </h1>
@@ -180,12 +172,10 @@ export default function PricingPage() {
       ══════════════════════════════════════════════════════ */}
       <section className="relative py-20 px-4 overflow-hidden bg-amber-50 dark:bg-slate-900">
 
-        {/* Ambient glow (subtle in light, stronger in dark) */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-100"
-            style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%)' }} />
-          <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-100"
-            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)' }} />
+        {/* Ambient glow orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-[10%] w-[400px] h-[400px] bg-orange-300/15 dark:bg-orange-900/12 rounded-full blur-[80px] animate-orb-1" />
+          <div className="absolute bottom-0 left-[5%] w-[350px] h-[350px] bg-pink-300/15 dark:bg-pink-900/10 rounded-full blur-[80px] animate-orb-2" style={{ animationDelay: '3s' }} />
         </div>
 
         {/* Wave top */}
@@ -211,6 +201,7 @@ export default function PricingPage() {
         </div>
       </section>
 
+      </div>
     </LandingLayout>
   );
 }

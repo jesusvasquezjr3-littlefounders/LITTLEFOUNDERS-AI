@@ -105,15 +105,15 @@ const LandingPage = () => {
 
               {/* Decorative blob behind characters */}
               <div
-                className="absolute inset-0 bg-gradient-to-tr from-orange-200/60 via-pink-200/50 to-violet-200/40 dark:from-violet-900/40 dark:via-pink-900/30 dark:to-blue-900/30 scale-105"
+                className="absolute inset-0 z-[5] bg-gradient-to-tr from-orange-200 via-pink-200 to-violet-200 dark:from-violet-900 dark:via-pink-900 dark:to-blue-900 scale-105"
                 style={{ borderRadius: '63% 37% 54% 46% / 55% 48% 52% 45%' }}
               />
 
               {/* Blurs behind each character */}
-              <div className="absolute bottom-0 z-0 animate-float left-1/2 -ml-[150px] w-[300px] h-[300px] lg:left-auto lg:ml-0 lg:-right-16 lg:w-[640px] lg:h-[640px]" style={{ animationDelay: '1.5s' }}>
+              <div className="absolute bottom-0 z-[2] animate-float left-1/2 -ml-[150px] w-[300px] h-[300px] lg:left-auto lg:ml-0 lg:-right-16 lg:w-[640px] lg:h-[640px]" style={{ animationDelay: '1.5s' }}>
                 <div className="absolute inset-8 lg:inset-20 rounded-full bg-pink-400/20 blur-[50px] lg:blur-[80px]" />
               </div>
-              <div className="absolute bottom-0 z-0 animate-float left-0 w-[200px] h-[200px] lg:left-auto lg:right-[13rem] lg:w-[400px] lg:h-[400px]" style={{ animationDelay: '0s' }}>
+              <div className="absolute bottom-0 z-[2] animate-float left-0 w-[200px] h-[200px] lg:left-auto lg:right-[13rem] lg:w-[400px] lg:h-[400px]" style={{ animationDelay: '0s' }}>
                 <div className="absolute inset-8 lg:inset-16 rounded-full bg-emerald-400/25 blur-[40px] lg:blur-[60px]" />
               </div>
 

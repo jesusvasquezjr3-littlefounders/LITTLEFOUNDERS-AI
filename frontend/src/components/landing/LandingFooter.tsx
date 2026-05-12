@@ -115,7 +115,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
             <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-white/35">
               <Link to="#" className="hover:text-gray-900 dark:hover:text-white/70 transition-colors">{t("footer.terms")}</Link>
               <Link to="#" className="hover:text-gray-900 dark:hover:text-white/70 transition-colors">{t("footer.privacy")}</Link>
-              <Link to="#" className="hover:text-gray-900 dark:hover:text-white/70 transition-colors">{t("footer.contact")}</Link>
+              <a href="mailto:informame@littlefounders.ai" className="hover:text-gray-900 dark:hover:text-white/70 transition-colors">{t("footer.contact")}</a>
             </div>
 
             {/* Copyright */}

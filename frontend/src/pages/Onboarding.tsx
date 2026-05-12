@@ -775,37 +775,21 @@ export default function Onboarding() {
           {/* ── STEP 0: Welcome ─────────────────────────────────────────── */}
           {step === 0 && (
             <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
-              {/* Characters cluster */}
-              <div className="relative w-72 h-80 mb-3">
-                {/* Central glow ring */}
-                <div
-                  className="absolute left-1/2 bottom-[18%] -translate-x-1/2 w-44 h-44 rounded-full pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(circle,rgba(139,92,246,0.22) 0%,transparent 70%)",
-                    filter: "blur(24px)",
-                  }}
-                />
-                {/* Liruf — center, lowered to make room for bubble */}
-                <div className="absolute left-1/2 bottom-4 -translate-x-1/2 w-44 h-44 drop-shadow-2xl z-10">
-                  <DinoCharacter mood="excited" showBubble currentText={t("welcome.liruf_bubble")} bubblePosition="standard" isTalking={isNarrationPlaying} />
+              {/* Single character in spotlight, matching other steps */}
+              <Spotlight color="rgba(139,92,246,0.15)">
+                <div className="w-36 h-48 mb-2 relative z-10">
+                  <DinoCharacter
+                    mood="excited"
+                    showBubble
+                    currentText={t("welcome.liruf_bubble")}
+                    bubblePosition="standard"
+                    isTalking={isNarrationPlaying}
+                  />
                 </div>
-                {/* Dina — bottom-left */}
-                <div className="absolute bottom-4 left-2 w-20 h-20 drop-shadow-xl z-0 opacity-85">
-                  <DinaCharacter expression="happy" showBubble={false} />
-                </div>
-                {/* Dr. Rho — bottom-right */}
-                <div className="absolute bottom-4 right-2 w-20 h-20 drop-shadow-xl z-0 opacity-85">
-                  <DrRhoCharacter mood="explaining" showBubble={false} />
-                </div>
-                {/* Zara — top-right */}
-                <div className="absolute top-2 right-6 w-16 h-16 drop-shadow-xl z-0 opacity-75">
-                  <ZaraVexCharacter mood="excited" showBubble={false} />
-                </div>
-              </div>
+              </Spotlight>
 
               {/* Speech bubble */}
-              <GlassCard className="mb-6 max-w-xs px-6 py-5">
+              <GlassCard className="mb-6 w-full p-7">
                 <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2 drop-shadow-sm">
                   {t("welcome.liruf_greeting")}
                 </h1>
@@ -818,7 +802,7 @@ export default function Onboarding() {
               </GlassCard>
 
               {/* Start CTA */}
-              <CtaButton onClick={handleStartFromWelcome} step={step} className="max-w-xs w-full py-5 text-lg">
+              <CtaButton onClick={handleStartFromWelcome} step={step} className="w-full py-5 text-lg">
                 {t("welcome.start_button")}
                 <Sparkles className="w-5 h-5 group-hover:rotate-12 group-hover:scale-110 transition-transform" />
               </CtaButton>
