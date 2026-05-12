@@ -19,7 +19,7 @@ import { MentorPopup } from './MentorPopup';
 import { PauseOverlay } from './PauseOverlay';
 import { GameOverScreen } from './GameOverScreen';
 
-export function NamVsYumGame() {
+export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
   const { t } = useTranslation('games');
   const navigate = useNavigate();
   const { playFile, playBGM, stopBGM } = useSound();
@@ -171,8 +171,9 @@ export function NamVsYumGame() {
 
   const handleExit = useCallback(() => {
     stopBGM({ fade: true, fadeDuration: 300 });
-    navigate(-1);
-  }, [navigate, stopBGM]);
+    if (onExit) onExit();
+    else navigate(-1);
+  }, [navigate, stopBGM, onExit]);
 
   const handleRetry = useCallback(() => {
     dispatch({ type: 'RESET' });
