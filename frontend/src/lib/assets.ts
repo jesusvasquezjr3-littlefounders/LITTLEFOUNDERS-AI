@@ -4,12 +4,13 @@ import { API_URL } from '@/config/api';
 const BUCKET = 'game-assets';
 const TTL_SECONDS = 3600; // 1 hour
 
-// ─── Signed URL cache (path → { url, expiresAt }) ────────────────────────────
-const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
+// ─── Signed URL cache (path → { url, expiresAt, isPublic }) ─────────────────
+const signedUrlCache = new Map<string, { url: string; expiresAt: number; isPublic?: boolean }>();
 
 /** Get a signed URL for a game asset.
  *  For authenticated users: uses Supabase JS client directly.
  *  For guests (no token): falls back to the backend proxy endpoint which uses service_role.
+ *  Last resort: public bucket URL (game-assets is public).
  */
 export async function getSignedUrl(path: string): Promise<string> {
   const now = Date.now();
@@ -18,26 +19,33 @@ export async function getSignedUrl(path: string): Promise<string> {
     return cached.url;
   }
 
-  const token = localStorage.getItem('token');
+  // Try Supabase signed URL (works for both authenticated users and anon — RLS allows anon reads)
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(path, TTL_SECONDS);
 
-  // Authenticated path: use Supabase client directly
-  if (token) {
-    const { data, error } = await supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(path, TTL_SECONDS);
-
-    if (!error && data?.signedUrl) {
-      signedUrlCache.set(path, { url: data.signedUrl, expiresAt: now + TTL_SECONDS * 1000 });
-      return data.signedUrl;
-    }
+  if (!error && data?.signedUrl) {
+    signedUrlCache.set(path, { url: data.signedUrl, expiresAt: now + TTL_SECONDS * 1000 });
+    return data.signedUrl;
   }
 
-  // Guest / fallback path: backend proxy
-  const res = await fetch(`${API_URL}/assets/signed-url?path=${encodeURIComponent(path)}`);
-  if (!res.ok) throw new Error(`Failed to sign asset via proxy: ${path} (${res.status})`);
-  const json = await res.json() as { url: string; expires_in: number };
-  signedUrlCache.set(path, { url: json.url, expiresAt: now + (json.expires_in ?? TTL_SECONDS) * 1000 });
-  return json.url;
+  // Fallback: backend proxy (when Supabase client fails)
+  try {
+    const res = await fetch(`${API_URL}/assets/signed-url?path=${encodeURIComponent(path)}`);
+    if (res.ok) {
+      const json = await res.json() as { url: string; expires_in: number };
+      signedUrlCache.set(path, { url: json.url, expiresAt: now + (json.expires_in ?? TTL_SECONDS) * 1000 });
+      return json.url;
+    }
+  } catch {
+    // proxy unavailable — fall through
+  }
+
+  // Public bucket fallback — use the real Supabase project URL (not the custom auth domain)
+  const storageBase = import.meta.env.VITE_SUPABASE_STORAGE_URL || import.meta.env.VITE_SUPABASE_URL;
+  const publicUrl = `${storageBase}/storage/v1/object/public/${BUCKET}/${path}`;
+  signedUrlCache.set(path, { url: publicUrl, expiresAt: now + TTL_SECONDS * 1000, isPublic: true });
+  return publicUrl;
 }
 
 // ─── Blob URL cache (path → blob:// URL) ─────────────────────────────────────
@@ -49,6 +57,14 @@ export async function getImageBlobUrl(path: string): Promise<string> {
   if (cached) return cached;
 
   const signedUrl = await getSignedUrl(path);
+
+  // Public URLs don't need blob conversion — use them directly
+  const cacheEntry = signedUrlCache.get(path);
+  if (cacheEntry?.isPublic) {
+    blobCache.set(path, signedUrl);
+    return signedUrl;
+  }
+
   const res = await fetch(signedUrl);
   if (!res.ok) throw new Error(`Failed to fetch asset: ${path} (${res.status})`);
 

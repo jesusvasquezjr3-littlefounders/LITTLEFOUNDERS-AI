@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
+import { NamVsYumGame } from "@/games/nam-vs-yum/components/NamVsYumGame";
+import "@/games/nam-vs-yum/nam-vs-yum.css";
 
 const MODULE_PILLS = [
   { emoji: "📚", key: "solution.animation.step1_label",  color: "from-blue-500 to-cyan-500",    bg: "bg-blue-500/10 dark:bg-blue-500/15",    border: "border-blue-300/50 dark:border-blue-500/30",    text: "text-blue-800 dark:text-blue-200" },
@@ -12,6 +14,7 @@ const MODULE_PILLS = [
 
 export function GamifiedLearningSection() {
   const { t } = useTranslation("landing");
+  const handleExit = useCallback(() => { /* no-op when embedded in landing */ }, []);
 
   const benefits = [
     t("solution.benefit1"),
@@ -109,18 +112,13 @@ export function GamifiedLearningSection() {
           </div>
 
           {/* ── Game embed (Ñam vs Yum) ── */}
-          <div className="flex-1 w-full order-2 relative flex items-center justify-center p-4 lg:p-0">
-            {/* Glow halo behind game */}
-            <div className="absolute inset-8 rounded-3xl blur-3xl opacity-20"
-              style={{ background: 'radial-gradient(circle, #7c3aed 0%, #3b82f6 50%, transparent 75%)' }} />
-            <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-violet-300/30 dark:border-violet-500/20"
-              style={{ aspectRatio: '9/16', maxHeight: 560 }}>
-              <iframe
-                src="/games/nam-vs-yum"
-                title="Ñam vs Yum"
-                className="w-full h-full border-0"
-                allow="autoplay"
-              />
+          <div className="flex-1 w-full order-2 relative flex items-center justify-center">
+            {/* Glow halo */}
+            <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30 pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse at center, #7c3aed 0%, #3b82f6 40%, transparent 70%)' }} />
+            {/* Game frame — portrait on mobile, wider on desktop */}
+            <div className="relative pixel-font rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(124,58,237,0.35)] w-[300px] h-[520px] md:w-full md:h-[540px] md:max-w-none">
+              <NamVsYumGame onExit={handleExit} />
             </div>
           </div>
 
