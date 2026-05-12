@@ -80,6 +80,8 @@
       "comboMultiplier": "x{{multiplier}}",
       "level": "Nivel {{level}}",
       "pause": "Pausa",
+      "expand": "Expandir",
+      "collapse": "Cerrar",
       "resume": "Continuar",
       "lives": "Salud Financiera",
       "savingsStreak": "¡Racha de Ahorro!"

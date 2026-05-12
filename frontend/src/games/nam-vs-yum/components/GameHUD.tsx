@@ -13,6 +13,9 @@ interface GameHUDProps {
   onPause: () => void;
   coins: number;
   playerLevel: number;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  embeddedMode: boolean;
 }
 
 export function GameHUD({
@@ -25,6 +28,9 @@ export function GameHUD({
   onPause,
   coins,
   playerLevel,
+  isExpanded,
+  onToggleExpand,
+  embeddedMode,
 }: GameHUDProps) {
   const { t } = useTranslation('games');
   const [prevLives, setPrevLives] = useState(lives);
@@ -111,6 +117,32 @@ export function GameHUD({
               />
             ))}
           </div>
+          {embeddedMode && !isExpanded && (
+            <button
+              onClick={onToggleExpand}
+              className="pointer-events-auto p-1.5 rounded-lg bg-black/40 hover:bg-black/60 active:bg-black/80 transition-colors"
+              aria-label={t('namVsYum.hud.expand')}
+              title={t('namVsYum.hud.expand')}
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            </button>
+          )}
+          {embeddedMode && isExpanded && (
+            <button
+              onClick={onToggleExpand}
+              className="pointer-events-auto p-1.5 rounded-lg bg-black/40 hover:bg-black/60 active:bg-black/80 transition-colors"
+              aria-label={t('namVsYum.hud.collapse')}
+              title={t('namVsYum.hud.collapse')}
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={onPause}
             className="pointer-events-auto p-1.5 rounded-lg bg-black/40 hover:bg-black/60 active:bg-black/80 transition-colors"

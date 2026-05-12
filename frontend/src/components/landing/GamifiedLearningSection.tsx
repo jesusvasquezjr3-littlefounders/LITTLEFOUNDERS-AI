@@ -118,7 +118,7 @@ export function GamifiedLearningSection() {
               style={{ background: 'radial-gradient(ellipse at center, #7c3aed 0%, #3b82f6 40%, transparent 70%)' }} />
             {/* Game frame — portrait on mobile, wider on desktop */}
             <div className="relative pixel-font rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(124,58,237,0.35)] w-[300px] h-[520px] md:w-full md:h-[540px] md:max-w-none">
-              <NamVsYumGame onExit={handleExit} />
+              <NamVsYumGame onExit={handleExit} embeddedMode />
             </div>
           </div>
 

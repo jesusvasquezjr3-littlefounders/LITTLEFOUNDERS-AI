@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useRef, useEffect, useState, useMemo } from 'react';
+import { useReducer, useCallback, useRef, useEffect, useState } from 'react';
 import { AssetImg } from '@/components/ui/AssetImg';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { gameReducer, createInitialState } from '../gameReducer';
 import { useGameEngine } from '../useGameEngine';
 import { ITEMS, AUDIO, PICTURES, GAME_CONFIG, DIFFICULTY_LEVELS, THEME_GRADIENTS, SKIN_CONFIG } from '../constants';
-import type { MonsterType, ItemCategory } from '../types';
+import type { MonsterType } from '../types';
 import { usePlayerProgress } from '../hooks/usePlayerProgress';
 import { useAchievements } from '../hooks/useAchievements';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
@@ -34,7 +34,7 @@ import { MonsterShop } from './MonsterShop';
 import { StatsScreen } from './StatsScreen';
 import { LeaderboardScreen, loadLeaderboard, saveLeaderboard } from './LeaderboardScreen';
 
-export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
+export function NamVsYumGame({ onExit, embeddedMode = false }: { onExit?: () => void; embeddedMode?: boolean } = {}) {
   const { t } = useTranslation('games');
   const navigate = useNavigate();
   const { playFile, playBGM, stopBGM } = useSound();
@@ -44,27 +44,24 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  // Player progress
   const playerProgress = usePlayerProgress();
   const { checkAchievements, achievements: achievementDefs } = useAchievements();
 
-  // Track monster animation states
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const [eatingMonster, setEatingMonster] = useState<MonsterType | null>(null);
   const [rejectingMonster, setRejectingMonster] = useState<MonsterType | null>(null);
   const [highlightedMonster, setHighlightedMonster] = useState<MonsterType | null>(null);
   const [highlightedTrash, setHighlightedTrash] = useState(false);
 
-  // Screen management
   const [showAchievements, setShowAchievements] = useState(false);
   const [showShop, setShowShop] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboardEntries, setLeaderboardEntries] = useState(() => loadLeaderboard());
 
-  // Easter egg states
   const [konamiActive, setKonamiActive] = useState(false);
 
-  // Session tracking
   const gameStartTimeRef = useRef<number>(0);
   const powerUpsUsedRef = useRef(0);
   const bombsDefusedRef = useRef(0);
@@ -72,17 +69,13 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
   const mentorTipsReceivedRef = useRef(0);
   const easterEggTriggeredRef = useRef(false);
 
-  // Particles and floating texts
   const [particles, setParticles] = useState<{ id: string; x: number; y: number; color: string; count: number }[]>([]);
   const [gameDimensions, setGameDimensions] = useState({ width: 0, height: 0 });
 
-  // Track the last known drag position
   const lastDragPosRef = useRef<{ x: number; y: number } | null>(null);
 
-  // Game engine
   const { handleDrop, handleTrashDrop } = useGameEngine(state, dispatch, gameAreaRef);
 
-  // Dimensions tracker
   useEffect(() => {
     const updateDims = () => {
       if (gameAreaRef.current) {
@@ -97,7 +90,6 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
     return () => window.removeEventListener('resize', updateDims);
   }, []);
 
-  // Keyboard controls
   useKeyboardControls({
     isPlaying: state.phase === 'PLAYING',
     onPause: () => dispatch({ type: 'PAUSE' }),
@@ -274,7 +266,6 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
 
       if (pos.y > monsterZoneTop) {
         if (pos.x >= centerLeft && pos.x <= centerRight) {
-          // Trash zone
           const defused = handleTrashDrop(id);
           if (defused) {
             setEatingMonster('vitalio');
@@ -337,7 +328,6 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
     [handleDrop, handleTrashDrop, playFile, t],
   );
 
-  // ── Particle helpers ──
   const addParticles = useCallback((x: number, y: number, color: string, count: number) => {
     const id = `burst-${Date.now()}-${Math.random()}`;
     setParticles((prev) => [...prev, { id, x, y, color, count }]);
@@ -354,7 +344,6 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
     }, 1200);
   }, [dispatch]);
 
-  // ── Phase handlers ──
   const handlePlay = useCallback(() => {
     dispatch({ type: 'START_PLAYING' });
     gameStartTimeRef.current = Date.now();
@@ -396,36 +385,26 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
 
   const isPlaying = state.phase === 'PLAYING' || state.phase === 'PAUSED' || state.phase === 'LEVEL_COMPLETE';
 
-  // Background theme
   const theme = playerProgress.progress.equippedTheme;
   const bgGradient = konamiActive
     ? 'linear-gradient(180deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%)'
     : THEME_GRADIENTS[theme] || THEME_GRADIENTS.sky;
 
-  // Weather
   const difficulty = DIFFICULTY_LEVELS[Math.min(state.level - 1, DIFFICULTY_LEVELS.length - 1)];
   const weather = difficulty?.weather || 'sunny';
 
-  // Monster skins
   const vitalioSkin = playerProgress.progress.equippedVitalioSkin;
   const caprichoSkin = playerProgress.progress.equippedCaprichoSkin;
 
-  // Leaderboard save
   const handleSaveLeaderboard = useCallback((entry: { name: string; score: number; level: number; date: string }) => {
     const newEntries = [...leaderboardEntries, entry].sort((a, b) => b.score - a.score).slice(0, 10);
     setLeaderboardEntries(newEntries);
     saveLeaderboard(newEntries);
   }, [leaderboardEntries]);
 
-  return (
-    <div
-      className={cn(
-        'w-full h-full relative overflow-hidden',
-        state.screenShake && 'animate-screen-shake',
-        konamiActive && 'animate-konami-bg'
-      )}
-    >
-      {/* Background — always visible */}
+  const gameContent = (
+    <>
+      {/* Background */}
       <div
         className="absolute inset-0"
         style={{ background: bgGradient, transition: 'background 1s ease' }}
@@ -438,28 +417,21 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
         />
       </div>
 
-      {/* Weather overlay */}
       <WeatherOverlay weather={weather} />
 
-      {/* CRT effects */}
       <div className="crt-vignette" />
       <div className="crt-scanlines" />
 
-      {/* Level flash */}
       {state.levelFlash && (
         <div className="absolute inset-0 bg-white/30 pointer-events-none animate-level-flash" style={{ zIndex: 50 }} />
       )}
 
-      {/* Game area — ALWAYS rendered, ref always attached */}
       <div
         ref={gameAreaRef}
         className="relative w-full h-full overflow-hidden"
         style={{ touchAction: 'none' }}
       >
-        {/* Particle system */}
         <ParticleSystem bursts={particles} width={gameDimensions.width} height={gameDimensions.height} />
-
-        {/* Floating texts */}
         <FloatingText texts={state.floatingTexts} />
 
         {isPlaying && (
@@ -474,6 +446,9 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
               onPause={handlePause}
               coins={playerProgress.progress.coins}
               playerLevel={playerProgress.progress.playerLevel}
+              isExpanded={isExpanded}
+              onToggleExpand={() => setIsExpanded((v) => !v)}
+              embeddedMode={embeddedMode}
             />
 
             <PowerUpIndicator activePowerUp={state.activePowerUp} />
@@ -521,7 +496,6 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
               </div>
             )}
 
-            {/* Monster zone */}
             <div
               className="absolute bottom-0 left-0 right-0 flex items-end justify-around px-4 pb-3 sm:pb-4"
               style={{ height: `${GAME_CONFIG.monsterZoneHeightPercent}%` }}
@@ -546,10 +520,8 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
               />
             </div>
 
-            {/* Trash zone */}
             <TrashZone isHighlighted={highlightedTrash} />
 
-            {/* Divider */}
             <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px opacity-20 bg-white"
               style={{ height: `${GAME_CONFIG.monsterZoneHeightPercent}%` }}
@@ -563,11 +535,7 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
             )}
 
             {state.phase === 'PAUSED' && (
-              <PauseOverlay
-                onResume={handleResume}
-                onRestart={handleRestart}
-                onQuit={handleExit}
-              />
+              <PauseOverlay onResume={handleResume} onRestart={handleRestart} onQuit={handleExit} />
             )}
 
             {state.phase === 'LEVEL_COMPLETE' && (
@@ -580,19 +548,13 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
               />
             )}
 
-            {/* Achievement popups */}
             {state.newAchievements.map((achId) => (
-              <AchievementPopup
-                key={achId}
-                achievementId={achId}
-                onDismiss={() => handleDismissAchievement(achId)}
-              />
+              <AchievementPopup key={achId} achievementId={achId} onDismiss={() => handleDismissAchievement(achId)} />
             ))}
           </>
         )}
       </div>
 
-      {/* Phase overlays */}
       {state.phase === 'START' && (
         <div className="absolute inset-0" style={{ zIndex: 70 }}>
           <GameStartScreen
@@ -639,10 +601,7 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
 
       {state.phase === 'TUTORIAL' && (
         <div className="absolute inset-0" style={{ zIndex: 70 }}>
-          <TutorialOverlay
-            onComplete={handleTutorialComplete}
-            onSkip={handlePlay}
-          />
+          <TutorialOverlay onComplete={handleTutorialComplete} onSkip={handlePlay} />
         </div>
       )}
 
@@ -657,6 +616,47 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
           />
         </div>
       )}
+    </>
+  );
+
+  return (
+    <div
+      className={cn(
+        'relative',
+        embeddedMode && isExpanded
+          ? 'fixed left-0 right-0 bottom-0 top-14 md:top-16 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-2 md:p-4'
+          : 'w-full h-full overflow-hidden',
+        state.screenShake && 'animate-screen-shake',
+        konamiActive && 'animate-konami-bg'
+      )}
+    >
+      {/* Close button for expanded mode */}
+      {embeddedMode && isExpanded && (
+        <button
+          onClick={() => setIsExpanded(false)}
+          className="absolute top-2 right-2 md:top-3 md:right-3 z-[10000] p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          title={t('namVsYum.hud.collapse')}
+          aria-label={t('namVsYum.hud.collapse')}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      )}
+
+      {/* Game inner container */}
+      <div
+        className={cn(
+          'relative',
+          embeddedMode && isExpanded
+            ? 'w-full h-full max-h-full md:max-w-2xl lg:max-w-4xl rounded-none md:rounded-2xl overflow-hidden shadow-2xl border-0 md:border md:border-white/10'
+            : 'w-full h-full'
+        )}
+      >
+        {gameContent}
+
+        {/* Expand button — only one, located in the HUD */}
+      </div>
     </div>
   );
 }
