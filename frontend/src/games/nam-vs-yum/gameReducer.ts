@@ -1,4 +1,4 @@
-import type { GameState, GameAction } from './types';
+import type { GameState, GameAction, AchievementId } from './types';
 import { COMBO_THRESHOLD, MAX_COMBO_MULTIPLIER, GAME_CONFIG } from './constants';
 
 const loadHighScore = (): number => {
@@ -27,12 +27,23 @@ export const createInitialState = (): GameState => ({
   comboMultiplier: 1,
   level: 1,
   itemsSorted: 0,
+  itemsSortedThisLevel: 0,
+  itemsCorrectThisLevel: 0,
+  levelStartTime: 0,
   fallingItems: [],
   activeMentorTip: null,
   highScore: loadHighScore(),
   lastFeedback: null,
   feedbackTimestamp: 0,
   draggingItemId: null,
+  activePowerUp: null,
+  frenzyCount: 0,
+  isFrenzyMode: false,
+  floatingTexts: [],
+  screenShake: false,
+  levelFlash: false,
+  newAchievements: [],
+  perfectLevelStreak: 0,
 });
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -40,12 +51,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SHOW_TUTORIAL':
       return { ...state, phase: 'TUTORIAL' };
 
-    case 'START_PLAYING':
+    case 'START_PLAYING': {
+      const now = Date.now();
       return {
         ...createInitialState(),
         highScore: state.highScore,
         phase: 'PLAYING',
+        levelStartTime: now,
       };
+    }
 
     case 'PAUSE':
       return { ...state, phase: 'PAUSED' };
@@ -60,14 +74,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
 
     case 'UPDATE_ITEMS':
-      // Merge: use RAF-updated positions for non-dragging items,
-      // but preserve the CURRENT state of any item being dragged
-      // (so we don't overwrite positions set by MOVE_DRAG).
       return {
         ...state,
         fallingItems: action.items.map((incoming) => {
           const current = state.fallingItems.find((c) => c.id === incoming.id);
-          // If the item is currently being dragged in state, keep its live position
           if (current && current.isDragging) return current;
           return incoming;
         }),
@@ -116,10 +126,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         MAX_COMBO_MULTIPLIER,
         1 + Math.floor(newCombo / COMBO_THRESHOLD)
       );
-      const pointsEarned = action.points * newMultiplier;
+
+      let pointsEarned = action.points * newMultiplier;
+      if (action.wasGolden) pointsEarned *= 3;
+      if (action.wasRainbow) pointsEarned *= 5;
+      if (state.isFrenzyMode) pointsEarned *= 1.5;
+      if (state.activePowerUp?.type === 'scoreBoost') pointsEarned *= 2;
+
+      pointsEarned = Math.round(pointsEarned);
+
       const newScore = state.score + pointsEarned;
       const newItemsSorted = state.itemsSorted + 1;
+      const newItemsCorrectThisLevel = state.itemsCorrectThisLevel + 1;
       const newHighScore = Math.max(state.highScore, newScore);
+      const newFrenzyCount = state.frenzyCount + 1;
+      const newIsFrenzy = newFrenzyCount >= GAME_CONFIG.frenzyThreshold;
 
       if (newHighScore > state.highScore) {
         saveHighScore(newHighScore);
@@ -135,10 +156,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         maxCombo: newMaxCombo,
         comboMultiplier: newMultiplier,
         itemsSorted: newItemsSorted,
+        itemsCorrectThisLevel: newItemsCorrectThisLevel,
         lastFeedback: 'correct',
         feedbackTimestamp: Date.now(),
         highScore: newHighScore,
         draggingItemId: null,
+        frenzyCount: newFrenzyCount,
+        isFrenzyMode: newIsFrenzy,
       };
     }
 
@@ -164,6 +188,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: isGameOver ? 'GAME_OVER' : state.phase,
         highScore: newHighScore,
         draggingItemId: null,
+        frenzyCount: 0,
+        isFrenzyMode: false,
+        screenShake: true,
       };
     }
 
@@ -186,11 +213,37 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         feedbackTimestamp: Date.now(),
         phase: isGameOver ? 'GAME_OVER' : state.phase,
         highScore: newHighScore,
+        frenzyCount: 0,
+        isFrenzyMode: false,
+        screenShake: true,
       };
     }
 
-    case 'LEVEL_UP':
-      return { ...state, level: state.level + 1 };
+    case 'LEVEL_UP': {
+      const wasPerfect = state.itemsSortedThisLevel > 0 && state.itemsCorrectThisLevel === state.itemsSortedThisLevel;
+      const perfectBonus = wasPerfect ? 50 : 0;
+      const newScore = state.score + perfectBonus;
+      const newHighScore = Math.max(state.highScore, newScore);
+      if (newHighScore > state.highScore) saveHighScore(newHighScore);
+
+      return {
+        ...state,
+        level: state.level + 1,
+        itemsSortedThisLevel: 0,
+        itemsCorrectThisLevel: 0,
+        levelStartTime: Date.now(),
+        score: newScore,
+        highScore: newHighScore,
+        levelFlash: true,
+        perfectLevelStreak: wasPerfect ? state.perfectLevelStreak + 1 : 0,
+      };
+    }
+
+    case 'SHOW_LEVEL_COMPLETE':
+      return { ...state, phase: 'LEVEL_COMPLETE' };
+
+    case 'DISMISS_LEVEL_COMPLETE':
+      return { ...state, phase: 'PLAYING' };
 
     case 'SHOW_MENTOR_TIP':
       return { ...state, activeMentorTip: action.tip };
@@ -211,6 +264,83 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...createInitialState(),
         highScore: Math.max(state.highScore, state.score),
+      };
+
+    case 'ACTIVATE_POWER_UP': {
+      let newLives = state.lives;
+      if (action.powerUp === 'extraLife') {
+        newLives = Math.min(state.maxLives, state.lives + 1);
+      }
+      return {
+        ...state,
+        activePowerUp: action.powerUp === 'extraLife'
+          ? null
+          : { type: action.powerUp, endsAt: Date.now() + action.durationMs },
+        lives: newLives,
+      };
+    }
+
+    case 'DEACTIVATE_POWER_UP':
+      return { ...state, activePowerUp: null };
+
+    case 'ADD_FLOATING_TEXT':
+      return {
+        ...state,
+        floatingTexts: [...state.floatingTexts, action.text],
+      };
+
+    case 'REMOVE_FLOATING_TEXT':
+      return {
+        ...state,
+        floatingTexts: state.floatingTexts.filter((ft) => ft.id !== action.id),
+      };
+
+    case 'TRIGGER_SCREEN_SHAKE':
+      return { ...state, screenShake: true };
+
+    case 'CLEAR_SCREEN_SHAKE':
+      return { ...state, screenShake: false };
+
+    case 'TRIGGER_LEVEL_FLASH':
+      return { ...state, levelFlash: true };
+
+    case 'CLEAR_LEVEL_FLASH':
+      return { ...state, levelFlash: false };
+
+    case 'ENTER_FRENZY':
+      return { ...state, isFrenzyMode: true };
+
+    case 'EXIT_FRENZY':
+      return { ...state, isFrenzyMode: false, frenzyCount: 0 };
+
+    case 'INCREMENT_FRENZY':
+      return { ...state, frenzyCount: state.frenzyCount + 1 };
+
+    case 'RESET_FRENZY':
+      return { ...state, frenzyCount: 0, isFrenzyMode: false };
+
+    case 'ADD_ACHIEVEMENT': {
+      if (state.newAchievements.includes(action.id)) return state;
+      return { ...state, newAchievements: [...state.newAchievements, action.id] };
+    }
+
+    case 'CLEAR_NEW_ACHIEVEMENTS':
+      return { ...state, newAchievements: [] };
+
+    case 'REVEAL_MYSTERY':
+      return {
+        ...state,
+        fallingItems: state.fallingItems.map((i) =>
+          i.id === action.id ? { ...i, revealedCategory: action.category } : i
+        ),
+      };
+
+    case 'TICK_BOMB':
+      return {
+        ...state,
+        fallingItems: state.fallingItems.map((i) =>
+          i.id === action.id ? { ...i, bombTimer: action.newTimer } : i
+        ),
       };
 
     default:

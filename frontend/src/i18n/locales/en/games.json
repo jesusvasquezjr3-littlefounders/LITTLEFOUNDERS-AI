@@ -52,7 +52,11 @@
       "playButton": "PLAY!",
       "highScore": "High Score: {{score}}",
       "howToPlay": "How to Play?",
-      "description": "Drag each item to the correct monster!"
+      "description": "Drag each item to the correct monster!",
+      "achievements": "Achievements",
+      "shop": "Shop",
+      "stats": "Stats",
+      "leaderboard": "Leaderboard"
     },
     "tutorial": {
       "step1Title": "Meet the Monsters",
@@ -151,6 +155,216 @@
       "retry": "Play Again!",
       "exit": "Exit",
       "newHighScore": "New High Score!"
+    },
+    "mentor": {
+      "tapToDismiss": "Tap to dismiss",
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "Watch out! A need is something essential to live, like water. A want is something we like but can wait for.",
+        "tip2": "Water, food, and shelter are basic needs. We can't live without them!",
+        "tip3": "Think: can I live without this? If the answer is yes, it's a want."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "Excellent budgeting! By identifying your expenses well, your savings grow.",
+        "tip2": "Wants are okay sometimes, but needs come first!",
+        "tip3": "Being smart with your money is a superpower. You can do it!"
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "Almost got it! I also bought too many toys before eating. Let's try again!",
+        "tip2": "Wow, you're doing great! Keep dragging to the right monster!",
+        "tip3": "The monsters are hungry! Feed them correctly!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "Ran out of coins? No worries! Try again and remember: essentials first, fun later.",
+        "tip2": "Every decision counts. Needs keep your body and mind healthy!",
+        "tip3": "Wants are fun, but they're not essential. Prioritize!"
+      }
+    },
+    "powerUps": {
+      "names": {
+        "freezeTime": "Freeze",
+        "scoreBoost": "Multiplier",
+        "extraLife": "Extra Life",
+        "magnet": "Magnet",
+        "clearScreen": "Clear",
+        "slowMotion": "Slow Mo"
+      },
+      "descriptions": {
+        "freezeTime": "Freeze time for 5 seconds",
+        "scoreBoost": "Double points for 10 seconds",
+        "extraLife": "Recover 1 heart",
+        "magnet": "Auto-attract items for 8 seconds",
+        "clearScreen": "Clear all items without penalty",
+        "slowMotion": "Slow fall to 30% for 6 seconds"
+      }
+    },
+    "items": {
+      "water": "Water",
+      "food": "Food",
+      "medicine": "Medicine",
+      "house": "House",
+      "internet": "Internet",
+      "doctor": "Doctor",
+      "bed": "Bed",
+      "school": "School",
+      "clothing": "Clothing",
+      "electricity": "Electricity",
+      "toothbrush": "Toothbrush",
+      "transport": "Transport",
+      "shower": "Shower",
+      "fruits": "Fruits",
+      "glasses": "Glasses",
+      "wheelchair": "Wheelchair",
+      "hearingAid": "Hearing Aid",
+      "toy": "Teddy Bear",
+      "candy": "Candy",
+      "videogame": "Video Game",
+      "iceCream": "Giant Ice Cream",
+      "ball": "Ball",
+      "chocolate": "Chocolate",
+      "puzzle": "Puzzle",
+      "skateboard": "Skateboard",
+      "doll": "Doll",
+      "stickers": "Stickers",
+      "soda": "Soda",
+      "kite": "Kite",
+      "paintSet": "Paint Set",
+      "remoteCar": "Remote Car",
+      "sunglasses": "Sunglasses",
+      "perfume": "Perfume",
+      "robot": "Toy Robot",
+      "balloon": "Balloon",
+      "jewelry": "Jewelry",
+      "designerBag": "Designer Bag",
+      "fancyWatch": "Fancy Watch",
+      "yacht": "Yacht",
+      "spaceship": "Spaceship",
+      "crown": "Crown"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "unlocked": "Achievement Unlocked!",
+      "unlockedCount": "unlocked",
+      "reward": "Reward",
+      "firstSteps": { "title": "First Steps", "description": "Sort your first item correctly" },
+      "sorterApprentice": { "title": "Apprentice", "description": "Sort 50 items total" },
+      "sorterExpert": { "title": "Expert", "description": "Sort 500 items total" },
+      "sorterMaster": { "title": "Master", "description": "Sort 2000 items total" },
+      "comboStarter": { "title": "Starter", "description": "Reach combo x2" },
+      "comboWarrior": { "title": "Warrior", "description": "Reach combo x5" },
+      "comboLegend": { "title": "Legend", "description": "Reach combo x10" },
+      "perfectLevel": { "title": "Perfect Level", "description": "Complete a level without mistakes" },
+      "highScorer": { "title": "High Scorer", "description": "Reach 1000 points" },
+      "scoreChampion": { "title": "Champion", "description": "Reach 5000 points" },
+      "scoreLegend": { "title": "Score Legend", "description": "Reach 10000 points" },
+      "survivor": { "title": "Survivor", "description": "Reach level 10" },
+      "speedDemon": { "title": "Speed Demon", "description": "Sort 10 items in 20 seconds" },
+      "mentorStudent": { "title": "Student", "description": "Receive 20 mentor tips" },
+      "easterEggHunter": { "title": "Hunter", "description": "Trigger a secret easter egg" },
+      "powerUpUser": { "title": "Powerful", "description": "Use 10 power-ups" },
+      "bombDefuser": { "title": "Defuser", "description": "Defuse 5 bombs" },
+      "goldenTouch": { "title": "Golden Touch", "description": "Collect 10 golden items" },
+      "konamiMaster": { "title": "Konami Master", "description": "Activate the secret code" }
+    },
+    "levelComplete": {
+      "title": "Level {{level}} Complete!",
+      "itemsSorted": "Items: {{count}}",
+      "perfectSorts": "Perfect: {{count}}",
+      "perfectBonus": "+50 Perfect Level Bonus!",
+      "continue": "Continue"
+    },
+    "shop": {
+      "title": "Shop",
+      "coins": "Coins",
+      "skinsTitle": "Monster Skins",
+      "themesTitle": "Background Themes",
+      "equip": "Equip",
+      "buy": "Buy",
+      "locked": "Locked",
+      "back": "Back",
+      "skins": {
+        "vitalioClassic": "Vitalio Classic",
+        "vitalioGold": "Vitalio Gold",
+        "vitalioNinja": "Vitalio Ninja",
+        "vitalioAstronaut": "Vitalio Astronaut",
+        "caprichoClassic": "Capricho Classic",
+        "caprichoGold": "Capricho Gold",
+        "caprichoPirate": "Capricho Pirate",
+        "caprichoRobot": "Capricho Robot"
+      },
+      "themes": {
+        "sky": "Classic Sky",
+        "forest": "Magic Forest",
+        "space": "Outer Space",
+        "city": "Pixel City"
+      }
+    },
+    "stats": {
+      "title": "Statistics",
+      "gamesPlayed": "Games Played",
+      "highScore": "High Score",
+      "totalItems": "Items Sorted",
+      "maxCombo": "Max Combo",
+      "highestLevel": "Highest Level",
+      "timePlayed": "Time Played",
+      "accuracy": "Accuracy",
+      "achievements": "Achievements",
+      "playerLevel": "Player Level"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "yourRank": "Your Rank",
+      "enterName": "Your name",
+      "saveScore": "Save Score",
+      "noScores": "No scores yet",
+      "newHighScore": "New High Score!"
+    },
+    "weather": {
+      "sunny": "Sunny",
+      "rainy": "Rainy",
+      "storm": "Storm",
+      "night": "Night",
+      "goldenHour": "Golden Hour"
+    },
+    "frenzy": {
+      "modeActive": "FRENZY MODE!",
+      "barLabel": "Frenzy"
+    },
+    "easterEggs": {
+      "konamiActivated": "RAINBOW MODE ACTIVATED!",
+      "unicornWrong": "Unicorns aren't needs!",
+      "unicornRight": "A magical want!"
+    },
+    "feedback": {
+      "correct": "Correct!",
+      "incorrect": "Oops! That doesn't go there.",
+      "comboStart": "Streak x{{count}}!",
+      "comboBreak": "Streak lost!",
+      "perfectStreak": "Perfect Streak!",
+      "moneyWasted": "Money wasted!",
+      "bombDefused": "Bomb defused!",
+      "bombExploded": "BOOM!",
+      "mysteryRevealed": "Mystery revealed!",
+      "goldenCollected": "Golden!",
+      "rainbowCollected": "Rainbow!"
+    },
+    "trashZone": {
+      "label": "TRASH"
+    },
+    "gameOver": {
+      "title": "Game Over!",
+      "finalScore": "Final Score",
+      "itemsSorted": "Items sorted: {{count}}",
+      "maxCombo": "Max streak: x{{combo}}",
+      "levelReached": "Level reached: {{level}}",
+      "retry": "Play Again!",
+      "exit": "Exit",
+      "newHighScore": "New High Score!",
+      "leaderboard": "Leaderboard",
+      "newAchievements": "New Achievements"
     },
     "pause": {
       "title": "Paused",

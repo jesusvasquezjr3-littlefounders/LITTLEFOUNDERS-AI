@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useRef, useEffect, useState } from 'react';
+import { useReducer, useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { AssetImg } from '@/components/ui/AssetImg';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -7,8 +7,11 @@ import { cn } from '@/lib/utils';
 
 import { gameReducer, createInitialState } from '../gameReducer';
 import { useGameEngine } from '../useGameEngine';
-import { ITEMS, AUDIO, PICTURES, GAME_CONFIG } from '../constants';
-import type { MonsterType } from '../types';
+import { ITEMS, AUDIO, PICTURES, GAME_CONFIG, DIFFICULTY_LEVELS, THEME_GRADIENTS, SKIN_CONFIG } from '../constants';
+import type { MonsterType, ItemCategory } from '../types';
+import { usePlayerProgress } from '../hooks/usePlayerProgress';
+import { useAchievements } from '../hooks/useAchievements';
+import { useKeyboardControls } from '../hooks/useKeyboardControls';
 
 import { GameStartScreen } from './GameStartScreen';
 import { TutorialOverlay } from './TutorialOverlay';
@@ -18,6 +21,18 @@ import { FallingItemComponent } from './FallingItem';
 import { MentorPopup } from './MentorPopup';
 import { PauseOverlay } from './PauseOverlay';
 import { GameOverScreen } from './GameOverScreen';
+import { ParticleSystem } from './ParticleSystem';
+import { FloatingText } from './FloatingText';
+import { WeatherOverlay } from './WeatherOverlay';
+import { PowerUpIndicator } from './PowerUpIndicator';
+import { FrenzyBar } from './FrenzyBar';
+import { TrashZone } from './TrashZone';
+import { LevelCompleteScreen } from './LevelCompleteScreen';
+import { AchievementPopup } from './AchievementPopup';
+import { AchievementGallery } from './AchievementGallery';
+import { MonsterShop } from './MonsterShop';
+import { StatsScreen } from './StatsScreen';
+import { LeaderboardScreen, loadLeaderboard, saveLeaderboard } from './LeaderboardScreen';
 
 export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
   const { t } = useTranslation('games');
@@ -26,22 +41,74 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
 
   const [state, dispatch] = useReducer(gameReducer, undefined, createInitialState);
   const gameAreaRef = useRef<HTMLDivElement>(null);
-
-  // Ref that always holds the latest state (for callbacks that can't have state in deps)
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  // Player progress
+  const playerProgress = usePlayerProgress();
+  const { checkAchievements, achievements: achievementDefs } = useAchievements();
 
   // Track monster animation states
   const [eatingMonster, setEatingMonster] = useState<MonsterType | null>(null);
   const [rejectingMonster, setRejectingMonster] = useState<MonsterType | null>(null);
   const [highlightedMonster, setHighlightedMonster] = useState<MonsterType | null>(null);
+  const [highlightedTrash, setHighlightedTrash] = useState(false);
 
-  // Track the last known drag position (local-coords) so dragEnd doesn't
-  // depend on state — which may be stale due to RAF UPDATE_ITEMS dispatches.
+  // Screen management
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showShop, setShowShop] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboardEntries, setLeaderboardEntries] = useState(() => loadLeaderboard());
+
+  // Easter egg states
+  const [konamiActive, setKonamiActive] = useState(false);
+
+  // Session tracking
+  const gameStartTimeRef = useRef<number>(0);
+  const powerUpsUsedRef = useRef(0);
+  const bombsDefusedRef = useRef(0);
+  const goldenCollectedRef = useRef(0);
+  const mentorTipsReceivedRef = useRef(0);
+  const easterEggTriggeredRef = useRef(false);
+
+  // Particles and floating texts
+  const [particles, setParticles] = useState<{ id: string; x: number; y: number; color: string; count: number }[]>([]);
+  const [gameDimensions, setGameDimensions] = useState({ width: 0, height: 0 });
+
+  // Track the last known drag position
   const lastDragPosRef = useRef<{ x: number; y: number } | null>(null);
 
-  // Game engine — reads dimensions directly from the DOM ref each RAF frame
-  const { handleDrop } = useGameEngine(state, dispatch, gameAreaRef);
+  // Game engine
+  const { handleDrop, handleTrashDrop } = useGameEngine(state, dispatch, gameAreaRef);
+
+  // Dimensions tracker
+  useEffect(() => {
+    const updateDims = () => {
+      if (gameAreaRef.current) {
+        setGameDimensions({
+          width: gameAreaRef.current.clientWidth,
+          height: gameAreaRef.current.clientHeight,
+        });
+      }
+    };
+    updateDims();
+    window.addEventListener('resize', updateDims);
+    return () => window.removeEventListener('resize', updateDims);
+  }, []);
+
+  // Keyboard controls
+  useKeyboardControls({
+    isPlaying: state.phase === 'PLAYING',
+    onPause: () => dispatch({ type: 'PAUSE' }),
+    onKonami: () => {
+      setKonamiActive(true);
+      easterEggTriggeredRef.current = true;
+      playerProgress.unlockAchievement('konamiMaster');
+      playerProgress.addCoins(100);
+      setTimeout(() => setKonamiActive(false), 30000);
+    },
+  });
 
   // ── BGM lifecycle ──
   useEffect(() => {
@@ -64,7 +131,9 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
 
   const prevLevelRef = useRef(state.level);
   useEffect(() => {
-    if (state.level > prevLevelRef.current) playFile(AUDIO.levelUp);
+    if (state.level > prevLevelRef.current) {
+      playFile(AUDIO.levelUp);
+    }
     prevLevelRef.current = state.level;
   }, [state.level, playFile]);
 
@@ -86,8 +155,63 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
   }, [state.phase, state.score, state.highScore, playFile]);
 
   useEffect(() => {
-    if (state.activeMentorTip) playFile(AUDIO.mentorPop);
+    if (state.activeMentorTip) {
+      playFile(AUDIO.mentorPop);
+      mentorTipsReceivedRef.current++;
+    }
   }, [state.activeMentorTip, playFile]);
+
+  useEffect(() => {
+    if (state.isFrenzyMode) {
+      playFile(AUDIO.perfectStreak);
+    }
+  }, [state.isFrenzyMode, playFile]);
+
+  useEffect(() => {
+    if (state.activePowerUp) {
+      playFile(AUDIO.powerUp);
+      powerUpsUsedRef.current++;
+    }
+  }, [state.activePowerUp, playFile]);
+
+  // ── Achievement checking ──
+  useEffect(() => {
+    if (state.phase !== 'PLAYING' && state.phase !== 'GAME_OVER') return;
+
+    const result = checkAchievements(
+      state,
+      playerProgress.progress.totalItemsSorted + state.itemsSorted,
+      Math.max(playerProgress.progress.maxComboEver, state.maxCombo),
+      Math.max(playerProgress.progress.highestLevelReached, state.level),
+      powerUpsUsedRef.current,
+      bombsDefusedRef.current,
+      goldenCollectedRef.current,
+      mentorTipsReceivedRef.current,
+      easterEggTriggeredRef.current,
+      playerProgress.progress.achievements.konamiMaster?.unlocked || false,
+    );
+
+    result.newlyUnlocked.forEach((id) => {
+      dispatch({ type: 'ADD_ACHIEVEMENT', id });
+      playerProgress.unlockAchievement(id);
+      const ach = achievementDefs.find((a) => a.id === id);
+      if (ach) playerProgress.addCoins(ach.reward);
+    });
+
+    result.progressUpdates.forEach(({ id, progress }) => {
+      playerProgress.updateAchievementProgress(id, progress);
+    });
+  }, [state.score, state.combo, state.level, state.itemsSorted, state.phase]);
+
+  // ── Record game end stats ──
+  useEffect(() => {
+    if (state.phase === 'GAME_OVER' && gameStartTimeRef.current > 0) {
+      const duration = Date.now() - gameStartTimeRef.current;
+      const correct = state.itemsSorted - (GAME_CONFIG.maxLives - state.lives);
+      playerProgress.recordGameEnd(state.score, state.itemsSorted, state.maxCombo, state.level, duration, correct, state.itemsSorted);
+      gameStartTimeRef.current = 0;
+    }
+  }, [state.phase]);
 
   // ── Drag handling ──
   const handleItemDragStart = useCallback(
@@ -105,14 +229,24 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
-      // Store position in ref so dragEnd can use it immediately
       lastDragPosRef.current = { x, y };
       dispatch({ type: 'MOVE_DRAG', id, x, y });
 
       const monsterZoneTop = rect.height * (1 - GAME_CONFIG.monsterZoneHeightPercent / 100);
+      const trashZoneWidth = rect.width * (GAME_CONFIG.trashZoneWidthPercent / 100);
+      const centerLeft = rect.width / 2 - trashZoneWidth / 2;
+      const centerRight = rect.width / 2 + trashZoneWidth / 2;
+
       if (y > monsterZoneTop) {
-        setHighlightedMonster(x < rect.width / 2 ? 'vitalio' : 'capricho');
+        if (x >= centerLeft && x <= centerRight) {
+          setHighlightedTrash(true);
+          setHighlightedMonster(null);
+        } else {
+          setHighlightedTrash(false);
+          setHighlightedMonster(x < rect.width / 2 ? 'vitalio' : 'capricho');
+        }
       } else {
+        setHighlightedTrash(false);
         setHighlightedMonster(null);
       }
     },
@@ -127,38 +261,110 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
       if (!area || !pos) {
         dispatch({ type: 'END_DRAG', id });
         setHighlightedMonster(null);
+        setHighlightedTrash(false);
         lastDragPosRef.current = null;
         return;
       }
 
       const rect = area.getBoundingClientRect();
       const monsterZoneTop = rect.height * (1 - GAME_CONFIG.monsterZoneHeightPercent / 100);
+      const trashZoneWidth = rect.width * (GAME_CONFIG.trashZoneWidthPercent / 100);
+      const centerLeft = rect.width / 2 - trashZoneWidth / 2;
+      const centerRight = rect.width / 2 + trashZoneWidth / 2;
 
-      // Use the ref position (always fresh) instead of reading from state
       if (pos.y > monsterZoneTop) {
-        const targetMonster: MonsterType = pos.x < rect.width / 2 ? 'vitalio' : 'capricho';
-        const isCorrect = handleDrop(id, targetMonster);
-
-        if (isCorrect) {
-          setEatingMonster(targetMonster);
-          playFile(AUDIO.chomp);
-          setTimeout(() => setEatingMonster(null), 400);
+        if (pos.x >= centerLeft && pos.x <= centerRight) {
+          // Trash zone
+          const defused = handleTrashDrop(id);
+          if (defused) {
+            setEatingMonster('vitalio');
+            playFile(AUDIO.chomp);
+            bombsDefusedRef.current++;
+            addParticles(pos.x, pos.y, '#22c55e', 15);
+            addFloatingText(pos.x, pos.y, t('namVsYum.feedback.bombDefused'), '#22c55e');
+            setTimeout(() => setEatingMonster(null), 400);
+          } else {
+            setRejectingMonster('vitalio');
+            playFile(AUDIO.reject);
+            setTimeout(() => setRejectingMonster(null), 600);
+          }
         } else {
-          setRejectingMonster(targetMonster);
-          playFile(AUDIO.reject);
-          setTimeout(() => setRejectingMonster(null), 600);
+          const targetMonster: MonsterType = pos.x < rect.width / 2 ? 'vitalio' : 'capricho';
+          const result = handleDrop(id, targetMonster);
+
+          if (result.correct) {
+            setEatingMonster(targetMonster);
+            playFile(AUDIO.chomp);
+
+            if (result.wasSpecial) {
+              if (result.wasBomb) {
+                addParticles(pos.x, pos.y, '#ef4444', 30);
+                addFloatingText(pos.x, pos.y, t('namVsYum.feedback.bombExploded'), '#ef4444');
+              } else if (result.powerUp) {
+                addParticles(pos.x, pos.y, '#3b82f6', 20);
+              } else {
+                addParticles(pos.x, pos.y, '#eab308', 25);
+                addFloatingText(pos.x, pos.y, `+${result.points}`, '#eab308');
+                if ((result as { wasGolden?: boolean }).wasGolden) {
+                  goldenCollectedRef.current++;
+                  addFloatingText(pos.x, pos.y - 20, t('namVsYum.feedback.goldenCollected'), '#eab308');
+                }
+              }
+            } else {
+              const isGolden = stateRef.current.fallingItems.find((i) => i.id === id)?.variant === 'golden';
+              const color = isGolden ? '#eab308' : '#22c55e';
+              addParticles(pos.x, pos.y, color, 12);
+              addFloatingText(pos.x, pos.y, `+${result.points}`, color);
+            }
+
+            setTimeout(() => setEatingMonster(null), 400);
+          } else {
+            setRejectingMonster(targetMonster);
+            playFile(AUDIO.reject);
+            addParticles(pos.x, pos.y, '#ef4444', 15);
+            addFloatingText(pos.x, pos.y, t('namVsYum.feedback.incorrect'), '#ef4444');
+            setTimeout(() => setRejectingMonster(null), 600);
+          }
         }
       } else {
         dispatch({ type: 'END_DRAG', id });
       }
+
       setHighlightedMonster(null);
+      setHighlightedTrash(false);
       lastDragPosRef.current = null;
     },
-    [handleDrop, playFile],
+    [handleDrop, handleTrashDrop, playFile, t],
   );
 
+  // ── Particle helpers ──
+  const addParticles = useCallback((x: number, y: number, color: string, count: number) => {
+    const id = `burst-${Date.now()}-${Math.random()}`;
+    setParticles((prev) => [...prev, { id, x, y, color, count }]);
+    setTimeout(() => {
+      setParticles((prev) => prev.filter((p) => p.id !== id));
+    }, 1000);
+  }, []);
+
+  const addFloatingText = useCallback((x: number, y: number, text: string, color: string) => {
+    const id = `ft-${Date.now()}-${Math.random()}`;
+    dispatch({ type: 'ADD_FLOATING_TEXT', text: { id, x, y, text, color, createdAt: Date.now() } });
+    setTimeout(() => {
+      dispatch({ type: 'REMOVE_FLOATING_TEXT', id });
+    }, 1200);
+  }, [dispatch]);
+
   // ── Phase handlers ──
-  const handlePlay = useCallback(() => dispatch({ type: 'START_PLAYING' }), []);
+  const handlePlay = useCallback(() => {
+    dispatch({ type: 'START_PLAYING' });
+    gameStartTimeRef.current = Date.now();
+    powerUpsUsedRef.current = 0;
+    bombsDefusedRef.current = 0;
+    goldenCollectedRef.current = 0;
+    mentorTipsReceivedRef.current = 0;
+    easterEggTriggeredRef.current = false;
+  }, []);
+
   const handleTutorial = useCallback(() => dispatch({ type: 'SHOW_TUTORIAL' }), []);
   const handleTutorialComplete = useCallback(() => dispatch({ type: 'START_PLAYING' }), []);
   const handlePause = useCallback(() => dispatch({ type: 'PAUSE' }), []);
@@ -180,15 +386,50 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
     setTimeout(() => dispatch({ type: 'START_PLAYING' }), 0);
   }, []);
 
-  const isPlaying = state.phase === 'PLAYING' || state.phase === 'PAUSED';
+  const handleContinueFromLevel = useCallback(() => {
+    dispatch({ type: 'DISMISS_LEVEL_COMPLETE' });
+  }, []);
 
-  // ── Render ──
-  // The game area div is ALWAYS in the DOM so the ref is always attached
-  // and the engine can read real dimensions. Overlays sit on top.
+  const handleDismissAchievement = useCallback((id: string) => {
+    dispatch({ type: 'CLEAR_NEW_ACHIEVEMENTS' });
+  }, []);
+
+  const isPlaying = state.phase === 'PLAYING' || state.phase === 'PAUSED' || state.phase === 'LEVEL_COMPLETE';
+
+  // Background theme
+  const theme = playerProgress.progress.equippedTheme;
+  const bgGradient = konamiActive
+    ? 'linear-gradient(180deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%)'
+    : THEME_GRADIENTS[theme] || THEME_GRADIENTS.sky;
+
+  // Weather
+  const difficulty = DIFFICULTY_LEVELS[Math.min(state.level - 1, DIFFICULTY_LEVELS.length - 1)];
+  const weather = difficulty?.weather || 'sunny';
+
+  // Monster skins
+  const vitalioSkin = playerProgress.progress.equippedVitalioSkin;
+  const caprichoSkin = playerProgress.progress.equippedCaprichoSkin;
+
+  // Leaderboard save
+  const handleSaveLeaderboard = useCallback((entry: { name: string; score: number; level: number; date: string }) => {
+    const newEntries = [...leaderboardEntries, entry].sort((a, b) => b.score - a.score).slice(0, 10);
+    setLeaderboardEntries(newEntries);
+    saveLeaderboard(newEntries);
+  }, [leaderboardEntries]);
+
   return (
-    <div className="w-full h-full relative">
+    <div
+      className={cn(
+        'w-full h-full relative overflow-hidden',
+        state.screenShake && 'animate-screen-shake',
+        konamiActive && 'animate-konami-bg'
+      )}
+    >
       {/* Background — always visible */}
-      <div className="absolute inset-0 game-bg-sky">
+      <div
+        className="absolute inset-0"
+        style={{ background: bgGradient, transition: 'background 1s ease' }}
+      >
         <AssetImg
           assetPath={PICTURES.background}
           alt=""
@@ -197,9 +438,17 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
         />
       </div>
 
-      {/* CRT effects — above game content (z-40) but below phase overlays (z-70) */}
+      {/* Weather overlay */}
+      <WeatherOverlay weather={weather} />
+
+      {/* CRT effects */}
       <div className="crt-vignette" />
       <div className="crt-scanlines" />
+
+      {/* Level flash */}
+      {state.levelFlash && (
+        <div className="absolute inset-0 bg-white/30 pointer-events-none animate-level-flash" style={{ zIndex: 50 }} />
+      )}
 
       {/* Game area — ALWAYS rendered, ref always attached */}
       <div
@@ -207,6 +456,12 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
         className="relative w-full h-full overflow-hidden"
         style={{ touchAction: 'none' }}
       >
+        {/* Particle system */}
+        <ParticleSystem bursts={particles} width={gameDimensions.width} height={gameDimensions.height} />
+
+        {/* Floating texts */}
+        <FloatingText texts={state.floatingTexts} />
+
         {isPlaying && (
           <>
             <GameHUD
@@ -217,16 +472,27 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
               comboMultiplier={state.comboMultiplier}
               level={state.level}
               onPause={handlePause}
+              coins={playerProgress.progress.coins}
+              playerLevel={playerProgress.progress.playerLevel}
             />
+
+            <PowerUpIndicator activePowerUp={state.activePowerUp} />
+            <FrenzyBar frenzyCount={state.frenzyCount} isFrenzyMode={state.isFrenzyMode} />
 
             {state.fallingItems.map((item) => {
               const def = ITEMS.find((d) => d.key === item.definitionKey);
-              if (!def) return null;
+              const displayDef = def || {
+                key: item.definitionKey,
+                category: item.revealedCategory || 'need',
+                emoji: item.variant === 'unicorn' ? '🦄' : item.variant === 'bomb' ? '💣' : item.variant === 'mystery' ? '❓' : '❓',
+                imageUrl: '',
+                tier: 1,
+              };
               return (
                 <FallingItemComponent
                   key={item.id}
                   item={item}
-                  definition={def}
+                  definition={displayDef}
                   onDragStart={handleItemDragStart}
                   onDragMove={handleItemDragMove}
                   onDragEnd={handleItemDragEnd}
@@ -265,15 +531,25 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
                 isEating={eatingMonster === 'vitalio'}
                 isRejecting={rejectingMonster === 'vitalio'}
                 isHighlighted={highlightedMonster === 'vitalio'}
+                skin={vitalioSkin}
+                hasBombNearby={state.fallingItems.some((i) => i.variant === 'bomb' && !i.isConsumed)}
+                isFrenzy={state.isFrenzyMode}
               />
               <Monster
                 type="capricho"
                 isEating={eatingMonster === 'capricho'}
                 isRejecting={rejectingMonster === 'capricho'}
                 isHighlighted={highlightedMonster === 'capricho'}
+                skin={caprichoSkin}
+                hasBombNearby={state.fallingItems.some((i) => i.variant === 'bomb' && !i.isConsumed)}
+                isFrenzy={state.isFrenzyMode}
               />
             </div>
 
+            {/* Trash zone */}
+            <TrashZone isHighlighted={highlightedTrash} />
+
+            {/* Divider */}
             <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px opacity-20 bg-white"
               style={{ height: `${GAME_CONFIG.monsterZoneHeightPercent}%` }}
@@ -293,19 +569,72 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
                 onQuit={handleExit}
               />
             )}
+
+            {state.phase === 'LEVEL_COMPLETE' && (
+              <LevelCompleteScreen
+                level={state.level}
+                itemsSorted={state.itemsSortedThisLevel}
+                correctItems={state.itemsCorrectThisLevel}
+                isPerfect={state.itemsSortedThisLevel > 0 && state.itemsCorrectThisLevel === state.itemsSortedThisLevel}
+                onContinue={handleContinueFromLevel}
+              />
+            )}
+
+            {/* Achievement popups */}
+            {state.newAchievements.map((achId) => (
+              <AchievementPopup
+                key={achId}
+                achievementId={achId}
+                onDismiss={() => handleDismissAchievement(achId)}
+              />
+            ))}
           </>
         )}
       </div>
 
-      {/* Phase overlays — sit on top of everything including CRT scanlines (z-60) */}
+      {/* Phase overlays */}
       {state.phase === 'START' && (
         <div className="absolute inset-0" style={{ zIndex: 70 }}>
           <GameStartScreen
             highScore={state.highScore}
             onPlay={handlePlay}
             onTutorial={handleTutorial}
+            onAchievements={() => setShowAchievements(true)}
+            onShop={() => setShowShop(true)}
+            onStats={() => setShowStats(true)}
+            onLeaderboard={() => setShowLeaderboard(true)}
+            playerProgress={playerProgress.progress}
           />
         </div>
+      )}
+
+      {showAchievements && (
+        <AchievementGallery progress={playerProgress.progress} onClose={() => setShowAchievements(false)} />
+      )}
+
+      {showShop && (
+        <MonsterShop
+          progress={playerProgress.progress}
+          onClose={() => setShowShop(false)}
+          onUnlockSkin={playerProgress.unlockSkin}
+          onUnlockTheme={playerProgress.unlockTheme}
+          onEquipSkin={playerProgress.equipSkin}
+          onEquipTheme={playerProgress.equipTheme}
+          onSpendCoins={playerProgress.spendCoins}
+        />
+      )}
+
+      {showStats && (
+        <StatsScreen progress={playerProgress.progress} accuracy={playerProgress.accuracy} onClose={() => setShowStats(false)} />
+      )}
+
+      {showLeaderboard && (
+        <LeaderboardScreen
+          entries={leaderboardEntries}
+          currentHighScore={state.highScore}
+          onClose={() => setShowLeaderboard(false)}
+          onSaveEntry={handleSaveLeaderboard}
+        />
       )}
 
       {state.phase === 'TUTORIAL' && (
@@ -323,6 +652,8 @@ export function NamVsYumGame({ onExit }: { onExit?: () => void } = {}) {
             state={state}
             onRetry={handleRetry}
             onExit={handleExit}
+            newAchievements={state.newAchievements}
+            onShowLeaderboard={() => setShowLeaderboard(true)}
           />
         </div>
       )}

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import type { MonsterType } from '../types';
-import { PICTURES } from '../constants';
+import type { MonsterType, SkinId } from '../types';
+import { PICTURES, SKIN_CONFIG } from '../constants';
 import { AssetImg } from '@/components/ui/AssetImg';
 import { cn } from '@/lib/utils';
 
@@ -9,9 +9,12 @@ interface MonsterProps {
   isEating: boolean;
   isRejecting: boolean;
   isHighlighted: boolean;
+  skin?: SkinId;
+  hasBombNearby?: boolean;
+  isFrenzy?: boolean;
 }
 
-export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterProps) {
+export function Monster({ type, isEating, isRejecting, isHighlighted, skin = 'classic', hasBombNearby, isFrenzy }: MonsterProps) {
   const { t } = useTranslation('games');
 
   const isVitalio = type === 'vitalio';
@@ -21,14 +24,14 @@ export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterP
   const idleImg = isVitalio ? PICTURES.vitalio : PICTURES.capricho;
   const eatImg = isVitalio ? PICTURES.vitalioEat : PICTURES.caprichoEat;
   const rejectImg = isVitalio ? PICTURES.vitalioReject : PICTURES.caprichoReject;
-
   const currentImg = isEating ? eatImg : isRejecting ? rejectImg : idleImg;
 
-  const emoji = isVitalio ? '🦎' : '👾';
-  const highlightColor = isVitalio
-    ? 'ring-green-400 shadow-green-400/50'
-    : 'ring-purple-400 shadow-purple-400/50';
-  const bgColor = isVitalio ? 'from-green-600 to-green-800' : 'from-purple-600 to-purple-800';
+  // Use skin config for visuals
+  const skinConfig = SKIN_CONFIG[skin];
+  const monsterSkin = isVitalio ? skinConfig?.vitalio : skinConfig?.capricho;
+  const bgColor = monsterSkin?.bg || (isVitalio ? 'from-green-600 to-green-800' : 'from-purple-600 to-purple-800');
+  const emoji = monsterSkin?.emoji || (isVitalio ? '🦎' : '👾');
+  const highlightColor = isVitalio ? 'ring-green-400 shadow-green-400/50' : 'ring-purple-400 shadow-purple-400/50';
   const labelBg = isVitalio ? 'bg-green-500' : 'bg-purple-500';
 
   return (
@@ -42,6 +45,9 @@ export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterP
           isHighlighted && `ring-4 ${highlightColor} shadow-lg drop-zone-active`,
           isEating && 'monster-eating',
           isRejecting && 'monster-rejecting',
+          hasBombNearby && 'animate-scared-shake',
+          isFrenzy && 'animate-happy-bounce',
+          !isEating && !isRejecting && !hasBombNearby && 'animate-breathing',
         )}
       >
         <AssetImg
@@ -55,6 +61,11 @@ export function Monster({ type, isEating, isRejecting, isHighlighted }: MonsterP
         {/* Glow effect when highlighted */}
         {isHighlighted && (
           <div className="absolute inset-0 rounded-xl bg-white/10 animate-pulse-scale pointer-events-none" />
+        )}
+
+        {/* Frenzy aura */}
+        {isFrenzy && (
+          <div className="absolute inset-0 rounded-xl bg-yellow-400/20 animate-pulse pointer-events-none" />
         )}
       </div>
 

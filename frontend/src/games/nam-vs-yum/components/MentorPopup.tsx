@@ -64,7 +64,7 @@ export function MentorPopup({ tip, onDismiss }: MentorPopupProps) {
 
         {/* Tap to dismiss hint */}
         <p className="pixel-font text-[6px] text-white/40 text-center mt-2">
-          tap to dismiss
+          {t('namVsYum.mentor.tapToDismiss')}
         </p>
       </div>
     </div>

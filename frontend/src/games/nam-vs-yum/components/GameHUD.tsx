@@ -11,6 +11,8 @@ interface GameHUDProps {
   comboMultiplier: number;
   level: number;
   onPause: () => void;
+  coins: number;
+  playerLevel: number;
 }
 
 export function GameHUD({
@@ -21,13 +23,15 @@ export function GameHUD({
   comboMultiplier,
   level,
   onPause,
+  coins,
+  playerLevel,
 }: GameHUDProps) {
   const { t } = useTranslation('games');
   const [prevLives, setPrevLives] = useState(lives);
   const [livesShaking, setLivesShaking] = useState(false);
   const [comboPop, setComboPop] = useState(false);
+  const [scorePop, setScorePop] = useState(false);
 
-  // Detect life lost
   useEffect(() => {
     if (lives < prevLives) {
       setLivesShaking(true);
@@ -38,7 +42,6 @@ export function GameHUD({
     setPrevLives(lives);
   }, [lives, prevLives]);
 
-  // Detect combo change
   useEffect(() => {
     if (comboMultiplier > 1) {
       setComboPop(true);
@@ -47,17 +50,37 @@ export function GameHUD({
     }
   }, [comboMultiplier]);
 
+  useEffect(() => {
+    setScorePop(true);
+    const timer = setTimeout(() => setScorePop(false), 200);
+    return () => clearTimeout(timer);
+  }, [score]);
+
   return (
     <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ zIndex: 60 }}>
       <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
-        {/* Score + Combo */}
+        {/* Score + Level + Coins */}
         <div className="flex flex-col items-start gap-0.5 pointer-events-none">
           <div className="flex items-center gap-1.5">
             <span className="pixel-font text-yellow-400 text-[8px] sm:text-[10px] uppercase">
               {t('namVsYum.hud.score')}
             </span>
-            <span className="pixel-font text-white text-xs sm:text-sm">
+            <span className={cn(
+              'pixel-font text-white text-xs sm:text-sm',
+              scorePop && 'animate-score-pop'
+            )}>
               {score}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="pixel-font text-cyan-300 text-[7px] sm:text-[9px]">
+              {t('namVsYum.hud.level', { level })}
+            </span>
+            <span className="pixel-font text-purple-300 text-[7px] sm:text-[9px]">
+              Lv.{playerLevel}
+            </span>
+            <span className="pixel-font text-yellow-400 text-[7px] sm:text-[9px]">
+              💰{coins}
             </span>
           </div>
           {combo >= 2 && (
@@ -70,13 +93,6 @@ export function GameHUD({
               </span>
             </div>
           )}
-        </div>
-
-        {/* Level */}
-        <div className="pointer-events-none">
-          <span className="pixel-font text-cyan-300 text-[7px] sm:text-[9px] uppercase">
-            {t('namVsYum.hud.level', { level })}
-          </span>
         </div>
 
         {/* Lives + Pause */}

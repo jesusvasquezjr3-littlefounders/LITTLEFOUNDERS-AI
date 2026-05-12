@@ -52,7 +52,11 @@
       "playButton": "¡JUGAR!",
       "highScore": "Mejor Puntuación: {{score}}",
       "howToPlay": "¿Cómo Jugar?",
-      "description": "¡Arrastra cada objeto al monstruo correcto!"
+      "description": "¡Arrastra cada objeto al monstruo correcto!",
+      "achievements": "Logros",
+      "shop": "Tienda",
+      "stats": "Estadísticas",
+      "leaderboard": "Tabla"
     },
     "tutorial": {
       "step1Title": "Conoce a los Monstruos",
@@ -151,6 +155,216 @@
       "retry": "¡Jugar de Nuevo!",
       "exit": "Salir",
       "newHighScore": "¡Nuevo Récord!"
+    },
+    "mentor": {
+      "tapToDismiss": "Toca para cerrar",
+      "drRho": {
+        "name": "Dr. Rho",
+        "tip1": "¡Ojo! Una necesidad es algo indispensable para vivir, como el agua. Un deseo es algo que nos gusta pero podemos esperar.",
+        "tip2": "El agua, la comida y un techo son necesidades básicas. ¡Sin ellas no podemos vivir!",
+        "tip3": "Piensa: ¿puedo vivir sin esto? Si la respuesta es sí, es un capricho."
+      },
+      "zara": {
+        "name": "Zara",
+        "tip1": "¡Excelente presupuesto! Al identificar bien tus gastos, tu capacidad de ahorro crece.",
+        "tip2": "Los caprichos están bien de vez en cuando, ¡pero primero lo necesario!",
+        "tip3": "Ser inteligente con tu dinero es un superpoder. ¡Tú puedes!"
+      },
+      "liruf": {
+        "name": "Liruf",
+        "tip1": "¡Casi lo logras! Yo también compré demasiados juguetes antes de comer. ¡Vamos otra vez!",
+        "tip2": "¡Wow, vas genial! ¡Sigue arrastrando al monstruo correcto!",
+        "tip3": "¡Los monstruos tienen hambre! ¡Dales de comer correctamente!"
+      },
+      "dina": {
+        "name": "Dina",
+        "tip1": "¿Te quedaste sin monedas? ¡No pasa nada! Intenta de nuevo y recuerda: primero lo vital, luego la diversión.",
+        "tip2": "Cada decisión cuenta. ¡Las necesidades mantienen tu cuerpo y mente saludables!",
+        "tip3": "Los caprichos son divertidos, pero no son esenciales. ¡Prioriza!"
+      }
+    },
+    "powerUps": {
+      "names": {
+        "freezeTime": "Congelar",
+        "scoreBoost": "Multiplicador",
+        "extraLife": "Vida Extra",
+        "magnet": "Imán",
+        "clearScreen": "Limpieza",
+        "slowMotion": "Cámara Lenta"
+      },
+      "descriptions": {
+        "freezeTime": "Congela el tiempo por 5 segundos",
+        "scoreBoost": "Duplica los puntos por 10 segundos",
+        "extraLife": "Recupera 1 corazón",
+        "magnet": "Atrae items automáticamente por 8 segundos",
+        "clearScreen": "Elimina todos los items sin penalización",
+        "slowMotion": "Ralentiza la caída al 30% por 6 segundos"
+      }
+    },
+    "items": {
+      "water": "Agua",
+      "food": "Comida",
+      "medicine": "Medicina",
+      "house": "Casa",
+      "internet": "Internet",
+      "doctor": "Doctor",
+      "bed": "Cama",
+      "school": "Escuela",
+      "clothing": "Ropa",
+      "electricity": "Electricidad",
+      "toothbrush": "Cepillo de dientes",
+      "transport": "Transporte",
+      "shower": "Ducha",
+      "fruits": "Frutas",
+      "glasses": "Lentes",
+      "wheelchair": "Silla de ruedas",
+      "hearingAid": "Audífono",
+      "toy": "Osito de Peluche",
+      "candy": "Dulces",
+      "videogame": "Videojuego",
+      "iceCream": "Helado Gigante",
+      "ball": "Pelota",
+      "chocolate": "Chocolate",
+      "puzzle": "Rompecabezas",
+      "skateboard": "Patineta",
+      "doll": "Muñeca",
+      "stickers": "Calcomanías",
+      "soda": "Refresco",
+      "kite": "Cometa",
+      "paintSet": "Set de Pintura",
+      "remoteCar": "Carro a Control",
+      "sunglasses": "Lentes de Sol",
+      "perfume": "Perfume",
+      "robot": "Robot de Juguete",
+      "balloon": "Globo",
+      "jewelry": "Joyería",
+      "designerBag": "Bolso de Diseñador",
+      "fancyWatch": "Reloj de Lujo",
+      "yacht": "Yate",
+      "spaceship": "Nave Espacial",
+      "crown": "Corona"
+    },
+    "achievements": {
+      "title": "Logros",
+      "unlocked": "¡Logro Desbloqueado!",
+      "unlockedCount": "desbloqueados",
+      "reward": "Recompensa",
+      "firstSteps": { "title": "Primeros Pasos", "description": "Clasifica tu primer item correctamente" },
+      "sorterApprentice": { "title": "Aprendiz", "description": "Clasifica 50 items en total" },
+      "sorterExpert": { "title": "Experto", "description": "Clasifica 500 items en total" },
+      "sorterMaster": { "title": "Maestro", "description": "Clasifica 2000 items en total" },
+      "comboStarter": { "title": "Iniciado", "description": "Alcanza combo x2" },
+      "comboWarrior": { "title": "Guerrero", "description": "Alcanza combo x5" },
+      "comboLegend": { "title": "Leyenda", "description": "Alcanza combo x10" },
+      "perfectLevel": { "title": "Nivel Perfecto", "description": "Completa un nivel sin errores" },
+      "highScorer": { "title": "Puntuador", "description": "Alcanza 1000 puntos" },
+      "scoreChampion": { "title": "Campeón", "description": "Alcanza 5000 puntos" },
+      "scoreLegend": { "title": "Leyenda del Score", "description": "Alcanza 10000 puntos" },
+      "survivor": { "title": "Sobreviviente", "description": "Alcanza el nivel 10" },
+      "speedDemon": { "title": "Velocista", "description": "Clasifica 10 items en 20 segundos" },
+      "mentorStudent": { "title": "Estudiante", "description": "Recibe 20 consejos de mentores" },
+      "easterEggHunter": { "title": "Cazador", "description": "Activa un easter egg secreto" },
+      "powerUpUser": { "title": "Poderoso", "description": "Usa 10 power-ups" },
+      "bombDefuser": { "title": "Desactivador", "description": "Desactiva 5 bombas" },
+      "goldenTouch": { "title": "Toque Dorado", "description": "Clasifica 10 items dorados" },
+      "konamiMaster": { "title": "Maestro Konami", "description": "Activa el código secreto" }
+    },
+    "levelComplete": {
+      "title": "¡Nivel {{level}} Completado!",
+      "itemsSorted": "Items: {{count}}",
+      "perfectSorts": "Perfectos: {{count}}",
+      "perfectBonus": "¡+50 Bonus por nivel perfecto!",
+      "continue": "Continuar"
+    },
+    "shop": {
+      "title": "Tienda",
+      "coins": "Monedas",
+      "skinsTitle": "Skins de Monstruos",
+      "themesTitle": "Temas de Fondo",
+      "equip": "Equipar",
+      "buy": "Comprar",
+      "locked": "Bloqueado",
+      "back": "Volver",
+      "skins": {
+        "vitalioClassic": "Vitalio Clásico",
+        "vitalioGold": "Vitalio Dorado",
+        "vitalioNinja": "Vitalio Ninja",
+        "vitalioAstronaut": "Vitalio Astronauta",
+        "caprichoClassic": "Capricho Clásico",
+        "caprichoGold": "Capricho Dorado",
+        "caprichoPirate": "Capricho Pirata",
+        "caprichoRobot": "Capricho Robot"
+      },
+      "themes": {
+        "sky": "Cielo Clásico",
+        "forest": "Bosque Mágico",
+        "space": "Espacio Exterior",
+        "city": "Ciudad Pixel"
+      }
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "gamesPlayed": "Partidas",
+      "highScore": "Mejor Puntuación",
+      "totalItems": "Items Clasificados",
+      "maxCombo": "Combo Máximo",
+      "highestLevel": "Nivel Máximo",
+      "timePlayed": "Tiempo Jugado",
+      "accuracy": "Precisión",
+      "achievements": "Logros",
+      "playerLevel": "Nivel de Jugador"
+    },
+    "leaderboard": {
+      "title": "Tabla de Puntuaciones",
+      "yourRank": "Tu posición",
+      "enterName": "Tu nombre",
+      "saveScore": "Guardar Puntuación",
+      "noScores": "Aún no hay puntuaciones",
+      "newHighScore": "¡Nuevo Récord!"
+    },
+    "weather": {
+      "sunny": "Soleado",
+      "rainy": "Lluvia",
+      "storm": "Tormenta",
+      "night": "Noche",
+      "goldenHour": "Hora Dorada"
+    },
+    "frenzy": {
+      "modeActive": "¡MODO FRENESÍ!",
+      "barLabel": "Frenesí"
+    },
+    "easterEggs": {
+      "konamiActivated": "¡MODO ARCOÍRIS ACTIVADO!",
+      "unicornWrong": "¡Los unicornios no son necesarios!",
+      "unicornRight": "¡Un capricho mágico!"
+    },
+    "feedback": {
+      "correct": "¡Correcto!",
+      "incorrect": "¡Ups! Eso no va ahí.",
+      "comboStart": "¡Racha x{{count}}!",
+      "comboBreak": "¡Racha perdida!",
+      "perfectStreak": "¡Racha Perfecta!",
+      "moneyWasted": "¡Dinero desperdiciado!",
+      "bombDefused": "¡Bomba desactivada!",
+      "bombExploded": "¡BOOM!",
+      "mysteryRevealed": "¡Misterio revelado!",
+      "goldenCollected": "¡Dorado!",
+      "rainbowCollected": "¡Arcoíris!"
+    },
+    "trashZone": {
+      "label": "PAPELERA"
+    },
+    "gameOver": {
+      "title": "¡Fin del Juego!",
+      "finalScore": "Puntuación Final",
+      "itemsSorted": "Objetos clasificados: {{count}}",
+      "maxCombo": "Racha máxima: x{{combo}}",
+      "levelReached": "Nivel alcanzado: {{level}}",
+      "retry": "¡Jugar de Nuevo!",
+      "exit": "Salir",
+      "newHighScore": "¡Nuevo Récord!",
+      "leaderboard": "Tabla de Puntos",
+      "newAchievements": "Nuevos Logros"
     },
     "pause": {
       "title": "Pausa",

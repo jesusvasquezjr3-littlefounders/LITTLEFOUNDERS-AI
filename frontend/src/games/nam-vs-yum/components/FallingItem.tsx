@@ -16,13 +16,10 @@ interface FallingItemProps {
 export function FallingItemComponent({ item, definition, onDragStart, onDragMove, onDragEnd }: FallingItemProps) {
   const { t } = useTranslation('games');
   const elementRef = useRef<HTMLDivElement>(null);
-
-  // Track dragging state locally with a ref so pointer events work
-  // immediately without waiting for React re-render (stale closure fix).
   const isDraggingRef = useRef(false);
 
   const size = window.innerWidth < 640 ? GAME_CONFIG.itemSizeMobilePx : GAME_CONFIG.itemSizePx;
-  const itemName = t(`namVsYum.items.${definition.key}`);
+  const itemName = t(`namVsYum.items.${definition.key}`, { defaultValue: definition.emoji });
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -32,18 +29,13 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
 
       const el = elementRef.current;
       if (el) {
-        try {
-          el.setPointerCapture(e.pointerId);
-        } catch {
-          // Fallback: some browsers may not support this
-        }
+        try { el.setPointerCapture(e.pointerId); } catch { /* ignore */ }
       }
 
       const rect = el?.getBoundingClientRect();
       const offsetX = rect ? e.clientX - rect.left - rect.width / 2 : 0;
       const offsetY = rect ? e.clientY - rect.top - rect.height / 2 : 0;
 
-      // Set local ref synchronously so subsequent pointer events work instantly
       isDraggingRef.current = true;
       onDragStart(item.id, offsetX, offsetY);
     },
@@ -52,7 +44,6 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      // Use the synchronous ref — not the async prop from state
       if (!isDraggingRef.current) return;
       e.preventDefault();
       e.stopPropagation();
@@ -66,16 +57,11 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
       if (!isDraggingRef.current) return;
       e.preventDefault();
       e.stopPropagation();
-
       isDraggingRef.current = false;
 
       const el = elementRef.current;
       if (el) {
-        try {
-          el.releasePointerCapture(e.pointerId);
-        } catch {
-          // ignore
-        }
+        try { el.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
       }
 
       onDragEnd(item.id);
@@ -92,10 +78,31 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
     [item.id, onDragEnd],
   );
 
-  // Sync ref when item gets consumed or drag ends externally (e.g. from reducer)
   if (!item.isDragging && isDraggingRef.current) {
     isDraggingRef.current = false;
   }
+
+  // Variant styles
+  const variantClasses = {
+    normal: 'bg-slate-800/80 border-slate-600',
+    golden: 'bg-yellow-900/80 border-yellow-400 animate-golden-pulse',
+    bomb: 'bg-red-900/80 border-red-500 animate-bomb-pulse',
+    mystery: 'bg-indigo-900/80 border-indigo-400 animate-mystery-sparkle',
+    rainbow: 'bg-gradient-to-br from-red-500 via-green-500 to-blue-500 border-white animate-rainbow-shift',
+    unicorn: 'bg-pink-900/80 border-pink-400 animate-unicorn-magic',
+  };
+
+  const glowColors = {
+    normal: definition.category === 'need' ? 'shadow-green-500/20' : 'shadow-purple-500/20',
+    golden: 'shadow-yellow-400/60',
+    bomb: 'shadow-red-500/60',
+    mystery: 'shadow-indigo-400/60',
+    rainbow: 'shadow-white/60',
+    unicorn: 'shadow-pink-400/60',
+  };
+
+  const showEmoji = item.variant !== 'normal' || !definition.imageUrl;
+  const displayEmoji = item.variant === 'unicorn' ? '🦄' : item.variant === 'bomb' ? '💣' : item.variant === 'mystery' ? '❓' : item.variant === 'rainbow' ? '🌈' : definition.emoji;
 
   return (
     <div
@@ -123,18 +130,36 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
     >
       <div
         className={cn(
-          'w-full h-full rounded-lg flex items-center justify-center',
-          'bg-slate-800/80 border-2 border-slate-600',
+          'w-full h-full rounded-lg flex items-center justify-center border-2',
           'shadow-md',
+          variantClasses[item.variant],
+          glowColors[item.variant],
+          item.isDragging && 'shadow-xl',
         )}
       >
-        <AssetImg
-          assetPath={definition.imageUrl}
-          alt={itemName}
-          className="w-[80%] h-[80%] object-contain pixel-art"
-          draggable={false}
-          fallback={<span className="text-2xl sm:text-3xl">{definition.emoji}</span>}
-        />
+        {showEmoji ? (
+          <span className="text-2xl sm:text-3xl">{displayEmoji}</span>
+        ) : (
+          <AssetImg
+            assetPath={definition.imageUrl}
+            alt={itemName}
+            className="w-[80%] h-[80%] object-contain pixel-art"
+            draggable={false}
+            fallback={<span className="text-2xl sm:text-3xl">{displayEmoji}</span>}
+          />
+        )}
+
+        {/* Bomb timer */}
+        {item.variant === 'bomb' && item.bombTimer !== undefined && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span className={cn(
+              'pixel-font text-[8px] font-bold',
+              item.bombTimer <= 2 ? 'text-red-500 animate-pulse' : 'text-orange-400'
+            )}>
+              {Math.ceil(item.bombTimer)}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Item name label (visible when dragging) */}
