@@ -105,11 +105,7 @@ export default function FaqPage() {
                   <div className="absolute inset-0 z-10 rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/10 pointer-events-none" />
                   <ShowreelPlayer playerRef={playerRef} />
                 </div>
-                {/* Floating label */}
-                <div className="absolute -bottom-3 left-6 flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-lg text-xs font-bold text-gray-700 dark:text-gray-300">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  {t('hero.badge')}
-                </div>
+
               </div>
             </div>
 

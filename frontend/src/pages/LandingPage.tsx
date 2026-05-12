@@ -61,10 +61,10 @@ const LandingPage = () => {
   }, []);
 
   const problemCards = [
-    { emoji: '📉', bg: 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50', border: 'border-red-100 dark:border-red-900/40', accent: 'bg-red-500', title: t('problem.card1_title'), text: t('problem.card1_text') },
-    { emoji: '😟', bg: 'bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-950/50', border: 'border-orange-100 dark:border-orange-900/40', accent: 'bg-orange-500', title: t('problem.card2_title'), text: t('problem.card2_text') },
-    { emoji: '💤', bg: 'bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/60', border: 'border-slate-100 dark:border-slate-700/60', accent: 'bg-slate-400', title: t('problem.card3_title'), text: t('problem.card3_text') },
-    { emoji: '💸', bg: 'bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-950/50', border: 'border-violet-100 dark:border-violet-900/40', accent: 'bg-violet-500', title: t('problem.card4_title'), text: t('problem.card4_text') },
+    { emoji: '📉', color: 'from-red-400 to-rose-500', shadow: 'shadow-red-200 dark:shadow-red-900/40', title: t('problem.card1_title'), text: t('problem.card1_text') },
+    { emoji: '😟', color: 'from-orange-400 to-amber-500', shadow: 'shadow-orange-200 dark:shadow-orange-900/40', title: t('problem.card2_title'), text: t('problem.card2_text') },
+    { emoji: '💤', color: 'from-slate-400 to-gray-500', shadow: 'shadow-slate-200 dark:shadow-slate-900/40', title: t('problem.card3_title'), text: t('problem.card3_text') },
+    { emoji: '💸', color: 'from-violet-400 to-purple-500', shadow: 'shadow-violet-200 dark:shadow-violet-900/40', title: t('problem.card4_title'), text: t('problem.card4_text') },
   ];
 
   const featureCards = [
@@ -268,14 +268,13 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
             {problemCards.map((card, i) => (
-              <div key={i} className={`group relative p-6 rounded-2xl border ${card.bg} ${card.border} hover:scale-[1.03] transition-all duration-300 hover:shadow-xl overflow-hidden`}>
-                {/* Top accent bar */}
-                <div className={`absolute top-0 left-0 right-0 h-1 ${card.accent} rounded-t-2xl`} />
-                <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center mb-4 text-3xl group-hover:scale-110 transition-transform">
+              <div key={i} className={`card-tilt relative bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-lg ${card.shadow} hover:shadow-2xl`}>
+                {/* Gradient icon circle */}
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
                   {card.emoji}
                 </div>
-                <h3 className="landing-heading font-black text-lg text-gray-900 dark:text-white mb-2">{card.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{card.text}</p>
+                <h3 className="landing-heading font-black text-xl mb-2 text-gray-900 dark:text-white">{card.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.text}</p>
               </div>
             ))}
           </div>

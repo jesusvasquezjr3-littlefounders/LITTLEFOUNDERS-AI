@@ -29,7 +29,7 @@
         "subtitle": "Así te personalizamos la experiencia perfecta.",
         "placeholder": "Escribe tu edad...",
         "dina_done": "¡{{age}} años! Perfecto, Dina ya tiene todo listo para ti.",
-        "dina_bubble": "¡Hola {{name}}! 🧡 ¿Cuántos años tienes? ¡Secreto entre nosotras! 🤫",
+        "dina_bubble": "¡Hola {{name}}! 🧡 ¿Cuántos años tienes? ¡Será nuestro secreto! 🤫",
         "dina_typing_bubble": "Ya veo... 📋",
         "dina_error_empty_bubble": "{{name}}, ¿tu edad? Mi antena no adivina 🙃",
         "dina_error_range_bubble": "¿{{age}} años? 😲 ¡Solo de 6 a 100, como los humanos! 🦕",
