@@ -257,11 +257,21 @@ const LandingPage = () => {
             </div>
             <h2 className="landing-heading text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight">
               {t('problem.title_part1')}{' '}
-              <span className="relative inline-block text-gray-400 line-through decoration-red-500 decoration-4">
-                {t('problem.title_part2')}
+              <span className="relative inline-block">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#ff6b6b] to-[#7048e8]">{t('problem.title_part2')}</span>
+                {/* Underline squiggle */}
+                <svg className="absolute top-[75%] left-0 w-full z-0" viewBox="0 0 200 12" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                  <path d="M2 8 C40 2, 80 12, 120 6 C160 0, 185 10, 198 6" stroke="url(#squiggle-grad-problem)" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+                  <defs>
+                    <linearGradient id="squiggle-grad-problem" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#ff6b6b"/>
+                      <stop offset="100%" stopColor="#7048e8"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
               </span>
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="relative z-10 mt-8 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
               <Trans i18nKey="problem.subtitle" ns="landing" />
             </p>
           </div>
