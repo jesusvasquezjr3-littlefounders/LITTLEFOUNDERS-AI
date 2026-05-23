@@ -27,9 +27,12 @@ const Login = () => {
     const user = localStorage.getItem('user');
 
     if (token || user) {
-      // Tutor/parent stays on dashboard; everyone else goes to /learn
       const userType = JSON.parse(localStorage.getItem('user') || '{}')?.user_type;
-      navigate(userType === 'tutor' || userType === 'parent' ? '/dashboard' : '/learn');
+      navigate(
+        userType === 'admin' ? '/admin' :
+        userType === 'tutor' || userType === 'parent' ? '/dashboard' :
+        '/learn'
+      );
     }
   }, [navigate]);
 
@@ -75,7 +78,11 @@ const Login = () => {
         });
 
         const userType = JSON.parse(localStorage.getItem('user') || '{}')?.user_type;
-        navigate(userType === 'tutor' || userType === 'parent' ? '/dashboard' : '/learn');
+        navigate(
+          userType === 'admin' ? '/admin' :
+          userType === 'tutor' || userType === 'parent' ? '/dashboard' :
+          '/learn'
+        );
       } else {
         playSound('auth_error');
         toast({
@@ -99,7 +106,10 @@ const Login = () => {
     playSound('ui_tap');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: { prompt: 'select_account' },
+      },
     });
     if (error) {
       toast({

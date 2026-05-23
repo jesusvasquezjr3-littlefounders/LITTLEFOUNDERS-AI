@@ -119,7 +119,8 @@ const AuthCallback = () => {
                                     className: 'bg-green-50 border-green-200 text-green-800',
                                 });
                             }
-                            navigate('/learn');
+                            const ut = data.user?.user_type;
+                            navigate(ut === 'admin' ? '/admin' : ut === 'tutor' || ut === 'parent' ? '/dashboard' : '/learn');
                         } else {
                             throw new Error(getTranslatedError(data.detail, t));
                         }
@@ -167,7 +168,8 @@ const AuthCallback = () => {
                                 className: 'bg-green-50 border-green-200 text-green-800',
                             });
                         }
-                        navigate('/learn');
+                        const ut = data.user?.user_type;
+                        navigate(ut === 'admin' ? '/admin' : ut === 'tutor' || ut === 'parent' ? '/dashboard' : '/learn');
                     } else {
                         throw new Error(getTranslatedError(data.detail, t));
                     }

@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Rocket, Star, Zap, Heart } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Rocket, Star, Zap, Heart, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { savePendingMerge, clearPendingMerge } from "@/lib/guestProfile";
@@ -23,6 +23,10 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [sentToEmail, setSentToEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
+  const [resendDone, setResendDone] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { playSound } = useSound();
@@ -95,12 +99,8 @@ const Register = () => {
       // If email confirmation is required, session will be null
       if (!authData.session) {
         playSound('auth_success');
-        toast({
-          title: t('auth:messages.register_success'),
-          description: t('auth:messages.check_email'),
-          className: "bg-green-50 border-green-200 text-green-800"
-        });
-        setTimeout(() => navigate('/login'), 3000);
+        setSentToEmail(formData.email);
+        setEmailSent(true);
         return;
       }
 
@@ -192,7 +192,10 @@ const Register = () => {
     playSound('ui_tap');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: { prompt: 'select_account' },
+      },
     });
     if (error) {
       toast({
@@ -217,6 +220,87 @@ const Register = () => {
       });
     }
   };
+
+  const handleResend = async () => {
+    if (isResending || resendDone) return;
+    setIsResending(true);
+    try {
+      await supabase.auth.resend({ type: 'signup', email: sentToEmail });
+      setResendDone(true);
+      playSound('auth_success');
+    } catch {
+      // resend failures are non-critical — Supabase rate-limits automatically
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  if (emailSent) {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900">
+        <div className="absolute top-4 right-4 z-20">
+          <LanguageSelector variant="full" />
+        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-sm">
+            <GlassPanel variant="strong" className="p-8 space-y-6 text-center">
+              {/* Icon */}
+              <div className="flex justify-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900/40 dark:to-blue-900/40 flex items-center justify-center shadow-lg">
+                  <Send className="w-9 h-9 text-cyan-600 dark:text-cyan-400" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-3">
+                <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t('auth:verify_email.title')}
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {t('auth:verify_email.subtitle')}
+                </p>
+                <p className="text-sm font-bold text-cyan-700 dark:text-cyan-400 break-all bg-cyan-50 dark:bg-cyan-900/20 rounded-lg px-3 py-2">
+                  {sentToEmail}
+                </p>
+              </div>
+
+              {/* Instruction */}
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                {t('auth:verify_email.instruction')}
+              </p>
+
+              {/* Spam note */}
+              <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                {t('auth:verify_email.spam_note')}
+              </p>
+
+              {/* Actions */}
+              <div className="space-y-3 pt-2">
+                <Button
+                  onClick={() => navigate('/login')}
+                  className="w-full h-11 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-600 text-white font-bold rounded-xl shadow-lg"
+                >
+                  {t('auth:verify_email.go_to_login')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleResend}
+                  disabled={isResending || resendDone}
+                  className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400"
+                >
+                  {resendDone
+                    ? t('auth:verify_email.resend_sent')
+                    : isResending
+                    ? '...'
+                    : t('auth:verify_email.resend')}
+                </Button>
+              </div>
+            </GlassPanel>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900">
