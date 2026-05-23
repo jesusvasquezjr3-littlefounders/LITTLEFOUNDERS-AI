@@ -191,8 +191,13 @@ const AuthCallback = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
-            <div className="text-center space-y-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="text-center space-y-2">
+                <dotlottie-wc
+                    src="https://lottie.host/e956c055-1138-4cbb-9eef-41241957ecf5/gG4DzYr6u6.lottie"
+                    style={{ width: '300px', height: '300px' }}
+                    autoplay
+                    loop
+                />
                 <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
                     {t('auth:login.loading')}
                 </h2>
