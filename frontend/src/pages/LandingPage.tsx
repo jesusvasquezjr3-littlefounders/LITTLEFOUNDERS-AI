@@ -136,7 +136,7 @@ const LandingPage = () => {
             <div className="relative z-30 flex-1 text-center lg:text-left space-y-5 max-w-xl">
 
               {/* Live badge */}
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-sm border border-amber-200 dark:border-amber-700/50 shadow-lg animate-fade-in-up">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-badge border-amber-200/40 dark:border-amber-700/30 shadow-lg animate-fade-in-up">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
@@ -176,7 +176,7 @@ const LandingPage = () => {
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" size="lg" className="h-14 px-8 text-lg rounded-2xl border-2 border-gray-300 dark:border-slate-700 bg-white/60 dark:bg-white/5 backdrop-blur-sm hover:bg-white dark:hover:bg-white/10 font-bold text-gray-700 dark:text-gray-200 w-full sm:w-auto transition-all">
+                <Button asChild variant="ghost" size="lg" className="glass-btn-ghost h-14 px-8 text-lg rounded-2xl font-bold text-gray-700 dark:text-gray-200 w-full sm:w-auto transition-all">
                   <Link to="/login">{t('hero.login_link')}</Link>
                 </Button>
               </div>
@@ -188,7 +188,7 @@ const LandingPage = () => {
                   { emoji: '🔒', label: t('hero.trust_secure') },
                   { emoji: '🌍', label: t('hero.trust_multilang') },
                 ].map((pill) => (
-                  <span key={pill.label} className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/70 dark:bg-white/10 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 backdrop-blur-sm">
+                  <span key={pill.label} className="text-xs font-semibold px-3 py-1.5 rounded-full glass-pill text-gray-600 dark:text-gray-300 border-gray-200/30 dark:border-slate-700/20">
                     {pill.emoji} {pill.label}
                   </span>
                 ))}
@@ -211,7 +211,7 @@ const LandingPage = () => {
         </div>
 
         {/* Language switcher bar */}
-        <div className="relative z-10 w-full py-4 border-t border-amber-200/50 dark:border-slate-700/50 bg-white/40 dark:bg-black/20 backdrop-blur-xl mt-auto">
+        <div className="relative z-10 w-full py-4 border-t border-amber-200/50 dark:border-slate-700/50 glass-panel mt-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
             <h3 className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-500 mb-2 sm:mb-3 uppercase tracking-[0.2em]">
               {t('language.title')}
@@ -278,7 +278,7 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
             {problemCards.map((card, i) => (
-              <div key={i} className={`card-tilt relative bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-lg ${card.shadow} hover:shadow-2xl`}>
+              <div key={i} className={`card-tilt relative glass-card rounded-3xl p-6 hover:shadow-2xl`}>
                 {/* Gradient icon circle */}
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
                   {card.emoji}
@@ -333,7 +333,7 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featureCards.map((card, i) => (
-              <div key={i} className={`card-tilt relative bg-white dark:bg-slate-800 rounded-3xl p-6 border border-gray-100 dark:border-slate-700 shadow-lg ${card.shadow} hover:shadow-2xl`}>
+              <div key={i} className={`card-tilt relative glass-card rounded-3xl p-6 hover:shadow-2xl`}>
                 {card.badge && (
                   <div className="absolute top-4 right-4 bg-pink-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
                     {card.badge}

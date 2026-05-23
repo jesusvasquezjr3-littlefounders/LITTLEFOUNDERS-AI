@@ -7,7 +7,7 @@ import { ArrowRight, Star, Users, Gamepad2, Trophy } from "lucide-react";
 /* ── Stat chip ─────────────────────────────────────────────────────────────── */
 function StatChip({ emoji, value, label }: { emoji: string; value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 px-5 py-3 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-sm shadow-sm">
+    <div className="flex flex-col items-center gap-0.5 px-5 py-3 rounded-2xl glass-chip">
       <span className="text-xl">{emoji}</span>
       <span className="text-gray-900 dark:text-white font-black text-lg leading-none">{value}</span>
       <span className="text-gray-500 dark:text-white/50 text-[11px] font-medium">{label}</span>

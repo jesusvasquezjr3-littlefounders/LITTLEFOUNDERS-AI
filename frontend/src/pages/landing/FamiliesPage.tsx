@@ -179,7 +179,7 @@ export default function FamiliesPage() {
               <div className="space-y-6">
 
                 {/* Coming-soon badge */}
-                <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-sm border border-amber-300 dark:border-amber-700/50 shadow-lg animate-fade-in-up">
+                <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-badge border-amber-300/40 dark:border-amber-700/30 shadow-lg animate-fade-in-up">
                   <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <span className="text-sm font-bold text-amber-800 dark:text-amber-300">{t('families.hero.coming_soon_label')}</span>
                 </div>
@@ -216,7 +216,7 @@ export default function FamiliesPage() {
                     { n: 2, icon: '✅', text: t('families.hero.step_2') },
                     { n: 3, icon: '🎁', text: t('families.hero.step_3') },
                   ].map(step => (
-                    <div key={step.n} className="flex items-center gap-3 p-3 rounded-2xl bg-white/70 dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700/50 backdrop-blur-sm hover:shadow-md transition-all">
+                    <div key={step.n} className="flex items-center gap-3 p-3 rounded-2xl glass-card hover:shadow-md transition-all">
                       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 text-white text-xs font-black flex items-center justify-center shadow-md flex-shrink-0">{step.n}</div>
                       <span className="text-base mr-1">{step.icon}</span>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{step.text}</span>

@@ -16,7 +16,7 @@ function ActiveCard({ t }: { t: any }) {
   ];
 
   return (
-    <div className="relative flex flex-col rounded-3xl overflow-hidden shadow-2xl border border-orange-200/60 dark:border-transparent bg-white dark:bg-[#1a0d3d]">
+    <div className="relative flex flex-col rounded-3xl overflow-hidden shadow-2xl glass-card border-orange-200/60 dark:border-transparent">
       {/* Rainbow top strip */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #f97316, #ec4899, #a855f7, #3b82f6)' }} />
 

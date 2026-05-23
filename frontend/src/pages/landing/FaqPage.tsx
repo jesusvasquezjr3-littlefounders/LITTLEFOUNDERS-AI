@@ -114,7 +114,7 @@ export default function FaqPage() {
                     const Icon = item.icon;
                     return (
                       <AccordionItem key={item.id} value={item.id}
-                        className="rounded-2xl border border-gray-200/60 dark:border-slate-700/50 bg-white dark:bg-slate-800/60 shadow-sm overflow-hidden group !border-b-0">
+                        className="rounded-2xl glass-card shadow-sm overflow-hidden group !border-b-0">
                         <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
                           <div className="flex items-center gap-3 w-full pr-2">
                             <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm flex-shrink-0`}>

@@ -63,7 +63,7 @@ export function GamifiedLearningSection() {
           <div className="flex-1 space-y-6 text-center md:text-left order-1">
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold uppercase tracking-widest bg-indigo-100 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/35 text-indigo-700 dark:text-indigo-300">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-badge text-sm font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 border-indigo-200/40 dark:border-indigo-500/25">
               <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-pulse" />
               {t("solution.badge")}
             </div>
@@ -111,7 +111,7 @@ export function GamifiedLearningSection() {
             <div className="flex flex-wrap gap-2.5 justify-center md:justify-start pt-2">
               {MODULE_PILLS.map((pill) => (
                 <span key={pill.key}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border ${pill.bg} ${pill.border} ${pill.text} backdrop-blur-sm transition-all hover:scale-105`}>
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold ${pill.text} glass-pill transition-all hover:scale-105`}>
                   <span className={`w-4 h-4 rounded-full bg-gradient-to-br ${pill.color} flex items-center justify-center text-[9px]`}>{pill.emoji}</span>
                   {t(pill.key)}
                 </span>
