@@ -1,11 +1,9 @@
 import React from 'react';
-import { motion } from "framer-motion";
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, Zap, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AnimatedSection, AnimatedStagger, AnimatedItem } from '@/components/ui/AnimatedSection';
 
 /* ── Active tier card ──────────────────────────────────────────────────────── */
 function ActiveCard({ t }: { t: any }) {
@@ -172,7 +170,7 @@ export default function PricingPage() {
       {/* ══════════════════════════════════════════════════════
           PRICING CARDS — light bg in light mode
       ══════════════════════════════════════════════════════ */}
-      <AnimatedSection as="section" className="relative py-20 px-4 overflow-hidden bg-amber-50 dark:bg-slate-900">
+      <section className="relative py-20 px-4 overflow-hidden bg-amber-50 dark:bg-slate-900">
 
         {/* Ambient glow orbs */}
         <div className="absolute inset-0 pointer-events-none">
@@ -191,17 +189,17 @@ export default function PricingPage() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto pt-8">
-          <AnimatedStagger className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            <AnimatedItem><ActiveCard t={t} /></AnimatedItem>
-            <AnimatedItem><GhostCard titleKey="pricing.tier2_title" t={t} /></AnimatedItem>
-            <AnimatedItem><GhostCard titleKey="pricing.tier3_title" t={t} /></AnimatedItem>
-          </AnimatedStagger>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            <ActiveCard t={t} />
+            <GhostCard titleKey="pricing.tier2_title" t={t} />
+            <GhostCard titleKey="pricing.tier3_title" t={t} />
+          </div>
 
           <p className="text-center text-sm text-gray-400 dark:text-white/25 mt-10 font-medium">
             {t('hero.cta_subtext')}
           </p>
         </div>
-      </AnimatedSection>
+      </section>
 
       </div>
     </LandingLayout>

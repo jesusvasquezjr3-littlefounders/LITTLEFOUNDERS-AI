@@ -1,8 +1,6 @@
 import React from "react";
 import { LandingNavbar } from "./LandingNavbar";
 import { LandingFooter } from "./LandingFooter";
-import { LiquidGlassBackground } from "@/components/ui/LiquidGlassBackground";
-import { PageTransition } from "@/components/ui/PageTransition";
 
 interface LandingLayoutProps {
     children: React.ReactNode;
@@ -11,15 +9,12 @@ interface LandingLayoutProps {
 
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children, hideCTA = false }) => {
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 font-sans selection:bg-pink-100 selection:text-pink-900 dark:selection:bg-pink-900 dark:selection:text-pink-100 transition-colors duration-300 relative">
-            <LiquidGlassBackground />
+        <div className="min-h-screen bg-white dark:bg-slate-950 font-sans selection:bg-pink-100 selection:text-pink-900 dark:selection:bg-pink-900 dark:selection:text-pink-100 transition-colors duration-300">
             <LandingNavbar />
             
-            <PageTransition>
-                <main>
-                    {children}
-                </main>
-            </PageTransition>
+            <main>
+                {children}
+            </main>
 
             <LandingFooter hideCTA={hideCTA} />
         </div>
