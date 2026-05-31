@@ -44,6 +44,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [clickPulse, setClickPulse] = useState(0);
+    const [isSurprised, setIsSurprised] = useState(false);
 
     // Smooth mouse tracking
     const targetHead = useRef({ x: 0, y: 0, rot: 0 });
@@ -96,11 +97,19 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
         excited: { eyesType: "sparkle", mouth: "open", blush: 0.6 }
     };
 
-    const c = moodConfig[mood];
+    const currentMood = isSurprised ? 'curious' : mood;
+    const c = moodConfig[currentMood];
 
     const handleClick = useCallback(() => {
         setClickPulse(p => p + 1);
+        setIsSurprised(true);
     }, []);
+
+    useEffect(() => {
+        if (!isSurprised) return;
+        const timer = setTimeout(() => setIsSurprised(false), 800);
+        return () => clearTimeout(timer);
+    }, [isSurprised]);
 
     return (
         <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer select-none", className)}
@@ -131,13 +140,11 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 }
                 .zara-idle-float { animation: zaraFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes zaraFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-                .zara-spring-bounce { animation: zaraSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
+                .zara-spring-bounce { animation: zaraSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
                 @keyframes zaraSpring {
-                    0% { transform: scale(1) translateY(0); }
-                    25% { transform: scale(0.95, 1.05) translateY(3px); }
-                    50% { transform: scale(1.05, 0.97) translateY(-10px); }
-                    75% { transform: scale(0.98, 1.02) translateY(2px); }
-                    100% { transform: scale(1) translateY(0); }
+                    0% { transform: scale(1); }
+                    40% { transform: scale(1.08); }
+                    100% { transform: scale(1); }
                 }
             `}</style>
 
@@ -147,7 +154,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 className={cn(
                     "w-full h-full object-contain",
                     "zara-idle-float",
-                    clickPulse > 0 && "zara-spring-bounce"
+                    isSurprised && "zara-spring-bounce"
                 )}
                 xmlns="http://www.w3.org/2000/svg"
             >

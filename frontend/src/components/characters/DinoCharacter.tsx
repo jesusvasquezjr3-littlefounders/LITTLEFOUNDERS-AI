@@ -24,6 +24,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
     const [clickPulse, setClickPulse] = useState(0);
+    const [isSurprised, setIsSurprised] = useState(false);
     const { t } = useTranslation('common');
 
     // ── Smooth mouse tracking (spring physics) ────────────────────────────
@@ -87,7 +88,16 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
 
     const handleClick = useCallback(() => {
         setClickPulse(p => p + 1);
+        setIsSurprised(true);
     }, []);
+
+    useEffect(() => {
+        if (!isSurprised) return;
+        const timer = setTimeout(() => setIsSurprised(false), 800);
+        return () => clearTimeout(timer);
+    }, [isSurprised]);
+
+    const effectiveMood = isSurprised ? 'shocked' : mood;
 
     return (
         <div className={cn("relative w-full h-full flex flex-col justify-end items-center transition-opacity duration-500 select-none", className)}>
@@ -127,13 +137,11 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     45% { transform: scaleY(1); } 55% { transform: scaleY(0.7); } 70% { transform: scaleY(1); } 100% { transform: scaleY(1); }
                 }
                 .dino-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .dino-spring-bounce { animation: dinoSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
+                .dino-spring-bounce { animation: dinoSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
                 @keyframes dinoSpring {
-                    0% { transform: scale(1, 1) translateY(0); }
-                    20% { transform: scale(1.12, 0.88) translateY(0); }
-                    45% { transform: scale(0.96, 1.04) translateY(-18px); }
-                    70% { transform: scale(1.02, 0.98) translateY(-6px); }
-                    100% { transform: scale(1, 1) translateY(0); }
+                    0% { transform: scale(1); }
+                    40% { transform: scale(1.08); }
+                    100% { transform: scale(1); }
                 }
             `}</style>
 
@@ -144,7 +152,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 className={cn(
                     "w-full h-full object-contain cursor-pointer overflow-visible",
                     "dino-breathe",
-                    clickPulse > 0 && "dino-spring-bounce"
+                    isSurprised && "dino-spring-bounce"
                 )}
                 style={{ willChange: "transform" }}
                 onClick={handleClick}
@@ -228,26 +236,26 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
 
                         {/* MOUTH GROUP */}
                         <g className={cn("dino-face-transition", isTalking ? "dino-mouth-anim" : "")}>
-                            {mood === 'happy' && (
+                            {effectiveMood === 'happy' && (
                                 <>
                                     <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />
                                     <path d="M0 40 Q 30 40 40 25 Q 20 20 0 40 Z" fill="#f87171" />
                                     <path d="M40 5 L 45 15 L 50 5 Z" fill="white" />
                                 </>
                             )}
-                            {mood === 'sad' && (
+                            {effectiveMood === 'sad' && (
                                 <path d="M-30 40 Q 20 40 60 30 Q 60 10 0 10 Q -30 10 -30 40 Z" fill="#374151" />
                             )}
-                            {mood === 'excited' && (
+                            {effectiveMood === 'excited' && (
                                 <>
                                     <ellipse cx="15" cy="20" rx="25" ry="20" fill="#374151" />
                                     <ellipse cx="15" cy="25" rx="15" ry="10" fill="#f87171" />
                                 </>
                             )}
-                            {mood === 'thinking' && (
+                            {effectiveMood === 'thinking' && (
                                 <path d="M-20 25 Q 20 25 50 20" stroke="#374151" strokeWidth="4" fill="none" />
                             )}
-                            {mood === 'shocked' && (
+                            {effectiveMood === 'shocked' && (
                                 <circle cx="15" cy="25" r="15" fill="#374151" />
                             )}
                         </g>

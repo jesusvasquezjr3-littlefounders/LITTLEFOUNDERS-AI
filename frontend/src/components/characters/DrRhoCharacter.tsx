@@ -38,6 +38,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [clickPulse, setClickPulse] = useState(0);
+    const [isSurprised, setIsSurprised] = useState(false);
 
     // Smooth mouse tracking
     const targetHead = useRef({ x: 0, y: 0, rot: 0 });
@@ -90,11 +91,19 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
         surprised: { eyebrowsY: -15, eyebrowsRot: 0, eyesType: "wide", mouth: "o", mustacheY: -8 }
     };
 
-    const current = moodConfig[mood];
+    const currentMood = isSurprised ? 'surprised' : mood;
+    const current = moodConfig[currentMood];
 
     const handleClick = useCallback(() => {
         setClickPulse(p => p + 1);
+        setIsSurprised(true);
     }, []);
+
+    useEffect(() => {
+        if (!isSurprised) return;
+        const timer = setTimeout(() => setIsSurprised(false), 800);
+        return () => clearTimeout(timer);
+    }, [isSurprised]);
 
     return (
         <div className={cn("relative w-full h-full flex items-end justify-center cursor-pointer select-none", className)}
@@ -125,13 +134,11 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 }
                 .rho-idle-float { animation: rhoFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes rhoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-                .rho-spring-bounce { animation: rhoSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
+                .rho-spring-bounce { animation: rhoSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
                 @keyframes rhoSpring {
-                    0% { transform: scale(1) translateY(0); }
-                    25% { transform: scale(0.95, 1.05) translateY(3px); }
-                    50% { transform: scale(1.05, 0.97) translateY(-10px); }
-                    75% { transform: scale(0.98, 1.02) translateY(2px); }
-                    100% { transform: scale(1) translateY(0); }
+                    0% { transform: scale(1); }
+                    40% { transform: scale(1.08); }
+                    100% { transform: scale(1); }
                 }
             `}</style>
 
@@ -141,7 +148,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 className={cn(
                     "w-full h-full object-contain transition-transform duration-500",
                     "rho-idle-float",
-                    clickPulse > 0 && "rho-spring-bounce"
+                    isSurprised && "rho-spring-bounce"
                 )}
                 xmlns="http://www.w3.org/2000/svg"
                 strokeLinecap="round"

@@ -32,6 +32,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     const [currentExpression, setCurrentExpression] = useState(expression);
     const [isBlinking, setIsBlinking] = useState(false);
     const [clickPulse, setClickPulse] = useState(0);
+    const [isSurprised, setIsSurprised] = useState(false);
 
     // ── Smooth mouse tracking (spring-like) ───────────────────────────────
     const targetPupil = useRef({ x: 0, y: 0 });
@@ -91,7 +92,8 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
         }
     };
 
-    const config = getExpressionConfig(currentExpression);
+    const effectiveExpression = isSurprised ? 'surprised' : currentExpression;
+    const config = getExpressionConfig(effectiveExpression);
 
     // ── Blinking (smooth, React-driven) ───────────────────────────────────
     useEffect(() => {
@@ -182,7 +184,14 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
 
     const handleClick = useCallback(() => {
         setClickPulse(p => p + 1);
+        setIsSurprised(true);
     }, []);
+
+    useEffect(() => {
+        if (!isSurprised) return;
+        const timer = setTimeout(() => setIsSurprised(false), 800);
+        return () => clearTimeout(timer);
+    }, [isSurprised]);
 
     return (
         <div
@@ -222,13 +231,11 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     0%, 100% { transform: scaleY(1); }
                     50% { transform: scaleY(1.25); }
                 }
-                .dina-spring-bounce { animation: dinaSpring 0.6s cubic-bezier(0.34, 1.8, 0.64, 1); transform-origin: center bottom; }
+                .dina-spring-bounce { animation: dinaSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
                 @keyframes dinaSpring {
-                    0% { transform: scale(1) translateY(0); }
-                    25% { transform: scale(0.95, 1.05) translateY(3px); }
-                    50% { transform: scale(1.06, 0.96) translateY(-10px); }
-                    75% { transform: scale(0.98, 1.02) translateY(2px); }
-                    100% { transform: scale(1) translateY(0); }
+                    0% { transform: scale(1); }
+                    40% { transform: scale(1.08); }
+                    100% { transform: scale(1); }
                 }
             `}</style>
 
@@ -238,7 +245,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
                 className={cn(
                     "w-full h-full object-contain",
-                    clickPulse > 0 && "dina-spring-bounce"
+                    isSurprised && "dina-spring-bounce"
                 )}
             >
                 <defs>
