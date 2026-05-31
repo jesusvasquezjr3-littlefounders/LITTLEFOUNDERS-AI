@@ -30,11 +30,9 @@
     "card3_title": "Cero Interés",
     "card3_text": "Las pláticas serias sobre dinero los aburren y no prestan atención.",
     "card4_title": "Errores Caros",
-    "card4_text": "Aprender a prueba y error en la vida real significa deudas reales.",
-    "badge": "El problema real"
+    "card4_text": "Aprender a prueba y error en la vida real significa deudas reales."
   },
   "solution": {
-    "badge": "La Solución Práctica",
     "title_part1": "No es una clase.",
     "title_part2": "Es pura",
     "title_highlight": "Práctica",
@@ -67,7 +65,6 @@
     }
   },
   "features": {
-    "badge": "¿Qué incluye?",
     "title": "Control para ti, Diversión para ellos",
     "subtitle": "Herramientas diseñadas para resultados reales.",
     "interactive_lessons": {

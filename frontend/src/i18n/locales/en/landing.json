@@ -35,11 +35,9 @@
     "card3_title": "Zero Interest",
     "card3_text": "Serious talks about money bore them, so they tune out completely.",
     "card4_title": "Costly Mistakes",
-    "card4_text": "Learning by trial and error in the real world means real-world debt.",
-    "badge": "The real problem"
+    "card4_text": "Learning by trial and error in the real world means real-world debt."
   },
   "solution": {
-    "badge": "The Practical Solution",
     "title_part1": "It's not a class.",
     "title_part2": "It's pure",
     "title_highlight": "Practice",
@@ -72,7 +70,6 @@
     }
   },
   "features": {
-    "badge": "What's included?",
     "title": "Control for you, Fun for them",
     "subtitle": "Tools designed for real-world results.",
     "interactive_lessons": {

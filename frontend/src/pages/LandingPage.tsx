@@ -229,9 +229,6 @@ const LandingPage = () => {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-14">
           <div className="space-y-5">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-2">
-              🚨 {t('problem.badge')}
-            </div>
             <h2 className="landing-heading text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight">
               {t('problem.title_part1')}{' '}
               <span className="relative inline-block">
@@ -299,9 +296,6 @@ const LandingPage = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800/40 text-xs font-bold text-orange-700 dark:text-orange-300 uppercase tracking-widest mb-4">
-              🎯 {t('features.badge')}
-            </div>
             <h2 className="landing-heading text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-tight">
               {t('features.title')}
             </h2>

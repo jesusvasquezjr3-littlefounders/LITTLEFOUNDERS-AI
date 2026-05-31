@@ -55,10 +55,6 @@ export function GamifiedLearningSection() {
           <div className="flex-1 space-y-6 text-center md:text-left order-1">
 
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-badge text-sm font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 border-indigo-200/40 dark:border-indigo-500/25">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-pulse" />
-              {t("solution.badge")}
-            </div>
 
             {/* Heading */}
             <h2 className="landing-heading text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight">

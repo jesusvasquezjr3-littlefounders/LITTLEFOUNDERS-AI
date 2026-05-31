@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -10,6 +10,7 @@ export const LandingNavbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
+    const clipId = useRef(`nav-wave-${Math.random().toString(36).slice(2, 9)}`).current;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -33,12 +34,25 @@ export const LandingNavbar = () => {
         return location.pathname.startsWith(path);
     };
 
+    const showGlass = isScrolled || mobileMenuOpen;
+
     return (
-        <>
-            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen
-                ? 'liquid-glass-subtle py-3'
-                : 'bg-transparent py-5'
-                }`}>
+        <div className="fixed top-0 w-full z-50">
+            {/* Wave clip-path definition */}
+            <svg width="0" height="0" className="absolute pointer-events-none">
+                <defs>
+                    <clipPath id={clipId} clipPathUnits="objectBoundingBox">
+                        <path d="M0,0 L1,0 L1,0.1 C0.875,1 0.75,0 0.625,0.7 C0.5,1 0.375,0 0.25,0.7 C0.125,1 0,0.1 0,0.1 Z" />
+                    </clipPath>
+                </defs>
+            </svg>
+
+            <nav
+                className={`w-full transition-all duration-300 ${showGlass
+                    ? 'liquid-glass-subtle py-3'
+                    : 'bg-transparent py-5'
+                }`}
+            >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center">
                         {/* Logo */}
@@ -64,23 +78,31 @@ export const LandingNavbar = () => {
                         </button>
                     </div>
                 </div>
+            </nav>
 
-                {/* Mobile Menu */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-xl">
-                        <Link to="/families" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.families')}</Link>
-                        <Link to="/faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.faq')}</Link>
-                        <Link to="/pricing" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.pricing')}</Link>
+            {/* Bottom wave — fused glass extension below the nav */}
+            {showGlass && !mobileMenuOpen && (
+                <div
+                    className="absolute top-full left-0 w-full h-6 liquid-glass-subtle pointer-events-none -mt-px"
+                    style={{ clipPath: `url(#${clipId})` }}
+                />
+            )}
 
-                        <div className="flex flex-col gap-3 mt-2">
-                            <div className="flex items-center justify-center py-2 gap-4">
-                                <ThemeToggle />
-                                <LanguageSelector variant="simple" />
-                            </div>
+            {/* Mobile Menu — outside nav so it isn't clipped */}
+            {mobileMenuOpen && (
+                <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-xl">
+                    <Link to="/families" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.families')}</Link>
+                    <Link to="/faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.faq')}</Link>
+                    <Link to="/pricing" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.pricing')}</Link>
+
+                    <div className="flex flex-col gap-3 mt-2">
+                        <div className="flex items-center justify-center py-2 gap-4">
+                            <ThemeToggle />
+                            <LanguageSelector variant="simple" />
                         </div>
                     </div>
-                )}
-            </nav>
-        </>
+                </div>
+            )}
+        </div>
     );
 };
