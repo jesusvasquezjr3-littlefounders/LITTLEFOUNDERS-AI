@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Mail, Sparkles, Rocket, ArrowLeft } from "lucide-react";
+import { Mail, Sparkles, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { GlassPanel } from "@/components/ui/GlassPanel";
@@ -64,15 +64,6 @@ const ForgotPassword = () => {
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               {t('auth:forgot_password.back_to_login')}
             </Link>
-
-            <div className="flex justify-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full shadow-lg border-2 border-purple-200 dark:border-purple-500">
-                <Rocket className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                  LittleFounders
-                </span>
-              </div>
-            </div>
           </div>
 
           <GlassPanel variant="strong" className="p-6 space-y-5">

@@ -4,14 +4,6 @@ import { CheckCircle2 } from "lucide-react";
 import { NamVsYumGame } from "@/games/nam-vs-yum/components/NamVsYumGame";
 import "@/games/nam-vs-yum/nam-vs-yum.css";
 
-const MODULE_PILLS = [
-  { emoji: "📚", key: "solution.animation.step1_label",  color: "from-blue-500 to-cyan-500",    bg: "bg-blue-500/10 dark:bg-blue-500/15",    border: "border-blue-300/50 dark:border-blue-500/30",    text: "text-blue-800 dark:text-blue-200" },
-  { emoji: "🎮", key: "solution.animation.games_title",  color: "from-violet-500 to-purple-500", bg: "bg-violet-500/10 dark:bg-violet-500/15", border: "border-violet-300/50 dark:border-violet-500/30", text: "text-violet-800 dark:text-violet-200" },
-  { emoji: "🚀", key: "solution.animation.sim_title",    color: "from-emerald-500 to-teal-500",  bg: "bg-emerald-500/10 dark:bg-emerald-500/15", border: "border-emerald-300/50 dark:border-emerald-500/30", text: "text-emerald-800 dark:text-emerald-200" },
-  { emoji: "🤖", key: "solution.animation.ai_title",     color: "from-pink-500 to-rose-500",     bg: "bg-pink-500/10 dark:bg-pink-500/15",    border: "border-pink-300/50 dark:border-pink-500/30",    text: "text-pink-800 dark:text-pink-200" },
-  { emoji: "🏦", key: "solution.animation.bank_title",   color: "from-amber-500 to-orange-500",  bg: "bg-amber-500/10 dark:bg-amber-500/15",  border: "border-amber-300/50 dark:border-amber-500/30",  text: "text-amber-800 dark:text-amber-200" },
-];
-
 export function GamifiedLearningSection() {
   const { t } = useTranslation("landing");
   const handleExit = useCallback(() => { /* no-op when embedded in landing */ }, []);
@@ -106,17 +98,6 @@ export function GamifiedLearningSection() {
                 </li>
               ))}
             </ul>
-
-            {/* Module pills — each with a mini gradient icon strip */}
-            <div className="flex flex-wrap gap-2.5 justify-center md:justify-start pt-2">
-              {MODULE_PILLS.map((pill) => (
-                <span key={pill.key}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold ${pill.text} glass-pill transition-all hover:scale-105`}>
-                  <span className={`w-4 h-4 rounded-full bg-gradient-to-br ${pill.color} flex items-center justify-center text-[9px]`}>{pill.emoji}</span>
-                  {t(pill.key)}
-                </span>
-              ))}
-            </div>
           </div>
 
           {/* ── Game embed (Ñam vs Yum) ── */}

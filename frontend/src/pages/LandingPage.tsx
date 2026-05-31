@@ -11,7 +11,6 @@ import { DinaCharacter } from "../components/characters/DinaCharacter";
 import DrRhoCharacter from "../components/characters/DrRhoCharacter";
 import ZaraVexCharacter from "../components/characters/ZaraVexCharacter";
 import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
-import { LandingParentCTA } from "../components/landing/LandingParentCTA";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useUserLanguage } from "@/hooks/useUserLanguage";
 import { SupportedLanguage } from "@/i18n";
@@ -75,7 +74,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <LandingLayout hideCTA={true}>
+    <LandingLayout>
 
       {/* ══════════════════════════════════════════════════════════
           HERO — warm sunburst background, big playful type
@@ -135,15 +134,6 @@ const LandingPage = () => {
             {/* Copy block */}
             <div className="relative z-30 flex-1 text-center lg:text-left space-y-5 max-w-xl">
 
-              {/* Live badge */}
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-badge border-amber-200/40 dark:border-amber-700/30 shadow-lg animate-fade-in-up">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                </span>
-                <span className="text-sm font-bold text-amber-800 dark:text-amber-300">{t('hero.badge')}</span>
-              </div>
-
               {/* Headline */}
               <h1 className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight animate-fade-in-up-delay-1 text-gray-900 dark:text-white">
                 {t('hero.title_part1')}{' '}
@@ -180,19 +170,6 @@ const LandingPage = () => {
                   <Link to="/login">{t('hero.login_link')}</Link>
                 </Button>
               </div>
-
-              {/* Trust pills */}
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-start animate-fade-in-up-delay-4">
-                {[
-                  { emoji: '🆓', label: t('hero.trust_free') },
-                  { emoji: '🔒', label: t('hero.trust_secure') },
-                  { emoji: '🌍', label: t('hero.trust_multilang') },
-                ].map((pill) => (
-                  <span key={pill.label} className="text-xs font-semibold px-3 py-1.5 rounded-full glass-pill text-gray-600 dark:text-gray-300 border-gray-200/30 dark:border-slate-700/20">
-                    {pill.emoji} {pill.label}
-                  </span>
-                ))}
-              </div>
             </div>
 
           </div>
@@ -211,9 +188,9 @@ const LandingPage = () => {
         </div>
 
         {/* Language switcher bar */}
-        <div className="relative z-10 w-full py-4 border-t border-amber-200/50 dark:border-slate-700/50 glass-panel mt-auto">
+        <div className="relative z-10 w-full py-6 border-t border-amber-200/50 dark:border-slate-700/50 glass-panel mt-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-            <h3 className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-500 mb-2 sm:mb-3 uppercase tracking-[0.2em]">
+            <h3 className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-500 mb-3 sm:mb-4 uppercase tracking-[0.2em]">
               {t('language.title')}
             </h3>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
@@ -221,7 +198,7 @@ const LandingPage = () => {
                 <button
                   key={lang.code}
                   onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
-                  className={`flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
                     isCurrentLanguage(lang.code)
                       ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white border-orange-300 dark:border-orange-600/50 shadow-md shadow-orange-200/50 scale-105'
                       : 'bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 hover:text-gray-900 dark:hover:text-white'
@@ -357,11 +334,6 @@ const LandingPage = () => {
           </svg>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          PARENT CTA
-      ══════════════════════════════════════════════════════════ */}
-      <LandingParentCTA />
 
     </LandingLayout>
   );

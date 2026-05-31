@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Rocket, Star, Zap, Heart, Send } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Star, Zap, Heart, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { savePendingMerge, clearPendingMerge } from "@/lib/guestProfile";
@@ -336,15 +336,6 @@ const Register = () => {
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
               {t('auth:register.back_to_home')}
             </Link>
-
-            <div className="flex justify-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full shadow-lg border-2 border-cyan-200 dark:border-cyan-500">
-                <Rocket className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                <span className="font-bold text-lg bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  LittleFounders
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Register Card */}

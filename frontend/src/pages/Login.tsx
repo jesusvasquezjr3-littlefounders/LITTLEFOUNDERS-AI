@@ -168,15 +168,6 @@ const Login = () => {
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
               {t('auth:login.back_to_home')}
             </Link>
-
-            <div className="flex justify-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full shadow-lg border-2 border-purple-200 dark:border-purple-500">
-                <Rocket className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                  LittleFounders
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Login Card */}

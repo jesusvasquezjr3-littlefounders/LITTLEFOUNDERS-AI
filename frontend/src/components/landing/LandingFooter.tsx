@@ -1,15 +1,15 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { EmailWaitlistForm } from "@/components/landing/EmailWaitlistForm";
 
 interface LandingFooterProps {
   hideCTA?: boolean;
 }
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false }) => {
-  const { t } = useTranslation("landing");
+  const { t, i18n } = useTranslation("landing");
+  const lang = i18n.language;
 
   const [ctaWordIndex, setCtaWordIndex] = React.useState(0);
   const ctaWords = (t("cta.rotating_words", { returnObjects: true }) as string[]) || ["founder"];
@@ -74,19 +74,18 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
             </h2>
 
             <p className="text-lg text-gray-600 dark:text-white/55 mb-10 max-w-xl mx-auto leading-relaxed">
-              {t("cta.subtitle")}
+              {t("families.hero.notify_desc")}
             </p>
 
-            <Button asChild size="lg"
-              className="btn-press h-14 px-12 text-xl rounded-2xl font-black text-white border-0 shadow-none"
-              style={{ background: 'linear-gradient(135deg, #f97316 0%, #ec4899 50%, #a855f7 100%)' }}>
-              <Link to="/register" className="flex items-center gap-2">
-                {t("cta.button")}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </Button>
-
-            <p className="mt-5 text-sm text-gray-500 dark:text-white/30">{t("cta.disclaimer")}</p>
+            <div className="flex justify-center">
+              <EmailWaitlistForm
+                ctaLabel={t("families.hero.notify_cta")}
+                placeholder={t("families.hero.email_placeholder")}
+                successMsg={t("families.hero.email_success")}
+                language={lang}
+                source="landing_footer"
+              />
+            </div>
           </div>
         </section>
       )}
