@@ -7,10 +7,10 @@ for retrieving localized messages.
 
 Usage:
     from i18n import get_message, MessageCode
-    
+
     # Get a message in the default language (Spanish)
     msg = get_message(MessageCode.LOGIN_SUCCESS)
-    
+
     # Get a message in a specific language
     msg = get_message(MessageCode.LOGIN_SUCCESS, "en")
 """

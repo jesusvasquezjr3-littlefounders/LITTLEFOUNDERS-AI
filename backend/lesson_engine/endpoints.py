@@ -211,7 +211,7 @@ async def get_adventures(
                 completed_count = db.query(UserLessonProgress).filter(
                     UserLessonProgress.user_id == user_id,
                     UserLessonProgress.lesson_id.in_(lesson_ids),
-                    UserLessonProgress.completed == True
+                    UserLessonProgress.completed
                 ).count()
                 completed_lessons = completed_count
 
@@ -277,7 +277,7 @@ async def get_adventure_sagas(
             completed_lessons = db.query(UserLessonProgress).filter(
                 UserLessonProgress.user_id == user_id,
                 UserLessonProgress.lesson_id.in_(lesson_ids),
-                UserLessonProgress.completed == True
+                UserLessonProgress.completed
             ).count()
 
         progress_percent = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
@@ -339,7 +339,7 @@ async def get_lesson_for_play(
         audio_segments = db.query(LessonAudioSegment).filter(
             LessonAudioSegment.lesson_id == lesson.id,
             LessonAudioSegment.language_code == lang,
-            LessonAudioSegment.is_active == True
+            LessonAudioSegment.is_active
         ).all()
 
         # Resolve character codes for audio segments (single query, no N+1)
@@ -666,7 +666,7 @@ async def complete_lesson(
 @router.get("/characters", response_model=list[CharacterResponse])
 async def get_characters(db: Session = Depends(get_db)):
     """Obtener todos los personajes activos."""
-    characters = db.query(Character).filter(Character.is_active == True).all()
+    characters = db.query(Character).filter(Character.is_active).all()
     return characters
 
 @router.get("/characters/{code}")
@@ -710,7 +710,7 @@ async def get_user_lesson_stats(public_id: str, lang: str = "es", db: Session = 
             comp = db.query(UserLessonProgress).filter(
                 UserLessonProgress.user_id == user_id,
                 UserLessonProgress.lesson_id.in_(l_ids),
-                UserLessonProgress.completed == True
+                UserLessonProgress.completed
             ).count()
 
         pct = (comp / total * 100) if total > 0 else 0
@@ -798,7 +798,7 @@ async def get_user_next_global_lesson(public_id: str, db: Session = Depends(get_
         UserLessonProgress, Lesson.id == UserLessonProgress.lesson_id
     ).filter(
         UserLessonProgress.user_id == user.id,
-        UserLessonProgress.completed == True
+        UserLessonProgress.completed
     ).order_by(
         Lesson.adventure_level.desc(),
         Lesson.saga_level.desc(),

@@ -43,7 +43,6 @@ def clear_lessons():
     print("🔥 PREPARING TO PURGE ALL LESSON DATA...")
 
     # 1. Harvest Audio URLs for Storage Cleanup
-    audio_urls = []
     try:
         segments = db.query(LessonAudioSegment.audio_url).all()
         translations = db.query(AudioSegmentTranslation.audio_url).all()

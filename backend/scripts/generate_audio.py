@@ -114,7 +114,7 @@ class LessonAudioGenerator:
     def generate_audio_lf_engine(self, text: str, character_code: str, emotion: str = "neutral", language_code: str = "es") -> bytes | None:
         """
         Genera audio usando LF Audio Engine.
-        
+
         Returns:
             bytes: Datos del audio WAV, o None si falló
         """
@@ -186,7 +186,7 @@ class LessonAudioGenerator:
     def process_lesson(self, lesson_code: str, language: str = "es"):
         """
         Procesa una lección completa: genera audios, sube y guarda en BD.
-        
+
         Args:
             lesson_code: Código de la lección (ej: 1-1-1-L1)
             language: Código de idioma (es, en)

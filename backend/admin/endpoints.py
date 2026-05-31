@@ -1026,7 +1026,7 @@ async def list_audio(
     db: Session = Depends(get_db)
 ):
     """Listar audios con filtros."""
-    query = db.query(LessonAudioSegment).filter(LessonAudioSegment.is_active == True)
+    query = db.query(LessonAudioSegment).filter(LessonAudioSegment.is_active)
 
     if lesson_id:
         # Accept lesson_code or lesson public_id

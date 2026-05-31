@@ -19,21 +19,21 @@ def verify_family_access(
 ) -> bool:
     """
     Verify if requester has permission to access target user's data
-    
+
     Rules:
     - TUTOR can access their children's data
     - CHILD can only access their own data
     - Users can always access their own data (if allow_self=True)
-    
+
     Args:
         db: Database session
         requester_id: ID of the user making the request
         target_user_id: ID of the user whose data is being accessed
         allow_self: Whether to allow access to own data
-    
+
     Returns:
         bool: True if access is allowed
-    
+
     Raises:
         HTTPException: If access is denied or users not found
     """
@@ -69,11 +69,11 @@ def verify_family_access(
 def get_authorized_children(db: Session, user_id: int) -> list[int]:
     """
     Get list of child IDs that a user is authorized to view/manage
-    
+
     Args:
         db: Database session
         user_id: ID of the user (tutor or child)
-    
+
     Returns:
         list[int]: List of child user IDs that the user can access
     """
@@ -98,11 +98,11 @@ def get_authorized_children(db: Session, user_id: int) -> list[int]:
 def get_authorized_parents(db: Session, child_id: int) -> list[int]:
     """
     Get list of parent (tutor) IDs that can manage a child
-    
+
     Args:
         db: Database session
         child_id: ID of the child user
-    
+
     Returns:
         list[int]: List of parent user IDs (tutors)
     """
@@ -128,16 +128,16 @@ def verify_ownership(
     """
     Verify that a resource belongs to the specified user
     Used for operations that modify data (create, update, delete)
-    
+
     Args:
         db: Database session
         user_id: ID of the user making the request
         resource_user_id: user_id field in the resource
         resource_name: Name of the resource for error messages
-    
+
     Returns:
         bool: True if user owns the resource
-    
+
     Raises:
         HTTPException: If ownership verification fails
     """
@@ -152,11 +152,11 @@ def verify_ownership(
 def get_family_member_ids(db: Session, user_id: int) -> list[int]:
     """
     Get all family member IDs for a user (includes self, tutor, children)
-    
+
     Args:
         db: Database session
         user_id: ID of the user
-    
+
     Returns:
         list[int]: List of all family member IDs
     """

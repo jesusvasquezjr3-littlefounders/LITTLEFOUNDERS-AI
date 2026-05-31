@@ -15,11 +15,6 @@ export function AchievementPopup({ achievementId, onDismiss }: AchievementPopupP
   const { t } = useTranslation('games');
   const [visible, setVisible] = useState(false);
 
-  const def = ACHIEVEMENTS.find((a) => a.id === achievementId);
-  if (!def) return null;
-
-  const IconComponent = (Icons[def.icon as keyof typeof Icons] as LucideIcon) || Icons.Award;
-
   useEffect(() => {
     const t1 = setTimeout(() => setVisible(true), 50);
     const t2 = setTimeout(() => onDismiss(), 3500);
@@ -28,6 +23,11 @@ export function AchievementPopup({ achievementId, onDismiss }: AchievementPopupP
       clearTimeout(t2);
     };
   }, [onDismiss]);
+
+  const def = ACHIEVEMENTS.find((a) => a.id === achievementId);
+  if (!def) return null;
+
+  const IconComponent = (Icons[def.icon as keyof typeof Icons] as LucideIcon) || Icons.Award;
 
   return (
     <div

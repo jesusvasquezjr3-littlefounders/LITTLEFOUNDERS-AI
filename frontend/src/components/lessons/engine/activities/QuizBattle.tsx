@@ -49,23 +49,6 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         }
     }, [exercise, content]);
 
-    const question = questions.current[currentQuestion];
-    const totalQuestions = questions.current.length;
-
-    if (totalQuestions === 0) {
-        return (
-            <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
-                <div className="text-4xl mb-4">📊</div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                    {t('quiz_battle.no_questions', { defaultValue: 'Sin preguntas disponibles' })}
-                </h3>
-                <Button onClick={onNext} className="mt-6">
-                    {t('actions.continue', { defaultValue: 'Continuar' })}
-                </Button>
-            </div>
-        );
-    }
-
     useEffect(() => {
         setCurrentQuestion(0);
         setSelectedAnswer(null);
@@ -103,6 +86,23 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
             moveToNext();
         }, 1500);
     };
+
+    const question = questions.current[currentQuestion];
+    const totalQuestions = questions.current.length;
+
+    if (totalQuestions === 0) {
+        return (
+            <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-4xl mb-4">📊</div>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                    {t('quiz_battle.no_questions', { defaultValue: 'Sin preguntas disponibles' })}
+                </h3>
+                <Button onClick={onNext} className="mt-6">
+                    {t('actions.continue', { defaultValue: 'Continuar' })}
+                </Button>
+            </div>
+        );
+    }
 
     const getCorrectId = () => {
         // Priority: question.correctId (legacy) -> exercise.correct_answer.correctOptionId -> exercise.correct_answer.correctId

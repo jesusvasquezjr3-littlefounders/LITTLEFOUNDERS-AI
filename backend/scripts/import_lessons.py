@@ -153,9 +153,9 @@ def verify_import(db):
 
     # Check for duplicates
     result = db.execute(text("""
-        SELECT lesson_code, COUNT(*) as cnt 
-        FROM lessons 
-        GROUP BY lesson_code 
+        SELECT lesson_code, COUNT(*) as cnt
+        FROM lessons
+        GROUP BY lesson_code
         HAVING COUNT(*) > 1
     """))
     dupes = result.fetchall()

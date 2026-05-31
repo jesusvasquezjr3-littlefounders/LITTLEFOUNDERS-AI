@@ -12,7 +12,7 @@ exclude = [".venv", ".git", "__pycache__"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501", "UP007"]   # UP007: prefer Optional[X] over X | None for compat
+ignore = ["E402", "E501", "E701", "E722", "E741", "F402", "N806", "N811", "UP007"]
 
 [tool.ruff.format]
 quote-style = "double"

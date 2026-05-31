@@ -20,10 +20,10 @@ Adding a new language:
 """
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class MessageCode(str, Enum):
+class MessageCode(StrEnum):
     """
     Enum of all message codes used throughout the application.
     Organized by category for easier maintenance.
@@ -148,14 +148,14 @@ DEFAULT_LANGUAGE = "es"
 def get_message(code: MessageCode, lang: str | None = None) -> str:
     """
     Get a translated message by its code.
-    
+
     Args:
         code: The MessageCode enum value
         lang: Language code ('es' or 'en'). Defaults to Spanish.
-    
+
     Returns:
         The translated message string
-    
+
     Example:
         >>> get_message(MessageCode.LOGIN_SUCCESS)
         '¡Inicio de sesión exitoso!'
@@ -180,14 +180,14 @@ def get_message(code: MessageCode, lang: str | None = None) -> str:
 def get_language_from_header(accept_language: str | None) -> str:
     """
     Extract language code from Accept-Language header.
-    
+
     Args:
         accept_language: The Accept-Language header value
                         e.g., "es-MX,es;q=0.9,en;q=0.8"
-    
+
     Returns:
         The primary language code ('es' or 'en')
-    
+
     Example:
         >>> get_language_from_header("es-MX,es;q=0.9,en;q=0.8")
         'es'

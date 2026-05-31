@@ -23,7 +23,7 @@ class LFAudioClient:
     def __init__(self, api_url: str = None, api_key: str = None):
         """
         Inicializa el cliente de LittleFounders Audio.
-        
+
         Args:
             api_url: URL base del servicio
             api_key: Clave de API para autenticación
@@ -42,7 +42,7 @@ class LFAudioClient:
     ) -> bytes | None:
         """
         Genera un audio usando LF Audio Engine.
-        
+
         Args:
             text: Texto a hablar
             character: 'liruf', 'dina', 'dr_rho', 'zara_vex'
@@ -50,7 +50,7 @@ class LFAudioClient:
             language_code: 'es' (Español) o 'en' (Inglés)
             output_path: Ruta donde guardar el archivo .wav (opcional)
             studio_intensity: 'light', 'medium', 'heavy'
-            
+
         Returns:
             bytes: Datos del audio WAV, o None si falló
         """

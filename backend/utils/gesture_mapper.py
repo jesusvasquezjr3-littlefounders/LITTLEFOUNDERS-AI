@@ -96,15 +96,15 @@ GESTURE_EQUIVALENCES: dict[str, dict[str, any]] = {
 def normalize_gesture(character_code: str, raw_gesture: str | None) -> str:
     """
     Normalize a gesture code to match the character component's expected prop value.
-    
+
     Args:
         character_code: The character code (e.g., 'liruf', 'dina', 'dr_rho', 'zara_vex')
         raw_gesture: The raw gesture code from the database or lesson data
-        
+
     Returns:
         The normalized gesture code that matches the component's prop definition,
         or the default gesture for the character if no mapping is found.
-        
+
     Examples:
         >>> normalize_gesture('liruf', 'feliz')
         'happy'
@@ -138,10 +138,10 @@ def normalize_gesture(character_code: str, raw_gesture: str | None) -> str:
 def get_available_gestures(character_code: str) -> list[str]:
     """
     Get the list of valid gestures for a character.
-    
+
     Args:
         character_code: The character code
-        
+
     Returns:
         List of valid gesture codes for the character
     """

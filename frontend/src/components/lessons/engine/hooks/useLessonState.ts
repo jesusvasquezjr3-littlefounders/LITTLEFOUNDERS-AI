@@ -289,8 +289,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'impact_meter':
         case 'case_real':
         case 'case_study':
-        case 'decision_challenge':
-        case 'credit_score': {
+        case 'decision_challenge': {
             const correctId = extractCorrectId(correctAnswer);
             if (correctId !== undefined) return String(answer) === String(correctId);
             // Fallback for types that don't have explicit correct_answer
@@ -649,11 +648,8 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── CREDIT SCORE ───
         // Component sends string[] (decision IDs per scenario) OR string (single choice)
         case 'credit_score': {
-            // Single choice mode
             const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) {
-                return String(answer) === String(correctId);
-            }
+            if (correctId !== undefined) return String(answer) === String(correctId);
             // Simulator mode: validate score threshold
             const decisions = Array.isArray(answer) ? answer : Object.values(answer || {});
             const initialScore = content?.initialScore || 650;

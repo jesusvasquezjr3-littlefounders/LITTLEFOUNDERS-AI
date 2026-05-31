@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint src/ --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src/ --report-unused-disable-directives",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

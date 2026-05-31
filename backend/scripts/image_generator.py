@@ -89,7 +89,7 @@ def generate_and_upload_image(prompt: str, filename: str, bucket: str = "lesson-
         print(f"☁️ Uploading {len(out_bytes)/1024:.1f}KB to bucket '{bucket}/{path_on_storage}'...")
 
         try:
-            res = sb.storage.from_(bucket).upload(
+            sb.storage.from_(bucket).upload(
                 path=path_on_storage,
                 file=out_bytes,
                 file_options={"content-type": content_type, "upsert": "true"}
@@ -100,7 +100,7 @@ def generate_and_upload_image(prompt: str, filename: str, bucket: str = "lesson-
                 try:
                     sb.storage.create_bucket(bucket, options={"public": True})
                     # Retry upload
-                    res = sb.storage.from_(bucket).upload(
+                    sb.storage.from_(bucket).upload(
                         path=path_on_storage,
                         file=out_bytes,
                         file_options={"content-type": content_type, "upsert": "true"}

@@ -49,7 +49,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Try to use sound, fail gracefully if context missing (e.g. tests)
     let playSound: any = () => { };
     try {
-      /* eslint-disable-next-line react-hooks/rules-of-hooks */
       const sound = useSound();
       playSound = sound.playSound;
     } catch (e) {

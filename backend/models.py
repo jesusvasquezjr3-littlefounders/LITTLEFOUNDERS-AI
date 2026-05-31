@@ -23,14 +23,14 @@ from database import Base
 
 
 # Enums
-class UserType(str, enum.Enum):
+class UserType(enum.StrEnum):
     TUTOR = "tutor"
     CHILD = "child"
     UNIVERSAL = "universal"
     ADMIN = "admin"
 
 
-class Gender(str, enum.Enum):
+class Gender(enum.StrEnum):
     MASCULINO = "masculino"
     FEMENINO = "femenino"
     OTRO = "otro"
@@ -40,7 +40,7 @@ class Gender(str, enum.Enum):
 
 
 
-class FollowStatus(str, enum.Enum):
+class FollowStatus(enum.StrEnum):
     PENDING = "pending"
     ACCEPTED = "accepted"
     REJECTED = "rejected"
@@ -309,7 +309,7 @@ class LessonAudioSegment(Base):
 # PLATFORM REPORTS
 # =====================================================
 
-class ReportType(str, enum.Enum):
+class ReportType(enum.StrEnum):
     BUG = "bug"
     ABUSE = "abuse"
     SUGGESTION = "suggestion"
@@ -317,14 +317,14 @@ class ReportType(str, enum.Enum):
     OTHER = "other"
 
 
-class ReportStatus(str, enum.Enum):
+class ReportStatus(enum.StrEnum):
     PENDING = "pending"
     IN_REVIEW = "in_review"
     RESOLVED = "resolved"
     CLOSED = "closed"
 
 
-class ReportPriority(str, enum.Enum):
+class ReportPriority(enum.StrEnum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -364,7 +364,7 @@ class PlatformReport(Base):
 # NOTIFICATIONS
 # =====================================================
 
-class NotificationType(str, enum.Enum):
+class NotificationType(enum.StrEnum):
     SYSTEM = "system"
     FOLLOW_REQUEST = "follow_request"
     FOLLOW_ACCEPTED = "follow_accepted"
@@ -376,19 +376,19 @@ class NotificationType(str, enum.Enum):
     LESSON = "lesson"
 
 
-class NotificationTargetType(str, enum.Enum):
+class NotificationTargetType(enum.StrEnum):
     ALL = "all"
     USER_TYPE = "user_type"
     SPECIFIC_USER = "specific_user"
 
 
-class NotificationStatus(str, enum.Enum):
+class NotificationStatus(enum.StrEnum):
     DRAFT = "draft"
     ACTIVE = "active"
     ARCHIVED = "archived"
 
 
-class NotificationPriority(str, enum.Enum):
+class NotificationPriority(enum.StrEnum):
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"

@@ -276,9 +276,9 @@ async def admin_list_notifications(
 
         # Estimate total recipients
         if n.target_type == NotificationTargetType.ALL:
-            total = db.query(User).filter(User.is_active == True).count()
+            total = db.query(User).filter(User.is_active).count()
         elif n.target_type == NotificationTargetType.USER_TYPE:
-            total = db.query(User).filter(User.is_active == True, User.user_type == n.target_value).count()
+            total = db.query(User).filter(User.is_active, User.user_type == n.target_value).count()
         else:
             total = 1
 
@@ -343,9 +343,9 @@ async def admin_create_notification(
 
     # Estimate recipients
     if notif.target_type == NotificationTargetType.ALL:
-        total = db.query(User).filter(User.is_active == True).count()
+        total = db.query(User).filter(User.is_active).count()
     elif notif.target_type == NotificationTargetType.USER_TYPE:
-        total = db.query(User).filter(User.is_active == True, User.user_type == notif.target_value).count()
+        total = db.query(User).filter(User.is_active, User.user_type == notif.target_value).count()
     else:
         total = 1
 
@@ -400,9 +400,9 @@ async def admin_update_notification(
     ).count()
 
     if notif.target_type == NotificationTargetType.ALL:
-        total = db.query(User).filter(User.is_active == True).count()
+        total = db.query(User).filter(User.is_active).count()
     elif notif.target_type == NotificationTargetType.USER_TYPE:
-        total = db.query(User).filter(User.is_active == True, User.user_type == notif.target_value).count()
+        total = db.query(User).filter(User.is_active, User.user_type == notif.target_value).count()
     else:
         total = 1
 
@@ -462,7 +462,7 @@ async def admin_search_users_for_targeting(
             func.lower(User.email).like(term),
             func.lower(User.username).like(term),
         ),
-        User.is_active == True,
+        User.is_active,
     ).limit(20).all()
 
     return [
