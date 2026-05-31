@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
@@ -71,6 +72,209 @@ import { ReportFAB } from "@/components/common/ReportFAB";
 const queryClient = new QueryClient();
 
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/placement" element={<PlacementPage />} />
+        <Route path="/families" element={<FamiliesPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        {/* Guest-accessible routes (requireAuth omitted = false) */}
+        {/* /dashboard — only for tutor / parent / admin users; others redirect to /learn */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Index />
+          </ProtectedRoute>
+        } />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/bye" element={<Bye />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* /learn — main home for universal / child / guest (zero-click learning) */}
+        <Route path="/learn" element={
+          <ProtectedRoute>
+            <LearnPage />
+          </ProtectedRoute>
+        } />
+
+        {/* /lessons — legacy redirect to /learn */}
+        <Route path="/lessons" element={<Navigate to="/learn" replace />} />
+
+        {/* Games — guest-accessible */}
+        <Route path="/games" element={
+          <ProtectedRoute>
+            <GamesPage />
+          </ProtectedRoute>
+        } />
+
+        {/* Auth-only: AI assistant requires a real account */}
+        <Route path="/ai" element={
+          <ProtectedRoute requireAuth>
+            <PageUnderConstruction />
+          </ProtectedRoute>
+        } />
+        {/* Guest-accessible: profile, avatar, settings, help */}
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/u/:username" element={<UserProfile />} />
+        <Route path="/avatar/edit" element={
+          <ProtectedRoute>
+            <AvatarEditor />
+          </ProtectedRoute>
+        } />
+        <Route path="/tasks" element={
+          <ChildProtectedRoute>
+            <PageUnderConstruction />
+          </ChildProtectedRoute>
+        } />
+        <Route path="/parent-tasks" element={
+          <ParentProtectedRoute>
+            <PageUnderConstruction />
+          </ParentProtectedRoute>
+        } />
+        <Route path="/growth" element={
+          <ProtectedRoute>
+            <PageUnderConstruction />
+          </ProtectedRoute>
+        } />
+        <Route path="/savings" element={
+          <ProtectedRoute>
+            <PageUnderConstruction />
+          </ProtectedRoute>
+        } />
+        <Route path="/store" element={
+          <ProtectedRoute>
+            <PageUnderConstruction />
+          </ProtectedRoute>
+        } />
+        <Route path="/investment-games" element={<Navigate to="/games" replace />} />
+
+        {/* Games */}
+        <Route path="/games/nam-vs-yum" element={
+          <ProtectedRoute>
+            <NamVsYumPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/games/nectar-of-shadows" element={
+          <ProtectedRoute>
+            <NectarOfShadowsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/games/nectar-de-las-sombras" element={<Navigate to="/games/nectar-of-shadows" replace />} />
+
+        <Route path="/games/paper-detective" element={
+          <ProtectedRoute>
+            <PaperDetectivePage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/games/paper-coin" element={
+          <ProtectedRoute>
+            <PaperCoinPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/games/hacker-defense" element={
+          <ProtectedRoute>
+            <HackerDefensePage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/games/chronobloom" element={
+          <ProtectedRoute>
+            <ChronoBloomPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
+        <Route path="/help" element={
+          <ProtectedRoute>
+            <Help />
+          </ProtectedRoute>
+        } />
+
+        {/* Admin Panel Routes */}
+        <Route path="/admin" element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/lessons" element={
+          <AdminProtectedRoute>
+            <AdminLessons />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/lessons/new" element={
+          <AdminProtectedRoute>
+            <AdminLessonEditor />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/lessons/:publicId/edit" element={
+          <AdminProtectedRoute>
+            <AdminLessonEditor />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/characters" element={
+          <AdminProtectedRoute>
+            <AdminCharacters />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/audio" element={
+          <AdminProtectedRoute>
+            <AdminAudio />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/history" element={
+          <AdminProtectedRoute>
+            <AdminHistory />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/users" element={
+          <AdminProtectedRoute>
+            <AdminUsers />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/help" element={
+          <AdminProtectedRoute>
+            <AdminHelp />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/reports" element={
+          <AdminProtectedRoute>
+            <AdminReports />
+          </AdminProtectedRoute>
+        } />
+        <Route path="/admin/notifications" element={
+          <AdminProtectedRoute>
+            <AdminNotifications />
+          </AdminProtectedRoute>
+        } />
+
+        {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
+        <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
+
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -83,200 +287,7 @@ const App = () => (
             <GoogleAnalytics />
             <LanguageSyncWrapper>
               <ReportFAB />
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/placement" element={<PlacementPage />} />
-                <Route path="/families" element={<FamiliesPage />} />
-                <Route path="/faq" element={<FaqPage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                {/* Guest-accessible routes (requireAuth omitted = false) */}
-                {/* /dashboard — only for tutor / parent / admin users; others redirect to /learn */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/bye" element={<Bye />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-
-                {/* /learn — main home for universal / child / guest (zero-click learning) */}
-                <Route path="/learn" element={
-                  <ProtectedRoute>
-                    <LearnPage />
-                  </ProtectedRoute>
-                } />
-
-                {/* /lessons — legacy redirect to /learn */}
-                <Route path="/lessons" element={<Navigate to="/learn" replace />} />
-
-                {/* Games — guest-accessible */}
-                <Route path="/games" element={
-                  <ProtectedRoute>
-                    <GamesPage />
-                  </ProtectedRoute>
-                } />
-
-                {/* Auth-only: AI assistant requires a real account */}
-                <Route path="/ai" element={
-                  <ProtectedRoute requireAuth>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                {/* Guest-accessible: profile, avatar, settings, help */}
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/u/:username" element={<UserProfile />} />
-                <Route path="/avatar/edit" element={
-                  <ProtectedRoute>
-                    <AvatarEditor />
-                  </ProtectedRoute>
-                } />
-                <Route path="/tasks" element={
-                  <ChildProtectedRoute>
-                    <PageUnderConstruction />
-                  </ChildProtectedRoute>
-                } />
-                <Route path="/parent-tasks" element={
-                  <ParentProtectedRoute>
-                    <PageUnderConstruction />
-                  </ParentProtectedRoute>
-                } />
-                <Route path="/growth" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/savings" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/store" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/investment-games" element={<Navigate to="/games" replace />} />
-
-                {/* Games */}
-                <Route path="/games/nam-vs-yum" element={
-                  <ProtectedRoute>
-                    <NamVsYumPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/games/nectar-of-shadows" element={
-                  <ProtectedRoute>
-                    <NectarOfShadowsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/games/nectar-de-las-sombras" element={<Navigate to="/games/nectar-of-shadows" replace />} />
-
-                <Route path="/games/paper-detective" element={
-                  <ProtectedRoute>
-                    <PaperDetectivePage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/games/paper-coin" element={
-                  <ProtectedRoute>
-                    <PaperCoinPage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/games/hacker-defense" element={
-                  <ProtectedRoute>
-                    <HackerDefensePage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/games/chronobloom" element={
-                  <ProtectedRoute>
-                    <ChronoBloomPage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/help" element={
-                  <ProtectedRoute>
-                    <Help />
-                  </ProtectedRoute>
-                } />
-
-                {/* Admin Panel Routes */}
-                <Route path="/admin" element={
-                  <AdminProtectedRoute>
-                    <AdminDashboard />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/lessons" element={
-                  <AdminProtectedRoute>
-                    <AdminLessons />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/lessons/new" element={
-                  <AdminProtectedRoute>
-                    <AdminLessonEditor />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/lessons/:publicId/edit" element={
-                  <AdminProtectedRoute>
-                    <AdminLessonEditor />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/characters" element={
-                  <AdminProtectedRoute>
-                    <AdminCharacters />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/audio" element={
-                  <AdminProtectedRoute>
-                    <AdminAudio />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/history" element={
-                  <AdminProtectedRoute>
-                    <AdminHistory />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/users" element={
-                  <AdminProtectedRoute>
-                    <AdminUsers />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/help" element={
-                  <AdminProtectedRoute>
-                    <AdminHelp />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/reports" element={
-                  <AdminProtectedRoute>
-                    <AdminReports />
-                  </AdminProtectedRoute>
-                } />
-                <Route path="/admin/notifications" element={
-                  <AdminProtectedRoute>
-                    <AdminNotifications />
-                  </AdminProtectedRoute>
-                } />
-
-                {/* Nuevo Motor de Lecciones - Rutas dinámicas */}
-                <Route path="/lesson/:lessonCode" element={<LessonRunner />} />
-
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AnimatedRoutes />
             </LanguageSyncWrapper>
           </BrowserRouter>
         </SoundProvider>

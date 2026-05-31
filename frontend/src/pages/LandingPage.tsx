@@ -3,6 +3,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { hasSession } from "@/lib/guestProfile";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Gamepad2, Bot, Layers, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LandingLayout } from "../components/landing/LandingLayout";
@@ -14,6 +15,8 @@ import { GamifiedLearningSection } from "../components/landing/GamifiedLearningS
 import { useLanguage } from "@/hooks/useLanguage";
 import { useUserLanguage } from "@/hooks/useUserLanguage";
 import { SupportedLanguage } from "@/i18n";
+import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/ui/AnimatedSection";
+import { staggerContainer, staggerContainerFast } from "@/lib/animations";
 
 /* ── Wave divider ─────────────────────────────────────────────────────────── */
 function WaveDivider({ flip = false, fromColor, toColor }: { flip?: boolean; fromColor: string; toColor: string }) {
@@ -132,10 +135,21 @@ const LandingPage = () => {
             </div>
 
             {/* Copy block */}
-            <div className="relative z-30 flex-1 text-center lg:text-left space-y-5 max-w-xl">
+            <motion.div
+              className="relative z-30 flex-1 text-center lg:text-left space-y-5 max-w-xl"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
 
               {/* Headline */}
-              <h1 className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight animate-fade-in-up-delay-1 text-gray-900 dark:text-white">
+              <motion.h1
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-gray-900 dark:text-white"
+              >
                 {t('hero.title_part1')}{' '}
                 <span className="relative inline-block">
                   <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#ff6b6b] to-[#7048e8]">
@@ -153,13 +167,25 @@ const LandingPage = () => {
                   </svg>
                 </span>{' '}
                 <span className="text-gray-800 dark:text-slate-100">{t('hero.title_part2')}</span>
-              </h1>
+              </motion.h1>
 
-              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed animate-fade-in-up-delay-2">
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed"
+              >
                 <Trans i18nKey="hero.subtitle" ns="landing" />
-              </p>
+              </motion.p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2 animate-fade-in-up-delay-3">
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2"
+              >
                 <Button asChild size="lg" className="btn-press h-14 px-10 text-lg rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white font-black w-full sm:w-auto border-0 shadow-none">
                   <Link to="/onboarding" className="flex items-center gap-2">
                     {t('hero.cta_button')}
@@ -169,8 +195,8 @@ const LandingPage = () => {
                 <Button asChild variant="ghost" size="lg" className="glass-btn-ghost h-14 px-8 text-lg rounded-2xl font-bold text-gray-700 dark:text-gray-200 w-full sm:w-auto transition-all">
                   <Link to="/login">{t('hero.login_link')}</Link>
                 </Button>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
           </div>
         </div>
@@ -188,17 +214,33 @@ const LandingPage = () => {
         </div>
 
         {/* Language switcher bar */}
-        <div className="relative z-10 w-full py-6 border-t border-amber-200/50 dark:border-slate-700/50 glass-panel mt-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 w-full py-6 border-t border-amber-200/50 dark:border-slate-700/50 glass-panel mt-auto"
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
             <h3 className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-500 mb-3 sm:mb-4 uppercase tracking-[0.2em]">
               {t('language.title')}
             </h3>
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <motion.div
+              variants={staggerContainerFast}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+            >
               {languages.map((lang) => (
-                <button
+                <motion.button
                   key={lang.code}
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.8 },
+                    visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+                  }}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => saveLanguagePreference(lang.code as SupportedLanguage)}
-                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 border ${
                     isCurrentLanguage(lang.code)
                       ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white border-orange-300 dark:border-orange-600/50 shadow-md shadow-orange-200/50 scale-105'
                       : 'bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 hover:text-gray-900 dark:hover:text-white'
@@ -206,17 +248,17 @@ const LandingPage = () => {
                 >
                   <span className="text-lg leading-none">{lang.flag}</span>
                   {lang.name}
-                </button>
+                </motion.button>
               ))}
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </header>
 
       {/* ══════════════════════════════════════════════════════════
           PROBLEM SECTION — dark, punchy, high contrast
       ══════════════════════════════════════════════════════════ */}
-      <section id="problem" className="relative py-24 bg-white dark:bg-[#080610] overflow-hidden">
+      <AnimatedSection as="section" id="problem" className="relative py-24 bg-white dark:bg-[#080610] overflow-hidden">
         {/* Background grid pattern */}
         <div className="absolute inset-0 pointer-events-none opacity-20 text-gray-200 dark:text-gray-800" style={{
           backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
@@ -253,18 +295,27 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
+          <AnimatedStagger className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
             {problemCards.map((card, i) => (
-              <div key={i} className={`card-tilt relative glass-card rounded-3xl p-6 hover:shadow-2xl`}>
-                {/* Gradient icon circle */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
-                  {card.emoji}
-                </div>
-                <h3 className="landing-heading font-black text-xl mb-2 text-gray-900 dark:text-white">{card.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.text}</p>
-              </div>
+              <AnimatedItem key={i}>
+                <motion.div
+                  className="card-tilt relative glass-card rounded-3xl p-6"
+                  whileHover={{
+                    y: -4,
+                    boxShadow: "0 12px 40px 0 hsl(var(--background) / 0.25)",
+                    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+                  }}
+                >
+                  {/* Gradient icon circle */}
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
+                    {card.emoji}
+                  </div>
+                  <h3 className="landing-heading font-black text-xl mb-2 text-gray-900 dark:text-white">{card.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.text}</p>
+                </motion.div>
+              </AnimatedItem>
             ))}
-          </div>
+          </AnimatedStagger>
         </div>
 
         {/* Wave bottom → GamifiedLearning dark bg */}
@@ -273,7 +324,7 @@ const LandingPage = () => {
             <path d="M0,30 C360,60 720,0 1080,40 C1260,55 1380,25 1440,30 L1440,60 L0,60 Z" fill="currentColor" className="text-indigo-50 dark:text-[#0d0a1f]" />
           </svg>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* ══════════════════════════════════════════════════════════
           GAMIFIED LEARNING (existing animated section)
@@ -283,7 +334,7 @@ const LandingPage = () => {
       {/* ══════════════════════════════════════════════════════════
           FEATURES — warm amber background, playful cards
       ══════════════════════════════════════════════════════════ */}
-      <section id="features" className="relative py-24 bg-amber-50 dark:bg-slate-900 overflow-hidden">
+      <AnimatedSection as="section" id="features" className="relative py-24 bg-amber-50 dark:bg-slate-900 overflow-hidden">
 
         {/* Decorative stars */}
         <div className="absolute top-8 right-16 text-3xl opacity-20 animate-slow-spin pointer-events-none">⭐</div>
@@ -308,23 +359,32 @@ const LandingPage = () => {
             <p className="text-lg text-gray-600 dark:text-gray-300">{t('features.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <AnimatedStagger className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featureCards.map((card, i) => (
-              <div key={i} className={`card-tilt relative glass-card rounded-3xl p-6 hover:shadow-2xl`}>
-                {card.badge && (
-                  <div className="absolute top-4 right-4 bg-pink-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    {card.badge}
+              <AnimatedItem key={i}>
+                <motion.div
+                  className="card-tilt relative glass-card rounded-3xl p-6"
+                  whileHover={{
+                    y: -4,
+                    boxShadow: "0 12px 40px 0 hsl(var(--background) / 0.25)",
+                    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+                  }}
+                >
+                  {card.badge && (
+                    <div className="absolute top-4 right-4 bg-pink-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      {card.badge}
+                    </div>
+                  )}
+                  {/* Gradient icon circle */}
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
+                    {card.emoji}
                   </div>
-                )}
-                {/* Gradient icon circle */}
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-5 text-2xl shadow-lg`}>
-                  {card.emoji}
-                </div>
-                <h3 className="landing-heading font-black text-xl mb-2 text-gray-900 dark:text-white">{card.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.desc}</p>
-              </div>
+                  <h3 className="landing-heading font-black text-xl mb-2 text-gray-900 dark:text-white">{card.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.desc}</p>
+                </motion.div>
+              </AnimatedItem>
             ))}
-          </div>
+          </AnimatedStagger>
         </div>
 
         {/* Wave bottom → ParentCTA dark bg */}
@@ -333,7 +393,7 @@ const LandingPage = () => {
             <path d="M0,20 C480,60 960,0 1440,40 L1440,60 L0,60 Z" fill="currentColor" className="text-violet-50 dark:text-[#0a0520]" />
           </svg>
         </div>
-      </section>
+      </AnimatedSection>
 
     </LandingLayout>
   );

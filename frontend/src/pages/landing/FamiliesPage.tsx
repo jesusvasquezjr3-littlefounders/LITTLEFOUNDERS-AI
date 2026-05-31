@@ -1,6 +1,8 @@
 import React from 'react';
+import { motion } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import { LandingLayout } from '@/components/landing/LandingLayout';
+import { AnimatedSection, AnimatedStagger, AnimatedItem } from '@/components/ui/AnimatedSection';
 import {
   CheckCircle2,
   Clock, Flame,
@@ -155,19 +157,24 @@ export default function FamiliesPage() {
                 </p>
 
                 {/* Steps */}
-                <div className="flex flex-col gap-3 animate-fade-in-up-delay-2">
+                <AnimatedStagger className="flex flex-col gap-3">
                   {[
                     { n: 1, icon: '📋', text: t('families.hero.step_1') },
                     { n: 2, icon: '✅', text: t('families.hero.step_2') },
                     { n: 3, icon: '🎁', text: t('families.hero.step_3') },
                   ].map(step => (
-                    <div key={step.n} className="flex items-center gap-3 p-3 rounded-2xl glass-card hover:shadow-md transition-all">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 text-white text-xs font-black flex items-center justify-center shadow-md flex-shrink-0">{step.n}</div>
-                      <span className="text-base mr-1">{step.icon}</span>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{step.text}</span>
-                    </div>
+                    <AnimatedItem key={step.n}>
+                      <motion.div
+                        className="flex items-center gap-3 p-3 rounded-2xl glass-card hover:shadow-md transition-all"
+                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                      >
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 text-white text-xs font-black flex items-center justify-center shadow-md flex-shrink-0">{step.n}</div>
+                        <span className="text-base mr-1">{step.icon}</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{step.text}</span>
+                      </motion.div>
+                    </AnimatedItem>
                   ))}
-                </div>
+                </AnimatedStagger>
               </div>
 
               {/* RIGHT — Dashboard mockup */}

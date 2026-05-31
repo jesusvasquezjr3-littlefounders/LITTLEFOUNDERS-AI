@@ -1,8 +1,10 @@
 import { useState, ReactNode, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
+import { PageTransition } from "@/components/ui/PageTransition";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
@@ -18,6 +20,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation('dashboard');
   const showGuestBanner = isGuest() && !localStorage.getItem('user');
+  const location = useLocation();
 
   // On mount: refresh user stats from /auth/me so streak/points are always fresh
   // This ensures cross-device consistency — stats stored in DB are fetched on each session
@@ -92,7 +95,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           )} aria-label={t('layout.main_content_aria')}>
             {/* Guest banner — appears on every page for non-authenticated guests */}
             {showGuestBanner && <GuestBanner />}
-            {children}
+            <PageTransition key={location.pathname}>
+              {children}
+            </PageTransition>
           </main>
         </div>
       </div>

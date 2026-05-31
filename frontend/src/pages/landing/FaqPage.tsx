@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from "framer-motion";
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import { ShowreelPlayer } from '@/components/showreel/ShowreelPlayer';
 import { useTranslation, Trans } from 'react-i18next';
@@ -11,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Bot, Sparkles, Globe, ShieldCheck, Mail, ArrowRight, ChevronDown } from "lucide-react";
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 /* ── FAQ item config ──────────────────────────────────────────────────────── */
 const FAQ_ITEMS = [
@@ -74,7 +76,7 @@ export default function FaqPage() {
         {/* ══════════════════════════════════════════════════════
           MAIN CONTENT — video + accordion
       ══════════════════════════════════════════════════════ */}
-        <section className="relative py-16 px-4 bg-amber-50 dark:bg-slate-900 overflow-hidden">
+        <AnimatedSection as="section" className="relative py-16 px-4 bg-amber-50 dark:bg-slate-900 overflow-hidden">
 
           {/* Ambient glow orbs */}
           <div className="absolute inset-0 pointer-events-none">
@@ -110,32 +112,47 @@ export default function FaqPage() {
               {/* RIGHT — accordion */}
               <div className="w-full lg:w-5/12 xl:w-1/3">
                 <Accordion type="single" collapsible className="w-full space-y-3">
-                  {FAQ_ITEMS.map((item) => {
+                  {FAQ_ITEMS.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                      <AccordionItem key={item.id} value={item.id}
-                        className="rounded-2xl glass-card shadow-sm overflow-hidden group !border-b-0">
-                        <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
-                          <div className="flex items-center gap-3 w-full pr-2">
-                            <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                              <Icon className="w-4 h-4 text-white" />
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <AccordionItem value={item.id}
+                          className="rounded-2xl glass-card shadow-sm overflow-hidden group !border-b-0">
+                          <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
+                            <div className="flex items-center gap-3 w-full pr-2">
+                              <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
+                                <Icon className="w-4 h-4 text-white" />
+                              </div>
+                              <span className="font-bold text-gray-900 dark:text-white text-sm leading-snug">
+                                {t(item.qKey)}
+                              </span>
                             </div>
-                            <span className="font-bold text-gray-900 dark:text-white text-sm leading-snug">
-                              {t(item.qKey)}
-                            </span>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className={`mx-5 mb-4 mt-1 p-4 rounded-xl ${item.bg} border ${item.border}`}>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                              {item.trans
-                                ? <Trans i18nKey={item.aKey} ns="landing" />
-                                : t(item.aKey)
-                              }
-                            </p>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                              <div className={`mx-5 mb-4 mt-1 p-4 rounded-xl ${item.bg} border ${item.border}`}>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                  {item.trans
+                                    ? <Trans i18nKey={item.aKey} ns="landing" />
+                                    : t(item.aKey)
+                                  }
+                                </p>
+                              </div>
+                            </motion.div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </motion.div>
                     );
                    })}
                 </Accordion>
@@ -149,12 +166,12 @@ export default function FaqPage() {
               <path d="M0,20 C480,56 960,5 1440,35 L1440,56 L0,56 Z" fill="currentColor" className="text-violet-50 dark:text-[#0f0720]" />
             </svg>
           </div>
-        </section>
+        </AnimatedSection>
 
         {/* ══════════════════════════════════════════════════════
           CONTACT CTA
       ══════════════════════════════════════════════════════ */}
-        <section className="relative py-24 overflow-hidden text-gray-900 dark:text-white bg-gradient-to-br from-violet-50 to-pink-50 dark:from-[#0f0720] dark:to-[#0a1530]">
+        <AnimatedSection as="section" className="relative py-24 overflow-hidden text-gray-900 dark:text-white bg-gradient-to-br from-violet-50 to-pink-50 dark:from-[#0f0720] dark:to-[#0a1530]">
 
           {/* Ambient glow orbs */}
           <div className="absolute inset-0 pointer-events-none">
@@ -196,7 +213,7 @@ export default function FaqPage() {
               </a>
             </Button>
           </div>
-        </section>
+        </AnimatedSection>
 
       </div>
     </LandingLayout>
