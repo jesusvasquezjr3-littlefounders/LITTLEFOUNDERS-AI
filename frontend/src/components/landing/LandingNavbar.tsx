@@ -37,7 +37,10 @@ export const LandingNavbar = () => {
     const showGlass = isScrolled || mobileMenuOpen;
 
     return (
-        <div className="fixed top-0 w-full z-50 view-transition-header">
+        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${showGlass
+            ? 'liquid-glass-subtle py-3'
+            : 'bg-transparent py-5'
+        }`}>
             {/* Wave clip-path definition */}
             <svg width="0" height="0" className="absolute pointer-events-none">
                 <defs>
@@ -47,48 +50,41 @@ export const LandingNavbar = () => {
                 </defs>
             </svg>
 
-            <nav
-                className={`w-full transition-all duration-300 ${showGlass
-                    ? 'liquid-glass-subtle py-3'
-                    : 'bg-transparent py-5'
-                }`}
-            >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center">
-                        {/* Logo */}
-                        <Link to="/" className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                            <img src="/logo-sized.png" alt="LittleFounders" className="h-10 w-auto object-contain dark:brightness-110" />
-                        </Link>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <img src="/logo-sized.png" alt="LittleFounders" className="h-10 w-auto object-contain dark:brightness-110" />
+                    </Link>
 
-                        {/* Desktop Menu */}
-                        <div className="hidden md:flex items-center gap-8">
-                            <Link to="/families" className={`font-medium transition-colors ${isCurrent('/families') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.families')}</Link>
-                            <Link to="/faq" className={`font-medium transition-colors ${isCurrent('/faq') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.faq')}</Link>
-                            <Link to="/pricing" className={`font-medium transition-colors ${isCurrent('/pricing') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.pricing')}</Link>
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center gap-8">
+                        <Link to="/families" className={`font-medium transition-colors ${isCurrent('/families') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.families')}</Link>
+                        <Link to="/faq" className={`font-medium transition-colors ${isCurrent('/faq') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.faq')}</Link>
+                        <Link to="/pricing" className={`font-medium transition-colors ${isCurrent('/pricing') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.pricing')}</Link>
 
-                            <div className="flex items-center gap-2 ml-4">
-                                <ThemeToggle />
-                                <LanguageSelector variant="simple" />
-                            </div>
+                        <div className="flex items-center gap-2 ml-4">
+                            <ThemeToggle />
+                            <LanguageSelector variant="simple" />
                         </div>
-
-                        {/* Mobile Menu Toggle */}
-                        <button className="md:hidden text-gray-700 dark:text-gray-200" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                            {mobileMenuOpen ? <X /> : <Menu />}
-                        </button>
                     </div>
+
+                    {/* Mobile Menu Toggle */}
+                    <button className="md:hidden text-gray-700 dark:text-gray-200" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        {mobileMenuOpen ? <X /> : <Menu />}
+                    </button>
                 </div>
-            </nav>
+            </div>
 
             {/* Bottom wave — fused glass extension below the nav */}
             {showGlass && !mobileMenuOpen && (
                 <div
-                    className="absolute top-full left-0 w-full h-6 liquid-glass-subtle pointer-events-none -mt-px"
-                    style={{ clipPath: `url(#${clipId})` }}
+                    className="absolute bottom-0 left-0 w-full h-6 liquid-glass-subtle pointer-events-none"
+                    style={{ transform: 'translateY(99%)', clipPath: `url(#${clipId})` }}
                 />
             )}
 
-            {/* Mobile Menu — outside nav so it isn't clipped */}
+            {/* Mobile Menu */}
             {mobileMenuOpen && (
                 <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-xl">
                     <Link to="/families" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.families')}</Link>
@@ -103,6 +99,6 @@ export const LandingNavbar = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </nav>
     );
 };
