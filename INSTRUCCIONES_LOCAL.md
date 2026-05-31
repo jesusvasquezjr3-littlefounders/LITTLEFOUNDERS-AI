@@ -35,11 +35,13 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+pip install -r requirements-dev.txt   # Testing + linting (solo local/CI)
 
 # O con Python por defecto (si es 3.11+):
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ### 2.2 Configurar variables de entorno
@@ -165,8 +167,13 @@ El proyecto tiene pipelines de CI en GitHub Actions:
 | **Backend CI** | Push/PR a `main` (paths: `backend/**`) | ruff lint → pytest (con PostgreSQL) |
 
 **Deployment** (manual vía Git):
-- **Frontend → Vercel:** Integración Git automática en `main`
-- **Backend → Render:** Integración Git automática en `main`
+- **Frontend → Vercel:** Integración Git automática en `main`. Solo se despliega `frontend/dist/` (test files excluidos vía `.vercelignore`)
+- **Backend → Render:** Integración Git automática en `main`. Render solo instala `requirements.txt` (producción). Testing y linting están en `requirements-dev.txt`
+
+### Seguridad en Deploy
+- **Vercel:** `.vercelignore` excluye: `backend/`, `api/`, `*.md`, `*.sql`, `frontend/vitest.config.ts`, `frontend/.env.example`, `frontend/src/__tests__/`
+- **Render:** Solo instala dependencias de producción (`requirements.txt`). Tests y linters (`requirements-dev.txt`) nunca se instalan en producción
+- **Nunca comitear `.env`**: Los archivos `.env` reales están en `.gitignore`. Solo se comitean `.env.example` y `.env.test` con valores placeholder
 
 ---
 

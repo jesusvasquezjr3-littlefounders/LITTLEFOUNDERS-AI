@@ -50,6 +50,10 @@ littlefounders.ai
 | 2026-05-31 | GitHub Actions CI implementado |
 | 2026-05-31 | Supabase config.toml creado para CLI local |
 | 2026-05-31 | .env.example + .env.test creados |
+| 2026-05-31 | Bugfix: 3 runtime bugs (hooks condicionales, case duplicado) |
+| 2026-05-31 | Bugfix: 19 undefined-name F821 en admin/endpoints.py |
+| 2026-05-31 | Seguridad: requirements.txt separado (prod) de requirements-dev.txt |
+| 2026-05-31 | Seguridad: .vercelignore actualizado con exclusiones de testing |
 
 ---
 
@@ -57,8 +61,8 @@ littlefounders.ai
 
 1. **~150 variables no usadas** en frontend (TS6133) — `noUnusedLocals` desactivado temporalmente
 2. **670 warnings de ESLint** en frontend — pre-existentes, no bloqueantes
-3. **115 issues de ruff** en backend — mayormente whitespace y estilo
-4. **Sin Supabase migrations** — dump inicial pendiente
-5. **Sin cobertura de tests reales** — solo placeholder tests
-6. **Sin E2E tests** — solo manuales
-7. **Sin pre-commit hooks**
+3. **Sin Supabase migrations** — dump inicial pendiente (ejecutar `supabase db dump` local)
+4. **Sin cobertura de tests reales** — solo placeholder tests
+5. **Sin E2E tests** — solo manuales
+6. **Sin pre-commit hooks** (husky/lint-staged)
+7. **CI necesita configurar secrets** — `VERCEL_DEPLOY_HOOK_URL` y `RENDER_DEPLOY_HOOK_URL` para CD

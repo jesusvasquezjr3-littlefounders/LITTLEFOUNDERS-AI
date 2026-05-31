@@ -15,3 +15,8 @@ backend/scripts/
 # (El backend ahora se despliega exclusivamente en Render)
 /backend/
 /api/
+
+# Archivos de testing y configuración local
+frontend/vitest.config.ts
+frontend/.env.example
+frontend/src/__tests__/

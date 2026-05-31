@@ -7,20 +7,8 @@ pydantic-settings>=2.1.0
 python-multipart>=0.0.9
 python-jose[cryptography]>=3.3.0
 email-validator>=2.1.0
-# Pipeline de Audio
 supabase>=2.0.0
 requests>=2.31.0
 python-dotenv>=1.0.0
-# Rate Limiting
 slowapi>=0.1.9
-
-# Testing
-pytest>=8.0.0
-pytest-asyncio>=0.24.0
-httpx>=0.28.0
-
-# Linting
-ruff>=0.8.0
-
-# Compatibility (PEP 604 union types for Python < 3.10)
 eval-type-backport>=0.3.0
