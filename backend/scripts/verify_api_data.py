@@ -1,6 +1,7 @@
-import requests
 import json
 import sys
+
+import requests
 
 BASE_URL = "http://localhost:8000/lesson-engine/lessons"
 
@@ -11,22 +12,22 @@ def check_lesson(code, check_fn):
         if response.status_code != 200:
             print(f"FAIL {code}: Status {response.status_code}")
             return False
-        
+
         data = response.json()
         timeline = data.get("timeline", [])
         if len(timeline) < 2:
             print(f"FAIL {code}: Timeline too short")
             return False
-            
+
         activity = timeline[1] # Index 1 is the activity
-        
+
         if check_fn(activity):
             print(f"PASS {code}")
             return True
         else:
             print(f"FAIL {code}: Logic check failed. Data: {json.dumps(activity, indent=2)}")
             return False
-            
+
     except Exception as e:
         print(f"FAIL {code}: Exception {e}")
         return False
@@ -82,7 +83,7 @@ def run():
     results.append(check_lesson("0-0-0-13", check_concept))
     results.append(check_lesson("0-0-0-14", check_roleplay))
     results.append(check_lesson("0-0-0-15", check_story))
-    
+
     if all(results):
         print("ALL PASSED")
         sys.exit(0)

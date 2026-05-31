@@ -3,11 +3,12 @@ Helper functions for family-based access control
 These functions ensure data integrity and prevent users from accessing
 data from other families
 """
+from __future__ import annotations
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
 from models import User, UserType
-from typing import Optional
 
 
 def verify_family_access(
@@ -39,25 +40,25 @@ def verify_family_access(
     # Same user accessing their own data
     if allow_self and requester_id == target_user_id:
         return True
-    
+
     # Get users
     requester = db.query(User).filter(User.id == requester_id).first()
     if not requester:
         raise HTTPException(status_code=404, detail="Requester not found")
-    
+
     target_user = db.query(User).filter(User.id == target_user_id).first()
     if not target_user:
         raise HTTPException(status_code=404, detail="Target user not found")
-    
+
     # TUTOR can access their children's data
     if requester.user_type == UserType.TUTOR:
         if target_user.tutor_id == requester_id:
             return True
-    
+
     # CHILD can only access their own data (already handled above)
     elif requester.user_type == UserType.CHILD:
         pass
-    
+
     # Access denied
     raise HTTPException(
         status_code=403,
@@ -79,18 +80,18 @@ def get_authorized_children(db: Session, user_id: int) -> list[int]:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return []
-    
+
     authorized_children = []
-    
+
     # If user is TUTOR, get all their children
     if user.user_type == UserType.TUTOR:
         children = db.query(User).filter(User.tutor_id == user_id).all()
         authorized_children = [child.id for child in children]
-    
+
     # If user is CHILD, only themselves
     elif user.user_type == UserType.CHILD:
         authorized_children = [user_id]
-    
+
     return authorized_children
 
 
@@ -108,13 +109,13 @@ def get_authorized_parents(db: Session, child_id: int) -> list[int]:
     child = db.query(User).filter(User.id == child_id).first()
     if not child or child.user_type != UserType.CHILD:
         return []
-    
+
     authorized_parents = []
-    
+
     # Add tutor
     if child.tutor_id:
         authorized_parents.append(child.tutor_id)
-    
+
     return authorized_parents
 
 
@@ -162,18 +163,18 @@ def get_family_member_ids(db: Session, user_id: int) -> list[int]:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return []
-    
+
     family_ids = [user_id]  # Include self
-    
+
     if user.user_type == UserType.CHILD:
         # Add tutor
         if user.tutor_id:
             family_ids.append(user.tutor_id)
-    
+
     elif user.user_type == UserType.TUTOR:
         # Add children
         children = db.query(User).filter(User.tutor_id == user_id).all()
         family_ids.extend([child.id for child in children])
-    
+
     return list(set(family_ids))  # Remove duplicates
 

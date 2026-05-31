@@ -7,10 +7,11 @@ Estrategia de upsert:
   2. Si existe → actualiza (audio_url, transcript, duration_ms, character_id, is_active).
   3. Si no existe → inserta nuevo registro.
 """
+from __future__ import annotations
 
 import hashlib
-from supabase import create_client, Client
-from typing import Optional, Tuple
+
+from supabase import Client, create_client
 
 import config
 
@@ -78,7 +79,7 @@ def load_audio_cache() -> dict:
         return {}
 
 
-def get_lesson_integer_id(public_uuid: str) -> Optional[int]:
+def get_lesson_integer_id(public_uuid: str) -> int | None:
     """
     Resuelve el public_id UUID de una lección a su integer primary key.
     El API devuelve public_id como 'id', pero lesson_audio_segments.lesson_id
@@ -98,7 +99,7 @@ def get_lesson_integer_id(public_uuid: str) -> Optional[int]:
         return None
 
 
-def get_character_id(character_code: str) -> Optional[int]:
+def get_character_id(character_code: str) -> int | None:
     """
     Obtiene el ID numérico del personaje desde la tabla 'characters'.
     Devuelve None si no se encuentra.

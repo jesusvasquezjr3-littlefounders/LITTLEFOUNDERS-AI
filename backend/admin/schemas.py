@@ -2,10 +2,12 @@
 backend/admin/schemas.py
 Schemas para request/response de todos los endpoints admin.
 """
-from pydantic import BaseModel, Field
-from typing import Optional, List, Any, Dict
-from datetime import datetime
+from __future__ import annotations
 
+from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 # ──── LECCIONES ────
 
@@ -14,10 +16,10 @@ class LessonMetadataUpdate(BaseModel):
     lesson_code: str = Field(..., pattern=r'^\d+-\d+-\d+-\d+$')
     title_es: str = Field(..., min_length=1, max_length=200)
     title_en: str = Field(..., min_length=1, max_length=200)
-    description_es: Optional[str] = None
-    description_en: Optional[str] = None
-    duration: Optional[int] = Field(None, ge=1, le=3600)
-    age_rate: Optional[str] = None
+    description_es: str | None = None
+    description_en: str | None = None
+    duration: int | None = Field(None, ge=1, le=3600)
+    age_rate: str | None = None
     points_reward: int = Field(10, ge=1, le=1000)
     adventure_level: int = Field(..., ge=1, le=6)
     saga_level: int = Field(..., ge=1, le=10)
@@ -27,32 +29,32 @@ class LessonMetadataUpdate(BaseModel):
 
 class LessonContentUpdate(BaseModel):
     """Para actualizar el contenido completo de ejercicios."""
-    content_es: List[dict]
-    content_en: List[dict]
+    content_es: list[dict]
+    content_en: list[dict]
 
 
 class LessonFullCreate(LessonMetadataUpdate):
     """Combinación de metadata + contenido para crear lección."""
-    content_es: List[dict] = Field(default_factory=list)
-    content_en: List[dict] = Field(default_factory=list)
+    content_es: list[dict] = Field(default_factory=list)
+    content_en: list[dict] = Field(default_factory=list)
 
 
 class LessonFullUpdate(BaseModel):
     """Para actualizar una lección existente (todos los campos opcionales)."""
-    lesson_code: Optional[str] = Field(None, pattern=r'^\d+-\d+-\d+-\d+$')
-    title_es: Optional[str] = Field(None, min_length=1, max_length=200)
-    title_en: Optional[str] = Field(None, min_length=1, max_length=200)
-    description_es: Optional[str] = None
-    description_en: Optional[str] = None
-    duration: Optional[int] = Field(None, ge=1, le=3600)
-    age_rate: Optional[str] = None
-    points_reward: Optional[int] = Field(None, ge=1, le=1000)
-    adventure_level: Optional[int] = Field(None, ge=1, le=6)
-    saga_level: Optional[int] = Field(None, ge=1, le=10)
-    topic_level: Optional[int] = Field(None, ge=1, le=20)
-    lesson_number: Optional[int] = Field(None, ge=1, le=50)
-    content_es: Optional[List[dict]] = None
-    content_en: Optional[List[dict]] = None
+    lesson_code: str | None = Field(None, pattern=r'^\d+-\d+-\d+-\d+$')
+    title_es: str | None = Field(None, min_length=1, max_length=200)
+    title_en: str | None = Field(None, min_length=1, max_length=200)
+    description_es: str | None = None
+    description_en: str | None = None
+    duration: int | None = Field(None, ge=1, le=3600)
+    age_rate: str | None = None
+    points_reward: int | None = Field(None, ge=1, le=1000)
+    adventure_level: int | None = Field(None, ge=1, le=6)
+    saga_level: int | None = Field(None, ge=1, le=10)
+    topic_level: int | None = Field(None, ge=1, le=20)
+    lesson_number: int | None = Field(None, ge=1, le=50)
+    content_es: list[dict] | None = None
+    content_en: list[dict] | None = None
 
 
 class LessonResponse(BaseModel):
@@ -60,19 +62,19 @@ class LessonResponse(BaseModel):
     lesson_code: str
     title_es: str
     title_en: str
-    description_es: Optional[str] = None
-    description_en: Optional[str] = None
-    duration: Optional[int] = None
-    age_rate: Optional[str] = None
+    description_es: str | None = None
+    description_en: str | None = None
+    duration: int | None = None
+    age_rate: str | None = None
     points_reward: int
     adventure_level: int
     saga_level: int
     topic_level: int
     lesson_number: int
-    content_es: List[dict]
-    content_en: List[dict]
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    content_es: list[dict]
+    content_en: list[dict]
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -89,17 +91,17 @@ class LessonListItem(BaseModel):
     topic_level: int
     lesson_number: int
     points_reward: int
-    duration: Optional[int] = None
+    duration: int | None = None
     exercise_count_es: int = 0
     exercise_count_en: int = 0
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True
 
 
 class LessonListResponse(BaseModel):
-    items: List[LessonListItem]
+    items: list[LessonListItem]
     total: int
     page: int
     page_size: int
@@ -111,23 +113,23 @@ class ExerciseCreate(BaseModel):
     """Para agregar un ejercicio a una lección."""
     type: str
     content: dict
-    correct_answer: Optional[dict] = None
-    feedback: Optional[dict] = None
-    character_code: Optional[str] = None
+    correct_answer: dict | None = None
+    feedback: dict | None = None
+    character_code: str | None = None
 
 
 class ExerciseUpdate(BaseModel):
     """Para actualizar un ejercicio existente."""
-    type: Optional[str] = None
-    content: Optional[dict] = None
-    correct_answer: Optional[dict] = None
-    feedback: Optional[dict] = None
-    character_code: Optional[str] = None
+    type: str | None = None
+    content: dict | None = None
+    correct_answer: dict | None = None
+    feedback: dict | None = None
+    character_code: str | None = None
 
 
 class ExerciseReorder(BaseModel):
     """Para reordenar ejercicios."""
-    new_order: List[int]
+    new_order: list[int]
 
 
 # ──── PERSONAJES ────
@@ -135,26 +137,26 @@ class ExerciseReorder(BaseModel):
 class CharacterCreate(BaseModel):
     code: str = Field(..., pattern=r'^[a-z_]{2,30}$')
     name: str = Field(..., min_length=1, max_length=100)
-    description: Optional[str] = None
-    default_appearance: Optional[dict] = None
+    description: str | None = None
+    default_appearance: dict | None = None
 
 
 class CharacterUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    default_appearance: Optional[dict] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    description: str | None = None
+    default_appearance: dict | None = None
+    is_active: bool | None = None
 
 
 class CharacterResponse(BaseModel):
     public_id: str
     code: str
     name: str
-    description: Optional[str] = None
-    default_appearance: Optional[dict] = None
+    description: str | None = None
+    default_appearance: dict | None = None
     is_active: bool
-    gestures: List[dict] = []
-    created_at: Optional[datetime] = None
+    gestures: list[dict] = []
+    created_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -162,14 +164,14 @@ class CharacterResponse(BaseModel):
 
 class GestureCreate(BaseModel):
     gesture_code: str
-    animation_data: Optional[dict] = None
+    animation_data: dict | None = None
     duration_ms: int = Field(1000, ge=100, le=30000)
 
 
 class GestureUpdate(BaseModel):
-    gesture_code: Optional[str] = None
-    animation_data: Optional[dict] = None
-    duration_ms: Optional[int] = Field(None, ge=100, le=30000)
+    gesture_code: str | None = None
+    animation_data: dict | None = None
+    duration_ms: int | None = Field(None, ge=100, le=30000)
 
 
 # ──── AUDIO ────
@@ -180,20 +182,20 @@ class AudioGenerateRequest(BaseModel):
     character_code: str
     emotion: str = "neutral"
     language_code: str = "es"
-    lesson_public_id: Optional[str] = None  # lesson public UUID or lesson_code
-    exercise_index: Optional[int] = None
+    lesson_public_id: str | None = None  # lesson public UUID or lesson_code
+    exercise_index: int | None = None
     target_field: str = "main"  # main, statement, question, instruction, feedback_success, feedback_error
 
 
 class AudioResponse(BaseModel):
     public_id: str
-    lesson_code: Optional[str] = None
-    exercise_id: Optional[int] = None
+    lesson_code: str | None = None
+    exercise_id: int | None = None
     target_field: str = "main"  # main, statement, question, instruction, feedback_success, feedback_error
-    character_code: Optional[str] = None
-    audio_url: Optional[str] = None
-    transcript: Optional[str] = None
-    emotion: Optional[str] = None
+    character_code: str | None = None
+    audio_url: str | None = None
+    transcript: str | None = None
+    emotion: str | None = None
     language_code: str = "es"
     source: str = "generated"
     tags: list = []
@@ -207,23 +209,23 @@ class AudioResponse(BaseModel):
 
 class HistoryEntry(BaseModel):
     public_id: str = Field(alias="id")  # We map public_id to 'id' for frontend compatibility
-    editor_public_id: Optional[str] = None
-    editor_name: Optional[str] = None
+    editor_public_id: str | None = None
+    editor_name: str | None = None
     entity_type: str
-    entity_public_id: Optional[str] = Field(None, alias="entity_id") # Map public_id to entity_id
+    entity_public_id: str | None = Field(None, alias="entity_id") # Map public_id to entity_id
     action: str
-    field_changed: Optional[str] = None
-    previous_value: Optional[Any] = None
-    new_value: Optional[Any] = None
-    metadata: Optional[dict] = None
-    created_at: Optional[datetime] = None
+    field_changed: str | None = None
+    previous_value: Any | None = None
+    new_value: Any | None = None
+    metadata: dict | None = None
+    created_at: datetime | None = None
 
     class Config:
         from_attributes = True
 
 
 class HistoryListResponse(BaseModel):
-    items: List[HistoryEntry]
+    items: list[HistoryEntry]
     total: int
     page: int
     page_size: int
@@ -241,8 +243,8 @@ class AdminStats(BaseModel):
     total_exercises: int
     total_characters: int
     total_audio_segments: int
-    recent_edits: List[HistoryEntry]
-    lessons_by_adventure: Dict[str, int]
+    recent_edits: list[HistoryEntry]
+    lessons_by_adventure: dict[str, int]
 
 
 # ──── USUARIOS ADMIN ────
@@ -253,7 +255,7 @@ class AdminUserResponse(BaseModel):
     email: str
     user_type: str
     is_active: bool
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     class Config:
         from_attributes = True

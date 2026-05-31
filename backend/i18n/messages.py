@@ -18,9 +18,9 @@ Adding a new language:
 2. Add translations for all MessageCode values
 3. Add the language to MESSAGES and SUPPORTED_LANGUAGES
 """
+from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
 
 class MessageCode(str, Enum):
@@ -28,7 +28,7 @@ class MessageCode(str, Enum):
     Enum of all message codes used throughout the application.
     Organized by category for easier maintenance.
     """
-    
+
     # Authentication
     LOGIN_SUCCESS = "LOGIN_SUCCESS"
     LOGIN_FAILED = "LOGIN_FAILED"
@@ -40,19 +40,19 @@ class MessageCode(str, Enum):
     SESSION_EXPIRED = "SESSION_EXPIRED"
     UNAUTHORIZED = "UNAUTHORIZED"
     ACCOUNT_INACTIVE = "ACCOUNT_INACTIVE"
-    
+
     # User Management
     USER_NOT_FOUND = "USER_NOT_FOUND"
     USER_CREATED = "USER_CREATED"
     USER_UPDATED = "USER_UPDATED"
     USER_DELETED = "USER_DELETED"
     PROFILE_UPDATED = "PROFILE_UPDATED"
-    
+
     # Lessons
     LESSON_NOT_FOUND = "LESSON_NOT_FOUND"
     LESSON_COMPLETED = "LESSON_COMPLETED"
     LESSON_PROGRESS_SAVED = "LESSON_PROGRESS_SAVED"
-    
+
     # Generic
     SUCCESS = "SUCCESS"
     ERROR = "ERROR"
@@ -75,19 +75,19 @@ MESSAGES_ES = {
     MessageCode.SESSION_EXPIRED: "Tu sesión ha expirado. Inicia sesión nuevamente.",
     MessageCode.UNAUTHORIZED: "No tienes permiso para acceder a este recurso",
     MessageCode.ACCOUNT_INACTIVE: "Tu cuenta está inactiva",
-    
+
     # User Management
     MessageCode.USER_NOT_FOUND: "Usuario no encontrado",
     MessageCode.USER_CREATED: "Usuario creado exitosamente",
     MessageCode.USER_UPDATED: "Usuario actualizado",
     MessageCode.USER_DELETED: "Usuario eliminado",
     MessageCode.PROFILE_UPDATED: "Perfil actualizado correctamente",
-    
+
     # Lessons
     MessageCode.LESSON_NOT_FOUND: "Lección no encontrada",
     MessageCode.LESSON_COMPLETED: "¡Lección completada!",
     MessageCode.LESSON_PROGRESS_SAVED: "Progreso guardado",
-    
+
     # Generic
     MessageCode.SUCCESS: "Operación exitosa",
     MessageCode.ERROR: "Error",
@@ -110,19 +110,19 @@ MESSAGES_EN = {
     MessageCode.SESSION_EXPIRED: "Your session has expired. Please log in again.",
     MessageCode.UNAUTHORIZED: "You don't have permission to access this resource",
     MessageCode.ACCOUNT_INACTIVE: "Your account is inactive",
-    
+
     # User Management
     MessageCode.USER_NOT_FOUND: "User not found",
     MessageCode.USER_CREATED: "User created successfully",
     MessageCode.USER_UPDATED: "User updated",
     MessageCode.USER_DELETED: "User deleted",
     MessageCode.PROFILE_UPDATED: "Profile updated successfully",
-    
+
     # Lessons
     MessageCode.LESSON_NOT_FOUND: "Lesson not found",
     MessageCode.LESSON_COMPLETED: "Lesson completed!",
     MessageCode.LESSON_PROGRESS_SAVED: "Progress saved",
-    
+
     # Generic
     MessageCode.SUCCESS: "Operation successful",
     MessageCode.ERROR: "Error",
@@ -145,7 +145,7 @@ SUPPORTED_LANGUAGES = ["es", "en"]
 DEFAULT_LANGUAGE = "es"
 
 
-def get_message(code: MessageCode, lang: Optional[str] = None) -> str:
+def get_message(code: MessageCode, lang: str | None = None) -> str:
     """
     Get a translated message by its code.
     
@@ -164,20 +164,20 @@ def get_message(code: MessageCode, lang: Optional[str] = None) -> str:
     """
     if lang is None:
         lang = DEFAULT_LANGUAGE
-    
+
     # Normalize language code (e.g., "es-MX" -> "es")
     lang = lang.split("-")[0].lower()
-    
+
     # Fallback to default if language not supported
     if lang not in SUPPORTED_LANGUAGES:
         lang = DEFAULT_LANGUAGE
-    
+
     # Get the message, with fallback to English, then to the code itself
     messages = MESSAGES.get(lang, MESSAGES_ES)
     return messages.get(code, MESSAGES_EN.get(code, str(code)))
 
 
-def get_language_from_header(accept_language: Optional[str]) -> str:
+def get_language_from_header(accept_language: str | None) -> str:
     """
     Extract language code from Accept-Language header.
     
@@ -196,9 +196,9 @@ def get_language_from_header(accept_language: Optional[str]) -> str:
     """
     if not accept_language:
         return DEFAULT_LANGUAGE
-    
+
     # Parse the primary language from the header
     primary_lang = accept_language.split(",")[0].split("-")[0].lower()
-    
+
     # Return the language if supported, otherwise default
     return primary_lang if primary_lang in SUPPORTED_LANGUAGES else DEFAULT_LANGUAGE

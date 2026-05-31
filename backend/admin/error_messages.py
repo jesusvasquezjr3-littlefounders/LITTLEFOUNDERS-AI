@@ -2,10 +2,12 @@
 backend/admin/error_messages.py
 Utilidad para formatear errores de validación de manera bilingüe.
 """
-from typing import List, Dict, Any
+from __future__ import annotations
+
+from typing import Any
 
 
-def format_validation_error_response(errors_es: List[str], errors_en: List[str]) -> Dict[str, Any]:
+def format_validation_error_response(errors_es: list[str], errors_en: list[str]) -> dict[str, Any]:
     """
     Formatea errores de validación de ejercicios en ambos idiomas.
 
@@ -73,7 +75,7 @@ def translate_error_to_english(error_es: str) -> str:
     return result
 
 
-def translate_errors_to_english(errors_es: List[str]) -> List[str]:
+def translate_errors_to_english(errors_es: list[str]) -> list[str]:
     """
     Traduce una lista de errores del español al inglés.
 
@@ -86,7 +88,7 @@ def translate_errors_to_english(errors_es: List[str]) -> List[str]:
     return [translate_error_to_english(error) for error in errors_es]
 
 
-def format_validation_error_detail(errors_es: List[str], errors_en: List[str]) -> str:
+def format_validation_error_detail(errors_es: list[str], errors_en: list[str]) -> str:
     """
     Formatea el detail string para HTTPException con información bilingüe.
 

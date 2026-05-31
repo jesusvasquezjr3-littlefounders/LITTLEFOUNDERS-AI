@@ -13,16 +13,16 @@ Flujo:
   4. Cálculo de duración con mutagen
   5. Devuelve (bytes_mp3, duration_ms)
 """
+from __future__ import annotations
 
 import io
+import pathlib
 import subprocess
 import tempfile
-import pathlib
 import time
-from typing import Optional
 
-import requests as http_requests
 import dashscope
+import requests as http_requests
 from mutagen.mp3 import MP3 as MutagenMP3
 
 import config
@@ -58,7 +58,7 @@ def generate_audio(
     if not text or not text.strip():
         raise ValueError("[tts_client] El texto está vacío — no se puede generar audio.")
 
-    last_error: Optional[Exception] = None
+    last_error: Exception | None = None
 
     for attempt in range(1, max_retries + 1):
         try:

@@ -1,6 +1,8 @@
-from pydantic import BaseModel, EmailStr, model_validator
-from typing import Optional, List
+from __future__ import annotations
+
 from datetime import datetime
+
+from pydantic import BaseModel, model_validator
 
 
 # Dashboard Schemas
@@ -17,11 +19,11 @@ class LessonResponse(BaseModel):
     id: int
     lesson_id: str
     title: str
-    description: Optional[str] = None
-    duration: Optional[str] = None
+    description: str | None = None
+    duration: str | None = None
     difficulty: str
-    age_range: Optional[str] = None
-    level_id: Optional[str] = None
+    age_range: str | None = None
+    level_id: str | None = None
     points_reward: int
     is_active: bool
     created_at: datetime
@@ -44,11 +46,11 @@ class AdventureResponse(BaseModel):
     id: int
     code: str
     title: str
-    description: Optional[str] = None
-    age_range: Optional[str] = None
+    description: str | None = None
+    age_range: str | None = None
     order_index: int = 0
-    theme_color: Optional[str] = None
-    background_scene: Optional[str] = None
+    theme_color: str | None = None
+    background_scene: str | None = None
     is_active: bool
     created_at: datetime
 
@@ -70,9 +72,9 @@ class SagaResponse(BaseModel):
     id: int
     code: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     order_index: int = 0
-    icon: Optional[str] = None
+    icon: str | None = None
     adventure_id: int
     is_active: bool
     created_at: datetime
@@ -93,7 +95,7 @@ class CharacterResponse(BaseModel):
     id: str    # public_id serialized as string (not internal integer)
     code: str  # Used by LF Audio Engine: liruf, dina, dr_rho, zara_vex
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
     @model_validator(mode='before')
     @classmethod
@@ -125,12 +127,12 @@ class ExerciseInTimeline(BaseModel):
     type: str
     order_index: int
     start_time_ms: int
-    pause_at_ms: Optional[int] = None
+    pause_at_ms: int | None = None
     content: dict
-    correct_answer: Optional[dict] = None
-    feedback: Optional[dict] = None
+    correct_answer: dict | None = None
+    feedback: dict | None = None
     points: int
-    audio: Optional[dict] = None  # Audio segment si existe
+    audio: dict | None = None  # Audio segment si existe
 
 
 # Lesson Play Response (para /api/lessons/{code}/play)
@@ -144,15 +146,15 @@ class LessonPlayResponse(BaseModel):
     """Respuesta completa para reproducir una lección"""
     lesson: dict
     meta: LessonMeta
-    timeline: List[ExerciseInTimeline]
+    timeline: list[ExerciseInTimeline]
 
 
 # Lesson Complete Request
 class LessonCompleteRequest(BaseModel):
     score: int = 100  # User's score (0-100)
     time_spent_seconds: int = 180  # Time spent on lesson
-    exercises_results: Optional[List[dict]] = None  # [{exercise_id, status, attempts}]
-    local_date: Optional[str] = None  # User's local YYYY-MM-DD for timezone-aware streak tracking
+    exercises_results: list[dict] | None = None  # [{exercise_id, status, attempts}]
+    local_date: str | None = None  # User's local YYYY-MM-DD for timezone-aware streak tracking
 
 
 # User Stats for Dashboard
@@ -163,11 +165,11 @@ class AdventureProgress(BaseModel):
     total_lessons: int
     completed_lessons: int
     progress_percent: float
-    current_saga: Optional[str] = None
+    current_saga: str | None = None
 
 
 class UserLessonStats(BaseModel):
-    adventure_progress: List[AdventureProgress]
+    adventure_progress: list[AdventureProgress]
     total_xp: int
     current_streak: int
     lessons_this_week: int

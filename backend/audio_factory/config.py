@@ -2,10 +2,12 @@
 config.py — Carga y valida todas las variables de entorno del audio_factory.
 Importar este módulo antes que cualquier otro en el factory.
 """
+from __future__ import annotations
 
 import os
 import sys
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Cargar .env desde la misma carpeta que este archivo
@@ -18,7 +20,7 @@ def _require(key: str) -> str:
     val = os.getenv(key)
     if not val:
         print(f"[config] ERROR: Variable de entorno '{key}' no encontrada en .env")
-        print(f"         Copia .env.example → .env y rellena el valor.")
+        print("         Copia .env.example → .env y rellena el valor.")
         sys.exit(1)
     return val
 

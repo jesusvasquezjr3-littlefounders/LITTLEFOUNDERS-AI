@@ -4,12 +4,11 @@ Gesture Mapper Utility
 Provides gesture equivalence mappings and default fallbacks for character gestures.
 This ensures backward compatibility when lesson data uses old/different gesture codes.
 """
-
-from typing import Dict, Optional
+from __future__ import annotations
 
 # Gesture equivalence mappings per character
 # Maps old/alternative gesture names to actual component prop values
-GESTURE_EQUIVALENCES: Dict[str, Dict[str, any]] = {
+GESTURE_EQUIVALENCES: dict[str, dict[str, any]] = {
     'liruf': {
         'default': 'happy',
         'mappings': {
@@ -94,7 +93,7 @@ GESTURE_EQUIVALENCES: Dict[str, Dict[str, any]] = {
 }
 
 
-def normalize_gesture(character_code: str, raw_gesture: Optional[str]) -> str:
+def normalize_gesture(character_code: str, raw_gesture: str | None) -> str:
     """
     Normalize a gesture code to match the character component's expected prop value.
     
@@ -116,22 +115,22 @@ def normalize_gesture(character_code: str, raw_gesture: Optional[str]) -> str:
     """
     # Normalize character code
     char_code = character_code.lower().strip()
-    
+
     # Handle None or empty gesture
     if not raw_gesture:
         return GESTURE_EQUIVALENCES.get(char_code, {}).get('default', 'happy')
-    
+
     # Normalize gesture code
     gesture = raw_gesture.lower().strip()
-    
+
     # Get character's mapping
     char_mapping = GESTURE_EQUIVALENCES.get(char_code)
     if not char_mapping:
         return 'happy'  # Ultimate fallback
-    
+
     # Try to find mapping
     normalized = char_mapping.get('mappings', {}).get(gesture)
-    
+
     # Return mapped gesture or default
     return normalized if normalized else char_mapping.get('default', 'happy')
 
@@ -149,7 +148,7 @@ def get_available_gestures(character_code: str) -> list[str]:
     char_code = character_code.lower().strip()
     char_mapping = GESTURE_EQUIVALENCES.get(char_code, {})
     mappings = char_mapping.get('mappings', {})
-    
+
     # Get unique actual gesture values (not the keys)
     actual_gestures = set(mappings.values())
     return sorted(list(actual_gestures))

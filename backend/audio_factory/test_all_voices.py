@@ -8,13 +8,12 @@ Ejecutar:
     python3 test_all_voices.py
 """
 
-import sys
 import pathlib
+import sys
 import time
 
-import config
-import voice_registry
 import tts_client
+import voice_registry
 
 # ── Textos de prueba por idioma ────────────────────────────────────────────
 # Cada texto incluye números, puntuación y variaciones de tono

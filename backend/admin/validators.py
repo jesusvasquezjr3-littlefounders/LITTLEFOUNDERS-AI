@@ -3,8 +3,7 @@ backend/admin/validators.py
 Validadores JSON por tipo de ejercicio.
 Aseguran que la estructura de cada ejercicio sea compatible con el LessonRunner.
 """
-from typing import List, Optional
-
+from __future__ import annotations
 
 # Los 40 tipos válidos de ejercicio
 VALID_EXERCISE_TYPES = [
@@ -96,7 +95,7 @@ ALWAYS_TRUE_TYPES = [
 ]
 
 
-def validate_exercise(exercise: dict, language: str = "es") -> List[str]:
+def validate_exercise(exercise: dict, language: str = "es") -> list[str]:
     """
     Valida un ejercicio individual.
     Retorna lista de errores. Lista vacía = ejercicio válido.
@@ -164,7 +163,7 @@ def validate_exercise(exercise: dict, language: str = "es") -> List[str]:
     return errors
 
 
-def validate_exercises(exercises: List[dict], language: str = "es") -> List[str]:
+def validate_exercises(exercises: list[dict], language: str = "es") -> list[str]:
     """
     Valida un arreglo completo de ejercicios.
     Retorna lista de errores acumulados.

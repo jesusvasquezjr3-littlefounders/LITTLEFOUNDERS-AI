@@ -1,7 +1,7 @@
-import os
 import io
-import time
+import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load env from parent directory
@@ -10,8 +10,8 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 try:
     from google import genai
     from google.genai import types
-    from supabase import create_client, Client
     from PIL import Image
+    from supabase import Client, create_client
 except ImportError as e:
     print(f"❌ Missing dependencies: {e}")
     print("Run: pip install google-genai supabase pillow")
@@ -46,9 +46,9 @@ def generate_and_upload_image(prompt: str, filename: str, bucket: str = "lesson-
     """
     full_prompt = prompt + STYLE_PROMPT_SUFFIX
     print(f"🎨 Generating: {prompt}...")
-    
+
     client = get_genai_client()
-    
+
     try:
         # Generate Image (Imagen 4 Fast - Latest)
         # Using model: imagen-4.0-fast-generate-001
@@ -60,34 +60,34 @@ def generate_and_upload_image(prompt: str, filename: str, bucket: str = "lesson-
                 aspect_ratio="16:9" if "scene" in filename else "1:1"
             )
         )
-        
+
         if not response.generated_images:
             print("❌ No images generated.")
             return ""
 
         # Get raw bytes
         image_bytes = response.generated_images[0].image.image_bytes
-        
+
         # Optimize/Convert to PNG using Pillow (ensure format)
         img = Image.open(io.BytesIO(image_bytes))
-        
+
         # Resize if huge? Imagen 3 outputs 1024x1024 usually. Good enough.
         # Convert to RGBA for standard
         if img.mode != 'RGBA' and img.mode != 'RGB':
             img = img.convert('RGB')
-            
+
         out_io = io.BytesIO()
         img.save(out_io, format='PNG', optimize=True)
         out_bytes = out_io.getvalue()
-        
+
         # Upload to Supabase
         sb = get_supabase_client()
-        
+
         content_type = "image/png"
         path_on_storage = f"generated/{filename}.png"
-        
+
         print(f"☁️ Uploading {len(out_bytes)/1024:.1f}KB to bucket '{bucket}/{path_on_storage}'...")
-        
+
         try:
             res = sb.storage.from_(bucket).upload(
                 path=path_on_storage,
@@ -110,11 +110,11 @@ def generate_and_upload_image(prompt: str, filename: str, bucket: str = "lesson-
                     return ""
             else:
                 raise upload_err
-        
+
         # Get Public URL
         public_url = sb.storage.from_(bucket).get_public_url(path_on_storage)
         print(f"✅ URL: {public_url}")
-        
+
         return public_url
 
     except Exception as e:

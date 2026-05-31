@@ -1,18 +1,20 @@
-from pydantic import BaseModel, EmailStr, field_validator, field_serializer
-from typing import Optional
+from __future__ import annotations
+
+import re
 from datetime import datetime
 from uuid import UUID
-import re
+
+from pydantic import BaseModel, field_serializer, field_validator
 
 
 class UserUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    birth_date: Optional[str] = None
-    gender: Optional[str] = None
-    avatar_config: Optional[dict] = None
-    username: Optional[str] = None
-    preferred_language: Optional[str] = None
+    name: str | None = None
+    email: str | None = None
+    birth_date: str | None = None
+    gender: str | None = None
+    avatar_config: dict | None = None
+    username: str | None = None
+    preferred_language: str | None = None
 
     @field_validator('username')
     @classmethod
@@ -35,21 +37,21 @@ class UserResponse(BaseModel):
     email: str
     user_type: str
     created_at: datetime
-    lessons_completed: Optional[int] = 0
-    minutes_studied: Optional[int] = 0
-    points_earned: Optional[int] = 0
-    current_streak: Optional[int] = 0
-    max_streak: Optional[int] = 0
-    balance: Optional[float] = 0.0
-    avatar_config: Optional[dict] = None
-    username: Optional[str] = None
-    preferred_language: Optional[str] = 'es'
-    auth_provider: Optional[str] = 'email'
-    birth_date: Optional[datetime] = None
-    gender: Optional[str] = None
+    lessons_completed: int | None = 0
+    minutes_studied: int | None = 0
+    points_earned: int | None = 0
+    current_streak: int | None = 0
+    max_streak: int | None = 0
+    balance: float | None = 0.0
+    avatar_config: dict | None = None
+    username: str | None = None
+    preferred_language: str | None = 'es'
+    auth_provider: str | None = 'email'
+    birth_date: datetime | None = None
+    gender: str | None = None
     # YYYY-MM-DD of the user's most recent streak activity.
     # Used by the frontend to derive streak visual state: zero / inactive / active.
-    last_activity_date: Optional[str] = None
+    last_activity_date: str | None = None
 
     @field_serializer('public_id')
     def serialize_public_id(self, v: UUID) -> str:
@@ -64,11 +66,11 @@ class SupabaseAuthRequest(BaseModel):
 
 
 class GuestMergeRequest(BaseModel):
-    name: Optional[str] = None
-    age: Optional[int] = None
-    interests: Optional[list] = None
-    experience_level: Optional[str] = None
-    preferred_language: Optional[str] = None
-    xp: Optional[int] = 0
-    current_streak: Optional[int] = 0
-    steps_completed: Optional[int] = 0
+    name: str | None = None
+    age: int | None = None
+    interests: list | None = None
+    experience_level: str | None = None
+    preferred_language: str | None = None
+    xp: int | None = 0
+    current_streak: int | None = 0
+    steps_completed: int | None = 0

@@ -21,16 +21,16 @@ Opciones avanzadas:
     --delay 2.0                (segundos entre llamadas a la API, default 1.5)
     --max-retries 3            (intentos por lección en caso de error)
 """
+from __future__ import annotations
 
+import argparse
 import json
 import os
+import re
 import sys
 import time
-import argparse
-import re
-from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 # ─── Configuración ───────────────────────────────────────────────────────────
 
@@ -516,10 +516,10 @@ def call_deepseek(
     model: str = "deepseek-chat",
     api_key: str = "",
     max_retries: int = 3,
-) -> Optional[str]:
+) -> str | None:
     """Llama a la API de DeepSeek y retorna el contenido de la respuesta."""
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     headers = {
         "Content-Type": "application/json",
@@ -552,7 +552,7 @@ def call_deepseek(
                 print(f"      Rate limit. Esperando {wait_time}s...")
                 time.sleep(wait_time)
             elif e.code == 402:
-                print(f"      ❌ Sin créditos en DeepSeek. Recarga tu cuenta.")
+                print("      ❌ Sin créditos en DeepSeek. Recarga tu cuenta.")
                 sys.exit(1)
             else:
                 print(f"      HTTP {e.code}: {error_body[:200]}")
@@ -568,7 +568,7 @@ def call_deepseek(
     return None
 
 
-def parse_lesson_json(raw_content: str) -> Optional[dict]:
+def parse_lesson_json(raw_content: str) -> dict | None:
     """Extrae y parsea el JSON de la respuesta del modelo."""
     # Limpiar posibles markdown bloques
     content = raw_content.strip()
@@ -712,12 +712,12 @@ def generate_lesson(
 
     raw_content = call_deepseek(system_prompt, user_prompt, model, api_key, max_retries)
     if not raw_content:
-        print(f"       ❌ Sin respuesta de la API")
+        print("       ❌ Sin respuesta de la API")
         return False
 
     lesson_data = parse_lesson_json(raw_content)
     if not lesson_data:
-        print(f"       ❌ JSON inválido en respuesta")
+        print("       ❌ JSON inválido en respuesta")
         # Guardar la respuesta raw para debug
         debug_path = OUTPUT_DIR / "debug" / f"{lesson_code}_raw.txt"
         debug_path.parent.mkdir(parents=True, exist_ok=True)
@@ -815,7 +815,7 @@ def generate_saga(
     delay: float,
     max_retries: int,
     dry_run: bool,
-    topic_filter: Optional[int] = None,
+    topic_filter: int | None = None,
 ) -> tuple[int, int]:
     """Genera todas las lecciones de una saga."""
     adventure_num = adventure_data["adventure"]

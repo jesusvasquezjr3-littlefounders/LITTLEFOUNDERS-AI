@@ -116,7 +116,7 @@ class MockCharacter:
 # ── Run Tests ────────────────────────────────────────────────────────────
 
 def run_tests():
-    import sys, os
+    import os
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     errors = []
@@ -153,8 +153,9 @@ def run_tests():
 
     # ── admin/schemas.py ─────────────────────────────────────────────────
     from admin.schemas import (
-        LessonResponse, LessonListItem, AdminUserResponse,
-        AudioResponse, CharacterResponse
+        AdminUserResponse,
+        AudioResponse,
+        LessonResponse,
     )
 
     test("AdminUserResponse — direct", lambda: AdminUserResponse(
@@ -178,10 +179,11 @@ def run_tests():
 
     # ── schemas.py ───────────────────────────────────────────────────────
     from schemas import (
-        AdventureResponse, AdventureWithProgress,
-        SagaResponse, SagaWithProgress,
+        AdventureResponse,
+        SagaResponse,
+    )
+    from schemas import (
         CharacterResponse as EngineCharacterResponse,
-        LessonResponse as EngineLessonResponse,
     )
 
     test("AdventureResponse — ORM mode", lambda:

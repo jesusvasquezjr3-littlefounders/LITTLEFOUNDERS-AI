@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
@@ -15,9 +16,9 @@ DATABASE_URL = f"postgresql://{os.environ.get('DATABASE_USERNAME')}:{os.environ.
 def migrate():
     print("🔥 INICIANDO REESTRUCTURACIÓN DE LA BASE DE DATOS DE LECCIONES...")
     print("⚠️ ESTO BORRARÁ TODAS LAS LECCIONES Y EL PROGRESO.")
-    
+
     engine = create_engine(DATABASE_URL)
-    
+
     sql_commands = """
     -- 1. DROP OLD TABLES (Cascading deletion)
     DROP TABLE IF EXISTS user_exercise_progress CASCADE;
@@ -84,11 +85,11 @@ def migrate():
     CREATE UNIQUE INDEX idx_user_lesson_progress_unique ON user_lesson_progress(user_id, lesson_id);
     
     """
-    
+
     with engine.connect() as conn:
         conn.execute(text(sql_commands))
         conn.commit()
-    
+
     print("✅ REESTRUCTURACION COMPLETADA EXITOSAMENTE.")
 
 if __name__ == "__main__":

@@ -1,5 +1,8 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from __future__ import annotations
+
 import os
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -17,16 +20,16 @@ class Settings(BaseSettings):
     database_password: str
     database_name: str
     database_username: str
-    
+
     # Security configuration
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
-    
+
     # Supabase Auth (for validating Supabase OAuth tokens)
     supabase_url: str = ""
     supabase_key: str = ""  # anon key
-    
+
     # Email configuration (optional - email features won't work without these)
     mail_username: str = ""
     mail_password: str = ""
@@ -34,12 +37,12 @@ class Settings(BaseSettings):
     mail_port: int = 587
     mail_server: str = "smtp.gmail.com"
     mail_from_name: str = "LittleFounders"
-    
+
     # API configuration
     api_title: str = "LittleFounders API"
     api_version: str = "1.0.0"
     api_description: str = "API para la plataforma educativa financiera LittleFounders"
-    
+
     # CORS configuration - SECURITY: whitelist only allowed origins
     # Can be overridden via CORS_ORIGINS env var (comma-separated list) in Render dashboard
     _default_cors_origins: list[str] = [

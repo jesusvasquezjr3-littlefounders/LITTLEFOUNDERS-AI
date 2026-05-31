@@ -1,13 +1,14 @@
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
 from config import settings
-import os
 
 # Create database URL
 try:
     DATABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
-    
+
     # Create engine with connection pooling disabled for serverless
     # Vercel functions are stateless and short-lived
     engine = create_engine(
@@ -19,13 +20,13 @@ try:
             "options": "-c timezone=utc"
         }
     )
-    
+
     # Create session factory
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    
+
     # Create base class for models
     Base = declarative_base()
-    
+
 except Exception as e:
     print(f"Database initialization failed: {type(e).__name__}")
     raise

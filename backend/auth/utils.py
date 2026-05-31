@@ -1,10 +1,13 @@
-from jose import JWTError, jwt
+from __future__ import annotations
+
 from datetime import datetime, timedelta
-from typing import Optional
+
+from jose import JWTError, jwt
+
 from config import settings
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
     """Create a JWT access token"""
     to_encode = data.copy()
     now = datetime.utcnow()
@@ -30,7 +33,7 @@ def verify_token(token: str, credentials_exception):
         raise credentials_exception
 
 
-def get_token_issued_at(token: str) -> Optional[datetime]:
+def get_token_issued_at(token: str) -> datetime | None:
     """Extract the issued-at timestamp from a JWT without full verification."""
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])

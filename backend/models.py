@@ -1,11 +1,25 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, Float, Enum, JSON, Index, UniqueConstraint
+from __future__ import annotations
+
+import enum
+
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from database import Base
-import enum
-import uuid
-from typing import Optional
 
 
 # Enums
@@ -43,36 +57,36 @@ class Lesson(Base):
     Reemplaza la antigua jerarquía Adventure > Saga > Lesson.
     """
     __tablename__ = "lessons"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     lesson_code = Column(String(50), unique=True, nullable=False)  # "1-1-1-1"
-    
+
     # Metadatos Internacionalizados
     title_es = Column(String(200), nullable=False)
     title_en = Column(String(200), nullable=False)
     description_es = Column(Text)
     description_en = Column(Text)
-    
+
     # Detalles
     duration = Column(Integer)  # En minutos
     age_rate = Column(String(20))
     points_reward = Column(Integer, default=10)
-    
+
     # Jerarquía (Niveles)
     adventure_level = Column(Integer, nullable=False)
     saga_level = Column(Integer, nullable=False)
     topic_level = Column(Integer, nullable=False)
     lesson_number = Column(Integer, nullable=False)
-    
+
     # Contenido (JSON completo por idioma)
     # Contiene array de ejercicios y configuración
     content_es = Column(JSON, nullable=False)
     content_en = Column(JSON, nullable=False)
-    
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     # Relationships
     progress = relationship("UserLessonProgress", back_populates="lesson", cascade="all, delete-orphan")
 
@@ -82,21 +96,21 @@ class UserLessonProgress(Base):
     Progreso simplificado de usuario en lecciones
     """
     __tablename__ = "user_lesson_progress"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     lesson_id = Column(Integer, ForeignKey("lessons.id"), nullable=False)
-    
+
     completed = Column(Boolean, default=False)
     progress = Column(Integer, default=0)  # 0-100
     score = Column(Integer, default=0)
     points_earned = Column(Integer, default=0)  # Points earned from this lesson
     time_spent_seconds = Column(Integer, default=0)  # Time spent in seconds
-    
+
     started_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     # Relationships
     lesson = relationship("Lesson", back_populates="progress")
     # user relationship defined in User model
@@ -105,7 +119,7 @@ class UserLessonProgress(Base):
 class Character(Base):
     """Personajes narradores (Liruf, Dina, Dr. Rho, Zara Vex)"""
     __tablename__ = "characters"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     code = Column(String(50), unique=True, nullable=False)  # e.g., "liruf", "dina", "dr_rho", "zara_vex"
@@ -114,7 +128,7 @@ class Character(Base):
     description = Column(Text)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # Relationships
     gestures = relationship("CharacterGesture", back_populates="character", cascade="all, delete-orphan")
 
@@ -122,13 +136,13 @@ class Character(Base):
 class CharacterGesture(Base):
     """Gestos disponibles para cada personaje"""
     __tablename__ = "character_gestures"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     character_id = Column(Integer, ForeignKey("characters.id"), nullable=False)
     gesture_code = Column(String(50), nullable=False)  # e.g., "wave", "celebrate"
     animation_data = Column(JSON)  # Datos de animación
     duration_ms = Column(Integer, default=1000)
-    
+
     # Relationships
     character = relationship("Character", back_populates="gestures")
 
@@ -136,7 +150,7 @@ class CharacterGesture(Base):
 # User Model
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(PG_UUID(as_uuid=True), unique=True, index=True, nullable=False, server_default=func.gen_random_uuid())
     name = Column(String(100), nullable=False)
@@ -147,10 +161,10 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_active = Column(Boolean, default=True)
-    
+
     # Family Relationships - Foreign Keys
     tutor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
+
     # SQLAlchemy Relationships
     children = relationship(
         "User",
@@ -163,25 +177,25 @@ class User(Base):
         foreign_keys=[tutor_id],
         back_populates="children"
     )
-    
+
     # Stats
     lessons_completed = Column(Integer, default=0)
     minutes_studied = Column(Integer, default=0)
     points_earned = Column(Integer, default=0)
     current_streak = Column(Integer, default=0)
-    
+
     # Virtual balance
     balance = Column(Float, default=0.0)
 
     # Preferences
     preferred_language = Column(String(10), default='es')
     auth_provider = Column(String(20), default='email')
-    
+
     avatar_config = Column(JSON, nullable=True)
     username = Column(String(30), nullable=True, unique=True)
     max_streak = Column(Integer, default=0)  # Historical max streak
     password_changed_at = Column(DateTime(timezone=True), nullable=True)
-    
+
     # Relationships
     learning_streaks = relationship("UserLearningStreak", back_populates="user", cascade="all, delete-orphan")
     followers = relationship(
@@ -199,16 +213,16 @@ class User(Base):
 
 class Follow(Base):
     __tablename__ = "follows"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     follower_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     followed_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     status = Column(String(20), default=FollowStatus.PENDING)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     __table_args__ = (UniqueConstraint('follower_id', 'followed_id', name='uq_follower_followed'),)
-    
+
     # Relationships
     follower = relationship("User", foreign_keys=[follower_id], back_populates="following")
     followed = relationship("User", foreign_keys=[followed_id], back_populates="followers")
@@ -216,7 +230,7 @@ class Follow(Base):
 class UserLearningStreak(Base):
     """Daily learning activity tracking for streak calculation"""
     __tablename__ = "user_learning_streaks"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     date = Column(DateTime, nullable=False)  # Date of activity (stored as DATE)
@@ -224,7 +238,7 @@ class UserLearningStreak(Base):
     minutes_studied = Column(Integer, default=0)
     points_earned = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # Relationships
     user = relationship("User", back_populates="learning_streaks")
 
@@ -257,7 +271,7 @@ class ContentEditHistory(Base):
     editor = relationship("User", foreign_keys=[editor_user_id])
 
     @property
-    def editor_public_id(self) -> Optional[str]:
+    def editor_public_id(self) -> str | None:
         return str(self.editor.public_id) if self.editor else None
 
 
@@ -342,7 +356,7 @@ class PlatformReport(Base):
     user = relationship("User", foreign_keys=[user_id])
 
     @property
-    def reporter_public_id(self) -> Optional[str]:
+    def reporter_public_id(self) -> str | None:
         return str(self.user.public_id) if self.user else None
 
 

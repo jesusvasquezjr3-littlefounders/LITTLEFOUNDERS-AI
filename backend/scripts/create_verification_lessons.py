@@ -1,16 +1,15 @@
-import sys
-import os
-import json
 import logging
+import os
+import sys
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Add parent directory to path to import backend modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database import Base
-from models import Lesson, ExerciseType
 from config import settings
+from models import Lesson
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +26,7 @@ def create_lesson_data(index, activity_type):
     """
     lesson_code = f"0-0-0-{index}"
     title = f"Test Lesson {index} - {activity_type}"
-    
+
     # Base content structure
     content_base = {
         "lesson_code": lesson_code,
@@ -48,11 +47,11 @@ def create_lesson_data(index, activity_type):
 
     # Generate specific activity content based on type
     activity_content = generate_activity_content(activity_type)
-    
+
     # Construct the full lesson content
-    # We add an intro narrative -> the activity -> potentially a completion message? 
+    # We add an intro narrative -> the activity -> potentially a completion message?
     # For now just the activity to keep it simple and focused on the engine logic.
-    
+
     # Adding a simple intro to ensure lesson starts correctly usually
     intro = {
         "type": "intro_narrative",
@@ -61,10 +60,10 @@ def create_lesson_data(index, activity_type):
             "transcript": f"Testing activity {activity_type}. Go!"
         }
     }
-    
+
     content_base["content_es"] = [intro, activity_content]
     content_base["content_en"] = [intro, activity_content]
-    
+
     return content_base
 
 def generate_activity_content(activity_type):
@@ -72,10 +71,10 @@ def generate_activity_content(activity_type):
     Generates the specific JSON content for an activity type.
     """
     base = {"type": activity_type, "character_code": "liruf"}
-    
+
     if activity_type == "intro_narrative":
         base["content"] = {"transcript": "This is a test narrative."}
-        
+
     elif activity_type == "multiple_choice":
         base["content"] = {
             "question": "Select option A",
@@ -473,7 +472,7 @@ def generate_activity_content(activity_type):
 
 def run():
     session = SessionLocal()
-    
+
     # List of all activity types from manifest (normalized)
     activity_types = [
         "intro_narrative", "tap_action", "matching_pairs", "fill_blank",
@@ -493,7 +492,7 @@ def run():
     try:
         for i, activity_type in enumerate(activity_types, 1):
             lesson_data = create_lesson_data(i, activity_type)
-            
+
             # Check if exists, update or create
             existing = session.query(Lesson).filter(Lesson.lesson_code == lesson_data["lesson_code"]).first()
             if existing:
@@ -504,10 +503,10 @@ def run():
                 logger.info(f"Creating lesson {lesson_data['lesson_code']}")
                 lesson = Lesson(**lesson_data)
                 session.add(lesson)
-        
+
         session.commit()
         logger.info("Successfully created/updated all verification lessons.")
-        
+
     except Exception as e:
         session.rollback()
         logger.error(f"Error creating lessons: {e}")

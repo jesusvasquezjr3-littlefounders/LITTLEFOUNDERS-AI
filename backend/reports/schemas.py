@@ -1,7 +1,9 @@
-from pydantic import BaseModel, EmailStr, field_validator
-from typing import Optional, Any
-from datetime import datetime
+from __future__ import annotations
 
+from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, EmailStr, field_validator
 
 # ── Request Schemas ────────────────────────────────────────────────────────────
 
@@ -10,10 +12,10 @@ class ReportCreate(BaseModel):
     reporter_email: EmailStr
     report_type: str = "other"  # bug | abuse | suggestion | content | other
     subject: str
-    reported_url: Optional[str] = None
+    reported_url: str | None = None
     context: str
-    evidence_url: Optional[str] = None
-    report_metadata: Optional[dict] = {}
+    evidence_url: str | None = None
+    report_metadata: dict | None = {}
 
     @field_validator("report_type")
     @classmethod
@@ -47,9 +49,9 @@ class ReportResponse(BaseModel):
     public_id: Any  # UUID
     report_type: str
     subject: str
-    reported_url: Optional[str]
+    reported_url: str | None
     context: str
-    evidence_url: Optional[str]
+    evidence_url: str | None
     status: str
     priority: str
     created_at: datetime
@@ -61,11 +63,11 @@ class ReportResponse(BaseModel):
 class ReportAdminResponse(ReportResponse):
     """Schema extendido para admin (incluye notas, user_id, metadata)."""
     reporter_email: str
-    reporter_public_id: Optional[str] = None
-    admin_notes: Optional[str] = None
-    report_metadata: Optional[dict]
-    updated_at: Optional[datetime]
-    resolved_at: Optional[datetime]
+    reporter_public_id: str | None = None
+    admin_notes: str | None = None
+    report_metadata: dict | None
+    updated_at: datetime | None
+    resolved_at: datetime | None
 
     class Config:
         from_attributes = True
@@ -73,9 +75,9 @@ class ReportAdminResponse(ReportResponse):
 
 class ReportStatusUpdate(BaseModel):
     """Para que admin actualice status/prioridad/notas."""
-    status: Optional[str] = None
-    priority: Optional[str] = None
-    admin_notes: Optional[str] = None
+    status: str | None = None
+    priority: str | None = None
+    admin_notes: str | None = None
 
     @field_validator("status")
     @classmethod

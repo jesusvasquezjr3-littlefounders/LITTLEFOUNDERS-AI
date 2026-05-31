@@ -2,25 +2,23 @@
 Enduntos del Nuevo Motor de Lecciones (v2 - Flat i18n)
 LittleFounders - 2026
 """
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.orm import Session, defer
-from sqlalchemy import func
-from typing import List, Optional, Dict
+from __future__ import annotations
+
 from datetime import datetime
 
-from database import get_db
-from models import (
-    Lesson, Character, CharacterGesture,
-    User, UserLessonProgress, LessonAudioSegment
-)
-from schemas import (
-    AdventureResponse, AdventureWithProgress,
-    SagaResponse, SagaWithProgress,
-    CharacterResponse, GestureResponse,
-    LessonPlayResponse, LessonCompleteRequest,
-    AdventureProgress, UserLessonStats
-)
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi import HTTPException as _HTTPException
+from sqlalchemy import func
+from sqlalchemy.orm import Session, defer
+
+from database import get_db
+from models import Character, CharacterGesture, Lesson, LessonAudioSegment, User, UserLessonProgress
+from schemas import (
+    AdventureWithProgress,
+    CharacterResponse,
+    LessonCompleteRequest,
+    SagaWithProgress,
+)
 
 
 def _resolve_user(db, public_id: str):
@@ -59,7 +57,7 @@ ADVENTURES_DATA = [
         "id": 1,
         "code": "archipelago",
         "title_key": "list.1.title",
-        "description_key": "list.1.description", 
+        "description_key": "list.1.description",
         "age_range": "5-7",
         "theme_color": "#4dd0e1",
         "background_scene": "archipelago",
@@ -185,9 +183,9 @@ TOPICS_DATA = {
 # ADVENTURES ENDPOINTS (Adapted for new Schema)
 # =====================================================
 
-@router.get("/adventures", response_model=List[AdventureWithProgress])
+@router.get("/adventures", response_model=list[AdventureWithProgress])
 async def get_adventures(
-    user_public_id: Optional[str] = None,
+    user_public_id: str | None = None,
     lang: str = "es",
     db: Session = Depends(get_db)
 ):
@@ -197,16 +195,16 @@ async def get_adventures(
     user_id = None
     if user_public_id:
         user_id = _resolve_user(db, user_public_id).id
-    
+
     result = []
-    
+
     for adv in ADVENTURES_DATA:
         # Count lessons for this adventure level (using level as ID)
         # OPTIMIZATION: Only fetch IDs, don't load full objects
         lesson_ids_result = db.query(Lesson.id).filter(Lesson.adventure_level == adv['id']).all()
         lesson_ids = [row[0] for row in lesson_ids_result]
         total_lessons = len(lesson_ids)
-        
+
         completed_lessons = 0
         if user_id:
             if lesson_ids:
@@ -216,14 +214,14 @@ async def get_adventures(
                     UserLessonProgress.completed == True
                 ).count()
                 completed_lessons = completed_count
-        
+
         progress_percent = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
-        
+
         # Get title from ADVENTURES_TITLES with i18n support
         titles = ADVENTURES_TITLES.get(adv['id'], {})
         title = titles.get(lang, titles.get('es', f"Adventure {adv['id']}"))
         description = f"Age {adv['age_range']}"  # Descriptions come from frontend i18n
-        
+
         result.append(AdventureWithProgress(
             id=adv['id'],
             code=adv['code'],
@@ -237,32 +235,32 @@ async def get_adventures(
             is_active=True,
             created_at=datetime.now(),
             total_sagas=len(SAGAS_DATA.get(adv['id'], [])),
-            completed_sagas=0, 
+            completed_sagas=0,
             total_lessons=total_lessons,
             completed_lessons=completed_lessons,
             progress_percent=round(progress_percent, 1)
         ))
-    
+
     return result
 
-@router.get("/adventures/{code}/sagas", response_model=List[SagaWithProgress])
+@router.get("/adventures/{code}/sagas", response_model=list[SagaWithProgress])
 async def get_adventure_sagas(
     code: str,
-    user_public_id: Optional[str] = None,
+    user_public_id: str | None = None,
     db: Session = Depends(get_db)
 ):
     """Sagas Mocked but with real lesson progress"""
     user_id = None
     if user_public_id:
         user_id = _resolve_user(db, user_public_id).id
-    
+
     # Find adventure ID
     adv = next((a for a in ADVENTURES_DATA if a['code'] == code), None)
     if not adv:
         raise HTTPException(status_code=404, detail="Adventure not found")
-        
+
     sagas_list = SAGAS_DATA.get(adv['id'], [])
-    
+
     result = []
     for saga in sagas_list:
         # Get lessons for this saga level
@@ -270,10 +268,10 @@ async def get_adventure_sagas(
             Lesson.adventure_level == adv['id'],
             Lesson.saga_level == saga['id']
         ).all()
-        
+
         total_lessons = len(lessons)
         completed_lessons = 0
-        
+
         if user_id and lessons:
             lesson_ids = [l.id for l in lessons]
             completed_lessons = db.query(UserLessonProgress).filter(
@@ -281,9 +279,9 @@ async def get_adventure_sagas(
                 UserLessonProgress.lesson_id.in_(lesson_ids),
                 UserLessonProgress.completed == True
             ).count()
-            
+
         progress_percent = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
-        
+
         result.append(SagaWithProgress(
             id=saga['id'],
             adventure_id=adv['id'],
@@ -298,7 +296,7 @@ async def get_adventure_sagas(
             completed_lessons=completed_lessons,
             progress_percent=round(progress_percent, 1)
         ))
-        
+
     return result
 
 # =====================================================
@@ -319,7 +317,7 @@ async def get_lesson_for_play(
     if not lesson:
         # Try finding by old lesson_id column if distinct? No, verified model uses lesson_code
         raise HTTPException(status_code=404, detail="Lesson not found")
-        
+
     # Select language content
     if lang == 'en':
         title = lesson.title_en
@@ -329,14 +327,14 @@ async def get_lesson_for_play(
         title = lesson.title_es
         description = lesson.description_es
         content_array = lesson.content_es
-        
+
     # ─── Fetch audio segments for this lesson ───
     # Wrapped in try/except: a DB failure here must NOT crash the lesson.
     # The lesson is fully functional without audio — exercises just play silently.
     #
     # exercise_id in lesson_audio_segments is 0-based, matching the position
     # in content_es/content_en arrays (index 0 = first exercise, etc.).
-    audio_by_exercise: Dict[int, dict] = {}
+    audio_by_exercise: dict[int, dict] = {}
     try:
         audio_segments = db.query(LessonAudioSegment).filter(
             LessonAudioSegment.lesson_id == lesson.id,
@@ -346,7 +344,7 @@ async def get_lesson_for_play(
 
         # Resolve character codes for audio segments (single query, no N+1)
         audio_char_ids = {seg.character_id for seg in audio_segments if seg.character_id}
-        audio_char_map: Dict[int, str] = {}
+        audio_char_map: dict[int, str] = {}
         if audio_char_ids:
             chars = db.query(Character.id, Character.code).filter(Character.id.in_(audio_char_ids)).all()
             audio_char_map = {c.id: c.code for c in chars}
@@ -403,7 +401,7 @@ async def get_lesson_for_play(
             }
 
             timeline.append(ex_data)
-            
+
     # Mock Saga/Adventure Info for display
     # We could look this up in ADVENTURES_DATA
     adv = next((a for a in ADVENTURES_DATA if a['id'] == lesson.adventure_level), {})
@@ -481,7 +479,7 @@ async def get_next_lesson(code: str, db: Session = Depends(get_db)):
 
 
 
-def _get_token_user_optional(http_request: Request, db: Session) -> Optional[User]:
+def _get_token_user_optional(http_request: Request, db: Session) -> User | None:
     """
     Extracts the authenticated User from the Bearer token if present and valid.
     Returns None if no token or token is invalid — never raises.
@@ -509,8 +507,9 @@ async def complete_lesson(
     db: Session = Depends(get_db)
 ):
     """Marcar lección completada y actualizar racha"""
-    from models import UserLearningStreak
     from datetime import date, timedelta
+
+    from models import UserLearningStreak
 
     user = _resolve_user(db, user_public_id)
 
@@ -664,7 +663,7 @@ async def complete_lesson(
 # =====================================================
 # CHARACTERS (Kept compatible)
 # =====================================================
-@router.get("/characters", response_model=List[CharacterResponse])
+@router.get("/characters", response_model=list[CharacterResponse])
 async def get_characters(db: Session = Depends(get_db)):
     """Obtener todos los personajes activos."""
     characters = db.query(Character).filter(Character.is_active == True).all()
@@ -675,11 +674,11 @@ async def get_character(code: str, db: Session = Depends(get_db)):
     character = db.query(Character).filter(Character.code == code).first()
     if not character:
         raise HTTPException(status_code=404, detail="Character not found")
-    
+
     gestures = db.query(CharacterGesture).filter(
         CharacterGesture.character_id == character.id
     ).all()
-    
+
     return {
         "id": str(character.public_id),
         "code": character.code,
@@ -698,7 +697,7 @@ async def get_character(code: str, db: Session = Depends(get_db)):
 async def get_user_lesson_stats(public_id: str, lang: str = "es", db: Session = Depends(get_db)):
     user = _resolve_user(db, public_id)
     user_id = user.id
-        
+
     # Adventure progress with i18n
     adventure_progress = []
     for adv in ADVENTURES_DATA:
@@ -713,10 +712,10 @@ async def get_user_lesson_stats(public_id: str, lang: str = "es", db: Session = 
                 UserLessonProgress.lesson_id.in_(l_ids),
                 UserLessonProgress.completed == True
             ).count()
-        
+
         pct = (comp / total * 100) if total > 0 else 0
         title = ADVENTURES_TITLES.get(adv['id'], {}).get(lang, ADVENTURES_TITLES.get(adv['id'], {}).get('es', 'Adventure'))
-        
+
         adventure_progress.append({
             "adventure_id": adv['id'],
             "adventure_title": title,
@@ -746,21 +745,22 @@ async def get_user_lesson_stats(public_id: str, lang: str = "es", db: Session = 
 @router.get("/users/{public_id}/streak")
 async def get_user_streak(public_id: str, db: Session = Depends(get_db)):
     """Get user's streak information"""
-    from models import UserLearningStreak
     from datetime import date, timedelta
-    
+
+    from models import UserLearningStreak
+
     user = _resolve_user(db, public_id)
     user_id = user.id
-    
+
     today = date.today()
-    
+
     # Get last 7 days of activity
     week_ago = today - timedelta(days=6)
     recent_activity = db.query(UserLearningStreak).filter(
         UserLearningStreak.user_id == user_id,
         func.date(UserLearningStreak.date) >= week_ago
     ).order_by(UserLearningStreak.date.desc()).all()
-    
+
     # Build activity calendar
     activity_days = []
     for i in range(7):
@@ -772,10 +772,10 @@ async def get_user_streak(public_id: str, db: Session = Depends(get_db)):
             "minutes": day_record.minutes_studied if day_record else 0,
             "active": day_record is not None
         })
-    
+
     # Check if user studied today
     studied_today = any(r.date.date() == today for r in recent_activity)
-    
+
     return {
         "current_streak": user.current_streak or 0,
         "max_streak": user.max_streak or 0,
@@ -820,7 +820,7 @@ async def get_user_next_global_lesson(public_id: str, db: Session = Depends(get_
 
     # Find the strictly next lesson after the last completed one
     # Same logic as get_next_lesson
-    
+
     # 1. Next in same topic
     next_lesson = db.query(Lesson).filter(
         Lesson.adventure_level == last_completed.adventure_level,
@@ -862,9 +862,9 @@ async def get_user_next_global_lesson(public_id: str, db: Session = Depends(get_
 @router.get("/lessons/by-adventure/{adventure_id}")
 async def get_lessons_by_adventure(
     adventure_id: int,
-    saga_id: Optional[int] = None,
-    topic_id: Optional[int] = None,
-    user_public_id: Optional[str] = None,
+    saga_id: int | None = None,
+    topic_id: int | None = None,
+    user_public_id: str | None = None,
     lang: str = "es",
     db: Session = Depends(get_db)
 ):
@@ -873,22 +873,22 @@ async def get_lessons_by_adventure(
     if user_public_id:
         user_id = _resolve_user(db, user_public_id).id
     query = db.query(Lesson).filter(Lesson.adventure_level == adventure_id)
-    
+
     if saga_id:
         query = query.filter(Lesson.saga_level == saga_id)
     if topic_id:
         query = query.filter(Lesson.topic_level == topic_id)
-    
+
     # OPTIMIZATION: Defer loading heavy content columns
     lessons = query.options(
-        defer(Lesson.content_es), 
+        defer(Lesson.content_es),
         defer(Lesson.content_en)
     ).order_by(
-        Lesson.saga_level, 
-        Lesson.topic_level, 
+        Lesson.saga_level,
+        Lesson.topic_level,
         Lesson.lesson_number
     ).all()
-    
+
     # Get progress if user_id provided
     progress_map = {}
     if user_id:
@@ -899,11 +899,11 @@ async def get_lessons_by_adventure(
                 UserLessonProgress.lesson_id.in_(lesson_ids)
             ).all()
             progress_map = {p.lesson_id: p for p in progress_records}
-    
+
     result = []
     for lesson in lessons:
         prog = progress_map.get(lesson.id)
-        
+
         # Resolve Topic Title
         topic_list = TOPICS_DATA.get((lesson.adventure_level, lesson.saga_level), [])
         topic = next((t for t in topic_list if t['id'] == lesson.topic_level), {})
@@ -912,7 +912,7 @@ async def get_lessons_by_adventure(
             topic_title = topic.get('title_en', f"Topic {lesson.topic_level}")
         else:
             topic_title = topic.get('title_es', f"Tema {lesson.topic_level}")
-        
+
         result.append({
             "id": str(lesson.public_id),
             "code": lesson.lesson_code,
@@ -929,7 +929,7 @@ async def get_lessons_by_adventure(
             "progress": prog.progress if prog else 0,
             "score": prog.score if prog else 0
         })
-    
+
     return {
         "adventure_id": adventure_id,
         "total_lessons": len(result),

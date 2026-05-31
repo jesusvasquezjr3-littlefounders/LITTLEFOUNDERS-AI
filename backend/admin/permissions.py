@@ -3,10 +3,9 @@ backend/admin/permissions.py
 Dependency de FastAPI que restringe acceso solo a usuarios ADMIN.
 """
 from fastapi import Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from database import get_db
-from models import User, UserType
+
 from auth.endpoints import get_current_user_from_token
+from models import User, UserType
 
 
 async def require_admin(

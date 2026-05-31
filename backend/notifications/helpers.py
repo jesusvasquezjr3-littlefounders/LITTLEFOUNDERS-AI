@@ -3,9 +3,15 @@ Helper functions to create automatic notifications (follow, streak, achievements
 Import and call these from other modules (social, lesson_engine, etc.)
 """
 from sqlalchemy.orm import Session
+
 from models import (
-    Notification, UserNotification, User,
-    NotificationType, NotificationTargetType, NotificationStatus, NotificationPriority
+    Notification,
+    NotificationPriority,
+    NotificationStatus,
+    NotificationTargetType,
+    NotificationType,
+    User,
+    UserNotification,
 )
 
 

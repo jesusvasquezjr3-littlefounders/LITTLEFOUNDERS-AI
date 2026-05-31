@@ -3,7 +3,8 @@ backend/admin/services.py
 Lógica para registrar automáticamente cada cambio en el historial.
 """
 from sqlalchemy.orm import Session
-from models import ContentEditHistory, Lesson, Character, CharacterGesture
+
+from models import Character, CharacterGesture, ContentEditHistory, Lesson
 
 
 def record_edit(

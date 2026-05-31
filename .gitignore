@@ -46,11 +46,12 @@ venv/
 .env
 *.env
 
-# Database
+# Database (except Supabase migrations)
 *.db
 *.sqlite
 *.sqlite3
 *.sql
+!supabase/migrations/
 
 # Docker
 *.pid

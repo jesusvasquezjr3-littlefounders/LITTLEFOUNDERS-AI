@@ -10,16 +10,16 @@ Usage:
 """
 
 import json
-import os
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy import text
-from database import SessionLocal, engine
+
+from database import SessionLocal
 from models import Lesson
 
 # Constants
@@ -40,29 +40,29 @@ TOTAL_EXPECTED = 3072
 
 def load_manifest():
     """Load the lessons manifest."""
-    with open(MANIFEST_FILE, 'r', encoding='utf-8') as f:
+    with open(MANIFEST_FILE, encoding='utf-8') as f:
         return json.load(f)
 
 
 def load_lesson_file(file_path: str) -> dict:
     """Load a single lesson JSON file."""
     full_path = LESSONS_DIR / file_path
-    with open(full_path, 'r', encoding='utf-8') as f:
+    with open(full_path, encoding='utf-8') as f:
         return json.load(f)
 
 
 def clear_existing_data(db):
     """Delete existing lessons and user progress."""
     print("\n🗑️  Clearing existing data...")
-    
+
     # Delete user progress first (FK constraint)
     result = db.execute(text("DELETE FROM user_lesson_progress"))
     print(f"   Deleted {result.rowcount} user_lesson_progress records")
-    
+
     # Delete lessons
     result = db.execute(text("DELETE FROM lessons"))
     print(f"   Deleted {result.rowcount} lesson records")
-    
+
     db.commit()
     print("   ✅ Existing data cleared")
 
@@ -70,7 +70,7 @@ def clear_existing_data(db):
 def import_lessons(db, manifest: dict, adventure_filter: int = None):
     """Import lessons from manifest."""
     lessons_index = manifest['lessons_index']
-    
+
     # Group by adventure
     adventures = {}
     for lesson_info in lessons_index:
@@ -81,18 +81,18 @@ def import_lessons(db, manifest: dict, adventure_filter: int = None):
         if adventure_num not in adventures:
             adventures[adventure_num] = []
         adventures[adventure_num].append(lesson_info)
-    
+
     total_imported = 0
-    
+
     for adv_num in sorted(adventures.keys()):
         lessons_list = adventures[adv_num]
         print(f"\n📚 Importing Adventure {adv_num} ({len(lessons_list)} lessons)...")
-        
+
         for i, lesson_info in enumerate(lessons_list):
             try:
                 # Load full lesson data
                 lesson_data = load_lesson_file(lesson_info['file_path'])
-                
+
                 # Create Lesson object
                 lesson = Lesson(
                     lesson_code=lesson_data['lesson_code'],
@@ -110,39 +110,39 @@ def import_lessons(db, manifest: dict, adventure_filter: int = None):
                     content_es=lesson_data['content_es'],
                     content_en=lesson_data['content_en']
                 )
-                
+
                 db.add(lesson)
                 total_imported += 1
-                
+
                 # Progress indicator
                 if (i + 1) % 100 == 0:
                     print(f"   ... {i + 1}/{len(lessons_list)} processed")
-                    
+
             except Exception as e:
                 print(f"   ❌ Error importing {lesson_info['lesson_code']}: {e}")
                 db.rollback()
                 raise
-        
+
         # Commit after each adventure
         db.commit()
         print(f"   ✅ Adventure {adv_num} complete: {len(lessons_list)} lessons")
-    
+
     return total_imported
 
 
 def verify_import(db):
     """Verify the import was successful."""
     print("\n🔍 Verifying import...")
-    
+
     # Total count
     result = db.execute(text("SELECT COUNT(*) FROM lessons"))
     total = result.scalar()
     print(f"   Total lessons in database: {total}")
-    
+
     if total != TOTAL_EXPECTED:
         print(f"   ⚠️  Expected {TOTAL_EXPECTED}, got {total}")
         return False
-    
+
     # Count per adventure
     for adv in range(1, 7):
         result = db.execute(text(f"SELECT COUNT(*) FROM lessons WHERE adventure_level = {adv}"))
@@ -150,7 +150,7 @@ def verify_import(db):
         expected = EXPECTED_COUNTS[adv]
         status = "✅" if count == expected else "❌"
         print(f"   {status} Adventure {adv}: {count}/{expected}")
-    
+
     # Check for duplicates
     result = db.execute(text("""
         SELECT lesson_code, COUNT(*) as cnt 
@@ -163,13 +163,13 @@ def verify_import(db):
         print(f"   ❌ Found {len(dupes)} duplicate lesson codes!")
         return False
     print("   ✅ No duplicate lesson codes")
-    
+
     # Sample lesson test
     result = db.execute(text("SELECT lesson_code, title_es FROM lessons LIMIT 1"))
     sample = result.fetchone()
     if sample:
         print(f"   ✅ Sample lesson: {sample[0]} - {sample[1]}")
-    
+
     print("\n✅ Verification complete!")
     return True
 
@@ -179,12 +179,12 @@ def count_lessons(db):
     result = db.execute(text("SELECT COUNT(*) FROM lessons"))
     total = result.scalar()
     print(f"\n📊 Current lessons in database: {total}")
-    
+
     for adv in range(1, 7):
         result = db.execute(text(f"SELECT COUNT(*) FROM lessons WHERE adventure_level = {adv}"))
         count = result.scalar()
         print(f"   Adventure {adv}: {count}")
-    
+
     return total
 
 
@@ -196,56 +196,56 @@ def main():
     parser.add_argument('--adventure', type=int, help='Import single adventure (1-6)')
     parser.add_argument('--no-clear', action='store_true', help='Skip clearing existing data')
     args = parser.parse_args()
-    
+
     print("=" * 60)
     print("🏫 LittleFounders Lesson Import Script")
     print("=" * 60)
     print(f"📁 Lessons directory: {LESSONS_DIR}")
     print(f"⏰ Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
+
     # Check lessons directory exists
     if not LESSONS_DIR.exists():
         print(f"❌ Lessons directory not found: {LESSONS_DIR}")
         sys.exit(1)
-    
+
     if not MANIFEST_FILE.exists():
         print(f"❌ Manifest file not found: {MANIFEST_FILE}")
         sys.exit(1)
-    
+
     db = SessionLocal()
-    
+
     try:
         if args.count:
             count_lessons(db)
             return
-        
+
         if args.verify:
             verify_import(db)
             return
-        
+
         # Full import
         print("\n📖 Loading manifest...")
         manifest = load_manifest()
         print(f"   Total lessons in manifest: {manifest['total_lessons']}")
-        
+
         if not args.no_clear:
             clear_existing_data(db)
-        
+
         print("\n🚀 Starting import...")
         total = import_lessons(db, manifest, args.adventure)
-        
+
         print(f"\n✅ Import complete! {total} lessons imported.")
-        
+
         # Verify
         verify_import(db)
-        
+
     except Exception as e:
         print(f"\n❌ Error: {e}")
         db.rollback()
         raise
     finally:
         db.close()
-    
+
     print(f"\n⏰ Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 

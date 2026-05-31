@@ -11,8 +11,8 @@ Qué hace:
   4. Muestra la duración detectada
 """
 
-import sys
 import pathlib
+import sys
 
 # Cargar config (lee .env de esta carpeta)
 import config
@@ -50,7 +50,7 @@ print(f"✓ voice_id obtenido: {voice_id}")
 # ── 3. Generación de audio de prueba ──────────────────────────
 TEST_TEXT = "¡Hola! Soy Liruf, tu guía de finanzas. Hoy aprenderemos a tomar decisiones inteligentes con el dinero."
 
-print(f"\n[3] Generando audio de prueba...")
+print("\n[3] Generando audio de prueba...")
 print(f'    Texto: "{TEST_TEXT}"')
 
 import tts_client
@@ -69,5 +69,5 @@ output_path.write_bytes(audio_bytes)
 print(f"\n[4] Guardado en: {output_path}")
 print(f"\n{'='*55}")
 print("  ✓ Prueba completada exitosamente")
-print(f"  Reproduce test_output_liruf_es.mp3 para verificar la voz")
+print("  Reproduce test_output_liruf_es.mp3 para verificar la voz")
 print(f"{'='*55}\n")

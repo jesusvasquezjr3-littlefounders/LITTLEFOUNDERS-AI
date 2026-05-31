@@ -17,17 +17,17 @@ Estructura de archivos esperada:
 Resultado: dict con keys "{character_code}_{lang}" → voice_id_string
   Ejemplo: {"liruf_es": "guanyu-xxx", "liruf_en": "guanyu-yyy", ...}
 """
+from __future__ import annotations
 
-import json
 import base64
+import json
 import pathlib
 import subprocess
 import tempfile
+
 import requests
-from typing import Optional
 
 import config
-
 
 # Personajes reconocidos por el sistema (codes del DB)
 KNOWN_CHARACTERS: list = ["liruf", "dina", "dr_rho", "zara_vex"]
@@ -143,7 +143,7 @@ def _enroll_voice(character_code: str, lang: str, file_path: pathlib.Path) -> st
         )
 
     data = resp.json()
-    voice_id: Optional[str] = data.get("output", {}).get("voice")
+    voice_id: str | None = data.get("output", {}).get("voice")
     if not voice_id:
         raise RuntimeError(
             f"[voice_registry] Respuesta inesperada para '{key}': {data}"
@@ -201,7 +201,7 @@ def build_registry(langs: list, force_reenroll: bool = False) -> dict:
     if not registry:
         print("[voice_registry] ADVERTENCIA: No se enrolló ningún personaje/idioma.")
         print(f"                 Coloca archivos .mp3 en: {config.VOICE_SAMPLES_DIR}")
-        print(f"                 Formato esperado: {{personaje}}_{{lang}}.mp3")
-        print(f"                 Ejemplo: liruf_es.mp3, liruf_en.mp3")
+        print("                 Formato esperado: {personaje}_{lang}.mp3")
+        print("                 Ejemplo: liruf_es.mp3, liruf_en.mp3")
 
     return registry

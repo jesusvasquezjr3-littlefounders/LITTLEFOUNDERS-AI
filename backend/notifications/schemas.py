@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from __future__ import annotations
+
 from datetime import datetime
 
+from pydantic import BaseModel, Field
 
 # ── User-facing schemas ──
 
@@ -10,11 +11,11 @@ class NotificationOut(BaseModel):
     type: str
     priority: str
     title: str  # resolved by user's language
-    body: Optional[str] = None
-    media_url: Optional[str] = None
-    action_url: Optional[str] = None
-    metadata: Optional[dict] = None
-    read_at: Optional[datetime] = None
+    body: str | None = None
+    media_url: str | None = None
+    action_url: str | None = None
+    metadata: dict | None = None
+    read_at: datetime | None = None
     created_at: datetime
 
     class Config:
@@ -33,32 +34,32 @@ class NotificationCreate(BaseModel):
     status: str = "active"
     title_es: str = Field(..., min_length=1, max_length=300)
     title_en: str = Field(..., min_length=1, max_length=300)
-    body_es: Optional[str] = None
-    body_en: Optional[str] = None
-    media_url: Optional[str] = None
-    action_url: Optional[str] = None
+    body_es: str | None = None
+    body_en: str | None = None
+    media_url: str | None = None
+    action_url: str | None = None
     target_type: str = "all"
-    target_value: Optional[str] = None
-    metadata: Optional[dict] = None
-    scheduled_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    target_value: str | None = None
+    metadata: dict | None = None
+    scheduled_at: datetime | None = None
+    expires_at: datetime | None = None
 
 
 class NotificationUpdate(BaseModel):
-    type: Optional[str] = None
-    priority: Optional[str] = None
-    status: Optional[str] = None
-    title_es: Optional[str] = None
-    title_en: Optional[str] = None
-    body_es: Optional[str] = None
-    body_en: Optional[str] = None
-    media_url: Optional[str] = None
-    action_url: Optional[str] = None
-    target_type: Optional[str] = None
-    target_value: Optional[str] = None
-    metadata: Optional[dict] = None
-    scheduled_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    type: str | None = None
+    priority: str | None = None
+    status: str | None = None
+    title_es: str | None = None
+    title_en: str | None = None
+    body_es: str | None = None
+    body_en: str | None = None
+    media_url: str | None = None
+    action_url: str | None = None
+    target_type: str | None = None
+    target_value: str | None = None
+    metadata: dict | None = None
+    scheduled_at: datetime | None = None
+    expires_at: datetime | None = None
 
 
 class NotificationAdminOut(BaseModel):
@@ -68,18 +69,18 @@ class NotificationAdminOut(BaseModel):
     status: str
     title_es: str
     title_en: str
-    body_es: Optional[str] = None
-    body_en: Optional[str] = None
-    media_url: Optional[str] = None
-    action_url: Optional[str] = None
+    body_es: str | None = None
+    body_en: str | None = None
+    media_url: str | None = None
+    action_url: str | None = None
     target_type: str
-    target_value: Optional[str] = None
-    metadata: Optional[dict] = None
-    created_by_name: Optional[str] = None
+    target_value: str | None = None
+    metadata: dict | None = None
+    created_by_name: str | None = None
     read_count: int = 0
     total_recipients: int = 0
-    scheduled_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    scheduled_at: datetime | None = None
+    expires_at: datetime | None = None
     created_at: datetime
 
     class Config:

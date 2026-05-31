@@ -12,13 +12,13 @@ Uso:
     python validate.py --adventure 1 --fix              # Intentar corregir automáticamente
     python validate.py --stats                          # Solo estadísticas
 """
+from __future__ import annotations
 
+import argparse
 import json
 import sys
-import argparse
-from pathlib import Path
-from typing import Optional
 from dataclasses import dataclass, field
+from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 RULES_FILE = BASE_DIR / "pedagogy_rules.json"
@@ -46,11 +46,11 @@ def load_rules() -> dict:
     with open(RULES_FILE, encoding="utf-8") as f:
         return json.load(f)
 
-def load_lesson(path: Path) -> Optional[dict]:
+def load_lesson(path: Path) -> dict | None:
     try:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError) as e:
+    except (json.JSONDecodeError, FileNotFoundError):
         return None
 
 # ─── Reglas de Validación ────────────────────────────────────────────────────
@@ -587,7 +587,7 @@ def main():
     # Resumen
     total = total_pass + total_fail + total_warn
     print(f"\n{'='*60}")
-    print(f"📊 Resumen de Validación")
+    print("📊 Resumen de Validación")
     print(f"{'='*60}")
     print(f"  Total validadas:  {total}")
     print(f"  ✅ Pasaron:       {total_pass}")

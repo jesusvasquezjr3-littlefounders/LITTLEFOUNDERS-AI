@@ -88,15 +88,13 @@ export interface ValidationResult {
 }
 
 // Helper function to get auth headers
-function getAuthHeaders() {
+function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem("token");
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) {
-    return {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    };
+    headers["Authorization"] = `Bearer ${token}`;
   }
-  return { "Content-Type": "application/json" };
+  return headers;
 }
 
 // Helper function to build query string

@@ -3,22 +3,31 @@ Notification endpoints:
   /notifications/*        — user-facing (get, read, dismiss)
   /admin/notifications/*  — admin management (CRUD)
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, case
-from typing import List, Optional
-from datetime import datetime, timezone
+from __future__ import annotations
 
+from datetime import UTC, datetime
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, func, or_
+from sqlalchemy.orm import Session
+
+from admin.permissions import require_admin
+from auth.endpoints import get_current_user_from_token
 from database import get_db
 from models import (
-    Notification, UserNotification, User,
-    NotificationType, NotificationTargetType, NotificationStatus, NotificationPriority
+    Notification,
+    NotificationStatus,
+    NotificationTargetType,
+    User,
+    UserNotification,
 )
-from auth.endpoints import get_current_user_from_token
-from admin.permissions import require_admin
+
 from .schemas import (
-    NotificationOut, UnreadCountOut,
-    NotificationCreate, NotificationUpdate, NotificationAdminOut
+    NotificationAdminOut,
+    NotificationCreate,
+    NotificationOut,
+    NotificationUpdate,
+    UnreadCountOut,
 )
 
 router = APIRouter(tags=["Notifications"])
@@ -36,7 +45,7 @@ def _user_notifications_query(db: Session, user: User):
     - target_type='specific_user' where target_value matches user.public_id
     All must be status=active and not expired.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return db.query(Notification).filter(
         Notification.status == NotificationStatus.ACTIVE,
         or_(Notification.scheduled_at.is_(None), Notification.scheduled_at <= now),
@@ -66,7 +75,7 @@ def _resolve_language(notif: Notification, lang: str):
 # USER ENDPOINTS
 # ─────────────────────────────────────────────
 
-@router.get("/notifications", response_model=List[NotificationOut])
+@router.get("/notifications", response_model=list[NotificationOut])
 async def get_my_notifications(
     limit: int = Query(30, le=100),
     offset: int = Query(0, ge=0),
@@ -158,7 +167,7 @@ async def mark_notification_read(
         UserNotification.notification_id == notif.id,
     ).first()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if un:
         if not un.read_at:
             un.read_at = now
@@ -178,7 +187,7 @@ async def mark_all_read(
     """Mark all of the user's notifications as read."""
     base = _user_notifications_query(db, current_user)
     all_notifs = base.all()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     notif_ids = [n.id for n in all_notifs]
     if not notif_ids:
@@ -218,7 +227,7 @@ async def dismiss_notification(
         UserNotification.notification_id == notif.id,
     ).first()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if un:
         un.dismissed_at = now
         if not un.read_at:
@@ -235,11 +244,11 @@ async def dismiss_notification(
 # ADMIN ENDPOINTS
 # ─────────────────────────────────────────────
 
-@router.get("/admin/notifications", response_model=List[NotificationAdminOut])
+@router.get("/admin/notifications", response_model=list[NotificationAdminOut])
 async def admin_list_notifications(
-    status_filter: Optional[str] = Query(None, alias="status"),
-    type_filter: Optional[str] = Query(None, alias="type"),
-    target_filter: Optional[str] = Query(None, alias="target"),
+    status_filter: str | None = Query(None, alias="status"),
+    type_filter: str | None = Query(None, alias="type"),
+    target_filter: str | None = Query(None, alias="target"),
     limit: int = Query(50, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),

@@ -1,15 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
-from typing import Optional, List
-from datetime import datetime, timedelta
-from collections import defaultdict
+from __future__ import annotations
 
+import os
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from auth.endpoints import get_current_user_from_token
 from database import get_db
 from models import PlatformReport, User
-from reports.schemas import ReportCreate, ReportResponse, ReportAdminResponse, ReportStatusUpdate
-from auth.endpoints import get_current_user_from_token
-import os
+from reports.schemas import ReportAdminResponse, ReportCreate, ReportResponse, ReportStatusUpdate
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
@@ -28,7 +30,7 @@ def _check_rate_limit(key: str, max_requests: int, window_seconds: int = 60):
     if len(timestamps) >= max_requests:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"Demasiadas solicitudes. Por favor espera un momento e intenta de nuevo."
+            detail="Demasiadas solicitudes. Por favor espera un momento e intenta de nuevo."
         )
     _rate_store[key].append(now)
 
@@ -42,16 +44,16 @@ def _require_admin(current_user: User):
             detail="Se requieren permisos de administrador"
         )
 
-def _validate_evidence_url(url: Optional[str]):
+def _validate_evidence_url(url: str | None):
     """Ensure evidence URL belongs to our Supabase domain to prevent malicious link injection."""
     if not url:
         return
     supabase_url = os.getenv("VITE_SUPABASE_URL", "supabase.co")
     domain = supabase_url.replace("https://", "").replace("http://", "").split("/")[0]
-    
+
     if "supabase.co" in url or (domain and domain in url) or url.startswith("[attached:"):
         return
-    
+
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="URL de evidencia no válida. Solo se permiten archivos subidos a la plataforma oficial."
@@ -76,7 +78,7 @@ async def create_report(
     _check_rate_limit(f"ip:{client_ip}", max_requests=5, window_seconds=60)
 
     # Try to get authenticated user (optional)
-    user_id: Optional[int] = None
+    user_id: int | None = None
     try:
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
@@ -125,12 +127,12 @@ async def create_report(
 
 # ── Admin Endpoints ────────────────────────────────────────────────────────────
 
-@router.get("/", response_model=List[ReportAdminResponse])
+@router.get("/", response_model=list[ReportAdminResponse])
 async def list_reports(
     skip: int = 0,
     limit: int = 50,
-    report_status: Optional[str] = None,
-    report_type: Optional[str] = None,
+    report_status: str | None = None,
+    report_type: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token),
 ):
@@ -168,7 +170,7 @@ async def get_report_stats(
     # Optimized aggregate queries
     status_counts = db.query(PlatformReport.status, func.count(PlatformReport.id)).group_by(PlatformReport.status).all()
     type_counts = db.query(PlatformReport.report_type, func.count(PlatformReport.id)).group_by(PlatformReport.report_type).all()
-    
+
     # Map results
     stats_data = {
         "total": sum(c[1] for c in status_counts),
@@ -179,11 +181,11 @@ async def get_report_stats(
             "bug": 0, "abuse": 0, "suggestion": 0, "content": 0, "other": 0
         }
     }
-    
+
     for s, count in status_counts:
         if s in stats_data["by_status"]:
             stats_data["by_status"][s] = count
-            
+
     for t, count in type_counts:
         if t in stats_data["by_type"]:
             stats_data["by_type"][t] = count
@@ -205,7 +207,7 @@ async def get_report(
         # Fallback to internal ID if it's a number (for backward compatibility during migration)
         if report_id.isdigit():
             report = db.query(PlatformReport).filter(PlatformReport.id == int(report_id)).first()
-        
+
         if not report:
             raise HTTPException(status_code=404, detail="Reporte no encontrado")
     return report
@@ -226,7 +228,7 @@ async def update_report(
         # Fallback to internal ID if it's a number
         if report_id.isdigit():
             report = db.query(PlatformReport).filter(PlatformReport.id == int(report_id)).first()
-            
+
         if not report:
             raise HTTPException(status_code=404, detail="Reporte no encontrado")
 

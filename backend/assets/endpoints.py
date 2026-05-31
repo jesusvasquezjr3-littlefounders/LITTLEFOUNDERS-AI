@@ -3,11 +3,13 @@ Assets proxy endpoints — generates signed URLs for game-assets bucket.
 Accessible by authenticated AND anonymous (guest) users.
 Rate-limited to prevent abuse.
 """
-from fastapi import APIRouter, HTTPException, Request, status
-from supabase import create_client
-from config import settings
 import time
 from collections import defaultdict
+
+from fastapi import APIRouter, HTTPException, Request, status
+from supabase import create_client
+
+from config import settings
 
 router = APIRouter(prefix="/assets", tags=["Assets"])
 

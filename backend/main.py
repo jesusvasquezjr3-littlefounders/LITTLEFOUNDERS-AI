@@ -1,18 +1,15 @@
-from fastapi import FastAPI, HTTPException, status, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, EmailStr
-from datetime import datetime
-from typing import Optional
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from utils.limiter import limiter
-import hashlib
-import json
 import os
 import sys
 import time as _time
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+from utils.limiter import limiter
 
 # ── ANSI colors (solo en TTY) ──────────────────────────────────────
 if sys.stdout.isatty():
@@ -42,20 +39,17 @@ print(f"\n{_CYAN}{_ASCII_BANNER}{_RESET}")
 print(f"  {_BOLD}LittleFounders API{_RESET} — Inicializando...\n")
 # ────────────────────────────────────────────────────────────────────
 
-from config import settings
-from database import engine
-import models
+from admin.endpoints import router as admin_router
+from assets.endpoints import router as assets_router
 
 # Import routers
 from auth.endpoints import router as auth_router
+from config import settings
 from dashboard.endpoints import router as dashboard_router
-
 from lesson_engine.endpoints import router as lesson_engine_router
-from admin.endpoints import router as admin_router
+from notifications.endpoints import router as notifications_router
 from reports.endpoints import router as reports_router
 from social.endpoints import router as social_router
-from notifications.endpoints import router as notifications_router
-from assets.endpoints import router as assets_router
 
 # Create database tables
 # DISABLED for Vercel: Tables should already exist in Supabase
@@ -103,6 +97,7 @@ async def _startup_system_check():
     # 2. Database
     try:
         from sqlalchemy import text
+
         from database import get_db
         db = next(get_db())
         db.execute(text("SELECT 1"))
@@ -219,8 +214,9 @@ async def root():
 async def health_check():
     """Health check endpoint to verify backend is running"""
     try:
-        from database import get_db
         from sqlalchemy import text
+
+        from database import get_db
         db = next(get_db())
         db.execute(text("SELECT 1"))
         db_status = "connected"

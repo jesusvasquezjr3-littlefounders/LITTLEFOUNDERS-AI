@@ -103,7 +103,7 @@ export default function ChronoBloomGame() {
   // ── Sound on interest earning ────────────────────────────────────────────
   const prevCapital = useRef(state.capital);
   useEffect(() => {
-    if (state.phase === 'YEAR_RESULT' && state.yearResultData?.totalInterestEarned > 0) {
+    if (state.phase === 'YEAR_RESULT' && (state.yearResultData?.totalInterestEarned ?? 0) > 0) {
       playFile(AUDIO.interestEarn);
     }
     if (state.phase === 'YEAR_RESULT' && state.yearResultData?.bearMarketOccurred) {

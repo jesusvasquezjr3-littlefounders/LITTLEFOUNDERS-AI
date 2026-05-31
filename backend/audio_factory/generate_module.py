@@ -28,12 +28,12 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+
+import db_client
+import voice_registry
 
 # ── Imports del factory (mismo proceso — comparte voz y caché) ────────────
-import config          # noqa: F401 — carga .env y valida vars
-import voice_registry
-import db_client
+import config  # noqa: F401 — carga .env y valida vars
 import main as factory
 
 MANIFEST_PATH = (

@@ -2,36 +2,46 @@
 backend/admin/endpoints.py
 Todos los endpoints del admin panel, protegidos por require_admin.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
-from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, asc, Date, cast
-from typing import Optional, List
-from datetime import datetime, timedelta
-import json
-import time
-import os
+from __future__ import annotations
 
-from database import get_db
-from models import (
-    User, UserType, Lesson, Character, CharacterGesture,
-    ContentEditHistory, LessonAudioSegment
+import json
+import os
+import time
+from datetime import datetime, timedelta
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from sqlalchemy import Date, String, asc, cast, desc, func
+from sqlalchemy.orm import Session
+
+from admin.error_messages import (
+    format_validation_error_detail,
+    format_validation_error_response,
+    translate_errors_to_english,
 )
 from admin.permissions import require_admin
 from admin.schemas import (
-    LessonFullCreate, LessonFullUpdate, LessonResponse, LessonListItem,
-    LessonListResponse, ExerciseCreate, ExerciseUpdate, ExerciseReorder,
-    CharacterCreate, CharacterUpdate, CharacterResponse,
-    GestureCreate, GestureUpdate,
-    AudioGenerateRequest, AudioResponse,
-    HistoryEntry, HistoryListResponse, RollbackRequest,
-    AdminStats, AdminUserResponse
+    AudioGenerateRequest,
+    CharacterCreate,
+    CharacterUpdate,
+    ExerciseCreate,
+    ExerciseReorder,
+    ExerciseUpdate,
+    GestureCreate,
+    GestureUpdate,
+    LessonFullCreate,
+    LessonFullUpdate,
 )
 from admin.services import record_edit, rollback_edit
-from admin.validators import validate_exercises, VALID_EXERCISE_TYPES
-from admin.error_messages import (
-    format_validation_error_response,
-    translate_errors_to_english,
-    format_validation_error_detail
+from admin.validators import VALID_EXERCISE_TYPES, validate_exercises
+from database import get_db
+from models import (
+    Character,
+    CharacterGesture,
+    ContentEditHistory,
+    Lesson,
+    LessonAudioSegment,
+    User,
+    UserType,
 )
 
 router = APIRouter(prefix="/admin", tags=["Admin Panel"])
@@ -83,7 +93,7 @@ async def get_admin_stats(
 
     # Actividad diaria por usuario (últimos 365 días)
     one_year_ago = datetime.utcnow() - timedelta(days=365)
-    
+
     daily_query = db.query(
         cast(ContentEditHistory.created_at, Date).label('date'),
         ContentEditHistory.editor_user_id,
@@ -105,14 +115,14 @@ async def get_admin_stats(
         date_str = str(date_val)
         if date_str not in activity_map:
             activity_map[date_str] = {"date": date_str}
-        
+
         user_name = user_names.get(user_id, f"User {user_id}")
         # Key must be unique per user. Using name.
         # If collisions, append ID? For now assume names distinct enough or acceptable overlap.
         activity_map[date_str][user_name] = count
 
     # Fill generic structure for existing users if convenient, but sparse is fine for Recharts if we map keys.
-    # Actually, for "Github style", we might just want total count per day for the heatmap, 
+    # Actually, for "Github style", we might just want total count per day for the heatmap,
     # and maybe a breakdown for tooltips.
     # But user asked for "contributions by admin user".
     # I'll return the array sorted by date.
@@ -135,10 +145,10 @@ async def get_admin_stats(
 
 @router.get("/lessons")
 async def list_lessons(
-    adventure_level: Optional[int] = Query(None, ge=1, le=6),
-    saga_level: Optional[int] = Query(None),
-    topic_level: Optional[int] = Query(None),
-    search: Optional[str] = Query(None),
+    adventure_level: int | None = Query(None, ge=1, le=6),
+    saga_level: int | None = Query(None),
+    topic_level: int | None = Query(None),
+    search: str | None = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     sort_by: str = Query("updated_at"),
@@ -214,7 +224,7 @@ async def get_lesson(
     """Obtener lección completa con contenido JSON (Vía public_id o id numérico)."""
     # Intentar por public_id (UUID)
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -319,7 +329,7 @@ async def update_lesson(
     """Actualizar lección (Vía public_id o id numérico)."""
     # Intentar por public_id (UUID)
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -392,7 +402,7 @@ async def delete_lesson(
     """Eliminar lección (Vía public_id o id numérico)."""
     # Intentar por public_id (UUID) primero
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     # Fallback a ID numérico
     if not lesson and lesson_id_or_uuid.isdigit():
         lesson = db.query(Lesson).filter(Lesson.id == int(lesson_id_or_uuid)).first()
@@ -441,10 +451,10 @@ async def duplicate_lesson(
     """Duplicar una lección (Vía public_id o id numérico)."""
     # Intentar por public_id (UUID) primero
     original = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     # Intentar por public_id (UUID)
     original = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     if not original:
         raise HTTPException(404, "Lección original no encontrada")
 
@@ -503,7 +513,7 @@ async def validate_lesson(
 ):
     """Validar estructura JSON (Vía public_id)."""
     lesson = db.query(Lesson).filter(func.cast(Lesson.public_id, String) == lesson_id_or_uuid).first()
-    
+
     if not lesson:
         raise HTTPException(404, "Lección no encontrada")
 
@@ -529,7 +539,7 @@ async def validate_lesson(
 async def add_exercise(
     lesson_id_or_uuid: str,
     exercise_es: ExerciseCreate,
-    exercise_en: Optional[ExerciseCreate] = None,
+    exercise_en: ExerciseCreate | None = None,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
@@ -597,7 +607,7 @@ async def update_exercise(
     lesson_id_or_uuid: str,
     index: int,
     exercise_es: ExerciseUpdate,
-    exercise_en: Optional[ExerciseUpdate] = None,
+    exercise_en: ExerciseUpdate | None = None,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
@@ -736,8 +746,8 @@ async def reorder_exercises(
 @router.put("/lessons/{lesson_id_or_uuid}/exercises")
 async def update_all_exercises(
     lesson_id_or_uuid: str,
-    content_es: List[dict],
-    content_en: List[dict],
+    content_es: list[dict],
+    content_en: list[dict],
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
@@ -864,7 +874,7 @@ async def update_character(
 ):
     """Editar personaje (Vía public_id)."""
     character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
-    
+
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
 
@@ -898,7 +908,7 @@ async def add_gesture(
 ):
     """Agregar gesto (Vía public_id)."""
     character = db.query(Character).filter(func.cast(Character.public_id, String) == character_id_or_uuid).first()
-    
+
     if not character:
         raise HTTPException(404, "Personaje no encontrado")
 
@@ -1007,9 +1017,9 @@ async def delete_gesture(
 
 @router.get("/audio")
 async def list_audio(
-    lesson_id: Optional[str] = Query(None),    # accepts lesson_code or lesson public_id
-    character_id: Optional[str] = Query(None),  # accepts character_code
-    language: Optional[str] = Query(None),
+    lesson_id: str | None = Query(None),    # accepts lesson_code or lesson public_id
+    character_id: str | None = Query(None),  # accepts character_code
+    language: str | None = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     admin: User = Depends(require_admin),
@@ -1074,10 +1084,10 @@ async def list_audio(
 @router.post("/audio/upload")
 async def upload_audio(
     file: UploadFile = File(...),
-    lesson_public_id: Optional[str] = Form(None),  # lesson public UUID or lesson_code
-    exercise_index: Optional[int] = Form(None),
+    lesson_public_id: str | None = Form(None),  # lesson public UUID or lesson_code
+    exercise_index: int | None = Form(None),
     target_field: str = Form("main"),  # main, statement, question, instruction, feedback_success, feedback_error
-    character_code: Optional[str] = Form(None),
+    character_code: str | None = Form(None),
     language: str = Form("es"),
     tags: str = Form("[]"),
     admin: User = Depends(require_admin),
@@ -1269,7 +1279,7 @@ async def delete_audio(
 ):
     """Eliminar audio (Vía public_id)."""
     segment = db.query(LessonAudioSegment).filter(func.cast(LessonAudioSegment.public_id, String) == audio_id_or_uuid).first()
-    
+
     if not segment:
         raise HTTPException(404, "Audio no encontrado")
 
@@ -1293,12 +1303,12 @@ async def delete_audio(
 
 @router.get("/history")
 async def list_history(
-    entity_type: Optional[str] = Query(None),
-    entity_id: Optional[str] = Query(None),   # accepts entity_public_id (UUID string)
-    user_id: Optional[str] = Query(None),       # accepts editor public_id (UUID string)
-    action: Optional[str] = Query(None),
-    date_from: Optional[str] = Query(None),
-    date_to: Optional[str] = Query(None),
+    entity_type: str | None = Query(None),
+    entity_id: str | None = Query(None),   # accepts entity_public_id (UUID string)
+    user_id: str | None = Query(None),       # accepts editor public_id (UUID string)
+    action: str | None = Query(None),
+    date_from: str | None = Query(None),
+    date_to: str | None = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
     admin: User = Depends(require_admin),

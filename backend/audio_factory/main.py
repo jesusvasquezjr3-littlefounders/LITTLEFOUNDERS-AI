@@ -16,29 +16,28 @@ Proceso por ejercicio:
   4. Sube el MP3 a Supabase Storage.
   5. Upsert en lesson_audio_segments.
 """
+from __future__ import annotations
 
 import argparse
 import sys
 import time
-from typing import Optional
 
+import db_client
+import extractor
 import requests as http
+import storage_client
+import tts_client
+import voice_registry
 
 # Importar config primero (carga .env y valida variables)
 import config
-import voice_registry
-import extractor
-import tts_client
-import storage_client
-import db_client
-
 
 # ── Fallback de personaje ─────────────────────────────────────────────────
 # Si un ejercicio no tiene character_code, se usa liruf como narrador por defecto
 DEFAULT_CHARACTER = "liruf"
 
 
-def fetch_lesson(lesson_code: str, lang: str) -> Optional[dict]:
+def fetch_lesson(lesson_code: str, lang: str) -> dict | None:
     """
     Obtiene los datos de la lección desde el backend REST API.
     Devuelve el JSON de la lección o None si falla.
@@ -64,7 +63,7 @@ def process_lesson(
     langs: list[str],
     voice_map: dict[str, str],
     dry_run: bool = False,
-    audio_cache: Optional[dict] = None,
+    audio_cache: dict | None = None,
 ) -> dict:
     """
     Procesa todos los ejercicios de una lección en los idiomas indicados.
@@ -106,11 +105,11 @@ def process_lesson(
         # El API devuelve public_id (UUID) como "id" — resolver al integer FK
         lesson_public_id: str = lesson_info.get("id", "")
         if not lesson_public_id:
-            print(f"  [main] ✗ La respuesta no incluye lesson.id.")
+            print("  [main] ✗ La respuesta no incluye lesson.id.")
             stats["errors"] += 1
             continue
 
-        lesson_id: Optional[int] = db_client.get_lesson_integer_id(lesson_public_id)
+        lesson_id: int | None = db_client.get_lesson_integer_id(lesson_public_id)
         if not lesson_id:
             print(f"  [main] ✗ No se pudo resolver lesson UUID '{lesson_public_id}' a integer ID.")
             stats["errors"] += 1
@@ -118,7 +117,7 @@ def process_lesson(
 
         timeline: list[dict] = lesson_data.get("timeline", [])
         if not timeline:
-            print(f"  [main] ⚠ La lección no tiene ejercicios.")
+            print("  [main] ⚠ La lección no tiene ejercicios.")
             continue
 
         print(f"  Lección ID: {lesson_id} | Ejercicios: {len(timeline)}\n")
@@ -140,7 +139,7 @@ def process_lesson(
             # Verificar que el personaje tiene voz enrollada para este idioma
             # La key del registry es "{character_code}_{lang}" (ej: "liruf_es")
             registry_key = f"{character_code}_{lang}"
-            voice_id: Optional[str] = voice_map.get(registry_key)
+            voice_id: str | None = voice_map.get(registry_key)
             if not voice_id:
                 print(f"      ⚠ Sin voice_id para '{registry_key}' — saltando ejercicio.")
                 stats["skipped"] += 1
@@ -160,7 +159,7 @@ def process_lesson(
                 continue
 
             if not text_segments:
-                print(f"      ⚠ Sin texto extraído para este ejercicio — saltando.")
+                print("      ⚠ Sin texto extraído para este ejercicio — saltando.")
                 stats["skipped"] += 1
                 continue
 
@@ -280,7 +279,7 @@ def print_report(lesson_code: str, langs: list[str], stats: dict, elapsed: float
     print(f"  Tiempo total      : {elapsed:.1f}s")
 
     if stats["error_details"]:
-        print(f"\n  Detalle de errores:")
+        print("\n  Detalle de errores:")
         for err in stats["error_details"]:
             print(f"    - {err}")
 
@@ -333,7 +332,7 @@ Ejemplos:
             sys.exit(1)
 
     print(f"\n{'═'*60}")
-    print(f"  LITTLE FOUNDERS — Audio Factory")
+    print("  LITTLE FOUNDERS — Audio Factory")
     print(f"  Lección : {lesson_code}")
     print(f"  Idiomas : {', '.join(langs)}")
     print(f"  Modo    : {'DRY-RUN (sin cambios)' if args.dry_run else 'PRODUCCIÓN'}")

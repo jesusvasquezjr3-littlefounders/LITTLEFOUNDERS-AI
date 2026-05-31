@@ -1,21 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from sqlalchemy import func as sa_func
-from datetime import datetime, timedelta, date
-from typing import Optional
+from __future__ import annotations
 
-from database import get_db
-from models import User, UserType, UserLearningStreak
-from auth.schemas import (
-    UserUpdate,
-    UserResponse,
-    SupabaseAuthRequest,
-    GuestMergeRequest,
-)
+from datetime import date, datetime, timedelta
+
 import requests
-from auth.utils import create_access_token, verify_token, get_token_issued_at
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import func as sa_func
+from sqlalchemy.orm import Session
+
+from auth.schemas import (
+    GuestMergeRequest,
+    SupabaseAuthRequest,
+    UserResponse,
+    UserUpdate,
+)
+from auth.utils import create_access_token, get_token_issued_at, verify_token
 from config import settings
+from database import get_db
+from models import User, UserLearningStreak, UserType
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -25,7 +27,7 @@ def _get_limiter():
     return limiter
 
 
-def _get_last_activity_date(db: Session, user_id: int) -> Optional[str]:
+def _get_last_activity_date(db: Session, user_id: int) -> str | None:
     """
     Returns the user's most recent streak activity date as a YYYY-MM-DD string,
     or None if the user has never completed a lesson.
@@ -94,12 +96,12 @@ async def get_current_user_from_token(token: str = Depends(oauth2_scheme), db: S
 
     return user
 
-async def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
+async def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> User | None:
     """Optional authentication: returns User if valid token present, else None"""
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
-    
+
     token = auth_header.split(" ")[1]
     try:
         email = verify_token(token, None)
@@ -272,7 +274,7 @@ async def get_current_user(
 
 @router.patch("/me", response_model=UserResponse)
 async def update_user_profile(
-    user_update: UserUpdate, 
+    user_update: UserUpdate,
     current_user: User = Depends(get_current_user_from_token),
     db: Session = Depends(get_db)
 ):
@@ -302,7 +304,7 @@ async def update_user_profile(
             current_user.avatar_config = user_update.avatar_config
         if user_update.preferred_language is not None:
             current_user.preferred_language = user_update.preferred_language
-        
+
         # Handle username update with uniqueness check
         if user_update.username is not None:
             # Check if username is already taken by another user
@@ -312,11 +314,11 @@ async def update_user_profile(
             ).first()
             if existing_user:
                 raise HTTPException(
-                    status_code=400, 
+                    status_code=400,
                     detail="Este nombre de usuario ya está en uso"
                 )
             current_user.username = user_update.username
-            
+
         db.commit()
         db.refresh(current_user)
         return current_user
@@ -341,7 +343,7 @@ async def get_user_family(
     from auth.permissions import verify_family_access
     user = resolve_user_by_public_id(db, public_id)
     verify_family_access(db, current_user.id, user.id, allow_self=True)
-    
+
     family_data = {
         "user": {
             "public_id": str(user.public_id),
@@ -352,7 +354,7 @@ async def get_user_family(
         "tutor": None,
         "children": []
     }
-    
+
     # If user is a CHILD, get their tutor
     if user.user_type == UserType.CHILD:
         if user.tutor_id:
@@ -364,7 +366,7 @@ async def get_user_family(
                     "email": tutor.email,
                     "user_type": tutor.user_type
                 }
-    
+
     # If user is a TUTOR, get their children
     elif user.user_type == UserType.TUTOR:
         children = db.query(User).filter(User.tutor_id == user.id).all()
@@ -379,7 +381,7 @@ async def get_user_family(
             }
             for child in children
         ]
-    
+
     return family_data
 
 
@@ -388,6 +390,7 @@ async def get_user_family(
 # =====================================================
 
 from pydantic import BaseModel
+
 
 class LanguagePreference(BaseModel):
     language: str  # 'es' or 'en'
@@ -406,7 +409,7 @@ async def get_language_preference(
     """
     # Return stored preference or default to 'es'
     preferred_language = getattr(current_user, 'preferred_language', 'es') or 'es'
-    
+
     return {
         "language": preferred_language,
         "supported_languages": SUPPORTED_LANGUAGES
@@ -429,17 +432,17 @@ async def update_language_preference(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid language. Supported languages: {', '.join(SUPPORTED_LANGUAGES)}"
         )
-    
+
     try:
         # Update user's language preference
         current_user.preferred_language = preference.language
         db.commit()
-        
+
         return {
             "message": "Language preference updated",
             "language": preference.language
         }
-    except Exception as e:
+    except Exception:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

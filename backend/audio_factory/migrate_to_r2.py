@@ -13,11 +13,11 @@ Uso:
   python3 migrate_to_r2.py --dry-run     # Solo muestra qué haría
   python3 migrate_to_r2.py --skip-clean  # Migra pero no elimina de Supabase
 """
+from __future__ import annotations
 
 import argparse
 import sys
 import time
-from typing import Optional
 
 import boto3
 import requests as http
@@ -47,7 +47,7 @@ SUPABASE_STORAGE_PREFIX = f"{config.SUPABASE_URL}/storage/v1/object/public/"
 SUPABASE_BUCKET_PATH_PREFIX = "lesson-assets/lesson-audio/"
 
 
-def supabase_url_to_r2_key(supabase_url: str) -> Optional[str]:
+def supabase_url_to_r2_key(supabase_url: str) -> str | None:
     """
     Extrae la clave R2 a partir de un URL de Supabase Storage.
 
@@ -80,7 +80,7 @@ def fetch_supabase_records() -> list[dict]:
         sys.exit(1)
 
 
-def download_audio(url: str) -> Optional[bytes]:
+def download_audio(url: str) -> bytes | None:
     """Descarga el MP3 desde el URL público de Supabase. Devuelve None si falla."""
     try:
         resp = http.get(url, timeout=30)
@@ -124,7 +124,7 @@ def delete_from_supabase(storage_path: str) -> bool:
 
 def migrate(dry_run: bool = False, skip_clean: bool = False) -> None:
     print(f"\n{'═'*60}")
-    print(f"  Migración Supabase Storage → Cloudflare R2")
+    print("  Migración Supabase Storage → Cloudflare R2")
     print(f"  Modo: {'DRY-RUN' if dry_run else 'PRODUCCIÓN'}")
     print(f"  Limpieza Supabase: {'NO' if skip_clean or dry_run else 'SÍ'}")
     print(f"{'═'*60}\n")
@@ -162,7 +162,7 @@ def migrate(dry_run: bool = False, skip_clean: bool = False) -> None:
         print(f"    → R2: {r2_key}")
 
         if dry_run:
-            print(f"    [DRY-RUN] Omitiría descarga, subida y actualización de DB")
+            print("    [DRY-RUN] Omitiría descarga, subida y actualización de DB")
             migrated += 1
             continue
 
@@ -210,7 +210,7 @@ def migrate(dry_run: bool = False, skip_clean: bool = False) -> None:
 
     # ── Reporte ───────────────────────────────────────────────────────────
     print(f"\n{'═'*60}")
-    print(f"  REPORTE FINAL")
+    print("  REPORTE FINAL")
     print(f"{'═'*60}")
     print(f"  Total procesados : {total}")
     print(f"  ✓ Migrados       : {migrated}")

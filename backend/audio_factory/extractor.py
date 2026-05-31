@@ -9,6 +9,7 @@ sin pasar por DeepSeek (siempre están en exercise.feedback.success/error).
 """
 
 import json
+
 from openai import OpenAI
 
 import config
