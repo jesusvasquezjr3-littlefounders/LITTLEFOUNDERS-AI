@@ -218,7 +218,7 @@ export function TopNav() {
 
   return (
     <>
-    <header className="relative flex items-center justify-between px-4 md:px-6 py-3 bg-card border-b border-border">
+    <header className="relative flex items-center justify-between px-4 md:px-6 py-3 bg-card border-b border-border view-transition-header">
       {/* Left Section: Stats */}
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Points Stat */}

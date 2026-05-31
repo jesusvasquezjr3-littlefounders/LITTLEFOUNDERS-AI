@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
+import { AnimatedRoutes } from "@/components/transitions/AnimatedRoutes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
 import { ChildProtectedRoute } from "@/components/auth/ChildProtectedRoute";
@@ -83,7 +84,7 @@ const App = () => (
             <GoogleAnalytics />
             <LanguageSyncWrapper>
               <ReportFAB />
-              <Routes>
+              <AnimatedRoutes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/placement" element={<PlacementPage />} />
@@ -276,7 +277,7 @@ const App = () => (
 
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
-              </Routes>
+              </AnimatedRoutes>
             </LanguageSyncWrapper>
           </BrowserRouter>
         </SoundProvider>

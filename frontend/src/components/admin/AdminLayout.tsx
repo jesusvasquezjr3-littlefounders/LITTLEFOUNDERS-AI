@@ -59,7 +59,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         />
 
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+          <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm view-transition-header">
             <div className="px-6 py-4 flex items-center justify-between">
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('layout.panelTitle')}
@@ -102,7 +102,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <main
             className={cn(
               "flex-1 overflow-y-auto transition-all duration-300 p-6",
-              !sidebarCollapsed ? "md:ml-0" : "md:ml-0"
+              !sidebarCollapsed ? "md:ml-0" : "md:ml-0",
+              "view-transition-content"
             )}
             aria-label={t('layout.mainContent')}
           >

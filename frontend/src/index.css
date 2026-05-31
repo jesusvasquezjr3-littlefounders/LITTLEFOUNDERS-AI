@@ -2181,3 +2181,32 @@
   100% { transform: scaleX(1); }
 }
 .animate-coin-flip { animation: coin-flip 1.8s ease-in-out infinite; }
+
+/* ── View Transitions API (Organic Page Transitions) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base utility classes for morphing elements */
+.view-transition-header {
+  view-transition-name: app-header;
+}
+
+.view-transition-sidebar {
+  view-transition-name: app-sidebar;
+}
+
+.view-transition-content {
+  view-transition-name: app-content;
+}
+
+/* Stop transition on elements that prefer-reduced-motion */
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

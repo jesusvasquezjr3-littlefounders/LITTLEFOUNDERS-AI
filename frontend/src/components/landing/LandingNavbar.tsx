@@ -37,7 +37,7 @@ export const LandingNavbar = () => {
     const showGlass = isScrolled || mobileMenuOpen;
 
     return (
-        <div className="fixed top-0 w-full z-50">
+        <div className="fixed top-0 w-full z-50 view-transition-header">
             {/* Wave clip-path definition */}
             <svg width="0" height="0" className="absolute pointer-events-none">
                 <defs>

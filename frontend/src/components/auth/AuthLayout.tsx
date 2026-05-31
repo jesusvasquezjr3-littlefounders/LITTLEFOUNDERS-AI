@@ -39,7 +39,7 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
           </div>
 
           {/* Auth Card */}
-          <Card className="border-0 shadow-large">
+          <Card className="border-0 shadow-large view-transition-content">
             <CardHeader className="text-center space-y-2">
               <CardTitle className="text-2xl font-bold">{title}</CardTitle>
               <CardDescription>{description}</CardDescription>

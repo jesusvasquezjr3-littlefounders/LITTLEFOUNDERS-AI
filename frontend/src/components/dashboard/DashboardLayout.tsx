@@ -88,7 +88,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <main className={cn(
             "flex-1 p-6 overflow-y-auto transition-all duration-300",
             // Desktop: dynamic margin for sidebar
-            !sidebarCollapsed ? "md:ml-64" : "md:ml-28"
+            !sidebarCollapsed ? "md:ml-64" : "md:ml-28",
+            "view-transition-content"
           )} aria-label={t('layout.main_content_aria')}>
             {/* Guest banner — appears on every page for non-authenticated guests */}
             {showGuestBanner && <GuestBanner />}

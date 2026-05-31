@@ -126,7 +126,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           "rounded-3xl liquid-glass",
           "shadow-2xl shadow-black/10",
           "transition-all duration-300 ease-out",
-          isExpanded ? "w-60" : "w-24"
+          isExpanded ? "w-60" : "w-24",
+          "view-transition-sidebar"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
