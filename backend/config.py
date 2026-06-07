@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     api_description: str = "API para la plataforma educativa financiera LittleFounders"
 
     # CORS configuration - SECURITY: whitelist only allowed origins
-    # Can be overridden via CORS_ORIGINS env var (comma-separated list) in Render dashboard
+    # Can be overridden via CORS_ORIGINS env var (comma-separated list) in the platform dashboard (Railway)
     _default_cors_origins: list[str] = [
         "https://littlefounders.ai",
         "https://www.littlefounders.ai",
@@ -68,7 +68,7 @@ class Settings(BaseSettings):
         """
         Returns CORS origins from CORS_ORIGINS env var (comma-separated) if set,
         otherwise falls back to the default list above.
-        Set this in Render's Environment Variables after you know your Vercel URL.
+        Set this in Railway's Variables after you know your Vercel URL.
         """
         env_origins = os.getenv("CORS_ORIGINS", "")
         if env_origins:
