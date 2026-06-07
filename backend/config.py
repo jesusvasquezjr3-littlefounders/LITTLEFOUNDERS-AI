@@ -77,5 +77,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-# CD smoke test — auto-deploy desde GitHub verificado 2026-06-07
