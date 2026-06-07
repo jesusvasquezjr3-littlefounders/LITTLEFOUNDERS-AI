@@ -1,0 +1,23 @@
+# Railway build context exclusions (sintaxis tipo .gitignore).
+# El servicio despliega con Root Directory = backend/, así que el frontend
+# y el resto del monorepo ya quedan fuera. Esto adelgaza la imagen del backend.
+
+# Documentación — no se necesita en runtime
+*.md
+**/*.md
+
+# Tests y herramientas de desarrollo
+tests/
+requirements-dev.txt
+
+# Caches
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Entorno local
+.env
+.venv/
+venv/
