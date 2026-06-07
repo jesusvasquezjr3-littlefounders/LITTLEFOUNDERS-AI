@@ -66,7 +66,7 @@ Antes de hacer commit, verificar:
 | Linting (BE) | ruff |
 | CI | GitHub Actions (2 workflows) |
 | Deploy FE | Vercel |
-| Deploy BE | Render |
+| Deploy BE | Railway |
 
 ---
 
