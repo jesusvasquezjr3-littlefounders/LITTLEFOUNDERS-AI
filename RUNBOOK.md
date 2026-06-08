@@ -7,23 +7,34 @@
 ## 1. Health Check
 
 ```bash
-curl https://api.littlefounders.ai/health
+# URL directa de Railway (o api.littlefounders.ai si hay dominio custom):
+curl https://littlefounders-backend-production.up.railway.app/health
 # Expected: {"status": "ok", "database": "connected"}
 ```
+
+> **Nota App Sleeping:** el backend escala a cero en ocioso. La **primera**
+> petición tras un rato sin tráfico tarda ~1s (wake), no es un incidente.
 
 ## 2. Backend Caído
 
 ```bash
-# 1. Verificar logs en Render dashboard
+# 1. Verificar logs en Railway (dashboard o CLI desde backend/):
+railway logs              # logs de runtime
+railway logs -b           # logs del último build/deploy
+railway status            # estado del servicio + deployment ID
+
 # 2. Verificar health endpoint
-curl https://api.littlefounders.ai/health
+curl https://littlefounders-backend-production.up.railway.app/health
 
 # 3. Verificar conectividad DB
 #    Revisar Supabase dashboard → Database → Connection pooling
 
-# 4. Verificar variables de entorno en Render
-#    Dashboard → Environment Variables
+# 4. Verificar variables de entorno en Railway
+#    Dashboard → servicio → Variables  (o `railway variables`)
 #    Especialmente: DATABASE_HOSTNAME, DATABASE_PASSWORD, SECRET_KEY
+
+# 5. Re-desplegar si hace falta (CD: merge a main con cambios en backend/**;
+#    manual: `railway up` desde backend/ con sesión iniciada)
 ```
 
 ## 3. Frontend Caído
