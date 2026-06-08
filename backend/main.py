@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import time as _time
@@ -76,8 +77,11 @@ def _print_check(name: str, ok: bool, detail: str = ""):
     print(msg)
 
 
-@app.on_event("startup")
-async def _startup_system_check():
+def _run_system_check():
+    """Diagnóstico de arranque. Hace IO de red bloqueante (DB + Supabase),
+    por eso se ejecuta en un thread fuera del path de arranque para no
+    retrasar la disponibilidad del servicio (clave para cold starts con
+    App Sleeping en Railway)."""
     _start = _time.time()
     print(f"\n  {'─' * 55}")
     print(f"  {_BOLD}System Status Check{_RESET}")
@@ -138,6 +142,13 @@ async def _startup_system_check():
     print(f"\n  {'─' * 55}")
     print(f"  {_BOLD}Startup completo{_RESET} — {_elapsed:.2f}s")
     print(f"  {'─' * 55}\n")
+
+
+@app.on_event("startup")
+async def _startup_system_check():
+    # Fire-and-forget: el servicio queda disponible de inmediato; el
+    # diagnóstico (IO de red bloqueante) corre en un thread aparte.
+    asyncio.create_task(asyncio.to_thread(_run_system_check))
 # ────────────────────────────────────────────────────────────────────
 
 # Custom exception handler for validation errors
