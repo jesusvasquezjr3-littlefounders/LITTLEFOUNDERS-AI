@@ -10,7 +10,7 @@
 ```
 littlefounders.ai
 ├── Frontend (React/Vite) → Vercel
-├── Backend (FastAPI) → Render
+├── Backend (FastAPI) → Railway
 └── Database (PostgreSQL) → Supabase
 ```
 
@@ -32,9 +32,9 @@ littlefounders.ai
 - **Linting:** ruff configurado ✓
 
 ### CI/CD
-- GitHub Actions: Frontend + Backend workflows ✓
-- Frontend deploy: Vercel (Git integration)
-- Backend deploy: Render (manual via Git)
+- GitHub Actions: Frontend CI + Backend CI + CD workflows ✓
+- Frontend deploy: Vercel (webhook desde `cd.yml`)
+- Backend deploy: Railway (`cd.yml` → `deploy-railway` corre `railway up` tras pasar Backend CI)
 
 ---
 
@@ -54,6 +54,10 @@ littlefounders.ai
 | 2026-05-31 | Bugfix: 19 undefined-name F821 en admin/endpoints.py |
 | 2026-05-31 | Seguridad: requirements.txt separado (prod) de requirements-dev.txt |
 | 2026-05-31 | Seguridad: .vercelignore actualizado con exclusiones de testing |
+| 2026-06-07 | Backend migrado de Render a Railway (motivo: costo del fee Pro por asiento) |
+| 2026-06-07 | CD backend implementado: `cd.yml` → `deploy-railway` (`railway up` + `RAILWAY_TOKEN`) |
+| 2026-06-07 | Optimización de costo: App Sleeping activado + startup no-bloqueante (cold start ~1s) |
+| 2026-06-07 | Limpieza: `Procfile` eliminado, `.railwayignore` agregado, secretos rotados |
 
 ---
 
@@ -65,4 +69,4 @@ littlefounders.ai
 4. **Sin cobertura de tests reales** — solo placeholder tests
 5. **Sin E2E tests** — solo manuales
 6. **Sin pre-commit hooks** (husky/lint-staged)
-7. **CI necesita configurar secrets** — `VERCEL_DEPLOY_HOOK_URL` y `RENDER_DEPLOY_HOOK_URL` para CD
+7. **Secrets de CD configurados** — `VERCEL_DEPLOY_HOOK_URL` y `RAILWAY_TOKEN` ✓ (el viejo `RENDER_DEPLOY_HOOK_URL` quedó obsoleto)

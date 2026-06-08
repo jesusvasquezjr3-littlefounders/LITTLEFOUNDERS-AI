@@ -39,8 +39,8 @@ graph TB
     end
 
     subgraph "API Gateway"
-        VERCEL["Vercel Serverless<br/>api/index.py"]
-        RENDER["Render<br/>uvicorn main:app"]
+        VERCEL["Vercel Serverless<br/>api/index.py (legacy)"]
+        RAILWAY["Railway<br/>uvicorn main:app"]
     end
 
     subgraph "Application Layer"
@@ -66,9 +66,9 @@ graph TB
     end
 
     FE -->|HTTPS| VERCEL
-    FE -->|HTTPS| RENDER
+    FE -->|HTTPS| RAILWAY
     VERCEL --> FAST
-    RENDER --> FAST
+    RAILWAY --> FAST
     FAST --> AUTH
     FAST --> LE
     FAST --> ADMIN
@@ -110,7 +110,9 @@ backend/
 ├── models.py                    # All ORM models (single source of truth)
 ├── schemas.py                   # Shared Pydantic response/request schemas
 ├── requirements.txt             # Python dependencies
-├── Procfile                     # Render deployment command
+├── railway.json                 # Railway: Nixpacks builder, healthcheck, startCommand
+├── nixpacks.toml                # Railway: Python 3.11 pin + start command
+├── .railwayignore               # Excludes *.md, tests/, caches from build context
 ├── .env                         # Environment variables (DO NOT COMMIT)
 │
 ├── auth/                        # Authentication & authorization
@@ -600,7 +602,7 @@ graph TD
 
 ## 8. API Endpoints Reference
 
-Base URL: `https://your-domain.com` (Render) or via Vercel serverless.
+Base URL: `https://littlefounders-backend-production.up.railway.app` (Railway).
 
 ### Router Registration Order (`main.py`)
 
@@ -1210,8 +1212,8 @@ graph LR
         V_API["api/index.py<br/>(Serverless Function)"]
     end
 
-    subgraph "Option B: Render (Persistent)"
-        R_API["uvicorn main:app<br/>(Procfile)"]
+    subgraph "Option B: Railway (Persistent) — PRODUCCIÓN"
+        R_API["uvicorn main:app<br/>(railway.json + nixpacks.toml)"]
     end
 
     subgraph "Data"
@@ -1224,6 +1226,8 @@ graph LR
     V_API --> STORE
     R_API --> STORE
 ```
+
+> **Producción actual:** Opción B (Railway). La Opción A (Vercel serverless vía `api/index.py`) es legacy y está ignorada por `.vercelignore`.
 
 ### Vercel Deployment
 
@@ -1240,17 +1244,28 @@ app = application
 - Table auto-creation is disabled (`models.Base.metadata.create_all` commented out)
 - Each cold start re-initializes the application
 
-### Render Deployment
+### Railway Deployment (producción)
 
-The `Procfile` configures the Render web service:
+`railway.json` + `nixpacks.toml` configuran el servicio web en Railway:
 
+```jsonc
+// railway.json
+{
+  "build":  { "builder": "NIXPACKS" },
+  "deploy": {
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+    "healthcheckPath": "/health",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
 ```
-web: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
-```
 
-- Persistent process with connection pooling
-- Automatic restarts on crash
-- Uses `$PORT` environment variable from Render
+- **Root Directory = `backend`** en el servicio → el contexto de build es solo `backend/`.
+- Proceso persistente con connection pooling; reinicio automático on-failure.
+- Usa la variable `$PORT` que inyecta Railway.
+- **App Sleeping (serverless):** escala a cero en ocioso (~$0 idle), wake ~1s. El diagnóstico de `@app.on_event("startup")` corre en un thread no-bloqueante (`asyncio.to_thread`) para no retrasar el arranque/wake.
+- **CD:** push a `main` con cambios en `backend/**` → Backend CI → `.github/workflows/cd.yml` job `deploy-railway` corre `railway up --service littlefounders-backend --ci` (auth `RAILWAY_TOKEN`).
+- ⚠️ **No configurar Watch Paths en Railway** (rompe `railway up`: el snapshot sube con raíz `backend/`, así que `backend/**` nunca coincide → "no changes detected, build will skip").
 
 ### Database Considerations
 

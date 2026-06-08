@@ -165,14 +165,16 @@ El proyecto tiene pipelines de CI en GitHub Actions:
 |----------|--------|---------|
 | **Frontend CI** | Push/PR a `main` (paths: `frontend/**`) | type-check → lint → test → build |
 | **Backend CI** | Push/PR a `main` (paths: `backend/**`) | ruff lint → pytest (con PostgreSQL) |
+| **CD — Deploy** | `workflow_run` al completar un CI en `main` | `deploy-vercel` (webhook) + `deploy-railway` (`railway up`, gated a Backend CI) |
 
-**Deployment** (manual vía Git):
-- **Frontend → Vercel:** Integración Git automática en `main`. Solo se despliega `frontend/dist/` (test files excluidos vía `.vercelignore`)
-- **Backend → Render:** Integración Git automática en `main`. Render solo instala `requirements.txt` (producción). Testing y linting están en `requirements-dev.txt`
+**Deployment** (automático vía GitHub Actions `cd.yml`):
+- **Frontend → Vercel:** `cd.yml` hace POST a `VERCEL_DEPLOY_HOOK_URL` tras pasar CI. Solo se despliega `frontend/dist/` (test files excluidos vía `.vercelignore`)
+- **Backend → Railway:** `cd.yml` job `deploy-railway` corre `railway up --service littlefounders-backend --ci` (auth `RAILWAY_TOKEN`) tras pasar **Backend CI**. Railway solo instala `requirements.txt` (producción) vía Nixpacks; `requirements-dev.txt` no se instala
 
 ### Seguridad en Deploy
 - **Vercel:** `.vercelignore` excluye: `backend/`, `api/`, `*.md`, `*.sql`, `frontend/vitest.config.ts`, `frontend/.env.example`, `frontend/src/__tests__/`
-- **Render:** Solo instala dependencias de producción (`requirements.txt`). Tests y linters (`requirements-dev.txt`) nunca se instalan en producción
+- **Railway:** `backend/.railwayignore` excluye `*.md`, `tests/`, caches y `requirements-dev.txt` del contexto de build. Solo se instala `requirements.txt` (producción)
+- **Secrets de CD:** `RAILWAY_TOKEN` y `VERCEL_DEPLOY_HOOK_URL` configurados en GitHub repo settings
 - **Nunca comitear `.env`**: Los archivos `.env` reales están en `.gitignore`. Solo se comitean `.env.example` y `.env.test` con valores placeholder
 
 ---
