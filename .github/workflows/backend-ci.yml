@@ -4,10 +4,12 @@ on:
     branches: [main]
     paths:
       - "backend/**"
+      - "!backend/**/*.md"   # cambios solo-docs no gatillan CI/CD del backend
       - ".github/workflows/backend-ci.yml"
   pull_request:
     paths:
       - "backend/**"
+      - "!backend/**/*.md"
       - ".github/workflows/backend-ci.yml"
 
 jobs:
