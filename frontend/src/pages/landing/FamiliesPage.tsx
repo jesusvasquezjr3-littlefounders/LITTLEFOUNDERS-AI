@@ -2,8 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LandingLayout } from '@/components/landing/LandingLayout';
 import {
-  CheckCircle2,
-  Clock, Flame,
+  Clock,
 } from 'lucide-react';
 
 /* ─── Wave divider ────────────────────────────────────────────────────────── */
@@ -20,75 +19,7 @@ function WaveDivider({ top = false, fromClass, toClass }: { top?: boolean; fromC
   );
 }
 
-/* ─── Hero dashboard preview ──────────────────────────────────────────────── */
-function HeroDashboardPreview({ t }: { t: any }) {
-  const tasks = [
-    { label: t('families.mock_data.tidy_room'), coins: 30, done: true, color: 'pink' },
-    { label: t('families.mock_data.complete_lesson'), coins: 50, done: true, color: 'purple' },
-    { label: t('families.mock_data.water_plants'), coins: 25, done: false, color: 'blue' },
-    { label: t('families.mock_data.practice_piano'), coins: 40, done: false, color: 'green' },
-  ];
-  const completed = tasks.filter(t => t.done).length;
-  const pct = Math.round((completed / tasks.length) * 100);
 
-  return (
-    <div className="relative w-full max-w-sm mx-auto select-none">
-      {/* Glow */}
-      <div className="absolute -inset-4 bg-gradient-to-br from-[#ff6b6b]/20 to-[#7048e8]/20 dark:from-[#ff6b6b]/10 dark:to-[#7048e8]/10 rounded-3xl blur-3xl -z-10" />
-
-      {/* Card */}
-      <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#ff6b6b] to-[#e64980] p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">{t('families.mock_data.panel_header')}</p>
-              <p className="text-white font-black text-lg">Sofía</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 bg-white/15 rounded-xl px-4 py-2">
-            <span className="text-2xl">🪙</span>
-            <div>
-              <p className="text-white font-black text-xl leading-none">1,250</p>
-              <p className="text-white/70 text-xs">{t('families.mock_data.accumulated_coins')}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="px-5 pt-4 pb-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{t('families.mock_data.today_progress')}</span>
-            <span className="text-xs font-black text-violet-600 dark:text-violet-400">{pct}%</span>
-          </div>
-          <div className="h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#ff6b6b] to-[#e64980] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
-          </div>
-        </div>
-
-        {/* Tasks */}
-        <div className="px-5 pb-5 space-y-2">
-          {tasks.map((task, i) => (
-            <div key={i} className={`flex items-center gap-3 p-3 rounded-xl ${task.done ? 'bg-green-50 dark:bg-green-900/15' : 'bg-gray-50 dark:bg-slate-800/50'}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${task.done ? 'bg-green-500' : 'border-2 border-gray-300 dark:border-gray-600'}`}>
-                {task.done && <CheckCircle2 className="w-4 h-4 text-white" />}
-              </div>
-              <span className={`text-sm font-semibold flex-1 ${task.done ? 'line-through text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>{task.label}</span>
-              <div className="flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
-                🪙 {task.coins}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Streak badge */}
-      <div className="absolute -top-3 -right-3 bg-gradient-to-br from-violet-400 to-red-500 text-white px-3 py-1.5 rounded-xl shadow-lg text-xs font-black flex items-center gap-1.5 z-10 animate-glow-pulse">
-        <Flame className="w-3.5 h-3.5" /> {t('families.mock_data.streak_days', { count: 7 })}
-      </div>
-    </div>
-  );
-}
 
 
 /* ─── PAGE ────────────────────────────────────────────────────────────────── */
@@ -163,9 +94,46 @@ export default function FamiliesPage() {
                 </div>
               </div>
 
-              {/* RIGHT — Dashboard mockup */}
-              <div className="flex justify-center items-center pt-4 lg:pt-0 animate-fade-in-up-delay-2">
-                <HeroDashboardPreview t={t} />
+              {/* RIGHT — Hero Visual Block */}
+              <div className="w-full flex justify-center items-center relative h-[300px] lg:h-[560px] flex-shrink-0 lg:w-[600px] overflow-visible animate-float" style={{ animationDelay: '1s' }}>
+                {/* Blurs behind the image */}
+                <div className="absolute bottom-0 z-0 animate-float left-1/2 -ml-[150px] w-[300px] h-[300px] lg:left-auto lg:ml-0 lg:-right-16 lg:w-[640px] lg:h-[640px]" style={{ animationDelay: '1.5s' }}>
+                  <div className="absolute inset-8 lg:inset-20 rounded-full bg-pink-400/20 blur-[50px] lg:blur-[80px]" />
+                </div>
+                <div className="absolute bottom-0 z-0 animate-float left-0 w-[200px] h-[200px] lg:left-auto lg:right-[13rem] lg:w-[400px] lg:h-[400px]" style={{ animationDelay: '0s' }}>
+                  <div className="absolute inset-8 lg:inset-16 rounded-full bg-emerald-400/25 blur-[40px] lg:blur-[60px]" />
+                </div>
+
+                {/* Morphing Blob Frame */}
+                <div className="relative w-[340px] h-[260px] sm:w-[400px] sm:h-[300px] lg:w-[600px] lg:h-[560px] flex-shrink-0 morphing-blob-frame bg-gradient-to-tr from-[#ff6b6b]/60 via-white/20 to-[#7048e8]/60 dark:from-[#ff6b6b]/45 dark:via-white/5 dark:to-[#7048e8]/45 p-[8px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(112,72,232,0.45)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15 overflow-hidden z-10" style={{ animationDelay: '0.5s' }}>
+                  <div className="w-full h-full overflow-hidden bg-white/70 dark:bg-slate-900/70 relative" style={{ borderRadius: 'inherit' }}>
+                    <img 
+                      src="/Hero-Families.png" 
+                      alt="LittleFounders Families Hero" 
+                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                    />
+                    {/* Glossy liquid glass reflections */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none mix-blend-overlay" />
+                    <div className="absolute -inset-full bg-gradient-to-b from-white/10 via-transparent to-transparent rotate-45 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Magical Sparkles/Glitter around the liquid glass image */}
+                <svg className="absolute -top-4 left-10 sm:-top-6 sm:left-20 lg:-top-10 lg:left-24 z-20 w-8 h-8 text-yellow-300 pointer-events-none animate-sparkle-1" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+                </svg>
+                <svg className="absolute top-10 -right-2 sm:top-14 sm:-right-4 lg:top-20 lg:-right-8 z-20 w-10 h-10 text-amber-300 pointer-events-none animate-sparkle-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+                </svg>
+                <svg className="absolute top-1/2 -left-6 sm:-left-8 lg:-left-12 z-20 w-7 h-7 text-yellow-200 pointer-events-none animate-sparkle-3" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+                </svg>
+                <svg className="absolute bottom-6 -right-4 sm:bottom-10 sm:-right-6 lg:bottom-16 lg:-right-10 z-20 w-6 h-6 text-pink-300 pointer-events-none animate-sparkle-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+                </svg>
+                <svg className="absolute -bottom-4 left-12 sm:-bottom-6 sm:left-24 lg:-bottom-10 lg:left-32 z-20 w-8 h-8 text-amber-200 pointer-events-none animate-sparkle-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+                </svg>
               </div>
             </div>
           </div>
