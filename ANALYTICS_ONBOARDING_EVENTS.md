@@ -9,8 +9,9 @@ Reference guide for the custom events instrumented in the LittleFounders web app
 | Field | Value |
 |---|---|
 | GA4 Measurement ID | `G-0XH7S80QG2` |
-| gtag.js loader | `frontend/index.html` (lines 29–40) |
+| gtag.js loader | `frontend/index.html` (§ `Google tag (gtag.js)` block) |
 | React wrapper (page views) | `frontend/src/components/analytics/GoogleAnalytics.tsx` |
+| Bot tagging | `frontend/index.html` → `lfIsLikelyBot()` sets `traffic_type` on every hit. See §8. |
 | Custom event helper | `frontend/src/lib/analytics.ts` → `trackEvent(name, params?)` |
 | Tracking gate | Disabled on `localhost` and `127.0.0.1`. Production only. |
 | Companion telemetry | Microsoft Clarity (`vwvchxd933`) — same hostname gate. |
@@ -316,3 +317,27 @@ Register these once in GA4 (Admin → Custom definitions → Custom dimensions, 
 3. Update this document — add the event under §3 with parameters, type table, and a row in §6.
 4. If the event should be a conversion, add it to §4.1 and register it as a Key Event in GA4.
 5. Never send raw user input that could identify a user (name, email, free-text answers). Send aggregates (length, count, hash) instead.
+
+---
+
+## 8. Bot / data-center traffic filtering
+
+GA4's built-in IAB bot list does **not** catch most data-center traffic, which inflated the reported US user count (~212 → ~130–140 real humans). Mitigation is two-layered.
+
+### 8.1 Client-side tagging (code — already shipped)
+
+`frontend/index.html` runs `lfIsLikelyBot()` before `gtag('config')` and tags **every hit** with a `traffic_type` parameter (`bot` | `human`). It does **not** drop the hit — data is preserved so it stays filterable rather than lost. Heuristics:
+
+- `navigator.webdriver === true` (declared automation)
+- User-agent matches `bot|crawl|spider|slurp|headless|phantom|puppeteer|playwright|selenium|lighthouse|gtmetrix|pingdom|monitor|preview|scrape`
+- `navigator.languages` empty (typical of headless/automation)
+
+### 8.2 GA4 console setup (manual — must be done in the GA4 admin, not in this repo)
+
+1. **Admin → Custom definitions → Create custom dimension**: scope **Event**, parameter name `traffic_type`.
+2. **Admin → Data Settings → Data Filters → Create filter** (Internal/Developer Traffic) that excludes `traffic_type = bot`. Start in **Testing** mode for a few days, then set **Active**.
+3. **Admin → Data Streams → Configure tag settings**: confirm *"Exclude all hits from known bots and spiders"* is enabled (IAB list).
+4. For data centers that slip through: identify their IP ranges in **Reports → Tech / Network**, add them as **Internal Traffic** IP filters.
+5. Build a **"Humans only"** segment (`traffic_type = human`) for any analysis that drives decisions.
+
+> Note: the `traffic_type` value is also useful in BigQuery exports (`event_params`) for retroactive cleanup of historical data.
