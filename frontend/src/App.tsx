@@ -18,7 +18,7 @@ import FamiliesPage from "./pages/landing/FamiliesPage";
 import FaqPage from "./pages/landing/FaqPage";
 import PricingPage from "./pages/landing/PricingPage";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Signup from "./pages/Signup";
 import Bye from "./pages/Bye";
 import AuthCallback from "./pages/AuthCallback";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -66,11 +66,23 @@ import { AdminHelp } from "@/pages/admin/AdminHelp";
 import AdminReports from "@/pages/admin/AdminReports";
 import AdminNotifications from "@/pages/admin/AdminNotifications";
 
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 // Common
 import { ReportFAB } from "@/components/common/ReportFAB";
 
 const queryClient = new QueryClient();
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -81,6 +93,7 @@ const App = () => (
           <Sonner />
           <Analytics />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
             <GoogleAnalytics />
             <LanguageSyncWrapper>
               <ReportFAB />
@@ -99,7 +112,7 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/signup" element={<Signup />} />
                 <Route path="/bye" element={<Bye />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

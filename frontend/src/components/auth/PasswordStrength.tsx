@@ -34,7 +34,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password = '' }) =>
   const strengthColors = [
     'bg-red-500',    // Muy Débil
     'bg-red-500',    // Débil
-    'bg-yellow-500', // Aceptable
+    'bg-indigo-500', // Aceptable
     'bg-blue-500',   // Buena
     'bg-green-500',  // Fuerte
     'bg-green-700'   // Muy Fuerte

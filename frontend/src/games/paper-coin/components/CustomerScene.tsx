@@ -16,7 +16,7 @@ function CoinBadge({ amount }: { amount: number }) {
       }}
     >
       <span className="text-xs">🪙</span>
-      <span className="font-black text-amber-900 text-sm">{amount}</span>
+      <span className="font-black text-blue-900 text-sm">{amount}</span>
     </div>
   );
 }
@@ -127,8 +127,8 @@ export function CustomerScene({ state }: Props) {
             )}
 
             {/* Payment */}
-            <div className="flex items-center justify-center gap-2 bg-amber-50 rounded-lg px-2 py-1">
-              <span className="text-xs text-amber-700 font-bold">
+            <div className="flex items-center justify-center gap-2 bg-blue-50 rounded-lg px-2 py-1">
+              <span className="text-xs text-blue-700 font-bold">
                 {t('paperCoin.scene.paysLabel')}
               </span>
               <CoinBadge amount={tx.payment} />

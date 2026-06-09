@@ -73,7 +73,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case 'urgent': return 'bg-red-100 dark:bg-red-950/30 border-red-500';
-            case 'important': return 'bg-yellow-100 dark:bg-yellow-950/30 border-yellow-500';
+            case 'important': return 'bg-indigo-100 dark:bg-indigo-950/30 border-indigo-500';
             case 'can_wait': return 'bg-green-100 dark:bg-green-950/30 border-green-500';
             default: return 'bg-slate-100 dark:bg-slate-800 border-slate-300';
         }
@@ -124,7 +124,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
             <div className="mb-6">
                 <div className="relative">
                     {/* Timeline Line */}
-                    <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-yellow-500 to-green-500 opacity-50 rounded-full"></div>
+                    <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-indigo-500 to-green-500 opacity-50 rounded-full"></div>
 
                     {/* Timeline Slots */}
                     <div className="space-y-3">
@@ -194,7 +194,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
                             {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
                         </p>
                         <Button
@@ -203,7 +203,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                                 "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
                                 "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >

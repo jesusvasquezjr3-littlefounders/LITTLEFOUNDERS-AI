@@ -45,7 +45,6 @@ function HeroDashboardPreview({ t }: { t: any }) {
               <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">{t('families.mock_data.panel_header')}</p>
               <p className="text-white font-black text-lg">Sofía</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🦕</div>
           </div>
           <div className="flex items-center gap-2 bg-white/15 rounded-xl px-4 py-2">
             <span className="text-2xl">🪙</span>
@@ -60,7 +59,7 @@ function HeroDashboardPreview({ t }: { t: any }) {
         <div className="px-5 pt-4 pb-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{t('families.mock_data.today_progress')}</span>
-            <span className="text-xs font-black text-orange-600 dark:text-orange-400">{pct}%</span>
+            <span className="text-xs font-black text-violet-600 dark:text-violet-400">{pct}%</span>
           </div>
           <div className="h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[#ff6b6b] to-[#e64980] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
@@ -75,7 +74,7 @@ function HeroDashboardPreview({ t }: { t: any }) {
                 {task.done && <CheckCircle2 className="w-4 h-4 text-white" />}
               </div>
               <span className={`text-sm font-semibold flex-1 ${task.done ? 'line-through text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>{task.label}</span>
-              <div className="flex items-center gap-1 text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
+              <div className="flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
                 🪙 {task.coins}
               </div>
             </div>
@@ -84,7 +83,7 @@ function HeroDashboardPreview({ t }: { t: any }) {
       </div>
 
       {/* Streak badge */}
-      <div className="absolute -top-3 -right-3 bg-gradient-to-br from-orange-400 to-red-500 text-white px-3 py-1.5 rounded-xl shadow-lg text-xs font-black flex items-center gap-1.5 z-10 animate-glow-pulse">
+      <div className="absolute -top-3 -right-3 bg-gradient-to-br from-violet-400 to-red-500 text-white px-3 py-1.5 rounded-xl shadow-lg text-xs font-black flex items-center gap-1.5 z-10 animate-glow-pulse">
         <Flame className="w-3.5 h-3.5" /> {t('families.mock_data.streak_days', { count: 7 })}
       </div>
     </div>
@@ -98,7 +97,7 @@ export default function FamiliesPage() {
   const lang = i18n.language;
 
   return (
-    <LandingLayout hideCTA={true}>
+    <LandingLayout>
       <div className="min-h-screen">
 
         {/* ════════════════════════════════════════════════════════
@@ -108,14 +107,9 @@ export default function FamiliesPage() {
 
           {/* Ambient glows */}
           <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
-            <div className="absolute top-10 right-[5%] w-[500px] h-[500px] bg-orange-300/15 dark:bg-orange-900/10 rounded-full blur-[100px] animate-orb-1" />
+             <div className="absolute top-10 right-[5%] w-[500px] h-[500px] bg-indigo-300/15 dark:bg-indigo-950/10 rounded-full blur-[100px] animate-orb-1" />
             <div className="absolute bottom-10 left-[10%] w-[400px] h-[400px] bg-pink-300/15 dark:bg-pink-900/8 rounded-full blur-[100px] animate-orb-2" style={{ animationDelay: '3s' }} />
           </div>
-
-          {/* Floating decos */}
-          <div className="absolute top-28 left-[6%] text-3xl opacity-40 animate-float pointer-events-none" style={{ animationDelay: '0.5s' }}>👨‍👩‍👧</div>
-          <div className="absolute top-40 right-[8%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '1.5s' }}>🪙</div>
-          <div className="absolute bottom-32 left-[18%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '0.8s' }}>⭐</div>
 
           <div className="max-w-7xl mx-auto w-full relative z-10 pb-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -124,9 +118,9 @@ export default function FamiliesPage() {
               <div className="space-y-6">
 
                 {/* Coming-soon badge */}
-                <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-badge border-amber-300/40 dark:border-amber-700/30 shadow-lg animate-fade-in-up">
-                  <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                  <span className="text-sm font-bold text-amber-800 dark:text-amber-300">{t('families.hero.coming_soon_label')}</span>
+                <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-badge border-indigo-300/40 dark:border-indigo-700/30 shadow-lg animate-fade-in-up">
+                  <Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300">{t('families.hero.coming_soon_label')}</span>
                 </div>
 
                 <h1 className="landing-heading text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight animate-fade-in-up-delay-1">
@@ -150,20 +144,19 @@ export default function FamiliesPage() {
                   <span className="block mt-1">{t('families.hero.title_part2')}</span>
                 </h1>
 
-                <p className="text-base lg:text-lg text-gray-700 dark:text-gray-300 max-w-xl leading-relaxed font-medium animate-fade-in-up-delay-2">
+                <p className="landing-body-text text-base lg:text-lg text-gray-700 dark:text-gray-300 max-w-xl leading-relaxed font-medium animate-fade-in-up-delay-2">
                   {t('families.hero.subtitle')}
                 </p>
 
                 {/* Steps */}
                 <div className="flex flex-col gap-3 animate-fade-in-up-delay-2">
                   {[
-                    { n: 1, icon: '📋', text: t('families.hero.step_1') },
-                    { n: 2, icon: '✅', text: t('families.hero.step_2') },
-                    { n: 3, icon: '🎁', text: t('families.hero.step_3') },
+                    { n: 1, text: t('families.hero.step_1') },
+                    { n: 2, text: t('families.hero.step_2') },
+                    { n: 3, text: t('families.hero.step_3') },
                   ].map(step => (
                     <div key={step.n} className="flex items-center gap-3 p-3 rounded-2xl glass-card hover:shadow-md transition-all">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 text-white text-xs font-black flex items-center justify-center shadow-md flex-shrink-0">{step.n}</div>
-                      <span className="text-base mr-1">{step.icon}</span>
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-pink-500 to-violet-600 text-white text-xs font-black flex items-center justify-center shadow-md flex-shrink-0">{step.n}</div>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{step.text}</span>
                     </div>
                   ))}

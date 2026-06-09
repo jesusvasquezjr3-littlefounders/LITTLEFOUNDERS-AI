@@ -185,7 +185,10 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto liquid-glass-strong rounded-3xl p-0 [&>button]:hidden">
+      <DialogContent 
+        className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto report-modal-clean rounded-3xl p-0 [&>button]:hidden"
+        overlayClassName="backdrop-blur-md bg-black/40"
+      >
         {/* Header Section */}
         <div className="p-6 pb-2 relative">
           <div className="flex items-center gap-3">

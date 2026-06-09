@@ -15,10 +15,10 @@ interface TapActionProps {
 const BG_COLORS = [
     { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]' },
     { bg: 'bg-pink-500', hover: 'hover:bg-pink-600', shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]' },
-    { bg: 'bg-orange-500', hover: 'hover:bg-orange-600', shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]' },
+    { bg: 'bg-violet-500', hover: 'hover:bg-violet-600', shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]' },
     { bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600', shadow: 'shadow-[0_4px_0_rgb(16,185,129)] hover:shadow-[0_2px_0_rgb(16,185,129)]' },
     { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]' },
-    { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-600', shadow: 'shadow-[0_4px_0_rgb(202,138,4)] hover:shadow-[0_2px_0_rgb(202,138,4)]' },
+    { bg: 'bg-indigo-500', hover: 'hover:bg-indigo-600', shadow: 'shadow-[0_4px_0_rgb(202,138,4)] hover:shadow-[0_2px_0_rgb(202,138,4)]' },
 ];
 
 export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProps) => {
@@ -155,7 +155,7 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                         "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                         "hover:-translate-y-[2px]"
                     )}
                 >

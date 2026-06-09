@@ -103,7 +103,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                             </button>
                         )}
                         {isFinished && (
-                            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full font-bold shadow-lg shadow-amber-500/30">
+                            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-400 to-violet-500 text-white rounded-full font-bold shadow-lg shadow-blue-500/30">
                                 🏆 {t('general.all_completed')}
                             </div>
                         )}

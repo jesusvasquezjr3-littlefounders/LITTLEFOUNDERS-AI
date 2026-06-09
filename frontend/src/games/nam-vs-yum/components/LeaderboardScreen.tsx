@@ -54,7 +54,7 @@ export function LeaderboardScreen({ entries, currentHighScore, onClose, onSaveEn
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-400" />
+            <Trophy className="w-5 h-5 text-indigo-400" />
             <h2 className="pixel-font text-sm sm:text-base text-white retro-glow">
               {t('namVsYum.leaderboard.title')}
             </h2>
@@ -66,13 +66,13 @@ export function LeaderboardScreen({ entries, currentHighScore, onClose, onSaveEn
 
         {/* Save score prompt */}
         {isTop10 && !alreadySaved && !showInput && (
-          <div className="mb-4 p-3 bg-yellow-500/20 rounded-xl border border-yellow-500/30">
-            <p className="pixel-font text-[8px] text-yellow-300 mb-2">
+          <div className="mb-4 p-3 bg-indigo-500/20 rounded-xl border border-indigo-500/30">
+            <p className="pixel-font text-[8px] text-indigo-300 mb-2">
               {t('namVsYum.leaderboard.newHighScore')}
             </p>
             <button
               onClick={() => setShowInput(true)}
-              className="pixel-font text-[8px] px-4 py-2 bg-yellow-500 hover:bg-yellow-400 rounded text-black transition-colors"
+              className="pixel-font text-[8px] px-4 py-2 bg-indigo-500 hover:bg-indigo-400 rounded text-black transition-colors"
             >
               {t('namVsYum.leaderboard.saveScore')}
             </button>
@@ -117,13 +117,13 @@ export function LeaderboardScreen({ entries, currentHighScore, onClose, onSaveEn
                 )}
               >
                 <div className="w-6 flex justify-center">
-                  {idx === 0 && <Medal className="w-4 h-4 text-yellow-400" />}
+                  {idx === 0 && <Medal className="w-4 h-4 text-indigo-400" />}
                   {idx === 1 && <Medal className="w-4 h-4 text-gray-300" />}
-                  {idx === 2 && <Medal className="w-4 h-4 text-amber-600" />}
+                  {idx === 2 && <Medal className="w-4 h-4 text-blue-600" />}
                   {idx > 2 && <span className="pixel-font text-[8px] text-white/40">{idx + 1}</span>}
                 </div>
                 <span className="flex-1 pixel-font text-[9px] text-white truncate">{entry.name}</span>
-                <span className="pixel-font text-[9px] text-yellow-400">{entry.score}</span>
+                <span className="pixel-font text-[9px] text-indigo-400">{entry.score}</span>
                 <span className="pixel-font text-[7px] text-white/30">{entry.date}</span>
               </div>
             ))}

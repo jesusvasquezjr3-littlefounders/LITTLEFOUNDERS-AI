@@ -59,7 +59,7 @@ export function GuestBanner() {
                     "text-white shadow-md shadow-violet-500/25",
                     "border border-white/10"
                 )}>
-                    <Link to="/register">
+                    <Link to="/signup">
                         <UserPlus className="w-3.5 h-3.5 mr-1.5" />
                         {t('guest.banner_cta')}
                     </Link>

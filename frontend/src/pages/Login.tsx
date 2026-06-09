@@ -139,16 +139,6 @@ const Login = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-purple-900/20 dark:to-slate-900">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating Coins */}
-        <div className="absolute top-20 left-10 w-16 h-16 bg-yellow-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
-        <div className="absolute top-40 right-20 w-12 h-12 bg-green-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
-        <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-blue-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
-
-        {/* Floating Stars */}
-        <Star className="absolute top-1/4 right-1/4 w-8 h-8 text-yellow-300 opacity-30 animate-pulse" />
-        <Star className="absolute bottom-1/3 left-1/3 w-6 h-6 text-pink-300 opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
-        <Sparkles className="absolute top-1/3 left-1/4 w-10 h-10 text-purple-300 opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
-
         {/* Gradient Orbs */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-400/30 to-cyan-400/30 rounded-full blur-3xl"></div>
@@ -174,7 +164,7 @@ const Login = () => {
           <GlassPanel variant="strong" className="p-6 space-y-5">
             {/* Header */}
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-violet-500 bg-clip-text text-transparent">
                 {t('auth:login.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-xs">
@@ -255,7 +245,7 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="w-full h-11 bg-gradient-to-r from-purple-500 via-pink-500 to-violet-500 hover:from-purple-600 hover:via-pink-600 hover:to-violet-600 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
@@ -265,7 +255,6 @@ const Login = () => {
                 ) : (
                   <span className="flex items-center gap-2">
                     {t('auth:login.button')}
-                    <Rocket className="w-4 h-4" />
                   </span>
                 )}
               </Button>
@@ -315,7 +304,7 @@ const Login = () => {
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {t('auth:login.no_account')}{" "}
                   <Link
-                    to="/register"
+                    to="/signup"
                     className="font-bold text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text hover:from-purple-700 hover:to-pink-700 transition-all"
                   >
                     {t('auth:login.create_account')}
@@ -328,9 +317,7 @@ const Login = () => {
           {/* Footer Message */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4" />
               {t('auth:login.footer')}
-              <Sparkles className="w-4 h-4" />
             </p>
           </div>
         </div>

@@ -93,12 +93,12 @@ const STEP_THEMES: Record<number, StepTheme> = {
     orb1Dark:  "bg-purple-600",   orb2Dark:  "bg-teal-500",
   },
   4: {
-    lightBg: "from-amber-100 via-orange-50 to-rose-100",
+    lightBg: "from-blue-100 via-violet-50 to-rose-100",
     darkBg: "dark:from-[#2d0a38] dark:via-[#3d0f1a] dark:to-[#200a4b]",
     btnGradient: "linear-gradient(135deg,#f59e0b 0%,#f97316 100%)",
     btnShadow: "0 12px 32px rgba(245,158,11,0.42)",
-    orb1Light: "bg-amber-400",    orb2Light: "bg-rose-300",
-    orb1Dark:  "bg-amber-600",    orb2Dark:  "bg-rose-500",
+    orb1Light: "bg-blue-400",    orb2Light: "bg-rose-300",
+    orb1Dark:  "bg-blue-600",    orb2Dark:  "bg-rose-500",
   },
   5: {
     lightBg: "from-emerald-100 via-teal-50 to-blue-100",

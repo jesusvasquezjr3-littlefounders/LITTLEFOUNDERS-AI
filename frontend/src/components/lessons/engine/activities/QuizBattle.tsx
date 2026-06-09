@@ -153,8 +153,8 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                 <>
                     <div className="mb-6 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <Trophy className="w-6 h-6 text-yellow-600" />
-                            <span className="text-2xl font-black text-yellow-600">
+                            <Trophy className="w-6 h-6 text-indigo-600" />
+                            <span className="text-2xl font-black text-indigo-600">
                                 {score}
                             </span>
                         </div>
@@ -230,14 +230,14 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                     <div className="mb-6 p-6 text-center">
                         <div className={cn(
                             "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4",
-                            quizPassed ? "bg-green-100 dark:bg-green-900" : "bg-orange-100 dark:bg-orange-900"
+                            quizPassed ? "bg-green-100 dark:bg-green-900" : "bg-violet-100 dark:bg-violet-900"
                         )}>
                             <span className="text-3xl">{quizPassed ? '🎉' : '📊'}</span>
                         </div>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">
                             {quizPassed ? t('quiz_battle.complete', { defaultValue: '¡Completado!' }) : t('quiz_battle.try_again', { defaultValue: 'Necesitas más puntos' })}
                         </h3>
-                        <p className="text-lg font-black text-yellow-600 mb-2">
+                        <p className="text-lg font-black text-indigo-600 mb-2">
                             {t('quiz_battle.final_score', { defaultValue: 'Puntaje' })}: {score}
                         </p>
                     </div>
@@ -262,7 +262,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                             "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             quizPassed
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
                             "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                         )}
                     >

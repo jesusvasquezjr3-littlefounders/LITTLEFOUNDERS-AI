@@ -81,7 +81,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                                 isSelected && "scale-105 z-10 ring-4 ring-offset-4 ring-foreground shadow-none translate-y-[8px]",
                                 !isSelected && !isOtherSelected && "hover:-translate-y-2 hover:shadow-[0_12px_0_hsl(var(--border))] active:translate-y-[8px] active:shadow-none",
                                 isRisk
-                                    ? "bg-orange-500 hover:bg-orange-400 border-orange-700 text-white"
+                                    ? "bg-violet-500 hover:bg-violet-400 border-violet-700 text-white"
                                     : "bg-blue-500 hover:bg-blue-400 border-blue-700 text-white"
                             )}
                         >
@@ -113,7 +113,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
             {/* Actions */}
             {feedback !== 'none' && (
                 <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
-                    <p className={cn("font-bold text-xl mb-4", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
+                    <p className={cn("font-bold text-xl mb-4", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
                         {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
                     </p>
                     <Button
@@ -122,7 +122,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                             "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                             "hover:-translate-y-[2px]"
                         )}
                     >

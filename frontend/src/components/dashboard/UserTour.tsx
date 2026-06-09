@@ -301,7 +301,7 @@ export function UserTour() {
                 )}>
                     {/* Background decoration */}
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
                     <Button
                         variant="ghost"
@@ -315,7 +315,7 @@ export function UserTour() {
                     <div className="relative z-10 pl-4">
                         <h3 className={cn(
                             "text-xl font-bold mb-3 bg-clip-text text-transparent",
-                            userRole === 'child' ? "bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400" : "bg-gradient-to-r from-orange-600 to-yellow-600 dark:from-orange-400 dark:to-yellow-400"
+                            userRole === 'child' ? "bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400" : "bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400"
                         )}>
                             {step.title}
                         </h3>
@@ -331,7 +331,7 @@ export function UserTour() {
                                         className={cn(
                                             "w-2 h-2 rounded-full transition-all duration-300",
                                             idx === currentStep
-                                                ? (userRole === 'child' ? "bg-blue-500 w-4" : "bg-orange-500 w-4")
+                                                ? (userRole === 'child' ? "bg-blue-500 w-4" : "bg-violet-500 w-4")
                                                 : "bg-muted-foreground/30"
                                         )}
                                     />
@@ -341,7 +341,7 @@ export function UserTour() {
                                 "text-white shadow-lg shadow-black/10 group transition-all duration-300 transform hover:-translate-y-0.5",
                                 userRole === 'child'
                                     ? "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-                                    : "bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
+                                    : "bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600"
                             )}>
                                 {currentStep === activeSteps.length - 1 ? t('tour.buttons.start') : t('tour.buttons.next')}
                                 {currentStep !== activeSteps.length - 1 && (

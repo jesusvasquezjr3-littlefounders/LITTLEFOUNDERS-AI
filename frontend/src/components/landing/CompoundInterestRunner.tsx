@@ -194,7 +194,7 @@ export function CompoundInterestRunner() {
                     <span className="text-lg font-black text-gray-900 dark:text-white">{t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}</span>
                 </div>
                 <div className="liquid-glass px-4 py-2 rounded-xl border border-pink-500/30 flex items-center gap-2">
-                    <Coins className="w-5 h-5 text-yellow-500" />
+                    <Coins className="w-5 h-5 text-indigo-500" />
                     <div className="flex flex-col">
                         <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.score_label')}</span>
                         <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">
@@ -279,7 +279,7 @@ export function CompoundInterestRunner() {
                         </p>
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-orange-500/25 transition-all transform hover:-translate-y-1"
+                            className="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-pink-500/25 transition-all transform hover:-translate-y-1"
                         >
                             {t('minigame.start')}
                         </button>

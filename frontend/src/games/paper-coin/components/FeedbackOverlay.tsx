@@ -59,7 +59,7 @@ export function FeedbackOverlay({ state }: Props) {
               </div>
             )}
             {state.correctStreak >= 3 && (
-              <div className="text-sm text-yellow-300 font-bold pc-anim-streak-flash">
+              <div className="text-sm text-indigo-300 font-bold pc-anim-streak-flash">
                 🔥 {t('paperCoin.feedback.streak', { count: state.correctStreak })}
               </div>
             )}
@@ -81,7 +81,7 @@ export function FeedbackOverlay({ state }: Props) {
             {tx && (
               <div className="text-white/80 text-sm text-center">
                 {t('paperCoin.feedback.correctWas')}{' '}
-                <span className="font-black text-yellow-300">{tx.correctChange} 🪙</span>
+                <span className="font-black text-indigo-300">{tx.correctChange} 🪙</span>
               </div>
             )}
           </>
@@ -102,7 +102,7 @@ export function FeedbackOverlay({ state }: Props) {
             {tx && (
               <div className="text-white/80 text-sm text-center">
                 {t('paperCoin.feedback.correctWas')}{' '}
-                <span className="font-black text-yellow-300">{tx.correctChange} 🪙</span>
+                <span className="font-black text-indigo-300">{tx.correctChange} 🪙</span>
               </div>
             )}
           </>
@@ -130,7 +130,7 @@ export function FeedbackOverlay({ state }: Props) {
       {/* Score float */}
       {isCorrect && (
         <div
-          className="absolute text-yellow-300 font-black text-xl pc-anim-score-float"
+          className="absolute text-indigo-300 font-black text-xl pc-anim-score-float"
           style={{ top: '30%', left: '50%', transform: 'translateX(-50%)' }}
         >
           +{state.lastWasBonus ? 20 : 10} XP

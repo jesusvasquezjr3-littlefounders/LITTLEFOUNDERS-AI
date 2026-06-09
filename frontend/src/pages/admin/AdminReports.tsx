@@ -50,7 +50,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { label_key: string; icon: React.ElementType; color: string }> = {
-  pending: { label_key: "admin.stats.pending", icon: Clock, color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800" },
+  pending: { label_key: "admin.stats.pending", icon: Clock, color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800" },
   in_review: { label_key: "admin.stats.in_review", icon: AlertCircle, color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30 dark:text-blue-400 border-blue-200 dark:border-blue-800" },
   resolved: { label_key: "admin.stats.resolved", icon: CheckCircle2, color: "text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800" },
   closed: { label_key: "admin.stats.closed", icon: XCircle, color: "text-slate-500 bg-slate-50 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700" },
@@ -58,8 +58,8 @@ const STATUS_CONFIG: Record<string, { label_key: string; icon: React.ElementType
 
 const PRIORITY_BADGES: Record<string, string> = {
   low: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
-  medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  high: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  medium: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+  high: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
   critical: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
 
@@ -177,7 +177,7 @@ function ReportDetail({
                   const filename = url.replace("[attached:", "").replace("]", "");
                   return (
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                      <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-500">
                         <AlertCircle className="w-6 h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -358,11 +358,11 @@ export default function AdminReports() {
       {/* Premium Admin Header */}
       <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-red-500/10 dark:border-red-500/5 shadow-2xl mb-2">
           {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-red-500/15 to-orange-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-red-500/15 to-violet-600/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-pink-500/10 to-red-600/10 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-red-500 via-orange-500 to-pink-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-red-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-red-500 via-violet-500 to-pink-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-red-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
                   <Flag className="w-5 h-5 md:w-7 md:h-7 text-white" />
               </div>
               <div className="text-left">

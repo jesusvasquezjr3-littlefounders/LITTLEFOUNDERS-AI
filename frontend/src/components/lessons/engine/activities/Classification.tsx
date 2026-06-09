@@ -71,7 +71,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
             <div className="flex flex-wrap justify-center gap-4 mb-6">
                 {categories.map((category: any, idx: number) => {
                     const categoryColors = [
-                        { bg: 'bg-yellow-500', border: 'border-yellow-600', text: 'text-white', emoji: '🌟' },
+                        { bg: 'bg-indigo-500', border: 'border-indigo-600', text: 'text-white', emoji: '🌟' },
                         { bg: 'bg-pink-500', border: 'border-pink-600', text: 'text-white', emoji: '💎' },
                         { bg: 'bg-blue-500', border: 'border-blue-600', text: 'text-white', emoji: '🌊' },
                     ];
@@ -100,7 +100,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                         'bg-sky-50 dark:bg-sky-900/30 border-sky-200 dark:border-sky-700',
                         'bg-pink-50 dark:bg-pink-900/30 border-pink-200 dark:border-pink-700',
                         'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-700',
-                        'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700',
+                        'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700',
                     ];
                     const cardColor = cardColors[idx % cardColors.length];
 
@@ -122,7 +122,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
 
                                         // Button Styles
                                         const btnColors = [
-                                            { active: 'bg-yellow-500 text-white shadow-none translate-y-[4px] ring-4 ring-yellow-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
+                                            { active: 'bg-indigo-500 text-white shadow-none translate-y-[4px] ring-4 ring-indigo-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
                                             { active: 'bg-pink-500 text-white shadow-none translate-y-[4px] ring-4 ring-pink-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
                                             { active: 'bg-blue-500 text-white shadow-none translate-y-[4px] ring-4 ring-blue-300', inactive: 'bg-card text-foreground shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] border-border' },
                                         ];
@@ -167,7 +167,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                         "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                         "hover:-translate-y-[2px]"
                     )}
                 >

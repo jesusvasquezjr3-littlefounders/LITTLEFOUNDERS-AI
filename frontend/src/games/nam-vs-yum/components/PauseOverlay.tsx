@@ -54,7 +54,7 @@ export function PauseOverlay({ onResume, onRestart, onQuit }: PauseOverlayProps)
         {/* Restart */}
         <button
           onClick={onRestart}
-          className={cn(buttonBase, 'bg-amber-500 border-amber-700 text-white')}
+          className={cn(buttonBase, 'bg-blue-500 border-blue-700 text-white')}
         >
           {t('namVsYum.pause.restart')}
         </button>

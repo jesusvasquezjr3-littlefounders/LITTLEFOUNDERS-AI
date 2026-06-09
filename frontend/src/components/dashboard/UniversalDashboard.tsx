@@ -32,7 +32,7 @@ export function UniversalDashboard({ user }: UniversalDashboardProps) {
             title: t('stats.points_earned'),
             value: user?.points_earned || 0,
             lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie",
-            color: "text-yellow-600",
+            color: "text-indigo-600",
             bgColor: "",
             description: t('stats.expert'),
             size: "150px"

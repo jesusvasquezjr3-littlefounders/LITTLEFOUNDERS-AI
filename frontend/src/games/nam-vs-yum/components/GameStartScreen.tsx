@@ -96,7 +96,7 @@ export function GameStartScreen({ highScore, onPlay, onTutorial, onAchievements,
           <span className="pixel-font text-[7px] text-purple-300">
             Lv.{playerProgress.playerLevel}
           </span>
-          <span className="pixel-font text-[7px] text-yellow-400">
+          <span className="pixel-font text-[7px] text-indigo-400">
             💰 {playerProgress.coins}
           </span>
           <span className="pixel-font text-[7px] text-green-400">
@@ -122,7 +122,7 @@ export function GameStartScreen({ highScore, onPlay, onTutorial, onAchievements,
             </span>
           </div>
 
-          <span className="pixel-font text-lg sm:text-xl text-yellow-400 mb-4">VS</span>
+          <span className="pixel-font text-lg sm:text-xl text-indigo-400 mb-4">VS</span>
 
           {/* Capricho */}
           <div className="flex flex-col items-center gap-1 animate-bounce-in" style={{ animationDelay: '0.15s' }}>
@@ -143,7 +143,7 @@ export function GameStartScreen({ highScore, onPlay, onTutorial, onAchievements,
 
         {/* High Score */}
         {highScore > 0 && (
-          <p className="pixel-font text-[8px] sm:text-[10px] text-yellow-300">
+          <p className="pixel-font text-[8px] sm:text-[10px] text-indigo-300">
             {t('namVsYum.startScreen.highScore', { score: highScore })}
           </p>
         )}
@@ -171,7 +171,7 @@ export function GameStartScreen({ highScore, onPlay, onTutorial, onAchievements,
             className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
             title={t('namVsYum.startScreen.achievements')}
           >
-            <Award className="w-4 h-4 text-amber-400" />
+            <Award className="w-4 h-4 text-blue-400" />
           </button>
           <button
             onClick={onShop}
@@ -192,7 +192,7 @@ export function GameStartScreen({ highScore, onPlay, onTutorial, onAchievements,
             className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
             title={t('namVsYum.startScreen.leaderboard')}
           >
-            <Trophy className="w-4 h-4 text-yellow-400" />
+            <Trophy className="w-4 h-4 text-indigo-400" />
           </button>
         </div>
 

@@ -141,7 +141,7 @@ export function MultipleChoiceStage({
                         className={cn(
                             "gap-2 font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl transition-all hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] w-full max-w-md text-white",
                             feedbackState === 'success' && "bg-green-500 hover:bg-green-600 shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]",
-                            feedbackState === 'error' && "bg-orange-500 hover:bg-orange-600 shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]"
+                            feedbackState === 'error' && "bg-violet-500 hover:bg-violet-600 shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]"
                         )}
                     >
                         {feedbackState === 'success'

@@ -398,15 +398,15 @@ const Profile = () => {
           <div className="lg:col-span-8 space-y-8 order-1 lg:order-1">
             <section className="space-y-4">
               <div className="flex items-center gap-2 px-1">
-                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-yellow-400 to-orange-500" />
+                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-400 to-violet-500" />
                 <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.my_achievements')}</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                   { title: t('common:dashboard.stats.lessons'), value: lessonsCompleted, lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie", accent: "from-blue-500/20 to-indigo-500/10 border-blue-500/20 shadow-blue-500/10", size: "70px" },
                   { title: t('common:dashboard.stats.minutes'), value: minutesStudied, lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie", accent: "from-emerald-500/20 to-teal-500/10 border-emerald-500/20 shadow-emerald-500/10", size: "70px" },
-                  { title: t('common:dashboard.stats.points'), value: pointsEarned, lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", accent: "from-amber-500/20 to-yellow-500/10 border-amber-500/20 shadow-amber-500/10", size: "70px" },
-                  { title: t('common:dashboard.stats.streak'), value: currentStreak, lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", accent: "from-rose-500/20 to-orange-500/10 border-rose-500/20 shadow-rose-500/10", size: "60px" }
+                  { title: t('common:dashboard.stats.points'), value: pointsEarned, lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", accent: "from-blue-500/20 to-indigo-500/10 border-blue-500/20 shadow-blue-500/10", size: "70px" },
+                  { title: t('common:dashboard.stats.streak'), value: currentStreak, lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", accent: "from-rose-500/20 to-violet-500/10 border-rose-500/20 shadow-rose-500/10", size: "60px" }
                 ].map((stat, idx) => (
                   <GlassPanel key={idx} variant="subtle" className={cn("hover:scale-[1.05] hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 group", `bg-gradient-to-br ${stat.accent}`, stat.value === 0 && "grayscale-[0.5] opacity-70")}>
                     <div className="p-5 flex flex-col items-center text-center relative">
@@ -445,7 +445,7 @@ const Profile = () => {
                             item.color === 'blue' && "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400",
                             item.color === 'green' && "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400",
                             item.color === 'purple' && "bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400",
-                            item.color === 'amber' && "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400"
+                            item.color === 'amber' && "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
                           )}>
                             <item.icon className="w-6 h-6" />
                           </div>

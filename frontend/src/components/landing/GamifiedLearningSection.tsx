@@ -35,11 +35,6 @@ export function GamifiedLearningSection() {
           style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%)' }} />
       </div>
 
-      {/* ── Floating decorative glyphs ── */}
-      <div className="absolute top-12 left-[6%] text-3xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '0.4s' }}>💡</div>
-      <div className="absolute top-20 right-[8%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '1.8s' }}>⭐</div>
-      <div className="absolute bottom-16 left-[12%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '0.9s' }}>🪙</div>
-
       {/* ── Wave top — Connects to Problem section ── */}
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 64 }}>
         <svg viewBox="0 0 1440 64" preserveAspectRatio="none" className="w-full h-full">
@@ -113,7 +108,7 @@ export function GamifiedLearningSection() {
       {/* ── Wave bottom ── */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 64 }}>
         <svg viewBox="0 0 1440 64" preserveAspectRatio="none" className="w-full h-full">
-          <path d="M0,30 C480,64 960,10 1440,45 L1440,64 L0,64 Z" fill="#FFF7ED" className="dark:hidden" />
+          <path d="M0,30 C480,64 960,10 1440,45 L1440,64 L0,64 Z" fill="#eff6ff" className="dark:hidden" />
           <path d="M0,30 C480,64 960,10 1440,45 L1440,64 L0,64 Z" className="hidden dark:block" style={{ fill: '#0f172a' }} />
         </svg>
       </div>

@@ -107,7 +107,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
 
             {/* Coin Bank */}
             <div className="mb-8 flex justify-center">
-                <div className="bg-yellow-400 text-slate-900 rounded-3xl px-8 py-6 shadow-sm border-4 border-yellow-600">
+                <div className="bg-indigo-400 text-slate-900 rounded-3xl px-8 py-6 shadow-sm border-4 border-indigo-600">
                     <div className="text-center">
                         <span className="text-sm font-bold opacity-80 block mb-1">
                             {t('mystery_investment.your_coins')}
@@ -177,7 +177,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                     >
                                         <Minus className="w-4 h-4" />
                                     </button>
-                                    <div className="w-12 h-12 rounded-xl bg-amber-400 flex items-center justify-center text-xl font-black text-slate-900 shadow-sm border-2 border-amber-500">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-400 flex items-center justify-center text-xl font-black text-slate-900 shadow-sm border-2 border-blue-500">
                                         {invested}
                                     </div>
                                     <button
@@ -250,7 +250,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? (totalReturn >= totalCoins ? "text-green-500" : "text-orange-500") : "text-red-500")}>
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? (totalReturn >= totalCoins ? "text-green-500" : "text-violet-500") : "text-red-500")}>
                             {feedback === 'success' ? (totalReturn >= totalCoins ? t('mystery_investment.profit') : t('mystery_investment.loss')) : t('feedback.error')}
                         </p>
                         <Button
@@ -259,7 +259,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                 "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 totalReturn >= totalCoins
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                                 "hover:-translate-y-[2px]"
                             )}
                         >

@@ -5,7 +5,7 @@ export function AnimatedBackground() {
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
             {/* Floating Shapes - Coins/Circles */}
             <div
-                className="absolute top-20 left-10 w-16 h-16 bg-yellow-400 rounded-full opacity-10 animate-bounce"
+                className="absolute top-20 left-10 w-16 h-16 bg-indigo-400 rounded-full opacity-10 animate-bounce"
                 style={{ animationDelay: '0s', animationDuration: '3s' }}
             ></div>
             <div
@@ -27,7 +27,7 @@ export function AnimatedBackground() {
 
             {/* Floating Icons */}
             <Star
-                className="absolute top-1/4 right-1/4 w-8 h-8 text-yellow-300 opacity-20 animate-pulse"
+                className="absolute top-1/4 right-1/4 w-8 h-8 text-indigo-300 opacity-20 animate-pulse"
                 style={{ animationDelay: '0s' }}
             />
             <Star
@@ -43,7 +43,7 @@ export function AnimatedBackground() {
                 style={{ animationDelay: '1.5s' }}
             />
             <Zap
-                className="absolute top-1/2 left-1/5 w-9 h-9 text-orange-300 opacity-20 animate-pulse"
+                className="absolute top-1/2 left-1/5 w-9 h-9 text-violet-300 opacity-20 animate-pulse"
                 style={{ animationDelay: '0.5s' }}
             />
             <Heart
@@ -54,7 +54,7 @@ export function AnimatedBackground() {
             {/* Gradient Orbs */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-pink-400/20 dark:from-purple-600/10 dark:to-pink-600/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-400/20 to-cyan-400/20 dark:from-blue-600/10 dark:to-cyan-600/10 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-yellow-400/10 to-orange-400/10 dark:from-yellow-600/5 dark:to-orange-600/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-indigo-400/10 to-violet-400/10 dark:from-indigo-600/5 dark:to-violet-600/5 rounded-full blur-3xl"></div>
         </div>
     );
 }

@@ -31,7 +31,7 @@ export function ShopScreen({ state, dispatch }: Props) {
   return (
     <div className="flex flex-col items-center min-h-screen w-full bg-gradient-to-b from-indigo-950 via-purple-950 to-slate-950 overflow-y-auto pc-no-scroll">
       {/* Header */}
-      <div className="w-full bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border-b border-yellow-400/20 px-4 py-4 text-center">
+      <div className="w-full bg-gradient-to-r from-indigo-500/20 to-blue-500/20 border-b border-indigo-400/20 px-4 py-4 text-center">
         {/* Day complete stars */}
         <div className="flex justify-center gap-2 mb-2">
           {[0, 1, 2].map((i) => (
@@ -43,20 +43,20 @@ export function ShopScreen({ state, dispatch }: Props) {
             </span>
           ))}
         </div>
-        <h2 className="pc-title-font text-2xl text-yellow-300">
+        <h2 className="pc-title-font text-2xl text-indigo-300">
           {t('paperCoin.shop.dayComplete', { day: state.day })}
         </h2>
-        <p className="text-amber-200/70 text-sm mt-1">
+        <p className="text-blue-200/70 text-sm mt-1">
           {t('paperCoin.shop.earnedToday', { score: state.totalDayScore })}
         </p>
       </div>
 
       {/* Tip coin balance */}
-      <div className="flex items-center gap-2 mt-4 bg-amber-900/30 border border-amber-500/30 rounded-2xl px-5 py-2">
+      <div className="flex items-center gap-2 mt-4 bg-blue-900/30 border border-blue-500/30 rounded-2xl px-5 py-2">
         <span className="text-2xl">🪙</span>
         <div>
-          <div className="text-amber-300 font-black text-xl">{state.tipCoins}</div>
-          <div className="text-amber-400/70 text-xs">{t('paperCoin.shop.balance')}</div>
+          <div className="text-blue-300 font-black text-xl">{state.tipCoins}</div>
+          <div className="text-blue-400/70 text-xs">{t('paperCoin.shop.balance')}</div>
         </div>
       </div>
 
@@ -114,7 +114,7 @@ export function ShopScreen({ state, dispatch }: Props) {
               </div>
               <div className="shrink-0 flex flex-col items-end gap-1">
                 {owned ? (
-                  <span className="text-yellow-400 text-xs font-bold">
+                  <span className="text-indigo-400 text-xs font-bold">
                     ✅ {t('paperCoin.shop.owned')}
                   </span>
                 ) : (
@@ -122,7 +122,7 @@ export function ShopScreen({ state, dispatch }: Props) {
                     <span className="text-sm">🪙</span>
                     <span
                       className={`font-black text-sm ${
-                        buyable ? 'text-yellow-300' : 'text-white/40'
+                        buyable ? 'text-indigo-300' : 'text-white/40'
                       }`}
                     >
                       {upgrade.cost}

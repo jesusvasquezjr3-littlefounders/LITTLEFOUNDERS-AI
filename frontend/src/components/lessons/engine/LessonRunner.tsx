@@ -691,9 +691,9 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
 
                         {/* Rewards */}
                         <div className="flex justify-center gap-4 relative">
-                            <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-500/20 px-4 py-2 rounded-2xl border-2 border-yellow-400 dark:border-yellow-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}>
-                                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                                <span className="font-bold text-yellow-700 dark:text-yellow-400 text-base">
+                            <div className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/20 px-4 py-2 rounded-2xl border-2 border-indigo-400 dark:border-indigo-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}>
+                                <Star className="w-5 h-5 text-indigo-500 fill-indigo-500" />
+                                <span className="font-bold text-indigo-700 dark:text-indigo-400 text-base">
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
@@ -1422,8 +1422,8 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     onEscapeKeyDown={(e) => e.preventDefault()}
                 >
                     <div className="text-center py-6">
-                        <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <BatteryLow className="w-10 h-10 text-yellow-500" />
+                        <div className="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <BatteryLow className="w-10 h-10 text-indigo-500" />
                         </div>
 
                         <DialogTitle className="text-3xl font-bold text-foreground mb-2">

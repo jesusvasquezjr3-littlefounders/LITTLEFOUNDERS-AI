@@ -110,7 +110,7 @@ function DraggableCoin({ coin, size, isEjected, vaultRef, onAdd, disabled }: Dra
         <CoinImg imageKey={coin.imageKey} size={size} />
         {/* Value badge */}
         <span
-          className="absolute text-xs font-black text-white bg-amber-700 rounded-full pointer-events-none"
+          className="absolute text-xs font-black text-white bg-blue-700 rounded-full pointer-events-none"
           style={{ bottom: 0, right: 0, minWidth: 18, padding: '1px 4px', fontSize: 11 }}
         >
           ${coin.value}
@@ -151,7 +151,7 @@ export function Phase2Vault({
 
       {/* Instruction */}
       <div className="pd-card-dark px-4 py-2 text-center mb-2">
-        <p className="text-sm font-bold text-amber-900">
+        <p className="text-sm font-bold text-blue-900">
           {t('paperDetective.phase2.instruction')}
         </p>
       </div>
@@ -193,7 +193,7 @@ export function Phase2Vault({
         {/* Coins in vault (click to remove) */}
         {vaultCoins.length > 0 && (
           <div className="pd-card w-full px-3 py-2">
-            <p className="text-xs font-bold text-amber-700 mb-2 text-center">
+            <p className="text-xs font-bold text-blue-700 mb-2 text-center">
               {t('paperDetective.phase2.vaultLabel')}
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -245,7 +245,7 @@ export function Phase2Vault({
       {/* Drawer (coins available to drag) */}
       <div className="w-full max-w-sm">
         <div className="pd-card px-2 py-2">
-          <p className="text-xs font-bold text-amber-700 text-center mb-2">
+          <p className="text-xs font-bold text-blue-700 text-center mb-2">
             {t('paperDetective.phase2.drawerLabel')}
           </p>
           <div className="flex justify-center flex-wrap gap-2 overflow-x-auto"
@@ -262,7 +262,7 @@ export function Phase2Vault({
               />
             ))}
             {drawerCoins.length === 0 && (
-              <p className="text-xs text-amber-500 italic py-2">
+              <p className="text-xs text-blue-500 italic py-2">
                 {t('paperDetective.phase2.noCoins')}
               </p>
             )}

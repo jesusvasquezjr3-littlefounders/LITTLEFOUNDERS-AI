@@ -85,7 +85,7 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
   // Variant styles
   const variantClasses = {
     normal: 'bg-slate-800/80 border-slate-600',
-    golden: 'bg-yellow-900/80 border-yellow-400 animate-golden-pulse',
+    golden: 'bg-indigo-900/80 border-indigo-400 animate-golden-pulse',
     bomb: 'bg-red-900/80 border-red-500 animate-bomb-pulse',
     mystery: 'bg-indigo-900/80 border-indigo-400 animate-mystery-sparkle',
     rainbow: 'bg-gradient-to-br from-red-500 via-green-500 to-blue-500 border-white animate-rainbow-shift',
@@ -94,7 +94,7 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
 
   const glowColors = {
     normal: definition.category === 'need' ? 'shadow-green-500/20' : 'shadow-purple-500/20',
-    golden: 'shadow-yellow-400/60',
+    golden: 'shadow-indigo-400/60',
     bomb: 'shadow-red-500/60',
     mystery: 'shadow-indigo-400/60',
     rainbow: 'shadow-white/60',
@@ -154,7 +154,7 @@ export function FallingItemComponent({ item, definition, onDragStart, onDragMove
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
             <span className={cn(
               'pixel-font text-[8px] font-bold',
-              item.bombTimer <= 2 ? 'text-red-500 animate-pulse' : 'text-orange-400'
+              item.bombTimer <= 2 ? 'text-red-500 animate-pulse' : 'text-violet-400'
             )}>
               {Math.ceil(item.bombTimer)}
             </span>

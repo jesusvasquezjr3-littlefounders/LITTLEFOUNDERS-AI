@@ -38,7 +38,7 @@ const STEPS = [
       <div className="flex flex-col items-center gap-2 mt-2">
         <div className="bg-white/10 rounded-xl p-3 text-center">
           <div className="text-sm text-white/70 mb-1">🧪 Potion — 8 🪙</div>
-          <div className="text-sm text-yellow-300 font-bold">Pays: 20 🪙</div>
+          <div className="text-sm text-indigo-300 font-bold">Pays: 20 🪙</div>
           <div className="flex items-center gap-2 justify-center mt-1">
             <span className="text-white/60 text-sm">Change =</span>
             <span className="bg-green-500 text-white font-black px-3 py-0.5 rounded-lg">20 − 8 = 12</span>
@@ -84,14 +84,14 @@ export function TutorialOverlay({ state, dispatch }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm bg-gradient-to-b from-amber-900 to-amber-950 rounded-3xl border-2 border-amber-500/40 shadow-2xl overflow-hidden">
+      <div className="w-full max-w-sm bg-gradient-to-b from-blue-900 to-blue-950 rounded-3xl border-2 border-blue-500/40 shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-amber-800/60 px-5 py-3 flex items-center justify-between">
-          <span className="text-amber-200 text-sm font-bold">
+        <div className="bg-blue-800/60 px-5 py-3 flex items-center justify-between">
+          <span className="text-blue-200 text-sm font-bold">
             {t('paperCoin.tutorial.title')} · {step + 1}/{STEPS.length}
           </span>
           <button
-            className="text-amber-400 text-xs hover:text-white transition-colors"
+            className="text-blue-400 text-xs hover:text-white transition-colors"
             onClick={() => dispatch({ type: 'TUTORIAL_SKIP' })}
           >
             {t('paperCoin.tutorial.skip')} →
@@ -112,10 +112,10 @@ export function TutorialOverlay({ state, dispatch }: Props) {
         {/* Content */}
         <div className="px-5 py-4 flex flex-col gap-3 pc-anim-fade-in" key={step}>
           <div className="text-4xl text-center">{current.icon}</div>
-          <h3 className="pc-title-font text-xl text-yellow-300 text-center">
+          <h3 className="pc-title-font text-xl text-indigo-300 text-center">
             {t(current.titleKey)}
           </h3>
-          <p className="text-amber-100 text-sm text-center leading-relaxed">
+          <p className="text-blue-100 text-sm text-center leading-relaxed">
             {t(current.descKey)}
           </p>
           {current.visual}

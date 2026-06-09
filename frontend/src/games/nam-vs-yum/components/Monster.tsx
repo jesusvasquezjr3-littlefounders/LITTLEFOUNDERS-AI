@@ -65,7 +65,7 @@ export function Monster({ type, isEating, isRejecting, isHighlighted, skin = 'cl
 
         {/* Frenzy aura */}
         {isFrenzy && (
-          <div className="absolute inset-0 rounded-xl bg-yellow-400/20 animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 rounded-xl bg-indigo-400/20 animate-pulse pointer-events-none" />
         )}
       </div>
 

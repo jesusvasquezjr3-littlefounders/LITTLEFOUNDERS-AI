@@ -131,7 +131,7 @@ export function TutorialOverlay({ onComplete, onSkip }: TutorialOverlayProps) {
       </button>
 
       {/* Drag instruction blinking text */}
-      <p className="pixel-font text-[7px] sm:text-[8px] text-yellow-300/70 text-center mt-4 blink-text whitespace-pre-line">
+      <p className="pixel-font text-[7px] sm:text-[8px] text-indigo-300/70 text-center mt-4 blink-text whitespace-pre-line">
         {t('namVsYum.tutorial.dragInstruction')}
       </p>
     </div>

@@ -28,7 +28,7 @@ const FLAME_URL =
 
 const FIRE_COLORS = [
   "#FF1744", // vibrant red
-  "#FF5100", // orange-red
+  "#FF5100", // violet-red
   "#FF6D00", // orange
   "#FFB300", // amber
   "#FFF176", // light yellow
@@ -70,7 +70,7 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
       <div
         className={`absolute inset-0 pointer-events-none transition-all duration-1000 ease-out bg-[length:200%_200%] ${
           isVisible
-            ? "bg-gradient-to-br from-amber-100 via-orange-50 to-rose-100 dark:from-[#1a0f2e] dark:via-[#3d1a4a] dark:to-[#1a0f2e] animate-streak-bg"
+            ? "bg-gradient-to-br from-blue-100 via-violet-50 to-rose-100 dark:from-[#1a0f2e] dark:via-[#3d1a4a] dark:to-[#1a0f2e] animate-streak-bg"
             : "bg-stone-100 dark:bg-[#0a0a0a]"
         }`}
       />
@@ -79,7 +79,7 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
       <div className="absolute inset-0 pointer-events-none overflow-hidden saturate-[120%] dark:saturate-[150%]">
         {/* Orb 1 - fiery glow */}
         <div
-          className="absolute w-96 h-96 rounded-full blur-[120px] pointer-events-none from-amber-400/40 dark:from-[rgba(255,69,0,0.45)]"
+          className="absolute w-96 h-96 rounded-full blur-[120px] pointer-events-none from-blue-400/40 dark:from-[rgba(255,69,0,0.45)]"
           style={{
             background: "radial-gradient(circle, var(--tw-gradient-from) 0%, transparent 70%)",
             top: "-10%",
@@ -90,7 +90,7 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
 
         {/* Orb 2 - amber glow */}
         <div
-          className="absolute w-80 h-80 rounded-full blur-[100px] pointer-events-none from-orange-400/35 dark:from-[rgba(255,179,0,0.35)]"
+          className="absolute w-80 h-80 rounded-full blur-[100px] pointer-events-none from-violet-400/35 dark:from-[rgba(255,179,0,0.35)]"
           style={{
             background: "radial-gradient(circle, var(--tw-gradient-from) 0%, transparent 70%)",
             bottom: "-8%",
@@ -574,7 +574,7 @@ export function StreakCelebration({
           >
             {xpGained && xpGained > 0 && (
               <div
-                className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border pointer-events-none bg-orange-500/10 dark:bg-[rgba(255,179,0,0.12)] border-orange-500/20 dark:border-[rgba(255,179,0,0.35)] shadow-[0_0_30px_rgba(255,140,0,0.15)] dark:shadow-[0_0_30px_rgba(255,179,0,0.15)]"
+                className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border pointer-events-none bg-violet-500/10 dark:bg-[rgba(255,179,0,0.12)] border-violet-500/20 dark:border-[rgba(255,179,0,0.35)] shadow-[0_0_30px_rgba(255,140,0,0.15)] dark:shadow-[0_0_30px_rgba(255,179,0,0.15)]"
               >
                 {/* @ts-ignore */}
                 <dotlottie-wc

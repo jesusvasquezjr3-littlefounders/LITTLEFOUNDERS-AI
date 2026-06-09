@@ -126,12 +126,12 @@ export const AdminDashboard: React.FC = () => {
         </GlassPanel>
 
         {/* Total Exercises */}
-        <GlassPanel variant="subtle" className="p-0 border-amber-500/10 hover:border-amber-500/30 transition-all group/card overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl -mr-10 -mt-10 group-hover/card:bg-amber-500/10 transition-colors" />
+        <GlassPanel variant="subtle" className="p-0 border-blue-500/10 hover:border-blue-500/30 transition-all group/card overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 group-hover/card:bg-blue-500/10 transition-colors" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
             <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('dashboard.totalExercises')}</CardTitle>
-            <div className="p-2 bg-amber-500/10 rounded-lg group-hover/card:scale-110 transition-transform">
-              <Zap className="h-4 w-4 text-amber-500" />
+            <div className="p-2 bg-blue-500/10 rounded-lg group-hover/card:scale-110 transition-transform">
+              <Zap className="h-4 w-4 text-blue-500" />
             </div>
           </CardHeader>
           <CardContent className="relative z-10">
@@ -306,7 +306,7 @@ export const AdminDashboard: React.FC = () => {
                           className={cn(
                             "text-[10px] font-black uppercase tracking-tighter rounded-lg",
                             edit.action === 'create' && "bg-green-500 hover:bg-green-600",
-                            edit.action === 'update' && "bg-amber-500 hover:bg-amber-600 text-white border-none",
+                            edit.action === 'update' && "bg-blue-500 hover:bg-blue-600 text-white border-none",
                             edit.action === 'delete' && "bg-red-500 hover:bg-red-600"
                           )}
                         >

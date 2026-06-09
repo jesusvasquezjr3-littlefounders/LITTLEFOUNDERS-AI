@@ -16,7 +16,7 @@ const MENTOR_EMOJIS: Record<string, string> = {
 
 const MENTOR_COLORS: Record<string, string> = {
   drRho: 'border-blue-400 bg-blue-900/90',
-  zara: 'border-amber-400 bg-amber-900/90',
+  zara: 'border-blue-400 bg-blue-900/90',
   liruf: 'border-green-400 bg-green-900/90',
   dina: 'border-pink-400 bg-pink-900/90',
 };
@@ -53,7 +53,7 @@ export function MentorPopup({ tip, onDismiss }: MentorPopupProps) {
 
           {/* Message */}
           <div className="flex-1 min-w-0">
-            <p className="pixel-font text-[8px] sm:text-[9px] text-yellow-300 mb-1">
+            <p className="pixel-font text-[8px] sm:text-[9px] text-indigo-300 mb-1">
               {name}
             </p>
             <p className="text-white text-xs sm:text-sm leading-relaxed">

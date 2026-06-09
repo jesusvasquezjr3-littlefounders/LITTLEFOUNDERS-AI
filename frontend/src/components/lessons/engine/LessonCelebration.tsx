@@ -172,7 +172,7 @@ export function LessonCelebration({
       {/* Background gradient */}
       <div className={cn(
         "absolute inset-0 z-0 animate-in fade-in duration-1000 backdrop-blur-sm",
-        isPerfect ? "bg-yellow-50/95 dark:bg-yellow-950/95" : "bg-emerald-50/95 dark:bg-emerald-950/95"
+        isPerfect ? "bg-indigo-50/95 dark:bg-indigo-950/95" : "bg-emerald-50/95 dark:bg-emerald-950/95"
       )} />
       
       {/* Drifting Orbs - Subtle, less distracting */}
@@ -195,7 +195,7 @@ export function LessonCelebration({
             <div className={cn(
               "absolute bottom-4 w-56 h-56 rounded-full z-[-1]",
               isPerfect
-                ? "bg-yellow-400/20 dark:bg-yellow-500/30"
+                ? "bg-indigo-400/20 dark:bg-indigo-500/30"
                 : "bg-emerald-400/20 dark:bg-emerald-500/30"
             )} style={{ filter: "blur(28px)" }} />
             
@@ -204,12 +204,12 @@ export function LessonCelebration({
             </div>
 
             {/* Sparkle particles */}
-            <div className="absolute top-0 right-10 animate-pulse text-yellow-400 z-10">
+            <div className="absolute top-0 right-10 animate-pulse text-indigo-400 z-10">
               <Sparkles size={28} />
             </div>
             {isPerfect && (
-              <div className="absolute top-4 left-8 animate-pulse text-yellow-300 z-10" style={{ animationDelay: '0.3s' }}>
-                <Star size={20} className="fill-yellow-300" />
+              <div className="absolute top-4 left-8 animate-pulse text-indigo-300 z-10" style={{ animationDelay: '0.3s' }}>
+                <Star size={20} className="fill-indigo-300" />
               </div>
             )}
           </div>
@@ -217,7 +217,7 @@ export function LessonCelebration({
           {/* Dynamic Title */}
           <h2 id="celebration-title" className={cn(
             "text-3xl sm:text-4xl font-black mb-2 drop-shadow-sm",
-            isPerfect ? "text-yellow-500 dark:text-yellow-400" : "text-emerald-600 dark:text-emerald-400"
+            isPerfect ? "text-indigo-500 dark:text-indigo-400" : "text-emerald-600 dark:text-emerald-400"
           )}>
             {t(messageKey, { defaultValue: "Great Job!" })}
           </h2>
@@ -233,7 +233,7 @@ export function LessonCelebration({
               </span>
               <span className={cn(
                 "text-sm font-black",
-                isPerfect ? "text-yellow-500" : "text-emerald-500"
+                isPerfect ? "text-indigo-500" : "text-emerald-500"
               )}>
                 {correctCount}/{totalCount}
               </span>
@@ -242,7 +242,7 @@ export function LessonCelebration({
               <div
                 className={cn(
                   "h-full rounded-full transition-all duration-1000 ease-out",
-                  isPerfect ? "bg-yellow-400" : "bg-emerald-500"
+                  isPerfect ? "bg-indigo-400" : "bg-emerald-500"
                 )}
                 style={{
                   width: phase === "visible" ? `${accuracy}%` : "0%",
@@ -253,14 +253,14 @@ export function LessonCelebration({
             {/* Performance badges */}
             <div className="flex justify-center gap-2 mt-2">
               {isPerfect && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-[10px] font-bold uppercase tracking-wider">
-                  <Star size={10} className="fill-yellow-500 text-yellow-500" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
+                  <Star size={10} className="fill-indigo-500 text-indigo-500" />
                   {t("badges.perfect", { defaultValue: "Perfect" })}
                 </span>
               )}
               {completionResult?.new_streak && completionResult.new_streak >= 3 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 text-[10px] font-bold uppercase tracking-wider">
-                  <Flame size={10} className="text-orange-500" />
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-[10px] font-bold uppercase tracking-wider">
+                  <Flame size={10} className="text-violet-500" />
                   {t("badges.streak", { defaultValue: "Streak" })}
                 </span>
               )}
@@ -282,8 +282,8 @@ export function LessonCelebration({
             >
                <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
                   <div className="relative">
-                    <Star className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 fill-yellow-400 drop-shadow-md" />
-                    <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+                    <Star className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400 fill-indigo-400 drop-shadow-md" />
+                    <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-indigo-300" />
                   </div>
                </div>
                <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
@@ -331,7 +331,7 @@ export function LessonCelebration({
               className={cn(
                 "relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500",
                 streakValue > 0
-                  ? "border-orange-200 dark:border-orange-500/40"
+                  ? "border-violet-200 dark:border-violet-500/40"
                   : "border-slate-200 dark:border-slate-700 opacity-60"
               )}
               style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
@@ -339,12 +339,12 @@ export function LessonCelebration({
                <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
                   <Flame className={cn(
                     "w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md",
-                    streakValue > 0 ? "text-orange-500 fill-orange-500" : "text-slate-300 dark:text-slate-600"
+                    streakValue > 0 ? "text-violet-500 fill-violet-500" : "text-slate-300 dark:text-slate-600"
                   )} />
                </div>
                <span className={cn(
                  "text-xl sm:text-2xl font-black",
-                 streakValue > 0 ? "text-orange-500" : "text-gray-400 dark:text-slate-500"
+                 streakValue > 0 ? "text-violet-500" : "text-gray-400 dark:text-slate-500"
                )}>
                  {animatedStreak}
                </span>
@@ -362,7 +362,7 @@ export function LessonCelebration({
                disabled={nextLessonCode === undefined}
                className={cn(
                  "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2",
-                 isPerfect ? "bg-yellow-500 hover:bg-yellow-600 shadow-[0_4px_0_rgb(161,98,7)] hover:shadow-[0_2px_0_rgb(161,98,7)]" : "bg-green-500 hover:bg-green-600"
+                 isPerfect ? "bg-indigo-500 hover:bg-indigo-600 shadow-[0_4px_0_rgb(161,98,7)] hover:shadow-[0_2px_0_rgb(161,98,7)]" : "bg-green-500 hover:bg-green-600"
                )}
            >
                    {nextLessonCode === undefined ? (

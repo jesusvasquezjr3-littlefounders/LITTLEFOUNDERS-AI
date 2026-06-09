@@ -13,7 +13,7 @@ export function GameStartScreen({ state, dispatch }: Props) {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen w-full overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-amber-900 via-amber-800 to-amber-950" />
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950" />
       <div className="absolute inset-0 opacity-20">
         {/* Decorative torches */}
         <div className="absolute top-8 left-6 text-4xl animate-pulse">🔦</div>
@@ -44,8 +44,8 @@ export function GameStartScreen({ state, dispatch }: Props) {
       <div className="relative z-10 flex flex-col items-center gap-6 px-6 w-full max-w-sm mx-auto">
         {/* Sign */}
         <div className="pc-anim-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="bg-amber-900/80 border-4 border-amber-600 rounded-2xl px-6 py-2 mb-1">
-            <p className="pc-title-font text-amber-200 text-xs tracking-widest uppercase">
+          <div className="bg-blue-900/80 border-4 border-blue-600 rounded-2xl px-6 py-2 mb-1">
+            <p className="pc-title-font text-blue-200 text-xs tracking-widest uppercase">
               {t('paperCoin.startScreen.shopSign')}
             </p>
           </div>
@@ -53,10 +53,10 @@ export function GameStartScreen({ state, dispatch }: Props) {
 
         {/* Title */}
         <div className="text-center pc-anim-fade-in" style={{ animationDelay: '0.2s' }}>
-          <h1 className="pc-title-font pc-start-title text-4xl md:text-5xl text-yellow-300 leading-tight">
+          <h1 className="pc-title-font pc-start-title text-4xl md:text-5xl text-indigo-300 leading-tight">
             {t('paperCoin.title')}
           </h1>
-          <p className="text-amber-200 text-sm mt-2 font-bold opacity-80">
+          <p className="text-blue-200 text-sm mt-2 font-bold opacity-80">
             {t('paperCoin.subtitle')}
           </p>
         </div>
@@ -64,8 +64,8 @@ export function GameStartScreen({ state, dispatch }: Props) {
         {/* High Score */}
         {state.highScore > 0 && (
           <div className="pc-anim-pop-in" style={{ animationDelay: '0.35s' }}>
-            <div className="bg-black/30 border border-yellow-400/40 rounded-xl px-5 py-2 text-center">
-              <span className="text-yellow-300 text-xs font-bold uppercase tracking-wider">
+            <div className="bg-black/30 border border-indigo-400/40 rounded-xl px-5 py-2 text-center">
+              <span className="text-indigo-300 text-xs font-bold uppercase tracking-wider">
                 🏆 {t('paperCoin.startScreen.highScore', { score: state.highScore })}
               </span>
             </div>
@@ -99,7 +99,7 @@ export function GameStartScreen({ state, dispatch }: Props) {
           </button>
 
           <button
-            className="w-full py-3 rounded-2xl text-base font-bold text-amber-200 border-2 border-amber-500/50 bg-black/20 hover:bg-black/30 transition-all duration-150 active:scale-95"
+            className="w-full py-3 rounded-2xl text-base font-bold text-blue-200 border-2 border-blue-500/50 bg-black/20 hover:bg-black/30 transition-all duration-150 active:scale-95"
             onClick={() => dispatch({ type: 'GO_TO_TUTORIAL' })}
           >
             📖 {t('paperCoin.startScreen.howToPlay')}
@@ -107,7 +107,7 @@ export function GameStartScreen({ state, dispatch }: Props) {
         </div>
 
         {/* Footer */}
-        <p className="text-amber-400/50 text-xs text-center pc-anim-fade-in" style={{ animationDelay: '0.7s' }}>
+        <p className="text-blue-400/50 text-xs text-center pc-anim-fade-in" style={{ animationDelay: '0.7s' }}>
           {t('paperCoin.startScreen.footerHint')}
         </p>
       </div>

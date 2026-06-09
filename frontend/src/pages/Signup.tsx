@@ -14,7 +14,7 @@ import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
-const Register = () => {
+const Signup = () => {
   const { t } = useTranslation(['auth', 'common', 'errors']);
   const [formData, setFormData] = useState({
     email: "",
@@ -306,17 +306,6 @@ const Register = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating Shapes */}
-        <div className="absolute top-10 right-10 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '0s', animationDuration: '4s' }}></div>
-        <div className="absolute top-1/3 left-10 w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '5s' }}></div>
-        <div className="absolute bottom-20 right-1/4 w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '3.5s' }}></div>
-
-        {/* Floating Icons */}
-        <Zap className="absolute top-1/4 left-1/4 w-10 h-10 text-yellow-400 opacity-30 animate-pulse" style={{ animationDelay: '0s' }} />
-        <Heart className="absolute top-1/2 right-1/3 w-8 h-8 text-pink-400 opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
-        <Star className="absolute bottom-1/4 left-1/3 w-12 h-12 text-purple-400 opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
-        <Sparkles className="absolute top-1/3 right-1/4 w-10 h-10 text-cyan-400 opacity-30 animate-pulse" style={{ animationDelay: '1.5s' }} />
-
         {/* Gradient Orbs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-purple-400/30 to-pink-400/30 rounded-full blur-3xl"></div>
@@ -509,9 +498,7 @@ const Register = () => {
           {/* Footer Message */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4" />
               {t('auth:register.footer')}
-              <Sparkles className="w-4 h-4" />
             </p>
           </div>
         </div>
@@ -520,4 +507,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Signup;

@@ -39,7 +39,7 @@ const USER_TYPES = [
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  draft: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  draft: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
   archived: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
 };
 
@@ -527,7 +527,7 @@ export default function AdminNotifications() {
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Borradores</p>
-            <p className="text-2xl font-bold text-yellow-600">{totalDraft}</p>
+            <p className="text-2xl font-bold text-indigo-600">{totalDraft}</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Archivadas</p>

@@ -68,7 +68,7 @@ export function GameHUD({
         {/* Score + Level + Coins */}
         <div className="flex flex-col items-start gap-0.5 pointer-events-none">
           <div className="flex items-center gap-1.5">
-            <span className="pixel-font text-yellow-400 text-[8px] sm:text-[10px] uppercase">
+            <span className="pixel-font text-indigo-400 text-[8px] sm:text-[10px] uppercase">
               {t('namVsYum.hud.score')}
             </span>
             <span className={cn(
@@ -85,16 +85,16 @@ export function GameHUD({
             <span className="pixel-font text-purple-300 text-[7px] sm:text-[9px]">
               Lv.{playerLevel}
             </span>
-            <span className="pixel-font text-yellow-400 text-[7px] sm:text-[9px]">
+            <span className="pixel-font text-indigo-400 text-[7px] sm:text-[9px]">
               💰{coins}
             </span>
           </div>
           {combo >= 2 && (
             <div className={cn('flex items-center gap-1', comboPop && 'combo-pop')}>
-              <span className="pixel-font text-orange-400 text-[7px] sm:text-[9px]">
+              <span className="pixel-font text-violet-400 text-[7px] sm:text-[9px]">
                 {t('namVsYum.hud.combo')}
               </span>
-              <span className="pixel-font text-orange-300 text-[9px] sm:text-xs font-bold">
+              <span className="pixel-font text-violet-300 text-[9px] sm:text-xs font-bold">
                 {t('namVsYum.hud.comboMultiplier', { multiplier: comboMultiplier })}
               </span>
             </div>
@@ -156,7 +156,7 @@ export function GameHUD({
       {/* Savings streak banner */}
       {combo >= 5 && (
         <div className="flex justify-center">
-          <div className="pixel-font text-[8px] sm:text-[10px] text-yellow-300 bg-yellow-500/20 px-3 py-1 rounded-full blink-text retro-glow">
+          <div className="pixel-font text-[8px] sm:text-[10px] text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-full blink-text retro-glow">
             {t('namVsYum.hud.savingsStreak')}
           </div>
         </div>

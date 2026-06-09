@@ -123,12 +123,12 @@ export function ReportFAB({ inline = false, className = "" }: ReportFABProps) {
           className={`
             inline-flex items-center gap-2.5 px-6 py-3 rounded-[20px] font-bold text-sm
             bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-2 border-white/50 dark:border-slate-700/50
-            text-slate-800 dark:text-white shadow-xl hover:shadow-orange-500/10
-            transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:border-orange-400/30
+            text-slate-800 dark:text-white shadow-xl hover:shadow-violet-500/10
+            transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:border-violet-400/30
             ${className}
           `}
         >
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-md">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-500 to-violet-500 flex items-center justify-center shadow-md">
             <Flag className="w-3.5 h-3.5 text-white" />
           </div>
           {t("button_label")}
@@ -162,7 +162,7 @@ export function ReportFAB({ inline = false, className = "" }: ReportFABProps) {
       >
         <div className="relative">
           {/* Subtle static glow */}
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-br from-red-500/10 to-orange-500/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-br from-red-500/10 to-violet-500/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           <button
             type="button"
@@ -174,7 +174,7 @@ export function ReportFAB({ inline = false, className = "" }: ReportFABProps) {
               ${!isDragging && 'group-hover:pr-6'}
             `}
           >
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-500 via-orange-500 to-rose-500 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:rotate-6">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-500 via-violet-500 to-rose-500 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:rotate-6">
               <Flag className="w-3.5 h-3.5 text-white" />
             </div>
             <span className={`max-w-0 overflow-hidden transition-all duration-500 whitespace-nowrap tracking-tight font-bold ${isDragging ? '' : 'group-hover:max-w-[100px]'}`}>

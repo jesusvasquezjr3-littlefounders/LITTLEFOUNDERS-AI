@@ -219,7 +219,7 @@ export const AdminUsers: React.FC = () => {
                   size="sm"
                   onClick={() => setDemoteConfirmId(user.id)}
                   title={t('users.demoteFromAdmin')}
-                  className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300"
+                  className="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
                 >
                   <ShieldMinus className="h-4 w-4" />
                 </Button>
@@ -387,7 +387,7 @@ export const AdminUsers: React.FC = () => {
       </GlassPanel>
 
       {/* Other Users Section */}
-      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-yellow-400 dark:border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
+      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-indigo-400 dark:border-indigo-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
         <CardHeader>
           <CardTitle className="text-slate-900 dark:text-white">
             {t('users.otherUsersTitle')} ({filteredOthers.length})

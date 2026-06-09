@@ -163,7 +163,7 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
     return (
         <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in duration-500 relative px-4">
             <div className="w-full max-w-4xl bg-card rounded-3xl shadow-sm border-2 border-border overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
-                <div className="absolute top-0 left-0 w-full h-4 bg-amber-300 dark:bg-amber-800 z-10" />
+                <div className="absolute top-0 left-0 w-full h-4 bg-blue-300 dark:bg-blue-800 z-10" />
 
                 <div className="w-full md:w-1/2 bg-blue-50 dark:bg-slate-900 flex items-end justify-center p-6 relative overflow-hidden">
                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-multiply dark:mix-blend-screen" />
@@ -178,7 +178,7 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center">
-                        <BookOpen className="w-8 h-8 text-amber-500 mb-4 opacity-50" />
+                        <BookOpen className="w-8 h-8 text-blue-500 mb-4 opacity-50" />
 
                         <div className={cn("transition-all duration-500 delay-100", isAnimating ? "opacity-0 translate-x-10" : "opacity-100 translate-x-0")}>
                             <p className="text-xl md:text-2xl font-medium leading-relaxed font-serif text-slate-800 dark:text-slate-200 mb-8">
@@ -193,11 +193,11 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
                                             onClick={() => handleChoice(choice.next_page)}
                                             className={cn(
                                                 "w-full h-auto min-h-[3.5rem] py-3 text-left justify-start text-base sm:text-lg whitespace-normal rounded-2xl border-2 transition-all",
-                                                "bg-card border-border hover:border-amber-400 dark:hover:border-amber-500 text-foreground",
+                                                "bg-card border-border hover:border-blue-400 dark:hover:border-blue-500 text-foreground",
                                                 "shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px]"
                                             )}
                                         >
-                                            <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-400 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-sm flex-shrink-0">
+                                            <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-sm flex-shrink-0">
                                                 {String.fromCharCode(65 + idx)}
                                             </span>
                                             {choice.text}
@@ -216,7 +216,7 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
                                         )}
                                         <Button
                                             onClick={handleNext}
-                                            className="w-full flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-2xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
+                                            className="w-full flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                                         >
                                             {pageIndex === pages.length - 1 ? t('actions.finish', { defaultValue: 'Finalizar' }) : t('actions.continue', { defaultValue: 'Continuar' })} 
                                             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />

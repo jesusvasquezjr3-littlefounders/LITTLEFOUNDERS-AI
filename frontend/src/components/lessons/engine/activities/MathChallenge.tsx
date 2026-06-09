@@ -121,7 +121,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                         "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
+                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
                         "hover:-translate-y-[2px]"
                     )}
                 >

@@ -84,7 +84,7 @@ export default function UserProfile() {
 
     if (profile.follow_status === "pending") {
       return (
-        <Button onClick={handleFollowAction} disabled={isActionLoading} variant="outline" className="rounded-full px-8 font-bold border-orange-200 text-orange-600 hover:bg-orange-50 bg-white">
+        <Button onClick={handleFollowAction} disabled={isActionLoading} variant="outline" className="rounded-full px-8 font-bold border-violet-200 text-violet-600 hover:bg-violet-50 bg-white">
           {isActionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('profile:social.pending')}
         </Button>
       );
@@ -172,9 +172,9 @@ export default function UserProfile() {
         {/* Stats Grid */}
         <h3 className="text-xl font-bold text-slate-800 dark:text-white px-2 mt-8 mb-4">{t('profile:sections.learning_stats')}</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Card className={cn("border-0 shadow-lg bg-orange-50 dark:bg-orange-950/20 transition-all", profile.current_streak === 0 && "grayscale opacity-60")}>
+          <Card className={cn("border-0 shadow-lg bg-violet-50 dark:bg-violet-950/20 transition-all", profile.current_streak === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-2xl flex items-center justify-center mb-3 text-orange-600">
+              <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/50 rounded-2xl flex items-center justify-center mb-3 text-violet-600">
                 <Flame className="w-6 h-6" />
               </div>
               <p className="text-3xl font-black text-slate-900 dark:text-white">{profile.current_streak}</p>
@@ -182,9 +182,9 @@ export default function UserProfile() {
             </CardContent>
           </Card>
           
-          <Card className={cn("border-0 shadow-lg bg-yellow-50 dark:bg-yellow-950/20 transition-all", profile.points_earned === 0 && "grayscale opacity-60")}>
+          <Card className={cn("border-0 shadow-lg bg-indigo-50 dark:bg-indigo-950/20 transition-all", profile.points_earned === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-2xl flex items-center justify-center mb-3 text-yellow-600">
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-2xl flex items-center justify-center mb-3 text-indigo-600">
                 <Star className="w-6 h-6" />
               </div>
               <p className="text-3xl font-black text-slate-900 dark:text-white">{profile.points_earned}</p>

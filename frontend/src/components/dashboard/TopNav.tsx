@@ -31,11 +31,11 @@ const NOTIFICATION_TYPE_CONFIG: Record<string, { icon: any; bgClass: string }> =
   follow_request: { icon: UserPlus, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
   follow_accepted: { icon: UserCheck, bgClass: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" },
   new_follower: { icon: UserPlus, bgClass: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400" },
-  streak: { icon: Flame, bgClass: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400" },
-  achievement: { icon: Trophy, bgClass: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" },
+  streak: { icon: Flame, bgClass: "bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400" },
+  achievement: { icon: Trophy, bgClass: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400" },
   lesson: { icon: BookOpen, bgClass: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
   admin_broadcast: { icon: Megaphone, bgClass: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
-  reminder: { icon: Clock, bgClass: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
+  reminder: { icon: Clock, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
   system: { icon: Sparkles, bgClass: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400" },
 };
 
@@ -225,7 +225,7 @@ export function TopNav() {
         <div className={cn(
           "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-all",
           (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0))
-            ? "border-amber-500/20 shadow-sm shadow-amber-500/5 group hover:scale-105"
+            ? "border-blue-500/20 shadow-sm shadow-blue-500/5 group hover:scale-105"
             : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
         )}>
           <div className="w-8 h-8 flex items-center justify-center">
@@ -234,7 +234,7 @@ export function TopNav() {
           </div>
           <span className={cn(
             "text-base font-black leading-none",
-            (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0)) ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"
+            (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0)) ? "text-blue-600 dark:text-blue-400" : "text-slate-500 dark:text-slate-400"
           )}>
             {guestMode ? (guestProfile?.xp ?? 0) : (user?.points_earned?.toLocaleString() || 0)}
           </span>
@@ -302,7 +302,7 @@ export function TopNav() {
         {/* Guest CTA — shown instead of bell + avatar */}
         {guestMode && (
           <Button asChild size="sm" className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold shadow-lg shadow-purple-500/20 text-xs h-9 px-3">
-            <Link to="/register">{t('guest.create_account')}</Link>
+            <Link to="/signup">{t('guest.create_account')}</Link>
           </Button>
         )}
 
@@ -499,7 +499,7 @@ export function TopNav() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
                 <Link to="/help" className="flex items-center w-full">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 mr-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mr-3">
                     <HelpCircle className="h-4 w-4" />
                   </div>
                   <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.help')}</span>

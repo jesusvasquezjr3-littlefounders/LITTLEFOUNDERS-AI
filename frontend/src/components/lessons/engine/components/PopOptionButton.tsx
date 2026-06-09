@@ -39,10 +39,10 @@ const THEME_STYLES = {
         active: 'active:shadow-none active:translate-y-[4px]'
     },
     orange: {
-        bg: 'bg-orange-500',
-        hover: 'hover:bg-orange-600',
+        bg: 'bg-violet-500',
+        hover: 'hover:bg-violet-600',
         text: 'text-white',
-        shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]',
+        shadow: 'shadow-[0_4px_0_rgb(109,40,217)] hover:shadow-[0_2px_0_rgb(109,40,217)]',
         active: 'active:shadow-none active:translate-y-[4px]'
     },
     green: {
@@ -53,10 +53,10 @@ const THEME_STYLES = {
         active: 'active:shadow-none active:translate-y-[4px]'
     },
     amber: {
-        bg: 'bg-amber-500',
-        hover: 'hover:bg-amber-600',
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
         text: 'text-white',
-        shadow: 'shadow-[0_4px_0_rgb(180,83,9)] hover:shadow-[0_2px_0_rgb(180,83,9)]',
+        shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]',
         active: 'active:shadow-none active:translate-y-[4px]'
     }
 };

@@ -47,7 +47,7 @@ export function PowerUpIndicator({ activePowerUp }: PowerUpIndicatorProps) {
         </span>
         <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
           <div
-            className="h-full bg-yellow-400 transition-all duration-100"
+            className="h-full bg-indigo-400 transition-all duration-100"
             style={{ width: `${progress * 100}%` }}
           />
         </div>

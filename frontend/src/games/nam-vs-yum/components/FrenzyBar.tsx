@@ -18,7 +18,7 @@ export function FrenzyBar({ frenzyCount, isFrenzyMode }: FrenzyBarProps) {
           <div
             className={cn(
               'h-full transition-all duration-300 rounded-full',
-              isFrenzyMode ? 'bg-pink-500 animate-pulse' : 'bg-orange-400'
+              isFrenzyMode ? 'bg-pink-500 animate-pulse' : 'bg-violet-400'
             )}
             style={{ width: `${isFrenzyMode ? 100 : progress * 100}%` }}
           />

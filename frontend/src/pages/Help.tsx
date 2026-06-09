@@ -121,7 +121,7 @@ const Help = () => {
     { icon: BookOpen, labelKey: "help_page.categories.lessons", gradient: "bg-gradient-to-br from-blue-500 to-cyan-500" },
     { icon: Gamepad2, labelKey: "help_page.categories.games", gradient: "bg-gradient-to-br from-purple-500 to-pink-500" },
     { icon: Shield, labelKey: "help_page.categories.privacy", gradient: "bg-gradient-to-br from-emerald-500 to-teal-500" },
-    { icon: MessageSquare, labelKey: "help_page.categories.contact", gradient: "bg-gradient-to-br from-orange-500 to-amber-500" },
+    { icon: MessageSquare, labelKey: "help_page.categories.contact", gradient: "bg-gradient-to-br from-violet-500 to-blue-500" },
   ];
 
   const FAQ_KEYS = [
@@ -210,13 +210,13 @@ const Help = () => {
             {/* Support Card */}
             <GlassPanel
               variant="strong"
-              className="relative overflow-hidden p-7 rounded-[2rem] space-y-6 shadow-2xl border border-orange-500/10 dark:border-orange-500/10"
+              className="relative overflow-hidden p-7 rounded-[2rem] space-y-6 shadow-2xl border border-violet-500/10 dark:border-violet-500/10"
             >
               {/* Background accent */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-red-500/15 to-orange-500/15 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-red-500/15 to-violet-500/15 rounded-full blur-2xl pointer-events-none" />
 
               <div className="relative flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-xl shadow-red-500/25 transform hover:rotate-3 hover:scale-105 transition-all duration-300">
+                <div className="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-red-500 to-violet-500 flex items-center justify-center shadow-xl shadow-red-500/25 transform hover:rotate-3 hover:scale-105 transition-all duration-300">
                   <MessageSquare className="w-8 h-8 text-white" />
                 </div>
                 <div className="space-y-2">

@@ -43,18 +43,10 @@ export const LandingParentCTA: React.FC = () => {
         ))}
       </div>
 
-      {/* ── Floating deco ── */}
-      <div className="absolute top-10 left-[8%]  text-3xl opacity-20 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>🚀</div>
-      <div className="absolute top-16 right-[6%] text-2xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '1.3s' }}>⭐</div>
-      <div className="absolute bottom-12 left-[14%] text-2xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '0.7s' }}>🪙</div>
-      <div className="absolute bottom-10 right-[10%] text-3xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '2s' }}>🎉</div>
-      <div className="absolute top-1/2 left-[4%]  text-xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '1.6s' }}>✨</div>
-      <div className="absolute top-1/3 right-[4%] text-xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '0.4s' }}>💡</div>
-
       {/* ── Wave top ── */}
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 64 }}>
         <svg viewBox="0 0 1440 64" preserveAspectRatio="none" className="w-full h-full">
-          <path d="M0,45 C480,10 960,55 1440,20 L1440,0 L0,0 Z" fill="#FFF7ED" className="dark:hidden" />
+          <path d="M0,45 C480,10 960,55 1440,20 L1440,0 L0,0 Z" fill="#eff6ff" className="dark:hidden" />
           <path d="M0,45 C480,10 960,55 1440,20 L1440,0 L0,0 Z" className="hidden dark:block" style={{ fill: '#0f172a' }} />
         </svg>
       </div>

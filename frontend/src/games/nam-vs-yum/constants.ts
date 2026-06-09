@@ -114,7 +114,7 @@ export const FRENZY_THRESHOLD = 15;
 
 export const MENTOR_CHARACTERS: MentorCharacter[] = [
   { id: 'drRho', emoji: '👨🏻‍💼', colorClass: 'border-blue-400 bg-blue-900/90', nameKey: 'namVsYum.mentor.drRho.name', tipKeys: ['namVsYum.mentor.drRho.tip1', 'namVsYum.mentor.drRho.tip2', 'namVsYum.mentor.drRho.tip3'] },
-  { id: 'zara', emoji: '👩🏻‍💼', colorClass: 'border-amber-400 bg-amber-900/90', nameKey: 'namVsYum.mentor.zara.name', tipKeys: ['namVsYum.mentor.zara.tip1', 'namVsYum.mentor.zara.tip2', 'namVsYum.mentor.zara.tip3'] },
+  { id: 'zara', emoji: '👩🏻‍💼', colorClass: 'border-blue-400 bg-blue-900/90', nameKey: 'namVsYum.mentor.zara.name', tipKeys: ['namVsYum.mentor.zara.tip1', 'namVsYum.mentor.zara.tip2', 'namVsYum.mentor.zara.tip3'] },
   { id: 'liruf', emoji: '🦖', colorClass: 'border-green-400 bg-green-900/90', nameKey: 'namVsYum.mentor.liruf.name', tipKeys: ['namVsYum.mentor.liruf.tip1', 'namVsYum.mentor.liruf.tip2', 'namVsYum.mentor.liruf.tip3'] },
   { id: 'dina', emoji: '🦕', colorClass: 'border-pink-400 bg-pink-900/90', nameKey: 'namVsYum.mentor.dina.name', tipKeys: ['namVsYum.mentor.dina.tip1', 'namVsYum.mentor.dina.tip2', 'namVsYum.mentor.dina.tip3'] },
 ];
@@ -166,10 +166,10 @@ export const THEME_PRICES: Record<string, number> = {
 
 export const SKIN_CONFIG: Record<string, { vitalio: { bg: string; emoji: string }; capricho: { bg: string; emoji: string } }> = {
   classic: { vitalio: { bg: 'from-green-600 to-green-800', emoji: '🦎' }, capricho: { bg: 'from-purple-600 to-purple-800', emoji: '👾' } },
-  gold: { vitalio: { bg: 'from-yellow-500 to-amber-700', emoji: '🌟' }, capricho: { bg: 'from-yellow-500 to-amber-700', emoji: '✨' } },
+  gold: { vitalio: { bg: 'from-indigo-500 to-blue-700', emoji: '🌟' }, capricho: { bg: 'from-indigo-500 to-blue-700', emoji: '✨' } },
   ninja: { vitalio: { bg: 'from-slate-700 to-black', emoji: '🥷' }, capricho: { bg: 'from-slate-700 to-black', emoji: '🗡️' } },
   astronaut: { vitalio: { bg: 'from-blue-500 to-indigo-800', emoji: '👨‍🚀' }, capricho: { bg: 'from-blue-500 to-indigo-800', emoji: '🚀' } },
-  pirate: { vitalio: { bg: 'from-red-700 to-amber-900', emoji: '🏴‍☠️' }, capricho: { bg: 'from-red-700 to-amber-900', emoji: '⚓' } },
+  pirate: { vitalio: { bg: 'from-red-700 to-blue-900', emoji: '🏴‍☠️' }, capricho: { bg: 'from-red-700 to-blue-900', emoji: '⚓' } },
   robot: { vitalio: { bg: 'from-cyan-600 to-blue-800', emoji: '🤖' }, capricho: { bg: 'from-cyan-600 to-blue-800', emoji: '⚙️' } },
 };
 

@@ -16,7 +16,7 @@ function ActiveCard({ t }: { t: any }) {
   ];
 
   return (
-    <div className="relative flex flex-col rounded-3xl overflow-hidden shadow-2xl glass-card border-orange-200/60 dark:border-transparent">
+    <div className="relative flex flex-col rounded-3xl overflow-hidden shadow-2xl glass-card border-indigo-200/60 dark:border-transparent">
       {/* Rainbow top strip */}
       <div className="h-1 w-full flex-shrink-0" style={{ background: 'linear-gradient(90deg, #f97316, #ec4899, #a855f7, #3b82f6)' }} />
 
@@ -126,15 +126,9 @@ export default function PricingPage() {
 
         {/* Ambient glow orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-20 right-[5%] w-[400px] h-[400px] bg-orange-300/25 dark:bg-orange-700/18 rounded-full blur-[90px] animate-orb-1" />
+          <div className="absolute -top-20 right-[5%] w-[400px] h-[400px] bg-indigo-300/20 dark:bg-indigo-950/20 rounded-full blur-[90px] animate-orb-1" />
           <div className="absolute -bottom-20 left-[8%] w-[350px] h-[350px] bg-pink-300/25 dark:bg-pink-700/18 rounded-full blur-[90px] animate-orb-2" style={{ animationDelay: '3s' }} />
         </div>
-
-        {/* Floating decos */}
-        <div className="absolute top-16 left-[7%]  text-3xl opacity-40 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>🪙</div>
-        <div className="absolute top-20 right-[8%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '1.4s' }}>⭐</div>
-        <div className="absolute bottom-8 left-[20%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '0.8s' }}>🎁</div>
-        <div className="absolute bottom-8 right-[15%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '2s' }}>🚀</div>
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
 
@@ -151,7 +145,7 @@ export default function PricingPage() {
               </defs>
             </svg>
           </div>
-          <p className="text-lg text-gray-600 dark:text-white/55 leading-relaxed animate-fade-in-up-delay-2 max-w-xl mx-auto">
+          <p className="landing-body-text text-lg text-gray-600 dark:text-white/55 leading-relaxed font-medium animate-fade-in-up-delay-2 max-w-xl mx-auto">
             {t('pricing.subtitle')}
           </p>
         </div>
@@ -160,7 +154,7 @@ export default function PricingPage() {
         <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 60 }}>
           <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-full">
             <path d="M0,30 C360,60 720,8 1080,45 C1260,58 1380,18 1440,32 L1440,60 L0,60 Z"
-              fill="#FFF7ED" className="dark:hidden" />
+              fill="#eff6ff" className="dark:hidden" />
             <path d="M0,30 C360,60 720,8 1080,45 C1260,58 1380,18 1440,32 L1440,60 L0,60 Z"
               className="hidden dark:block" style={{ fill: '#0f172a' }} />
           </svg>
@@ -170,11 +164,11 @@ export default function PricingPage() {
       {/* ══════════════════════════════════════════════════════
           PRICING CARDS — light bg in light mode
       ══════════════════════════════════════════════════════ */}
-      <section className="relative py-20 px-4 overflow-hidden bg-amber-50 dark:bg-slate-900">
+      <section className="relative py-20 px-4 overflow-hidden bg-gradient-to-br from-blue-50/30 via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:to-slate-950">
 
         {/* Ambient glow orbs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-[10%] w-[400px] h-[400px] bg-orange-300/15 dark:bg-orange-900/12 rounded-full blur-[80px] animate-orb-1" />
+          <div className="absolute top-0 right-[10%] w-[400px] h-[400px] bg-indigo-300/15 dark:bg-indigo-950/12 rounded-full blur-[80px] animate-orb-1" />
           <div className="absolute bottom-0 left-[5%] w-[350px] h-[350px] bg-pink-300/15 dark:bg-pink-900/10 rounded-full blur-[80px] animate-orb-2" style={{ animationDelay: '3s' }} />
         </div>
 
@@ -182,7 +176,7 @@ export default function PricingPage() {
         <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 60 }}>
           <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-full">
             <path d="M0,30 C360,0 720,52 1080,15 C1260,2 1380,42 1440,28 L1440,0 L0,0 Z"
-              fill="#FFF7ED" className="dark:hidden" />
+              fill="#eff6ff" className="dark:hidden" />
             <path d="M0,30 C360,0 720,52 1080,15 C1260,2 1380,42 1440,28 L1440,0 L0,0 Z"
               className="hidden dark:block" style={{ fill: '#0f172a' }} />
           </svg>

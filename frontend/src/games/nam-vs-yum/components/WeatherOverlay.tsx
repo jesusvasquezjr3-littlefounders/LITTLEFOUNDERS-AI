@@ -65,7 +65,7 @@ export function WeatherOverlay({ weather }: WeatherOverlayProps) {
       )}
 
       {weather === 'goldenHour' && (
-        <div className="absolute inset-0 bg-orange-500/10" />
+        <div className="absolute inset-0 bg-violet-500/10" />
       )}
     </div>
   );

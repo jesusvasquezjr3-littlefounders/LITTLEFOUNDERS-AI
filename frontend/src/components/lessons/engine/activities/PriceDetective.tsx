@@ -80,7 +80,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                 <div className="mb-8 flex justify-center">
                     <Button
                         onClick={handleInvestigate}
-                        className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-[0_4px_0_rgb(217,119,6)] hover:shadow-[0_2px_0_rgb(217,119,6)] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2"
+                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-[0_4px_0_rgb(217,119,6)] hover:shadow-[0_2px_0_rgb(217,119,6)] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2"
                     >
                         <Search className="w-6 h-6 mr-2" />
                         {t('price_detective.investigate')}
@@ -132,14 +132,14 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                                 "transition-all duration-500 overflow-hidden",
                                 showUnitPrices ? "max-h-32 opacity-100" : "max-h-0 opacity-0"
                             )}>
-                                <div className="bg-amber-100 dark:bg-amber-900/30 border-2 border-amber-400 dark:border-amber-700 rounded-xl p-3 flex items-center justify-between">
+                                <div className="bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-700 rounded-xl p-3 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Search className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                                        <span className="text-sm font-bold text-amber-800 dark:text-amber-300">
+                                        <Search className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                        <span className="text-sm font-bold text-blue-800 dark:text-blue-300">
                                             {t('price_detective.unit_price')}
                                         </span>
                                     </div>
-                                    <span className="text-xl font-black text-amber-900 dark:text-amber-100">
+                                    <span className="text-xl font-black text-blue-900 dark:text-blue-100">
                                         ${unitPrice}
                                     </span>
                                 </div>
@@ -168,7 +168,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
                             {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
                         </p>
                         <Button
@@ -177,7 +177,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                                 "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
                                 "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >

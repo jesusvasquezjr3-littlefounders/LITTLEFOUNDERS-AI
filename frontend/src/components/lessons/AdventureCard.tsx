@@ -42,7 +42,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                 <div className="absolute top-6 right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
                     <div className="w-20 h-2 bg-white/30 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-yellow-400 rounded-full transition-all duration-500"
+                            className="h-full bg-indigo-400 rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                         />
                     </div>

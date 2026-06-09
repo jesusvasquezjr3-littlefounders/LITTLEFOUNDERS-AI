@@ -17,7 +17,7 @@ export function LevelCompleteScreen({ level, itemsSorted, correctItems, isPerfec
     <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm" style={{ zIndex: 70 }}>
       <div className="flex flex-col items-center gap-4 animate-bounce-in max-w-xs w-full px-4">
         {/* Title */}
-        <h2 className="pixel-font text-lg sm:text-xl text-yellow-400 retro-glow text-center">
+        <h2 className="pixel-font text-lg sm:text-xl text-indigo-400 retro-glow text-center">
           {t('namVsYum.levelComplete.title', { level })}
         </h2>
 
@@ -29,7 +29,7 @@ export function LevelCompleteScreen({ level, itemsSorted, correctItems, isPerfec
               className={cn(
                 'w-8 h-8 sm:w-10 sm:h-10 transition-all duration-500',
                 star <= (isPerfect ? 3 : correctItems >= itemsSorted * 0.8 ? 2 : 1)
-                  ? 'fill-yellow-400 text-yellow-400'
+                  ? 'fill-indigo-400 text-indigo-400'
                   : 'fill-gray-700 text-gray-700'
               )}
               style={{ animationDelay: `${star * 0.15}s` }}
@@ -41,7 +41,7 @@ export function LevelCompleteScreen({ level, itemsSorted, correctItems, isPerfec
         <div className="flex flex-col gap-2 w-full bg-white/5 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 pixel-font text-[8px] text-white/60">
-              <Zap className="w-3 h-3 text-yellow-400" />
+              <Zap className="w-3 h-3 text-indigo-400" />
               {t('namVsYum.levelComplete.itemsSorted', { count: itemsSorted })}
             </span>
           </div>

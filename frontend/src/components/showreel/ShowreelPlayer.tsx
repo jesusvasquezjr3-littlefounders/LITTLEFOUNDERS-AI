@@ -99,7 +99,7 @@ const ShowreelPlayer = React.memo(function ShowreelPlayer({ playerRef: externalR
         s_cta_button: t("showreel.cta_button"),
         s_cta_headline: t("showreel.cta_headline"),
         s_cta_sub: t("showreel.cta_sub"),
-        onCtaClick: () => navigate("/register"),
+        onCtaClick: () => navigate("/signup"),
     };
 
     return (

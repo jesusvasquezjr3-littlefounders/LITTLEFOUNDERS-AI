@@ -36,12 +36,6 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
           <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-[0.03]"
             style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
-          {/* Floating deco */}
-          <div className="absolute top-8  left-[10%] text-3xl opacity-15 animate-float pointer-events-none" style={{ animationDelay: '0.3s' }}>🎓</div>
-          <div className="absolute top-12 right-[8%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '1.5s' }}>⭐</div>
-          <div className="absolute bottom-8 left-[16%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '0.9s' }}>🪙</div>
-          <div className="absolute bottom-10 right-[12%] text-2xl opacity-10 animate-float pointer-events-none" style={{ animationDelay: '2.1s' }}>✨</div>
-
           {/* Wave top */}
           <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 64 }}>
             <svg viewBox="0 0 1440 64" preserveAspectRatio="none" className="w-full h-full">

@@ -187,13 +187,13 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                         </div>
                     )}
                     {criteria.length > 0 && (
-                        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
-                            <p className="text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wide mb-2">
+                        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
+                            <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide mb-2">
                                 {t('portfolio_builder.criteria', { defaultValue: 'Criterios' })}
                             </p>
                             <ul className="list-disc list-inside space-y-1">
                                 {criteria.map((c: string, idx: number) => (
-                                    <li key={idx} className="text-sm text-amber-900 dark:text-amber-200">
+                                    <li key={idx} className="text-sm text-blue-900 dark:text-blue-200">
                                         {c}
                                     </li>
                                 ))}
@@ -345,7 +345,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                         <span className={cn(
                             "text-lg font-black",
                             riskLevel === 'low' && "text-green-600",
-                            riskLevel === 'medium' && "text-yellow-600",
+                            riskLevel === 'medium' && "text-indigo-600",
                             riskLevel === 'high' && "text-red-600"
                         )}>
                             {t(`portfolio_builder.${riskLevel}`, { defaultValue: riskLevel })}

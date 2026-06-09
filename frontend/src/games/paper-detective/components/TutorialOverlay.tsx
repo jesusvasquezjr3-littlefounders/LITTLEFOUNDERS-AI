@@ -37,7 +37,7 @@ export function TutorialOverlay({ onComplete, onSkip }: Props) {
         {STEPS.map((_, i) => (
           <div
             key={i}
-            className={`w-3 h-3 rounded-full border-2 transition-all ${i === step ? 'bg-amber-700 border-amber-900 scale-125' : i < step ? 'bg-amber-400 border-amber-600' : 'bg-amber-200 border-amber-400'}`}
+            className={`w-3 h-3 rounded-full border-2 transition-all ${i === step ? 'bg-blue-700 border-blue-900 scale-125' : i < step ? 'bg-blue-400 border-blue-600' : 'bg-blue-200 border-blue-400'}`}
           />
         ))}
       </div>
@@ -62,13 +62,13 @@ export function TutorialOverlay({ onComplete, onSkip }: Props) {
         {step === 1 && (
           <div className="mb-3">
             <div className="pd-price-tag inline-block px-4 py-2 mb-3">
-              <span className="text-2xl font-black text-amber-900">$5</span>
+              <span className="text-2xl font-black text-blue-900">$5</span>
             </div>
             <div className="flex justify-center gap-3 mt-2">
               {['coin1', 'coin2', 'coin5', 'pokerChip'].map((key, i) => (
                 <div
                   key={key}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl border-4 ${i === 2 ? 'border-green-500 bg-green-100' : 'border-amber-300 bg-amber-50'}`}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl border-4 ${i === 2 ? 'border-green-500 bg-green-100' : 'border-blue-300 bg-blue-50'}`}
                 >
                   {COIN_EMOJI[key]}
                 </div>
@@ -93,10 +93,10 @@ export function TutorialOverlay({ onComplete, onSkip }: Props) {
           </div>
         )}
 
-        <h2 className="text-lg font-black text-amber-900 mb-2">
+        <h2 className="text-lg font-black text-blue-900 mb-2">
           {t(`paperDetective.tutorial.${current.key}Title`)}
         </h2>
-        <p className="text-sm text-amber-800 leading-relaxed">
+        <p className="text-sm text-blue-800 leading-relaxed">
           {t(`paperDetective.tutorial.${current.key}Desc`)}
         </p>
       </div>
@@ -105,7 +105,7 @@ export function TutorialOverlay({ onComplete, onSkip }: Props) {
       <div className="flex gap-3 w-full max-w-sm">
         <button
           onClick={onSkip}
-          className="pd-btn flex-1 py-3 text-sm font-bold text-amber-700"
+          className="pd-btn flex-1 py-3 text-sm font-bold text-blue-700"
         >
           {t('paperDetective.tutorial.skip')}
         </button>

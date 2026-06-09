@@ -83,7 +83,7 @@ function PairsList({ pairs }: { pairs: any[] }) {
                         {pair.left || pair.term || `A${i + 1}`}
                     </span>
                     <span className="text-slate-400">↔</span>
-                    <span className="flex-1 px-3 py-2 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm text-center border border-amber-200 dark:border-amber-700">
+                    <span className="flex-1 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-lg text-sm text-center border border-blue-200 dark:border-blue-700">
                         {pair.right || pair.definition || `B${i + 1}`}
                     </span>
                 </div>
@@ -98,9 +98,9 @@ function ProductsGrid({ products, budget }: { products: any[]; budget?: number }
     return (
         <div className="mt-4">
             {budget !== undefined && (
-                <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-700">
                     <span className="text-lg">💰</span>
-                    <span className="font-bold text-yellow-700 dark:text-yellow-300">${budget}</span>
+                    <span className="font-bold text-indigo-700 dark:text-indigo-300">${budget}</span>
                 </div>
             )}
             <div className="grid grid-cols-2 gap-2">
@@ -142,8 +142,8 @@ function StoryPages({ pages }: { pages: any[] }) {
     return (
         <div className="mt-4 space-y-3">
             {pages.slice(0, 3).map((page: any, i: number) => (
-                <div key={page.id || i} className="px-4 py-3 bg-amber-50/60 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <span className="text-xs text-amber-500 dark:text-amber-400 font-bold">📄 {i + 1}</span>
+                <div key={page.id || i} className="px-4 py-3 bg-blue-50/60 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/50">
+                    <span className="text-xs text-blue-500 dark:text-blue-400 font-bold">📄 {i + 1}</span>
                     <p className="text-sm text-slate-700 dark:text-slate-300 mt-1">{page.text || '...'}</p>
                 </div>
             ))}
@@ -199,7 +199,7 @@ function DialoguePreview({ dialogue, choices, correctId }: { dialogue: any[]; ch
                         ${msg.sender === 'user'
                             ? 'bg-blue-500 text-white rounded-br-md'
                             : msg.sender === 'narrator'
-                                ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 italic'
+                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 italic'
                                 : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-md'}`}>
                         {msg.text || '...'}
                     </div>
@@ -323,10 +323,10 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
                 {/* Coin counter */}
                 {type === 'coin_counter' && (
                     <div className="mt-4 text-center">
-                        <p className="text-3xl font-bold text-yellow-500">💰 ${c.targetAmount || 0}</p>
+                        <p className="text-3xl font-bold text-indigo-500">💰 ${c.targetAmount || 0}</p>
                         <div className="flex justify-center gap-2 mt-3 flex-wrap">
                             {(c.coins_available || []).map((coin: any, i: number) => (
-                                <span key={i} className="px-3 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full text-yellow-700 dark:text-yellow-300 font-bold text-sm border border-yellow-300 dark:border-yellow-700">
+                                <span key={i} className="px-3 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full text-indigo-700 dark:text-indigo-300 font-bold text-sm border border-indigo-300 dark:border-indigo-700">
                                     ${coin.value}
                                 </span>
                             ))}

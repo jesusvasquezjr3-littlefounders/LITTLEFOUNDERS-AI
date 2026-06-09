@@ -48,7 +48,7 @@ export function RegistrationPromptModal({ open, onClose }: RegistrationPromptMod
 
                     <div className="flex flex-col gap-2 w-full">
                         <Button asChild className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold shadow-lg shadow-purple-500/20">
-                            <Link to="/register" onClick={onClose}>{t('guest.create_account')}</Link>
+                            <Link to="/signup" onClick={onClose}>{t('guest.create_account')}</Link>
                         </Button>
                         <Button variant="ghost" onClick={onClose} className="w-full rounded-xl text-muted-foreground hover:text-foreground">
                             {t('guest.continue_exploring')}

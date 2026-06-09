@@ -200,7 +200,7 @@ const AdventureBanner: React.FC<{
             <span className="text-white/80 text-sm font-bold">{t('locked')}</span>
           </div>
         ) : adventure.completedLessons === adventure.totalLessons && adventure.totalLessons > 0 ? (
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500/90 backdrop-blur-md border border-amber-300/20 shadow-lg">
+          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-500/90 backdrop-blur-md border border-blue-300/20 shadow-lg">
             <span className="text-white text-sm font-black">🏆 {t('learn.adventure.completed_badge')}</span>
           </div>
         ) : (
@@ -389,17 +389,17 @@ export default function LearnPage() {
 
               {/* All-completed badge */}
               {isFinished && (
-                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-black shadow-lg shadow-amber-500/30">
+                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-blue-400 to-violet-500 text-white text-xs font-black shadow-lg shadow-blue-500/30">
                   🏆 {t('lessons:learn.all_completed_title')}
                 </div>
               )}
             </div>
 
             {/* ── Beta notice strip (Internal to Left Column) ───────────────── */}
-            <div className="bg-yellow-400/10 dark:bg-yellow-400/5 border border-yellow-400/20 h-10 px-4 rounded-xl flex items-center gap-3 overflow-hidden">
-              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse shrink-0" />
+            <div className="bg-indigo-400/10 dark:bg-indigo-400/5 border border-indigo-400/20 h-10 px-4 rounded-xl flex items-center gap-3 overflow-hidden">
+              <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shrink-0" />
               <div className="relative flex-1 overflow-hidden whitespace-nowrap">
-                <p className="inline-block text-[11px] font-black uppercase tracking-widest text-yellow-700 dark:text-yellow-500/80 animate-marquee sm:animate-none">
+                <p className="inline-block text-[11px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-500/80 animate-marquee sm:animate-none">
                   {t('lessons:learn.beta_notice')}
                 </p>
               </div>
@@ -495,7 +495,7 @@ export default function LearnPage() {
         {/* ── All completed state ─────────────────────────────────────────── */}
         {isFinished && (
           <div className="text-center py-12 animate-in fade-in duration-700">
-            <div className="inline-block p-6 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40 mb-4 text-5xl shadow-lg">
+            <div className="inline-block p-6 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 mb-4 text-5xl shadow-lg">
               🏆
             </div>
             <p className="font-black text-3xl text-slate-800 dark:text-white mb-3">

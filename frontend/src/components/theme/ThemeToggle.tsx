@@ -8,7 +8,7 @@ export function ThemeToggle() {
 
     const options = [
         { id: 'system', icon: Monitor, label: 'Sistema', color: 'text-blue-500' },
-        { id: 'light', icon: Sun, label: 'Claro', color: 'text-amber-500' },
+        { id: 'light', icon: Sun, label: 'Claro', color: 'text-blue-500' },
         { id: 'dark', icon: Moon, label: 'Oscuro', color: 'text-indigo-500' },
     ];
 

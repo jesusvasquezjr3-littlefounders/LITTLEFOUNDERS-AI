@@ -92,8 +92,8 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
 
     const getScoreColor = () => {
         if (score >= 740) return 'bg-green-500 border-2 border-green-600 text-white';
-        if (score >= 670) return 'bg-yellow-500 border-2 border-yellow-600 text-white';
-        if (score >= 580) return 'bg-orange-500 border-2 border-orange-600 text-white';
+        if (score >= 670) return 'bg-indigo-500 border-2 border-indigo-600 text-white';
+        if (score >= 580) return 'bg-violet-500 border-2 border-violet-600 text-white';
         return 'bg-red-500 border-2 border-red-600 text-white';
     };
 
@@ -137,7 +137,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                 {/* Score Range Indicator */}
                 <div className="mt-4 bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-red-500 via-indigo-500 to-green-500 transition-all duration-500"
                         style={{ width: `${((score - 300) / 550) * 100}%` }}
                     ></div>
                 </div>
@@ -195,11 +195,11 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                     <div className={cn(
                         "mb-6 p-6 rounded-2xl text-center w-full",
                         feedback === 'success' && "bg-green-100 dark:bg-green-950/30 border-2 border-green-500",
-                        feedback === 'error' && "bg-orange-100 dark:bg-orange-950/30 border-2 border-orange-500"
+                        feedback === 'error' && "bg-violet-100 dark:bg-violet-950/30 border-2 border-violet-500"
                     )}>
                         <p className={cn(
                             "font-bold text-lg mb-2",
-                            feedback === 'success' ? "text-green-700 dark:text-green-300" : "text-orange-700 dark:text-orange-300"
+                            feedback === 'success' ? "text-green-700 dark:text-green-300" : "text-violet-700 dark:text-violet-300"
                         )}>
                             {feedback === 'success' ? t('credit_score.great_job') : t('credit_score.needs_work')}
                         </p>
@@ -217,7 +217,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                             "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                             "hover:-translate-y-[2px]"
                         )}
                     >

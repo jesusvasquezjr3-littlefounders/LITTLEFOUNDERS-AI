@@ -21,9 +21,9 @@ interface LessonPathProps {
 const THEME_COLORS: Record<string, { bg: string; border: string; text: string; light: string }> = {
     archipelago: { bg: 'bg-cyan-500', border: 'border-cyan-600', text: 'text-cyan-500', light: 'bg-cyan-100 dark:bg-cyan-900/30' },
     forest: { bg: 'bg-emerald-500', border: 'border-emerald-600', text: 'text-emerald-500', light: 'bg-emerald-100 dark:bg-emerald-900/30' },
-    city: { bg: 'bg-orange-500', border: 'border-orange-600', text: 'text-orange-500', light: 'bg-orange-100 dark:bg-orange-900/30' },
+    city: { bg: 'bg-violet-500', border: 'border-violet-600', text: 'text-violet-500', light: 'bg-violet-100 dark:bg-violet-900/30' },
     valley: { bg: 'bg-purple-500', border: 'border-purple-600', text: 'text-purple-500', light: 'bg-purple-100 dark:bg-purple-900/30' },
-    kingdom: { bg: 'bg-amber-500', border: 'border-amber-600', text: 'text-amber-500', light: 'bg-amber-100 dark:bg-amber-900/30' },
+    kingdom: { bg: 'bg-blue-500', border: 'border-blue-600', text: 'text-blue-500', light: 'bg-blue-100 dark:bg-blue-900/30' },
     cosmos: { bg: 'bg-indigo-500', border: 'border-indigo-600', text: 'text-indigo-500', light: 'bg-indigo-100 dark:bg-indigo-900/30' },
 };
 
@@ -115,7 +115,7 @@ const LessonNode: React.FC<LessonNodeProps> = ({
                         {lesson.completed && (
                             <div className="absolute -bottom-8 flex gap-1">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className={`w-2 h-2 rounded-full ${i <= (lesson.score > 80 ? 3 : 2) ? 'bg-yellow-400' : 'bg-gray-300 dark:bg-gray-700'}`} />
+                                    <div key={i} className={`w-2 h-2 rounded-full ${i <= (lesson.score > 80 ? 3 : 2) ? 'bg-indigo-400' : 'bg-gray-300 dark:bg-gray-700'}`} />
                                 ))}
                             </div>
                         )}
@@ -138,8 +138,8 @@ const LessonNode: React.FC<LessonNodeProps> = ({
                             <Badge variant="secondary" className="text-[10px] gap-1 h-5 px-1.5">
                                 <Clock className="w-3 h-3" /> {Math.ceil(lesson.duration / 60)} min
                             </Badge>
-                            <Badge variant="outline" className="text-[10px] gap-1 h-5 px-1.5 border-yellow-500/50 text-yellow-600 dark:text-yellow-400">
-                                <Star className="w-3 h-3 fill-yellow-500" /> +{lesson.pointsReward} pts
+                            <Badge variant="outline" className="text-[10px] gap-1 h-5 px-1.5 border-indigo-500/50 text-indigo-600 dark:text-indigo-400">
+                                <Star className="w-3 h-3 fill-indigo-500" /> +{lesson.pointsReward} pts
                             </Badge>
                             {isLocked && (
                                 <Badge variant="outline" className="text-[10px] h-5 px-1.5 ml-auto text-gray-400 border-dashed">

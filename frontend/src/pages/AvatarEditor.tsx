@@ -356,11 +356,11 @@ const AvatarEditor = () => {
                                 // Different gradient colors for each category
                                 const gradients = [
                                     'from-pink-400 to-pink-600',
-                                    'from-amber-400 to-orange-500',
+                                    'from-blue-400 to-violet-500',
                                     'from-sky-400 to-blue-500',
-                                    'from-yellow-400 to-amber-500',
+                                    'from-indigo-400 to-blue-500',
                                     'from-rose-400 to-red-500',
-                                    'from-orange-300 to-orange-500',
+                                    'from-violet-300 to-violet-500',
                                     'from-indigo-400 to-purple-500',
                                     'from-emerald-400 to-teal-500',
                                     'from-violet-400 to-purple-600',

@@ -13,7 +13,7 @@ export function BombTimer({ timer, x, y }: BombTimerProps) {
     <div
       className={cn(
         'absolute pointer-events-none pixel-font text-xs font-bold',
-        isUrgent ? 'text-red-500 animate-pulse-scale' : 'text-orange-400'
+        isUrgent ? 'text-red-500 animate-pulse-scale' : 'text-violet-400'
       )}
       style={{
         left: x,

@@ -59,14 +59,14 @@ export function GameHUD({ state, dispatch }: Props) {
       {/* Score */}
       <div className="flex flex-col items-end shrink-0">
         <div className="flex items-center gap-1">
-          <span className="text-yellow-300 text-xs font-black">
+          <span className="text-indigo-300 text-xs font-black">
             {state.score}
           </span>
-          <span className="text-yellow-400 text-xs">XP</span>
+          <span className="text-indigo-400 text-xs">XP</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-amber-400 text-xs">🪙</span>
-          <span className="text-amber-300 text-xs font-bold">
+          <span className="text-blue-400 text-xs">🪙</span>
+          <span className="text-blue-300 text-xs font-bold">
             {state.tipCoins}
           </span>
         </div>

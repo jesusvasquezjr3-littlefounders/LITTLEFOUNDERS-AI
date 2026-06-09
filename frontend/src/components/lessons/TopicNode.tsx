@@ -15,7 +15,7 @@ export interface Topic {
 // ============== THEME COLORS ==============
 
 const THEME_COLORS = {
-    amber: { base: "bg-amber-500", shadow: "shadow-[0_6px_0_rgb(217,119,6)] hover:shadow-[0_4px_0_rgb(217,119,6)]" },
+    amber: { base: "bg-blue-500", shadow: "shadow-[0_6px_0_rgb(29,78,216)] hover:shadow-[0_4px_0_rgb(29,78,216)]" },
     purple: { base: "bg-purple-500", shadow: "shadow-[0_6px_0_rgb(107,33,168)] hover:shadow-[0_4px_0_rgb(107,33,168)]" },
     emerald: { base: "bg-emerald-500", shadow: "shadow-[0_6px_0_rgb(5,150,105)] hover:shadow-[0_4px_0_rgb(5,150,105)]" },
     blue: { base: "bg-blue-500", shadow: "shadow-[0_6px_0_rgb(29,78,216)] hover:shadow-[0_4px_0_rgb(29,78,216)]" },
@@ -84,7 +84,7 @@ export const TopicNode: React.FC<TopicNodeProps> = ({ topic, index, totalInSaga,
 
                 {/* Current Indicator Ring */}
                 {!topic.isLocked && !topic.isCompleted && (
-                    <div className="absolute inset-0 -m-1.5 border-4 border-yellow-400 rounded-[34px] animate-pulse pointer-events-none" />
+                    <div className="absolute inset-0 -m-1.5 border-4 border-indigo-400 rounded-[34px] animate-pulse pointer-events-none" />
                 )}
             </button>
         </div>

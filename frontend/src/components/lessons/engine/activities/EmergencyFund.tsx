@@ -100,7 +100,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                 <div className={cn(
                     "text-white rounded-2xl p-6 border-2 text-center shadow-sm",
                     fundBalance >= 3000 && "bg-green-500 border-green-600",
-                    fundBalance >= 1000 && fundBalance < 3000 && "bg-yellow-500 border-yellow-600",
+                    fundBalance >= 1000 && fundBalance < 3000 && "bg-indigo-500 border-indigo-600",
                     fundBalance < 1000 && "bg-red-500 border-red-600"
                 )}>
                     <div className="flex items-center justify-center gap-2 mb-2">
@@ -194,7 +194,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                             "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
                             "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                         )}
                     >

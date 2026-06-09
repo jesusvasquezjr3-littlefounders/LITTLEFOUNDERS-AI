@@ -130,7 +130,7 @@ export const AdminHistory: React.FC = () => {
       case 'duplicate':
         return 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100';
       case 'rollback':
-        return 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-100';
+        return 'bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-100';
       default:
         return 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100';
     }
@@ -140,13 +140,13 @@ export const AdminHistory: React.FC = () => {
     <div className="space-y-6 p-8 bg-white dark:bg-slate-900 min-h-screen">
       {/* Header */}
       {/* Premium Admin Header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-amber-500/10 dark:border-amber-500/5 shadow-2xl">
+      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-blue-500/10 dark:border-blue-500/5 shadow-2xl">
           {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-amber-500/15 to-orange-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-yellow-500/10 to-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-blue-500/15 to-violet-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-amber-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+              <div className="p-2 md:p-3 bg-gradient-to-br from-blue-500 via-violet-500 to-indigo-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-blue-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
                   <History className="w-5 h-5 md:w-7 md:h-7 text-white" />
               </div>
               <div className="text-left">
@@ -172,10 +172,10 @@ export const AdminHistory: React.FC = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
             {/* Search */}
             <div className="relative lg:col-span-2 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-amber-500 transition-colors" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-500 transition-colors" />
               <Input
                 placeholder={t('history.searchPlaceholder')}
-                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
+                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -221,7 +221,7 @@ export const AdminHistory: React.FC = () => {
             {/* Editor */}
             <Input
               placeholder={t('history.editorPlaceholder')}
-              className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
+              className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
               value={editorFilter}
               onChange={(e) => {
                 setEditorFilter(e.target.value);
@@ -260,7 +260,7 @@ export const AdminHistory: React.FC = () => {
                   setDateStartFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
               />
             </div>
             <div>
@@ -274,7 +274,7 @@ export const AdminHistory: React.FC = () => {
                   setDateEndFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-amber-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
               />
             </div>
           </div>

@@ -15,7 +15,7 @@ export function PauseOverlay({ onResume, onRestart, onQuit }: Props) {
     <div className="absolute inset-0 z-30 flex items-center justify-center pd-font"
       style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}>
       <div className="pd-card w-full max-w-xs mx-4 p-6 text-center pd-slide-up">
-        <h2 className="text-2xl font-black text-amber-900 mb-6">
+        <h2 className="text-2xl font-black text-blue-900 mb-6">
           ⏸ {t('paperDetective.pause.title')}
         </h2>
 
@@ -29,7 +29,7 @@ export function PauseOverlay({ onResume, onRestart, onQuit }: Props) {
 
           <button
             onClick={toggleMute}
-            className="pd-btn py-3 text-sm font-bold w-full text-amber-800"
+            className="pd-btn py-3 text-sm font-bold w-full text-blue-800"
           >
             {mute
               ? `🔇 ${t('paperDetective.pause.soundOff')}`
@@ -38,7 +38,7 @@ export function PauseOverlay({ onResume, onRestart, onQuit }: Props) {
 
           <button
             onClick={onRestart}
-            className="pd-btn py-3 text-sm font-bold w-full text-amber-700"
+            className="pd-btn py-3 text-sm font-bold w-full text-blue-700"
           >
             🔄 {t('paperDetective.pause.restart')}
           </button>

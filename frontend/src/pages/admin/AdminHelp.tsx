@@ -110,7 +110,7 @@ export const AdminHelp: React.FC = () => {
           <Card className="dark:bg-slate-900 dark:border-slate-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Zap className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 {t('help.docs.quickStart.title')}
               </CardTitle>
               <CardDescription className="dark:text-slate-400">
@@ -153,7 +153,7 @@ export const AdminHelp: React.FC = () => {
                     <div className="flex items-start gap-3">
                       {module === 'lessons' && <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-1" />}
                       {module === 'characters' && <Users className="w-5 h-5 text-green-600 dark:text-green-400 mt-1" />}
-                      {module === 'audio' && <Video className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-1" />}
+                      {module === 'audio' && <Video className="w-5 h-5 text-violet-600 dark:text-violet-400 mt-1" />}
                       {module === 'users' && <Shield className="w-5 h-5 text-red-600 dark:text-red-400 mt-1" />}
                       <div className="space-y-2">
                         <h4 className="font-semibold dark:text-slate-50">
@@ -205,18 +205,18 @@ export const AdminHelp: React.FC = () => {
           </Card>
 
           {/* Tips & Tricks */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800 border-amber-200 dark:border-amber-800">
+          <Card className="dark:bg-slate-900 dark:border-slate-800 border-blue-200 dark:border-blue-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 {t('help.docs.tips.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {Array.from({ length: tipsCount }, (_, i) => i + 1).map((num) => (
-                  <Alert key={num} className="dark:bg-amber-950/20 dark:border-amber-800/50">
-                    <Lightbulb className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <Alert key={num} className="dark:bg-blue-950/20 dark:border-blue-800/50">
+                    <Lightbulb className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     <AlertDescription className="ml-2 text-sm dark:text-slate-300">
                       <strong className="font-semibold">{t(`help.docs.tips.tip${num}.title`)}</strong>
                       {' - '}
@@ -371,7 +371,7 @@ export const AdminHelp: React.FC = () => {
                   ))}
                 </ol>
                 <Alert className="dark:bg-slate-800 dark:border-slate-700">
-                  <Lightbulb className="h-4 w-4 text-amber-500" />
+                  <Lightbulb className="h-4 w-4 text-blue-500" />
                   <AlertTitle className="dark:text-slate-100">{t('help.tutorials.createLesson.tip.title')}</AlertTitle>
                   <AlertDescription className="dark:text-slate-300">
                     {t('help.tutorials.createLesson.tip.description')}
@@ -385,7 +385,7 @@ export const AdminHelp: React.FC = () => {
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                    <Zap className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                    <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     {t('help.tutorials.editLesson.title')}
                   </CardTitle>
                   <Badge variant="secondary" className="dark:bg-slate-800">
@@ -400,7 +400,7 @@ export const AdminHelp: React.FC = () => {
                 <ol className="space-y-4">
                   {Array.from({ length: tutorialStepsEdit }, (_, i) => i + 1).map((num) => (
                     <li key={num} className="flex gap-3 items-start">
-                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center text-yellow-700 dark:text-yellow-300 font-bold text-sm">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                         {num}
                       </div>
                       <div className="flex-1 pt-1">
@@ -539,7 +539,7 @@ export const AdminHelp: React.FC = () => {
           <Card className="dark:bg-slate-900 dark:border-slate-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Settings className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                <Settings className="w-5 h-5 text-violet-600 dark:text-violet-400" />
                 {t('help.troubleshooting.title')}
               </CardTitle>
               <CardDescription className="dark:text-slate-400">
@@ -552,7 +552,7 @@ export const AdminHelp: React.FC = () => {
                   <AccordionItem key={num} value={`trouble-${num}`} className="border-slate-200 dark:border-slate-700">
                     <AccordionTrigger className="hover:no-underline dark:text-slate-50 text-left">
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                        <AlertCircle className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
                         {t(`help.troubleshooting.issue${num}.problem`)}
                       </div>
                     </AccordionTrigger>

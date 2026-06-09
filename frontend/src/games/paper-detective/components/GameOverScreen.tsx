@@ -30,14 +30,14 @@ export function GameOverScreen({ state, onRetry, onExit, onWardrobe }: Props) {
       </div>
 
       {/* Title */}
-      <h1 className="text-3xl font-black text-amber-900 mb-1 pd-slide-up">
+      <h1 className="text-3xl font-black text-blue-900 mb-1 pd-slide-up">
         {t('paperDetective.gameOver.title')}
       </h1>
 
       {isNewHighScore && (
         <div className="pd-card px-4 py-1 mb-3 pd-combo-badge"
           style={{ background: '#f1c40f', borderColor: '#d68910' }}>
-          <span className="text-sm font-black text-amber-900">
+          <span className="text-sm font-black text-blue-900">
             🏆 {t('paperDetective.gameOver.newHighScore')}
           </span>
         </div>
@@ -46,25 +46,25 @@ export function GameOverScreen({ state, onRetry, onExit, onWardrobe }: Props) {
       {/* Stats card */}
       <div className="pd-card w-full max-w-xs p-5 mb-5 pd-slide-up" style={{ animationDelay: '0.1s' }}>
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between items-center border-b border-amber-200 pb-2">
-            <span className="text-sm font-bold text-amber-700">
+          <div className="flex justify-between items-center border-b border-blue-200 pb-2">
+            <span className="text-sm font-bold text-blue-700">
               🏅 {t('paperDetective.gameOver.finalScore')}
             </span>
-            <span className="text-2xl font-black text-amber-900">{state.score}</span>
+            <span className="text-2xl font-black text-blue-900">{state.score}</span>
           </div>
-          <div className="flex justify-between items-center border-b border-amber-200 pb-2">
-            <span className="text-sm font-bold text-amber-700">
+          <div className="flex justify-between items-center border-b border-blue-200 pb-2">
+            <span className="text-sm font-bold text-blue-700">
               🥇 {t('paperDetective.gameOver.highScore', { score: state.highScore })}
             </span>
-            <span className="text-lg font-black text-amber-800">{state.highScore}</span>
+            <span className="text-lg font-black text-blue-800">{state.highScore}</span>
           </div>
-          <div className="flex justify-between items-center border-b border-amber-200 pb-2">
-            <span className="text-sm font-bold text-amber-700">
+          <div className="flex justify-between items-center border-b border-blue-200 pb-2">
+            <span className="text-sm font-bold text-blue-700">
               📅 {t('paperDetective.gameOver.daysReached', { day: state.dayNumber })}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm font-bold text-amber-700">
+            <span className="text-sm font-bold text-blue-700">
               ⭐ {t('paperDetective.gameOver.pointsEarned', { points: state.sessionPoints })}
             </span>
           </div>
@@ -87,7 +87,7 @@ export function GameOverScreen({ state, onRetry, onExit, onWardrobe }: Props) {
         </button>
         <button
           onClick={onExit}
-          className="pd-btn py-3 text-sm font-bold text-amber-700"
+          className="pd-btn py-3 text-sm font-bold text-blue-700"
         >
           🚪 {t('paperDetective.gameOver.exit')}
         </button>

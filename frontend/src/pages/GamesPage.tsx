@@ -140,18 +140,18 @@ export default function GamesPage() {
     <Layout>
       <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {/* Premium Header Section */}
-        <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-orange-500/10 dark:border-orange-500/5 shadow-2xl">
+        <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-violet-500/10 dark:border-violet-500/5 shadow-2xl">
           {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-orange-500/15 to-red-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-orange-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-violet-500/15 to-red-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
-            <div className="p-2 md:p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-orange-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+            <div className="p-2 md:p-3 bg-gradient-to-br from-violet-400 to-red-500 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-violet-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
               <Gamepad2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
+                <span className="text-[10px] font-black text-violet-500 dark:text-violet-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
               </div>
               <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
                 {t('games:listing.title')}

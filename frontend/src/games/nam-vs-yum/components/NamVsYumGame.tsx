@@ -490,7 +490,7 @@ export function NamVsYumGame({ onExit, embeddedMode = false }: { onExit?: () => 
 
             {state.combo > 0 && state.combo % 5 === 0 && state.lastFeedback === 'correct' && (
               <div className="absolute top-[40%] left-1/2 -translate-x-1/2 pointer-events-none" style={{ zIndex: 60 }}>
-                <span className="pixel-font text-xs text-orange-400 combo-pop retro-glow">
+                <span className="pixel-font text-xs text-violet-400 combo-pop retro-glow">
                   {t('namVsYum.feedback.comboStart', { count: state.comboMultiplier })}
                 </span>
               </div>

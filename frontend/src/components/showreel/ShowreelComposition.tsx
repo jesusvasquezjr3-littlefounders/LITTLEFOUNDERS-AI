@@ -587,7 +587,7 @@ const Phase5: React.FC<{ p: ShowreelProps }> = ({ p }) => {
                             onClick={(e) => {
                                 e.preventDefault(); e.stopPropagation();
                                 if (p.onCtaClick) p.onCtaClick();
-                                else window.location.href = "/register";
+                                else window.location.href = "/signup";
                             }}
                             style={{
                                 background: `linear-gradient(135deg, ${LF.primary} 0%, ${LF.purple} 100%)`,

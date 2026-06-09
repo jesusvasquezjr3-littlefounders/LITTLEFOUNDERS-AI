@@ -154,14 +154,14 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                     </div>
                 </div>
 
-                <div className="mt-4 bg-orange-50 dark:bg-orange-950/30 border-2 border-orange-500 dark:border-orange-700 rounded-xl p-4 text-center shadow-sm">
+                <div className="mt-4 bg-violet-50 dark:bg-violet-950/30 border-2 border-violet-500 dark:border-violet-700 rounded-xl p-4 text-center shadow-sm">
                     <div className="flex items-center justify-center gap-2 mb-1">
-                        <TrendingUp className="w-5 h-5 text-orange-700 dark:text-orange-300" />
-                        <span className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                        <TrendingUp className="w-5 h-5 text-violet-700 dark:text-violet-300" />
+                        <span className="text-sm font-bold text-violet-800 dark:text-violet-200">
                             {t('inflation.price_increase')}
                         </span>
                     </div>
-                    <div className="text-3xl font-black text-orange-900 dark:text-orange-100">
+                    <div className="text-3xl font-black text-violet-900 dark:text-violet-100">
                         +{percentageChange.toFixed(1)}%
                     </div>
                 </div>

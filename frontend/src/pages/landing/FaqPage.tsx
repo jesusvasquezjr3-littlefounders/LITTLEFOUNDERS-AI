@@ -39,11 +39,6 @@ export default function FaqPage() {
             <div className="absolute -bottom-20 left-[8%] w-[350px] h-[350px] bg-rose-300/25 dark:bg-rose-700/18 rounded-full blur-[90px] animate-orb-2" style={{ animationDelay: '3s' }} />
           </div>
 
-          {/* Floating decos */}
-          <div className="absolute top-16 left-[7%] text-3xl opacity-40 animate-float pointer-events-none" style={{ animationDelay: '0s' }}>❓</div>
-          <div className="absolute top-20 right-[8%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '1.4s' }}>💡</div>
-          <div className="absolute bottom-8 left-[18%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '0.7s' }}>✨</div>
-
           <div className="relative z-10 max-w-4xl mx-auto text-center">
 
             <h1 className="landing-heading text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-4 animate-fade-in-up-delay-1">
@@ -65,7 +60,7 @@ export default function FaqPage() {
           {/* Wave bottom */}
           <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 56 }}>
             <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full">
-              <path d="M0,28 C360,56 720,8 1080,40 C1260,52 1380,18 1440,28 L1440,56 L0,56 Z" fill="#FFF7ED" className="dark:hidden" />
+              <path d="M0,28 C360,56 720,8 1080,40 C1260,52 1380,18 1440,28 L1440,56 L0,56 Z" fill="#eff6ff" className="dark:hidden" />
               <path d="M0,28 C360,56 720,8 1080,40 C1260,52 1380,18 1440,28 L1440,56 L0,56 Z" className="hidden dark:block" style={{ fill: '#0f172a' }} />
             </svg>
           </div>
@@ -74,7 +69,7 @@ export default function FaqPage() {
         {/* ══════════════════════════════════════════════════════
           MAIN CONTENT — video + accordion
       ══════════════════════════════════════════════════════ */}
-        <section className="relative py-16 px-4 bg-amber-50 dark:bg-slate-900 overflow-hidden">
+        <section className="relative py-16 px-4 bg-gradient-to-br from-blue-50/30 via-purple-50/30 to-pink-50/30 dark:from-slate-900 dark:to-slate-950 overflow-hidden">
 
           {/* Ambient glow orbs */}
           <div className="absolute inset-0 pointer-events-none">
@@ -85,7 +80,7 @@ export default function FaqPage() {
           {/* Wave top */}
           <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 56 }}>
             <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full">
-              <path d="M0,28 C360,0 720,48 1080,16 C1260,4 1380,38 1440,28 L1440,0 L0,0 Z" fill="#FFF7ED" className="dark:hidden" />
+              <path d="M0,28 C360,0 720,48 1080,16 C1260,4 1380,38 1440,28 L1440,0 L0,0 Z" fill="#eff6ff" className="dark:hidden" />
               <path d="M0,28 C360,0 720,48 1080,16 C1260,4 1380,38 1440,28 L1440,0 L0,0 Z" className="hidden dark:block" style={{ fill: '#0f172a' }} />
             </svg>
           </div>
@@ -162,35 +157,40 @@ export default function FaqPage() {
             <div className="absolute top-10 right-[8%] w-[400px] h-[400px] bg-rose-300/20 dark:bg-rose-700/15 rounded-full blur-[80px] animate-orb-2" style={{ animationDelay: '3s' }} />
           </div>
 
-          {/* Floating decos */}
-          <div className="absolute top-8  left-[10%] text-3xl opacity-40 animate-float pointer-events-none" style={{ animationDelay: '0.3s' }}>💌</div>
-          <div className="absolute top-12 right-[8%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '1.5s' }}>⭐</div>
-          <div className="absolute bottom-8 right-[14%] text-2xl opacity-30 animate-float pointer-events-none" style={{ animationDelay: '0.9s' }}>✨</div>
-
           {/* Wave top */}
           <div className="absolute top-0 left-0 w-full overflow-hidden leading-none pointer-events-none" style={{ height: 56 }}>
             <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full">
-              <path d="M0,28 C480,5 960,52 1440,20 L1440,0 L0,0 Z" fill="currentColor" className="text-amber-50 dark:text-[#0f172a]" />
+              <path d="M0,28 C480,5 960,52 1440,20 L1440,0 L0,0 Z" fill="currentColor" className="text-pink-50/50 dark:text-[#0f172a]" />
             </svg>
           </div>
 
           <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
-            {/* Icon */}
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center shadow-xl mx-auto mb-6 animate-fade-in-up">
-              <Mail className="w-8 h-8 text-white" />
+            {/* Morphing Liquid Glass icon background */}
+            <div 
+              className="w-16 h-16 relative flex-shrink-0 morphing-blob-frame bg-gradient-to-tr from-[#ff6b6b]/60 via-white/20 to-[#7048e8]/60 dark:from-[#ff6b6b]/45 dark:via-white/5 dark:to-[#7048e8]/45 p-[3px] backdrop-blur-md shadow-xl border border-white/40 dark:border-white/15 overflow-hidden mx-auto mb-6 z-10 animate-fade-in-up"
+            >
+              <div 
+                className="w-full h-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-500 to-violet-600 relative" 
+                style={{ borderRadius: 'inherit' }}
+              >
+                <Mail className="w-8 h-8 text-white relative z-10" />
+                {/* Glossy liquid glass reflections */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/35 to-transparent pointer-events-none mix-blend-overlay" />
+                <div className="absolute -inset-full bg-gradient-to-b from-white/15 via-transparent to-transparent rotate-45 pointer-events-none" />
+              </div>
             </div>
 
             <h2 className="landing-heading text-3xl md:text-4xl font-black mb-4 animate-fade-in-up-delay-1">
               {t('faq.contact_title')}
             </h2>
-            <p className="text-base text-gray-600 dark:text-white/55 mb-8 leading-relaxed animate-fade-in-up-delay-2">
+            <p className="landing-body-text text-base text-gray-600 dark:text-white/55 mb-8 leading-relaxed font-medium animate-fade-in-up-delay-2">
               {t('faq.contact_subtitle')}
             </p>
 
             <Button asChild size="lg"
-              className="btn-press h-14 px-10 text-lg rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white font-black border-0 shadow-none"
+              className="btn-press h-14 px-10 text-lg rounded-2xl bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-black border-0 shadow-none w-72 justify-center mx-auto"
             >
-              <a href="mailto:informame@littlefounders.ai" className="flex items-center gap-2">
+              <a href="mailto:informame@littlefounders.ai" className="flex items-center justify-center gap-2">
                 <Mail className="w-5 h-5" />
                 {t('faq.contact_button')}
               </a>

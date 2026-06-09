@@ -68,7 +68,7 @@ const ForgotPassword = () => {
 
           <GlassPanel variant="strong" className="p-6 space-y-5">
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-violet-500 bg-clip-text text-transparent">
                 {t('auth:forgot_password.title')}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 text-xs">
@@ -114,7 +114,7 @@ const ForgotPassword = () => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-11 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="w-full h-11 bg-gradient-to-r from-purple-500 via-pink-500 to-violet-500 hover:from-purple-600 hover:via-pink-600 hover:to-violet-600 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
@@ -131,9 +131,7 @@ const ForgotPassword = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4" />
               {t('auth:login.footer')}
-              <Sparkles className="w-4 h-4" />
             </p>
           </div>
         </div>

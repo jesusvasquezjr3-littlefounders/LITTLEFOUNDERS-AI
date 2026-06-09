@@ -48,16 +48,16 @@ export function AchievementGallery({ progress, onClose }: AchievementGalleryProp
                 className={cn(
                   'flex items-center gap-3 p-3 rounded-xl transition-all',
                   isUnlocked
-                    ? 'bg-amber-900/30 border border-amber-500/30'
+                    ? 'bg-blue-900/30 border border-blue-500/30'
                     : 'bg-white/5 border border-white/10'
                 )}
               >
                 <div className={cn(
                   'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
-                  isUnlocked ? 'bg-amber-500/30' : 'bg-white/10'
+                  isUnlocked ? 'bg-blue-500/30' : 'bg-white/10'
                 )}>
                   {isUnlocked ? (
-                    <IconComponent className="w-5 h-5 text-amber-400" />
+                    <IconComponent className="w-5 h-5 text-blue-400" />
                   ) : (
                     <Lock className="w-4 h-4 text-white/30" />
                   )}
@@ -65,7 +65,7 @@ export function AchievementGallery({ progress, onClose }: AchievementGalleryProp
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     'pixel-font text-[9px] sm:text-[10px]',
-                    isUnlocked ? 'text-amber-300' : 'text-white/40'
+                    isUnlocked ? 'text-blue-300' : 'text-white/40'
                   )}>
                     {t(`namVsYum.achievements.${ach.id}.title`)}
                   </p>
@@ -81,7 +81,7 @@ export function AchievementGallery({ progress, onClose }: AchievementGalleryProp
                     </div>
                   )}
                 </div>
-                <span className="pixel-font text-[8px] text-yellow-400 flex-shrink-0">
+                <span className="pixel-font text-[8px] text-indigo-400 flex-shrink-0">
                   +{ach.reward}💰
                 </span>
               </div>

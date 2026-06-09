@@ -55,7 +55,7 @@ export function Phase1Inspection({ item, options, selectedId, feedback, onSelect
 
       {/* Instruction banner */}
       <div className="pd-card-dark px-4 py-2 text-center mb-2">
-        <p className="text-sm font-bold text-amber-900">
+        <p className="text-sm font-bold text-blue-900">
           {t('paperDetective.phase1.instruction')}
         </p>
       </div>
@@ -70,7 +70,7 @@ export function Phase1Inspection({ item, options, selectedId, feedback, onSelect
 
         {/* Price tag */}
         <div className="pd-price-tag px-6 py-2 text-center">
-          <span className="text-3xl sm:text-4xl font-black text-amber-900">
+          <span className="text-3xl sm:text-4xl font-black text-blue-900">
             {t('paperDetective.phase1.priceLabel', { price: item.price })}
           </span>
         </div>

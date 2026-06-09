@@ -27,7 +27,7 @@ export function PauseOverlay({ state, dispatch }: Props) {
               {t('paperCoin.hud.day', { day: state.day })}
             </span>
             <span className="text-white/30">·</span>
-            <span className="text-yellow-300 text-sm font-bold">
+            <span className="text-indigo-300 text-sm font-bold">
               {state.score} XP
             </span>
           </div>
@@ -57,7 +57,7 @@ export function PauseOverlay({ state, dispatch }: Props) {
           </button>
 
           <button
-            className="w-full py-3 rounded-xl font-bold text-amber-300/80 border border-amber-500/20 bg-amber-900/20 hover:bg-amber-900/30 transition-all active:scale-95"
+            className="w-full py-3 rounded-xl font-bold text-blue-300/80 border border-blue-500/20 bg-blue-900/20 hover:bg-blue-900/30 transition-all active:scale-95"
             onClick={() => dispatch({ type: 'RESTART' })}
           >
             🔄 {t('paperCoin.pause.restart')}

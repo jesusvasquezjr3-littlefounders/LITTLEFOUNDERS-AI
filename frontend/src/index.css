@@ -101,9 +101,9 @@
     --team-light: 25 95% 96%;
 
     /* Duolingo-Style Warning/Info Colors */
-    --warning: 45 93% 58%;
+    --warning: 25 95% 55%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 45 93% 96%;
+    --warning-light: 25 95% 95%;
 
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
@@ -116,7 +116,7 @@
     --gradient-customers: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
     --gradient-product: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
     --gradient-team: linear-gradient(135deg, hsl(25 95% 53%), hsl(25 95% 63%));
-    --gradient-warning: linear-gradient(135deg, hsl(45 93% 58%), hsl(45 93% 68%));
+    --gradient-warning: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
 
     /* Duolingo-Style Shadows (soft, bottom-heavy) */
     --shadow-soft: 0 2px 4px 0 hsl(0 0% 0% / 0.08);
@@ -152,14 +152,14 @@
     --glass-blur-lg: 44px;
     --glass-saturate: 180%;
     --glass-brightness: 1.04;
-    --glass-tint: 255 200 240;
-    --glass-shadow-xs: 0 2px 8px -1px hsl(var(--glass-tint) / 0.08), 0 1px 3px -1px hsl(0 0% 0% / 0.04);
-    --glass-shadow-sm: 0 4px 16px -2px hsl(var(--glass-tint) / 0.12), 0 2px 6px -1px hsl(0 0% 0% / 0.06);
-    --glass-shadow-md: 0 8px 32px -4px hsl(var(--glass-tint) / 0.16), 0 4px 12px -2px hsl(0 0% 0% / 0.08);
-    --glass-shadow-lg: 0 16px 48px -6px hsl(var(--glass-tint) / 0.2), 0 6px 20px -3px hsl(0 0% 0% / 0.1);
+    --glass-tint: 200 210 255;
+    --glass-shadow-xs: 0 2px 8px -1px rgb(var(--glass-tint) / 0.08), 0 1px 3px -1px hsl(0 0% 0% / 0.04);
+    --glass-shadow-sm: 0 4px 16px -2px rgb(var(--glass-tint) / 0.12), 0 2px 6px -1px hsl(0 0% 0% / 0.06);
+    --glass-shadow-md: 0 8px 32px -4px rgb(var(--glass-tint) / 0.16), 0 4px 12px -2px hsl(0 0% 0% / 0.08);
+    --glass-shadow-lg: 0 16px 48px -6px rgb(var(--glass-tint) / 0.2), 0 6px 20px -3px hsl(0 0% 0% / 0.1);
     --glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.18) 0%, transparent 55%);
     --glass-refraction: radial-gradient(ellipse at 75% 85%, rgba(168,85,247,0.05) 0%, transparent 50%);
-    --glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(255,210,240,0.04) 0deg, rgba(200,230,255,0.04) 90deg, rgba(230,200,255,0.04) 180deg, rgba(255,220,200,0.04) 270deg, rgba(255,210,240,0.04) 360deg);
+    --glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.04) 0deg, rgba(200,230,255,0.04) 90deg, rgba(230,200,255,0.04) 180deg, rgba(200,220,255,0.04) 270deg, rgba(210,210,255,0.04) 360deg);
     --glass-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     --glass-glow-inner: inset 0 1px 1px rgba(255,255,255,0.45);
     --glass-accent: 236 64% 58%;
@@ -234,9 +234,9 @@
     --team-light: 25 95% 20%;
 
     /* Warning/Info - Adjusted for dark mode */
-    --warning: 45 93% 63%;
+    --warning: 25 95% 58%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 45 93% 20%;
+    --warning-light: 25 95% 18%;
 
     --info: 199 89% 53%;
     --info-foreground: 0 0% 100%;
@@ -260,13 +260,13 @@
     --glass-shine: inset 0 1px 1.5px 0 var(--glass-highlight);
 
     --glass-tint: 160 130 210;
-    --glass-shadow-xs: 0 2px 8px -1px hsl(var(--glass-tint) / 0.05), 0 1px 3px -1px hsl(0 0% 0% / 0.1);
-    --glass-shadow-sm: 0 4px 16px -2px hsl(var(--glass-tint) / 0.08), 0 2px 6px -1px hsl(0 0% 0% / 0.15);
-    --glass-shadow-md: 0 8px 32px -4px hsl(var(--glass-tint) / 0.1), 0 4px 12px -2px hsl(0 0% 0% / 0.2);
-    --glass-shadow-lg: 0 16px 48px -6px hsl(var(--glass-tint) / 0.14), 0 6px 20px -3px hsl(0 0% 0% / 0.25);
+    --glass-shadow-xs: 0 2px 8px -1px rgb(var(--glass-tint) / 0.05), 0 1px 3px -1px hsl(0 0% 0% / 0.1);
+    --glass-shadow-sm: 0 4px 16px -2px rgb(var(--glass-tint) / 0.08), 0 2px 6px -1px hsl(0 0% 0% / 0.15);
+    --glass-shadow-md: 0 8px 32px -4px rgb(var(--glass-tint) / 0.1), 0 4px 12px -2px hsl(0 0% 0% / 0.2);
+    --glass-shadow-lg: 0 16px 48px -6px rgb(var(--glass-tint) / 0.14), 0 6px 20px -3px hsl(0 0% 0% / 0.25);
     --glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.06) 0%, transparent 55%);
     --glass-refraction: radial-gradient(ellipse at 75% 85%, rgba(168,85,247,0.08) 0%, transparent 50%);
-    --glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(255,210,240,0.02) 0deg, rgba(200,230,255,0.02) 90deg, rgba(230,200,255,0.02) 180deg, rgba(255,220,200,0.02) 270deg, rgba(255,210,240,0.02) 360deg);
+    --glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.02) 0deg, rgba(200,230,255,0.02) 90deg, rgba(230,200,255,0.02) 180deg, rgba(200,220,255,0.02) 270deg, rgba(210,210,255,0.02) 360deg);
     --glass-glow-inner: inset 0 1px 1px rgba(255,255,255,0.12);
     --glass-text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     --glass-text-shadow-strong: 0 1px 3px rgba(0,0,0,0.5);
@@ -308,9 +308,9 @@
     --team: 25 95% 53%;
     --team-foreground: 0 0% 100%;
     --team-light: 25 95% 96%;
-    --warning: 45 93% 58%;
+    --warning: 25 95% 55%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 45 93% 96%;
+    --warning-light: 25 95% 95%;
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
     --info-light: 199 89% 96%;
@@ -2084,16 +2084,38 @@
 .landing-heading {
   font-family: 'Nunito', 'system-ui', sans-serif;
 }
+.landing-body-text {
+  font-family: 'Nunito', 'system-ui', sans-serif;
+}
+/* Standardize typography for all landing sections to use Nunito */
+.landing-page-root,
+.landing-page-root button,
+.landing-page-root input,
+.landing-page-root select,
+.landing-page-root textarea,
+.landing-page-root span,
+.landing-page-root p,
+.landing-page-root h1,
+.landing-page-root h2,
+.landing-page-root h3,
+.landing-page-root h4,
+.landing-page-root h5,
+.landing-page-root h6,
+.landing-page-root a {
+  font-family: 'Nunito', 'system-ui', sans-serif !important;
+}
 
 /* Starburst / sunburst radial pattern behind hero */
 .hero-sunburst {
   background-image: repeating-conic-gradient(
-    #FEF9EC 0deg 6deg,
-    #FFF4D6 6deg 12deg
+    from 0deg at 50% 50%,
+    #eff6ff 0deg 6deg,
+    #faf5ff 6deg 12deg
   );
 }
 .dark .hero-sunburst {
   background-image: repeating-conic-gradient(
+    from 0deg at 50% 50%,
     #1e1a2e 0deg 6deg,
     #231e35 6deg 12deg
   );
@@ -2162,8 +2184,8 @@
 
 /* Soft pulsing glow */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px 0px rgba(249,115,22,0.3); }
-  50%       { box-shadow: 0 0 40px 10px rgba(249,115,22,0.5); }
+  0%, 100% { box-shadow: 0 0 20px 0px rgba(139,92,246,0.3); }
+  50%       { box-shadow: 0 0 40px 10px rgba(139,92,246,0.5); }
 }
 .animate-glow-pulse { animation: glow-pulse 2.5s ease-in-out infinite; }
 
@@ -2210,3 +2232,72 @@
     animation: none !important;
   }
 }
+
+/* Morphing blob animation for premium hero frame */
+@keyframes morph-blob {
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  33% {
+    border-radius: 40% 60% 70% 30% / 50% 60% 40% 50%;
+  }
+  66% {
+    border-radius: 50% 50% 30% 70% / 60% 40% 60% 40%;
+  }
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}
+.morphing-blob-frame {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  animation: morph-blob 5s ease-in-out infinite;
+}
+
+/* Twinkle and float animations for sparkles around the premium liquid glass frame */
+@keyframes sparkle-float-twinkle {
+  0%, 100% {
+    transform: scale(0) rotate(0deg) translateY(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(90deg) translateY(-8px);
+    opacity: 0.95;
+    filter: drop-shadow(0 0 8px rgba(253, 224, 71, 0.8));
+  }
+}
+
+.animate-sparkle-1 {
+  animation: sparkle-float-twinkle 4s infinite ease-in-out;
+}
+.animate-sparkle-2 {
+  animation: sparkle-float-twinkle 3.2s infinite ease-in-out 0.8s;
+}
+.animate-sparkle-3 {
+  animation: sparkle-float-twinkle 4.8s infinite ease-in-out 1.6s;
+}
+.animate-sparkle-4 {
+  animation: sparkle-float-twinkle 3.6s infinite ease-in-out 2.4s;
+}
+.animate-sparkle-5 {
+  animation: sparkle-float-twinkle 4.2s infinite ease-in-out 3.2s;
+}
+
+/* Clean layout for the report modal (removes liquid glass glow/refractions) */
+.report-modal-clean {
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.dark .report-modal-clean {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+.report-modal-clean::before,
+.report-modal-clean::after {
+  display: none !important;
+  content: none !important;
+}
+
+
+

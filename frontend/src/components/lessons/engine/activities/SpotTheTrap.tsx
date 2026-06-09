@@ -108,9 +108,9 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
         <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             <div className="mb-8 text-center">
-                <div className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-900/30 border-2 border-amber-400 dark:border-amber-700 rounded-full px-6 py-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                    <span className="font-bold text-amber-800 dark:text-amber-200">
+                <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-700 rounded-full px-6 py-3">
+                    <AlertTriangle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <span className="font-bold text-blue-800 dark:text-blue-200">
                         {t('spot_trap.warning', { defaultValue: '¡Cuidado! Identifica las trampas' })}
                     </span>
                 </div>
@@ -139,8 +139,8 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 className={cn(
                                     "w-full text-left p-4 rounded-xl border-2 transition-all duration-300 relative overflow-hidden cursor-pointer select-none",
                                     "bg-white dark:bg-slate-800",
-                                    feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2",
-                                    !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-lg",
+                                    feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2",
+                                    !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg",
                                     !isRevealed && isSelected && "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900/50 shadow-lg",
                                     isRevealed && isTrap && "border-red-500 bg-red-50 dark:bg-red-950/30",
                                     isRevealed && !isTrap && "border-green-500 bg-green-50 dark:bg-green-950/30"
@@ -170,7 +170,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 {!isRevealed && msg.hints && msg.hints.length > 0 && (
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         {msg.hints.map((hint: string, idx: number) => (
-                                            <span key={idx} className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full">
+                                            <span key={idx} className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
                                                 {hint}
                                             </span>
                                         ))}
@@ -236,8 +236,8 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                     className={cn(
                                         "w-full text-left p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer select-none",
                                         "bg-white dark:bg-slate-800",
-                                        feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2",
-                                        !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-lg",
+                                        feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2",
+                                        !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg",
                                         !isRevealed && isSelected && "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900/50 shadow-lg",
                                         isRevealed && isCorrectAnswer && "border-green-500 bg-green-50 dark:bg-green-950/30",
                                         isRevealed && !isCorrectAnswer && isSelected && "border-red-500 bg-red-50 dark:bg-red-950/30"
@@ -277,7 +277,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
+                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
                             {feedback === 'success'
                                 ? t('status.correct', { defaultValue: '¡Correcto!' })
                                 : t('status.incorrect', { defaultValue: '¡Incorrecto!' })}
@@ -288,7 +288,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
+                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
                                 "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             )}
                         >

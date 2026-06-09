@@ -181,10 +181,10 @@ export default function Lessons() {
 
         
         {/* Development Notice Bar */}
-        <div className="bg-yellow-400/10 dark:bg-yellow-400/5 border border-yellow-400/20 h-10 px-4 rounded-xl flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">
-          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shrink-0" />
+        <div className="bg-indigo-400/10 dark:bg-indigo-400/5 border border-indigo-400/20 h-10 px-4 rounded-xl flex items-center gap-3 mb-2 animate-in fade-in slide-in-from-top-2 duration-700 overflow-hidden">
+          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shrink-0" />
           <div className="relative flex-1 overflow-hidden whitespace-nowrap">
-            <p className="inline-block text-[9px] font-black uppercase tracking-widest text-yellow-700 dark:text-yellow-500/80 animate-marquee sm:animate-none">
+            <p className="inline-block text-[9px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-500/80 animate-marquee sm:animate-none">
               {t('lessons:notices.beta_improvement')}
             </p>
           </div>

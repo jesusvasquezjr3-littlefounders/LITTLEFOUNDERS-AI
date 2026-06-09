@@ -127,7 +127,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     </Button>
                 ) : (
                     <div className="flex flex-col items-center">
-                        <Button onClick={handleContinueFallback} className={cn("w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2", fb === 'success' ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]" : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]")}>
+                        <Button onClick={handleContinueFallback} className={cn("w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2", fb === 'success' ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]" : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px] hover:-translate-y-[2px]")}>
                             {fb === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
                             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Button>
@@ -203,12 +203,12 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     <div className="text-2xl font-black text-muted-foreground">−</div>
                 </div>
 
-                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-orange-400 dark:border-orange-600 shadow-sm">
+                <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 border-violet-400 dark:border-violet-600 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-foreground">
                             {t('tax_puzzle.deductions')}
                         </span>
-                        <span className="text-xl font-black text-orange-600 dark:text-orange-400">
+                        <span className="text-xl font-black text-violet-600 dark:text-violet-400">
                             ${deductions.toLocaleString()}
                         </span>
                     </div>
@@ -277,7 +277,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                                 "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
                                 feedback === 'success'
                                     ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px]"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
+                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(249,115,22)] hover:shadow-[0_2px_0_rgb(249,115,22)] active:shadow-none active:translate-y-[4px]",
                                 "hover:-translate-y-[2px]"
                             )}
                         >

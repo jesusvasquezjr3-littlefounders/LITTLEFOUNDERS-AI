@@ -91,7 +91,7 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
 
             {/* Goal Display */}
             <div className="mb-6 text-center">
-                <div className="inline-flex flex-col items-center bg-yellow-500 border-2 border-yellow-600 text-white rounded-2xl px-6 py-4 shadow-sm">
+                <div className="inline-flex flex-col items-center bg-indigo-500 border-2 border-indigo-600 text-white rounded-2xl px-6 py-4 shadow-sm">
                     <Trophy className="w-8 h-8 mb-2" />
                     <span className="text-xs font-medium opacity-90 mb-1">{t('savings_race.goal')}</span>
                     <div className="text-3xl font-black">${goal}</div>

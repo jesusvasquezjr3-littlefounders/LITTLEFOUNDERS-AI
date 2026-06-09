@@ -53,14 +53,14 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
 
       {/* Header */}
       <div className="pd-card mx-3 mt-3 px-4 py-3 flex items-center justify-between flex-shrink-0">
-        <button onClick={onBack} className="pd-btn px-3 py-1 text-xs font-bold text-amber-700">
+        <button onClick={onBack} className="pd-btn px-3 py-1 text-xs font-bold text-blue-700">
           ← {t('paperDetective.wardrobe.back')}
         </button>
-        <h2 className="text-sm font-black text-amber-900">
+        <h2 className="text-sm font-black text-blue-900">
           👔 {t('paperDetective.wardrobe.title')}
         </h2>
         <div className="pd-card px-2 py-1 text-center" style={{ background: '#f1c40f', borderColor: '#d68910' }}>
-          <span className="text-xs font-black text-amber-900">⭐ {state.totalPoints}</span>
+          <span className="text-xs font-black text-blue-900">⭐ {state.totalPoints}</span>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
           )}
         </div>
         {equippedDef && (
-          <span className="text-xs font-bold text-amber-700 mt-1">
+          <span className="text-xs font-bold text-blue-700 mt-1">
             ✓ {t(equippedDef.nameKey)}
           </span>
         )}
@@ -96,7 +96,7 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`pd-btn px-3 py-1 text-xs font-bold flex-1 ${selectedCategory === cat ? 'pd-btn-primary' : 'text-amber-800'}`}
+            className={`pd-btn px-3 py-1 text-xs font-bold flex-1 ${selectedCategory === cat ? 'pd-btn-primary' : 'text-blue-800'}`}
           >
             {cat === 'all' ? '👁️' : CATEGORY_ICONS[cat as CosmeticType]}{' '}
             {cat === 'all'
@@ -130,7 +130,7 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
                     draggable={false}
                   />
                 </div>
-                <p className="text-xs font-bold text-amber-800 mb-2">{t(cosmetic.nameKey)}</p>
+                <p className="text-xs font-bold text-blue-800 mb-2">{t(cosmetic.nameKey)}</p>
 
                 {isUnlocked ? (
                   <button
@@ -143,7 +143,7 @@ export function WardrobeScreen({ state, dispatch, onBack, onPlayAgain }: Props) 
                   <button
                     onClick={() => handleUnlock(cosmetic.id, cosmetic.cost)}
                     disabled={!canAfford}
-                    className={`pd-btn w-full py-1.5 text-xs font-bold ${canAfford ? 'pd-btn-primary' : 'text-amber-400 cursor-not-allowed'}`}
+                    className={`pd-btn w-full py-1.5 text-xs font-bold ${canAfford ? 'pd-btn-primary' : 'text-blue-400 cursor-not-allowed'}`}
                   >
                     {isConfirming
                       ? `✓ ${t('paperDetective.wardrobe.confirm')}`

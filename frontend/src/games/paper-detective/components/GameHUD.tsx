@@ -34,8 +34,8 @@ export function GameHUD({ score, comboCount, comboMultiplier, dayNumber, timeLef
 
       {/* Score */}
       <div className="pd-card px-2 py-1 flex items-center gap-1 flex-shrink-0">
-        <span className="text-xs font-bold text-amber-700">🏅</span>
-        <span className="text-sm font-black text-amber-900 tabular-nums">{score}</span>
+        <span className="text-xs font-bold text-blue-700">🏅</span>
+        <span className="text-sm font-black text-blue-900 tabular-nums">{score}</span>
       </div>
 
       {/* Combo badge */}
@@ -53,10 +53,10 @@ export function GameHUD({ score, comboCount, comboMultiplier, dayNumber, timeLef
       {/* Fuse / Timer — expands to fill available space */}
       <div className="flex-1 flex flex-col gap-0.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-amber-800">
+          <span className="text-xs font-bold text-blue-800">
             🧨 {t('paperDetective.hud.timeLabel')}
           </span>
-          <span className="text-xs font-bold text-amber-700">
+          <span className="text-xs font-bold text-blue-700">
             {t('paperDetective.hud.day', { day: dayNumber })}
           </span>
         </div>

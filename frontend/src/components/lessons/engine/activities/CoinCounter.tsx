@@ -110,7 +110,7 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
                     <button
                         key={idx}
                         onClick={() => removeCoin(idx)}
-                        className="w-12 h-12 rounded-full bg-yellow-400 border-2 border-yellow-600 shadow-sm flex items-center justify-center font-bold text-yellow-900 animate-in zoom-in hover:scale-110 transition-transform"
+                        className="w-12 h-12 rounded-full bg-indigo-400 border-2 border-indigo-600 shadow-sm flex items-center justify-center font-bold text-indigo-900 animate-in zoom-in hover:scale-110 transition-transform"
                     >
                         {val}
                     </button>
@@ -137,7 +137,7 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
                         "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                         "hover:-translate-y-[2px]"
                     )}
                 >

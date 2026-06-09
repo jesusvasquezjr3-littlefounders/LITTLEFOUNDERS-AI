@@ -21,12 +21,12 @@ const Bye = () => {
             {/* Animated Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Floating Coins */}
-                <div className="absolute top-20 left-10 w-16 h-16 bg-yellow-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
+                <div className="absolute top-20 left-10 w-16 h-16 bg-indigo-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
                 <div className="absolute top-40 right-20 w-12 h-12 bg-green-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
                 <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-blue-400 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
 
                 {/* Floating Stars */}
-                <Star className="absolute top-1/4 right-1/4 w-8 h-8 text-yellow-300 opacity-30 animate-pulse" />
+                <Star className="absolute top-1/4 right-1/4 w-8 h-8 text-indigo-300 opacity-30 animate-pulse" />
                 <Star className="absolute bottom-1/3 left-1/3 w-6 h-6 text-pink-300 opacity-30 animate-pulse" style={{ animationDelay: '1s' }} />
                 <Sparkles className="absolute top-1/3 left-1/4 w-10 h-10 text-purple-300 opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
 
@@ -44,7 +44,7 @@ const Bye = () => {
                 </div>
 
                 <div className="space-y-4">
-                    <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent drop-shadow-sm">
+                    <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-violet-500 bg-clip-text text-transparent drop-shadow-sm">
                         {t('common:bye_page.title')}
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-300 font-medium max-w-md mx-auto leading-relaxed">

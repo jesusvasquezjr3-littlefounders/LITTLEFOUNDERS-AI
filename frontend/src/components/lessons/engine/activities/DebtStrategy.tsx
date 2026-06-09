@@ -136,11 +136,11 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 "w-full max-w-2xl mx-auto p-8 text-center",
                 "animate-in fade-in slide-in-from-bottom-4 duration-500"
             )}>
-                <div className="p-6 bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700 rounded-2xl">
-                    <h3 className="text-lg font-black text-amber-900 dark:text-amber-100 mb-2">
+                <div className="p-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-2xl">
+                    <h3 className="text-lg font-black text-blue-900 dark:text-blue-100 mb-2">
                         {t('debt_strategy.fallback_title', { defaultValue: 'Ejercicio no disponible' })}
                     </h3>
-                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
                         {t('debt_strategy.fallback_text', { defaultValue: 'El contenido de este ejercicio no tiene el formato esperado. Contacta al administrador.' })}
                     </p>
                 </div>
@@ -164,14 +164,14 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 "animate-in fade-in slide-in-from-bottom-4 duration-500"
             )}>
                 {/* Context Card */}
-                <div className="mb-6 p-6 bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl shadow-sm">
+                <div className="mb-6 p-6 bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-500 dark:border-indigo-700 rounded-2xl shadow-sm">
                     {scenario && (
-                        <p className="text-sm text-yellow-900 dark:text-yellow-100 mb-3 leading-relaxed">
+                        <p className="text-sm text-indigo-900 dark:text-indigo-100 mb-3 leading-relaxed">
                             {scenario}
                         </p>
                     )}
                     {instruction && (
-                        <p className="text-sm font-bold text-yellow-800 dark:text-yellow-200">
+                        <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200">
                             {instruction}
                         </p>
                     )}
@@ -260,11 +260,11 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             "animate-in fade-in slide-in-from-bottom-4 duration-500"
         )}>
             {/* Explanation Card */}
-            <div className="mb-6 p-6 bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-500 dark:border-yellow-700 rounded-2xl shadow-sm">
-                <h3 className="text-lg font-black text-yellow-900 dark:text-yellow-100 mb-2 flex items-center gap-2">
+            <div className="mb-6 p-6 bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-500 dark:border-indigo-700 rounded-2xl shadow-sm">
+                <h3 className="text-lg font-black text-indigo-900 dark:text-indigo-100 mb-2 flex items-center gap-2">
                     {t('debt_strategy.intro_title', { defaultValue: 'Estrategia de Pago de Deudas' })}
                 </h3>
-                <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                <p className="text-sm text-indigo-800 dark:text-indigo-200 mb-3">
                     {t('debt_strategy.intro_text', {
                         defaultValue: 'Tienes deudas por ${{debt}} y puedes pagar ${{payment}} al mes.',
                         debt: debts.reduce((sum: number, d: any) => sum + d.balance, 0).toLocaleString(),

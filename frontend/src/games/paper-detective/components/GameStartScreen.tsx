@@ -36,10 +36,10 @@ export function GameStartScreen({ highScore, totalPoints, equippedCosmetic, onPl
           draggable={false}
           fallback={
             <div className="pd-card px-6 py-3 text-center">
-              <h1 className="text-2xl sm:text-3xl font-black text-amber-900 leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-blue-900 leading-tight">
                 🕵️ {t('paperDetective.title')}
               </h1>
-              <p className="text-sm sm:text-base font-bold text-amber-700 mt-1">
+              <p className="text-sm sm:text-base font-bold text-blue-700 mt-1">
                 {t('paperDetective.subtitle')}
               </p>
             </div>
@@ -74,11 +74,11 @@ export function GameStartScreen({ highScore, totalPoints, equippedCosmetic, onPl
       {/* Score info */}
       <div className="pd-card px-6 py-3 text-center mb-5 pd-slide-up" style={{ animationDelay: '0.1s' }}>
         {highScore > 0 && (
-          <p className="text-sm font-bold text-amber-700 mb-1">
+          <p className="text-sm font-bold text-blue-700 mb-1">
             🏆 {t('paperDetective.startScreen.highScore', { score: highScore })}
           </p>
         )}
-        <p className="text-xs text-amber-600">
+        <p className="text-xs text-blue-600">
           ⭐ {t('paperDetective.startScreen.totalPoints', { points: totalPoints })}
         </p>
       </div>
@@ -93,7 +93,7 @@ export function GameStartScreen({ highScore, totalPoints, equippedCosmetic, onPl
         </button>
         <button
           onClick={onTutorial}
-          className="pd-btn w-full py-3 text-sm font-bold text-amber-900 rounded-lg"
+          className="pd-btn w-full py-3 text-sm font-bold text-blue-900 rounded-lg"
         >
           📖 {t('paperDetective.startScreen.howToPlay')}
         </button>

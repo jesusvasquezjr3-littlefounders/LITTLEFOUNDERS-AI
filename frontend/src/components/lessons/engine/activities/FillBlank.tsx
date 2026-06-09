@@ -181,7 +181,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
 
             {/* Hint */}
             {hint && !isChecked && (
-                <div className="mb-4 flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm">
+                <div className="mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm">
                     <Lightbulb className="w-4 h-4" />
                     <span>{hint}</span>
                 </div>
@@ -205,7 +205,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
             {isChecked && (
                 <div className="mb-6 text-center animate-in zoom-in">
                     <span className="text-4xl block mb-2">{feedback === 'success' ? '🎉' : '🤔'}</span>
-                    <p className={cn("font-bold text-xl", feedback === 'success' ? "text-green-500" : "text-orange-500")}>
+                    <p className={cn("font-bold text-xl", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
                         {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                     </p>
                 </div>
@@ -251,7 +251,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                         "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                         feedback === 'success'
                             ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                         "hover:-translate-y-[2px]"
                     )}
                 >

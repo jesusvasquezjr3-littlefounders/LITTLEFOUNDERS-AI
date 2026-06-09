@@ -12,7 +12,7 @@ const SagaHeader: React.FC<{ saga: SagaData }> = ({ saga }) => {
     const getThemeColor = (theme: string) => {
         const baseStyle = "border-2 shadow-sm";
         switch (theme) {
-            case 'amber': return `${baseStyle} bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300`;
+            case 'amber': return `${baseStyle} bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-800 dark:text-blue-300`;
             case 'blue': return `${baseStyle} bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-800 dark:text-blue-300`;
             case 'emerald': return `${baseStyle} bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300`;
             case 'rose': return `${baseStyle} bg-rose-100 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300`;
@@ -111,7 +111,7 @@ const NextAdventurePreview: React.FC<NextAdventurePreviewProps> = ({
     if (!nextAdventure) {
         return (
             <div className="text-center py-12">
-                <div className="inline-block p-6 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 mb-4 text-5xl shadow-lg">
+                <div className="inline-block p-6 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 mb-4 text-5xl shadow-lg">
                     🏆
                 </div>
                 <p className="font-bold text-2xl text-slate-800 dark:text-white mb-2">{t('general.completed_all_title')}</p>

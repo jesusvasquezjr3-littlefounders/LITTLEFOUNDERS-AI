@@ -41,21 +41,21 @@ export function AchievementPopup({ achievementId, onDismiss }: AchievementPopupP
     >
       <div className={cn(
         'flex items-center gap-3 px-4 py-3 rounded-xl',
-        'bg-gradient-to-r from-amber-600 to-yellow-500',
-        'border-2 border-yellow-300 shadow-lg shadow-yellow-500/40',
+        'bg-gradient-to-r from-blue-600 to-indigo-500',
+        'border-2 border-indigo-300 shadow-lg shadow-indigo-500/40',
         'animate-achievement-pop'
       )}>
         <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
           <IconComponent className="w-6 h-6 text-white" />
         </div>
         <div>
-          <p className="pixel-font text-[8px] text-yellow-100 uppercase">
+          <p className="pixel-font text-[8px] text-indigo-100 uppercase">
             {t('namVsYum.achievements.unlocked')}
           </p>
           <p className="pixel-font text-xs text-white">
             {t(`namVsYum.achievements.${achievementId}.title`)}
           </p>
-          <p className="text-[9px] text-yellow-100/80">
+          <p className="text-[9px] text-indigo-100/80">
             +{def.reward} 💰
           </p>
         </div>

@@ -52,12 +52,12 @@ export function UserConnectionsList({
           </div>
           
           <div className="flex items-center gap-4 text-sm font-bold">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-600">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-600">
               <Flame className="w-3.5 h-3.5 fill-current" />
               <span>{u.current_streak}</span>
             </div>
             
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600">
               <Star className="w-3.5 h-3.5 fill-current" />
               <span>{u.points_earned}</span>
             </div>

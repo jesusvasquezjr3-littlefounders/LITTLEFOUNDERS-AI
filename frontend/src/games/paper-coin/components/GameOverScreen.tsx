@@ -61,7 +61,7 @@ export function GameOverScreen({ state, dispatch }: Props) {
           }}
         >
           <span className="text-2xl">🏆</span>
-          <span className="font-black text-amber-900 text-base">
+          <span className="font-black text-blue-900 text-base">
             {t('paperCoin.gameOver.newRecord')}
           </span>
         </div>
@@ -78,7 +78,7 @@ export function GameOverScreen({ state, dispatch }: Props) {
             <div className="text-2xl mb-1">{stat.icon}</div>
             <div
               className={`font-black text-lg ${
-                stat.highlight ? 'text-yellow-300' : 'text-white'
+                stat.highlight ? 'text-indigo-300' : 'text-white'
               }`}
             >
               {stat.value}
@@ -91,7 +91,7 @@ export function GameOverScreen({ state, dispatch }: Props) {
       {/* High score display */}
       <div className="text-white/50 text-sm mb-5 pc-anim-fade-in" style={{ animationDelay: '0.55s' }}>
         🏆 {t('paperCoin.gameOver.bestRecord')}: {' '}
-        <span className="text-yellow-300 font-bold">{state.highScore} XP</span>
+        <span className="text-indigo-300 font-bold">{state.highScore} XP</span>
       </div>
 
       {/* Actions */}

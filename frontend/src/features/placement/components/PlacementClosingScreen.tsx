@@ -60,8 +60,8 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
 
           <div className={cn(
             'flex items-center justify-center gap-2 mb-8 w-max',
-            'bg-gradient-to-r from-orange-500/10 to-amber-500/10',
-            'border border-orange-500/20 dark:border-orange-500/10',
+            'bg-gradient-to-r from-violet-500/10 to-blue-500/10',
+            'border border-violet-500/20 dark:border-violet-500/10',
             'rounded-full py-1.5 px-6',
           )}>
             <div className="w-12 h-12 flex items-center justify-center -ml-3 -my-2 overflow-visible">
@@ -77,7 +77,7 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
               <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-[#FFD060] to-[#FF8C00] drop-shadow-sm">
                 1
               </span>
-              <span className="text-orange-600/90 dark:text-orange-400/90 font-bold uppercase tracking-widest text-[11px] mt-0.5">
+              <span className="text-violet-600/90 dark:text-violet-400/90 font-bold uppercase tracking-widest text-[11px] mt-0.5">
                 {t('closing.streak_label')}
               </span>
             </div>

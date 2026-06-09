@@ -79,8 +79,8 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                     disabled={answered !== null}
                     className={cn(
                         "h-32 rounded-[2rem] flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-2 border-transparent",
-                        "bg-orange-500 hover:bg-orange-400 text-white shadow-[0_8px_0_rgb(194,65,12)] hover:shadow-[0_4px_0_rgb(194,65,12)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
-                        answered === false && "scale-95 shadow-none translate-y-[8px] ring-4 ring-orange-300",
+                        "bg-violet-500 hover:bg-violet-400 text-white shadow-[0_8px_0_rgb(194,65,12)] hover:shadow-[0_4px_0_rgb(194,65,12)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
+                        answered === false && "scale-95 shadow-none translate-y-[8px] ring-4 ring-violet-300",
                         answered === true && "opacity-30 grayscale",
                         feedback === 'success' && exercise.correct_answer?.isTrue === false && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105",
                         feedback === 'error' && answered === false && "bg-red-500 shadow-none ring-4 ring-red-300 shake"
@@ -113,7 +113,7 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                             "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
                             feedback === 'success'
                                 ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                : "bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
+                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
                             "hover:-translate-y-[2px]"
                         )}
                     >

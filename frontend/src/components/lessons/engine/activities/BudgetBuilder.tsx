@@ -304,8 +304,8 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                 )}
 
                 {overBudget && feedback === 'none' && (
-                    <div className="mb-4 p-3 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 text-center">
-                        <p className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                    <div className="mb-4 p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 text-center">
+                        <p className="text-sm font-bold text-violet-600 dark:text-violet-400">
                             {t('budget_builder.over_budget', {
                                 defaultValue: 'Has excedido el presupuesto total',
                             })}
@@ -328,7 +328,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                             <p
                                 className={cn(
                                     'font-bold text-lg mb-3',
-                                    feedback === 'success' ? 'text-green-500' : 'text-orange-500'
+                                    feedback === 'success' ? 'text-green-500' : 'text-violet-500'
                                 )}
                             >
                                 {feedback === 'success'
@@ -341,7 +341,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                     'w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2',
                                     feedback === 'success'
                                         ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]'
-                                        : 'bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
+                                        : 'bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
                                     'hover:-translate-y-[2px]'
                                 )}
                             >
@@ -530,7 +530,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                         <p
                             className={cn(
                                 'font-bold text-lg mb-3',
-                                feedback === 'success' ? 'text-green-500' : 'text-orange-500'
+                                feedback === 'success' ? 'text-green-500' : 'text-violet-500'
                             )}
                         >
                             {feedback === 'success'
@@ -543,7 +543,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                 'w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2',
                                 feedback === 'success'
                                     ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]'
-                                    : 'bg-orange-500 hover:bg-orange-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
+                                    : 'bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
                                 'hover:-translate-y-[2px]'
                             )}
                         >

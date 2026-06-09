@@ -58,7 +58,7 @@ export function MonsterShop({ progress, onClose, onUnlockSkin, onUnlockTheme, on
             {t('namVsYum.shop.title')}
           </h2>
           <div className="flex items-center gap-3">
-            <span className="pixel-font text-[8px] text-yellow-400">
+            <span className="pixel-font text-[8px] text-indigo-400">
               💰 {progress.coins}
             </span>
             <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-colors">
@@ -118,7 +118,7 @@ export function MonsterShop({ progress, onClose, onUnlockSkin, onUnlockTheme, on
                     className={cn(
                       'pixel-font text-[7px] px-2 py-1 rounded transition-colors flex items-center gap-1',
                       canAfford
-                        ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                        ? 'bg-blue-600 hover:bg-blue-500 text-white'
                         : 'bg-white/10 text-white/30 cursor-not-allowed'
                     )}
                   >
@@ -175,7 +175,7 @@ export function MonsterShop({ progress, onClose, onUnlockSkin, onUnlockTheme, on
                     className={cn(
                       'pixel-font text-[7px] px-2 py-1 rounded transition-colors flex items-center gap-1',
                       canAfford
-                        ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                        ? 'bg-blue-600 hover:bg-blue-500 text-white'
                         : 'bg-white/10 text-white/30 cursor-not-allowed'
                     )}
                   >
