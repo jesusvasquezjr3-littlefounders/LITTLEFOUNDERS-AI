@@ -2299,5 +2299,26 @@
   content: none !important;
 }
 
+/* Morphing blob animation for the embedded video frame */
+@keyframes morph-blob-video {
+  0% {
+    border-radius: 45% 55% 35% 65% / 55% 40% 60% 45%;
+  }
+  33% {
+    border-radius: 55% 45% 65% 35% / 40% 55% 45% 60%;
+  }
+  66% {
+    border-radius: 35% 65% 45% 55% / 60% 45% 55% 40%;
+  }
+  100% {
+    border-radius: 45% 55% 35% 65% / 55% 40% 60% 45%;
+  }
+}
+
+.morphing-blob-video-frame {
+  border-radius: 45% 55% 35% 65% / 55% 40% 60% 45%;
+  animation: morph-blob-video 6s ease-in-out infinite;
+}
+
 
 

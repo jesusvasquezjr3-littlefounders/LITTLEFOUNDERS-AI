@@ -98,7 +98,7 @@ LittleFounders AI es una **plataforma educativa de alfabetización financiera pa
 - **Sonido:** Howler
 - **Animaciones:** Canvas Confetti, Tailwind Animate, keyframes CSS custom
 - **Temas:** next-themes (dark/light/system)
-- **Analytics:** Vercel Analytics, Google Analytics (G-0XH7S80Q2), Microsoft Clarity
+- **Analytics & SEO:** Vercel Analytics, Google Analytics (G-0XH7S80Q2), Microsoft Clarity, JSON-LD Schema (WebSite/EducationalOrganization)
 
 ### Backend
 - **Framework:** FastAPI 0.110+ (async)
@@ -258,7 +258,9 @@ cd backend && python3 -m ruff check .
 - Configurado por `vercel.json`.
 - `buildCommand`: `cd frontend && npm install && npm run build`
 - `outputDirectory`: `frontend/dist`
-- SPA rewrite: todo a `index.html` excepto rutas que empiecen con `/api/`.
+- **Routing y SEO:** `vercel.json` tiene una regla de `rewrites` que rutea todo el tráfico de `en.littlefounders.ai` hacia `/index-en.html`.
+- SPA rewrite: todo a `index.html` (o `index-en.html` si aplica) excepto rutas que empiecen con `/api/`.
+- **Build (Vite):** `vite.config.ts` tiene configurado `rollupOptions.input` para construir tanto `index.html` como `index-en.html`, asegurando metadatos (Open Graph) correctos por idioma.
 - Node engine: `24.x`.
 
 ### Backend → Railway

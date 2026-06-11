@@ -22,7 +22,10 @@
     "cta_subtext": "No credit card required • Instant access",
     "trust_free": "Free to start",
     "trust_secure": "100% secure",
-    "trust_multilang": "Multi-language"
+    "trust_multilang": "Multi-language",
+    "age_range": "For kids ages 6 to 17",
+    "time_required": "Only 5 minutes a day",
+    "main_benefit": "Learn to save and invest by playing"
   },
   "problem": {
     "title_part1": "School teaches algebra...",

@@ -102,7 +102,8 @@ const LandingPage = () => {
                 <div className="w-full h-full overflow-hidden bg-white/70 dark:bg-slate-900/70 relative" style={{ borderRadius: 'inherit' }}>
                   <img 
                     src="/Hero-Landing.png" 
-                    alt="LittleFounders Hero" 
+                    alt="Niños y adolescentes aprendiendo finanzas e inversión interactiva con LittleFounders" 
+                    loading="lazy"
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                   {/* Glossy liquid glass reflections */}
@@ -157,7 +158,19 @@ const LandingPage = () => {
                 <Trans i18nKey="hero.subtitle" ns="landing" />
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2 animate-fade-in-up-delay-3 w-full">
+              <div className="flex flex-col gap-2 pt-2 animate-fade-in-up-delay-3 text-sm lg:text-base font-bold text-gray-700 dark:text-gray-300">
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <span className="text-pink-500 text-lg leading-none">✓</span> {t('hero.age_range')}
+                </div>
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <span className="text-violet-500 text-lg leading-none">✓</span> {t('hero.time_required')}
+                </div>
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <span className="text-emerald-500 text-lg leading-none">✓</span> {t('hero.main_benefit')}
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4 animate-fade-in-up-delay-3 w-full">
                 <Button asChild size="lg" className="btn-press h-14 px-10 text-lg rounded-2xl bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-black w-72 border-0 shadow-none">
                   <Link to="/onboarding" className="flex items-center gap-2 justify-center">
                     {t('hero.cta_button')}

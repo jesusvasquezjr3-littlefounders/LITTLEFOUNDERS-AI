@@ -1,12 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
-import { NamVsYumGame } from "@/games/nam-vs-yum/components/NamVsYumGame";
-import "@/games/nam-vs-yum/nam-vs-yum.css";
 
 export function GamifiedLearningSection() {
   const { t } = useTranslation("landing");
-  const handleExit = useCallback(() => { /* no-op when embedded in landing */ }, []);
 
   const benefits = [
     t("solution.benefit1"),
@@ -91,15 +88,53 @@ export function GamifiedLearningSection() {
             </ul>
           </div>
 
-          {/* ── Game embed (Ñam vs Yum) ── */}
-          <div className="flex-1 w-full order-2 relative flex items-center justify-center">
+          {/* ── Video embed (Loop, muted) ── */}
+          <div className="flex-1 w-full order-2 relative flex items-center justify-center min-h-[300px] sm:min-h-[380px] lg:min-h-[480px]">
             {/* Glow halo */}
             <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30 pointer-events-none"
               style={{ background: 'radial-gradient(ellipse at center, #7c3aed 0%, #3b82f6 40%, transparent 70%)' }} />
-            {/* Game frame — portrait on mobile, wider on desktop */}
-            <div className="relative pixel-font rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(124,58,237,0.35)] w-[300px] h-[520px] md:w-full md:h-[540px] md:max-w-none">
-              <NamVsYumGame onExit={handleExit} embeddedMode />
+
+            {/* Blurs behind the video */}
+            <div className="absolute bottom-0 z-0 animate-float left-1/2 -ml-[120px] w-[240px] h-[240px] lg:left-auto lg:ml-0 lg:-right-6 lg:w-[480px] lg:h-[480px]" style={{ animationDelay: '1.5s' }}>
+              <div className="absolute inset-6 lg:inset-16 rounded-full bg-pink-400/20 blur-[40px] lg:blur-[70px]" />
             </div>
+            <div className="absolute bottom-0 z-0 animate-float left-0 w-[160px] h-[160px] lg:left-auto lg:right-[8rem] lg:w-[320px] lg:h-[320px]" style={{ animationDelay: '0s' }}>
+              <div className="absolute inset-6 lg:inset-12 rounded-full bg-emerald-400/25 blur-[30px] lg:blur-[50px]" />
+            </div>
+
+            {/* Morphing Blob Video Frame */}
+            <div className="relative w-[340px] h-[235px] sm:w-[460px] sm:h-[315px] lg:w-[620px] lg:h-[420px] flex-shrink-0 morphing-blob-video-frame bg-gradient-to-tr from-[#ff6b6b]/60 via-white/20 to-[#7048e8]/60 dark:from-[#ff6b6b]/45 dark:via-white/5 dark:to-[#7048e8]/45 p-[6px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(112,72,232,0.45)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15 overflow-hidden z-10" style={{ animationDelay: '0.5s' }}>
+              <div className="w-full h-full overflow-hidden bg-white/70 dark:bg-slate-900/70 relative" style={{ borderRadius: 'inherit' }}>
+                <video
+                  src="/video/8747232-sd_960_540_25fps.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                />
+                {/* Glossy liquid glass reflections */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none mix-blend-overlay" />
+                <div className="absolute -inset-full bg-gradient-to-b from-white/10 via-transparent to-transparent rotate-45 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Magical Sparkles/Glitter around the liquid glass video */}
+            <svg className="absolute -top-4 left-6 sm:-top-6 sm:left-12 lg:-top-10 lg:left-16 z-20 w-8 h-8 text-yellow-300 pointer-events-none animate-sparkle-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+            </svg>
+            <svg className="absolute top-6 -right-2 sm:top-10 sm:-right-4 lg:top-14 lg:-right-6 z-20 w-10 h-10 text-amber-300 pointer-events-none animate-sparkle-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+            </svg>
+            <svg className="absolute top-1/2 -left-6 sm:-left-8 lg:-left-10 z-20 w-7 h-7 text-yellow-200 pointer-events-none animate-sparkle-3" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+            </svg>
+            <svg className="absolute bottom-4 -right-2 sm:bottom-6 sm:-right-4 lg:bottom-10 lg:-right-6 z-20 w-6 h-6 text-pink-300 pointer-events-none animate-sparkle-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+            </svg>
+            <svg className="absolute -bottom-4 left-10 sm:-bottom-6 sm:left-16 lg:-bottom-8 lg:left-24 z-20 w-8 h-8 text-amber-200 pointer-events-none animate-sparkle-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
+            </svg>
           </div>
 
         </div>

@@ -100,8 +100,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
 
             {/* Logo */}
             <Link to="/" className="opacity-80 hover:opacity-100 transition-opacity">
-              <img src="/logo-sized.png" alt="LittleFounders"
-                className="h-9 w-auto object-contain brightness-0 dark:invert" />
+              <img src="/logo-sized.png" alt="LittleFounders Logo - Educación Financiera para Niños"
+                className="h-9 w-auto object-contain brightness-0 dark:invert" loading="lazy" />
             </Link>
 
             {/* Links */}

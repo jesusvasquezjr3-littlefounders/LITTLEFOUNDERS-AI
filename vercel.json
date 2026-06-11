@@ -4,6 +4,16 @@
     "rewrites": [
         {
             "source": "/((?!api/).*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "en.littlefounders.ai"
+                }
+            ],
+            "destination": "/index-en.html"
+        },
+        {
+            "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
     ]

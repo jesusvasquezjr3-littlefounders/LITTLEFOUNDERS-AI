@@ -17,7 +17,10 @@
     "cta_subtext": "No requiere tarjeta • Acceso inmediato",
     "trust_free": "Gratis para empezar",
     "trust_secure": "100% seguro",
-    "trust_multilang": "Multi-idioma"
+    "trust_multilang": "Multi-idioma",
+    "age_range": "Para niños de 6 a 17 años",
+    "time_required": "Solo 5 minutos al día",
+    "main_benefit": "Aprende a ahorrar e invertir jugando"
   },
   "problem": {
     "title_part1": "La escuela enseña álgebra...",

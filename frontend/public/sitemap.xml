@@ -1,10 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://littlefounders.ai/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://littlefounders.ai/families</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://littlefounders.ai/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://littlefounders.ai/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://littlefounders.ai/placement</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://littlefounders.ai/login</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://littlefounders.ai/signup</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://littlefounders.ai/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/families</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/families" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/families" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/families" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/pricing" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/faq</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/faq" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/placement</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/placement" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/placement" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/placement" />
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/login</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/login" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/login" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/login" />
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/signup</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/signup" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.littlefounders.ai/signup" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/signup" />
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>

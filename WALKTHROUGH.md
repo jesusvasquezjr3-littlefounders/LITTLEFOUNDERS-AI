@@ -58,6 +58,9 @@ littlefounders.ai
 | 2026-06-07 | CD backend implementado: `cd.yml` → `deploy-railway` (`railway up` + `RAILWAY_TOKEN`) |
 | 2026-06-07 | Optimización de costo: App Sleeping activado + startup no-bloqueante (cold start ~1s) |
 | 2026-06-07 | Limpieza: `Procfile` eliminado, `.railwayignore` agregado, secretos rotados |
+| 2026-06-11 | Arquitectura: `index-en.html` añadido al build de Vite para servir metadatos Open Graph en inglés desde `en.littlefounders.ai` vía Vercel rewrites |
+| 2026-06-11 | SEO: Optimización integral (JSON-LD WebApp/EducationalOrganization, Sitemap hreflang, preloads LCP, lazy loading imgs) |
+| 2026-06-11 | UX: Añadidos viñetas descriptivas en Hero section (edad, tiempo y beneficio principal) |
 
 ---
 

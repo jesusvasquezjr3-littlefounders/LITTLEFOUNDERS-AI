@@ -54,7 +54,7 @@ export const LandingNavbar = () => {
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src="/logo-sized.png" alt="LittleFounders" className="h-10 w-auto object-contain dark:brightness-110" />
+                        <img src="/logo-sized.png" alt="LittleFounders Logo - Plataforma de Educación Financiera para Niños" className="h-10 w-auto object-contain dark:brightness-110" />
                     </Link>
 
                     {/* Desktop Menu */}
