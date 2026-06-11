@@ -1,6 +1,6 @@
 # CLAUDE.md — LittleFounders AI Operating Rules
 
-> **Última actualización:** 2026-05-31
+> **Última actualización:** 2026-06-11
 > **Propósito:** Reglas operativas no negociables para agentes AI.
 
 ---
@@ -8,27 +8,39 @@
 ## 1. Autoridad de Documentación
 
 1. `CLAUDE.md` — este archivo (máxima autoridad)
-2. `AGENTS.md` — reglas del proyecto
+2. `AGENTS.md` — reglas del proyecto, doc map, instrucciones post-cambio
 3. `ROADMAP.md` — plan de arquitectura y sprints
 4. `GLOSSARY.md` — terminología canónica
-5. `WALKTHROUGH.md` — snapshot informativo
-6. Código fuente — descriptivo, no autoritativo
+5. `repo_map.md` — mapa de código (auto-generado)
+6. `WALKTHROUGH.md` — snapshot informativo
 7. `RUNBOOK.md` — respuesta a incidentes
+8. Código fuente — descriptivo, no autoritativo
 
 ---
 
 ## 2. Requisitos Pre-Commit
 
-Antes de hacer commit, verificar:
+Antes de hacer commit, verificar (checklist unificado):
 
-- [ ] `npm run type-check` pasa en `frontend/`
+**Calidad de código:**
+- [ ] `npm run type-check` (o `tsc -b`) pasa en `frontend/`
 - [ ] `npm run lint` pasa en `frontend/` (sin errores)
-- [ ] `ruff check` pasa en `backend/`
+- [ ] `ruff check .` pasa en `backend/` (o `python3 -m ruff check .`)
 - [ ] `npm test` pasa en `frontend/`
 - [ ] Tests agregados para lógica nueva
-- [ ] Sin PII en logs o payloads externos
 - [ ] Sin `any` en TypeScript sin justificación en PR
+- [ ] Mobile-first: clases base para móvil, breakpoints para desktop
+- [ ] i18n: todo texto visible pasa por `t()`
+
+**Seguridad:**
+- [ ] Sin PII en logs o payloads externos
 - [ ] Migraciones SQL pasan `supabase db reset` dos veces seguidas
+- [ ] Sin secrets commiteados (`.env` en `.gitignore`)
+
+**Documentación (ver AGENTS.md §12):**
+- [ ] Cambios sustanciales reflejados en `*.md` (arquitectura, API, deploy, etc.)
+- [ ] `repo_map.md` regenerado si cambió estructura de directorios
+- [ ] Workflows CI/CD actualizados si aplica
 
 ---
 
@@ -86,3 +98,30 @@ Antes de hacer commit, verificar:
 - **Backend:** `pytest -v` en `backend/`
 - Tests contra DB local (no Cloud Supabase)
 - Cubrir al menos: middleware, validación Zod, casos happy + sad path
+
+---
+
+## 7. Documentación
+
+### 7.1 Cómo navegar la documentación
+
+Ver `AGENTS.md §10` (Mapa de Documentación) y `§11` (repo_map.md).
+
+### 7.2 Regla de oro
+
+> **Todo cambio sustancial debe documentarse.** Un cambio es sustancial si afecta arquitectura, API, entorno, build, dependencias, estructura de directorios, auth o convenciones. Ver checklist detallado en `AGENTS.md §12.3`.
+
+### 7.3 repo_map.md — Mapa de código
+
+- Archivo auto-generado en raíz del proyecto: `repo_map.md`
+- Contiene árbol de directorios + primeras 15 líneas de cada archivo
+- **Nunca incluir en su totalidad en el prompt** — solo la sección relevante
+- Regenerar con: `python3 scripts/generate_repo_map.py`
+
+### 7.4 Orden de lectura recomendado
+
+1. `AGENTS.md` — panorama completo
+2. `repo_map.md` — árbol + previews de archivos
+3. `CLAUDE.md` — reglas operativas (este archivo)
+4. `WALKTHROUGH.md` — estado actual + deuda técnica
+5. `BACKEND_GUIDE.md` o `frontend/FRONTEND_GUIDE.md` según el área

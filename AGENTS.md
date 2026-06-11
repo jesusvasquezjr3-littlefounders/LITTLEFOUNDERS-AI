@@ -56,7 +56,8 @@ LittleFounders AI es una **plataforma educativa de alfabetización financiera pa
 │   ├── .railwayignore       # Excluye *.md, tests/, caches del contexto de build
 │   ├── auth/                # JWT, OAuth, guest merge, permisos familiares
 │   ├── dashboard/           # Estadísticas de usuario
-│   ├── lesson_engine/       # Contenido: adventures, sagas, lecciones, streaks
+│   ├── lesson_engine/       # Motor de lecciones: endpoints API + 2,461 lecciones JSON
+│   ├── lesson_factory/      # Generador IA de lecciones (DeepSeek + curriculum)
 │   ├── admin/               # CRUD de lecciones, ejercicios, usuarios, reportes
 │   ├── reports/             # Feedback/bugs con rate limiting
 │   ├── social/              # Sistema de follows y perfiles públicos
@@ -85,7 +86,7 @@ LittleFounders AI es una **plataforma educativa de alfabetización financiera pa
 ## 3. Stack Tecnológico
 
 ### Frontend
-- **Framework:** React 18.3 + TypeScript 5.5 (strict: false)
+- **Framework:** React 18.3 + TypeScript 5.5 (strict: true)
 - **Build tool:** Vite 5.4 con `@vitejs/plugin-react-swc`
 - **Routing:** React Router v6
 - **Estilos:** Tailwind CSS 3.4 + PostCSS + Autoprefixer
@@ -181,7 +182,7 @@ npm run preview      # vite preview
 3. **Namespaces disponibles:** `common`, `auth`, `landing`, `lessons`, `games`, `admin`, `dashboard`, `avatar`, `settings`, `profile`, `placement`, `reports`, `errors`, `onboarding`.
 4. **Path alias:** `@/` apunta a `src/`. Usar siempre para imports internos.
 5. **Estilos:** Tailwind utility classes. Para variantes de componentes usar `class-variance-authority` (CVA). `cn()` (clsx + tailwind-merge) está disponible en `src/lib/utils.ts`.
-6. **Tipos:** TypeScript con `strict: false`. No hay tests.
+6. **Tipos:** TypeScript con `strict: true` (configurado en `tsconfig.app.json` y `tsconfig.node.json`). No hay tests.
 
 ### Backend
 
@@ -294,36 +295,170 @@ Hay 3 workflows en `.github/workflows/`:
 
 ### Frontend
 - **Game reducer pattern:** Cada juego en `src/games/` tiene su propio `gameReducer.ts` con acciones tipadas y fases de juego.
-- **Lesson engine:** Contenido jerárquico: Adventure → Saga → Topic → Lesson. Las lecciones se cargan desde el backend y se renderizan con componentes dinámicos según el tipo de ejercicio.
+- **Lesson engine:** Contenido jerárquico: Adventure → Saga → Topic → Lesson. Las lecciones se cargan desde el backend y se renderizan con componentes dinámicos según el tipo de ejercicio (~50+ tipos, con validación centralizada en `useLessonState.ts`). LessonRunner usa una máquina de estados (`IDLE → PLAYING → WAITING_INPUT → CHECKING → FEEDBACK_SUCCESS/ERROR → COMPLETED`) con sistema de vidas (5 por lección).
 - **Auth wrappers:** `ProtectedRoute`, `ParentProtectedRoute`, `ChildProtectedRoute`, `AdminProtectedRoute` manejan redirecciones según el tipo de usuario.
 - **Guest merge:** El frontend soporta usuarios anónimos; al autenticarse, `/auth/merge-guest` transfiere el progreso.
 
 ### Backend
 - **Optional auth:** Muchos endpoints del lesson engine son públicos (jugables sin login), usando `get_current_user_optional`.
 - **Streaks:** Lógica de rachas diarias usa la fecha local (`YYYY-MM-DD`) enviada por el frontend para evitar problemas de timezone.
-- **Audio pipeline:** Admin genera TTS via "LF Audio Engine" (`scripts/lf_audio_client.py`) y sube a Supabase Storage. Las lecciones inyectan un mapa de audio en la timeline.
+- **Audio pipeline:** Admin genera TTS via "LF Audio Engine" (`scripts/lf_audio_client.py`) y sube a Supabase Storage. Las lecciones inyectan un mapa de audio en la timeline con granularidad por sub-elemento (`target_field`: `main`, `statement`, `question`, `instruction`, `feedback_success`, `feedback_error`).
+- **Lesson Factory:** `lesson_factory/generate.py` usa DeepSeek API con currículum estructurado y reglas pedagógicas para generar las 2,461 lecciones bilingües. El validador en `validate.py` verifica esquema, tipos de ejercicio y diversidad de objetivos.
 - **Audit trail:** El admin registra todo cambio en `ContentEditHistory` con soporte para rollback.
 - **Startup no-bloqueante:** El diagnóstico de `@app.on_event("startup")` (chequeo de DB + Supabase) corre en un thread fire-and-forget (`asyncio.to_thread`), así uvicorn queda disponible de inmediato. Clave para minimizar el cold start con App Sleeping en Railway. No metas IO de red bloqueante en el path de arranque.
 
 ---
 
-## 10. Documentación Adicional
+## 10. Mapa de Documentación
 
-| Archivo | Contenido |
-|---|---|
-| `backend/BACKEND_GUIDE.md` | Guía técnica extensa del backend (1,361 líneas). Arquitectura, modelos, API reference, deployment. |
-| `frontend/FRONTEND-DEVELOPER-MANUAL.md` | Manual de diseño frontend. Secciones vacías de colores/tipografía, pero convenciones i18n y pre-flight checklist detallados. |
-| `INSTRUCCIONES_LOCAL.md` | Guía rápida en español para levantar backend y frontend localmente. |
-| `ANALYTICS_ONBOARDING_EVENTS.md` | Referencia de eventos GA4 para el funnel de onboarding + placement. |
-| `CLAUDE.md` | Reglas operativas no negociables para agentes AI. |
-| `ROADMAP.md` | Plan de arquitectura, sprints y API contract. |
-| `GLOSSARY.md` | Términos canónicos del proyecto. |
-| `WALKTHROUGH.md` | Snapshot del estado actual, progreso y deuda técnica. |
-| `RUNBOOK.md` | Procedimientos de respuesta a incidentes. |
+> **Propósito:** Navegación eficiente entre todos los archivos `*.md` del proyecto.
+> Cada documento enumera sus dependencias y documentos relacionados para que un agente AI
+> pueda localizar contexto relevante sin leer archivos innecesarios.
+
+### 10.1 Documentos Raíz (en `/`)
+
+| Documento | Contenido | Relaciones |
+|---|---|---|
+| **`AGENTS.md`** (este) | Fuente de verdad para agentes AI. Resumen del proyecto, stack, comandos, convenciones, despliegue. | → `CLAUDE.md` (§1 autoridad), → `repo_map.md` (navegación de código), → cada doc abajo |
+| **`CLAUDE.md`** | Reglas operativas no negociables. Jerarquía de autoridad de documentación. Pre-commit checklist técnico. | Padre de todos los docs (§1). Referencia: `AGENTS.md`, `ROADMAP.md`, `GLOSSARY.md`, `WALKTHROUGH.md`, `RUNBOOK.md` |
+| **`GLOSSARY.md`** | Términos canónicos del proyecto (Adventure, Saga, Topic, Lesson, Exercise, etc.). | Usado por: `AGENTS.md`, `BACKEND_GUIDE.md`, `RULES.md`, `repo_map.md` |
+| **`ROADMAP.md`** | Plan de arquitectura, sprints completados/pendientes, API contract resumido. | → `WALKTHROUGH.md` (deuda técnica), → `CLAUDE.md` (§6 testing), → `AGENTS.md` (§8 despliegue) |
+| **`WALKTHROUGH.md`** | Snapshot del estado actual, progreso, decisiones recientes, deuda técnica conocida. | → `ROADMAP.md` (sprints), → `AGENTS.md` (stack), → `RUNBOOK.md` (incidentes) |
+| **`RUNBOOK.md`** | Procedimientos de respuesta a incidentes (backend caído, frontend caído, DB lenta, rate limiting, rollback). | → `AGENTS.md` (§8 Railway, §7 seguridad), → `BACKEND_GUIDE.md` (§14 middleware) |
+| **`ANALYTICS_ONBOARDING_EVENTS.md`** | Referencia de eventos GA4 para el funnel de onboarding + placement. Códigos de evento, parámetros, triggers. | → `frontend/src/lib/analytics.ts`, → `frontend/src/components/analytics/GoogleAnalytics.tsx`, → `frontend/index.html` (gtag) |
+| **`INSTRUCCIONES_LOCAL.md`** | Guía rápida en español para levantar backend y frontend localmente. Prerrequisitos, troubleshooting. | → `AGENTS.md` (§4 comandos), → `BACKEND_GUIDE.md` (§3 getting started) |
+| **`repo_map.md`** | **Auto-generado.** Índice completo del repositorio: árbol de directorios + primeras 15 líneas de cada archivo de código. | → `scripts/generate_repo_map.py` (generador), → todos los archivos del proyecto |
+
+### 10.2 Documentos del Backend (en `backend/`)
+
+| Documento | Contenido | Relaciones |
+|---|---|---|
+| **`BACKEND_GUIDE.md`** | 1,700+ líneas. Guía técnica completa del backend: arquitectura, estructura, config, DB, modelos ORM, auth, API endpoints, lesson engine, admin, social, reports, dashboard, middleware, deployment. | → `AGENTS.md` (§3 stack, §5 backend conventions), → `models.py` (ORM), → `main.py` (routers), → `config.py` (settings), → `database.py` (engine) |
+| **`audio_factory/AUDIO_ENGINE.md`** | Documentación maestra del pipeline TTS. Estado: ✅ completo, ⏸️ pendiente análisis de costes. 40+ tipos de ejercicio, 4 personajes, ES/EN. | → `audio_factory/*.py` (código), → `scripts/lf_audio_client.py` (cliente), → `AGENTS.md` (§9 audio pipeline backend), → `GLOSSARY.md` (Audio Factory) |
+| **`lesson_factory/RULES.md`** | Estándares de calidad pedagógica para creación de lecciones. Principios, adaptación por edad, estructura cognitiva, criterios de precisión, métricas. | → `lesson_factory/generate.py`, → `lesson_factory/validate.py`, → `AGENTS.md` (§9 Lesson Factory), → `GLOSSARY.md` (Lesson, Exercise) |
+| **`lesson_factory/GENERATION_LOG.md`** | Log técnico de la generación masiva de 2,461 lecciones vía DeepSeek. Arquitectura del pipeline, resultados, calidad y lecciones aprendidas. | → `lesson_factory/RULES.md`, → `lesson_factory/generate.py`, → `lesson_engine/littlefounders_lessons/` (datos generados), → `lesson_factory/curriculum/*.json` (currículos) |
+
+### 10.3 Documentos del Frontend (en `frontend/`)
+
+| Documento | Contenido | Relaciones |
+|---|---|---|
+| **`FRONTEND_GUIDE.md`** | Guía técnica completa del frontend (~600 líneas). Arquitectura, routing completo, páginas, componentes, hooks, juegos, lesson engine, auth, contextos, build, testing. | → `AGENTS.md` (§3 stack, §5 frontend conventions), → `src/` (código fuente), → `src/i18n/README.md` |
+| **`src/i18n/README.md`** | Guía de internacionalización. Idiomas soportados, estructura de archivos, uso en componentes, convenciones, troubleshooting. | → `src/i18n/index.ts`, → `src/i18n/locales/{es,en}/*.json`, → `AGENTS.md` (§5 frontend i18n obligatorio) |
+
+### 10.4 Mapa de Navegación Rápida para Agentes AI
+
+```
+Problema/Situación                                          → Documento a leer primero
+──────────────────────────────────────────────────────────────────────────────
+"No sé por dónde empezar"                                   → repo_map.md + AGENTS.md (§1-3)
+"Necesito entender la arquitectura del backend"             → BACKEND_GUIDE.md (§1-2, §8)
+"Error en producción / incidente"                           → RUNBOOK.md
+"Qué reglas debo seguir como AI agent"                      → CLAUDE.md + AGENTS.md
+"Qué terminología usar"                                     → GLOSSARY.md
+"Qué sigue en el roadmap"                                   → ROADMAP.md + WALKTHROUGH.md
+"Estado actual y deuda técnica"                             → WALKTHROUGH.md
+"Cómo generar/validar lecciones"                            → lesson_factory/RULES.md + GENERATION_LOG.md
+"Cómo funciona el audio TTS"                                → audio_factory/AUDIO_ENGINE.md
+"Cómo usar i18n en frontend"                                → src/i18n/README.md
+"Eventos de analytics / onboarding"                         → ANALYTICS_ONBOARDING_EVENTS.md
+"Cómo levantar localmente"                                  → INSTRUCCIONES_LOCAL.md + AGENTS.md (§4)
+"Qué archivos de código existen y dónde están"              → repo_map.md (árbol + previews)
+```
 
 ---
 
-## 11. Checklist Pre-Commit (Frontend)
+## 11. repo_map.md — Sistema de Navegación de Código
+
+**Archivo:** `repo_map.md` (raíz del proyecto)
+**Generador:** `scripts/generate_repo_map.py`
+
+### 11.1 ¿Qué contiene?
+
+- **Árbol de directorios** completo (excluye `node_modules/`, `.git/`, `dist/`, `__pycache__/`, `.vercel/`, lecciones JSON de datos).
+- **Primeras 15 líneas de cada archivo de código** y configuración (461 archivos total):
+  - `Code` (438): `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.css`, `.html`
+  - `Config` (23): `.toml`, `.yaml`, `.yml`, `.json` (package.json, tsconfig, railway, etc.)
+
+### 11.2 Cómo usar `repo_map.md`
+
+1. **Encuentra la ruta** del archivo que buscas usando el árbol de directorios o el índice de archivos.
+2. **Lee el preview** de las primeras 15 líneas (imports, interfaces, clases, funciones principales).
+3. **Decide si necesitas el archivo completo** — si sí, usa `Read` sobre la ruta exacta.
+4. **Nunca** incluyas `repo_map.md` en su totalidad en el contexto — solo la sección relevante.
+
+### 11.3 Regeneración
+
+Si agregas, eliminas o renombras archivos de código, regenera el mapa:
+
+```bash
+python3 scripts/generate_repo_map.py
+```
+
+Esto actualiza automáticamente el árbol y todos los previews.
+
+---
+
+## 12. Instrucciones para Agentes AI — Mantenimiento de Documentación
+
+### 12.1 Principio Fundamental
+
+> **Todo cambio sustancial en el proyecto debe reflejarse en al menos un archivo de documentación.**
+
+Un cambio es "sustancial" si:
+- Modifica la arquitectura (nuevo módulo, cambio de framework, nuevo servicio externo)
+- Agrega o elimina endpoints API
+- Cambia variables de entorno requeridas
+- Modifica comandos de build, test o deploy
+- Agrega o elimina dependencias principales
+- Cambia la estructura de directorios
+- Modifica el flujo de onboarding, auth o datos críticos
+- Introduce nuevas convenciones de código
+
+### 12.2 Documentos a Actualizar según el Cambio
+
+| Tipo de Cambio | Documentos a Actualizar |
+|---|---|
+| **Arquitectura / Stack** | `AGENTS.md` (§1-3), `CLAUDE.md` (§4), `WALKTHROUGH.md`, `ROADMAP.md` |
+| **Comandos / Build** | `AGENTS.md` (§4), `INSTRUCCIONES_LOCAL.md` |
+| **Convenciones de código** | `AGENTS.md` (§5), `CLAUDE.md` (§3) |
+| **Testing / CI** | `AGENTS.md` (§6), `ROADMAP.md`, `CLAUDE.md` (§6) |
+| **Seguridad / Auth** | `AGENTS.md` (§7), `CLAUDE.md` (§5) |
+| **Despliegue** | `AGENTS.md` (§8), `RUNBOOK.md`, `CLAUDE.md` (§4) |
+| **Endpoints API** | `BACKEND_GUIDE.md` (§8), `ROADMAP.md` (API contract) |
+| **Modelos ORM / DB** | `BACKEND_GUIDE.md` (§5-6), `models.py` (código) |
+| **Lesson Engine / Lecciones** | `BACKEND_GUIDE.md` (§9), `lesson_factory/RULES.md`, `GENERATION_LOG.md` |
+| **Audio Factory** | `audio_factory/AUDIO_ENGINE.md` |
+| **i18n / Traducciones** | `src/i18n/README.md` |
+| **Analytics / Eventos** | `ANALYTICS_ONBOARDING_EVENTS.md` |
+| **Términos / Conceptos** | `GLOSSARY.md` |
+| **Estructura de archivos** | `repo_map.md` (ejecutar `scripts/generate_repo_map.py`) |
+
+### 12.3 Checklist Post-Cambio
+
+Después de implementar un cambio sustancial, verifica:
+
+- [ ] ¿El cambio afecta la arquitectura descrita en `AGENTS.md` (§1-3)? → Actualizar.
+- [ ] ¿Cambian los comandos de build/test/deploy? → Actualizar `AGENTS.md` (§4) y/o `INSTRUCCIONES_LOCAL.md`.
+- [ ] ¿Se modificaron convenciones de código? → Actualizar `AGENTS.md` (§5) y `CLAUDE.md` (§3).
+- [ ] ¿Hay nuevos endpoints o cambios en los existentes? → Actualizar `BACKEND_GUIDE.md` (§8) y `ROADMAP.md` (API contract).
+- [ ] ¿Se agregaron/eliminaron variables de entorno? → Actualizar `AGENTS.md` (§7) y `.env.example`.
+- [ ] ¿Cambió la estructura de directorios? → Regenerar `repo_map.md` (`python3 scripts/generate_repo_map.py`).
+- [ ] ¿Se introdujeron nuevos términos? → Actualizar `GLOSSARY.md`.
+- [ ] ¿Cambió el despliegue o la infraestructura? → Actualizar `AGENTS.md` (§8), `RUNBOOK.md`, y `CLAUDE.md` (§4).
+- [ ] ¿El cambio genera nueva deuda técnica? → Actualizar `WALKTHROUGH.md` (sección de deuda técnica).
+- [ ] ¿Cambia el roadmap o sprints? → Actualizar `ROADMAP.md`.
+
+### 12.4 Orden de Lectura Recomendado para Agentes Nuevos
+
+1. `AGENTS.md` — panorama completo del proyecto (este archivo)
+2. `repo_map.md` — árbol de directorios + preview de archivos
+3. `CLAUDE.md` — reglas operativas no negociables
+4. `WALKTHROUGH.md` — estado actual y deuda técnica
+5. `BACKEND_GUIDE.md` (si trabajas en backend) o documentación específica del módulo
+
+---
+
+## 13. Checklist Pre-Commit (Frontend)
 
 Antes de hacer `git commit`, revisa:
 
@@ -334,7 +469,9 @@ Antes de hacer `git commit`, revisa:
 - [ ] **ruff:** ¿`python3 -m ruff check .` está limpio?
 - [ ] **CI:** ¿Los workflows de GitHub Actions están actualizados?
 - [ ] **Build:** ¿`vite build` genera el bundle sin errores?
+- [ ] **Documentación:** ¿Los cambios sustanciales están reflejados en los documentos `*.md`? (ver §12.3)
+- [ ] **repo_map.md:** ¿Se regeneró si cambió la estructura de directorios? (`python3 scripts/generate_repo_map.py`)
 
 ---
 
-*Este documento es la fuente de verdad para agentes AI. Si cambias la arquitectura, el stack o los comandos de build, actualiza este archivo.*
+*Este documento es la fuente de verdad para agentes AI. Si cambias la arquitectura, el stack, los comandos de build, o la documentación del proyecto, actualiza este archivo y regenera `repo_map.md`.*

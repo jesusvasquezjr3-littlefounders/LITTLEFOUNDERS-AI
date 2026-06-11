@@ -126,14 +126,23 @@ backend/
 │   ├── schemas.py               # Admin-specific Pydantic schemas
 │   ├── permissions.py           # require_admin dependency
 │   ├── services.py              # Edit history recording & rollback logic
-│   ├── validators.py            # Exercise JSON structure validation (40+ types)
+│   ├── validators.py            # Exercise JSON structure validation (50+ types)
 │   └── error_messages.py        # Bilingual error formatting (ES/EN)
 │
 ├── dashboard/                   # User dashboard statistics
 │   └── endpoints.py             # Stats, recent activity, pending tasks
 │
 ├── lesson_engine/               # Lesson delivery system (v2 flat i18n)
-│   └── endpoints.py             # Adventures, sagas, lesson playback, completion
+│   ├── endpoints.py             # Adventures, sagas, lesson playback, completion
+│   └── littlefounders_lessons/  # Generated lesson JSON files (2,461 lessons)
+│
+├── lesson_factory/              # AI lesson generation pipeline
+│   ├── generate.py              # DeepSeek API lesson generator
+│   ├── validate.py              # Pedagogical & structural validator
+│   ├── curriculum/              # Blueprints for all 6 adventures
+│   ├── pedagogy_rules.json      # Rules for AI prompt construction
+│   ├── RULES.md                 # Content Quality Standards v1.2
+│   └── GENERATION_LOG.md        # Generation history & known issues
 │
 ├── reports/                     # Platform feedback & bug reports
 │   ├── endpoints.py             # Report CRUD with rate limiting
@@ -649,19 +658,21 @@ app.include_router(social_router)        # /social/*
 
 #### Lesson Engine (`/lesson-engine`)
 
+All lesson engine endpoints are **unauthenticated** — they accept optional `user_public_id` query params instead of Bearer tokens, allowing guest (play-before-login) scenarios.
+
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/lesson-engine/adventures?user_public_id=&lang=` | None | List all 6 adventures with progress |
-| `GET` | `/lesson-engine/adventures/{code}/sagas?user_public_id=` | None | List sagas for an adventure |
-| `GET` | `/lesson-engine/lessons/{code}/play?lang=` | None | Get full lesson content for playback |
-| `GET` | `/lesson-engine/lessons/{code}/next` | None | Get next lesson code in sequence |
-| `POST` | `/lesson-engine/lessons/{code}/complete?user_public_id=` | None | Mark lesson as completed |
-| `GET` | `/lesson-engine/lessons/by-adventure/{id}?saga_id=&topic_id=&lang=` | None | List lessons filtered by hierarchy |
+| `GET` | `/lesson-engine/adventures?user_public_id=&lang=` | None | List all 6 adventures with i18n title + per-user progress |
+| `GET` | `/lesson-engine/adventures/{code}/sagas?user_public_id=` | None | List sagas for an adventure with lesson progress |
+| `GET` | `/lesson-engine/lessons/{code}/play?lang=` | None | Get full lesson content + audio segments for playback |
+| `GET` | `/lesson-engine/lessons/{code}/next` | None | Get next lesson code in sequence (topic → saga → adventure) |
+| `POST` | `/lesson-engine/lessons/{code}/complete?user_public_id=` | Opt | Mark lesson completed, update streak, reward points. Bearer token optional for cross-verification |
+| `GET` | `/lesson-engine/lessons/by-adventure/{id}?saga_id=&topic_id=&user_public_id=&lang=` | None | List lessons filtered by hierarchy with progress per user |
 | `GET` | `/lesson-engine/characters` | None | List all active characters |
 | `GET` | `/lesson-engine/characters/{code}` | None | Get character details + gestures |
-| `GET` | `/lesson-engine/users/{public_id}/stats?lang=` | None | User's adventure progress stats |
-| `GET` | `/lesson-engine/users/{public_id}/streak` | None | User's streak info (7-day calendar) |
-| `GET` | `/lesson-engine/users/{public_id}/next-lesson` | None | User's global next lesson |
+| `GET` | `/lesson-engine/users/{public_id}/stats?lang=` | None | User's adventure progress stats (per-adventure breakdown) |
+| `GET` | `/lesson-engine/users/{public_id}/streak` | None | User's streak info (7-day calendar, current/max streak) |
+| `GET` | `/lesson-engine/users/{public_id}/next-lesson` | None | User's global next incomplete lesson for "Continue" button |
 
 #### Admin Panel (`/admin`)
 
@@ -720,16 +731,16 @@ All admin endpoints require **Bearer token with `admin` user type**.
 
 ## 9. Lesson Engine
 
-The lesson engine is the core content delivery system. It uses a **hierarchical structure** with hardcoded adventure/saga metadata and database-stored lesson content.
+The lesson engine is the core educational content delivery system. It uses a **4-level hierarchical structure** with hardcoded adventure/saga metadata and database-stored lesson content. The frontend renders lessons via a state-driven LessonRunner with 50+ interactive exercise types.
 
-### Content Hierarchy
+### 9.1 Content Architecture
 
 ```mermaid
 graph TD
     ADV["Adventure (6 total)<br/>e.g., Archipelago, Forest, City..."]
-    ADV --> SAGA["Saga (4-5 per adventure)<br/>e.g., Treasure Detectives, Magic Merchants..."]
-    SAGA --> TOPIC["Topic (2+ per saga)<br/>e.g., Basic Concepts, Knowledge Quiz"]
-    TOPIC --> LESSON["Lesson (N per topic)<br/>e.g., 1-1-1-1, 1-1-1-2"]
+    ADV --> SAGA["Saga (3-6 per adventure)<br/>e.g., Treasure Detectives, Savings Goals..."]
+    SAGA --> TOPIC["Topic (1-37 per saga)<br/>e.g., Basic Concepts, Market, Risk..."]
+    TOPIC --> LESSON["Lesson (1-20 per topic)<br/>e.g., 1-1-1-1, 1-1-1-2"]
 
     style ADV fill:#4dd0e1,color:#000
     style SAGA fill:#4caf50,color:#fff
@@ -737,137 +748,452 @@ graph TD
     style LESSON fill:#ab47bc,color:#fff
 ```
 
-### Adventures
+**Hierarchy dimensions:**
+- Adventure metadata → hardcoded in `endpoints.py` (`ADVENTURES_DATA`, `SAGAS_DATA`, `TOPICS_DATA`)
+- Lesson content → stored in PostgreSQL `lessons` table (`content_es`/`content_en` JSON columns)
+- 2,461 lessons total across 6 adventures, generated by the Lesson Factory pipeline
 
-| ID | Code | Title (EN) | Age Range | Theme Color |
-|---|---|---|---|---|
-| 1 | `archipelago` | The Barter Archipelago | 5-7 | `#4dd0e1` |
-| 2 | `forest` | The Forest of Abundance | 8-9 | `#4caf50` |
-| 3 | `city` | The Digital City | 10-12 | `#ff7043` |
-| 4 | `valley` | The Valley of Inventors | 13-14 | `#ab47bc` |
-| 5 | `kingdom` | The Realm of Titans | 15-17 | `#ffd54f` |
-| 6 | `cosmos` | Financial Cosmos | 18+ | `#7e57c2` |
+### 9.2 Adventures (Hardcoded)
 
-### Characters (Narrators)
+All 6 adventures are defined as a static list in `ADVENTURES_DATA`. Titles are i18n-keyed (fetched from frontend `lang` param).
 
-| Code | Name | Default Gesture | Available Gestures |
+| ID | Code | Title (ES) | Title (EN) | Age Range | Theme Color |
+|---|---|---|---|---|---|
+| 1 | `archipelago` | El Archipiélago del Trueque | The Barter Archipelago | 5-7 | `#4dd0e1` |
+| 2 | `forest` | El Bosque de la Abundancia | The Forest of Abundance | 8-9 | `#4caf50` |
+| 3 | `city` | La Ciudad Digital | The Digital City | 10-12 | `#ff7043` |
+| 4 | `valley` | El Valle de los Inventores | The Valley of Inventors | 13-14 | `#ab47bc` |
+| 5 | `kingdom` | El Reino de los Titanes | The Realm of Titans | 15-17 | `#ffd54f` |
+| 6 | `cosmos` | Cosmos Financiero | Financial Cosmos | 18+ | `#7e57c2` |
+
+### 9.3 Sagas & Topics (Hardcoded)
+
+Sagas are hardcoded in `SAGAS_DATA` (dictionary keyed by adventure ID). Topics are hardcoded in `TOPICS_DATA` (dictionary keyed by `(adventure_id, saga_id)` tuple).
+
+**Example — Adventure 1 (Archipelago) sagas:**
+
+| ID | Code | Title (ES) | Title (EN) |
 |---|---|---|---|
-| `liruf` | Liruf | `happy` | happy, sad, excited, thinking, shocked |
-| `dina` | Dina | `happy` | neutral, happy, surprised, wink |
-| `dr_rho` | Dr. Rho | `wise` | neutral, wise, mysterious, explaining, surprised |
-| `zara_vex` | Zara Vex | `happy` | neutral, happy, flirty, curious, excited |
+| 1 | `savings` | Detectives del Tesoro | Treasure Detectives |
+| 2 | `exchange` | Mercaderes Mágicos | Magic Merchants |
+| 3 | `money_forms` | Formas del Dinero | Forms of Money |
+| 4 | `needs_wants` | Necesidades y Deseos | Needs and Wants |
+| 5 | `first_savings` | Mi Primer Ahorro | My First Savings |
 
-### Lesson Playback Flow
+Each saga contains 1-37 topics, and each topic contains 1-20 lessons (varying by complexity).
+
+### 9.4 Characters (Narrators)
+
+Four narrator characters drive the pedagogical narrative. The backend normalizes character codes through `CHARACTER_CODE_MAP` to accept variations (`drrho` → `dr_rho`, `zaravex` → `zara_vex`).
+
+| Code | Name | Gestures |
+|---|---|---|
+| `liruf` | Liruf | happy, sad, excited, thinking, shocked |
+| `dina` | Dina | neutral, happy, surprised, wink |
+| `dr_rho` | Dr. Rho | neutral, wise, mysterious, explaining, surprised |
+| `zara_vex` | Zara Vex | neutral, happy, flirty, curious, excited |
+
+### 9.5 Lesson Data Model
+
+The `Lesson` ORM model uses **flat i18n** — bilingual content lives in the same row:
+
+```python
+class Lesson(Base):
+    __tablename__ = "lessons"
+
+    lesson_code   = Column(String(50), unique=True)  # "1-1-1-1"
+    title_es      = Column(String(200))
+    title_en      = Column(String(200))
+    description_es = Column(Text)
+    description_en = Column(Text)
+    content_es    = Column(JSON)   # Full exercise array in Spanish
+    content_en    = Column(JSON)   # Full exercise array in English
+    duration      = Column(Integer)  # Minutes
+    points_reward = Column(Integer, default=10)
+    adventure_level = Column(Integer)
+    saga_level      = Column(Integer)
+    topic_level     = Column(Integer)
+    lesson_number   = Column(Integer)
+    age_rate      = Column(String(20))  # "5-7", "8-9", etc.
+```
+
+**Lesson code convention:** `{adventure}-{saga}-{topic}-{lesson}` (e.g. `1-3-22-1`).
+
+Related models:
+- `UserLessonProgress` — per-user completion, score, time spent, points earned
+- `UserLearningStreak` — daily activity tracking for streak calculation
+- `LessonAudioSegment` — per-exercise audio segments (narrative, feedback, instructions)
+
+### 9.6 Lesson Generation Pipeline (Lesson Factory)
+
+The `lesson_factory/` directory contains the AI-powered content generation system that produced the 2,461 lessons currently in production.
+
+**Components:**
+
+| File | Purpose |
+|---|---|
+| `generate.py` | DeepSeek API client: constructs prompts with curriculum blueprints + pedagogy rules, generates bilingual JSON lessons |
+| `validate.py` | Structural & pedagogical validator: checks JSON schema, exercise type validity, field requirements, objective diversity |
+| `curriculum/adventure_{1-6}.json` | Blueprints with per-adventure content rules, allowed exercise types, vocabulary constraints, age adaptation |
+| `pedagogy_rules.json` | Machine-readable rules for AI prompt construction (character personas, exercise schemas, forbidden patterns) |
+| `RULES.md` | Content Quality Standards v1.2 — 7 non-negotiable principles, 5-phase cognitive structure, age adaptation table |
+| `GENERATION_LOG.md` | Detailed generation history (v1.0: 2,405 lessons; v2.0: +1,466 regenerated, ~$9.89 total API cost) |
+
+**Generation flow:**
+```
+Curriculum Blueprint → Prompt Construction → DeepSeek API → JSON Lesson → Validator → littlefounders_lessons/
+```
+
+Key specifications:
+- Parallel generation: up to 32 simultaneous processes (one per saga)
+- Max tokens: 8,192 per lesson, timeout 300s
+- 5 cognitive phases per concept: Why → What → How → Error → Connection
+- 5 exercise objectives: Recognize, Calculate, Compare, Decide, Apply
+- 8-18 exercises per lesson (Duolingo-style depth)
+
+### 9.7 API Endpoints — Detailed Reference
+
+#### `GET /adventures` — List Adventures
+Returns all 6 adventures with per-user progress. Data is a merge of hardcoded `ADVENTURES_DATA` + DB counts from `lessons` and `user_lesson_progress` tables.
+
+**Params:** `user_public_id` (optional), `lang` (default `"es"`)
+
+**Response fields per adventure:** `id`, `code`, `title` (i18n), `description`, `age_range`, `theme_color`, `background_scene`, `total_sagas`, `completed_sagas`, `total_lessons`, `completed_lessons`, `progress_percent`
+
+#### `GET /adventures/{code}/sagas` — List Sagas
+Returns hardcoded sagas for an adventure with live lesson progress from DB.
+
+**Params:** `user_public_id` (optional), `code` (adventure code: `archipelago`, `forest`, etc.)
+
+#### `GET /lessons/{code}/play` — Get Lesson for Playback
+Returns full lesson content with audio segments for the LessonRunner.
+
+**Params:** `code` (e.g., `"1-1-1-1"`), `lang` (`"es"`/`"en"`)
+
+**Response structure:**
+```json
+{
+  "lesson": {
+    "id": "uuid",
+    "code": "1-1-1-1",
+    "title": "...",
+    "description": "...",
+    "saga": "Treasure Detectives",
+    "saga_code": "savings",
+    "adventure": "The Barter Archipelago",
+    "adventure_code": "archipelago",
+    "topic": "Basic Concepts",
+    "topic_code": "basics",
+    "language": "es"
+  },
+  "meta": {
+    "estimated_duration_seconds": 180,
+    "points_reward": 10,
+    "xp_reward": 25
+  },
+  "timeline": [
+    {
+      "id": 1,
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "order_index": 0,
+      "start_time_ms": 0,
+      "pause_at_ms": null,
+      "points": 5,
+      "content": { "transcript": "..." },
+      "correct_answer": null,
+      "feedback": { "success": "...", "error": "..." },
+      "audio": {
+        "main": { "url": "...", "duration_ms": 5000, "emotion": "happy", "transcript": "...", "characterCode": "liruf" },
+        "feedback_success": { "url": "...", "duration_ms": 2000, ... }
+      }
+    }
+  ]
+}
+```
+
+**Audio injection:** Audio segments are fetched from `lesson_audio_segments` table grouped by `exercise_id` (0-based index matching position in `content_es`/`content_en` arrays) and `target_field` (`main`, `statement`, `question`, `instruction`, `feedback_success`, `feedback_error`). Failed audio queries are non-fatal — lesson plays silently.
+
+#### `POST /lessons/{code}/complete` — Complete Lesson
+Marks a lesson as completed, updates streak, awards points.
+
+**Params:** `code`, `user_public_id` (required in query)
+
+**Request body:**
+```json
+{
+  "score": 100,
+  "time_spent_seconds": 180,
+  "exercises_results": [],
+  "local_date": "2026-06-11"
+}
+```
+
+**Cross-verification:** If the request includes a Bearer token, the token's user identity is verified against `user_public_id`. A mismatch returns 403. This prevents stale localStorage `public_id` values from writing progress to the wrong account.
+
+**`local_date` parameter:** User's local YYYY-MM-DD date for timezone-accurate streak tracking. The frontend sends this to avoid server-timezone discrepancies.
+
+**Response:**
+```json
+{
+  "success": true,
+  "points_earned": 10,
+  "xp_earned": 25,
+  "new_streak": 5,
+  "max_streak": 12,
+  "streak_extended": true,
+  "was_first_today": true,
+  "last_activity_date": "2026-06-11",
+  "lessons_completed": 48,
+  "minutes_studied": 360,
+  "total_points": 520
+}
+```
+
+- `was_first_today`: `true` only on the user's FIRST completion of the calendar day. The frontend uses this to trigger the streak celebration animation.
+- `streak_extended`: `true` when the current streak value increased (vs. being maintained by completing more lessons the same day).
+
+#### `GET /lessons/{code}/next` — Get Next Lesson
+Returns the strictly next lesson in sequence: same topic → next topic → next saga → next adventure.
+
+**Response:** `{ "next_code": "1-1-1-2" | null, "is_last": true | false }`
+
+#### `GET /lessons/by-adventure/{id}` — List Lessons by Hierarchy
+Returns all lessons for an adventure/saga/topic with per-user progress. Uses `.options(defer(Lesson.content_es), defer(Lesson.content_en))` to avoid loading heavy JSON data in list views.
+
+**Params:** `adventure_id` (path), `saga_id`, `topic_id`, `user_public_id`, `lang`
+
+**Response:** `{ adventure_id, total_lessons, completed_lessons, lessons: [...] }`
+
+#### `GET /users/{public_id}/stats` — User Lesson Stats
+Returns per-adventure progress breakdown + aggregate stats.
+
+**Response:** `{ adventure_progress: [...], total_xp, current_streak, max_streak, lessons_completed, minutes_studied }`
+
+#### `GET /users/{public_id}/streak` — User Streak Info
+Returns 7-day activity calendar + current/max streak.
+
+**Response:** `{ current_streak, max_streak, studied_today, week_activity: [{date, lessons, minutes, active}], total_days_studied }`
+
+#### `GET /users/{public_id}/next-lesson` — Global Next Lesson
+Returns the absolute next incomplete lesson for the user (used by "Continue Learning" / "Resume" button). Scans all adventures in sequence. If no lessons completed, returns the very first lesson (`1-1-1-1`).
+
+### 9.8 Lesson Playback Flow
 
 ```mermaid
 sequenceDiagram
-    participant FE as Frontend
+    participant FE as Frontend (LessonRunner)
     participant API as /lesson-engine
     participant DB as PostgreSQL
 
     FE->>API: GET /lessons/{code}/play?lang=es
     API->>DB: SELECT * FROM lessons WHERE lesson_code = code
     API->>API: Select content_es or content_en based on lang
-    API->>API: Build timeline from JSON exercise array
-    API->>API: Normalize character codes
+    API->>DB: SELECT audio FROM lesson_audio_segments WHERE lesson_id = ...
+    API->>API: Build timeline + inject AudioSegmentMap per exercise
+    API->>API: Normalize character codes via CHARACTER_CODE_MAP
     API->>FE: {lesson, meta, timeline[]}
 
-    Note over FE: User completes exercises...
+    Note over FE: LessonRunner state machine:<br/>IDLE → PLAYING → WAITING_INPUT → CHECKING →<br/>FEEDBACK_SUCCESS/ERROR → COMPLETED
 
     FE->>API: POST /lessons/{code}/complete?user_public_id=xxx
+    Note over FE: Body: {score, time_spent_seconds, local_date}
+    API->>API: Bearer token cross-verification (if present)
     API->>DB: Find/create UserLessonProgress
     API->>DB: Update progress (completed=true, score, time)
     API->>DB: Record UserLearningStreak for today
-    API->>DB: Calculate streak (consecutive days)
+    API->>DB: Calculate streak (consecutive days from distinct activity dates)
     API->>DB: Update user.current_streak, user.max_streak
-    API->>FE: {success, points_earned, xp_earned, new_streak}
+    API->>FE: {success, points_earned, xp_earned, new_streak, <br/>       streak_extended, was_first_today, last_activity_date,<br/>       lessons_completed, minutes_studied, total_points}
+
+    Note over FE: StreakCelebration (if was_first_today) →<br/>LessonCelebration (animated counters) →<br/>Navigate to next lesson
 ```
 
-### Exercise Types (40+)
+### 9.9 Exercise Types (50+)
 
-Exercises are stored as JSON arrays in `content_es`/`content_en`. Each exercise has a `type` field and a `content` object with type-specific fields.
+Exercises are stored as JSON arrays in `content_es`/`content_en` columns. Each exercise has a `type` field, a type-specific `content` object, optional `correct_answer`, and `feedback`.
 
-#### Foundation (11 types)
+The frontend `useLessonState.ts` centralizes validation for all types via a single `validateAnswer()` function that handles each type's specific comparison logic (string matching, numeric tolerance, array position, set comparison, etc.).
 
-| Type | Required Content Fields |
+#### Foundation
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `intro_narrative` | `transcript` | Always correct (consumption) |
+| `multiple_choice` | `question`, `options[]` | Option ID match |
+| `true_false` | `statement`, `instruction` | Boolean via `isTrue` |
+| `fill_blank` | `segments[]`, `options[]` | String/word-bank match |
+| `classification` | `items[]`, `categories{}` | Category-to-item map |
+| `matching_pairs` | `pairs[]` | Self-validating (always correct) |
+| `sequencing` | `items[]` | Position-by-position array |
+| `tap_action` | `statement`, `items[]` | Set of target IDs |
+| `story_mode` | `pages[]` | String ID or always correct |
+| `math_challenge` | `question` | Numeric with tolerance (0.01) |
+| `word_scramble` | `word` | Case-insensitive string |
+
+#### Interactive
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `roleplay_chat` | `dialogue[]`, `choices[]` | Option ID match |
+| `estimation_slider` | `min`, `max`, `correctRangeId` | Numeric range or tolerance |
+| `risk_reward` | `question`, `risk_options[]` | Option ID match |
+| `concept_builder` | `question`, `concepts[]` | Array position match |
+| `quiz_battle` | `questions[]` | Option ID match |
+
+#### Economy & Budget
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `shop_sim` | `budget`, `products[]` | Total spent / budget constraint |
+| `coin_counter` | `targetAmount`, `coins_available[]` | Numeric comparison |
+| `price_detective` | `products[]` | Option ID match |
+| `bill_splitter` | `people`, `items[]` | Per-person calculation |
+| `budget_builder` | `budget`, `items[]` | Option/min-category/allocation |
+| `expense_timeline` | `expenses[]` | Array position match |
+| `subscription_tracker` | *(varies)* | Always correct (simulator) |
+
+#### Savings & Investment
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `savings_race` | `goal`, `strategies[]` | Always correct (simulator) |
+| `emergency_fund` | `initialFund`, `events[]` | Always correct (simulator) |
+| `goal_roadmap` | `goals[]` | Always correct (simulator) |
+| `interest_calculator` | *(varies)* | Always correct (simulator) |
+| `portfolio_builder` | `assets[]` | Always correct (simulator) |
+| `mystery_investment` | `totalCoins`, `boxes[]` | Option ID match |
+| `passive_income` | `streams[]`, `targetIncome` | Always correct (simulator) |
+| `opportunity_cost` | `options[]` | Option ID match |
+| `market_reaction` | `options[]` | Option ID match |
+
+#### Advanced
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `inflation_simulator` | `product` | Always correct (simulator) |
+| `credit_score` | `initialScore`, `scenarios[]` | Always correct (simulator) |
+| `debt_strategy` | `debts[]`, `monthlyPayment` | Option ID match |
+| `tax_puzzle` | `pieces[]` | Option ID match |
+| `salary_comparison` | `offers[]` | Always correct (simulator) |
+| `spot_trap` | `messages[]` / `scenarios[]` | Trap IDs from content |
+| `impact_meter` | `budget`, `causes[]` | Option ID match |
+| `mindset_comparison` | `scenario` | Always correct (simulator) |
+
+#### Comparison & Case Study (AI-generated types)
+
+| Type | Content Fields | Validation |
+|---|---|---|
+| `comparison` | *(varies)* | Option ID match |
+| `compare` | *(varies)* | Option ID match |
+| `comparison_chart` | *(varies)* | Option ID match |
+| `comparison_matrix` | *(varies)* | Option ID match |
+| `comparison_slider` | *(varies)* | Option ID match |
+| `comparison_table` | *(varies)* | Option ID match |
+| `comparison_challenge` | *(varies)* | Option ID match |
+| `case_study` | *(varies)* | Option ID match |
+| `case_real` | *(varies)* | Option ID match |
+| `decision_challenge` | *(varies)* | Option ID match |
+| `decision_matrix` | *(varies)* | Option ID match |
+
+#### Legacy / Unmapped
+
+| Type | Notes |
 |---|---|
-| `intro_narrative` | `transcript` |
-| `multiple_choice` | `question`, `options` |
-| `true_false` | `statement` |
-| `fill_blank` | `segments`, `options` |
-| `classification` | `items`, `categories` |
-| `matching_pairs` | `pairs` |
-| `sequencing` | `items` |
-| `tap_action` | `items` |
-| `story_mode` | `pages` |
-| `math_challenge` | `question` |
-| `word_scramble` | `word` |
+| `drag_drop` | No specific validation — uses `extractCorrectId` |
+| `sorting_buckets` | No specific validation — uses `extractCorrectId` |
+| `image_hotspot` | No specific validation — uses `extractCorrectId` |
+| `balance_scale` | No specific validation — uses `extractCorrectId` |
 
-#### Interactive (5 types)
+**Simulator types:** Exercise types marked "always correct (simulator)" use `handleSimulatorSubmit` in LessonRunner, which always succeeds. These are open-ended simulations that can't be wrong (e.g., dragging sliders, exploring scenarios) — they provide experience without failure.
 
-| Type | Required Content Fields |
+### 9.10 Audio System
+
+Each exercise can have granular audio via the `LessonAudioSegment` model, keyed by `(lesson_id, exercise_id, language_code, target_field)`.
+
+**`target_field` values:**
+
+| Field | Purpose |
 |---|---|
-| `roleplay_chat` | `dialogue`, `choices` |
-| `estimation_slider` | `min`, `max` |
-| `risk_reward` | `question`, `risk_options` |
-| `concept_builder` | `question`, `concepts` |
-| `quiz_battle` | `questions` |
+| `main` | Primary narration / transcript |
+| `statement` | Exercise statement (true/false, tap_action) |
+| `question` | Question text (multiple_choice, math_challenge) |
+| `instruction` | Instructions for the exercise |
+| `feedback_success` | Success feedback narration |
+| `feedback_error` | Error feedback narration |
 
-#### Economy & Budget (7 types)
+The frontend `useLessonAudio` hook defines per-type `LOAD_SEQUENCE` to determine which audio fields to play and in what order. It uses a resilient design: missing URLs, 404s, and autoplay blocks are handled silently.
 
-| Type | Required Content Fields |
-|---|---|
-| `shop_sim` | `budget`, `products` |
-| `coin_counter` | `targetAmount`, `coins_available` |
-| `price_detective` | `products` |
-| `bill_splitter` | `people`, `items` |
-| `budget_builder` | `budget`, `items` |
-| `expense_timeline` | `expenses` |
-| `subscription_tracker` | *(none required)* |
+**Audio pipeline:** Admin generates TTS via the LF Audio Engine client (`scripts/lf_audio_client.py`) and uploads to Supabase Storage. The `POST /admin/audio/generate` endpoint orchestrates this.
 
-#### Savings & Investment (9 types)
+### 9.11 Validation & State Machine (Frontend)
 
-| Type | Required Content Fields |
-|---|---|
-| `savings_race` | `goal`, `strategies` |
-| `emergency_fund` | `initialFund`, `events` |
-| `goal_roadmap` | `goals` |
-| `interest_calculator` | *(none required)* |
-| `portfolio_builder` | `assets` |
-| `mystery_investment` | `totalCoins`, `boxes` |
-| `passive_income` | `streams`, `targetIncome` |
-| `opportunity_cost` | `options` |
-| `market_reaction` | `options` |
+The LessonRunner (`LessonRunner.tsx`) uses a centralized state machine:
 
-#### Advanced (8 types)
+```
+IDLE → PLAYING → WAITING_INPUT → CHECKING → FEEDBACK_SUCCESS/FEEDBACK_ERROR → (next) → PLAYING/COMPLETED
+```
 
-| Type | Required Content Fields |
-|---|---|
-| `inflation_simulator` | `product` |
-| `credit_score` | `initialScore`, `scenarios` |
-| `debt_strategy` | `debts`, `monthlyPayment` |
-| `tax_puzzle` | `pieces` |
-| `salary_comparison` | `offers` |
-| `spot_trap` | `messages` |
-| `impact_meter` | `budget`, `causes` |
-| `mindset_comparison` | `scenario` |
+- **`IDLE`** — Start screen with character, lesson title, rewards, duration
+- **`PLAYING`** — Narration audio playing (auto-advances to WAITING_INPUT)
+- **`WAITING_INPUT`** — User can interact with the exercise
+- **`CHECKING`** — Validating answer via centralized `validateAnswer()`
+- **`FEEDBACK_SUCCESS/ERROR`** — Shows result, plays feedback audio
+- **`COMPLETED`** — Calls `completeLesson()` API, shows celebrations, navigates to next lesson
 
-### Streak Calculation
+**Lives system:** Users get 5 lives per lesson. Each incorrect answer costs 1 life. At 0 lives, a "Game Over" dialog offers retry or exit.
+
+The `validateAnswer()` function in `useLessonState.ts` is the single source of truth — a 950+ line function that handles ALL exercise types with type-specific comparison logic:
+
+- **Option-based:** String ID comparison via `extractCorrectId()` (tries 40+ field name variants)
+- **Numeric:** Comparison with configurable tolerance (default 0.01)
+- **Array/Sequence:** Position-by-position comparison
+- **Set-based:** Target ID set comparison (tap_action)
+- **Map-based:** Normalized classification-to-category matching
+- **Consumption-only:** Always correct (narratives, stories)
+- **Simulator:** Always correct via separate handler
+
+### 9.12 Streak Calculation
 
 ```mermaid
 graph TD
-    COMPLETE["Lesson Completed"] --> RECORD["Record activity in<br/>user_learning_streaks<br/>(date, lessons, minutes, points)"]
-    RECORD --> FETCH["Fetch all distinct<br/>activity dates DESC"]
-    FETCH --> TODAY{"Studied today?"}
-    TODAY -->|Yes| COUNT["streak = 1<br/>Check yesterday..."]
-    TODAY -->|No| YEST{"Studied yesterday?"}
-    YEST -->|Yes| COUNT2["streak = 1<br/>Check day before..."]
-    YEST -->|No| ZERO["streak = 0"]
-    COUNT --> LOOP["While previous day<br/>has activity: streak++"]
-    COUNT2 --> LOOP
-    LOOP --> UPDATE["Update user.current_streak<br/>user.max_streak = max(max, current)"]
+    COMPLETE["Lesson Completed<br/>(POST /complete)"] --> RECORD["Record activity in<br/>user_learning_streaks<br/>(date, lessons, minutes, points)"]
+    RECORD --> FLUSH["db.flush() — critical: new row<br/>must be visible to query below"]
+    FLUSH --> FETCH["SELECT DISTINCT date<br/>FROM user_learning_streaks<br/>ORDER BY date DESC"]
+    FETCH --> TODAY{"Today in<br/>activity_dates?"}
+    TODAY -->|Yes| COUNT["streak = 1<br/>⬇️"]
+    TODAY -->|No| ZERO["streak = 0"]
+    COUNT --> LOOP["check_date = yesterday<br/>while check_date in activity_dates:<br/>  streak += 1<br/>  check_date -= 1 day"]
+    LOOP --> UPDATE["user.current_streak = streak<br/>user.max_streak = max(max, streak)"]
+    UPDATE --> RESP["Return: {new_streak, streak_extended,<br/>       was_first_today, last_activity_date}"]
 ```
 
+Key design decisions:
+- **`local_date` from frontend:** Avoids server timezone issues. The client sends its own YYYY-MM-DD.
+- **`was_first_today`:** `true` only on the first completion of the calendar day. Frontend uses this to gate streak celebration animations.
+- **`streak_extended`:** `true` when the numeric streak value increased (not just maintained by doing multiple lessons the same day).
+- **`db.flush()` after insert:** Required because `autoflush=False` in database.py — without explicit flush, a newly-added streak row wouldn't be visible to the activity dates query.
+- **Calculated from `user_learning_streaks`:** Not stored as a single denormalized counter — the streak is recomputed from the distinct activity date history on every completion.
+
+### 9.13 Content Quality Standards
+
+The `lesson_factory/RULES.md` defines the pedagogical framework:
+
+**7 Non-Negotiable Principles:**
+1. Teach through action (decide, calculate, analyze), not passive reading
+2. Max 5-7 new concepts per lesson
+3. Anchor every concept to a real, age-appropriate situation
+4. Feedback must explain *why* — not just mark right/wrong
+5. ≥80% accuracy required to advance
+6. No jargon without immediate contextual definition
+7. No formulas without units, range, or clear purpose
+
+**5-Phase Cognitive Structure (per concept):**
+1. Why it Matters → 2. What It Is → 3. How to Use It → 4. What Error to Avoid → 5. How It Connects
+
+**5 Exercise Objectives:** Recognize, Calculate, Compare, Decide, Apply
+
+**Age Adaptation:** 5 groups (6-8, 9-11, 12-14, 15-17, 18+) with specific language, examples, and interaction modes per group.
 ---
 
 ## 10. Admin Panel
@@ -917,7 +1243,7 @@ sequenceDiagram
 
 The `admin/validators.py` module validates exercise JSON structures before saving:
 
-1. Checks that `type` is one of the 40 valid exercise types
+1. Checks that `type` is one of the 50+ valid exercise types
 2. Validates required content fields for each type
 3. Checks `correct_answer` presence for types that require it
 4. Validates structural integrity (options arrays, category lists, etc.)
