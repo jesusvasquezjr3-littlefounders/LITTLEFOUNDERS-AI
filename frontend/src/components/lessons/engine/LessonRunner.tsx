@@ -71,19 +71,44 @@ import {
     Star,
     Loader2,
     AlertCircle,
-    ArrowRight,
-    PartyPopper,
+    Flame,
     Volume2,
     VolumeX,
     BatteryLow
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
-import { normalizeGesture } from '@/utils/gestureMapper';
 
 
 interface LessonRunnerProps {
     lessonCode?: string;
+}
+
+// Character code mapping - normalize all variations to canonical codes
+const CHARACTER_CODE_MAP: Record<string, string> = {
+    // Canonical codes
+    'liruf': 'liruf',
+    'dina': 'dina',
+    'dr_rho': 'dr_rho',
+    'zara_vex': 'zara_vex',
+
+    // Variations without underscores (from DB)
+    'drrho': 'dr_rho',
+    'zaravex': 'zara_vex',
+
+    // Camel case variations
+    'DrRho': 'dr_rho',
+    'ZaraVex': 'zara_vex',
+
+    // Lowercase variations
+    'dr rho': 'dr_rho',
+    'zara vex': 'zara_vex'
+};
+
+/** Resolve a raw character code (from DB) to a canonical one */
+function normalizeCharacterCode(rawCode: unknown): string {
+    const normalized = String(rawCode ?? '').toLowerCase().trim();
+    return CHARACTER_CODE_MAP[normalized] || CHARACTER_CODE_MAP[String(rawCode)] || 'liruf';
 }
 
 export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) {
@@ -132,13 +157,18 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const isLessonActive = state !== 'IDLE' && state !== 'COMPLETED';
     const {
         isNarrativeAudioPlaying,
-        playOnLoad: playNarrativeOnLoad,
         playFeedback: playNarrativeFeedback,
         stopAudio: stopNarrativeAudio,
     } = useLessonAudio(currentExercise, audioMuted, isLessonActive);
 
     // Energy system (lives)
     const [lives, setLives] = useState(5);
+
+    // In-lesson combo: consecutive correct answers (resets on error / new lesson)
+    const [combo, setCombo] = useState(0);
+
+    // Bumps every time a life is lost — used to replay the energy chip shake animation
+    const [lifeLossTick, setLifeLossTick] = useState(0);
 
     // Track lesson start time to calculate real duration
     // Starts as null — only set when user presses "Start" (not on mount)
@@ -199,13 +229,25 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         const isCorrect = submitAnswer(answer);
         if (isCorrect) {
             playSound('edu_success');
-            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
+            setCombo(c => {
+                const newCombo = c + 1;
+                // Escalating celebration: bigger burst the longer the combo
+                confetti({
+                    particleCount: Math.min(50 + newCombo * 15, 140),
+                    spread: Math.min(50 + newCombo * 8, 100),
+                    origin: { y: 0.7 },
+                    disableForReducedMotion: true
+                });
+                return newCombo;
+            });
             setLocalFeedback('success');
         } else {
             playSound('edu_error');
+            setCombo(0);
+            setLifeLossTick(t => t + 1);
             setLives(l => {
-                const newLives = l - 1;
-                if (newLives <= 0) {
+                const newLives = Math.max(0, l - 1);
+                if (newLives <= 0 && !gameOverTimerRef.current) {
                     gameOverTimerRef.current = setTimeout(() => setShowGameOver(true), 1000);
                 }
                 return newLives;
@@ -222,7 +264,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     const handleSimulatorSubmit = useCallback((answer: any): boolean => {
         const isCorrect = submitAnswer(answer);
         playSound('edu_success');
-        confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 }, disableForReducedMotion: true });
         setLocalFeedback('success');
         playNarrativeFeedback(true);
         return isCorrect;
@@ -277,36 +319,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return 'happy'; // Friendly default
     };
 
-// Character code mapping - normalize all variations to canonical codes
-// Defined OUTSIDE component to avoid recreation on every render
-const CHARACTER_CODE_MAP: Record<string, string> = {
-    // Canonical codes
-    'liruf': 'liruf',
-    'dina': 'dina',
-    'dr_rho': 'dr_rho',
-    'zara_vex': 'zara_vex',
-
-    // Variations without underscores (from DB)
-    'drrho': 'dr_rho',
-    'zaravex': 'zara_vex',
-
-    // Camel case variations
-    'DrRho': 'dr_rho',
-    'ZaraVex': 'zara_vex',
-
-    // Lowercase variations
-    'dr rho': 'dr_rho',
-    'zara vex': 'zara_vex'
-};
-
     // Get current character code from exercise with normalization
-    const getCharacterCode = (): string => {
-        const rawCode = currentExercise?.character_code || 'liruf';
-        // Normalize the code using the mapping dictionary
-        // Safeguard: String() wrapper prevents crash if rawCode is somehow null/number
-        const normalized = String(rawCode ?? '').toLowerCase().trim();
-        return CHARACTER_CODE_MAP[normalized] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
-    };
+    const getCharacterCode = (): string =>
+        normalizeCharacterCode(currentExercise?.character_code || 'liruf');
 
     // Get current text to display
     // Prioridad de contenido:
@@ -602,6 +617,9 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
         setShowGameOver(false);
         setLocalFeedback('none');
         setLives(5);
+        setCombo(0);
+        setLifeLossTick(0);
+        isSubmittingRef.current = false;
         hasCompletedOnceRef.current = false;
         celebrationShownRef.current = false;
         lessonStartTimeRef.current = null;
@@ -614,6 +632,27 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
 
     // Close lesson — always go to /learn (not navigate(-1) which could go to a previous lesson)
     const handleClose = () => navigate('/learn');
+
+    // ─── Full restart of the lesson run (celebration retry / game-over retry) ───
+    // Resets everything a fresh attempt needs: lives, combo, feedback, submit lock
+    // and any pending game-over timer. Without these resets, a retry that starts on
+    // the same exercise index left isSubmittingRef=true and localFeedback='error',
+    // blocking all further submissions.
+    const restartLessonRun = useCallback(() => {
+        if (gameOverTimerRef.current) {
+            clearTimeout(gameOverTimerRef.current);
+            gameOverTimerRef.current = null;
+        }
+        isSubmittingRef.current = false;
+        setLocalFeedback('none');
+        setLives(5);
+        setCombo(0);
+        setShowGameOver(false);
+        stopNarrativeAudio();
+        lessonStartTimeRef.current = Date.now();
+        startLesson();
+        playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
+    }, [startLesson, playBGM, stopNarrativeAudio]);
 
     // ============ LOADING STATE ============
     if (loading) {
@@ -647,10 +686,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
 
     // ============ IDLE STATE - START SCREEN ============
     if (state === 'IDLE') {
-        const startCharacterCode = (() => {
-            const rawCode = data.timeline[0]?.character_code || 'liruf';
-            return CHARACTER_CODE_MAP[String(rawCode ?? '').toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
-        })();
+        const startCharacterCode = normalizeCharacterCode(data.timeline[0]?.character_code || 'liruf');
 
         return (
             <div className="fixed inset-0 bg-background flex flex-col overflow-hidden">
@@ -698,7 +734,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                                 </span>
                             </div>
                             <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '550ms', animationFillMode: 'backwards' }}>
-                                <Zap className="w-5 h-5 text-blue-500 fill-blue-500" />
+                                <Clock className="w-5 h-5 text-blue-500" />
                                 <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
                                     {data.meta.estimated_duration_seconds >= 60
                                         ? `${Math.round(data.meta.estimated_duration_seconds / 60)} min`
@@ -732,7 +768,12 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
     }
 
     // ============ ACTIVE LESSON ============
-    const exerciseNumber = `${currentExerciseIndex + 1}/${totalExercises}`;
+    // Duolingo-style progress: the bar reflects COMPLETED exercises, and fills the
+    // current segment the moment the user answers correctly (instant reward signal).
+    const completedUnits = currentExerciseIndex + (localFeedback === 'success' || state === 'COMPLETED' ? 1 : 0);
+    const displayProgress = totalExercises > 0
+        ? Math.min(100, Math.round((completedUnits / totalExercises) * 100))
+        : progress;
 
     return (
         <div className="fixed inset-0 bg-background flex flex-col">
@@ -752,15 +793,33 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                 <div className="flex-1 h-5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 relative shadow-inner">
                     <div
                         className="h-full bg-green-500 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
-                        style={{ width: `${progress}%` }}
+                        style={{ width: `${displayProgress}%` }}
                     >
                         <div className="absolute top-1 left-2 right-2 h-1.5 bg-white/30 rounded-full" />
                         <div className="animate-shimmer-sweep" />
                     </div>
                 </div>
 
-                {/* Energy (formerly Lives) */}
-                <div className="flex items-center gap-1.5 bg-red-100 dark:bg-red-500/20 px-3 py-1.5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 shadow-sm">
+                {/* Combo streak (2+ consecutive correct answers) */}
+                {combo >= 2 && (
+                    <div
+                        key={`combo-${combo}`}
+                        className="flex items-center gap-1 bg-amber-100 dark:bg-amber-500/20 px-2.5 py-1.5 rounded-2xl border-2 border-amber-300 dark:border-amber-500/30 shadow-sm animate-bounce-in-scale"
+                        aria-label={t('combo', { count: combo, defaultValue: '¡Racha x{{count}}!' })}
+                    >
+                        <Flame className="w-5 h-5 text-amber-500 fill-amber-500" />
+                        <span className="text-base font-bold text-amber-600 dark:text-amber-400">x{combo}</span>
+                    </div>
+                )}
+
+                {/* Energy (formerly Lives) — shakes on each life lost */}
+                <div
+                    key={`energy-${lifeLossTick}`}
+                    className={cn(
+                        "flex items-center gap-1.5 bg-red-100 dark:bg-red-500/20 px-3 py-1.5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 shadow-sm",
+                        lifeLossTick > 0 && "animate-shake"
+                    )}
+                >
                     <Zap className="w-5 h-5 text-red-500 fill-red-500" />
                     <span className="text-base font-bold text-red-600 dark:text-red-400">{lives}</span>
                 </div>
@@ -1403,9 +1462,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                     setShowSuccess(false);
                     setShowStreakCelebration(false);
                     celebrationShownRef.current = false;
-                    lessonStartTimeRef.current = null;
-                    startLesson();
-                    playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
+                    restartLessonRun();
                 }}
             />
 
@@ -1441,12 +1498,7 @@ const CHARACTER_CODE_MAP: Record<string, string> = {
                                 {t('game_over.exit_button')}
                             </Button>
                             <Button
-                                onClick={() => {
-                                    setShowGameOver(false);
-                                    setLives(5);
-                                    startLesson();
-                                    playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
-                                }}
+                                onClick={restartLessonRun}
                                 className="flex-1 h-14 sm:h-16 rounded-2xl font-bold bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                             >
                                 <Zap className="w-4 h-4 fill-current" />

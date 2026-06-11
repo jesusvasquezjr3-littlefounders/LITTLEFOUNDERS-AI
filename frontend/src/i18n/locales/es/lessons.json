@@ -125,6 +125,7 @@
   "locked": "Bloqueado",
   "locked_description": "Completa esta lección para desbloquear más contenido.",
   "tip": "CONSEJO",
+  "combo": "¡Racha x{{count}}!",
   "price_detective": {
     "investigate": "🔍 INVESTIGAR PRECIOS",
     "total_price": "Precio Total",

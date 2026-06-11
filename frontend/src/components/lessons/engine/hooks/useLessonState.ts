@@ -158,15 +158,6 @@ function normalizeClassifications(correctAnswer: any, content?: any): Record<str
             if (typeof firstVal === 'string') {
                 return correctAnswer as Record<string, string>;
             }
-            // Check if it's category-to-single-item: { categoryId: itemId }
-            if (typeof firstVal === 'string' && !keys[0].startsWith('i') && !keys[0].startsWith('it')) {
-                // This could be { cat1: "i1" } — invert it
-                const inverted: Record<string, string> = {};
-                keys.forEach(catId => {
-                    inverted[String((correctAnswer as any)[catId])] = catId;
-                });
-                return inverted;
-            }
         }
         // Nested classifications object
         if (correctAnswer.classifications && typeof correctAnswer.classifications === 'object') {
@@ -434,7 +425,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                 if (correctText !== undefined) return stringMatch(userStr, correctText);
                 return false;
             }
-            const tolerance = Number(correctAnswer?.tolerance ?? correctAnswer?.tolerance ?? 0.01);
+            const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
             // Compare as strings first (exact match)
             if (userStr === String(correctValue).trim()) return true;
             // Try numeric comparison with tolerance
@@ -619,7 +610,7 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                 case 'allocation': {
                     // answer is Record<string, number|string>
                     const userAlloc = answer as Record<string, number | string>;
-                    const tolerance = Number(correctAnswer?.tolerance ?? correctAnswer?.tolerance ?? 0.01);
+                    const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
                     return Object.keys(normalized.data).every(key => {
                         const expected = normalized.data[key];
                         const actual = Number(userAlloc?.[key] ?? 0);

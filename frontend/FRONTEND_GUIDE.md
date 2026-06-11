@@ -665,6 +665,9 @@ build: {
 
 - `API_URL` desde `src/config/api.ts` (VITE_API_URL env var, fallback localhost:8000)
 - Endpoints del backend en Railway (`https://littlefounders-backend-production.up.railway.app`)
+- **Dev contra backend remoto (sin CORS):** en `frontend/.env.local` definir
+  `VITE_API_URL=/api-proxy` y `VITE_DEV_API_PROXY=<url-backend>`. Vite proxea
+  `/api-proxy/*` al backend remoto del lado del servidor (ver `vite.config.ts`).
 
 ### Almacenamiento Local (Auth)
 

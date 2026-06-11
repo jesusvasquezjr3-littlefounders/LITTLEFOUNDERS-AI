@@ -130,6 +130,7 @@
   "locked": "Locked",
   "locked_description": "Complete this lesson to unlock more content.",
   "tip": "TIP",
+  "combo": "Combo x{{count}}!",
   "price_detective": {
     "investigate": "🔍 INVESTIGATE PRICES",
     "total_price": "Total Price",
