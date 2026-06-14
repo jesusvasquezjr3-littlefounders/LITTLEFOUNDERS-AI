@@ -2,18 +2,114 @@
   "sidebar": {
     "title": "Admin",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "lessons": "Lessons",
     "characters": "Characters",
     "audio": "Audio",
     "history": "History",
     "users": "Users",
     "help": "Help",
-    "logout": "Log Out"
+    "reports": "Reports",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "logout": "Log Out",
+    "groupOverview": "Overview",
+    "groupContent": "Content",
+    "groupCommunity": "Community",
+    "groupSystem": "System"
   },
   "layout": {
     "panelTitle": "Administration Panel",
     "role": "Administrator",
-    "mainContent": "Main content"
+    "mainContent": "Main content",
+    "settingsTooltip": "Settings",
+    "notificationsTooltip": "Notifications"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Real-time platform metrics and behavior",
+    "refresh": "Reload",
+    "openExternal": "Open in new tab",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "loading": "Loading Analytics dashboard…",
+    "loadErrorTitle": "Couldn't display the embedded dashboard",
+    "loadErrorBody": "The Analytics site may be blocking embedding due to security policies. Open it in a new tab to see it in full.",
+    "openButton": "Open Analytics",
+    "embedHint": "Not loading? Open it in a new tab.",
+    "poweredBy": "External dashboard",
+    "launcherTitle": "Analytics dashboard",
+    "launcherBody": "The provider (Metabase) does not allow embedding for security reasons, so it opens in a new tab with full functionality.",
+    "tryEmbed": "Try embedding here",
+    "backToLauncher": "Back",
+    "embedAttempt": "Trying to embed the dashboard…",
+    "embedBlockedNote": "The provider blocked embedding. Use “Open Analytics” to view it in full."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Personalize your admin panel experience",
+    "savedNote": "Preferences are saved in this browser.",
+    "account": {
+      "title": "Account",
+      "subtitle": "Your administrator information",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "unknown": "Not available"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Theme, language and motion",
+      "theme": "Theme",
+      "language": "Language",
+      "languageEs": "Español",
+      "languageEn": "English",
+      "reduceMotion": "Reduce motion",
+      "reduceMotionDesc": "Minimizes panel animations and transitions"
+    },
+    "panel": {
+      "title": "Panel",
+      "subtitle": "Navigation behavior",
+      "sidebarCollapsed": "Collapse sidebar by default",
+      "sidebarCollapsedDesc": "Start with the sidebar in compact mode",
+      "defaultLanding": "Landing page",
+      "defaultLandingDesc": "Section to show when entering the panel"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Admin alert center",
+      "showBadge": "Show unread counter",
+      "showBadgeDesc": "Display a badge with the number of unread alerts",
+      "sound": "Sound on new alerts",
+      "soundDesc": "Play a subtle sound with each new alert"
+    },
+    "session": {
+      "title": "Session & data",
+      "subtitle": "Version, cache and sign out",
+      "version": "Version",
+      "environment": "Environment",
+      "clearCache": "Clear local cache",
+      "clearCacheDesc": "Removes preferences and cached data in this browser",
+      "clearCacheDone": "Local cache cleared",
+      "logout": "Sign out",
+      "logoutDesc": "Sign out of your admin session on this device"
+    }
+  },
+  "alerts": {
+    "title": "Notifications",
+    "subtitle": "Panel alerts",
+    "markAll": "Mark all as read",
+    "empty": "You have no new alerts",
+    "viewReports": "View reports",
+    "compose": "Send notification",
+    "unreadOne": "{{count}} unread",
+    "unreadOther": "{{count}} unread",
+    "loading": "Loading alerts…",
+    "kinds": {
+      "report": "Pending report",
+      "edit": "Recent edit",
+      "broadcast": "Active notification"
+    }
   },
   "dashboard": {
     "title": "Dashboard",

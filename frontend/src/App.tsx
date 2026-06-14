@@ -66,6 +66,8 @@ import AdminUsers from "@/pages/admin/AdminUsers";
 import { AdminHelp } from "@/pages/admin/AdminHelp";
 import AdminReports from "@/pages/admin/AdminReports";
 import AdminNotifications from "@/pages/admin/AdminNotifications";
+import AdminAnalytics from "@/pages/admin/AdminAnalytics";
+import AdminSettings from "@/pages/admin/AdminSettings";
 
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -284,6 +286,16 @@ const App = () => (
                 <Route path="/admin/notifications" element={
                   <AdminProtectedRoute>
                     <AdminNotifications />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/analytics" element={
+                  <AdminProtectedRoute>
+                    <AdminAnalytics />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/settings" element={
+                  <AdminProtectedRoute>
+                    <AdminSettings />
                   </AdminProtectedRoute>
                 } />
 

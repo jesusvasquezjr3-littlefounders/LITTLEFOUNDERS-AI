@@ -1,12 +1,11 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
+import { AdminNotificationBell } from "./AdminNotificationBell";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { cn } from "@/lib/utils";
-import { Bell } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { notificationsAdminApi } from "@/lib/api/notifications";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -14,7 +13,6 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { t } = useTranslation('admin');
-  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const isMobile = window.innerWidth < 768;
@@ -23,13 +21,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     const stored = localStorage.getItem('admin_sidebar_collapsed');
     return stored ? JSON.parse(stored) : false;
   });
-  const [notifCount, setNotifCount] = useState(0);
-
-  useEffect(() => {
-    notificationsAdminApi.list({ status: 'active' })
-      .then(items => setNotifCount(items.length))
-      .catch(() => {});
-  }, [location.pathname]);
 
   const handleToggleSidebar = () => {
     const newState = !sidebarCollapsed;
@@ -48,8 +39,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
   };
 
-  const isOnNotificationsPage = location.pathname === '/admin/notifications';
-
   return (
     <div className="h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
       <div className="flex h-full">
@@ -64,30 +53,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {t('layout.panelTitle')}
               </h1>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
                 <ThemeToggle />
 
-                {/* Notifications management button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  className={cn(
-                    "relative",
-                    isOnNotificationsPage && "bg-slate-100 dark:bg-slate-800"
-                  )}
-                >
-                  <Link to="/admin/notifications">
-                    <Bell className="h-5 w-5" />
-                    {notifCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full bg-indigo-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
-                        {notifCount > 99 ? '99+' : notifCount}
-                      </span>
-                    )}
+                {/* Admin alert center (bell inbox) */}
+                <AdminNotificationBell />
+
+                {/* Settings shortcut */}
+                <Button variant="ghost" size="sm" asChild title={t('layout.settingsTooltip')}>
+                  <Link to="/admin/settings" aria-label={t('layout.settingsTooltip')}>
+                    <Settings className="h-5 w-5" />
                   </Link>
                 </Button>
 
-                <div className="text-right">
+                <div className="hidden sm:block text-right pl-1">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
                     {getAdminName()}
                   </p>
@@ -100,11 +79,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </header>
 
           <main
-            className={cn(
-              "flex-1 overflow-y-auto transition-all duration-300 p-6",
-              !sidebarCollapsed ? "md:ml-0" : "md:ml-0",
-              "view-transition-content"
-            )}
+            className="flex-1 overflow-y-auto transition-all duration-300 p-6 view-transition-content"
             aria-label={t('layout.mainContent')}
           >
             {children}
