@@ -1,104 +1,80 @@
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
+  BarChart3,
   BookOpen,
   Users,
+  UserCog,
   Headphones,
   History,
-  Zap,
   HelpCircle,
   Menu,
   X,
   LogOut,
   Flag,
   Bell,
+  Settings,
+  LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 
 interface AdminSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
 }
 
-const adminMenuItems = [
+interface MenuItem {
+  titleKey: string;
+  url: string;
+  icon: LucideIcon;
+  id: string;
+}
+
+interface MenuGroup {
+  labelKey: string;
+  items: MenuItem[];
+}
+
+const menuGroups: MenuGroup[] = [
   {
-    title: "Dashboard",
-    url: "/admin",
-    icon: LayoutDashboard,
-    id: "nav-dashboard",
+    labelKey: "sidebar.groupOverview",
+    items: [
+      { titleKey: "sidebar.dashboard", url: "/admin", icon: LayoutDashboard, id: "nav-dashboard" },
+      { titleKey: "sidebar.analytics", url: "/admin/analytics", icon: BarChart3, id: "nav-analytics" },
+    ],
   },
   {
-    title: "Lecciones",
-    url: "/admin/lessons",
-    icon: BookOpen,
-    id: "nav-lessons",
+    labelKey: "sidebar.groupContent",
+    items: [
+      { titleKey: "sidebar.lessons", url: "/admin/lessons", icon: BookOpen, id: "nav-lessons" },
+      { titleKey: "sidebar.characters", url: "/admin/characters", icon: Users, id: "nav-characters" },
+      { titleKey: "sidebar.audio", url: "/admin/audio", icon: Headphones, id: "nav-audio" },
+    ],
   },
   {
-    title: "Personajes",
-    url: "/admin/characters",
-    icon: Users,
-    id: "nav-characters",
+    labelKey: "sidebar.groupCommunity",
+    items: [
+      { titleKey: "sidebar.users", url: "/admin/users", icon: UserCog, id: "nav-users" },
+      { titleKey: "sidebar.reports", url: "/admin/reports", icon: Flag, id: "nav-reports" },
+      { titleKey: "sidebar.notifications", url: "/admin/notifications", icon: Bell, id: "nav-notifications" },
+    ],
   },
   {
-    title: "Audio",
-    url: "/admin/audio",
-    icon: Headphones,
-    id: "nav-audio",
-  },
-  {
-    title: "Historial",
-    url: "/admin/history",
-    icon: History,
-    id: "nav-history",
-  },
-  {
-    title: "Usuarios",
-    url: "/admin/users",
-    icon: Zap,
-    id: "nav-users",
-  },
-  {
-    title: "Preguntas",
-    url: "/admin/help",
-    icon: HelpCircle,
-    id: "nav-help",
-  },
-  {
-    title: "Reportes",
-    url: "/admin/reports",
-    icon: Flag,
-    id: "nav-reports",
-  },
-  {
-    title: "Notificaciones",
-    url: "/admin/notifications",
-    icon: Bell,
-    id: "nav-notifications",
+    labelKey: "sidebar.groupSystem",
+    items: [
+      { titleKey: "sidebar.history", url: "/admin/history", icon: History, id: "nav-history" },
+      { titleKey: "sidebar.help", url: "/admin/help", icon: HelpCircle, id: "nav-help" },
+      { titleKey: "sidebar.settings", url: "/admin/settings", icon: Settings, id: "nav-settings" },
+    ],
   },
 ];
 
 export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
   const { t } = useTranslation('admin');
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const { toast } = useToast();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
-  const menuItems = [
-    { ...adminMenuItems[0], title: t('sidebar.dashboard') },
-    { ...adminMenuItems[1], title: t('sidebar.lessons') },
-    { ...adminMenuItems[2], title: t('sidebar.characters') },
-    { ...adminMenuItems[3], title: t('sidebar.audio') },
-    { ...adminMenuItems[4], title: t('sidebar.history') },
-    { ...adminMenuItems[5], title: t('sidebar.users') },
-    { ...adminMenuItems[6], title: t('sidebar.help') },
-    { ...adminMenuItems[7], title: 'Reportes' },
-    { ...adminMenuItems[8], title: 'Notificaciones' },
-  ];
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -151,33 +127,45 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
           )}
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPath === item.url;
+        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-4">
+          {menuGroups.map((group) => (
+            <div key={group.labelKey} className="space-y-1">
+              {!collapsed ? (
+                <p className="px-3 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  {t(group.labelKey)}
+                </p>
+              ) : (
+                <div className="mx-3 mb-1 h-px bg-slate-200 dark:bg-slate-800" />
+              )}
 
-            return (
-              <NavLink
-                key={item.id}
-                to={item.url}
-                onClick={handleMobileNavigate}
-                className={({ isActive: routeIsActive }) =>
-                  cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                    "text-sm font-medium whitespace-nowrap",
-                    routeIsActive
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200",
-                    collapsed && "md:justify-center md:px-2"
-                  )
-                }
-                end={item.url === '/admin'}
-              >
-                <Icon className={cn("w-5 h-5 flex-shrink-0")} />
-                {!collapsed && <span>{item.title}</span>}
-              </NavLink>
-            );
-          })}
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const title = t(item.titleKey);
+                return (
+                  <NavLink
+                    key={item.id}
+                    to={item.url}
+                    onClick={handleMobileNavigate}
+                    title={collapsed ? title : undefined}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200",
+                        "text-sm font-medium whitespace-nowrap",
+                        isActive
+                          ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 shadow-sm"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200",
+                        collapsed && "md:justify-center md:px-2"
+                      )
+                    }
+                    end={item.url === '/admin'}
+                  >
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    {!collapsed && <span>{title}</span>}
+                  </NavLink>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="border-t border-slate-200 dark:border-slate-800 p-4">
@@ -189,6 +177,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
               "w-full justify-start gap-3 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors",
               collapsed && "md:justify-center md:px-2"
             )}
+            title={collapsed ? t('sidebar.logout') : undefined}
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
             {!collapsed && <span>{t('sidebar.logout')}</span>}

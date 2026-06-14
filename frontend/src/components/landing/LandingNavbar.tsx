@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
@@ -10,92 +10,126 @@ export const LandingNavbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
-    const clipId = useRef(`nav-wave-${Math.random().toString(36).slice(2, 9)}`).current;
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
-        };
+        const handleScroll = () => setIsScrolled(window.scrollY > 16);
         window.addEventListener('scroll', handleScroll);
-        // Initial check
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const navLinks = [
-        { path: '/', label: 'LittleFounders' },
+        { path: '/how-it-works', label: t('nav.how') },
         { path: '/families', label: t('nav.families') },
-        { path: '/faq', label: t('nav.faq') },
         { path: '/pricing', label: t('nav.pricing') },
+        { path: '/faq', label: t('nav.faq') },
     ];
 
-    const isCurrent = (path: string) => {
-        if (path === '/') return location.pathname === '/';
-        return location.pathname.startsWith(path);
-    };
-
-    const showGlass = isScrolled || mobileMenuOpen;
+    const isCurrent = (path: string) => location.pathname.startsWith(path);
+    const showSolid = isScrolled || mobileMenuOpen;
 
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${showGlass
-            ? 'liquid-glass-subtle py-3'
-            : 'bg-transparent py-5'
-        }`}>
-            {/* Wave clip-path definition */}
-            <svg width="0" height="0" className="absolute pointer-events-none">
-                <defs>
-                    <clipPath id={clipId} clipPathUnits="objectBoundingBox">
-                        <path d="M0,0 L1,0 L1,0.1 C0.875,1 0.75,0 0.625,0.7 C0.5,1 0.375,0 0.25,0.7 C0.125,1 0,0.1 0,0.1 Z" />
-                    </clipPath>
-                </defs>
-            </svg>
-
+        <nav
+            className={`corp fixed top-0 w-full z-50 transition-all duration-300 ${
+                showSolid
+                    ? 'py-3 bg-white/85 dark:bg-[#0a0e1a]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 shadow-[0_4px_30px_-12px_rgba(15,23,42,0.15)]'
+                    : 'py-4 bg-transparent border-b border-transparent'
+            }`}
+        >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center gap-4">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src="/logo-sized.png" alt="LittleFounders Logo - Plataforma de Educación Financiera para Niños" className="h-10 w-auto object-contain dark:brightness-110" />
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 shrink-0"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    >
+                        <img
+                            src="/logo-sized.png"
+                            alt="LittleFounders — Educación financiera para niños"
+                            className="h-9 w-auto object-contain dark:brightness-110"
+                        />
                     </Link>
 
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-                        <Link to="/families" className={`font-medium transition-colors ${isCurrent('/families') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.families')}</Link>
-                        <Link to="/faq" className={`font-medium transition-colors ${isCurrent('/faq') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.faq')}</Link>
-                        <Link to="/pricing" className={`font-medium transition-colors ${isCurrent('/pricing') ? 'text-pink-600 dark:text-pink-400' : 'text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400'}`}>{t('nav.pricing')}</Link>
-
-                        <div className="flex items-center gap-2 ml-4">
-                            <ThemeToggle />
-                            <LanguageSelector variant="simple" />
-                        </div>
+                    {/* Desktop links */}
+                    <div className="hidden lg:flex items-center gap-8">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={`text-sm font-medium transition-colors ${
+                                    isCurrent(link.path)
+                                        ? 'text-indigo-600 dark:text-indigo-300'
+                                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300'
+                                }`}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
 
-                    {/* Mobile Menu Toggle */}
-                    <button className="md:hidden text-gray-700 dark:text-gray-200" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                        {mobileMenuOpen ? <X /> : <Menu />}
-                    </button>
+                    {/* Desktop actions */}
+                    <div className="hidden lg:flex items-center gap-3">
+                        <ThemeToggle />
+                        <LanguageSelector variant="simple" />
+                        <Link
+                            to="/login"
+                            className="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-300 px-3 py-2 transition-colors"
+                        >
+                            {t('nav.login')}
+                        </Link>
+                        <Link
+                            to="/onboarding"
+                            className="corp-btn-primary inline-flex items-center gap-1.5 text-sm font-semibold rounded-xl px-5 py-2.5"
+                        >
+                            {t('nav.register')}
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+
+                    {/* Mobile toggle */}
+                    <div className="flex lg:hidden items-center gap-2">
+                        <ThemeToggle />
+                        <LanguageSelector variant="simple" />
+                        <button
+                            className="text-slate-700 dark:text-slate-200 p-1"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label="Menu"
+                        >
+                            {mobileMenuOpen ? <X /> : <Menu />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Bottom wave — fused glass extension below the nav */}
-            {showGlass && !mobileMenuOpen && (
-                <div
-                    className="absolute bottom-0 left-0 w-full h-6 liquid-glass-subtle pointer-events-none"
-                    style={{ transform: 'translateY(99%)', clipPath: `url(#${clipId})` }}
-                />
-            )}
-
-            {/* Mobile Menu */}
+            {/* Mobile menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-xl">
-                    <Link to="/families" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.families')}</Link>
-                    <Link to="/faq" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.faq')}</Link>
-                    <Link to="/pricing" className="text-lg font-medium text-gray-700 dark:text-gray-200 py-2 border-b border-gray-50 dark:border-slate-800" onClick={() => setMobileMenuOpen(false)}>{t('nav.pricing')}</Link>
-
-                    <div className="flex flex-col gap-3 mt-2">
-                        <div className="flex items-center justify-center py-2 gap-4">
-                            <ThemeToggle />
-                            <LanguageSelector variant="simple" />
-                        </div>
+                <div className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.path}
+                            to={link.path}
+                            className="text-base font-medium text-slate-700 dark:text-slate-200 py-3 border-b border-slate-100 dark:border-white/5"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                    <div className="flex flex-col gap-2 mt-3">
+                        <Link
+                            to="/login"
+                            className="text-center text-sm font-semibold text-slate-700 dark:text-slate-200 py-3 rounded-xl border border-slate-200 dark:border-white/10"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            {t('nav.login')}
+                        </Link>
+                        <Link
+                            to="/onboarding"
+                            className="corp-btn-primary text-center text-sm font-semibold py-3 rounded-xl"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            {t('nav.register')}
+                        </Link>
                     </div>
                 </div>
             )}

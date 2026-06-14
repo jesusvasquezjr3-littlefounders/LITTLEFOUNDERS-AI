@@ -68,3 +68,9 @@ backend/lesson_engine/littlefounders_lessons_v1_backup_20260416_144555
 # agents
 .mcp.json
 .claude/
+# Backups de archivos de entorno (nunca commitear)
+.env.*
+*.env.bak*
+!.env.example
+!*.env.example
+!.env.test

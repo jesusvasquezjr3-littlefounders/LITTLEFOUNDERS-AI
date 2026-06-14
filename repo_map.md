@@ -134,6 +134,8 @@ LITTLEFOUNDERS-AI/
                     LandingLayout.tsx
                     LandingNavbar.tsx
                     LandingParentCTA.tsx
+                    Reveal.tsx
+                    StockImage.tsx
                 showreel/
                     ShowreelComposition.tsx
                     ShowreelPlayer.tsx
@@ -150,6 +152,7 @@ LITTLEFOUNDERS-AI/
                     AdminActivityChart.tsx
                     AdminContributionGraph.tsx
                     AdminLayout.tsx
+                    AdminNotificationBell.tsx
                     AdminProtectedRoute.tsx
                     AdminSidebar.tsx
                     ExerciseEditorForms.tsx
@@ -262,19 +265,23 @@ LITTLEFOUNDERS-AI/
                     CharacterSection.tsx
                     FeatureCard.tsx
             __tests__/
+                lessonEngine.test.ts
                 placeholder.test.ts
                 setup.ts
             hooks/
                 use-mobile.tsx
                 use-toast.ts
+                useAdminAlerts.ts
                 useAdminAudio.ts
                 useAdminCharacters.ts
                 useAdminHistory.ts
                 useAdminLessons.ts
+                useAdminSettings.ts
                 useAdminStats.ts
                 useAsset.ts
                 useAuth.ts
                 useLanguage.ts
+                useScrollReveal.ts
                 useUserLanguage.ts
             lib/
                 analytics.ts
@@ -316,8 +323,10 @@ LITTLEFOUNDERS-AI/
                 landing/
                     FamiliesPage.tsx
                     FaqPage.tsx
+                    HowItWorksPage.tsx
                     PricingPage.tsx
                 admin/
+                    AdminAnalytics.tsx
                     AdminAudio.tsx
                     AdminCharacters.tsx
                     AdminDashboard.tsx
@@ -327,6 +336,7 @@ LITTLEFOUNDERS-AI/
                     AdminLessons.tsx
                     AdminNotifications.tsx
                     AdminReports.tsx
+                    AdminSettings.tsx
                     AdminUsers.tsx
                 social/
                     UserProfile.tsx
@@ -865,7 +875,7 @@ LITTLEFOUNDERS-AI/
 
 ## Archivos de Código (primeras 15 líneas cada uno)
 
-**438 archivos de código** + **23 archivos de configuración**
+**448 archivos de código** + **23 archivos de configuración**
 
 ### `.github/workflows/backend-ci.yml` (Config)
 
@@ -2469,6 +2479,26 @@ import Onboarding from "./pages/Onboarding";
 import PlacementPage from "./pages/PlacementPage";
 ```
 
+### `frontend/src/__tests__/lessonEngine.test.ts` (Code)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { extractCorrectId } from '@/components/lessons/engine/hooks/useLessonState';
+
+describe('extractCorrectId', () => {
+    it('returns undefined for null/non-object inputs', () => {
+        expect(extractCorrectId(null)).toBeUndefined();
+        expect(extractCorrectId(undefined)).toBeUndefined();
+        expect(extractCorrectId('a')).toBeUndefined();
+        expect(extractCorrectId(42)).toBeUndefined();
+    });
+
+    it('extracts the canonical correctOptionId', () => {
+        expect(extractCorrectId({ correctOptionId: 'opt1' })).toBe('opt1');
+    });
+
+```
+
 ### `frontend/src/__tests__/placeholder.test.ts` (Code)
 
 ```typescript
@@ -2530,21 +2560,41 @@ interface AdminContributionGraphProps {
 ### `frontend/src/components/admin/AdminLayout.tsx` (Code)
 
 ```typescript
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
+import { AdminNotificationBell } from "./AdminNotificationBell";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { cn } from "@/lib/utils";
-import { Bell } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { notificationsAdminApi } from "@/lib/api/notifications";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const { t } = useTranslation('admin');
+```
+
+### `frontend/src/components/admin/AdminNotificationBell.tsx` (Code)
+
+```typescript
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Bell, Flag, PencilLine, Megaphone, CheckCheck, Inbox, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
+import { useAdminAlerts, type AdminAlertKind } from '@/hooks/useAdminAlerts';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
+
+const KIND_ICON: Record<AdminAlertKind, React.ElementType> = {
+  report: Flag,
+  edit: PencilLine,
 ```
 
 ### `frontend/src/components/admin/AdminProtectedRoute.tsx` (Code)
@@ -2572,19 +2622,19 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
 ```typescript
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
+  BarChart3,
   BookOpen,
   Users,
+  UserCog,
   Headphones,
   History,
-  Zap,
   HelpCircle,
   Menu,
   X,
   LogOut,
-  Flag,
 ```
 
 ### `frontend/src/components/admin/ExerciseEditorForms.tsx` (Code)
@@ -3333,6 +3383,7 @@ export function GamifiedLearningSection() {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { Mail, ShieldCheck, Globe, Sparkles } from "lucide-react";
 import { EmailWaitlistForm } from "@/components/landing/EmailWaitlistForm";
 
 interface LandingFooterProps {
@@ -3343,8 +3394,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
   const { t, i18n } = useTranslation("landing");
   const lang = i18n.language;
 
-  const [ctaWordIndex, setCtaWordIndex] = React.useState(0);
-  const ctaWords = (t("cta.rotating_words", { returnObjects: true }) as string[]) || ["founder"];
+  const productLinks = [
 ```
 
 ### `frontend/src/components/landing/LandingLayout.tsx` (Code)
@@ -3361,7 +3411,7 @@ interface LandingLayoutProps {
 
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children, hideCTA = false }) => {
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 landing-page-root selection:bg-pink-100 selection:text-pink-900 dark:selection:bg-pink-900 dark:selection:text-pink-100 transition-colors duration-300">
+        <div className="corp min-h-screen bg-white dark:bg-[#070b14] landing-page-root selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-500/40 dark:selection:text-white transition-colors duration-300">
             <LandingNavbar />
             
             <main className="view-transition-content">
@@ -3370,9 +3420,9 @@ export const LandingLayout: React.FC<LandingLayoutProps> = ({ children, hideCTA 
 ### `frontend/src/components/landing/LandingNavbar.tsx` (Code)
 
 ```typescript
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
@@ -3382,9 +3432,9 @@ export const LandingNavbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
-    const clipId = useRef(`nav-wave-${Math.random().toString(36).slice(2, 9)}`).current;
 
     useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 16);
 ```
 
 ### `frontend/src/components/landing/LandingParentCTA.tsx` (Code)
@@ -3405,6 +3455,46 @@ function StatChip({ emoji, value, label }: { emoji: string; value: string; label
       <span className="text-gray-500 dark:text-white/50 text-[11px] font-medium">{label}</span>
     </div>
   );
+```
+
+### `frontend/src/components/landing/Reveal.tsx` (Code)
+
+```typescript
+import React from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
+type RevealVariant = "up" | "left" | "right" | "scale";
+
+interface RevealProps {
+  children: React.ReactNode;
+  /** Direction the element animates in from. Default: "up". */
+  variant?: RevealVariant;
+  /** Stagger delay in ms. */
+  delay?: number;
+  className?: string;
+  /** Render as a different element (e.g. "li", "section"). Default: "div". */
+  as?: keyof JSX.IntrinsicElements;
+  once?: boolean;
+```
+
+### `frontend/src/components/landing/StockImage.tsx` (Code)
+
+```typescript
+import React, { useState } from "react";
+
+interface StockImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  /** Gradient shown while loading or if the image fails (keeps layout intact). */
+  fallbackClassName?: string;
+  loading?: "lazy" | "eager";
+}
+
+/**
+ * StockImage — renders a free-license (Unsplash) photo with a graceful
+ * gradient fallback so the corporate layout never breaks on a dead link
+ * or slow network. The gradient stays visible behind the image and is
 ```
 
 ### `frontend/src/components/lessons/AdventureCard.tsx` (Code)
@@ -8327,6 +8417,26 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 ```
 
+### `frontend/src/hooks/useAdminAlerts.ts` (Code)
+
+```typescript
+/**
+ * useAdminAlerts Hook
+ *
+ * Frontend-only admin "inbox". Aggregates read-only data the panel already
+ * exposes into a single list of actionable alerts for the notification bell:
+ *   - Pending platform reports   → GET /reports/?status=pending
+ *   - Recent edits by OTHER admins → recent_edits from /admin/stats
+ *   - Active broadcast notifications → notificationsAdminApi.list({status:'active'})
+ *
+ * "Read" state is tracked in localStorage (`admin_alerts_seen`); no backend.
+ */
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+```
+
 ### `frontend/src/hooks/useAdminAudio.ts` (Code)
 
 ```typescript
@@ -8407,6 +8517,26 @@ export interface LessonFilters {
   topic_level?: number;
 ```
 
+### `frontend/src/hooks/useAdminSettings.ts` (Code)
+
+```typescript
+/**
+ * useAdminSettings Hook
+ *
+ * Frontend-only admin preferences persisted in localStorage under
+ * `admin_settings`. No backend involved. Changes are broadcast to every
+ * mounted instance via a custom window event so the header, sidebar and
+ * settings page stay in sync without a global store.
+ */
+
+import { useCallback, useEffect, useState } from 'react';
+
+export interface AdminSettings {
+  /** Minimize animations and transitions across the admin panel. */
+  reduceMotion: boolean;
+  /** Show the unread-count badge on the notification bell. */
+```
+
 ### `frontend/src/hooks/useAdminStats.ts` (Code)
 
 ```typescript
@@ -8485,6 +8615,26 @@ function getAuthUser(): AuthUser | null {
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+```
+
+### `frontend/src/hooks/useScrollReveal.ts` (Code)
+
+```typescript
+import { useEffect, useRef } from "react";
+
+/**
+ * useScrollReveal
+ * Adds the `is-visible` class to the observed element once it enters the
+ * viewport, driving the `.reveal` CSS transitions. One-shot by default so
+ * content stays put after the first reveal (feels calmer on a corporate site).
+ */
+export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
+  options: { threshold?: number; rootMargin?: string; once?: boolean } = {}
+) {
+  const { threshold = 0.15, rootMargin = "0px 0px -10% 0px", once = true } = options;
+  const ref = useRef<T | null>(null);
+
+  useEffect(() => {
 ```
 
 ### `frontend/src/hooks/useUserLanguage.ts` (Code)
@@ -8867,21 +9017,21 @@ const Index = () => {
 ### `frontend/src/pages/LandingPage.tsx` (Code)
 
 ```typescript
-import { useState, useEffect } from "react";
-import { useTranslation, Trans } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, Link } from "react-router-dom";
 import { hasSession } from "@/lib/guestProfile";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Gamepad2, Bot, Layers, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
-import { LandingLayout } from "../components/landing/LandingLayout";
-
-import { GamifiedLearningSection } from "../components/landing/GamifiedLearningSection";
-import { useLanguage } from "@/hooks/useLanguage";
-import { useUserLanguage } from "@/hooks/useUserLanguage";
-import { SupportedLanguage } from "@/i18n";
-
-/* ── Wave divider ─────────────────────────────────────────────────────────── */
+import { Reveal } from "@/components/landing/Reveal";
+import { StockImage } from "@/components/landing/StockImage";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Globe,
+  Sparkles,
+  BookOpen,
+  Gamepad2,
+  Bot,
 ```
 
 ### `frontend/src/pages/LearnPage.tsx` (Code)
@@ -9104,6 +9254,26 @@ import { useSound } from "@/contexts/SoundContext";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 ```
 
+### `frontend/src/pages/admin/AdminAnalytics.tsx` (Code)
+
+```typescript
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BarChart3, RefreshCw, ExternalLink, Maximize2, Minimize2, AlertTriangle, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { GlassPanel } from '@/components/ui/GlassPanel';
+
+/** Single source of truth for the external analytics dashboard URL. */
+export const ADMIN_ANALYTICS_URL = 'https://lf-analytics-production-669d.up.railway.app/';
+
+/** Time to wait for the iframe to load before assuming embedding is blocked. */
+const LOAD_TIMEOUT_MS = 8000;
+
+export const AdminAnalytics: React.FC = () => {
+  const { t } = useTranslation('admin');
+  const [loaded, setLoaded] = useState(false);
+```
+
 ### `frontend/src/pages/admin/AdminAudio.tsx` (Code)
 
 ```typescript
@@ -9284,6 +9454,26 @@ interface PlatformReport {
   reporter_public_id?: string;
 ```
 
+### `frontend/src/pages/admin/AdminSettings.tsx` (Code)
+
+```typescript
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Settings as SettingsIcon, User, Palette, LayoutGrid, Bell, LogOut, Trash2, Info } from 'lucide-react';
+import { GlassPanel } from '@/components/ui/GlassPanel';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { useToast } from '@/hooks/use-toast';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
+import { cn } from '@/lib/utils';
+
+const SIDEBAR_KEY = 'admin_sidebar_collapsed';
+
+```
+
 ### `frontend/src/pages/admin/AdminUsers.tsx` (Code)
 
 ```typescript
@@ -9327,21 +9517,41 @@ function WaveDivider({ top = false, fromClass, toClass }: { top?: boolean; fromC
 ### `frontend/src/pages/landing/FaqPage.tsx` (Code)
 
 ```typescript
-import React from 'react';
-import { LandingLayout } from '@/components/landing/LandingLayout';
-import { ShowreelPlayer } from '@/components/showreel/ShowreelPlayer';
-import { useTranslation, Trans } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+import { Reveal } from "@/components/landing/Reveal";
+import { ShowreelPlayer } from "@/components/showreel/ShowreelPlayer";
+import { useTranslation, Trans } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Bot, Sparkles, Globe, ShieldCheck, Mail, ArrowRight, ChevronDown } from "lucide-react";
+import { Bot, Globe, ShieldCheck, Mail, Sparkles, ArrowRight } from "lucide-react";
 
-/* ── FAQ item config ──────────────────────────────────────────────────────── */
+const FAQ_ITEMS = [
+```
+
+### `frontend/src/pages/landing/HowItWorksPage.tsx` (Code)
+
+```typescript
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+import { Reveal } from "@/components/landing/Reveal";
+import {
+  ArrowRight,
+  UserPlus,
+  Gamepad2,
+  Bot,
+  LineChart,
+  Sparkles,
+  CheckCircle2,
+  Smile,
+  ShieldCheck,
+} from "lucide-react";
 ```
 
 ### `frontend/src/pages/landing/PricingPage.tsx` (Code)
@@ -9533,21 +9743,21 @@ export default {
 ### `frontend/vite.config.ts` (Code)
 
 ```typescript
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  return {
   server: {
     host: "::",
     port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
+    proxy: env.VITE_DEV_API_PROXY
+      ? {
+          // Dev-only proxy: set VITE_DEV_API_PROXY (e.g. the Railway backend URL)
 ```
 
 ### `frontend/vitest.config.ts` (Code)

@@ -16,6 +16,7 @@ import PlacementPage from "./pages/PlacementPage";
 import LandingPage from "./pages/LandingPage";
 import FamiliesPage from "./pages/landing/FamiliesPage";
 import FaqPage from "./pages/landing/FaqPage";
+import HowItWorksPage from "./pages/landing/HowItWorksPage";
 import PricingPage from "./pages/landing/PricingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -65,6 +66,8 @@ import AdminUsers from "@/pages/admin/AdminUsers";
 import { AdminHelp } from "@/pages/admin/AdminHelp";
 import AdminReports from "@/pages/admin/AdminReports";
 import AdminNotifications from "@/pages/admin/AdminNotifications";
+import AdminAnalytics from "@/pages/admin/AdminAnalytics";
+import AdminSettings from "@/pages/admin/AdminSettings";
 
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -102,6 +105,7 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/placement" element={<PlacementPage />} />
                 <Route path="/families" element={<FamiliesPage />} />
+                <Route path="/how-it-works" element={<HowItWorksPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 {/* Guest-accessible routes (requireAuth omitted = false) */}
@@ -282,6 +286,16 @@ const App = () => (
                 <Route path="/admin/notifications" element={
                   <AdminProtectedRoute>
                     <AdminNotifications />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/analytics" element={
+                  <AdminProtectedRoute>
+                    <AdminAnalytics />
+                  </AdminProtectedRoute>
+                } />
+                <Route path="/admin/settings" element={
+                  <AdminProtectedRoute>
+                    <AdminSettings />
                   </AdminProtectedRoute>
                 } />
 

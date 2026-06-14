@@ -2,18 +2,114 @@
   "sidebar": {
     "title": "Admin",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "lessons": "Lecciones",
     "characters": "Personajes",
     "audio": "Audio",
     "history": "Historial",
     "users": "Usuarios",
     "help": "Preguntas",
-    "logout": "Cerrar Sesión"
+    "reports": "Reportes",
+    "notifications": "Notificaciones",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión",
+    "groupOverview": "Resumen",
+    "groupContent": "Contenido",
+    "groupCommunity": "Comunidad",
+    "groupSystem": "Sistema"
   },
   "layout": {
     "panelTitle": "Panel de Administración",
     "role": "Administrador",
-    "mainContent": "Contenido principal"
+    "mainContent": "Contenido principal",
+    "settingsTooltip": "Configuración",
+    "notificationsTooltip": "Notificaciones"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Métricas y comportamiento de la plataforma en tiempo real",
+    "refresh": "Recargar",
+    "openExternal": "Abrir en pestaña nueva",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa",
+    "loading": "Cargando panel de Analytics…",
+    "loadErrorTitle": "No se pudo mostrar el panel embebido",
+    "loadErrorBody": "El sitio de Analytics puede estar bloqueando la incrustación por políticas de seguridad. Ábrelo en una pestaña nueva para verlo completo.",
+    "openButton": "Abrir Analytics",
+    "embedHint": "¿No carga? Ábrelo en una pestaña nueva.",
+    "poweredBy": "Panel externo",
+    "launcherTitle": "Panel de Analytics",
+    "launcherBody": "El proveedor (Metabase) no permite incrustarlo por seguridad, así que se abre en una pestaña nueva con todas sus funciones.",
+    "tryEmbed": "Intentar incrustar aquí",
+    "backToLauncher": "Volver",
+    "embedAttempt": "Intentando incrustar el panel…",
+    "embedBlockedNote": "El proveedor bloqueó la incrustación. Usa “Abrir Analytics” para verlo completo."
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia del panel de administración",
+    "savedNote": "Las preferencias se guardan en este navegador.",
+    "account": {
+      "title": "Cuenta",
+      "subtitle": "Tu información de administrador",
+      "name": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "unknown": "No disponible"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "subtitle": "Tema, idioma y movimiento",
+      "theme": "Tema",
+      "language": "Idioma",
+      "languageEs": "Español",
+      "languageEn": "English",
+      "reduceMotion": "Reducir movimiento",
+      "reduceMotionDesc": "Minimiza animaciones y transiciones del panel"
+    },
+    "panel": {
+      "title": "Panel",
+      "subtitle": "Comportamiento de la navegación",
+      "sidebarCollapsed": "Colapsar menú lateral por defecto",
+      "sidebarCollapsedDesc": "Inicia con el menú lateral compacto",
+      "defaultLanding": "Página de inicio",
+      "defaultLandingDesc": "Sección a mostrar al entrar al panel"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "subtitle": "Centro de alertas del administrador",
+      "showBadge": "Mostrar contador de no leídas",
+      "showBadgeDesc": "Muestra un badge con la cantidad de alertas sin leer",
+      "sound": "Sonido al recibir alertas",
+      "soundDesc": "Reproduce un sonido sutil con cada alerta nueva"
+    },
+    "session": {
+      "title": "Sesión y datos",
+      "subtitle": "Versión, caché y cierre de sesión",
+      "version": "Versión",
+      "environment": "Entorno",
+      "clearCache": "Limpiar caché local",
+      "clearCacheDesc": "Borra preferencias y datos en caché de este navegador",
+      "clearCacheDone": "Caché local limpiada",
+      "logout": "Cerrar sesión",
+      "logoutDesc": "Cierra tu sesión de administrador en este dispositivo"
+    }
+  },
+  "alerts": {
+    "title": "Notificaciones",
+    "subtitle": "Alertas del panel",
+    "markAll": "Marcar todas como leídas",
+    "empty": "No tienes alertas nuevas",
+    "viewReports": "Ver reportes",
+    "compose": "Enviar notificación",
+    "unreadOne": "{{count}} sin leer",
+    "unreadOther": "{{count}} sin leer",
+    "loading": "Cargando alertas…",
+    "kinds": {
+      "report": "Reporte pendiente",
+      "edit": "Edición reciente",
+      "broadcast": "Notificación activa"
+    }
   },
   "dashboard": {
     "title": "Panel de Control",
