@@ -2320,5 +2320,141 @@
   animation: morph-blob-video 6s ease-in-out infinite;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   CORPORATE MARKETING SYSTEM  (LandingPage v2 — clean / trustworthy)
+   The `.corp` scope opts a subtree out of the playful Nunito defaults and
+   into a professional Inter/Sora type system.
+   ════════════════════════════════════════════════════════════════════════ */
+.corp,
+.corp button,
+.corp input,
+.corp select,
+.corp textarea,
+.corp span,
+.corp p,
+.corp li,
+.corp a {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+.corp h1,
+.corp h2,
+.corp h3,
+.corp h4,
+.corp h5,
+.corp h6,
+.corp .corp-display {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+/* Brand gradient text used sparingly for emphasis */
+.corp-gradient-text {
+  background-image: linear-gradient(120deg, #4f46e5 0%, #2563eb 45%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Eyebrow / kicker label above section headings */
+.corp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4f46e5;
+}
+.dark .corp-eyebrow { color: #a5b4fc; }
+
+/* Soft enterprise card */
+.corp-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -16px rgba(15, 23, 42, 0.18);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.corp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 24px 48px -24px rgba(79, 70, 229, 0.35);
+  border-color: rgba(79, 70, 229, 0.22);
+}
+.dark .corp-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+}
+.dark .corp-card:hover {
+  border-color: rgba(129, 140, 248, 0.35);
+  box-shadow: 0 24px 48px -24px rgba(79, 70, 229, 0.5);
+}
+
+/* Primary corporate button */
+.corp-btn-primary {
+  background-image: linear-gradient(120deg, #4f46e5, #2563eb);
+  color: #fff;
+  box-shadow: 0 10px 28px -10px rgba(37, 99, 235, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.corp-btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.7);
+}
+.corp-btn-primary:active { transform: translateY(0); }
+
+/* Subtle dotted/grid backdrops */
+.corp-grid-bg {
+  background-image:
+    linear-gradient(rgba(79, 70, 229, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 70, 229, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
+}
+
+/* ── Scroll reveal (IntersectionObserver driven) ───────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-left  { transform: translateX(-36px); }
+.reveal-right { transform: translateX(36px); }
+.reveal-scale { transform: scale(0.94); }
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Slow ken-burns drift for hero background media */
+@keyframes corp-kenburns {
+  0%   { transform: scale(1.05) translate3d(0, 0, 0); }
+  100% { transform: scale(1.18) translate3d(-1.5%, -1.5%, 0); }
+}
+.corp-kenburns { animation: corp-kenburns 22s ease-in-out infinite alternate; }
+
+/* Marquee for the trust/logo strip */
+@keyframes corp-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.corp-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: corp-marquee 32s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .corp-kenburns, .corp-marquee-track { animation: none; }
+}
+
 
 
