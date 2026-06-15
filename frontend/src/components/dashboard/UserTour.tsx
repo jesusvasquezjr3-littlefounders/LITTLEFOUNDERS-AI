@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
-import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 
 interface TourStep {
     targetId?: string;
@@ -286,33 +284,26 @@ export function UserTour() {
                 )}
                 style={!isCenter ? { top: `${coords.top}px`, left: `${coords.left}px` } : {}}
             >
-                {/* Character Float Container */}
-                <div className="absolute -top-20 -left-20 w-48 h-48 z-20 pointer-events-none drop-shadow-2xl animate-in zoom-in slide-in-from-bottom-6 duration-700">
-                    {userRole === 'child' ? (
-                        <ZaraVexCharacter mood={step.mood || "happy"} />
-                    ) : (
-                        <DrRhoCharacter mood={step.mood || "explaining"} />
-                    )}
-                </div>
-
-                <Card className={cn(
-                    "w-[340px] p-6 pt-10 relative overflow-visible bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/40",
+                <div className={cn(
+                    "w-[340px] p-6 relative overflow-visible shadow-xl shadow-black/5 dark:shadow-black/40 rounded-2xl",
+                    "!bg-[#fdecf6] dark:!bg-[#ec008c]",
+                    "border-2 !border-[#fdc70c] dark:!border-[#1d4ed8]",
                     isCenter ? "text-center scale-105" : "animate-in fade-in zoom-in-95 slide-in-from-left-4"
                 )}>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-500 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-colors z-30"
+                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-black/20 !text-black dark:!text-white transition-colors z-30"
                         onClick={handleClose}
                     >
                         <X className="w-4 h-4" />
                     </Button>
 
-                    <div className="relative z-10 pl-4">
-                        <h3 className="corp-display corp-gradient-text text-xl font-bold mb-3">
+                    <div className="relative z-10">
+                        <h3 className="corp-display text-xl font-bold mb-3 !text-black dark:!text-white">
                             {step.title}
                         </h3>
-                        <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed font-medium">
+                        <p className="mb-6 text-sm leading-relaxed font-semibold !text-black dark:!text-white">
                             {step.description}
                         </p>
 
@@ -324,13 +315,13 @@ export function UserTour() {
                                         className={cn(
                                             "h-2 rounded-full transition-all duration-300",
                                             idx === currentStep
-                                                ? "w-4 bg-indigo-500"
-                                                : "w-2 bg-slate-300 dark:bg-white/15"
+                                                ? "w-4 !bg-[#fdc70c] dark:!bg-black"
+                                                : "w-2 !bg-[#fdc70c]/30 dark:!bg-black/30"
                                         )}
                                     />
                                 ))}
                             </div>
-                            <Button onClick={handleNext} variant="ghost" size="sm" className="corp-btn-primary group rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-1">
+                            <Button onClick={handleNext} variant="ghost" size="sm" className="group rounded-xl px-4 text-sm font-bold inline-flex items-center justify-center gap-1 !bg-[#fdc70c] !text-black hover:!bg-[#e5b40b] dark:!bg-black dark:!text-white dark:hover:!bg-black/80">
                                 {currentStep === activeSteps.length - 1 ? t('tour.buttons.start') : t('tour.buttons.next')}
                                 {currentStep !== activeSteps.length - 1 && (
                                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -341,11 +332,11 @@ export function UserTour() {
 
                     {!isCenter && (
                         <div
-                            className="absolute -left-2 w-4 h-4 bg-white dark:bg-[#0d1426] border-l border-b border-slate-200 dark:border-white/10 transform rotate-45 transition-[top] duration-300"
+                            className="absolute -left-[9px] w-4 h-4 transform rotate-45 transition-[top] duration-300 !bg-[#fdecf6] dark:!bg-[#ec008c] border-l-2 border-b-2 !border-[#fdc70c] dark:!border-[#1d4ed8]"
                             style={{ top: `${coords.arrowTop}px` }}
                         />
                     )}
-                </Card>
+                </div>
             </div>
         </div>
     );
