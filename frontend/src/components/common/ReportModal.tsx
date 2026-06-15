@@ -186,7 +186,7 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent 
-        className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto corp-card rounded-3xl p-0 [&>button]:hidden"
+        className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto corp-dialog rounded-3xl p-0 [&>button]:hidden"
         overlayClassName="backdrop-blur-md bg-black/40"
       >
         {/* Header Section */}
