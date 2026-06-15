@@ -127,6 +127,7 @@
   "completed": "completed",
   "no_lessons": "No lessons available.",
   "unit": "Unit",
+  "start_here": "Start here",
   "locked": "Locked",
   "locked_description": "Complete this lesson to unlock more content.",
   "tip": "TIP",
@@ -369,6 +370,7 @@
       "collapse": "Hide"
     },
     "scroll_to_current": "Go to my lesson",
+    "scroll_to_current_hint": "Jump back to where you left off and highlight your next lesson",
     "beta_notice": "We're working daily to bring you the best lessons."
   }
 }

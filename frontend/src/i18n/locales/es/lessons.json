@@ -122,6 +122,7 @@
   "completed": "completadas",
   "no_lessons": "No hay lecciones disponibles.",
   "unit": "Unidad",
+  "start_here": "Empieza aquí",
   "locked": "Bloqueado",
   "locked_description": "Completa esta lección para desbloquear más contenido.",
   "tip": "CONSEJO",
@@ -364,6 +365,7 @@
       "collapse": "Ocultar"
     },
     "scroll_to_current": "Ir a mi lección",
+    "scroll_to_current_hint": "Ir a donde te quedaste y resaltar tu próxima lección",
     "beta_notice": "Trabajamos a diario para ofrecerte las mejores lecciones."
   }
 }

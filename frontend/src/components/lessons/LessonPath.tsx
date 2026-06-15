@@ -16,6 +16,10 @@ interface LessonPathProps {
     isLoading?: boolean;
     sagaTitle?: string;
     themeColor?: string;
+    /** Global next-to-do lesson code (e.g. "2-3-1-5"). Used to highlight a single current node. */
+    currentLessonCode?: string | null;
+    /** Whether this saga is the one containing the user's current lesson (fallback when no code match). */
+    isCurrentSaga?: boolean;
 }
 
 const THEME_COLORS: Record<string, { bg: string; border: string; text: string; light: string }> = {
@@ -56,20 +60,6 @@ const LessonNode: React.FC<LessonNodeProps> = ({
         }
     };
 
-    // Self-scrolling capability
-    React.useEffect(() => {
-        if (isCurrentLesson) {
-            // Short delay to let the DOM paint completely in accordion
-            const timer = setTimeout(() => {
-                const node = document.getElementById('current-lesson-node');
-                if (node) {
-                    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 600);
-            return () => clearTimeout(timer);
-        }
-    }, [isCurrentLesson]);
-
     const wavePattern = [0, -50, 0, 50];
     const xOffset = wavePattern[index % 4];
 
@@ -82,45 +72,63 @@ const LessonNode: React.FC<LessonNodeProps> = ({
             }}
             tabIndex={-1}
         >
-            <HoverCard openDelay={200}>
-                <HoverCardTrigger asChild>
-                    <button
-                        onClick={handleClick}
-                        disabled={isLocked}
-                        className={`
-                            group relative w-20 h-16 rounded-[30px] flex items-center justify-center
-                            transition-all duration-200 active:scale-95 outline-none
-                            ${colors.bg}
-                            border-b-[6px] ${colors.border} active:border-b-0 active:translate-y-[6px]
-                            ${isLocked ? 'opacity-80 cursor-not-allowed' : 'cursor-pointer hover:brightness-110 shadow-xl'}
-                        `}
-                    >
-                        {/* Internal Highlight */}
-                        <div className="absolute top-2 left-3 w-6 h-3 bg-white/30 rounded-full" />
+            {/* Floating "Start here" beacon — only for the next-to-do lesson */}
+            {isCurrentLesson && (
+                <div className="absolute -top-4 z-40 flex flex-col items-center animate-bounce pointer-events-none">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[10px] font-black uppercase tracking-wide shadow-md shadow-amber-500/40 whitespace-nowrap">
+                        {t('start_here')}
+                    </span>
+                </div>
+            )}
 
-                        {/* Icon */}
-                        <div className="text-white drop-shadow-md relative z-10">
-                            {lesson.completed ? (
-                                <Check strokeWidth={4} className="w-8 h-8" />
-                            ) : isLocked ? (
-                                <Lock className="w-6 h-6 opacity-70" />
-                            ) : isCurrentLesson ? (
-                                <Play fill="currentColor" className="w-8 h-8 ml-1" />
-                            ) : (
-                                <Star fill="currentColor" className="w-8 h-8" />
+            {/* Sized wrapper so the pulsing halo aligns to the node without tinting it */}
+            <div className="relative inline-flex">
+                {/* Pulsing attention halo (sibling behind the button → no face tint) */}
+                {isCurrentLesson && (
+                    <span className="absolute inset-0 rounded-[30px] bg-amber-300/60 animate-ping pointer-events-none" />
+                )}
+
+                <HoverCard openDelay={200}>
+                    <HoverCardTrigger asChild>
+                        <button
+                            onClick={handleClick}
+                            disabled={isLocked}
+                            className={cn(
+                                'group relative w-20 h-16 rounded-[30px] flex items-center justify-center',
+                                'transition-all duration-200 active:scale-95 outline-none',
+                                colors.bg,
+                                !isLocked && `border-b-[6px] ${colors.border} active:border-b-0 active:translate-y-[6px]`,
+                                isLocked && 'opacity-60 grayscale cursor-not-allowed',
+                                !isLocked && !isCurrentLesson && 'cursor-pointer hover:brightness-110 shadow-xl',
+                                isCurrentLesson && 'cursor-pointer scale-110 ring-4 ring-amber-300/80 shadow-xl shadow-amber-400/40'
                             )}
-                        </div>
+                        >
+                            {/* Internal Highlight */}
+                            <div className="absolute top-2 left-3 w-6 h-3 bg-white/30 rounded-full" />
 
-                        {/* Stars for score/mastery (tiny dots) if completed */}
-                        {lesson.completed && (
-                            <div className="absolute -bottom-8 flex gap-1">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className={`w-2 h-2 rounded-full ${i <= (lesson.score > 80 ? 3 : 2) ? 'bg-indigo-400' : 'bg-gray-300 dark:bg-gray-700'}`} />
-                                ))}
+                            {/* Icon */}
+                            <div className="text-white drop-shadow-md relative z-10">
+                                {lesson.completed ? (
+                                    <Check strokeWidth={4} className="w-8 h-8" />
+                                ) : isLocked ? (
+                                    <Lock className="w-6 h-6 opacity-70" />
+                                ) : isCurrentLesson ? (
+                                    <Play fill="currentColor" className="w-8 h-8 ml-1" />
+                                ) : (
+                                    <Star fill="currentColor" className="w-8 h-8" />
+                                )}
                             </div>
-                        )}
-                    </button>
-                </HoverCardTrigger>
+
+                            {/* Stars for score/mastery (tiny dots) if completed */}
+                            {lesson.completed && (
+                                <div className="absolute -bottom-8 flex gap-1">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className={`w-2 h-2 rounded-full ${i <= (lesson.score > 80 ? 3 : 2) ? 'bg-indigo-400' : 'bg-gray-300 dark:bg-gray-700'}`} />
+                                    ))}
+                                </div>
+                            )}
+                        </button>
+                    </HoverCardTrigger>
 
                 {/* Preview Content */}
                 <HoverCardContent side="top" className="w-72 p-0 overflow-hidden border-2 shadow-xl z-50">
@@ -149,7 +157,8 @@ const LessonNode: React.FC<LessonNodeProps> = ({
                         </div>
                     </div>
                 </HoverCardContent>
-            </HoverCard>
+                </HoverCard>
+            </div>
         </div>
     );
 };
@@ -158,7 +167,9 @@ export const LessonPath: React.FC<LessonPathProps> = ({
     lessons,
     isLoading,
     sagaTitle,
-    themeColor = 'archipelago'
+    themeColor = 'archipelago',
+    currentLessonCode,
+    isCurrentSaga = false
 }) => {
     const { t } = useTranslation('lessons');
     const colors = THEME_COLORS[themeColor] || THEME_COLORS.archipelago;
@@ -202,10 +213,24 @@ export const LessonPath: React.FC<LessonPathProps> = ({
         );
     }
 
-    // Find first incomplete lesson global index
-    const firstIncompleteGlobalIndex = lessons.findIndex(l => !l.completed);
-    const currentLessonGlobalIndex = firstIncompleteGlobalIndex === -1 ? lessons.length - 1 : firstIncompleteGlobalIndex;
-    const currentLessonId = lessons[currentLessonGlobalIndex]?.id || -1;
+    // Determine the single "current" (next-to-do) lesson.
+    // Prefer the GLOBAL next-lesson code so only the saga that truly contains it shows a
+    // highlighted node — this prevents duplicate "current" markers across multiple open sagas.
+    // Fallback (no code, or code not in this saga): mark the first incomplete lesson, but ONLY
+    // for the saga flagged as current, so other open sagas never light up a node.
+    const matchedByCodeIndex = currentLessonCode
+        ? lessons.findIndex(l => l.code === currentLessonCode)
+        : -1;
+    const firstIncompleteIndex = lessons.findIndex(l => !l.completed);
+    const currentLessonGlobalIndex =
+        matchedByCodeIndex !== -1
+            ? matchedByCodeIndex
+            : isCurrentSaga
+                ? (firstIncompleteIndex === -1 ? lessons.length - 1 : firstIncompleteIndex)
+                : -1;
+    const currentLessonId = currentLessonGlobalIndex !== -1
+        ? (lessons[currentLessonGlobalIndex]?.id ?? null)
+        : null;
 
     return (
         <div className="w-full py-2 pb-32">

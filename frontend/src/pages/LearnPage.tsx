@@ -15,7 +15,7 @@ import { useResumeLesson } from '@/components/lessons/hooks/useResumeLesson';
 import { useSagaData, type SagaData } from '@/components/lessons/hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '@/components/ui/LoadingScreen';
-import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap, LocateFixed } from 'lucide-react';
 import { getGuestProfile } from '@/lib/guestProfile';
 import { cn } from '@/lib/utils';
 
@@ -125,6 +125,8 @@ const SagaSectionItem: React.FC<{
                 lessons={lessons}
                 isLoading={isLoading}
                 themeColor={themeColor}
+                currentLessonCode={nextLessonCode}
+                isCurrentSaga={isCurrentSaga}
               />
             </div>
           )}
@@ -322,13 +324,62 @@ export default function LearnPage() {
     return adventure1Sagas;
   };
 
-  // ── Auto-scroll to current lesson on load (Managed by ID now) ──────────────
-  const handleContinueScroll = () => {
-    const node = document.getElementById('current-lesson-node');
-    if (node) {
-      node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
+  // ── Focus the current lesson: expand its adventure/saga, scroll it to center,
+  //    and flash it. Shared by the "Go to my lesson" button and the on-entry auto-focus. ──
+  const autoFocusedRef = useRef(false);
+
+  const focusCurrentLesson = useCallback(() => {
+    if (!currentLocation) return;
+    const { advId, sagaId } = currentLocation;
+
+    // 1. Make sure the right adventure + saga are open (idempotent).
+    setExpandedAdventures(prev => (prev.has(advId) ? prev : new Set([...prev, advId])));
+    setOpenSagas(prev => {
+      const key = `${advId}-${sagaId}`;
+      return prev.has(key) ? prev : new Set([...prev, key]);
+    });
+    setActiveAdventureId(advId);
+
+    // 2. The node mounts lazily (lessons are fetched on saga open), so poll for it.
+    //    Pick the VISIBLE instance — the same saga can be mounted twice (mobile inline
+    //    column is `lg:hidden` on desktop but still in the DOM), which would duplicate the id.
+    let attempts = 0;
+    const maxAttempts = 40; // ~6s at 150ms intervals
+
+    const tryFocus = () => {
+      const nodes = Array.from(
+        document.querySelectorAll<HTMLElement>('#current-lesson-node')
+      );
+      const node = nodes.find(n => n.offsetParent !== null) ?? nodes[0];
+
+      if (node) {
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Brief attention flash (restart animation if already applied).
+        node.classList.remove('lf-lesson-flash');
+        void node.offsetWidth;
+        node.classList.add('lf-lesson-flash');
+        window.setTimeout(() => node.classList.remove('lf-lesson-flash'), 1800);
+        // Corrective re-center after layout settles (accordion/banner images).
+        window.setTimeout(() => {
+          node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
+        return;
+      }
+      if (attempts++ < maxAttempts) {
+        window.setTimeout(tryFocus, 150);
+      }
+    };
+
+    window.setTimeout(tryFocus, 60);
+  }, [currentLocation]);
+
+  // ── Auto-focus the current lesson once per visit, after data is ready ──────
+  useEffect(() => {
+    if (autoFocusedRef.current) return;
+    if (!currentLocation || adventuresLoading) return;
+    autoFocusedRef.current = true;
+    focusCurrentLesson();
+  }, [currentLocation, adventuresLoading, focusCurrentLesson]);
 
   // ── Loading state ──────────────────────────────────────────────────────────
   if (isUserLoading || adventuresLoading) {
@@ -350,35 +401,40 @@ export default function LearnPage() {
             
             {/* ── Page Header (Internal to Left Column) ────────────────────── */}
             <div className="flex items-center justify-between gap-4 py-2 border-b border-white/10 dark:border-white/5 mb-2">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 min-w-0">
                 <div className="p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl shadow-xl shadow-indigo-500/20 shrink-0">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1">
+                <div className="min-w-0">
+                  <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1 truncate">
                     {t('lessons:learn.page_title')}
                   </h1>
-                  <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 uppercase tracking-wide leading-none">
+                  <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 uppercase tracking-wide leading-none truncate">
                     {t('common:app_name')}
                   </p>
                 </div>
               </div>
 
-              {/* Continue button — only when user has a current lesson & not finished */}
+              {/* "Go to my lesson" — jumps & highlights where the user left off.
+                  Amber matches the highlighted lesson node, with a gentle attention pulse. */}
               {!isFinished && nextLessonCode && (
                 <button
                   id="learn-continue-btn"
-                  onClick={handleContinueScroll}
+                  onClick={focusCurrentLesson}
+                  title={t('lessons:learn.scroll_to_current_hint')}
+                  aria-label={t('lessons:learn.scroll_to_current_hint')}
                   className={cn(
-                    'shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full',
-                    'bg-gradient-to-r from-indigo-500 to-blue-500',
-                    'text-white text-xs font-semibold uppercase tracking-wide shadow-lg shadow-indigo-500/30',
-                    'hover:from-indigo-600 hover:to-blue-600 transition-colors duration-200'
+                    'lf-resume-pulse group relative shrink-0 inline-flex items-center gap-2 rounded-full',
+                    'px-4 py-2.5 sm:px-5 sm:py-3',
+                    'bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950',
+                    'text-xs sm:text-sm font-black uppercase tracking-wide',
+                    'ring-2 ring-amber-300/70 shadow-lg shadow-amber-500/30',
+                    'hover:from-amber-300 hover:to-amber-400 hover:scale-[1.04] active:scale-95',
+                    'transition-all duration-200'
                   )}
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{t('lessons:learn.scroll_to_current')}</span>
-                  <span className="sm:hidden">▶</span>
+                  <LocateFixed className="w-4 h-4 shrink-0" />
+                  <span>{t('lessons:learn.scroll_to_current')}</span>
                 </button>
               )}
 
@@ -402,6 +458,11 @@ export default function LearnPage() {
                 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
                 .animate-marquee { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
                 @media (min-width: 640px) { .animate-marquee { animation: none; padding-left: 0; transform: none; white-space: normal; } }
+                @keyframes lfLessonFlash { 0%, 100% { filter: none; } 25%, 65% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.95)); } }
+                .lf-lesson-flash { animation: lfLessonFlash 1.6s ease-in-out; }
+                @keyframes lfResumePulse { 0%, 100% { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12)); } 50% { filter: drop-shadow(0 0 11px rgba(245, 158, 11, 0.9)); } }
+                .lf-resume-pulse { animation: lfResumePulse 2.4s ease-in-out infinite; }
+                @media (prefers-reduced-motion: reduce) { .lf-lesson-flash, .lf-resume-pulse { animation: none; } }
               `}</style>
             </div>
 
