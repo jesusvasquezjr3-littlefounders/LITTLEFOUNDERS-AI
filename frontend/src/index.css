@@ -2235,6 +2235,27 @@ html[data-reduce-motion="true"] *::after {
   view-transition-name: app-content;
 }
 
+/* Persistent app chrome (sidebar + top bar) must NOT animate during page
+   transitions. It is mounted once by the shared DashboardLayout/AdminLayout
+   route and stays in the DOM across navigations, so any morph/crossfade of its
+   captured snapshot reads as the element "jumping" or "reloading".
+   We snap straight to the new state (no group morph, no old→new fade) while the
+   content area (app-content) keeps its organic transition. */
+::view-transition-group(app-sidebar),
+::view-transition-group(app-header) {
+  animation: none !important;
+}
+::view-transition-old(app-sidebar),
+::view-transition-old(app-header) {
+  animation: none !important;
+  opacity: 0 !important;
+}
+::view-transition-new(app-sidebar),
+::view-transition-new(app-header) {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
 /* Stop transition on elements that prefer-reduced-motion */
 @media (prefers-reduced-motion) {
   ::view-transition-group(*),
