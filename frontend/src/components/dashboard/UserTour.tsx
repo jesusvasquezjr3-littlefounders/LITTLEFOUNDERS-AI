@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Rocket, ChevronRight, X, Sparkles, GraduationCap } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
@@ -296,56 +296,44 @@ export function UserTour() {
                 </div>
 
                 <Card className={cn(
-                    "w-[340px] p-6 pt-10 shadow-2xl border-2 relative overflow-visible bg-background/95 backdrop-blur-xl",
-                    isCenter ? "text-center border-primary/30 scale-110" : "border-primary/50 animate-in fade-in zoom-in-95 slide-in-from-left-4"
+                    "w-[340px] p-6 pt-10 relative overflow-visible bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/40",
+                    isCenter ? "text-center scale-105" : "animate-in fade-in zoom-in-95 slide-in-from-left-4"
                 )}>
-                    {/* Background decoration */}
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-accent/50 text-muted-foreground hover:text-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors z-30"
+                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-500 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-colors z-30"
                         onClick={handleClose}
                     >
                         <X className="w-4 h-4" />
                     </Button>
 
                     <div className="relative z-10 pl-4">
-                        <h3 className={cn(
-                            "text-xl font-bold mb-3 bg-clip-text text-transparent",
-                            userRole === 'child' ? "bg-gradient-to-r from-indigo-600 to-blue-600 dark:from-indigo-400 dark:to-blue-400" : "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
-                        )}>
+                        <h3 className="corp-display corp-gradient-text text-xl font-bold mb-3">
                             {step.title}
                         </h3>
-                        <p className="text-muted-foreground mb-6 text-sm leading-relaxed font-medium">
+                        <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed font-medium">
                             {step.description}
                         </p>
 
                         <div className="flex items-center justify-between mt-2">
-                            <div className="flex gap-1.5">
+                            <div className="flex items-center gap-1.5">
                                 {activeSteps.map((_, idx) => (
                                     <div
                                         key={idx}
                                         className={cn(
-                                            "w-2 h-2 rounded-full transition-all duration-300",
+                                            "h-2 rounded-full transition-all duration-300",
                                             idx === currentStep
-                                                ? (userRole === 'child' ? "bg-indigo-500 w-4" : "bg-blue-500 w-4")
-                                                : "bg-muted-foreground/30"
+                                                ? "w-4 bg-indigo-500"
+                                                : "w-2 bg-slate-300 dark:bg-white/15"
                                         )}
                                     />
                                 ))}
                             </div>
-                            <Button onClick={handleNext} size="sm" className={cn(
-                                "text-white shadow-lg shadow-black/10 group transition-all duration-300 transform hover:-translate-y-0.5",
-                                userRole === 'child'
-                                    ? "bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600"
-                                    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
-                            )}>
+                            <Button onClick={handleNext} variant="ghost" size="sm" className="corp-btn-primary group rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-1">
                                 {currentStep === activeSteps.length - 1 ? t('tour.buttons.start') : t('tour.buttons.next')}
                                 {currentStep !== activeSteps.length - 1 && (
-                                    <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 )}
                             </Button>
                         </div>
@@ -353,7 +341,7 @@ export function UserTour() {
 
                     {!isCenter && (
                         <div
-                            className="absolute -left-2 w-4 h-4 bg-background border-l-2 border-b-2 border-primary transform rotate-45 transition-[top] duration-300"
+                            className="absolute -left-2 w-4 h-4 bg-white dark:bg-[#0d1426] border-l border-b border-slate-200 dark:border-white/10 transform rotate-45 transition-[top] duration-300"
                             style={{ top: `${coords.arrowTop}px` }}
                         />
                     )}

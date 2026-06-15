@@ -5,7 +5,8 @@
     "pricing": "Precios",
     "how": "Cómo Funciona",
     "login": "Iniciar Sesión",
-    "register": "Ya tengo cuenta"
+    "register": "Ya tengo cuenta",
+    "resume": "Continuar"
   },
   "hero": {
     "badge": "No requiere tarjeta • Acceso inmediato",
@@ -331,6 +332,7 @@
       "title_2": "antes de crecer",
       "subtitle": "Lecciones interactivas, simuladores reales y un tutor con IA que convierten la educación financiera en una habilidad para toda la vida. Solo 5 minutos al día.",
       "cta_primary": "Empieza Ahora",
+      "cta_resume": "Continuar donde lo dejaste",
       "cta_secondary": "Ver cómo funciona",
       "microcopy": "Sin tarjeta de crédito · Para edades 6–17 · Cancela cuando quieras"
     },

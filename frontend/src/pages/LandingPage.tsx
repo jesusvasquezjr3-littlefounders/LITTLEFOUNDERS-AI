@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { hasSession } from "@/lib/guestProfile";
 import { Reveal } from "@/components/landing/Reveal";
-import { StockImage } from "@/components/landing/StockImage";
 import { LiquidGlassMedia } from "@/components/landing/LiquidGlassMedia";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import {
@@ -59,11 +57,10 @@ function SectionHeading({
 
 const LandingPage = () => {
   const { t } = useTranslation("landing");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (hasSession()) navigate("/learn");
-  }, [navigate]);
+  // Returning users (guest or authenticated) can browse the landing freely.
+  // Their primary CTA resumes where they left off instead of restarting onboarding.
+  const session = hasSession();
+  const startTo = session ? "/learn" : "/onboarding";
 
   const trustItems = [
     { icon: Lock, label: t("corp.trust.item_1") },
@@ -150,10 +147,10 @@ const LandingPage = () => {
               <Reveal delay={240}>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
                   <Link
-                    to="/onboarding"
+                    to={startTo}
                     className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5"
                   >
-                    {t("corp.hero.cta_primary")}
+                    {session ? t("corp.hero.cta_resume") : t("corp.hero.cta_primary")}
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                   <Link
@@ -453,10 +450,10 @@ const LandingPage = () => {
                 </p>
                 <div className="mt-9 flex flex-col sm:flex-row gap-3 justify-center">
                   <Link
-                    to="/onboarding"
+                    to={startTo}
                     className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5 bg-white text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg"
                   >
-                    {t("corp.final_cta.primary")}
+                    {session ? t("corp.hero.cta_resume") : t("corp.final_cta.primary")}
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                   <Link

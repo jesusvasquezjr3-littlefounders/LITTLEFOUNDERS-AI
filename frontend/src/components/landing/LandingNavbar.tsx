@@ -4,12 +4,17 @@ import { Menu, X, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { hasSession } from "@/lib/guestProfile";
 
 export const LandingNavbar = () => {
     const { t } = useTranslation('landing');
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
+    // Returning users get a "Continue" CTA back into the app; new users register.
+    const session = hasSession();
+    const ctaTo = session ? "/learn" : "/login";
+    const ctaLabel = session ? t('nav.resume') : t('nav.register');
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 16);
@@ -73,10 +78,10 @@ export const LandingNavbar = () => {
                         <ThemeToggle />
                         <LanguageSelector variant="simple" />
                         <Link
-                            to="/login"
+                            to={ctaTo}
                             className="corp-btn-primary inline-flex items-center gap-1.5 text-sm font-semibold rounded-xl px-5 py-2.5"
                         >
-                            {t('nav.register')}
+                            {ctaLabel}
                             <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>
@@ -111,11 +116,11 @@ export const LandingNavbar = () => {
                     ))}
                     <div className="flex flex-col gap-2 mt-3">
                         <Link
-                            to="/login"
+                            to={ctaTo}
                             className="corp-btn-primary text-center text-sm font-semibold py-3 rounded-xl"
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            {t('nav.register')}
+                            {ctaLabel}
                         </Link>
                     </div>
                 </div>

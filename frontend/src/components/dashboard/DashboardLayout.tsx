@@ -6,6 +6,7 @@ import { UserTour } from "./UserTour";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
+import { GuestNudgeModal } from "@/components/auth/GuestNudgeModal";
 import { isGuest } from "@/lib/guestProfile";
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
@@ -73,6 +74,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="corp h-screen overflow-hidden bg-slate-50 dark:bg-[#070b14]">
       <UserTour />
+      <GuestNudgeModal />
       <div className="flex h-full relative">
         {/* Menú lateral: Flotante y responsivo */}
         <Sidebar

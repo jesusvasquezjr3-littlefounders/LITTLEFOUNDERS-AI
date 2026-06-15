@@ -10,7 +10,8 @@
     "pricing": "Pricing",
     "how": "How It Works",
     "login": "Log In",
-    "register": "Already have an account?"
+    "register": "Already have an account?",
+    "resume": "Continue"
   },
   "hero": {
     "badge": "No credit card required • Instant access",
@@ -336,6 +337,7 @@
       "title_2": "before they grow up",
       "subtitle": "Interactive lessons, real simulators, and an AI tutor that turn financial education into a lifelong skill. Just 5 minutes a day.",
       "cta_primary": "Start Now",
+      "cta_resume": "Continue where you left off",
       "cta_secondary": "See how it works",
       "microcopy": "No credit card · Ages 6–17 · Cancel anytime"
     },

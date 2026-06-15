@@ -25,7 +25,7 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
       <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
         <div className="relative w-full flex justify-center mt-2 mb-6 pointer-events-none">
           <div className="absolute bottom-4 w-48 h-48 rounded-full z-0 bg-emerald-400/20 dark:bg-emerald-500/15 blur-2xl" />
-          <div className="relative w-44 h-56 drop-shadow-2xl z-10">
+          <div className="relative w-64 h-64 sm:w-72 sm:h-72 drop-shadow-2xl z-10">
             <DinoCharacter mood="excited" showBubble currentText={t('closing.liruf_bubble', { name, adventure: result?.finalAdventure ?? '-', saga: result?.finalSaga ?? '-' })} bubblePosition="standard" />
           </div>
         </div>

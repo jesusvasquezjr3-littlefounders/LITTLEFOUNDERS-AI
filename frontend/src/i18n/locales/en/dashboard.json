@@ -174,9 +174,13 @@
         "main_content_aria": "Main content"
     },
     "guest": {
-        "banner_title": "Want to save your progress?",
-        "banner_description": "Create a free account to keep your {{xp}} XP and your {{streak}}-day streak.",
+        "banner_title": "Your progress isn't saved",
+        "banner_description": "You're in guest mode. Create a free account to keep your {{xp}} XP and {{streak}}-day streak — without losing anything.",
         "banner_cta": "Create free account",
+        "nudge_title": "Save your progress, {{name}}",
+        "nudge_body": "You're exploring as a guest. Create a free account so your {{xp}} XP and {{streak}}-day streak aren't lost. It's quick, and you'll pick up right where you left off.",
+        "nudge_cta": "Create free account",
+        "nudge_later": "Not now",
         "indicator": "Guest Mode",
         "create_account": "Create account",
         "feature_requires_account_title": "Members-only feature",

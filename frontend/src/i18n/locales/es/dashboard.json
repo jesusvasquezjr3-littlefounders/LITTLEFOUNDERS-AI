@@ -170,9 +170,13 @@
         "main_content_aria": "Contenido principal"
     },
     "guest": {
-        "banner_title": "¿Quieres guardar tu progreso?",
-        "banner_description": "Crea una cuenta gratis para no perder tus {{xp}} XP y tu racha de {{streak}} días.",
+        "banner_title": "Tu progreso no está guardado",
+        "banner_description": "Estás en modo invitado. Crea una cuenta gratis para conservar tus {{xp}} XP y tu racha de {{streak}} días — sin perder nada.",
         "banner_cta": "Crear cuenta gratis",
+        "nudge_title": "Guarda tu progreso, {{name}}",
+        "nudge_body": "Estás explorando como invitado. Crea una cuenta gratis para que tus {{xp}} XP y tu racha de {{streak}} días no se pierdan. Es rápido y seguimos justo donde lo dejaste.",
+        "nudge_cta": "Crear cuenta gratis",
+        "nudge_later": "Ahora no",
         "indicator": "Modo Invitado",
         "create_account": "Crear cuenta",
         "feature_requires_account_title": "Función para miembros",
