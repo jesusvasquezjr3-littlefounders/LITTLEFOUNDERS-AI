@@ -61,6 +61,7 @@ littlefounders.ai
 | 2026-06-11 | Arquitectura: `index-en.html` añadido al build de Vite para servir metadatos Open Graph en inglés desde `en.littlefounders.ai` vía Vercel rewrites |
 | 2026-06-11 | SEO: Optimización integral (JSON-LD WebApp/EducationalOrganization, Sitemap hreflang, preloads LCP, lazy loading imgs) |
 | 2026-06-11 | UX: Añadidos viñetas descriptivas en Hero section (edad, tiempo y beneficio principal) |
+| 2026-06-14 | UX/UI: Estandarización visual integral bajo el sistema "corp" (`corp-grid-bg`, `corp-card`, `corp-btn-primary`) en todas las páginas de autenticación, onboarding, landings y modales utilitarios |
 
 ---
 

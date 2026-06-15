@@ -5,7 +5,7 @@
     "pricing": "Precios",
     "how": "Cómo Funciona",
     "login": "Iniciar Sesión",
-    "register": "Registrate Gratis"
+    "register": "Ya tengo cuenta"
   },
   "hero": {
     "badge": "No requiere tarjeta • Acceso inmediato",
@@ -330,7 +330,7 @@
       "title_grad": "dominar el dinero",
       "title_2": "antes de crecer",
       "subtitle": "Lecciones interactivas, simuladores reales y un tutor con IA que convierten la educación financiera en una habilidad para toda la vida. Solo 5 minutos al día.",
-      "cta_primary": "Comenzar gratis",
+      "cta_primary": "Empieza Ahora",
       "cta_secondary": "Ver cómo funciona",
       "microcopy": "Sin tarjeta de crédito · Para edades 6–17 · Cancela cuando quieras"
     },
@@ -434,7 +434,7 @@
     "final_cta": {
       "title": "Dale a tu hijo la ventaja que la escuela no da",
       "subtitle": "Únete hoy. Es gratis, toma menos de un minuto y puede cambiar su relación con el dinero para siempre.",
-      "primary": "Comenzar gratis",
+      "primary": "Empieza Ahora",
       "secondary": "Hablar con nosotros",
       "microcopy": "Sin tarjeta de crédito · Acceso inmediato"
     }
@@ -444,7 +444,7 @@
     "hero_title_1": "De cero a inteligencia financiera,",
     "hero_title_grad": "paso a paso",
     "hero_subtitle": "Diseñamos cada detalle para que aprender sobre dinero sea simple para tus hijos y tranquilo para ti. Así funciona.",
-    "hero_cta": "Comenzar gratis",
+    "hero_cta": "Empieza Ahora",
     "steps_eyebrow": "El proceso",
     "steps_title": "Empieza en menos de un minuto",
     "s1_kicker": "Paso 01",
@@ -472,7 +472,7 @@
     "parents_3": "Entorno 100% seguro y sin anuncios",
     "cta_title": "¿Listo para empezar?",
     "cta_subtitle": "Crea tu cuenta gratis y dale a tu hijo herramientas que durarán toda la vida.",
-    "cta_button": "Comenzar gratis",
+    "cta_button": "Empieza Ahora",
     "cta_secondary": "Ver preguntas frecuentes"
   },
   "showreel": {

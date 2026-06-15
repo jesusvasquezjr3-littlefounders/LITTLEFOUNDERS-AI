@@ -739,6 +739,14 @@ Hook `useLessonAudio()` maneja playback de narración por ejercicio con:
 | CVA | `class-variance-authority` para variantes de componentes |
 | cn() | `clsx` + `tailwind-merge` en `src/lib/utils.ts` |
 
+### Diseño y Estilos (Corp Standard)
+
+Todo el proyecto sigue un estándar unificado (índigo/white frosted glass):
+- **Fondos globales:** `bg-gradient-to-b from-indigo-50/80 via-white to-white` + `<div className="absolute inset-0 corp-grid-bg pointer-events-none" />`.
+- **Paneles y formularios:** Usar exclusivamente la clase `corp-card` para asegurar las transparencias consistentes (no blurs customizados aleatorios).
+- **Botones principales:** Usar `corp-btn-primary`.
+- **Componentes de Auth/Onboarding:** Ya implementan este layout exacto. No crear diseños aislados sin antes ajustarse a la línea visual principal.
+
 ### Estructura de Archivos
 
 - Cada feature en su directorio dentro de `src/`

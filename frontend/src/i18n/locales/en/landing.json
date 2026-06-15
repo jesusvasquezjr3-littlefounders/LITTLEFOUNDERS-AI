@@ -10,7 +10,7 @@
     "pricing": "Pricing",
     "how": "How It Works",
     "login": "Log In",
-    "register": "Sign Up Free"
+    "register": "Already have an account?"
   },
   "hero": {
     "badge": "No credit card required • Instant access",
@@ -335,7 +335,7 @@
       "title_grad": "master money",
       "title_2": "before they grow up",
       "subtitle": "Interactive lessons, real simulators, and an AI tutor that turn financial education into a lifelong skill. Just 5 minutes a day.",
-      "cta_primary": "Start for free",
+      "cta_primary": "Start Now",
       "cta_secondary": "See how it works",
       "microcopy": "No credit card · Ages 6–17 · Cancel anytime"
     },
@@ -439,7 +439,7 @@
     "final_cta": {
       "title": "Give your child the edge school doesn't",
       "subtitle": "Join today. It's free, takes less than a minute, and can change their relationship with money forever.",
-      "primary": "Start for free",
+      "primary": "Start Now",
       "secondary": "Talk to us",
       "microcopy": "No credit card · Instant access"
     }
@@ -449,7 +449,7 @@
     "hero_title_1": "From zero to financial intelligence,",
     "hero_title_grad": "step by step",
     "hero_subtitle": "We designed every detail so learning about money is simple for your kids and reassuring for you. Here's how.",
-    "hero_cta": "Start for free",
+    "hero_cta": "Start Now",
     "steps_eyebrow": "The process",
     "steps_title": "Get started in under a minute",
     "s1_kicker": "Step 01",
@@ -477,7 +477,7 @@
     "parents_3": "100% safe and ad-free environment",
     "cta_title": "Ready to get started?",
     "cta_subtitle": "Create your free account and give your child tools that last a lifetime.",
-    "cta_button": "Start for free",
+    "cta_button": "Start Now",
     "cta_secondary": "View FAQ"
   },
   "showreel": {

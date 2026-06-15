@@ -74,12 +74,6 @@ export const LandingNavbar = () => {
                         <LanguageSelector variant="simple" />
                         <Link
                             to="/login"
-                            className="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-300 px-3 py-2 transition-colors"
-                        >
-                            {t('nav.login')}
-                        </Link>
-                        <Link
-                            to="/onboarding"
                             className="corp-btn-primary inline-flex items-center gap-1.5 text-sm font-semibold rounded-xl px-5 py-2.5"
                         >
                             {t('nav.register')}
@@ -118,13 +112,6 @@ export const LandingNavbar = () => {
                     <div className="flex flex-col gap-2 mt-3">
                         <Link
                             to="/login"
-                            className="text-center text-sm font-semibold text-slate-700 dark:text-slate-200 py-3 rounded-xl border border-slate-200 dark:border-white/10"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            {t('nav.login')}
-                        </Link>
-                        <Link
-                            to="/onboarding"
                             className="corp-btn-primary text-center text-sm font-semibold py-3 rounded-xl"
                             onClick={() => setMobileMenuOpen(false)}
                         >

@@ -186,13 +186,13 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent 
-        className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto report-modal-clean rounded-3xl p-0 [&>button]:hidden"
+        className="sm:max-w-lg w-full max-h-[92vh] overflow-y-auto corp-card rounded-3xl p-0 [&>button]:hidden"
         overlayClassName="backdrop-blur-md bg-black/40"
       >
         {/* Header Section */}
         <div className="p-6 pb-2 relative">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/10">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <Flag className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -213,19 +213,19 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
         {/* ── Success State ── */}
         {submitState === "success" ? (
           <div className="flex flex-col items-center gap-5 py-12 text-center animate-in fade-in zoom-in-95 duration-500">
-            <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center relative">
-              <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div className="w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center relative">
+              <CheckCircle2 className="w-10 h-10 text-indigo-500" />
             </div>
             <div className="space-y-1 px-8">
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{t("success.title")}</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t("success.description")}</p>
             </div>
-            <Button
+            <button
               onClick={handleClose}
-              className="mt-2 rounded-2xl h-12 px-8 bg-green-600 hover:bg-green-700 text-white font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="corp-btn-primary mt-2 h-11 px-8 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2"
             >
               {t("success.close")}
-            </Button>
+            </button>
           </div>
         ) : (
           /* ── Form ── */
@@ -242,10 +242,10 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                     type="button"
                     onClick={() => setReportType(type)}
                     className={`
-                      px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border
+                      px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 border
                       ${reportType === type
-                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg scale-105"
-                        : "bg-white/10 dark:bg-black/20 text-slate-500 dark:text-slate-400 border-white/10 hover:bg-white/20 dark:hover:bg-black/30 hover:border-white/20"
+                        ? "bg-indigo-600 dark:bg-indigo-500 text-white border-transparent shadow-md scale-105"
+                        : "bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:text-indigo-700 dark:hover:text-indigo-300"
                       }
                     `}
                   >
@@ -268,9 +268,9 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                   disabled={!!sessionEmail}
                   placeholder={t("form.email_placeholder")}
                   className={`
-                    w-full px-4 py-3 rounded-2xl border-2 transition-all outline-none text-sm font-bold
-                    ${errors.email ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
-                    text-slate-900 dark:text-white placeholder-slate-400/70
+                    w-full px-4 py-3 rounded-xl border transition-all outline-none text-sm font-medium
+                    ${errors.email ? "border-red-400 bg-red-500/5" : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:bg-white dark:focus:bg-white/10"}
+                    text-slate-900 dark:text-white placeholder-slate-400
                     ${sessionEmail ? "opacity-40 cursor-not-allowed" : ""}
                   `}
                 />
@@ -289,9 +289,9 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                   placeholder={t("form.subject_placeholder")}
                   maxLength={200}
                   className={`
-                    w-full px-4 py-3 rounded-2xl border-2 transition-all outline-none text-sm font-bold
-                    ${errors.subject ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
-                    text-slate-900 dark:text-white placeholder-slate-400/70
+                    w-full px-4 py-3 rounded-xl border transition-all outline-none text-sm font-medium
+                    ${errors.subject ? "border-red-400 bg-red-500/5" : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:bg-white dark:focus:bg-white/10"}
+                    text-slate-900 dark:text-white placeholder-slate-400
                   `}
                 />
                 {errors.subject && <p className="text-[10px] font-bold text-red-500 ml-1">{errors.subject}</p>}
@@ -309,9 +309,9 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
                 placeholder={t("form.context_placeholder")}
                 rows={3}
                   className={`
-                    w-full px-4 py-4 rounded-[1.5rem] border-2 transition-all outline-none resize-none text-sm leading-relaxed font-bold
-                    ${errors.context ? "border-red-400/50 bg-red-500/5" : "border-transparent bg-white/50 dark:bg-black/20 focus:border-slate-900 dark:focus:border-white/50 focus:bg-white dark:focus:bg-black/40"}
-                    text-slate-900 dark:text-white placeholder-slate-400/70
+                    w-full px-4 py-4 rounded-xl border transition-all outline-none resize-none text-sm leading-relaxed font-medium
+                    ${errors.context ? "border-red-400 bg-red-500/5" : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:bg-white dark:focus:bg-white/10"}
+                    text-slate-900 dark:text-white placeholder-slate-400
                   `}
                 />
               {errors.context && <p className="text-[10px] font-bold text-red-500 ml-1">{errors.context}</p>}
@@ -370,18 +370,18 @@ export function ReportModal({ open, onClose, reportedUrl }: ReportModalProps) {
             {/* Actions */}
             <div className="flex gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={handleClose}
-                className="flex-1 h-14 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+                className="flex-1 h-12 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
                 {t("form.cancel")}
               </Button>
-              <Button type="submit" disabled={submitState === "loading"}
-                className="flex-1 h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-95 font-black uppercase tracking-widest text-xs shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50">
+              <button type="submit" disabled={submitState === "loading"}
+                className="corp-btn-primary flex-1 h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none">
                 {submitState === "loading" ? (
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Flag className="w-4 h-4 mr-2" />
+                  <Flag className="w-4 h-4" />
                 )}
                 {submitState === "loading" ? t("form.submitting") : t("form.submit")}
-              </Button>
+              </button>
             </div>
 
             {/* Global error */}

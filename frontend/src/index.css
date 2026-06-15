@@ -2264,6 +2264,19 @@ html[data-reduce-motion="true"] *::after {
   animation: morph-blob 5s ease-in-out infinite;
 }
 
+/* Morphing rectangular animation for Landing Page frames */
+@keyframes morph-rect {
+  0% { border-radius: 16px 64px 20px 48px / 48px 20px 64px 16px; }
+  33% { border-radius: 64px 16px 48px 20px / 20px 48px 16px 64px; }
+  66% { border-radius: 20px 48px 16px 64px / 64px 16px 48px 20px; }
+  100% { border-radius: 16px 64px 20px 48px / 48px 20px 64px 16px; }
+}
+.morphing-rect-frame {
+  border-radius: 16px 64px 20px 48px / 48px 20px 64px 16px;
+  animation: morph-rect 5s ease-in-out infinite;
+}
+
+
 /* Twinkle and float animations for sparkles around the premium liquid glass frame */
 @keyframes sparkle-float-twinkle {
   0%, 100% {

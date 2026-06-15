@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { hasSession } from "@/lib/guestProfile";
 import { Reveal } from "@/components/landing/Reveal";
 import { StockImage } from "@/components/landing/StockImage";
+import { LiquidGlassMedia } from "@/components/landing/LiquidGlassMedia";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import {
   ArrowRight,
@@ -171,40 +172,34 @@ const LandingPage = () => {
             </div>
 
             {/* Media */}
-            <Reveal variant="scale" delay={120} className="relative">
-              <div className="relative rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-white/5 p-2 shadow-[0_40px_100px_-30px_rgba(37,99,235,0.45)] backdrop-blur">
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-900">
-                  <video
-                    src="/video/8747232-sd_960_540_25fps.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover corp-kenburns"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-indigo-900/40 via-transparent to-transparent pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Floating chips */}
-              <div className="absolute -bottom-5 -left-3 sm:-left-6 rounded-2xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl px-4 py-3 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">+50</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t("solution.animation.coins_label")}</p>
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-3 sm:-right-5 rounded-2xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl px-4 py-3 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">100%</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t("corp.stats.safe_label")}</p>
-                </div>
-              </div>
+            <Reveal variant="scale" delay={120} className="relative z-10">
+                <LiquidGlassMedia
+                  type="video"
+                  src="/video/8747232-sd_960_540_25fps.mp4"
+                  delay="0.5s"
+                  badges={
+                    <>
+                      <div className="absolute -bottom-5 -left-3 sm:-left-6 rounded-2xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl px-4 py-3 flex items-center gap-3 z-20">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                          <Trophy className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">+50</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t("solution.animation.coins_label")}</p>
+                        </div>
+                      </div>
+                      <div className="absolute -top-4 -right-3 sm:-right-5 rounded-2xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl px-4 py-3 flex items-center gap-3 z-20">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">100%</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t("corp.stats.safe_label")}</p>
+                        </div>
+                      </div>
+                    </>
+                  }
+                />
             </Reveal>
           </div>
 
@@ -273,15 +268,13 @@ const LandingPage = () => {
       <section className="relative py-24 bg-slate-50 dark:bg-[#0a0e1a] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
-            <Reveal variant="left">
-              <div className="relative rounded-3xl border border-slate-200 dark:border-white/10 p-2 shadow-2xl bg-white dark:bg-white/5">
-                <StockImage
+            <Reveal variant="left" className="relative z-10">
+                <LiquidGlassMedia
+                  type="image"
                   src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1100&q=80"
                   alt="Familia aprendiendo finanzas con LittleFounders"
-                  className="w-full h-full object-cover"
-                  fallbackClassName="aspect-[4/3] rounded-2xl bg-gradient-to-br from-indigo-500/30 via-blue-500/20 to-sky-400/30"
+                  delay="0.8s"
                 />
-              </div>
             </Reveal>
 
             <div>
@@ -430,15 +423,14 @@ const LandingPage = () => {
             </ul>
           </div>
 
-          <Reveal variant="right">
-            <div className="relative rounded-3xl border border-slate-200 dark:border-white/10 p-2 shadow-2xl bg-white dark:bg-white/5">
-              <StockImage
-                src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1100&q=80"
-                alt="Entorno seguro de aprendizaje para niños"
-                className="w-full h-full object-cover"
-                fallbackClassName="aspect-[4/3] rounded-2xl bg-gradient-to-br from-emerald-500/25 via-teal-500/20 to-indigo-500/25"
-              />
-            </div>
+          <Reveal variant="right" className="relative z-10">
+            <LiquidGlassMedia
+              type="image"
+              src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1100&q=80"
+              alt="Entorno seguro de aprendizaje para niños"
+              delay="1.2s"
+              fallbackClassName="w-full h-full bg-gradient-to-br from-emerald-500/25 via-teal-500/20 to-indigo-500/25"
+            />
           </Reveal>
         </div>
       </section>

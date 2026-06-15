@@ -109,7 +109,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               </a>
               <div className="mt-5 flex flex-col gap-3">
                 <Link
-                  to="/onboarding"
+                  to="/login"
                   className="corp-btn-primary inline-flex items-center justify-center text-sm font-semibold rounded-xl px-5 py-2.5 w-fit"
                 >
                   {t("nav.register")}
