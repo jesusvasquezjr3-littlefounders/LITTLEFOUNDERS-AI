@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play, BookOpen, Users, Star } from "lucide-react";
@@ -103,7 +102,6 @@ const ALL_GAMES: GameCard[] = [
 ];
 
 export default function GamesPage() {
-  const Layout = DashboardLayout;
   const { t } = useTranslation(['games', 'common']);
   const navigate = useNavigate();
   // Group games by age group
@@ -136,8 +134,7 @@ export default function GamesPage() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
+    <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {/* Premium Header Section */}
         <div className="corp-panel relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6">
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
@@ -293,6 +290,5 @@ export default function GamesPage() {
           </div>
         ))}
       </div>
-    </Layout>
   );
 }

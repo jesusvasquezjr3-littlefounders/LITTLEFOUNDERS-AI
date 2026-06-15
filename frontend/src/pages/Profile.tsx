@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Mail, Shield, Palette, Loader2, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
@@ -196,8 +195,8 @@ const Profile = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="corp max-w-6xl mx-auto space-y-6 pb-8 animate-in fade-in duration-500">
+    <>
+    <div className="corp max-w-6xl mx-auto space-y-6 pb-8 animate-in fade-in duration-500">
         
         {/* Profile Header Card */}
         <div
@@ -563,7 +562,7 @@ const Profile = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 };
 

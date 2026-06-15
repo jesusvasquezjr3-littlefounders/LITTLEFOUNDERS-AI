@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAvatar } from '@dicebear/core';
 import * as avataaars from '@dicebear/avataaars';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shuffle, Save, Check, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -261,8 +260,7 @@ const AvatarEditor = () => {
     };
 
     return (
-        <DashboardLayout>
-            <div className="corp max-w-4xl mx-auto pb-8 space-y-6 animate-in fade-in duration-500">
+        <div className="corp max-w-4xl mx-auto pb-8 space-y-6 animate-in fade-in duration-500">
 
                 {/* Premium Header with Save Button */}
                 <div className="corp-panel px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5">
@@ -447,7 +445,6 @@ const AvatarEditor = () => {
                 </div>
 
             </div>
-        </DashboardLayout>
     );
 };
 

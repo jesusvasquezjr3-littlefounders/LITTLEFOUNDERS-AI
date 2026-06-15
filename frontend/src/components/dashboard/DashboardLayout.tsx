@@ -1,4 +1,5 @@
 import { useState, ReactNode, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
@@ -10,7 +11,7 @@ import { isGuest } from "@/lib/guestProfile";
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
 interface DashboardLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 // Layout principal del panel de Littlefounders
@@ -89,7 +90,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           )} aria-label={t('layout.main_content_aria')}>
             {/* Guest banner — appears on every page for non-authenticated guests */}
             {showGuestBanner && <GuestBanner />}
-            {children}
+            {children ?? <Outlet />}
           </main>
         </div>
       </div>

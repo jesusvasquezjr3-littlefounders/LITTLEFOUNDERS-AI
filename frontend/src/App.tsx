@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route } from "react-router-dom";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { AnimatedRoutes } from "@/components/transitions/AnimatedRoutes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
@@ -107,13 +108,7 @@ const App = () => (
                 <Route path="/how-it-works" element={<HowItWorksPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
-                {/* Guest-accessible routes (requireAuth omitted = false) */}
-                {/* /dashboard — only for tutor / parent / admin users; others redirect to /learn */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } />
+                {/* Auth / public routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/bye" element={<Bye />} />
@@ -121,115 +116,38 @@ const App = () => (
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* /learn — main home for universal / child / guest (zero-click learning) */}
-                <Route path="/learn" element={
-                  <ProtectedRoute>
-                    <LearnPage />
-                  </ProtectedRoute>
-                } />
-
-                {/* /lessons — legacy redirect to /learn */}
-                <Route path="/lessons" element={<Navigate to="/learn" replace />} />
-
-                {/* Games — guest-accessible */}
-                <Route path="/games" element={
-                  <ProtectedRoute>
-                    <GamesPage />
-                  </ProtectedRoute>
-                } />
-
-                {/* Auth-only: AI assistant requires a real account */}
-                <Route path="/ai" element={
-                  <ProtectedRoute requireAuth>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                {/* Guest-accessible: profile, avatar, settings, help */}
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
+                {/* Public social profile — standalone, uses DashboardLayout internally */}
                 <Route path="/u/:username" element={<UserProfile />} />
-                <Route path="/avatar/edit" element={
-                  <ProtectedRoute>
-                    <AvatarEditor />
-                  </ProtectedRoute>
-                } />
-                <Route path="/tasks" element={
-                  <ChildProtectedRoute>
-                    <PageUnderConstruction />
-                  </ChildProtectedRoute>
-                } />
-                <Route path="/parent-tasks" element={
-                  <ParentProtectedRoute>
-                    <PageUnderConstruction />
-                  </ParentProtectedRoute>
-                } />
-                <Route path="/growth" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/savings" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/store" element={
-                  <ProtectedRoute>
-                    <PageUnderConstruction />
-                  </ProtectedRoute>
-                } />
-                <Route path="/investment-games" element={<Navigate to="/games" replace />} />
 
-                {/* Games */}
-                <Route path="/games/nam-vs-yum" element={
-                  <ProtectedRoute>
-                    <NamVsYumPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/games/nectar-of-shadows" element={
-                  <ProtectedRoute>
-                    <NectarOfShadowsPage />
-                  </ProtectedRoute>
-                } />
+                {/* /lessons — legacy redirect */}
+                <Route path="/lessons" element={<Navigate to="/learn" replace />} />
+                <Route path="/investment-games" element={<Navigate to="/games" replace />} />
                 <Route path="/games/nectar-de-las-sombras" element={<Navigate to="/games/nectar-of-shadows" replace />} />
 
-                <Route path="/games/paper-detective" element={
-                  <ProtectedRoute>
-                    <PaperDetectivePage />
-                  </ProtectedRoute>
-                } />
+                {/* ── Dashboard layout route: sidebar/topnav persist across all child routes ── */}
+                <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+                  <Route path="/dashboard" element={<Index />} />
+                  <Route path="/learn" element={<LearnPage />} />
+                  <Route path="/games" element={<GamesPage />} />
+                  <Route path="/ai" element={<ProtectedRoute requireAuth><PageUnderConstruction /></ProtectedRoute>} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/avatar/edit" element={<AvatarEditor />} />
+                  <Route path="/tasks" element={<ChildProtectedRoute><PageUnderConstruction /></ChildProtectedRoute>} />
+                  <Route path="/parent-tasks" element={<ParentProtectedRoute><PageUnderConstruction /></ParentProtectedRoute>} />
+                  <Route path="/growth" element={<PageUnderConstruction />} />
+                  <Route path="/savings" element={<PageUnderConstruction />} />
+                  <Route path="/store" element={<PageUnderConstruction />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/help" element={<Help />} />
+                </Route>
 
-                <Route path="/games/paper-coin" element={
-                  <ProtectedRoute>
-                    <PaperCoinPage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/games/hacker-defense" element={
-                  <ProtectedRoute>
-                    <HackerDefensePage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/games/chronobloom" element={
-                  <ProtectedRoute>
-                    <ChronoBloomPage />
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/help" element={
-                  <ProtectedRoute>
-                    <Help />
-                  </ProtectedRoute>
-                } />
+                {/* Games (fullscreen — no dashboard chrome) */}
+                <Route path="/games/nam-vs-yum" element={<ProtectedRoute><NamVsYumPage /></ProtectedRoute>} />
+                <Route path="/games/nectar-of-shadows" element={<ProtectedRoute><NectarOfShadowsPage /></ProtectedRoute>} />
+                <Route path="/games/paper-detective" element={<ProtectedRoute><PaperDetectivePage /></ProtectedRoute>} />
+                <Route path="/games/paper-coin" element={<ProtectedRoute><PaperCoinPage /></ProtectedRoute>} />
+                <Route path="/games/hacker-defense" element={<ProtectedRoute><HackerDefensePage /></ProtectedRoute>} />
+                <Route path="/games/chronobloom" element={<ProtectedRoute><ChronoBloomPage /></ProtectedRoute>} />
 
                 {/* Admin Panel Routes */}
                 <Route path="/admin" element={

@@ -7,7 +7,6 @@
  * • Full i18n, mobile-first, light/dark compatible, Liquid Glass aesthetic
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { AdventureCard } from '@/components/lessons/AdventureCard';
 import { LessonPath } from '@/components/lessons/LessonPath';
 import { useAdventuresAPI, type Adventure } from '@/components/lessons/hooks/useAdventures';
@@ -334,17 +333,14 @@ export default function LearnPage() {
   // ── Loading state ──────────────────────────────────────────────────────────
   if (isUserLoading || adventuresLoading) {
     return (
-      <DashboardLayout>
-        <div className="max-w-6xl mx-auto p-4">
-          <LessonsLoadingScreen minimal />
-        </div>
-      </DashboardLayout>
+      <div className="max-w-6xl mx-auto p-4">
+        <LessonsLoadingScreen minimal />
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="max-w-7xl mx-auto px-4 pb-32 pt-2 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 pb-32 pt-2 space-y-6">
 
         {/* ── Content Grid (Dynamic Layout: 7/5 Proportions) ──────────────── */}
         <div className="lg:grid lg:grid-cols-12 lg:gap-12 items-stretch min-h-screen">
@@ -506,6 +502,5 @@ export default function LearnPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ReportFAB } from "@/components/common/ReportFAB";
 import { cn } from "@/lib/utils";
 import {
@@ -125,8 +124,7 @@ const Help = () => {
   ];
 
   return (
-    <DashboardLayout>
-      <div className="corp max-w-6xl mx-auto px-4 py-8 animate-in fade-in duration-300 space-y-8">
+    <div className="corp max-w-6xl mx-auto px-4 py-8 animate-in fade-in duration-300 space-y-8">
 
         {/* ── Page Header ── */}
         <div className="corp-panel px-7 py-6 flex items-center gap-5">
@@ -227,7 +225,6 @@ const Help = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 };
 

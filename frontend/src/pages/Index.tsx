@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ParentDashboard } from "@/components/dashboard/ParentDashboard";
 import { isGuest, getPendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { API_URL } from "@/config/api";
@@ -78,11 +77,7 @@ const Index = () => {
   }
 
   // Tutor / Parent users — keep the dashboard for management features
-  return (
-    <DashboardLayout>
-      <ParentDashboard user={user} />
-    </DashboardLayout>
-  );
+  return <ParentDashboard user={user} />;
 };
 
 export default Index;

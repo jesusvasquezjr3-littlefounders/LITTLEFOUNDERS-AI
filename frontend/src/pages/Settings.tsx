@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -335,8 +334,7 @@ const Settings = () => {
     const isEmailAuth = user.auth_provider === 'email' || !user.auth_provider;
 
     return (
-        <DashboardLayout>
-            <div className="corp max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500 space-y-8">
+        <div className="corp max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500 space-y-8">
 
                 {/* Premium Page Header */}
                 <div className="corp-panel px-5 py-5 md:px-7 md:py-6 flex items-center gap-5">
@@ -692,7 +690,6 @@ const Settings = () => {
                 </div>
 
             </div>
-        </DashboardLayout>
     );
 };
 
