@@ -155,7 +155,7 @@ export function NectarGame() {
 
   const handleExit = useCallback(() => {
     stopBGM({ fade: true });
-    navigate('/investment-games');
+    navigate('/games');
   }, [stopBGM, navigate]);
 
   /* ── Derived state ──────────────────────────────────────── */

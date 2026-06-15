@@ -42,7 +42,7 @@ const getMenuItems = (t: (key: string) => string) => {
       { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai" },
       { title: t('dashboard:sidebar.my_tasks'), url: "/tasks", icon: Trophy, id: "nav-tasks" },
       { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/games", icon: Gamepad2, id: "nav-games" },
       { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, id: "nav-banking" },
       { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, id: "nav-store" },
     ];
@@ -51,7 +51,7 @@ const getMenuItems = (t: (key: string) => string) => {
       { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, id: "nav-lessons" },
       // AI is locked for guests — flagged with requiresAuth, handled in handleItemClick
       { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai", requiresAuth: !localStorage.getItem('user') },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/games", icon: Gamepad2, id: "nav-games" },
       { title: t('dashboard:sidebar.my_tasks'), url: "#", icon: Trophy, id: "nav-tasks", locked: true },
       { title: t('dashboard:sidebar.my_savings'), url: "#", icon: PiggyBank, id: "nav-savings", locked: true },
       { title: t('dashboard:sidebar.digital_banking'), url: "#", icon: TrendingUp, id: "nav-banking", locked: true },
@@ -64,7 +64,7 @@ const getMenuItems = (t: (key: string) => string) => {
       { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai" },
       { title: t('dashboard:sidebar.task_management'), url: "/parent-tasks", icon: ClipboardList, id: "nav-tasks" },
       { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/games", icon: Gamepad2, id: "nav-games" },
       { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, id: "nav-banking" },
       { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, id: "nav-store" },
     ];

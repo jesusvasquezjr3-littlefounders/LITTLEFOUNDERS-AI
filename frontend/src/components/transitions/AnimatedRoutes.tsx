@@ -16,8 +16,18 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({ children }) => {
       return;
     }
 
+    // Skip the snapshot-based view transition when navigating WITHIN the app
+    // shell (dashboard/admin). The sidebar + top bar are mounted once by the
+    // shared layout route and persist across navigation, so a full-page snapshot
+    // overlay only causes artifacts: the chrome appears to "jump", and the new
+    // page is captured mid-`animate-in` (opacity 0) producing a whole-screen
+    // flash before it fades in. Inside the shell we swap instantly and let each
+    // page's own `animate-in` entrance play. Marketing / public pages (no shell)
+    // keep the organic view transition.
+    const inAppShell = !!document.querySelector('.view-transition-sidebar');
+
     // Check if the browser supports View Transitions API
-    if (!document.startViewTransition) {
+    if (!document.startViewTransition || inAppShell) {
       setDisplayLocation(location);
       return;
     }
