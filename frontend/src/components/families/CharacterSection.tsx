@@ -39,7 +39,7 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
         )}>
           <div className="space-y-3">
             {subtitle && (
-              <p className="text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider">
+              <p className="text-sm font-bold text-indigo-600 dark:text-indigo-300 uppercase tracking-wider">
                 {subtitle}
               </p>
             )}
@@ -56,8 +56,8 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
             <ul className="space-y-2 pt-4">
               {features.map((feature, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pink-100 dark:bg-pink-900/30 flex-shrink-0 mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-pink-600 dark:bg-pink-400" />
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex-shrink-0 mt-0.5">
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-300" />
                   </span>
                   <span className="text-gray-700 dark:text-gray-300 font-medium">
                     {feature}

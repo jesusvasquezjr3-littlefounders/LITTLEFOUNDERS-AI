@@ -3,6 +3,12 @@
 > **Guía técnica completa para contribuidores del frontend.**
 > Framework: React 18 + Vite 5 + TypeScript 5.5 + Tailwind CSS 3.4 | Despliegue: Vercel
 
+> ⚠️ **Estilos visuales → `DESIGN_SYSTEM.md`.** Antes de crear o modificar
+> cualquier UI, lee [`frontend/DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md): es el
+> estándar visual **inmutable** ("corp"). Toda vista de chrome serio usa las
+> clases `corp-*` (nada de `liquid-glass`/`GlassPanel` ni estilos por página).
+> Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful".
+
 ---
 
 ## Tabla de Contenidos

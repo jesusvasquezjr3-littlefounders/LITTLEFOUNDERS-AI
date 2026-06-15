@@ -1,12 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminUsers, usePromoteUser, useDemoteUser } from '@/hooks/useAdminStats';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import {
   Table,
   TableBody,
@@ -100,18 +96,18 @@ export const AdminUsers: React.FC = () => {
     }
   };
 
-  const getUserTypeBadgeVariant = (type: string) => {
+  const getUserTypeBadgeClass = (type: string): string => {
     switch (type) {
       case 'admin':
-        return 'default';
+        return 'corp-badge corp-badge--info';
       case 'tutor':
-        return 'secondary';
+        return 'corp-badge';
       case 'universal':
-        return 'outline';
+        return 'corp-badge';
       case 'child':
-        return 'outline';
+        return 'corp-badge';
       default:
-        return 'outline';
+        return 'corp-badge';
     }
   };
 
@@ -134,7 +130,7 @@ export const AdminUsers: React.FC = () => {
     user: User;
     showPromoteButton?: boolean;
   }> = ({ user, showPromoteButton }) => (
-    <TableRow key={user.id} className={`border-slate-200 dark:border-slate-700 ${!user.is_active ? 'opacity-60' : ''} hover:bg-slate-50 dark:hover:bg-slate-800`}>
+    <TableRow key={user.id} className={!user.is_active ? 'opacity-60' : ''}>
       <TableCell>
         <div>
           <p className="font-medium text-slate-900 dark:text-white">{user.name}</p>
@@ -143,13 +139,13 @@ export const AdminUsers: React.FC = () => {
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <Badge variant={getUserTypeBadgeVariant(user.user_type)} className="capitalize bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
+          <span className={`${getUserTypeBadgeClass(user.user_type)} capitalize`}>
             {getUserTypeLabel(user.user_type)}
-          </Badge>
+          </span>
           {!user.is_active && (
-            <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">
+            <span className="corp-badge">
               {t('users.inactive')}
-            </Badge>
+            </span>
           )}
         </div>
       </TableCell>
@@ -166,17 +162,16 @@ export const AdminUsers: React.FC = () => {
               }}
             >
               <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => setPromoteConfirmId(user.id)}
                   title={t('users.promoteToAdmin')}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  className="corp-btn-ghost inline-flex items-center justify-center h-8 w-8 rounded-lg"
                 >
                   <ShieldPlus className="h-4 w-4" />
-                </Button>
+                </button>
               </DialogTrigger>
-              <DialogContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <DialogContent className="corp corp-dialog rounded-3xl">
                 <DialogHeader>
                   <DialogTitle className="text-slate-900 dark:text-white">
                     {t('users.promoteTitle')}
@@ -188,19 +183,21 @@ export const AdminUsers: React.FC = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    variant="outline"
+                  <button
+                    type="button"
                     onClick={() => setPromoteConfirmId(null)}
-                    className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                    className="corp-btn-secondary h-10 rounded-xl px-4 text-sm font-semibold"
                   >
                     {t('common.cancel')}
-                  </Button>
-                  <Button
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => handlePromote(user.id)}
                     disabled={promoteUser.isPending}
+                    className="corp-btn-primary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {promoteUser.isPending ? t('common.promoting') : t('users.promote')}
-                  </Button>
+                  </button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -214,17 +211,16 @@ export const AdminUsers: React.FC = () => {
               }}
             >
               <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => setDemoteConfirmId(user.id)}
                   title={t('users.demoteFromAdmin')}
-                  className="text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+                  className="corp-btn-ghost inline-flex items-center justify-center h-8 w-8 rounded-lg"
                 >
                   <ShieldMinus className="h-4 w-4" />
-                </Button>
+                </button>
               </DialogTrigger>
-              <DialogContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <DialogContent className="corp corp-dialog rounded-3xl">
                 <DialogHeader>
                   <DialogTitle className="text-slate-900 dark:text-white">
                     {t('users.demoteTitle')}
@@ -236,20 +232,21 @@ export const AdminUsers: React.FC = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    variant="outline"
+                  <button
+                    type="button"
                     onClick={() => setDemoteConfirmId(null)}
-                    className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                    className="corp-btn-secondary h-10 rounded-xl px-4 text-sm font-semibold"
                   >
                     {t('common.cancel')}
-                  </Button>
-                  <Button
-                    variant="destructive"
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => handleDemote(user.id)}
                     disabled={demoteUser.isPending}
+                    className="corp-btn-danger h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {demoteUser.isPending ? t('common.demoting') : t('users.demote')}
-                  </Button>
+                  </button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -260,100 +257,67 @@ export const AdminUsers: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 p-8 bg-white dark:bg-slate-900 min-h-screen">
-      {/* Premium Admin Header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-blue-500/10 dark:border-blue-500/5 shadow-2xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-blue-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-cyan-500/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-blue-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-                  <Users className="w-5 h-5 md:w-7 md:h-7 text-white" />
-              </div>
-              <div className="text-left">
-                  <div className="flex items-center gap-2 mb-0.5">
-                      {/* Branding removed as per user request */}
-                  </div>
-                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
-                      {t('users.title')}
-                  </h1>
-                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
-                      {t('users.subtitle')}
-                  </p>
-              </div>
-          </div>
+    <div className="space-y-6 p-8 min-h-screen">
+      {/* Page Header */}
+      <div className="corp-panel p-6 md:p-8 flex flex-wrap items-center gap-4">
+        <div className="corp-icon-chip w-12 h-12 shrink-0">
+          <Users className="w-6 h-6" />
+        </div>
+        <div className="text-left">
+          <span className="corp-eyebrow">{t('users.subtitle')}</span>
+          <h1 className="corp-display mt-1 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+            {t('users.title')}
+          </h1>
+        </div>
       </div>
 
       {/* Search */}
-      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
-        <div className="px-4 py-3">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-500 transition-colors" />
-            <Input
-              placeholder={t('users.searchPlaceholder')}
-              className="pl-10 h-12 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-transparent focus:border-blue-500/50 transition-all rounded-xl shadow-inner text-slate-900 dark:text-white"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+      <div className="corp-panel-subtle p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+          <Input
+            placeholder={t('users.searchPlaceholder')}
+            className="corp-input h-10 pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-      </GlassPanel>
+      </div>
 
       {/* Users Summary */}
       <div className="grid gap-4 md:grid-cols-3">
-        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              {t('users.totalUsers')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-12 bg-slate-200 dark:bg-slate-700" />
-            ) : (
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{users.length}</div>
-            )}
-          </CardContent>
-        </GlassPanel>
-        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              {t('users.admins')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-12 bg-slate-200 dark:bg-slate-700" />
-            ) : (
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{adminUsers.length}</div>
-            )}
-          </CardContent>
-        </GlassPanel>
-        <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              {t('users.otherUsers')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-12 bg-slate-200 dark:bg-slate-700" />
-            ) : (
-              <div className="text-2xl font-bold text-slate-600 dark:text-slate-400">{otherUsers.length}</div>
-            )}
-          </CardContent>
-        </GlassPanel>
+        <div className="corp-card p-6">
+          <p className="corp-eyebrow">{t('users.totalUsers')}</p>
+          {isLoading ? (
+            <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <div className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{users.length}</div>
+          )}
+        </div>
+        <div className="corp-card p-6">
+          <p className="corp-eyebrow">{t('users.admins')}</p>
+          {isLoading ? (
+            <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <div className="mt-3 text-2xl font-bold text-indigo-600 dark:text-indigo-300">{adminUsers.length}</div>
+          )}
+        </div>
+        <div className="corp-card p-6">
+          <p className="corp-eyebrow">{t('users.otherUsers')}</p>
+          {isLoading ? (
+            <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
+          ) : (
+            <div className="mt-3 text-2xl font-bold text-slate-600 dark:text-slate-400">{otherUsers.length}</div>
+          )}
+        </div>
       </div>
 
       {/* Admin Users Section */}
-      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-slate-900 dark:text-white">
-            {t('users.administrators')} ({filteredAdmins.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="corp-panel p-6">
+        <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white">
+          {t('users.administrators')} ({filteredAdmins.length})
+        </h2>
+        <div className="mt-4">
           {isLoading ? (
             <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
@@ -362,13 +326,13 @@ export const AdminUsers: React.FC = () => {
             </div>
           ) : filteredAdmins.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="corp-table">
                 <TableHeader>
-                  <TableRow className="border-slate-200 dark:border-slate-700">
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.nameEmail')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.type')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('users.created')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white text-center">{t('users.actions')}</TableHead>
+                  <TableRow>
+                    <TableHead>{t('users.nameEmail')}</TableHead>
+                    <TableHead>{t('users.type')}</TableHead>
+                    <TableHead>{t('users.created')}</TableHead>
+                    <TableHead className="text-center">{t('users.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -379,25 +343,23 @@ export const AdminUsers: React.FC = () => {
               </Table>
             </div>
           ) : (
-            <p className="text-center text-slate-500 dark:text-slate-400 py-8">
+            <div className="corp-empty py-8">
               {t('users.noAdminsFound')}
-            </p>
+            </div>
           )}
-        </CardContent>
-      </GlassPanel>
+        </div>
+      </div>
 
       {/* Other Users Section */}
-      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-indigo-400 dark:border-indigo-500 shadow-[0_0_20px_rgba(250,204,21,0.3)] dark:shadow-[0_0_20px_rgba(250,204,21,0.15)]">
-        <CardHeader>
-          <CardTitle className="text-slate-900 dark:text-white">
-            {t('users.otherUsersTitle')} ({filteredOthers.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-6 rounded-lg border border-red-500 bg-red-50 dark:bg-red-950/30 p-4 shadow-[0_0_15px_rgba(239,68,68,0.2)] dark:shadow-[0_0_20px_rgba(239,68,68,0.15)] ring-1 ring-red-500/50">
+      <div className="corp-panel p-6">
+        <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white">
+          {t('users.otherUsersTitle')} ({filteredOthers.length})
+        </h2>
+        <div className="mt-4">
+          <div className="mb-6 rounded-xl border border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-950/30 p-4">
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-red-100 dark:bg-red-900/50 p-2">
-                <TriangleAlert className="h-6 w-6 text-red-600 dark:text-red-500 animate-pulse" />
+                <TriangleAlert className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold uppercase tracking-wider text-red-700 dark:text-red-400 flex items-center gap-2">
@@ -411,7 +373,7 @@ export const AdminUsers: React.FC = () => {
           </div>
 
           {!isUnlocked ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">
+            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 corp-panel-subtle">
               <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-4">
                 <Lock className="h-8 w-8 text-slate-400 dark:text-slate-500" />
               </div>
@@ -426,11 +388,11 @@ export const AdminUsers: React.FC = () => {
 
               <Dialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="mt-4">
+                  <button type="button" className="corp-btn-secondary mt-4 h-10 rounded-xl px-4 text-sm font-semibold">
                     {t('users.securityLock.unlockButton')}
-                  </Button>
+                  </button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="corp corp-dialog rounded-3xl">
                   <DialogHeader>
                     <DialogTitle>{t('users.securityLock.unlockTitle')}</DialogTitle>
                     <DialogDescription>
@@ -443,14 +405,15 @@ export const AdminUsers: React.FC = () => {
                         placeholder={t('users.securityLock.placeholder', { phrase: t('users.securityLock.unlockPhrase') })}
                         value={unlockInput}
                         onChange={(e) => setUnlockInput(e.target.value.toUpperCase())}
-                        className="text-center font-mono uppercase tracking-wider"
+                        className="corp-input h-10 text-center font-mono uppercase tracking-wider"
                       />
-                      <p className="text-xs text-center text-muted-foreground">
+                      <p className="text-xs text-center text-slate-500 dark:text-slate-400">
                         {t('users.securityLock.unlockPhrase')}: <span className="font-bold select-all">{t('users.securityLock.unlockPhrase')}</span>
                       </p>
                     </div>
-                    <Button
-                      className="w-full"
+                    <button
+                      type="button"
+                      className="corp-btn-primary w-full h-11 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={unlockInput !== t('users.securityLock.unlockPhrase')}
                       onClick={() => {
                         setIsUnlocked(true);
@@ -459,7 +422,7 @@ export const AdminUsers: React.FC = () => {
                       }}
                     >
                       {t('common.confirm')}
-                    </Button>
+                    </button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -473,13 +436,13 @@ export const AdminUsers: React.FC = () => {
               </div>
             ) : filteredOthers.length > 0 ? (
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="corp-table">
                   <TableHeader>
-                    <TableRow className="border-slate-200 dark:border-slate-700">
-                      <TableHead className="text-slate-900 dark:text-white">{t('users.nameEmail')}</TableHead>
-                      <TableHead className="text-slate-900 dark:text-white">{t('users.type')}</TableHead>
-                      <TableHead className="text-slate-900 dark:text-white">{t('users.created')}</TableHead>
-                      <TableHead className="text-slate-900 dark:text-white">{t('users.actions')}</TableHead>
+                    <TableRow>
+                      <TableHead>{t('users.nameEmail')}</TableHead>
+                      <TableHead>{t('users.type')}</TableHead>
+                      <TableHead>{t('users.created')}</TableHead>
+                      <TableHead>{t('users.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -490,58 +453,54 @@ export const AdminUsers: React.FC = () => {
                 </Table>
               </div>
             ) : (
-              <p className="text-center text-slate-500 dark:text-slate-400 py-8">
+              <div className="corp-empty py-8">
                 {t('users.noOtherUsersFound')}
-              </p>
+              </div>
             )
           )}
-        </CardContent>
-      </GlassPanel>
+        </div>
+      </div>
 
       {/* User Roles Legend */}
-      <GlassPanel variant="default" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-base text-slate-900 dark:text-white">
-            {t('users.userRoles')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100">
-                {t('users.userTypeAdmin')}
-              </Badge>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {t('users.adminDescription')}
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
-                {t('users.userTypeTutor')}
-              </Badge>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {t('users.tutorDescription')}
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-                {t('users.userTypeUniversal')}
-              </Badge>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {t('users.universalDescription')}
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
-                {t('users.userTypeChild')}
-              </Badge>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {t('users.childDescription')}
-              </p>
-            </div>
+      <div className="corp-panel p-6">
+        <h2 className="corp-display text-base font-bold text-slate-900 dark:text-white">
+          {t('users.userRoles')}
+        </h2>
+        <div className="mt-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <span className="corp-badge corp-badge--info">
+              {t('users.userTypeAdmin')}
+            </span>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t('users.adminDescription')}
+            </p>
           </div>
-        </CardContent>
-      </GlassPanel>
+          <div className="flex items-start gap-3">
+            <span className="corp-badge">
+              {t('users.userTypeTutor')}
+            </span>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t('users.tutorDescription')}
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="corp-badge">
+              {t('users.userTypeUniversal')}
+            </span>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t('users.universalDescription')}
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="corp-badge">
+              {t('users.userTypeChild')}
+            </span>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t('users.childDescription')}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

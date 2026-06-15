@@ -86,7 +86,7 @@ const SagaSectionItem: React.FC<{
           {/* Saga color dot */}
           <div className={cn(
             'shrink-0 w-3 h-3 rounded-full shadow-sm',
-            isCurrentSaga ? 'bg-indigo-500 animate-pulse' : 'bg-slate-400 dark:bg-slate-600'
+            isCurrentSaga ? 'bg-indigo-500' : 'bg-slate-400 dark:bg-slate-600'
           )} />
           <div className="min-w-0">
             <p className="text-base font-black text-slate-800 dark:text-white truncate leading-tight">
@@ -102,7 +102,7 @@ const SagaSectionItem: React.FC<{
 
         <div className="flex items-center gap-2 shrink-0">
           {isCurrentSaga && (
-            <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest border border-indigo-400/20">
+            <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wide border border-indigo-400/20">
               <Sparkles className="w-3 h-3" />
               {t('lessons:learn.continue_button')}
             </span>
@@ -155,9 +155,9 @@ const AdventureBanner: React.FC<{
         'relative w-full max-w-2xl mx-auto rounded-[28px] overflow-hidden',
         'shadow-[0_12px_0_rgba(0,0,0,0.07)] dark:shadow-[0_12px_0_rgba(0,0,0,0.3)]',
         'border-4 transition-all duration-300',
-        isSelected ? 'border-indigo-500/60 dark:border-indigo-400/50 scale-[1.02] shadow-2xl' : 'border-black/5 dark:border-white/5',
-        'cursor-pointer hover:scale-[1.01] active:scale-[0.99]',
-        isLocked && 'saturate-50 cursor-default hover:scale-100 active:scale-100'
+        isSelected ? 'border-indigo-500/60 dark:border-indigo-400/50 shadow-2xl' : 'border-black/5 dark:border-white/5',
+        'cursor-pointer',
+        isLocked && 'saturate-50 cursor-default'
       )}
       style={{ height: '280px' }}
       onClick={isLocked ? undefined : onToggle}
@@ -355,14 +355,14 @@ export default function LearnPage() {
             {/* ── Page Header (Internal to Left Column) ────────────────────── */}
             <div className="flex items-center justify-between gap-4 py-2 border-b border-white/10 dark:border-white/5 mb-2">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/20 shrink-0">
+                <div className="p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl shadow-xl shadow-indigo-500/20 shrink-0">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1">
                     {t('lessons:learn.page_title')}
                   </h1>
-                  <p className="text-xs font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none">
+                  <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 uppercase tracking-wide leading-none">
                     {t('common:app_name')}
                   </p>
                 </div>
@@ -375,10 +375,9 @@ export default function LearnPage() {
                   onClick={handleContinueScroll}
                   className={cn(
                     'shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full',
-                    'bg-gradient-to-r from-indigo-500 to-purple-600',
-                    'text-white text-xs font-black uppercase tracking-wide shadow-lg shadow-indigo-500/30',
-                    'hover:from-indigo-600 hover:to-purple-700 transition-all duration-200',
-                    'hover:scale-105 active:scale-95'
+                    'bg-gradient-to-r from-indigo-500 to-blue-500',
+                    'text-white text-xs font-semibold uppercase tracking-wide shadow-lg shadow-indigo-500/30',
+                    'hover:from-indigo-600 hover:to-blue-600 transition-colors duration-200'
                   )}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -389,7 +388,7 @@ export default function LearnPage() {
 
               {/* All-completed badge */}
               {isFinished && (
-                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-blue-400 to-violet-500 text-white text-xs font-black shadow-lg shadow-blue-500/30">
+                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30">
                   🏆 {t('lessons:learn.all_completed_title')}
                 </div>
               )}
@@ -397,9 +396,9 @@ export default function LearnPage() {
 
             {/* ── Beta notice strip (Internal to Left Column) ───────────────── */}
             <div className="bg-indigo-400/10 dark:bg-indigo-400/5 border border-indigo-400/20 h-10 px-4 rounded-xl flex items-center gap-3 overflow-hidden">
-              <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
               <div className="relative flex-1 overflow-hidden whitespace-nowrap">
-                <p className="inline-block text-[11px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-500/80 animate-marquee sm:animate-none">
+                <p className="inline-block text-[11px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300 animate-marquee sm:animate-none">
                   {t('lessons:learn.beta_notice')}
                 </p>
               </div>

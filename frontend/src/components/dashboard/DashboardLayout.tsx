@@ -2,7 +2,6 @@ import { useState, ReactNode, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
@@ -71,10 +70,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-900/20 dark:to-slate-900">
-      {/* Animated Background */}
-      <AnimatedBackground />
-
+    <div className="corp h-screen overflow-hidden bg-slate-50 dark:bg-[#070b14]">
       <UserTour />
       <div className="flex h-full relative">
         {/* Menú lateral: Flotante y responsivo */}

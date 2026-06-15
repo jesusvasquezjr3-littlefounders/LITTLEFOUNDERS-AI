@@ -8,8 +8,6 @@ import {
   useValidateLesson,
   Lesson,
 } from '@/hooks/useAdminLessons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -280,19 +278,20 @@ export const AdminLessonEditor: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 lg:p-8 dark:bg-slate-950 dark:text-slate-50 max-w-[1400px] mx-auto">
+    <div className="space-y-6 p-6 lg:p-8 max-w-[1400px] mx-auto">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="corp-panel p-6 md:p-8 flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/lessons')} className="dark:text-slate-400 dark:hover:text-slate-50">
-            <ArrowLeft className="h-4 w-4 mr-1" /> {t('editor.backToLessons')}
-          </Button>
-          <Separator orientation="vertical" className="h-6 dark:bg-slate-700" />
+          <button onClick={() => navigate('/admin/lessons')}
+            className="corp-btn-ghost h-9 rounded-xl px-3 text-sm font-semibold inline-flex items-center gap-1">
+            <ArrowLeft className="h-4 w-4" /> {t('editor.backToLessons')}
+          </button>
+          <Separator orientation="vertical" className="h-6 bg-slate-200 dark:bg-white/10" />
           <div>
-            <h1 className="text-2xl font-bold tracking-tight dark:text-slate-50">
+            <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
               {isNew ? t('editor.createNew') : `${t('editor.editTitle')}: ${lessonData.lesson_code}`}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {isNew ? t('editor.createNewDesc') : t('editor.editDesc')}
             </p>
           </div>
@@ -300,30 +299,33 @@ export const AdminLessonEditor: React.FC = () => {
         <div className="flex gap-2 flex-wrap">
           {isEditing && (
             <>
-              <Button variant="outline" onClick={handleDiscard} className="dark:border-slate-700 dark:text-slate-50 dark:hover:bg-slate-800">
+              <button onClick={handleDiscard}
+                className="corp-btn-secondary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center">
                 <X className="mr-2 h-4 w-4" /> {t('editor.discard')}
-              </Button>
-              <Button variant="outline" onClick={handleValidate} disabled={validateLesson.isPending} className="dark:border-slate-700 dark:text-slate-50 dark:hover:bg-slate-800">
+              </button>
+              <button onClick={handleValidate} disabled={validateLesson.isPending}
+                className="corp-btn-secondary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
                 {t('editor.validate')}
-              </Button>
-              <Button onClick={handleSave} disabled={createLesson.isPending || updateLesson.isPending}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700">
+              </button>
+              <button onClick={handleSave} disabled={createLesson.isPending || updateLesson.isPending}
+                className="corp-btn-primary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
                 <Save className="mr-2 h-4 w-4" />
                 {createLesson.isPending || updateLesson.isPending ? t('editor.saving') : t('editor.save')}
-              </Button>
+              </button>
             </>
           )}
           {!isEditing && !isNew && (
-            <Button onClick={() => setIsEditing(true)} className="dark:bg-blue-600 dark:hover:bg-blue-700">
+            <button onClick={() => setIsEditing(true)}
+              className="corp-btn-primary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center">
               <Edit className="mr-2 h-4 w-4" /> {t('editor.edit')}
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
       {/* ── Alerts ── */}
       {validationErrors.length > 0 && (
-        <Alert variant="destructive" className="dark:bg-red-950 dark:border-red-800 dark:text-red-200">
+        <Alert variant="destructive" className="dark:bg-red-950/40 dark:border-red-900/60 dark:text-red-200">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             <p className="font-semibold mb-1">{t('editor.validationErrors')}:</p>
@@ -334,90 +336,88 @@ export const AdminLessonEditor: React.FC = () => {
         </Alert>
       )}
       {saveSuccess && (
-        <Alert className="bg-emerald-50 border-emerald-200 dark:bg-emerald-950 dark:border-emerald-800">
+        <Alert className="bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/60">
           <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           <AlertDescription className="text-emerald-800 dark:text-emerald-200">{t('editor.savedSuccess')}</AlertDescription>
         </Alert>
       )}
 
       {/* ── Metadata ── */}
-      <Card className="dark:bg-slate-800 dark:border-slate-700">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg dark:text-slate-50">{t('editor.metadata')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
+      <div className="corp-panel p-6">
+        <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white mb-4">{t('editor.metadata')}</h2>
+        <div className="space-y-5">
           {/* Code + Lesson Number */}
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label className="dark:text-slate-300">{t('editor.code')}</Label>
+              <Label className="corp-label">{t('editor.code')}</Label>
               <Input value={lessonData.lesson_code}
                 onChange={(e) => handleField('lesson_code', e.target.value)}
                 disabled={!isEditing} placeholder={t('editor.codePlaceholder')}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('editor.codeHelp')}</p>
+                className="corp-input mt-1" />
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t('editor.codeHelp')}</p>
             </div>
             <div>
-              <Label className="dark:text-slate-300">{t('editor.lessonNumber')}</Label>
+              <Label className="corp-label">{t('editor.lessonNumber')}</Label>
               <Input type="number" value={lessonData.lesson_number}
                 onChange={(e) => handleField('lesson_number', parseInt(e.target.value))}
                 disabled={!isEditing} min={1}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1" />
             </div>
           </div>
 
           {/* Bilingual Titles */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-lg border border-blue-100 dark:border-blue-900/50">
-              <Label className="text-blue-700 dark:text-blue-300 text-xs font-semibold uppercase tracking-wider">🇲🇽 {t('editor.titleES')}</Label>
+            <div className="corp-panel-subtle p-3">
+              <Label className="corp-eyebrow text-blue-700 dark:text-blue-300">🇲🇽 {t('editor.titleES')}</Label>
               <Input value={lessonData.title_es}
                 onChange={(e) => handleField('title_es', e.target.value)}
                 disabled={!isEditing} placeholder={t('editor.titleESPlaceholder')}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1" />
             </div>
-            <div className="bg-red-50/50 dark:bg-red-950/20 p-3 rounded-lg border border-red-100 dark:border-red-900/50">
-              <Label className="text-red-700 dark:text-red-300 text-xs font-semibold uppercase tracking-wider">🇺🇸 {t('editor.titleEN')}</Label>
+            <div className="corp-panel-subtle p-3">
+              <Label className="corp-eyebrow text-red-700 dark:text-red-300">🇺🇸 {t('editor.titleEN')}</Label>
               <Input value={lessonData.title_en}
                 onChange={(e) => handleField('title_en', e.target.value)}
                 disabled={!isEditing} placeholder={t('editor.titleENPlaceholder')}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1" />
             </div>
           </div>
 
           {/* Bilingual Descriptions */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-lg border border-blue-100 dark:border-blue-900/50">
-              <Label className="text-blue-700 dark:text-blue-300 text-xs font-semibold uppercase tracking-wider">🇲🇽 {t('editor.descriptionES')}</Label>
+            <div className="corp-panel-subtle p-3">
+              <Label className="corp-eyebrow text-blue-700 dark:text-blue-300">🇲🇽 {t('editor.descriptionES')}</Label>
               <Textarea value={lessonData.description_es}
                 onChange={(e) => handleField('description_es', e.target.value)}
                 disabled={!isEditing} placeholder={t('editor.descriptionESPlaceholder')}
-                className="mt-1 min-h-20 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1 min-h-20" />
             </div>
-            <div className="bg-red-50/50 dark:bg-red-950/20 p-3 rounded-lg border border-red-100 dark:border-red-900/50">
-              <Label className="text-red-700 dark:text-red-300 text-xs font-semibold uppercase tracking-wider">🇺🇸 {t('editor.descriptionEN')}</Label>
+            <div className="corp-panel-subtle p-3">
+              <Label className="corp-eyebrow text-red-700 dark:text-red-300">🇺🇸 {t('editor.descriptionEN')}</Label>
               <Textarea value={lessonData.description_en}
                 onChange={(e) => handleField('description_en', e.target.value)}
                 disabled={!isEditing} placeholder={t('editor.descriptionENPlaceholder')}
-                className="mt-1 min-h-20 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1 min-h-20" />
             </div>
           </div>
 
           {/* Numeric & Level Fields */}
           <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             <div>
-              <Label className="dark:text-slate-300 text-xs">{t('editor.duration')}</Label>
+              <Label className="corp-label">{t('editor.duration')}</Label>
               <Input type="number" value={lessonData.duration}
                 onChange={(e) => handleField('duration', parseInt(e.target.value))}
                 disabled={!isEditing} min={1}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1" />
             </div>
             <div>
-              <Label className="dark:text-slate-300 text-xs">{t('editor.ageRate')}</Label>
+              <Label className="corp-label">{t('editor.ageRate')}</Label>
               <Select value={lessonData.age_rate}
                 onValueChange={(v) => handleField('age_rate', v)} disabled={!isEditing}>
-                <SelectTrigger className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                <SelectTrigger className="corp-input mt-1">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="dark:bg-slate-700 dark:border-slate-600">
+                <SelectContent className="dark:bg-[#0d1426] dark:border-white/10">
                   <SelectItem value="4-6" className="dark:text-slate-50">4-6</SelectItem>
                   <SelectItem value="7-9" className="dark:text-slate-50">7-9</SelectItem>
                   <SelectItem value="10-12" className="dark:text-slate-50">10-12</SelectItem>
@@ -426,11 +426,11 @@ export const AdminLessonEditor: React.FC = () => {
               </Select>
             </div>
             <div>
-              <Label className="dark:text-slate-300 text-xs">{t('editor.points')}</Label>
+              <Label className="corp-label">{t('editor.points')}</Label>
               <Input type="number" value={lessonData.points_reward}
                 onChange={(e) => handleField('points_reward', parseInt(e.target.value))}
                 disabled={!isEditing} min={0}
-                className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50" />
+                className="corp-input mt-1" />
             </div>
             {[
               { field: 'adventure_level' as const, label: t('editor.adventureLevel'), max: 6 },
@@ -438,13 +438,13 @@ export const AdminLessonEditor: React.FC = () => {
               { field: 'topic_level' as const, label: t('editor.topicLevel'), max: 4 },
             ].map(({ field, label, max }) => (
               <div key={field}>
-                <Label className="dark:text-slate-300 text-xs">{label}</Label>
+                <Label className="corp-label">{label}</Label>
                 <Select value={lessonData[field].toString()}
                   onValueChange={(v) => handleField(field, parseInt(v))} disabled={!isEditing}>
-                  <SelectTrigger className="mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                  <SelectTrigger className="corp-input mt-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-slate-700 dark:border-slate-600">
+                  <SelectContent className="dark:bg-[#0d1426] dark:border-white/10">
                     {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
                       <SelectItem key={n} value={n.toString()} className="dark:text-slate-50">
                         {t('editor.level')} {n}
@@ -455,19 +455,17 @@ export const AdminLessonEditor: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Exercise Timeline ── */}
-      <Card className="dark:bg-slate-800 dark:border-slate-700">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg dark:text-slate-50">
-              {t('editor.exercises')} ({lessonData.content_es.length})
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-5">
+      <div className="corp-panel p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white">
+            {t('editor.exercises')} ({lessonData.content_es.length})
+          </h2>
+        </div>
+        <div className="space-y-5">
           {/* Timeline Strip */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             {lessonData.content_es.map((exercise, idx) => {
@@ -483,20 +481,20 @@ export const AdminLessonEditor: React.FC = () => {
                   onDragOver={handleDragOver(idx)}
                   className={`flex-shrink-0 w-24 h-24 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all duration-200 relative
                     ${isSelected
-                      ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/50 shadow-lg scale-105'
-                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500'
+                      ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-900/40 shadow-lg'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow dark:border-white/10 dark:bg-[#0d1426] dark:hover:border-white/20'
                     }
-                    ${isDragOver ? 'ring-2 ring-blue-400 ring-offset-2 dark:ring-offset-slate-800' : ''}
+                    ${isDragOver ? 'ring-2 ring-indigo-400 ring-offset-2 dark:ring-offset-[#0a0e1a]' : ''}
                     ${isEditing ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 >
                   {isEditing && (
-                    <GripVertical className="absolute top-1 right-1 h-3 w-3 text-gray-300 dark:text-gray-500" />
+                    <GripVertical className="absolute top-1 right-1 h-3 w-3 text-slate-300 dark:text-slate-500" />
                   )}
                   <span className="text-2xl">{icon}</span>
-                  <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 leading-tight text-center px-1 line-clamp-2">
+                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-300 leading-tight text-center px-1 line-clamp-2">
                     {typeName}
                   </span>
-                  <span className="text-[9px] text-gray-400 dark:text-gray-500">#{idx + 1}</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500">#{idx + 1}</span>
                 </button>
               );
             })}
@@ -504,28 +502,28 @@ export const AdminLessonEditor: React.FC = () => {
             {isEditing && (
               <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="flex-shrink-0 w-24 h-24 rounded-xl border-2 border-dashed border-gray-300 dark:border-slate-500 flex flex-col items-center justify-center gap-1 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:border-emerald-500 dark:hover:bg-emerald-900/20 transition-all">
-                    <Plus className="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{t('editor.addExercise')}</span>
+                  <button className="flex-shrink-0 w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 dark:border-white/15 flex flex-col items-center justify-center gap-1 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:border-indigo-500 dark:hover:bg-indigo-900/20 transition-all">
+                    <Plus className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500">{t('editor.addExercise')}</span>
                   </button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg dark:bg-slate-800 dark:text-slate-50 dark:border-slate-700 max-h-[80vh] overflow-y-auto">
+                <DialogContent className="corp corp-dialog rounded-3xl max-w-lg p-6 max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="dark:text-slate-50">{t('editor.addExercise')}</DialogTitle>
-                    <DialogDescription className="dark:text-gray-400">{t('editor.selectType')}</DialogDescription>
+                    <DialogTitle className="text-slate-900 dark:text-white">{t('editor.addExercise')}</DialogTitle>
+                    <DialogDescription className="text-slate-500 dark:text-slate-400">{t('editor.selectType')}</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     {EXERCISE_TYPE_GROUPS.map((group) => (
                       <div key={group.key}>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                        <h4 className="corp-eyebrow mb-2">
                           {group.emoji} {t(`editor.${group.key}`)}
                         </h4>
                         <div className="grid grid-cols-2 gap-1.5">
                           {group.types.map((type) => (
                             <button key={type} onClick={() => handleAddExercise(type)}
-                              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
                               <span>{EXERCISE_TYPE_ICONS[type]}</span>
-                              <span className="dark:text-slate-200">{t(`editor.types.${type}`)}</span>
+                              <span>{t(`editor.types.${type}`)}</span>
                             </button>
                           ))}
                         </div>
@@ -538,55 +536,55 @@ export const AdminLessonEditor: React.FC = () => {
           </div>
 
           {lessonData.content_es.length === 0 && (
-            <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+            <div className="corp-empty py-8">
               <p>{t('editor.noExercises')}</p>
             </div>
           )}
 
-          <Separator className="dark:bg-slate-700" />
+          <Separator className="bg-slate-200 dark:bg-white/10" />
 
           {/* ── Bilingual Exercise Editor ── */}
           {selectedExerciseEs && selectedExerciseEn ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold dark:text-slate-50 flex items-center gap-2">
+                <h3 className="corp-display font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                   <span className="text-xl">{EXERCISE_TYPE_ICONS[selectedType]}</span>
                   {t('editor.exercise')} #{selectedExerciseIndex! + 1}: {t(`editor.types.${selectedType}`)}
                 </h3>
                 <div className="flex gap-2 flex-wrap">
                   {/* Preview button (always visible) */}
-                  <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}
-                    className="dark:border-slate-600 dark:text-slate-50 dark:hover:bg-slate-700">
+                  <button onClick={() => setPreviewOpen(true)}
+                    className="corp-btn-secondary h-9 rounded-xl px-3 text-sm font-semibold inline-flex items-center">
                     <Eye className="h-4 w-4 mr-1" /> {t('editor.preview')}
-                  </Button>
+                  </button>
                   {isEditing && (
                     <>
                       {/* Move up/down */}
-                      <Button variant="outline" size="sm" onClick={() => handleMoveExercise(selectedExerciseIndex!, selectedExerciseIndex! - 1)}
+                      <button onClick={() => handleMoveExercise(selectedExerciseIndex!, selectedExerciseIndex! - 1)}
                         disabled={selectedExerciseIndex === 0}
-                        className="dark:border-slate-600 dark:text-slate-50 dark:hover:bg-slate-700" title={t('editor.moveUp')}>
+                        className="corp-btn-secondary h-9 w-9 rounded-xl inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" title={t('editor.moveUp')}>
                         <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleMoveExercise(selectedExerciseIndex!, selectedExerciseIndex! + 1)}
+                      </button>
+                      <button onClick={() => handleMoveExercise(selectedExerciseIndex!, selectedExerciseIndex! + 1)}
                         disabled={selectedExerciseIndex === lessonData.content_es.length - 1}
-                        className="dark:border-slate-600 dark:text-slate-50 dark:hover:bg-slate-700" title={t('editor.moveDown')}>
+                        className="corp-btn-secondary h-9 w-9 rounded-xl inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" title={t('editor.moveDown')}>
                         <ChevronDown className="h-4 w-4" />
-                      </Button>
+                      </button>
                       {/* Duplicate */}
-                      <Button variant="outline" size="sm" onClick={() => handleDuplicateExercise(selectedExerciseIndex!)}
-                        className="dark:border-slate-600 dark:text-slate-50 dark:hover:bg-slate-700" title={t('editor.duplicate')}>
+                      <button onClick={() => handleDuplicateExercise(selectedExerciseIndex!)}
+                        className="corp-btn-secondary h-9 w-9 rounded-xl inline-flex items-center justify-center" title={t('editor.duplicate')}>
                         <Copy className="h-4 w-4" />
-                      </Button>
+                      </button>
                       {/* Type change */}
                       <Select value={selectedType}
                         onValueChange={(v) => {
                           handleUpdateExercise('es', { type: v });
                           handleUpdateExercise('en', { type: v });
                         }}>
-                        <SelectTrigger className="w-48 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                        <SelectTrigger className="corp-input w-48 h-9">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-700 dark:border-slate-600 max-h-60">
+                        <SelectContent className="dark:bg-[#0d1426] dark:border-white/10 max-h-60">
                           {ALL_EXERCISE_TYPES.map((type) => (
                             <SelectItem key={type} value={type} className="dark:text-slate-50">
                               {EXERCISE_TYPE_ICONS[type]} {t(`editor.types.${type}`)}
@@ -594,11 +592,10 @@ export const AdminLessonEditor: React.FC = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button variant="destructive" size="sm"
-                        onClick={() => handleDeleteExercise(selectedExerciseIndex!)}
-                        className="dark:bg-red-600 dark:hover:bg-red-700">
+                      <button onClick={() => handleDeleteExercise(selectedExerciseIndex!)}
+                        className="corp-btn-danger h-9 w-9 rounded-xl inline-flex items-center justify-center">
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </button>
                     </>
                   )}
                 </div>
@@ -606,10 +603,10 @@ export const AdminLessonEditor: React.FC = () => {
 
               {/* Character & Gesture Selector Row */}
               {isEditing && (
-                <div className="flex items-center gap-3 flex-wrap p-3 bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/20 rounded-xl border border-purple-100 dark:border-purple-900/50">
+                <div className="flex items-center gap-3 flex-wrap corp-panel-subtle p-3">
                   {/* Character Selector */}
                   <div className="flex items-center gap-2">
-                    <Label className="text-xs font-semibold text-purple-700 dark:text-purple-300 whitespace-nowrap">
+                    <Label className="corp-label whitespace-nowrap text-indigo-700 dark:text-indigo-300">
                       {t('editor.fields.character')}
                     </Label>
                     <Select
@@ -619,10 +616,10 @@ export const AdminLessonEditor: React.FC = () => {
                         handleUpdateExercise('en', { character_code: v, character_mood: undefined });
                       }}
                     >
-                      <SelectTrigger className="w-40 h-8 text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                      <SelectTrigger className="corp-input w-40 h-8 text-sm">
                         <SelectValue placeholder={t('editor.fields.selectCharacter')} />
                       </SelectTrigger>
-                      <SelectContent className="dark:bg-slate-700 dark:border-slate-600">
+                      <SelectContent className="dark:bg-[#0d1426] dark:border-white/10">
                         {CHARACTER_OPTIONS.map((char) => (
                           <SelectItem key={char.code} value={char.code} className="dark:text-slate-50">
                             {char.emoji} {char.label}
@@ -635,7 +632,7 @@ export const AdminLessonEditor: React.FC = () => {
                   {/* Gesture Selector (dynamic based on character) */}
                   {selectedExerciseEs?.character_code && (
                     <div className="flex items-center gap-2">
-                      <Label className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 whitespace-nowrap">
+                      <Label className="corp-label whitespace-nowrap text-indigo-700 dark:text-indigo-300">
                         {t('editor.fields.gesture')}
                       </Label>
                       <Select
@@ -645,10 +642,10 @@ export const AdminLessonEditor: React.FC = () => {
                           handleUpdateExercise('en', { character_mood: v });
                         }}
                       >
-                        <SelectTrigger className="w-44 h-8 text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-slate-50">
+                        <SelectTrigger className="corp-input w-44 h-8 text-sm">
                           <SelectValue placeholder={t('editor.fields.selectGesture')} />
                         </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-700 dark:border-slate-600">
+                        <SelectContent className="dark:bg-[#0d1426] dark:border-white/10">
                           {getGestureLabels(selectedExerciseEs.character_code).map((g) => (
                             <SelectItem key={g.value} value={g.value} className="dark:text-slate-50">
                               {g.emoji} {i18n.language === 'en' ? g.labelEn : g.label}
@@ -661,7 +658,7 @@ export const AdminLessonEditor: React.FC = () => {
 
                   {/* Live Character Mini Preview */}
                   {selectedExerciseEs?.character_code && (
-                    <div className="ml-auto flex-shrink-0 w-32 h-32 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 rounded-lg backdrop-blur-sm shadow-inner p-2 border border-slate-200 dark:border-slate-700">
+                    <div className="ml-auto flex-shrink-0 w-32 h-32 flex items-center justify-center bg-white/50 dark:bg-[#0a0e1a]/60 rounded-lg shadow-inner p-2 border border-slate-200 dark:border-white/10">
                       {(() => {
                         const code = selectedExerciseEs.character_code;
                         const mood = selectedExerciseEs.character_mood;
@@ -680,10 +677,10 @@ export const AdminLessonEditor: React.FC = () => {
 
               {/* Side-by-side bilingual editors */}
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="bg-blue-50/30 dark:bg-blue-950/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/50">
+                <div className="corp-panel-subtle p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm">🇲🇽</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                    <span className="corp-eyebrow text-blue-700 dark:text-blue-300">
                       {t('editor.spanish')}
                     </span>
                   </div>
@@ -694,10 +691,10 @@ export const AdminLessonEditor: React.FC = () => {
                     t={t}
                   />
                 </div>
-                <div className="bg-red-50/30 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/50">
+                <div className="corp-panel-subtle p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm">🇺🇸</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-300">
+                    <span className="corp-eyebrow text-red-700 dark:text-red-300">
                       {t('editor.english')}
                     </span>
                   </div>
@@ -712,36 +709,34 @@ export const AdminLessonEditor: React.FC = () => {
             </div>
           ) : (
             lessonData.content_es.length > 0 && (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className="corp-empty py-8">
                 <p>{t('editor.noExerciseSelected')}</p>
               </div>
             )
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Preview Dialog ── */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-md dark:bg-slate-900 dark:text-slate-50 dark:border-slate-700">
+        <DialogContent className="corp corp-dialog rounded-3xl max-w-md p-6">
           <DialogHeader>
-            <DialogTitle className="dark:text-slate-50 flex items-center gap-2">
+            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-2">
               <Eye className="h-5 w-5" /> {t('editor.previewTitle')}
             </DialogTitle>
-            <DialogDescription className="dark:text-gray-400">
+            <DialogDescription className="text-slate-500 dark:text-slate-400">
               {t(`editor.types.${selectedType}`)}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center gap-2 mb-2">
-            <Button variant={previewLang === 'es' ? 'default' : 'outline'} size="sm"
-              onClick={() => setPreviewLang('es')}
-              className={previewLang === 'es' ? 'bg-blue-600 hover:bg-blue-700' : 'dark:border-slate-600 dark:text-slate-50'}>
+            <button onClick={() => setPreviewLang('es')}
+              className={`h-9 rounded-xl px-4 text-sm font-semibold inline-flex items-center ${previewLang === 'es' ? 'corp-btn-primary' : 'corp-btn-secondary'}`}>
               🇲🇽 ES
-            </Button>
-            <Button variant={previewLang === 'en' ? 'default' : 'outline'} size="sm"
-              onClick={() => setPreviewLang('en')}
-              className={previewLang === 'en' ? 'bg-red-600 hover:bg-red-700' : 'dark:border-slate-600 dark:text-slate-50'}>
+            </button>
+            <button onClick={() => setPreviewLang('en')}
+              className={`h-9 rounded-xl px-4 text-sm font-semibold inline-flex items-center ${previewLang === 'en' ? 'corp-btn-primary' : 'corp-btn-secondary'}`}>
               🇺🇸 EN
-            </Button>
+            </button>
           </div>
           <ExercisePreview
             exercise={previewLang === 'es' ? selectedExerciseEs : selectedExerciseEn}
@@ -753,15 +748,15 @@ export const AdminLessonEditor: React.FC = () => {
       {/* ── Floating save bar ── */}
       {isEditing && (
         <div className="fixed bottom-6 right-6 flex gap-2 z-50">
-          <Button variant="outline" onClick={handleDiscard}
-            className="shadow-lg dark:border-slate-600 dark:text-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800">
+          <button onClick={handleDiscard}
+            className="corp-btn-secondary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center shadow-lg">
             {t('editor.discard')}
-          </Button>
-          <Button onClick={handleSave} disabled={createLesson.isPending || updateLesson.isPending}
-            className="shadow-lg bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700">
+          </button>
+          <button onClick={handleSave} disabled={createLesson.isPending || updateLesson.isPending}
+            className="corp-btn-primary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
             <Save className="mr-2 h-4 w-4" />
             {t('editor.save')}
-          </Button>
+          </button>
         </div>
       )}
     </div>

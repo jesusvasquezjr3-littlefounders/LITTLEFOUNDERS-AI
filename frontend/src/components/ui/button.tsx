@@ -22,7 +22,6 @@ const buttonVariants = cva(
         // Duolingo-style variants
         success: "bg-success text-success-foreground hover:bg-success/90 rounded-2xl shadow-button hover:shadow-button-hover active:shadow-button-active active:translate-y-1",
         warning: "bg-warning text-warning-foreground hover:bg-warning/90 rounded-2xl shadow-button hover:shadow-button-hover active:shadow-button-active active:translate-y-1",
-        fun: "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-2xl shadow-button hover:shadow-button-hover active:shadow-button-active active:translate-y-1 hover:scale-105",
       },
       size: {
         default: "h-11 px-6 py-2",

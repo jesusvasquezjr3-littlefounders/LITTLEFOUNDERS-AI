@@ -38,35 +38,35 @@ const getMenuItems = (t: (key: string) => string) => {
 
   if (effectiveType === 'child') {
     return [
-      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
-      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
-      { title: t('dashboard:sidebar.my_tasks'), url: "/tasks", icon: Trophy, color: "from-indigo-400 to-violet-500", shadow: "shadow-indigo-500/40", id: "nav-tasks" },
-      { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, color: "from-green-400 to-emerald-600", shadow: "shadow-green-500/40", id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-violet-400 to-red-500", shadow: "shadow-violet-500/40", id: "nav-games" },
-      { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, color: "from-pink-400 to-rose-600", shadow: "shadow-pink-500/40", id: "nav-banking" },
-      { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, color: "from-purple-400 to-violet-600", shadow: "shadow-purple-500/40", id: "nav-store" },
+      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, id: "nav-lessons" },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai" },
+      { title: t('dashboard:sidebar.my_tasks'), url: "/tasks", icon: Trophy, id: "nav-tasks" },
+      { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, id: "nav-savings" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, id: "nav-banking" },
+      { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, id: "nav-store" },
     ];
   } else if (effectiveType === 'universal') {
     return [
-      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
+      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, id: "nav-lessons" },
       // AI is locked for guests — flagged with requiresAuth, handled in handleItemClick
-      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai", requiresAuth: !localStorage.getItem('user') },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-violet-400 to-red-500", shadow: "shadow-violet-500/40", id: "nav-games" },
-      { title: t('dashboard:sidebar.my_tasks'), url: "#", icon: Trophy, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-tasks", locked: true },
-      { title: t('dashboard:sidebar.my_savings'), url: "#", icon: PiggyBank, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-savings", locked: true },
-      { title: t('dashboard:sidebar.digital_banking'), url: "#", icon: TrendingUp, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-banking", locked: true },
-      { title: t('dashboard:sidebar.store'), url: "#", icon: Store, color: "from-slate-300 to-slate-400", shadow: "", id: "nav-store", locked: true },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai", requiresAuth: !localStorage.getItem('user') },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.my_tasks'), url: "#", icon: Trophy, id: "nav-tasks", locked: true },
+      { title: t('dashboard:sidebar.my_savings'), url: "#", icon: PiggyBank, id: "nav-savings", locked: true },
+      { title: t('dashboard:sidebar.digital_banking'), url: "#", icon: TrendingUp, id: "nav-banking", locked: true },
+      { title: t('dashboard:sidebar.store'), url: "#", icon: Store, id: "nav-store", locked: true },
     ];
   } else {
     return [
-      { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, color: "from-blue-400 to-blue-600", shadow: "shadow-blue-500/40", id: "nav-home" },
-      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, color: "from-indigo-400 to-indigo-600", shadow: "shadow-indigo-500/40", id: "nav-lessons" },
-      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, color: "from-purple-400 to-indigo-500", shadow: "shadow-purple-500/40", id: "nav-ai" },
-      { title: t('dashboard:sidebar.task_management'), url: "/parent-tasks", icon: ClipboardList, color: "from-indigo-400 to-violet-500", shadow: "shadow-indigo-500/40", id: "nav-tasks" },
-      { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, color: "from-green-400 to-emerald-600", shadow: "shadow-green-500/40", id: "nav-savings" },
-      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, color: "from-violet-400 to-red-500", shadow: "shadow-violet-500/40", id: "nav-games" },
-      { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, color: "from-pink-400 to-rose-600", shadow: "shadow-pink-500/40", id: "nav-banking" },
-      { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, color: "from-purple-400 to-violet-600", shadow: "shadow-purple-500/40", id: "nav-store" },
+      { title: t('dashboard:sidebar.home'), url: "/dashboard", icon: Home, id: "nav-home" },
+      { title: t('dashboard:sidebar.lessons'), url: "/learn", icon: BookOpen, id: "nav-lessons" },
+      { title: t('dashboard:sidebar.ai'), url: "/ai", icon: Bot, id: "nav-ai" },
+      { title: t('dashboard:sidebar.task_management'), url: "/parent-tasks", icon: ClipboardList, id: "nav-tasks" },
+      { title: t('dashboard:sidebar.my_savings'), url: "/savings", icon: PiggyBank, id: "nav-savings" },
+      { title: t('dashboard:sidebar.entrepreneurship'), url: "/investment-games", icon: Gamepad2, id: "nav-games" },
+      { title: t('dashboard:sidebar.digital_banking'), url: "/growth", icon: TrendingUp, id: "nav-banking" },
+      { title: t('dashboard:sidebar.store'), url: "/store", icon: Store, id: "nav-store" },
     ];
   }
 };
@@ -123,8 +123,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         className={cn(
           "hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50",
           "flex-col items-center gap-1 p-3",
-          "rounded-3xl liquid-glass",
-          "shadow-2xl shadow-black/10",
+          "rounded-3xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10",
+          "shadow-xl shadow-black/5 dark:shadow-black/40",
           "transition-all duration-300 ease-out",
           isExpanded ? "w-60" : "w-24",
           "view-transition-sidebar"
@@ -146,28 +146,28 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 className={cn(
                   "group flex items-center gap-3 p-2 rounded-2xl transition-all duration-200",
                   active
-                    ? "bg-white/90 dark:bg-slate-800/90 shadow-md"
-                    : "hover:bg-white/60 dark:hover:bg-slate-800/60",
+                    ? "bg-indigo-50 dark:bg-indigo-500/10"
+                    : "hover:bg-slate-100 dark:hover:bg-white/5",
                   !isExpanded && "justify-center",
                   item.locked && "opacity-50 cursor-not-allowed"
                 )}
               >
                 <div className={cn(
-                  "relative flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200",
-                  `bg-gradient-to-br ${item.color}`,
-                  active ? `shadow-lg ${item.shadow}` : "shadow-md",
-                  "group-hover:scale-105 group-hover:shadow-lg"
+                  "relative flex items-center justify-center w-12 h-12 rounded-2xl transition-colors duration-200",
+                  active
+                    ? "bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-md shadow-indigo-500/30"
+                    : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-white"
                 )}>
-                  <item.icon className="w-6 h-6 text-white" />
+                  <item.icon className="w-6 h-6" />
                   {item.locked && (
                     <div className="absolute -top-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-1 shadow">
-                      <Lock className="w-3 h-3 text-slate-500" />
+                      <Lock className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                     </div>
                   )}
                 </div>
                 {isExpanded && (
                   <span className={cn(
-                    "text-xs font-bold uppercase tracking-wide truncate transition-colors",
+                    "text-xs font-semibold tracking-tight truncate transition-colors",
                     active ? "text-slate-800 dark:text-white" : "text-slate-600 dark:text-slate-300"
                   )}>
                     {item.title}
@@ -184,20 +184,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           onClick={onToggle}
           className={cn(
             "mt-2 p-3 rounded-2xl w-full transition-all duration-200",
-            "hover:bg-white/60 dark:hover:bg-slate-800/60",
-            !collapsed && "bg-blue-50/80 dark:bg-blue-900/40"
+            "hover:bg-slate-100 dark:hover:bg-white/5",
+            !collapsed && "bg-indigo-50 dark:bg-indigo-500/10"
           )}
           title={!collapsed ? t('sidebar.collapse') : t('sidebar.expand')}
         >
           <ChevronsLeftRight className={cn(
-            "w-5 h-5 text-slate-500 transition-transform duration-300",
-            !collapsed && "text-blue-500 rotate-90"
+            "w-5 h-5 text-slate-500 dark:text-slate-400 transition-transform duration-300",
+            !collapsed && "text-indigo-500 rotate-90"
           )} />
         </Button>
       </div>
 
       {/* Mobile Bottom Dock - Horizontal */}
-      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 rounded-2xl liquid-glass shadow-2xl overflow-x-auto max-w-[95vw]">
+      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/40 overflow-x-auto max-w-[95vw]">
         {menuItems.slice(0, 7).map((item: any) => {
           const active = isActive(item.url);
           return (
@@ -208,20 +208,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               end={item.url === "/dashboard" || item.url === "/learn"}
               onClick={(e) => handleItemClick(e, item)}
               className={cn(
-                "flex-shrink-0 flex items-center justify-center p-1.5 rounded-xl transition-all duration-200",
-                active ? "scale-110" : "hover:scale-105",
+                "flex-shrink-0 flex items-center justify-center p-1.5 rounded-xl transition-colors duration-200",
                 item.locked && "opacity-50"
               )}
             >
               <div className={cn(
-                "relative flex items-center justify-center w-11 h-11 rounded-xl",
-                `bg-gradient-to-br ${item.color}`,
-                active ? `shadow-lg ${item.shadow}` : "shadow-md"
+                "relative flex items-center justify-center w-11 h-11 rounded-xl transition-colors duration-200",
+                active
+                  ? "bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-md shadow-indigo-500/30"
+                  : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300"
               )}>
-                <item.icon className="w-5 h-5 text-white" />
+                <item.icon className="w-5 h-5" />
                 {item.locked && (
                   <div className="absolute -top-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-0.5 shadow">
-                    <Lock className="w-2.5 h-2.5 text-slate-500" />
+                    <Lock className="w-2.5 h-2.5 text-slate-500 dark:text-slate-400" />
                   </div>
                 )}
               </div>

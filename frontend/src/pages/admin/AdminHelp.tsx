@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -30,7 +29,6 @@ import {
   Settings,
   PlayCircle,
 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const AdminHelp: React.FC = () => {
   const { t } = useTranslation('admin');
@@ -51,37 +49,37 @@ export const AdminHelp: React.FC = () => {
   const glossaryCount = 10;
 
   return (
-    <div className="space-y-6 p-4 md:p-8 dark:bg-slate-950 dark:text-slate-50 min-h-screen">
+    <div className="space-y-6 p-4 md:p-8">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-            <HelpCircle className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold dark:text-slate-50">{t('help.title')}</h1>
-            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">{t('help.subtitle')}</p>
-          </div>
+      <div className="corp-panel p-6 md:p-8 flex items-center gap-4">
+        <div className="corp-icon-chip w-12 h-12 flex-shrink-0">
+          <HelpCircle className="w-6 h-6" />
+        </div>
+        <div>
+          <h1 className="corp-display text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{t('help.title')}</h1>
+          <p className="mt-1 text-sm md:text-base text-slate-500 dark:text-slate-400">{t('help.subtitle')}</p>
         </div>
       </div>
 
       {/* Welcome Banner */}
-      <Alert className="border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 dark:border-blue-800">
-        <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-        <AlertTitle className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
-          {t('help.welcome.title')}
-        </AlertTitle>
-        <AlertDescription className="ml-2 text-slate-700 dark:text-slate-300 space-y-2">
-          <p>{t('help.welcome.message')}</p>
-          <p className="text-sm italic border-l-4 border-blue-400 pl-3 py-1 bg-blue-50/50 dark:bg-blue-950/20">
-            {t('help.welcome.responsibility')}
-          </p>
-        </AlertDescription>
-      </Alert>
+      <div className="corp-panel-subtle p-5 md:p-6">
+        <div className="flex items-start gap-3">
+          <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-300 mt-0.5 flex-shrink-0" />
+          <div className="space-y-2">
+            <p className="text-base md:text-lg font-semibold text-slate-900 dark:text-white">
+              {t('help.welcome.title')}
+            </p>
+            <p className="text-slate-600 dark:text-slate-400">{t('help.welcome.message')}</p>
+            <p className="text-sm italic border-l-4 border-indigo-400 dark:border-indigo-500 pl-3 py-1 text-slate-600 dark:text-slate-400">
+              {t('help.welcome.responsibility')}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 dark:bg-slate-900 gap-2">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-slate-100 dark:bg-[#0d1426] gap-2">
           <TabsTrigger value="welcome" className="gap-2">
             <BookOpen className="w-4 h-4" />
             <span className="hidden sm:inline">{t('help.tabs.documentation')}</span>
@@ -107,21 +105,21 @@ export const AdminHelp: React.FC = () => {
         {/* Documentation Tab */}
         <TabsContent value="welcome" className="space-y-6">
           {/* Quick Start Guide */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.docs.quickStart.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.docs.quickStart.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 {Array.from({ length: 5 }, (_, i) => i + 1).map((num) => (
-                  <div key={num} className="flex gap-3 items-start p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                  <div key={num} className="flex gap-3 items-start p-3 rounded-xl bg-slate-50 dark:bg-[#0d1426]">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
                       {num}
                     </div>
                     <div className="flex-1">
@@ -136,34 +134,34 @@ export const AdminHelp: React.FC = () => {
           </Card>
 
           {/* System Overview */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.docs.overview.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.docs.overview.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {['lessons', 'characters', 'audio', 'users'].map((module) => (
-                  <div key={module} className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:shadow-md transition-shadow">
+                  <div key={module} className="corp-panel-subtle p-4">
                     <div className="flex items-start gap-3">
-                      {module === 'lessons' && <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-1" />}
-                      {module === 'characters' && <Users className="w-5 h-5 text-green-600 dark:text-green-400 mt-1" />}
-                      {module === 'audio' && <Video className="w-5 h-5 text-violet-600 dark:text-violet-400 mt-1" />}
-                      {module === 'users' && <Shield className="w-5 h-5 text-red-600 dark:text-red-400 mt-1" />}
+                      {module === 'lessons' && <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-300 mt-1" />}
+                      {module === 'characters' && <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-1" />}
+                      {module === 'audio' && <Video className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-1" />}
+                      {module === 'users' && <Shield className="w-5 h-5 text-rose-600 dark:text-rose-400 mt-1" />}
                       <div className="space-y-2">
-                        <h4 className="font-semibold dark:text-slate-50">
+                        <h4 className="font-semibold text-slate-900 dark:text-white">
                           {t(`help.docs.modules.${module}.title`)}
                         </h4>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
                           {t(`help.docs.modules.${module}.description`)}
                         </p>
-                        <Separator className="dark:bg-slate-700" />
-                        <p className="text-xs text-slate-500 dark:text-slate-500">
+                        <Separator className="bg-slate-200 dark:bg-white/10" />
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           {t(`help.docs.modules.${module}.details`)}
                         </p>
                       </div>
@@ -175,23 +173,23 @@ export const AdminHelp: React.FC = () => {
           </Card>
 
           {/* Best Practices */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 {t('help.docs.bestPractices.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.docs.bestPractices.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
                 {Array.from({ length: bestPracticesCount }, (_, i) => i + 1).map((num) => (
-                  <li key={num} className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <ChevronRight className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <li key={num} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                    <ChevronRight className="w-5 h-5 text-indigo-600 dark:text-indigo-300 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">
+                      <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">
                         {t(`help.docs.bestPractices.practice${num}.title`)}
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -205,45 +203,45 @@ export const AdminHelp: React.FC = () => {
           </Card>
 
           {/* Tips & Tricks */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800 border-blue-200 dark:border-blue-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <Lightbulb className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.docs.tips.title')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {Array.from({ length: tipsCount }, (_, i) => i + 1).map((num) => (
-                  <Alert key={num} className="dark:bg-blue-950/20 dark:border-blue-800/50">
-                    <Lightbulb className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    <AlertDescription className="ml-2 text-sm dark:text-slate-300">
-                      <strong className="font-semibold">{t(`help.docs.tips.tip${num}.title`)}</strong>
+                  <div key={num} className="corp-panel-subtle p-3 flex items-start gap-3">
+                    <Lightbulb className="h-4 w-4 text-indigo-600 dark:text-indigo-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                      <strong className="font-semibold text-slate-900 dark:text-white">{t(`help.docs.tips.tip${num}.title`)}</strong>
                       {' - '}
                       {t(`help.docs.tips.tip${num}.description`)}
-                    </AlertDescription>
-                  </Alert>
+                    </p>
+                  </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
           {/* Glossary */}
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Search className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <Search className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.docs.glossary.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.docs.glossary.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {Array.from({ length: glossaryCount }, (_, i) => i + 1).map((num) => (
-                  <div key={num} className="p-3 border border-slate-200 dark:border-slate-700 rounded-lg">
-                    <h5 className="font-semibold text-sm text-blue-600 dark:text-blue-400 mb-1">
+                  <div key={num} className="corp-panel-subtle p-3">
+                    <h5 className="font-semibold text-sm text-indigo-600 dark:text-indigo-300 mb-1">
                       {t(`help.docs.glossary.term${num}.name`)}
                     </h5>
                     <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -258,13 +256,13 @@ export const AdminHelp: React.FC = () => {
 
         {/* FAQ Tab */}
         <TabsContent value="faq" className="space-y-6">
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <HelpCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.faq.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.faq.subtitle')}
               </CardDescription>
             </CardHeader>
@@ -272,19 +270,19 @@ export const AdminHelp: React.FC = () => {
               <Accordion type="single" collapsible className="w-full space-y-2">
                 {/* Lessons FAQs */}
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold mb-3 text-purple-600 dark:text-purple-400 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.faq.categories.lessons')}
                   </h3>
                   {Array.from({ length: faqLessonsCount }, (_, i) => i + 1).map((num) => (
-                    <AccordionItem key={`lesson-${num}`} value={`faq-lesson-${num}`} className="border-slate-200 dark:border-slate-700">
-                      <AccordionTrigger className="hover:no-underline dark:text-slate-50 text-left">
+                    <AccordionItem key={`lesson-${num}`} value={`faq-lesson-${num}`} className="border-slate-200 dark:border-white/10">
+                      <AccordionTrigger className="hover:no-underline text-slate-900 dark:text-white text-left">
                         {t(`help.faq.lessons.q${num}.question`)}
                       </AccordionTrigger>
                       <AccordionContent className="text-slate-600 dark:text-slate-400 space-y-2">
                         <p>{t(`help.faq.lessons.q${num}.answer`)}</p>
                         {t(`help.faq.lessons.q${num}.example`, { defaultValue: '' }) && (
-                          <div className="mt-2 p-2 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono">
+                          <div className="mt-2 p-2 bg-slate-100 dark:bg-[#0d1426] rounded text-xs font-mono">
                             {t(`help.faq.lessons.q${num}.example`)}
                           </div>
                         )}
@@ -295,13 +293,13 @@ export const AdminHelp: React.FC = () => {
 
                 {/* Technical FAQs */}
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.faq.categories.technical')}
                   </h3>
                   {Array.from({ length: faqTechnicalCount }, (_, i) => i + 1).map((num) => (
-                    <AccordionItem key={`tech-${num}`} value={`faq-tech-${num}`} className="border-slate-200 dark:border-slate-700">
-                      <AccordionTrigger className="hover:no-underline dark:text-slate-50 text-left">
+                    <AccordionItem key={`tech-${num}`} value={`faq-tech-${num}`} className="border-slate-200 dark:border-white/10">
+                      <AccordionTrigger className="hover:no-underline text-slate-900 dark:text-white text-left">
                         {t(`help.faq.technical.q${num}.question`)}
                       </AccordionTrigger>
                       <AccordionContent className="text-slate-600 dark:text-slate-400">
@@ -313,13 +311,13 @@ export const AdminHelp: React.FC = () => {
 
                 {/* General FAQs */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-green-600 dark:text-green-400 flex items-center gap-2">
-                    <HelpCircle className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.faq.categories.general')}
                   </h3>
                   {Array.from({ length: faqGeneralCount }, (_, i) => i + 1).map((num) => (
-                    <AccordionItem key={`general-${num}`} value={`faq-general-${num}`} className="border-slate-200 dark:border-slate-700">
-                      <AccordionTrigger className="hover:no-underline dark:text-slate-50 text-left">
+                    <AccordionItem key={`general-${num}`} value={`faq-general-${num}`} className="border-slate-200 dark:border-white/10">
+                      <AccordionTrigger className="hover:no-underline text-slate-900 dark:text-white text-left">
                         {t(`help.faq.general.q${num}.question`)}
                       </AccordionTrigger>
                       <AccordionContent className="text-slate-600 dark:text-slate-400">
@@ -337,18 +335,18 @@ export const AdminHelp: React.FC = () => {
         <TabsContent value="tutorials" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
             {/* Tutorial 1: Create Lesson */}
-            <Card className="dark:bg-slate-900 dark:border-slate-800">
+            <Card className="corp-card">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                    <PlayCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <PlayCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.tutorials.createLesson.title')}
                   </CardTitle>
-                  <Badge variant="secondary" className="dark:bg-slate-800">
+                  <span className="corp-badge corp-badge--warning">
                     {t('help.tutorials.difficulty.intermediate')}
-                  </Badge>
+                  </span>
                 </div>
-                <CardDescription className="dark:text-slate-400">
+                <CardDescription className="text-slate-500 dark:text-slate-400">
                   {t('help.tutorials.createLesson.description')}
                 </CardDescription>
               </CardHeader>
@@ -356,11 +354,11 @@ export const AdminHelp: React.FC = () => {
                 <ol className="space-y-4">
                   {Array.from({ length: tutorialStepsCreate }, (_, i) => i + 1).map((num) => (
                     <li key={num} className="flex gap-3 items-start">
-                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold text-sm">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                         {num}
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">
+                        <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">
                           {t(`help.tutorials.createLesson.step${num}.title`)}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -370,29 +368,31 @@ export const AdminHelp: React.FC = () => {
                     </li>
                   ))}
                 </ol>
-                <Alert className="dark:bg-slate-800 dark:border-slate-700">
-                  <Lightbulb className="h-4 w-4 text-blue-500" />
-                  <AlertTitle className="dark:text-slate-100">{t('help.tutorials.createLesson.tip.title')}</AlertTitle>
-                  <AlertDescription className="dark:text-slate-300">
-                    {t('help.tutorials.createLesson.tip.description')}
-                  </AlertDescription>
-                </Alert>
+                <div className="corp-panel-subtle p-3 flex items-start gap-3">
+                  <Lightbulb className="h-4 w-4 text-indigo-600 dark:text-indigo-300 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{t('help.tutorials.createLesson.tip.title')}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {t('help.tutorials.createLesson.tip.description')}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             {/* Tutorial 2: Edit Lesson */}
-            <Card className="dark:bg-slate-900 dark:border-slate-800">
+            <Card className="corp-card">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                    <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <Zap className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.tutorials.editLesson.title')}
                   </CardTitle>
-                  <Badge variant="secondary" className="dark:bg-slate-800">
+                  <span className="corp-badge corp-badge--success">
                     {t('help.tutorials.difficulty.beginner')}
-                  </Badge>
+                  </span>
                 </div>
-                <CardDescription className="dark:text-slate-400">
+                <CardDescription className="text-slate-500 dark:text-slate-400">
                   {t('help.tutorials.editLesson.description')}
                 </CardDescription>
               </CardHeader>
@@ -400,11 +400,11 @@ export const AdminHelp: React.FC = () => {
                 <ol className="space-y-4">
                   {Array.from({ length: tutorialStepsEdit }, (_, i) => i + 1).map((num) => (
                     <li key={num} className="flex gap-3 items-start">
-                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                         {num}
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
                           {t(`help.tutorials.editLesson.step${num}`)}
                         </p>
                       </div>
@@ -415,18 +415,18 @@ export const AdminHelp: React.FC = () => {
             </Card>
 
             {/* Tutorial 3: Manage Users */}
-            <Card className="dark:bg-slate-900 dark:border-slate-800">
+            <Card className="corp-card">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                    <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.tutorials.manageUsers.title')}
                   </CardTitle>
-                  <Badge variant="secondary" className="dark:bg-slate-800">
+                  <span className="corp-badge corp-badge--danger">
                     {t('help.tutorials.difficulty.advanced')}
-                  </Badge>
+                  </span>
                 </div>
-                <CardDescription className="dark:text-slate-400">
+                <CardDescription className="text-slate-500 dark:text-slate-400">
                   {t('help.tutorials.manageUsers.description')}
                 </CardDescription>
               </CardHeader>
@@ -434,40 +434,42 @@ export const AdminHelp: React.FC = () => {
                 <ol className="space-y-4">
                   {Array.from({ length: tutorialStepsUsers }, (_, i) => i + 1).map((num) => (
                     <li key={num} className="flex gap-3 items-start">
-                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-700 dark:text-green-300 font-bold text-sm">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                         {num}
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
                           {t(`help.tutorials.manageUsers.step${num}`)}
                         </p>
                       </div>
                     </li>
                   ))}
                 </ol>
-                <Alert variant="destructive" className="dark:bg-red-950/30 dark:border-red-800">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle className="dark:text-red-300">{t('help.tutorials.manageUsers.warning.title')}</AlertTitle>
-                  <AlertDescription className="dark:text-red-300">
-                    {t('help.tutorials.manageUsers.warning.description')}
-                  </AlertDescription>
-                </Alert>
+                <div className="rounded-xl border border-rose-200 bg-rose-50 dark:border-rose-500/30 dark:bg-rose-500/10 p-3 flex items-start gap-3">
+                  <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">{t('help.tutorials.manageUsers.warning.title')}</p>
+                    <p className="text-sm text-rose-700/90 dark:text-rose-300/90">
+                      {t('help.tutorials.manageUsers.warning.description')}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             {/* Tutorial 4: History Rollback */}
-            <Card className="dark:bg-slate-900 dark:border-slate-800">
+            <Card className="corp-card">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                    <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                    <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                     {t('help.tutorials.rollback.title')}
                   </CardTitle>
-                  <Badge variant="secondary" className="dark:bg-slate-800">
+                  <span className="corp-badge corp-badge--warning">
                     {t('help.tutorials.difficulty.intermediate')}
-                  </Badge>
+                  </span>
                 </div>
-                <CardDescription className="dark:text-slate-400">
+                <CardDescription className="text-slate-500 dark:text-slate-400">
                   {t('help.tutorials.rollback.description')}
                 </CardDescription>
               </CardHeader>
@@ -475,11 +477,11 @@ export const AdminHelp: React.FC = () => {
                 <ol className="space-y-4">
                   {Array.from({ length: tutorialStepsRollback }, (_, i) => i + 1).map((num) => (
                     <li key={num} className="flex gap-3 items-start">
-                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-700 dark:text-purple-300 font-bold text-sm">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                         {num}
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
                           {t(`help.tutorials.rollback.step${num}`)}
                         </p>
                       </div>
@@ -493,13 +495,13 @@ export const AdminHelp: React.FC = () => {
 
         {/* Step-by-Step Tab */}
         <TabsContent value="steps" className="space-y-6">
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <ListOrdered className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <ListOrdered className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.steps.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.steps.subtitle')}
               </CardDescription>
             </CardHeader>
@@ -508,18 +510,18 @@ export const AdminHelp: React.FC = () => {
                 <div key={num}>
                   <div className="flex gap-4 items-start">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
                         {num}
                       </div>
                     </div>
                     <div className="flex-1 pt-1">
-                      <h4 className="font-semibold text-lg mb-2 dark:text-slate-50">
+                      <h4 className="font-semibold text-lg mb-2 text-slate-900 dark:text-white">
                         {t(`help.steps.workflow.step${num}.title`)}
                       </h4>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                         {t(`help.steps.workflow.step${num}.description`)}
                       </p>
-                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border-l-4 border-blue-400">
+                      <div className="mt-3 p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border-l-4 border-indigo-400 dark:border-indigo-500">
                         <p className="text-xs text-slate-700 dark:text-slate-300">
                           <strong className="font-semibold">{t(`help.steps.workflow.step${num}.actionLabel`)}</strong>{' '}
                           {t(`help.steps.workflow.step${num}.action`)}
@@ -527,7 +529,7 @@ export const AdminHelp: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  {num < workflowSteps && <Separator className="mt-6 dark:bg-slate-800" />}
+                  {num < workflowSteps && <Separator className="mt-6 bg-slate-200 dark:bg-white/10" />}
                 </div>
               ))}
             </CardContent>
@@ -536,29 +538,29 @@ export const AdminHelp: React.FC = () => {
 
         {/* Troubleshooting Tab */}
         <TabsContent value="troubleshooting" className="space-y-6">
-          <Card className="dark:bg-slate-900 dark:border-slate-800">
+          <Card className="corp-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-                <Settings className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+                <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
                 {t('help.troubleshooting.title')}
               </CardTitle>
-              <CardDescription className="dark:text-slate-400">
+              <CardDescription className="text-slate-500 dark:text-slate-400">
                 {t('help.troubleshooting.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
                 {Array.from({ length: troubleshootingCount }, (_, i) => i + 1).map((num) => (
-                  <AccordionItem key={num} value={`trouble-${num}`} className="border-slate-200 dark:border-slate-700">
-                    <AccordionTrigger className="hover:no-underline dark:text-slate-50 text-left">
+                  <AccordionItem key={num} value={`trouble-${num}`} className="border-slate-200 dark:border-white/10">
+                    <AccordionTrigger className="hover:no-underline text-slate-900 dark:text-white text-left">
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
+                        <AlertCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-300 flex-shrink-0" />
                         {t(`help.troubleshooting.issue${num}.problem`)}
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-3">
                       <div className="text-sm text-slate-600 dark:text-slate-400">
-                        <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                        <p className="font-semibold text-slate-900 dark:text-white mb-2">
                           {t(`help.troubleshooting.issue${num}.solution.title`)}
                         </p>
                         <p className="mb-3">{t(`help.troubleshooting.issue${num}.solution.description`)}</p>
@@ -581,10 +583,10 @@ export const AdminHelp: React.FC = () => {
       </Tabs>
 
       {/* Support Card */}
-      <Card className="border-2 border-blue-200 dark:border-blue-800 dark:bg-slate-900">
+      <Card className="corp-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 dark:text-slate-50">
-            <Heart className="w-5 h-5 text-red-500" />
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <Heart className="w-5 h-5 text-rose-500" />
             {t('help.support.title')}
           </CardTitle>
         </CardHeader>
@@ -593,25 +595,25 @@ export const AdminHelp: React.FC = () => {
             {t('help.support.message')}
           </p>
           <div className="flex gap-3 flex-wrap">
-            <Badge variant="outline" className="dark:border-slate-700 dark:text-slate-300">
+            <span className="corp-badge corp-badge--brand">
               {t('help.support.responsibility')}
-            </Badge>
-            <Badge variant="outline" className="dark:border-slate-700 dark:text-slate-300">
+            </span>
+            <span className="corp-badge corp-badge--brand">
               {t('help.support.quality')}
-            </Badge>
-            <Badge variant="outline" className="dark:border-slate-700 dark:text-slate-300">
+            </span>
+            <span className="corp-badge corp-badge--brand">
               {t('help.support.innovation')}
-            </Badge>
-            <Badge variant="outline" className="dark:border-slate-700 dark:text-slate-300">
+            </span>
+            <span className="corp-badge corp-badge--brand">
               {t('help.support.impact')}
-            </Badge>
+            </span>
           </div>
-          <Alert className="dark:bg-green-950/20 dark:border-green-800">
-            <Heart className="h-4 w-4 text-green-600 dark:text-green-400" />
-            <AlertDescription className="ml-2 text-sm dark:text-slate-300">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10 p-3 flex items-start gap-3">
+            <Heart className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-emerald-700 dark:text-emerald-300">
               {t('help.support.thankyou')}
-            </AlertDescription>
-          </Alert>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

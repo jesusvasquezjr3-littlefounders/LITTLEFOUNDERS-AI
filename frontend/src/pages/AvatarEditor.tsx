@@ -4,8 +4,6 @@ import { createAvatar } from '@dicebear/core';
 import * as avataaars from '@dicebear/avataaars';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import { ArrowLeft, Shuffle, Save, Check, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { API_URL } from '@/config/api';
@@ -264,31 +262,27 @@ const AvatarEditor = () => {
 
     return (
         <DashboardLayout>
-            <div className="max-w-4xl mx-auto pb-8 space-y-6 animate-in fade-in duration-500">
+            <div className="corp max-w-4xl mx-auto pb-8 space-y-6 animate-in fade-in duration-500">
 
                 {/* Premium Header with Save Button */}
-                <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-pink-500/10 dark:border-pink-500/5">
-                    {/* Ambient Glows */}
-                    <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-pink-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-
-                    <div className="flex items-center gap-4 w-full md:w-auto relative z-10">
+                <div className="corp-panel px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5">
+                    <div className="flex items-center gap-4 w-full md:w-auto">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => navigate('/profile')}
-                            className="rounded-full bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 backdrop-blur-md shadow-sm border border-white/20 dark:border-white/5"
+                            className="corp-btn-ghost rounded-full h-10 w-10 shrink-0"
                         >
-                            <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                            <ArrowLeft className="w-5 h-5" />
                         </Button>
-                        
+
                         <div className="flex items-center gap-3 md:gap-4">
-                            <div className="p-2 md:p-3 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl md:rounded-2xl shadow-xl shadow-pink-500/30 transform -rotate-3 shrink-0">
-                                <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                            <div className="corp-icon-chip w-10 h-10 md:w-12 md:h-12 shrink-0">
+                                <User className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-pink-500 dark:text-pink-400 uppercase tracking-widest leading-none mb-0.5">{t('common:app_name')}</span>
-                                <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-none">
+                                <span className="corp-eyebrow leading-none mb-0.5">{t('common:app_name')}</span>
+                                <h1 className="corp-display text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                                     {t('avatar:title')}
                                 </h1>
                             </div>
@@ -298,7 +292,7 @@ const AvatarEditor = () => {
                     <Button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="w-full md:w-auto bg-gradient-to-r relative z-10 from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-xl md:rounded-full px-6 shadow-lg shadow-pink-500/20 hover:shadow-xl hover:scale-105 active:scale-95 transition-all gap-2"
+                        className="corp-btn-primary w-full md:w-auto h-11 rounded-xl px-6 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSaving ? (
                             <>
@@ -315,33 +309,33 @@ const AvatarEditor = () => {
                 </div>
 
                 {/* Avatar Preview */}
-                <GlassPanel variant="default" className="border-0 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-lg">
-                    <CardContent className="flex flex-col items-center py-8">
+                <div className="corp-card">
+                    <div className="flex flex-col items-center py-8">
                         <div className="relative">
                             <div
                                 className="absolute -inset-2 rounded-full blur-lg opacity-50 animate-pulse transition-colors duration-500"
                                 style={{
                                     background: config.backgroundColor?.[0] && config.backgroundColor[0] !== 'none'
                                         ? `#${config.backgroundColor[0]}`
-                                        : 'linear-gradient(to right, #ec4899, #9333ea)' // pink-500 to purple-600
+                                        : 'linear-gradient(to right, #6366f1, #3b82f6)' // indigo-500 to blue-500
                                 }}
                             />
                             <img
                                 src={avatarSvg}
                                 alt="Tu Avatar"
-                                className="relative w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-white shadow-2xl"
+                                className="relative w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-white dark:border-slate-700 shadow-2xl"
                             />
                         </div>
                         <Button
                             variant="outline"
                             onClick={handleRandomize}
-                            className="mt-6 gap-2 rounded-full border-2 hover:bg-purple-50 dark:hover:bg-purple-900/30"
+                            className="corp-btn-secondary mt-6 h-11 rounded-xl px-5 text-sm font-semibold inline-flex items-center justify-center gap-2"
                         >
                             <Shuffle className="w-4 h-4" />
                             {t('avatar:actions.randomize')}
                         </Button>
-                    </CardContent>
-                </GlassPanel>
+                    </div>
+                </div>
 
                 {/* Duolingo-style Category Selector - Horizontal scroll on ALL devices */}
                 <div className="w-full relative group">
@@ -351,27 +345,8 @@ const AvatarEditor = () => {
 
                     <div className="w-full overflow-x-auto py-4 px-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
                         <div className="flex gap-3 px-2 min-w-max mx-auto">
-                            {Object.entries(AVATAR_OPTIONS).map(([key, opt], index) => {
+                            {Object.entries(AVATAR_OPTIONS).map(([key, opt]) => {
                                 const isActive = activeTab === key;
-                                // Different gradient colors for each category
-                                const gradients = [
-                                    'from-pink-400 to-pink-600',
-                                    'from-blue-400 to-violet-500',
-                                    'from-sky-400 to-blue-500',
-                                    'from-indigo-400 to-blue-500',
-                                    'from-rose-400 to-red-500',
-                                    'from-violet-300 to-violet-500',
-                                    'from-indigo-400 to-purple-500',
-                                    'from-emerald-400 to-teal-500',
-                                    'from-violet-400 to-purple-600',
-                                    'from-slate-400 to-slate-600',
-                                    'from-cyan-400 to-cyan-600',
-                                    'from-lime-400 to-green-500',
-                                    'from-fuchsia-400 to-fuchsia-600',
-                                    'from-red-400 to-rose-500',
-                                    'from-teal-400 to-teal-600'
-                                ];
-                                const gradient = gradients[index % gradients.length];
 
                                 return (
                                     <button
@@ -390,7 +365,7 @@ const AvatarEditor = () => {
                                         flex items-center justify-center
                                         shadow-lg transition-all duration-200
                                         ${isActive
-                                                ? `bg-gradient-to-br ${gradient} ring-4 ring-white dark:ring-slate-700 shadow-xl`
+                                                ? 'bg-gradient-to-br from-indigo-500 to-blue-500 ring-4 ring-white dark:ring-slate-700 shadow-xl'
                                                 : 'bg-slate-200 dark:bg-slate-700'
                                             }
                                     `}>
@@ -412,8 +387,8 @@ const AvatarEditor = () => {
                 </div>
 
                 {/* Options Grid - Larger items on mobile */}
-                <GlassPanel variant="strong" className="border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl">
-                    <CardContent className="p-3 md:p-6">
+                <div className="corp-card">
+                    <div className="p-3 md:p-6">
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
                             {AVATAR_OPTIONS[activeTab as keyof typeof AVATAR_OPTIONS]?.values.map((value) => {
                                 const isSelected = config[activeTab]?.[0] === value;
@@ -426,8 +401,8 @@ const AvatarEditor = () => {
                                         className={`
                                             relative aspect-square rounded-2xl border-3 transition-all duration-200 overflow-hidden
                                             ${isSelected
-                                                ? 'border-purple-500 ring-4 ring-purple-300/50 scale-105 shadow-lg'
-                                                : 'border-slate-200 dark:border-slate-600 hover:border-purple-300 hover:scale-102'
+                                                ? 'border-indigo-500 ring-4 ring-indigo-300/50 dark:ring-indigo-500/40 scale-105 shadow-lg'
+                                                : 'border-slate-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500'
                                             }
                                             ${isColor ? '' : 'p-0.5 bg-slate-50 dark:bg-slate-700'}
                                         `}
@@ -460,7 +435,7 @@ const AvatarEditor = () => {
                                             </div>
                                         )}
                                         {isSelected && (
-                                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
                                                 <Check className="w-4 h-4 text-white" />
                                             </div>
                                         )}
@@ -468,8 +443,8 @@ const AvatarEditor = () => {
                                 );
                             })}
                         </div>
-                    </CardContent>
-                </GlassPanel>
+                    </div>
+                </div>
 
             </div>
         </DashboardLayout>

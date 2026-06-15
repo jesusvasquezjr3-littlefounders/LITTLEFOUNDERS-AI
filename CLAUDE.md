@@ -12,9 +12,10 @@
 3. `ROADMAP.md` — plan de arquitectura y sprints
 4. `GLOSSARY.md` — terminología canónica
 5. `repo_map.md` — mapa de código (auto-generado)
-6. `WALKTHROUGH.md` — snapshot informativo
-7. `RUNBOOK.md` — respuesta a incidentes
-8. Código fuente — descriptivo, no autoritativo
+6. `frontend/DESIGN_SYSTEM.md` — estándar visual "corp" (autoritativo sobre estilos de Frontend)
+7. `WALKTHROUGH.md` — snapshot informativo
+8. `RUNBOOK.md` — respuesta a incidentes
+9. Código fuente — descriptivo, no autoritativo
 
 ---
 
@@ -52,6 +53,7 @@ Antes de hacer commit, verificar (checklist unificado):
 - **Sin `any`:** usar tipos concretos; justificar excepciones en PR
 - **`strict: true`** en tsconfig — no relajar sin aprobación
 - **Tailwind utility classes:** sin valores raw hex/pixel
+- **Estándar visual "corp":** toda vista de "chrome serio" (marketing, auth, cuenta, admin, utilitarias) usa las clases `corp-*` y sigue `frontend/DESIGN_SYSTEM.md`. Prohibido `liquid-glass`/`GlassPanel` y estilos ad-hoc por página. Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful" (§9 de ese doc).
 - **Sin Prettier:** formateo vía ESLint + convenciones
 
 ### Backend (Python/FastAPI)
@@ -125,3 +127,4 @@ Ver `AGENTS.md §10` (Mapa de Documentación) y `§11` (repo_map.md).
 3. `CLAUDE.md` — reglas operativas (este archivo)
 4. `WALKTHROUGH.md` — estado actual + deuda técnica
 5. `BACKEND_GUIDE.md` o `frontend/FRONTEND_GUIDE.md` según el área
+6. `frontend/DESIGN_SYSTEM.md` — estándar visual antes de tocar UI de Frontend

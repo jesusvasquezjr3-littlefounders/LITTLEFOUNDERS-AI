@@ -67,7 +67,7 @@ export function LanguageSelector({
                     )}
                 >
                     <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-pink-500 transition-colors" />
+                        <Globe className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-indigo-500 transition-colors" />
                         <span className="text-xs font-bold uppercase tracking-tight text-gray-700 dark:text-gray-200">
                             {currentLanguageInfo.code}
                         </span>
@@ -81,15 +81,15 @@ export function LanguageSelector({
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
                         className={cn(
-                            'gap-2 cursor-pointer py-2.5 px-4 focus:bg-pink-50 dark:focus:bg-pink-900/20 transition-colors',
-                            isCurrentLanguage(lang.code) && 'bg-pink-50/50 dark:bg-pink-900/10 text-pink-600 dark:text-pink-400 font-medium'
+                            'gap-2 cursor-pointer py-2.5 px-4 focus:bg-indigo-50 dark:focus:bg-indigo-900/20 transition-colors',
+                            isCurrentLanguage(lang.code) && 'bg-indigo-50/50 dark:bg-indigo-900/10 text-indigo-600 dark:text-indigo-400 font-medium'
                         )}
                     >
                         <span className="text-base">{lang.flag}</span>
                         <span className="text-sm">{lang.name}</span>
                         {isCurrentLanguage(lang.code) && (
                             <span className="ml-auto">
-                                <div className="w-1.5 h-1.5 rounded-full bg-pink-500" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                             </span>
                         )}
                     </DropdownMenuItem>

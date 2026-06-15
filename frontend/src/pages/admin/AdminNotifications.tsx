@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  Bell, Plus, Filter, RefreshCw, Search, Send, Archive, Edit2, Eye,
-  Users, User, Globe, Clock, Trash2, X, ChevronDown,
+  Bell, Plus, Filter, RefreshCw, Search, Send, Archive, Edit2,
+  Users, User, Globe, Clock, X,
   Megaphone, UserPlus, Flame, Trophy, BookOpen, Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   notificationsAdminApi,
   type NotificationAdminItem,
@@ -38,15 +37,15 @@ const USER_TYPES = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  draft: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-  archived: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+  active: "corp-badge corp-badge--success",
+  draft: "corp-badge corp-badge--brand",
+  archived: "corp-badge",
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
-  normal: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-  high: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  low: "corp-badge",
+  normal: "corp-badge corp-badge--info",
+  high: "corp-badge corp-badge--danger",
 };
 
 function timeAgo(dateStr: string): string {
@@ -144,17 +143,17 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
-        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto mx-4"
+        className="corp corp-dialog rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
+          <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white">
             {isEdit ? "Editar Notificacion" : "Nueva Notificacion"}
           </h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <button onClick={onClose} className="corp-btn-ghost h-9 w-9 rounded-lg inline-flex items-center justify-center">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -162,36 +161,36 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Type, Priority, Status row */}
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipo</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">Tipo</label>
               <select
                 value={form.type}
                 onChange={e => setForm(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               >
                 {NOTIFICATION_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Prioridad</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">Prioridad</label>
               <select
                 value={form.priority}
                 onChange={e => setForm(prev => ({ ...prev, priority: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               >
                 <option value="low">Baja</option>
                 <option value="normal">Normal</option>
                 <option value="high">Alta</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Estado</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">Estado</label>
               <select
                 value={form.status}
                 onChange={e => setForm(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               >
                 <option value="active">Activa</option>
                 <option value="draft">Borrador</option>
@@ -202,7 +201,7 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
 
           {/* Content - Spanish */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="corp-display text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="fi fi-es w-4 h-3 rounded-sm" /> Contenido en Espanol
             </h3>
             <input
@@ -210,21 +209,21 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
               placeholder="Titulo en espanol *"
               value={form.title_es}
               onChange={e => setForm(prev => ({ ...prev, title_es: e.target.value }))}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+              className="corp-input"
               required
             />
             <textarea
               placeholder="Descripcion en espanol (opcional)"
               value={form.body_es || ""}
               onChange={e => setForm(prev => ({ ...prev, body_es: e.target.value }))}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm resize-none"
+              className="corp-input resize-none"
               rows={2}
             />
           </div>
 
           {/* Content - English */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="corp-display text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="fi fi-us w-4 h-3 rounded-sm" /> Content in English
             </h3>
             <input
@@ -232,21 +231,21 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
               placeholder="Title in English *"
               value={form.title_en}
               onChange={e => setForm(prev => ({ ...prev, title_en: e.target.value }))}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+              className="corp-input"
               required
             />
             <textarea
               placeholder="Description in English (optional)"
               value={form.body_en || ""}
               onChange={e => setForm(prev => ({ ...prev, body_en: e.target.value }))}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm resize-none"
+              className="corp-input resize-none"
               rows={2}
             />
           </div>
 
           {/* Targeting */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Destinatarios</h3>
+            <h3 className="corp-display text-sm font-semibold text-slate-900 dark:text-white">Destinatarios</h3>
             <div className="grid grid-cols-3 gap-2">
               {TARGET_TYPES.map(tt => {
                 const Icon = tt.icon;
@@ -258,10 +257,10 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
                       setForm(prev => ({ ...prev, target_type: tt.value, target_value: "" }));
                       setSelectedUser(null);
                     }}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
                       form.target_type === tt.value
-                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-500"
-                        : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 dark:border-indigo-500"
+                        : "border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -279,10 +278,10 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
                     key={ut.value}
                     type="button"
                     onClick={() => setForm(prev => ({ ...prev, target_value: ut.value }))}
-                    className={`px-3 py-2 rounded-lg border text-sm transition-all ${
+                    className={`px-3 py-2 rounded-xl border text-sm transition-all ${
                       form.target_value === ut.value
-                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
-                        : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 dark:border-indigo-500"
+                        : "border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
                     }`}
                   >
                     {ut.label}
@@ -295,10 +294,10 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
             {form.target_type === "specific_user" && (
               <div className="space-y-2 mt-2">
                 {selectedUser ? (
-                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                  <div className="corp-panel-subtle flex items-center justify-between p-3 rounded-xl">
                     <div>
                       <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedUser.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         {selectedUser.username ? `@${selectedUser.username}` : selectedUser.email} · {selectedUser.user_type} · Idioma: {selectedUser.preferred_language}
                       </p>
                     </div>
@@ -308,32 +307,32 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
                         setSelectedUser(null);
                         setForm(prev => ({ ...prev, target_value: "" }));
                       }}
-                      className="p-1 rounded hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                      className="corp-btn-ghost h-8 w-8 rounded-lg inline-flex items-center justify-center"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none z-10" />
                     <input
                       type="text"
                       placeholder="Buscar usuario por nombre, email o username..."
                       value={userSearch}
                       onChange={e => setUserSearch(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-3 py-2 text-sm"
+                      className="corp-input pl-9"
                     />
                     {userResults.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <div className="corp-panel absolute z-10 w-full mt-1 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-hidden">
                         {userResults.map(u => (
                           <button
                             key={u.public_id}
                             type="button"
                             onClick={() => selectUser(u)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm border-b border-slate-100 dark:border-slate-700 last:border-0"
+                            className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-white/5 text-sm border-b border-slate-100 dark:border-white/10 last:border-0"
                           >
                             <p className="font-medium text-slate-900 dark:text-white">{u.name}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               {u.username ? `@${u.username}` : u.email} · {u.user_type} · {u.preferred_language}
                             </p>
                           </button>
@@ -341,7 +340,7 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
                       </div>
                     )}
                     {searchingUsers && (
-                      <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-4 text-center text-sm text-slate-500">
+                      <div className="corp-panel absolute z-10 w-full mt-1 rounded-xl shadow-lg p-4 text-center text-sm text-slate-500 dark:text-slate-400">
                         Buscando...
                       </div>
                     )}
@@ -353,61 +352,61 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
 
           {/* Media & Action */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL de Imagen/Media</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">URL de Imagen/Media</label>
               <input
                 type="url"
                 placeholder="https://..."
                 value={form.media_url || ""}
                 onChange={e => setForm(prev => ({ ...prev, media_url: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL de Accion (click)</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">URL de Accion (click)</label>
               <input
                 type="text"
                 placeholder="/dashboard, /lessons, etc."
                 value={form.action_url || ""}
                 onChange={e => setForm(prev => ({ ...prev, action_url: e.target.value }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               />
             </div>
           </div>
 
           {/* Schedule & Expiry */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Programar envio</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">Programar envio</label>
               <input
                 type="datetime-local"
                 value={form.scheduled_at ? new Date(form.scheduled_at).toISOString().slice(0, 16) : ""}
                 onChange={e => setForm(prev => ({ ...prev, scheduled_at: e.target.value ? new Date(e.target.value).toISOString() : "" }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fecha de expiracion</label>
+            <div className="space-y-1.5">
+              <label className="corp-label">Fecha de expiracion</label>
               <input
                 type="datetime-local"
                 value={form.expires_at ? new Date(form.expires_at).toISOString().slice(0, 16) : ""}
                 onChange={e => setForm(prev => ({ ...prev, expires_at: e.target.value ? new Date(e.target.value).toISOString() : "" }))}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
+                className="corp-input"
               />
             </div>
           </div>
 
           {/* Preview */}
           {(form.title_es || form.title_en) && (
-            <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-800/50">
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Vista Previa</p>
+            <div className="corp-panel-subtle rounded-xl p-4">
+              <p className="corp-eyebrow mb-2">Vista Previa</p>
               <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shrink-0">
+                <div className="corp-icon-chip w-9 h-9 shrink-0">
                   <Bell className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-900 dark:text-white">{form.title_es || form.title_en}</p>
-                  {form.body_es && <p className="text-xs text-slate-500 mt-0.5">{form.body_es}</p>}
+                  {form.body_es && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{form.body_es}</p>}
                   {form.media_url && (
                     <img src={form.media_url} alt="" className="mt-2 rounded-lg max-h-24 object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
                   )}
@@ -418,17 +417,25 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="corp-btn-ghost h-11 rounded-xl px-5 text-sm font-semibold"
+            >
               Cancelar
-            </Button>
-            <Button type="submit" disabled={saving || !form.title_es || !form.title_en}>
+            </button>
+            <button
+              type="submit"
+              disabled={saving || !form.title_es || !form.title_en}
+              className="corp-btn-primary h-11 rounded-xl px-5 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {saving ? (
-                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full" />
               ) : (
-                <Send className="h-4 w-4 mr-2" />
+                <Send className="h-4 w-4" />
               )}
               {isEdit ? "Guardar Cambios" : "Crear Notificacion"}
-            </Button>
+            </button>
           </div>
         </form>
       </div>
@@ -503,7 +510,7 @@ export default function AdminNotifications() {
   return (
     <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="corp-panel p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Bell className="h-6 w-6 text-indigo-500" />
@@ -513,40 +520,43 @@ export default function AdminNotifications() {
               Gestiona las notificaciones de la plataforma
             </p>
           </div>
-          <Button onClick={() => openEditor()} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-            <Plus className="h-4 w-4 mr-2" />
+          <button
+            onClick={() => openEditor()}
+            className="corp-btn-primary h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
             Nueva Notificacion
-          </Button>
+          </button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+          <div className="corp-card p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Activas</p>
-            <p className="text-2xl font-bold text-green-600">{totalActive}</p>
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{totalActive}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+          <div className="corp-card p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Borradores</p>
-            <p className="text-2xl font-bold text-indigo-600">{totalDraft}</p>
+            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{totalDraft}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+          <div className="corp-card p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Archivadas</p>
-            <p className="text-2xl font-bold text-slate-500">{totalArchived}</p>
+            <p className="text-2xl font-bold text-slate-500 dark:text-slate-400">{totalArchived}</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+          <div className="corp-card p-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">Lecturas Totales</p>
-            <p className="text-2xl font-bold text-indigo-600">{totalRead}</p>
+            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{totalRead}</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="corp-panel p-3 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-slate-400" />
             <select
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm"
+              className="corp-input w-auto py-1.5"
             >
               <option value="">Todos los estados</option>
               <option value="active">Activas</option>
@@ -557,38 +567,44 @@ export default function AdminNotifications() {
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm"
+            className="corp-input w-auto py-1.5"
           >
             <option value="">Todos los tipos</option>
             {NOTIFICATION_TYPES.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
-          <Button variant="ghost" size="sm" onClick={fetchNotifications} className="ml-auto">
-            <RefreshCw className="h-4 w-4 mr-1" />
+          <button
+            onClick={fetchNotifications}
+            className="corp-btn-ghost ml-auto h-9 rounded-lg px-3 text-sm font-semibold inline-flex items-center justify-center gap-1.5"
+          >
+            <RefreshCw className="h-4 w-4" />
             Refrescar
-          </Button>
+          </button>
         </div>
 
         {/* Notifications Table */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="corp-panel overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-slate-500">
+            <div className="flex items-center justify-center py-16 text-slate-500 dark:text-slate-400">
               <div className="animate-spin h-5 w-5 border-2 border-indigo-500 border-t-transparent rounded-full mr-3" />
               Cargando notificaciones...
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+            <div className="corp-empty py-16">
               <Bell className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" />
               <p className="text-lg font-medium text-slate-900 dark:text-white">Sin notificaciones</p>
-              <p className="text-sm text-slate-500 mt-1">Crea tu primera notificacion para comenzar.</p>
-              <Button onClick={() => openEditor()} className="mt-4">
-                <Plus className="h-4 w-4 mr-2" />
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Crea tu primera notificacion para comenzar.</p>
+              <button
+                onClick={() => openEditor()}
+                className="corp-btn-primary mt-4 h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
                 Crear Notificacion
-              </Button>
+              </button>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100 dark:divide-white/10">
               {notifications.map(notif => {
                 const typeInfo = NOTIFICATION_TYPES.find(t => t.value === notif.type);
                 const TypeIcon = typeInfo?.icon || Bell;
@@ -597,10 +613,10 @@ export default function AdminNotifications() {
                 return (
                   <div
                     key={notif.public_id}
-                    className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     {/* Icon */}
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 shrink-0">
+                    <div className="corp-icon-chip w-10 h-10 shrink-0">
                       <TypeIcon className="h-5 w-5" />
                     </div>
 
@@ -610,10 +626,10 @@ export default function AdminNotifications() {
                         <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                           {notif.title_es}
                         </p>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${STATUS_COLORS[notif.status] || ""}`}>
+                        <span className={STATUS_COLORS[notif.status] || "corp-badge"}>
                           {notif.status}
                         </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${PRIORITY_COLORS[notif.priority] || ""}`}>
+                        <span className={PRIORITY_COLORS[notif.priority] || "corp-badge"}>
                           {notif.priority}
                         </span>
                       </div>
@@ -639,25 +655,21 @@ export default function AdminNotifications() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
+                      <button
                         onClick={() => openEditor(notif)}
-                        className="h-8 w-8 p-0"
+                        className="corp-btn-ghost h-8 w-8 rounded-lg inline-flex items-center justify-center"
                         title="Editar"
                       >
                         <Edit2 className="h-4 w-4" />
-                      </Button>
+                      </button>
                       {notif.status !== "archived" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <button
                           onClick={() => handleArchive(notif.public_id)}
-                          className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
+                          className="corp-btn-ghost h-8 w-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-red-500"
                           title="Archivar"
                         >
                           <Archive className="h-4 w-4" />
-                        </Button>
+                        </button>
                       )}
                     </div>
                   </div>

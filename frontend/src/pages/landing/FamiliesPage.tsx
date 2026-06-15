@@ -38,21 +38,21 @@ export default function FamiliesPage() {
 
   const marketplaceItems = [
     { icon: Coins, title: t("families.marketplace.item_1_title"), desc: t("families.marketplace.item_1_desc"), color: "from-amber-500 to-orange-500" },
-    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc"), color: "from-violet-500 to-fuchsia-500" },
+    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc"), color: "from-indigo-500 to-blue-500" },
     { icon: Gift, title: t("families.marketplace.item_3_title"), desc: t("families.marketplace.item_3_desc"), color: "from-emerald-500 to-teal-500" },
   ];
 
   const parentInsights = [
     { icon: TrendingUp, color: "from-indigo-500 to-blue-500", title: t("families.parent_tools.insight_1_title"), desc: t("families.parent_tools.insight_1_desc") },
     { icon: Coins, color: "from-amber-500 to-orange-500", title: t("families.parent_tools.insight_2_title"), desc: t("families.parent_tools.insight_2_desc") },
-    { icon: MessageCircle, color: "from-violet-500 to-fuchsia-500", title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
+    { icon: MessageCircle, color: "from-indigo-500 to-sky-500", title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
     { icon: ShieldCheck, color: "from-emerald-500 to-teal-500", title: t("families.parent_tools.insight_4_title"), desc: t("families.parent_tools.insight_4_desc") },
     { icon: LayoutDashboard, color: "from-sky-500 to-cyan-500", title: t("families.parent_tools.insight_5_title"), desc: t("families.parent_tools.insight_5_desc") },
-    { icon: Star, color: "from-pink-500 to-rose-500", title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
+    { icon: Star, color: "from-indigo-500 to-blue-500", title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
   ];
 
   const benefits = [
-    { icon: Users, color: "from-pink-500 to-rose-500", title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
+    { icon: Users, color: "from-indigo-500 to-sky-500", title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
     { icon: TrendingUp, color: "from-indigo-500 to-blue-500", title: t("families.benefits.benefit_2_title"), desc: t("families.benefits.benefit_2_desc") },
     { icon: ShieldCheck, color: "from-emerald-500 to-teal-500", title: t("families.benefits.benefit_3_title"), desc: t("families.benefits.benefit_3_desc") },
     { icon: MessageCircle, color: "from-amber-500 to-orange-500", title: t("families.benefits.benefit_4_title"), desc: t("families.benefits.benefit_4_desc") },
@@ -73,7 +73,7 @@ export default function FamiliesPage() {
       <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
         <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/15 dark:bg-indigo-600/15 blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-violet-400/10 dark:bg-violet-700/10 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-sky-400/10 dark:bg-sky-700/10 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -103,7 +103,7 @@ export default function FamiliesPage() {
                 <div className="mt-8 space-y-3">
                   {steps.map((step) => (
                     <div key={step.n} className="corp-card flex items-center gap-4 px-5 py-3.5">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
                         {step.n}
                       </div>
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{step.text}</span>
@@ -159,7 +159,7 @@ export default function FamiliesPage() {
               {[
                 { key: "benefit_1", color: "from-amber-500 to-orange-500", icon: Coins },
                 { key: "benefit_2", color: "from-indigo-500 to-blue-500", icon: TrendingUp },
-                { key: "benefit_3", color: "from-violet-500 to-fuchsia-500", icon: Gift },
+                { key: "benefit_3", color: "from-indigo-500 to-blue-500", icon: Gift },
                 { key: "benefit_4", color: "from-emerald-500 to-teal-500", icon: LayoutDashboard },
               ].map(({ key, color, icon: Icon }, i) => (
                 <Reveal key={key} delay={i * 80}>

@@ -24,7 +24,6 @@ import Bye from "./pages/Bye";
 import AuthCallback from "./pages/AuthCallback";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Lessons from "./pages/Lessons";
 import LearnPage from "./pages/LearnPage";
 import Profile from "./pages/Profile";
 import AvatarEditor from "./pages/AvatarEditor";

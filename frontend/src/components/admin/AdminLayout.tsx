@@ -40,7 +40,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="corp h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
       <div className="flex h-full">
         <AdminSidebar
           collapsed={sidebarCollapsed}
@@ -50,7 +50,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm view-transition-header">
             <div className="px-6 py-4 flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
                 {t('layout.panelTitle')}
               </h1>
               <div className="flex items-center gap-2 md:gap-3">

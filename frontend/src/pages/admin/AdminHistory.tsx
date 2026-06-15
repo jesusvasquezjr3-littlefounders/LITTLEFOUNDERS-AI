@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminHistory, useRollback } from '@/hooks/useAdminHistory';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -29,11 +26,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronDown, ChevronUp, RotateCcw, Search, History } from 'lucide-react';
-import { GlassPanel } from '@/components/ui/GlassPanel';
-import { cn } from '@/lib/utils';
 
 interface HistoryEntry {
   id: string;
@@ -122,60 +116,53 @@ export const AdminHistory: React.FC = () => {
   const getActionColor = (action: string) => {
     switch (action) {
       case 'create':
-        return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100';
+        return 'corp-badge corp-badge--success';
       case 'update':
-        return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100';
+        return 'corp-badge corp-badge--info';
       case 'delete':
-        return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100';
+        return 'corp-badge corp-badge--danger';
       case 'duplicate':
-        return 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100';
+        return 'corp-badge corp-badge--brand';
       case 'rollback':
-        return 'bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-100';
+        return 'corp-badge corp-badge--brand';
       default:
-        return 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100';
+        return 'corp-badge';
     }
   };
 
   return (
-    <div className="space-y-6 p-8 bg-white dark:bg-slate-900 min-h-screen">
+    <div className="space-y-6 p-8 bg-white dark:bg-[#070b14] min-h-screen">
       {/* Header */}
-      {/* Premium Admin Header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-blue-500/10 dark:border-blue-500/5 shadow-2xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-blue-500/15 to-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-blue-500 via-violet-500 to-indigo-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-blue-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-                  <History className="w-5 h-5 md:w-7 md:h-7 text-white" />
-              </div>
-              <div className="text-left">
-                  <div className="flex items-center gap-2 mb-0.5">
-                      {/* Branding removed as per user request */}
-                  </div>
-                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
-                      {t('history.title')}
-                  </h1>
-                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
-                      {t('history.description')}
-                  </p>
-              </div>
+      <div className="corp-panel p-6 md:p-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="corp-icon-chip w-11 h-11 shrink-0">
+            <History className="w-5 h-5" />
           </div>
+          <div>
+            <span className="corp-eyebrow">{t('app_name', 'LittleFounders')}</span>
+            <h1 className="corp-display mt-1 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+              {t('history.title')}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {t('history.description')}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
-      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
-        <CardHeader className="py-3 px-6 border-b border-slate-100 dark:border-slate-800/50">
-          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{t('common.filters')}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 md:p-6">
+      <div className="corp-panel overflow-hidden">
+        <div className="py-3 px-6 border-b border-slate-200 dark:border-white/10">
+          <span className="corp-eyebrow">{t('common.filters')}</span>
+        </div>
+        <div className="p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
             {/* Search */}
-            <div className="relative lg:col-span-2 group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-500 transition-colors" />
+            <div className="relative lg:col-span-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
               <Input
                 placeholder={t('history.searchPlaceholder')}
-                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11 pl-10"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -189,10 +176,10 @@ export const AdminHistory: React.FC = () => {
               setEntityTypeFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('history.allTypes')} />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl">
+              <SelectContent className="bg-white dark:bg-[#0d1426] border-slate-200 dark:border-white/10 rounded-xl">
                 {ENTITY_TYPES.map((type) => (
                   <SelectItem key={type} value={type} className="text-slate-900 dark:text-white">
                     {t(`history.entityNames.${type}`)}
@@ -206,10 +193,10 @@ export const AdminHistory: React.FC = () => {
               setActionFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('history.allActions')} />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl">
+              <SelectContent className="bg-white dark:bg-[#0d1426] border-slate-200 dark:border-white/10 rounded-xl">
                 {ACTIONS.map((action) => (
                   <SelectItem key={action} value={action} className="text-slate-900 dark:text-white">
                     {t(`history.actionNames.${action}`)}
@@ -221,7 +208,7 @@ export const AdminHistory: React.FC = () => {
             {/* Editor */}
             <Input
               placeholder={t('history.editorPlaceholder')}
-              className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
+              className="corp-input h-11"
               value={editorFilter}
               onChange={(e) => {
                 setEditorFilter(e.target.value);
@@ -230,8 +217,8 @@ export const AdminHistory: React.FC = () => {
             />
 
             {/* Clear Filters */}
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={() => {
                 setEntityTypeFilter('');
                 setActionFilter('');
@@ -241,16 +228,16 @@ export const AdminHistory: React.FC = () => {
                 setSearchTerm('');
                 setCurrentPage(1);
               }}
-              className="h-11 rounded-xl font-bold bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="corp-btn-secondary h-11 rounded-xl px-5 text-sm font-semibold"
             >
               {t('common.clear')}
-            </Button>
+            </button>
           </div>
 
           {/* Date Filters */}
           <div className="grid gap-4 md:grid-cols-2 mt-4">
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block ml-1">
+            <div className="space-y-1.5">
+              <label className="corp-label">
                 {t('common.fromDate')}
               </label>
               <Input
@@ -260,11 +247,11 @@ export const AdminHistory: React.FC = () => {
                   setDateStartFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11"
               />
             </div>
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block ml-1">
+            <div className="space-y-1.5">
+              <label className="corp-label">
                 {t('common.toDate')}
               </label>
               <Input
@@ -274,12 +261,12 @@ export const AdminHistory: React.FC = () => {
                   setDateEndFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11"
               />
             </div>
           </div>
-        </CardContent>
-      </GlassPanel>
+        </div>
+      </div>
 
       {/* Results Info */}
       <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -289,34 +276,34 @@ export const AdminHistory: React.FC = () => {
       </div>
 
       {/* History Table */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-        <CardContent className="pt-6">
+      <div className="corp-panel overflow-hidden">
+        <div className="p-4 md:p-6">
           {isLoading ? (
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full bg-slate-200 dark:bg-slate-700" />
+                <Skeleton key={i} className="h-16 w-full bg-slate-200 dark:bg-white/10" />
               ))}
             </div>
           ) : paginatedEntries.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="corp-table">
                 <TableHeader>
-                  <TableRow className="border-slate-200 dark:border-slate-700">
-                    <TableHead className="w-12 text-slate-900 dark:text-white"></TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('common.date')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('history.editor')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('history.entityType')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('history.entityId')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('common.action')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('history.fieldsChanged')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white text-center">{t('common.actions')}</TableHead>
+                  <TableRow>
+                    <TableHead className="w-12"></TableHead>
+                    <TableHead>{t('common.date')}</TableHead>
+                    <TableHead>{t('history.editor')}</TableHead>
+                    <TableHead>{t('history.entityType')}</TableHead>
+                    <TableHead>{t('history.entityId')}</TableHead>
+                    <TableHead>{t('common.action')}</TableHead>
+                    <TableHead>{t('history.fieldsChanged')}</TableHead>
+                    <TableHead className="text-center">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedEntries.map((entry) => (
                     <React.Fragment key={entry.id}>
                       <TableRow
-                        className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        className="cursor-pointer"
                         onClick={() =>
                           setExpandedEntryId(
                             expandedEntryId === entry.id ? null : entry.id
@@ -326,37 +313,37 @@ export const AdminHistory: React.FC = () => {
                         <TableCell>
                           <div>
                             {expandedEntryId === entry.id ? (
-                              <ChevronUp className="h-4 w-4 text-slate-900 dark:text-white" />
+                              <ChevronUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                             ) : (
-                              <ChevronDown className="h-4 w-4 text-slate-900 dark:text-white" />
+                              <ChevronDown className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm whitespace-nowrap">
+                        <TableCell className="whitespace-nowrap">
                           <div className="text-slate-900 dark:text-white">
                             {new Date(entry.created_at).toLocaleDateString()}
                           </div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                          <div className="text-xs text-slate-500 dark:text-slate-400">
                             {new Date(entry.created_at).toLocaleTimeString()}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-slate-900 dark:text-white">
+                        <TableCell className="text-slate-900 dark:text-white">
                           {entry.editor_name}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="capitalize bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white">
+                          <span className="corp-badge capitalize">
                             {entry.entity_type}
-                          </Badge>
+                          </span>
                         </TableCell>
-                        <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                        <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">
                           <div>{entry.entity_id}</div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={getActionColor(entry.action)} variant="secondary">
+                          <span className={getActionColor(entry.action)}>
                             {entry.action}
-                          </Badge>
+                          </span>
                         </TableCell>
-                        <TableCell className="text-sm text-slate-600 dark:text-slate-400">
+                        <TableCell className="text-slate-600 dark:text-slate-400">
                           {entry.field_changed ? (
                             <span>{entry.field_changed}</span>
                           ) : (
@@ -372,20 +359,19 @@ export const AdminHistory: React.FC = () => {
                               }}
                             >
                               <DialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
+                                <button
+                                  type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setRollbackConfirmId(entry.id);
                                   }}
-                                  className="text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
+                                  className="corp-btn-ghost h-9 w-9 rounded-lg inline-flex items-center justify-center"
                                   title={t('history.rollback')}
                                 >
                                   <RotateCcw className="h-4 w-4" />
-                                </Button>
+                                </button>
                               </DialogTrigger>
-                              <DialogContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                              <DialogContent className="corp corp-dialog rounded-3xl sm:max-w-lg p-6">
                                 <DialogHeader>
                                   <DialogTitle className="text-slate-900 dark:text-white">
                                     {t('history.rollbackTitle')}
@@ -395,19 +381,21 @@ export const AdminHistory: React.FC = () => {
                                   </DialogDescription>
                                 </DialogHeader>
                                 <div className="flex justify-end gap-2 pt-4">
-                                  <Button
-                                    variant="outline"
+                                  <button
+                                    type="button"
                                     onClick={() => setRollbackConfirmId(null)}
-                                    className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                                    className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold"
                                   >
                                     {t('common.cancel')}
-                                  </Button>
-                                  <Button
+                                  </button>
+                                  <button
+                                    type="button"
                                     onClick={() => handleRollback(entry.id)}
                                     disabled={rollback.isPending}
+                                    className="corp-btn-primary h-10 rounded-xl px-5 text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     {rollback.isPending ? t('common.rollingBack') : t('history.rollback')}
-                                  </Button>
+                                  </button>
                                 </div>
                               </DialogContent>
                             </Dialog>
@@ -417,32 +405,32 @@ export const AdminHistory: React.FC = () => {
 
                       {/* Expanded Row - Details */}
                       {expandedEntryId === entry.id && entry.field_changed && (
-                        <TableRow className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                        <TableRow className="bg-slate-50 dark:bg-white/[0.03]">
                           <TableCell colSpan={8} className="p-4">
                             <div className="space-y-4">
                               <div>
-                                <h4 className="font-semibold text-sm mb-3 text-slate-900 dark:text-white">
+                                <h4 className="corp-display font-semibold text-sm mb-3 text-slate-900 dark:text-white">
                                   {t('history.changes')}
                                 </h4>
-                                <ScrollArea className="h-auto border rounded-lg p-4 bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600">
-                                  <div className="border-l-4 border-blue-400 pl-3">
+                                <ScrollArea className="corp-panel-subtle h-auto rounded-lg p-4">
+                                  <div className="border-l-4 border-indigo-400 dark:border-indigo-500 pl-3">
                                     <p className="font-medium text-sm mb-2 text-slate-900 dark:text-white">
                                       {entry.field_changed}
                                     </p>
                                     <div className="grid grid-cols-2 gap-3 text-xs">
-                                      <div className="bg-red-50 dark:bg-red-900 p-2 rounded border border-red-200 dark:border-red-700">
-                                        <p className="font-semibold text-red-700 dark:text-red-100 mb-1">
+                                      <div className="bg-red-50 dark:bg-red-950/40 p-2 rounded border border-red-200 dark:border-red-900/50">
+                                        <p className="font-semibold text-red-700 dark:text-red-300 mb-1">
                                           {t('history.oldValue')}
                                         </p>
-                                        <p className="text-red-600 dark:text-red-200 font-mono break-words">
+                                        <p className="text-red-600 dark:text-red-300 font-mono break-words">
                                           {entry.previous_value !== undefined ? JSON.stringify(entry.previous_value, null, 2) : '-'}
                                         </p>
                                       </div>
-                                      <div className="bg-green-50 dark:bg-green-900 p-2 rounded border border-green-200 dark:border-green-700">
-                                        <p className="font-semibold text-green-700 dark:text-green-100 mb-1">
+                                      <div className="bg-emerald-50 dark:bg-emerald-950/40 p-2 rounded border border-emerald-200 dark:border-emerald-900/50">
+                                        <p className="font-semibold text-emerald-700 dark:text-emerald-300 mb-1">
                                           {t('history.newValue')}
                                         </p>
-                                        <p className="text-green-600 dark:text-green-200 font-mono break-words">
+                                        <p className="text-emerald-600 dark:text-emerald-300 font-mono break-words">
                                           {entry.new_value !== undefined ? JSON.stringify(entry.new_value, null, 2) : '-'}
                                         </p>
                                       </div>
@@ -460,14 +448,12 @@ export const AdminHistory: React.FC = () => {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-500 dark:text-slate-400">
-                {t('history.noFound')}
-              </p>
+            <div className="corp-empty py-12">
+              <p>{t('history.noFound')}</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
@@ -476,22 +462,22 @@ export const AdminHistory: React.FC = () => {
             {t('common.page')} {currentPage} {t('common.of')} {totalPages}
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+              className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('common.previous')}
-            </Button>
-            <Button
-              variant="outline"
+            </button>
+            <button
+              type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+              className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('common.next')}
-            </Button>
+            </button>
           </div>
         </div>
       )}

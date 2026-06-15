@@ -190,7 +190,7 @@ const AuthCallback = () => {
     }, [navigate, searchParams, toast, t, playSound]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="corp min-h-screen flex items-center justify-center">
             <div className="text-center space-y-2">
                 <dotlottie-wc
                     src="https://lottie.host/f3fd5a59-10b3-419d-bc1f-c55c3aea4666/twBZE2f4co.lottie"
@@ -198,7 +198,7 @@ const AuthCallback = () => {
                     autoplay
                     loop
                 />
-                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+                <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-200">
                     {t('auth:login.loading')}
                 </h2>
             </div>

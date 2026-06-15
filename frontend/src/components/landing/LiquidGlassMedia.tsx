@@ -23,7 +23,7 @@ export const LiquidGlassMedia: React.FC<LiquidGlassMediaProps> = ({
       <div className="relative animate-float" style={{ animationDelay: delay }}>
         
         {/* Liquid Glass Frame */}
-        <div className="relative rounded-3xl morphing-rect-frame bg-gradient-to-tr from-[#ff6b6b]/60 via-white/20 to-[#7048e8]/60 dark:from-[#ff6b6b]/45 dark:via-white/5 dark:to-[#7048e8]/45 p-[8px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(112,72,232,0.45)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15">
+        <div className="relative rounded-3xl morphing-rect-frame bg-gradient-to-tr from-indigo-500/60 via-white/20 to-blue-500/60 dark:from-indigo-500/45 dark:via-white/5 dark:to-blue-500/45 p-[8px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(79,70,229,0.45)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15">
           
           {/* Inner masking container */}
           <div className="group relative aspect-[4/3] overflow-hidden bg-white/70 dark:bg-slate-900/70" style={{ borderRadius: 'inherit' }}>
@@ -65,7 +65,7 @@ export const LiquidGlassMedia: React.FC<LiquidGlassMediaProps> = ({
         <svg className="absolute -bottom-4 right-12 sm:-bottom-6 sm:right-24 z-20 w-8 h-8 text-amber-200 pointer-events-none animate-sparkle-5" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
         </svg>
-        <svg className="absolute top-1/3 -left-6 sm:-left-8 z-20 w-6 h-6 text-pink-300 pointer-events-none animate-sparkle-2" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="absolute top-1/3 -left-6 sm:-left-8 z-20 w-6 h-6 text-indigo-300 pointer-events-none animate-sparkle-2" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C12 0 12.5 8.5 15 11C17.5 13.5 24 12 24 12C24 12 17.5 12.5 15 15C12.5 17.5 12 24 12 24C12 24 11.5 17.5 9 15C6.5 12.5 0 12 0 12C0 12 6.5 11.5 9 11C11.5 8.5 12 0 12 0Z" />
         </svg>
       </div>

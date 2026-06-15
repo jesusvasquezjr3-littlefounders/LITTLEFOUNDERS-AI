@@ -27,11 +27,11 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     };
 
     return (
-        <article className={`group wallpaper-card ${themeClasses[theme]} relative w-full h-full rounded-[32px] overflow-hidden shadow-sm border-2 border-border dark:border-white/10 transition-all hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none`}>
+        <article className={`group wallpaper-card ${themeClasses[theme]} relative w-full h-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-white/10 transition-shadow hover:shadow-md`}>
             {/* Label */}
             {!hideTitle && (
                 <div className="label absolute top-6 left-6 z-50 pointer-events-none transition-opacity duration-300">
-                    <span className="text-white text-2xl font-black drop-shadow-lg">
+                    <span className="text-white text-2xl font-bold drop-shadow-lg">
                         {title}
                     </span>
                 </div>
@@ -39,7 +39,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
 
             {/* Progress Bar */}
             {status !== 'locked' && progress > 0 && (
-                <div className="absolute top-6 right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <div className="absolute top-6 right-6 z-50 flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full">
                     <div className="w-20 h-2 bg-white/30 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-indigo-400 rounded-full transition-all duration-500"
@@ -51,7 +51,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
             )}
 
             {/* Scene Container */}
-            <div className="scene w-full h-full relative overflow-hidden transition-all duration-400 group-hover:blur-lg group-hover:scale-105">
+            <div className="scene w-full h-full relative overflow-hidden">
                 {theme === 'archipelago' && <ArchipelagoScene />}
                 {theme === 'forest' && <ForestScene />}
                 {theme === 'city' && <CityScene />}
@@ -63,7 +63,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
             {/* Hover Effect Layer */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-[55]">
                 <div className="text-white">
-                    <h3 className="text-2xl font-black mb-1">{title}</h3>
+                    <h3 className="text-2xl font-bold mb-1">{title}</h3>
                 </div>
             </div>
 
@@ -216,33 +216,33 @@ const ForestScene = () => (
 );
 
 const CityScene = () => (
-    <div className="scene-city w-full h-full relative bg-gradient-to-b from-[#7e57c2] to-[#d1c4e9] dark:from-[#311b92] dark:to-[#4527a0]">
+    <div className="scene-city w-full h-full relative bg-gradient-to-b from-[#6366f1] to-[#c7d2fe] dark:from-[#312e81] dark:to-[#1e3a8a]">
         <div className="stars absolute inset-0 bg-stars opacity-0 dark:opacity-90 z-0" />
         <div className="celestial absolute top-8 right-10 w-12 h-12 bg-[#ffd54f] dark:bg-[#eee] rounded-full shadow-sun dark:shadow-moon z-1" />
 
         {/* Background Buildings */}
         <div className="skyline-bg absolute bottom-10 w-full flex justify-around opacity-60 z-1">
-            <div className="bg-bldg w-10 h-[100px] bg-[#5e35b1] rounded-t" />
-            <div className="bg-bldg w-10 h-[160px] bg-[#673ab7] rounded-t" />
-            <div className="bg-bldg w-10 h-[90px] bg-[#5e35b1] rounded-t" />
-            <div className="bg-bldg w-10 h-[140px] bg-[#512da8] rounded-t" />
-            <div className="bg-bldg w-10 h-[120px] bg-[#5e35b1] rounded-t" />
-            <div className="bg-bldg w-10 h-[110px] bg-[#673ab7] rounded-t" />
-            <div className="bg-bldg w-8 h-[80px] bg-[#5e35b1] rounded-t" />
-            <div className="bg-bldg w-10 h-[130px] bg-[#673ab7] rounded-t" />
+            <div className="bg-bldg w-10 h-[100px] bg-[#4f46e5] rounded-t" />
+            <div className="bg-bldg w-10 h-[160px] bg-[#6366f1] rounded-t" />
+            <div className="bg-bldg w-10 h-[90px] bg-[#4f46e5] rounded-t" />
+            <div className="bg-bldg w-10 h-[140px] bg-[#4338ca] rounded-t" />
+            <div className="bg-bldg w-10 h-[120px] bg-[#4f46e5] rounded-t" />
+            <div className="bg-bldg w-10 h-[110px] bg-[#6366f1] rounded-t" />
+            <div className="bg-bldg w-8 h-[80px] bg-[#4f46e5] rounded-t" />
+            <div className="bg-bldg w-10 h-[130px] bg-[#6366f1] rounded-t" />
         </div>
 
         {/* Additional Background Buildings (for wider cards) */}
         <div className="skyline-bg-2 absolute bottom-10 left-0 w-full flex justify-between opacity-40 z-0">
-            <div className="bg-bldg w-8 h-[70px] bg-[#512da8] rounded-t" />
-            <div className="bg-bldg w-6 h-[50px] bg-[#5e35b1] rounded-t" />
-            <div className="bg-bldg w-8 h-[90px] bg-[#673ab7] rounded-t" />
-            <div className="bg-bldg w-6 h-[60px] bg-[#512da8] rounded-t" />
-            <div className="bg-bldg w-8 h-[75px] bg-[#5e35b1] rounded-t" />
+            <div className="bg-bldg w-8 h-[70px] bg-[#4338ca] rounded-t" />
+            <div className="bg-bldg w-6 h-[50px] bg-[#4f46e5] rounded-t" />
+            <div className="bg-bldg w-8 h-[90px] bg-[#6366f1] rounded-t" />
+            <div className="bg-bldg w-6 h-[60px] bg-[#4338ca] rounded-t" />
+            <div className="bg-bldg w-8 h-[75px] bg-[#4f46e5] rounded-t" />
         </div>
 
         {/* Foreground Buildings */}
-        <div className="fg-bldg fb1 absolute bottom-[50px] left-[5%] w-[60px] h-[140px] bg-[#ba68c8] rounded-t-[10px] z-5 shadow-bldg" />
+        <div className="fg-bldg fb1 absolute bottom-[50px] left-[5%] w-[60px] h-[140px] bg-[#818cf8] rounded-t-[10px] z-5 shadow-bldg" />
         <div className="fg-bldg fb2 absolute bottom-[50px] left-[25%] w-[80px] h-[200px] bg-[#7986cb] rounded-t-[10px] z-6 shadow-bldg" />
         <div className="fg-bldg fb3 absolute bottom-[50px] left-[55%] w-[50px] h-[120px] bg-[#ef5350] rounded-t-[10px] z-4 shadow-bldg" />
         <div className="fg-bldg fb4 absolute bottom-[50px] right-[5%] w-[70px] h-[160px] bg-[#4dd0e1] rounded-t-[10px] z-5 shadow-bldg" />
@@ -391,11 +391,11 @@ const KingdomScene = () => (
 // ============== STYLES ==============
 
 const CosmosScene = () => (
-    <div className="scene-cosmos w-full h-full relative bg-gradient-to-b from-[#1a237e] via-[#311b92] to-[#000000]">
+    <div className="scene-cosmos w-full h-full relative bg-gradient-to-b from-[#1a237e] via-[#1e3a8a] to-[#000000]">
         <div className="stars absolute inset-0 bg-stars opacity-90 z-0" />
 
         {/* Nebula */}
-        <div className="nebula absolute top-0 right-0 w-full h-full bg-gradient-radial from-purple-500/20 to-transparent opacity-50 z-0" />
+        <div className="nebula absolute top-0 right-0 w-full h-full bg-gradient-radial from-indigo-500/20 to-transparent opacity-50 z-0" />
 
         {/* Planet Big */}
         <div className="planet-big absolute bottom-[-50px] left-[-50px] w-[200px] h-[200px] bg-[#3949ab] rounded-full shadow-[inset_-20px_-20px_50px_rgba(0,0,0,0.5)] z-5">
@@ -554,7 +554,6 @@ const adventureStyles = `
 
   /* Hover effects */
   .wallpaper-card:hover .label { opacity: 0; }
-  .wallpaper-card:hover .scene { filter: blur(12px); transform: scale(1.03); }
 `;
 
 export default AdventureCard;

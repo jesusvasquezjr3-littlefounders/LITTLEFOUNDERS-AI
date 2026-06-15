@@ -90,16 +90,16 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
     <>
       <button
         onClick={onToggle}
-        className="hidden md:flex fixed top-4 left-4 z-50 items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-        aria-label="Toggle sidebar"
+        className="hidden md:flex fixed top-4 left-4 z-50 items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+        aria-label={t('sidebar.toggleSidebar', 'Toggle sidebar')}
       >
         <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
       </button>
 
       <button
         onClick={() => setShowMobileMenu(!showMobileMenu)}
-        className="md:hidden fixed top-4 left-4 z-40 flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-        aria-label="Toggle mobile menu"
+        className="md:hidden fixed top-4 left-4 z-40 flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+        aria-label={t('sidebar.toggleMobileMenu', 'Toggle mobile menu')}
       >
         {showMobileMenu ? (
           <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
@@ -110,7 +110,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          "fixed md:relative h-screen liquid-glass-subtle border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 z-30",
+          "fixed md:relative h-screen corp-panel border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 z-30",
           collapsed ? "w-20 md:w-20" : "w-64 md:w-64",
           !showMobileMenu && "md:translate-x-0 -translate-x-full",
           "view-transition-sidebar"
@@ -131,7 +131,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
           {menuGroups.map((group) => (
             <div key={group.labelKey} className="space-y-1">
               {!collapsed ? (
-                <p className="px-3 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                <p className="corp-eyebrow px-3 pb-1">
                   {t(group.labelKey)}
                 </p>
               ) : (
@@ -152,7 +152,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
                         "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200",
                         "text-sm font-medium whitespace-nowrap",
                         isActive
-                          ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 shadow-sm"
+                          ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-200"
                           : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200",
                         collapsed && "md:justify-center md:px-2"
                       )

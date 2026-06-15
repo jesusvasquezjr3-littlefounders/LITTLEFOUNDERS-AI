@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
-import { GlassPanel } from "@/components/ui/GlassPanel";
-import { Settings, Trophy, Flame, Star, Mail, Shield, Palette, Loader2, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
+import { Mail, Shield, Palette, Loader2, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
 import { socialApi, UserPublicProfile, FollowRequest } from "../lib/api/social";
 import { UserConnectionsList } from "@/components/social/UserConnectionsList";
 import { Input } from "@/components/ui/input";
@@ -199,43 +197,35 @@ const Profile = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-6 pb-8 animate-in fade-in duration-500">
+      <div className="corp max-w-6xl mx-auto space-y-6 pb-8 animate-in fade-in duration-500">
         
         {/* Profile Header Card */}
         <div
           className={cn(
-            "relative rounded-3xl p-6 md:p-10 liquid-glass-strong overflow-hidden transition-all duration-700 border border-white/20 dark:border-white/10 shadow-2xl",
-            !hasCustomBanner && "bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl"
+            "corp relative rounded-2xl p-6 md:p-10 overflow-hidden",
+            !hasCustomBanner && "corp-panel"
           )}
           style={hasCustomBanner ? { backgroundColor: user.avatar_config.bannerColor } : {}}
         >
-          {/* Ambient Glows Layered - only if no banner */}
-          {!hasCustomBanner && (
-            <>
-              <div className="absolute -top-16 -right-16 w-80 h-80 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-full blur-[100px] pointer-events-none animate-pulse duration-[10s]" />
-              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-gradient-to-tr from-blue-500/15 to-cyan-500/15 rounded-full blur-[80px] pointer-events-none" />
-            </>
-          )}
-
           {/* Subtle Overlay - only if has banner to protect text contrast */}
           {hasCustomBanner && (
-            <div className="absolute inset-0 bg-black/10 dark:bg-black/20 backdrop-blur-[2px] pointer-events-none" />
+            <div className="absolute inset-0 bg-black/10 dark:bg-black/20 pointer-events-none" />
           )}
 
           {/* Banner Edit Button */}
           <div className="absolute top-6 right-6 z-40">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-white/10 hover:bg-white/40 dark:hover:bg-black/40 text-slate-800 dark:text-white shadow-lg transition-all active:scale-90" disabled={isUpdatingBanner}>
+                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full bg-white/70 dark:bg-[#0d1426]/70 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-[#0d1426] text-slate-800 dark:text-white shadow-sm transition-colors" disabled={isUpdatingBanner}>
                   {isUpdatingBanner ? <Loader2 className="w-5 h-5 animate-spin" /> : <Palette className="w-5 h-5" />}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-72 p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl border-white/20 dark:border-slate-800 rounded-3xl">
+              <PopoverContent align="end" className="corp w-72 p-4 corp-panel rounded-2xl">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-black text-xs uppercase tracking-widest text-slate-500">{t('profile:tabs.banner')}</h4>
+                    <h4 className="corp-eyebrow">{t('profile:tabs.banner')}</h4>
                     {user?.avatar_config?.bannerColor && (
-                      <Button variant="ghost" size="sm" onClick={() => handleUpdateBanner('none')} className="h-7 text-[10px] font-bold text-red-500">{t('profile:actions.reset')}</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleUpdateBanner('none')} className="h-7 text-[10px] font-bold text-red-500 dark:text-red-400">{t('profile:actions.reset')}</Button>
                     )}
                   </div>
                   <div className="grid grid-cols-5 gap-2.5">
@@ -244,11 +234,11 @@ const Profile = () => {
                         key={color}
                         onClick={() => handleUpdateBanner(color)}
                         className={cn(
-                          "w-10 h-10 rounded-xl border-2 transition-all hover:scale-110 active:scale-95 shadow-sm",
-                          color === 'none' 
-                            ? "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 flex items-center justify-center" 
+                          "w-10 h-10 rounded-xl border-2 transition-all active:scale-95 shadow-sm",
+                          color === 'none'
+                            ? "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 flex items-center justify-center"
                             : "border-white/50 dark:border-black/20",
-                          (user?.avatar_config?.bannerColor === color || (!user?.avatar_config?.bannerColor && color === 'none')) && "ring-2 ring-indigo-500 ring-offset-2 scale-110 border-indigo-500"
+                          (user?.avatar_config?.bannerColor === color || (!user?.avatar_config?.bannerColor && color === 'none')) && "ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-[#0d1426] border-indigo-500"
                         )}
                         style={color !== 'none' ? { backgroundColor: color } : {}}
                       >
@@ -263,16 +253,8 @@ const Profile = () => {
 
           <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 z-30">
             {/* Avatar Section */}
-            <div className="relative group">
-              <div
-                className="absolute -inset-2 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition duration-1000 group-hover:duration-200"
-                style={{
-                  background: user.avatar_config?.backgroundColor?.[0] && user.avatar_config.backgroundColor[0] !== 'none'
-                    ? `#${user.avatar_config.backgroundColor[0]}`
-                    : 'linear-gradient(to right, #6366f1, #a855f7)'
-                }}
-              />
-              <div className="relative p-1 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-full border border-white/30 dark:border-white/10 shadow-2xl">
+            <div className="relative">
+              <div className="relative p-1 bg-white/60 dark:bg-[#0d1426]/60 rounded-full border border-slate-200 dark:border-white/10 shadow-sm">
                 <AvatarDisplay config={user.avatar_config} size={150} showCTA={true} linkToEdit={true} />
               </div>
             </div>
@@ -281,13 +263,13 @@ const Profile = () => {
             <div className="text-center md:text-left flex-1 space-y-4 pb-2">
               <div>
                 <h1 className={cn(
-                  "text-4xl md:text-5xl font-black tracking-tighter mb-2 flex flex-col md:flex-row items-center gap-3",
+                  "corp-display text-4xl md:text-5xl font-bold tracking-tight mb-2 flex flex-col md:flex-row items-center gap-3",
                   hasCustomBanner ? "text-white drop-shadow-2xl" : "text-slate-900 dark:text-white"
                 )}>
-                  {user.name}
+                  {hasCustomBanner ? user.name : <span className="corp-gradient-text">{user.name}</span>}
                 </h1>
                 <p className={cn(
-                  "text-base font-bold flex items-center justify-center md:justify-start gap-2",
+                  "text-base font-semibold flex items-center justify-center md:justify-start gap-2",
                   hasCustomBanner ? "text-white/90 drop-shadow-lg" : "text-slate-500 dark:text-slate-400"
                 )}>
                   <AtSign className="w-4 h-4" />
@@ -297,77 +279,81 @@ const Profile = () => {
 
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   <div className={cn(
-                    "px-5 py-2.5 rounded-2xl backdrop-blur-md border flex items-center gap-3 shadow-xl transition-all duration-300",
-                    hasCustomBanner 
-                      ? "bg-white/20 border-white/30" 
-                      : "bg-indigo-500/10 dark:bg-indigo-900/30 border-white/20 dark:border-white/5"
+                    "px-5 py-2.5 rounded-xl border flex items-center gap-3 transition-colors",
+                    hasCustomBanner
+                      ? "bg-white/20 border-white/30"
+                      : "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-white/10"
                   )}>
                     <Shield className={cn(
                       "w-5 h-5",
-                      hasCustomBanner ? "text-indigo-300" : "text-indigo-500 dark:text-indigo-400"
+                      hasCustomBanner ? "text-indigo-200" : "text-indigo-500 dark:text-indigo-300"
                     )} />
                     <div>
                       <p className={cn(
-                        "text-[9px] font-black uppercase tracking-widest leading-none mb-1",
+                        "text-[9px] font-semibold uppercase tracking-widest leading-none mb-1",
                         hasCustomBanner ? "text-white/60" : "text-slate-500 dark:text-slate-400"
                       )}>{t('profile:fields.user_type')}</p>
                       <p className={cn(
-                        "text-sm font-black",
+                        "text-sm font-bold",
                         hasCustomBanner ? "text-white" : "text-slate-900 dark:text-white"
                       )}>{getUserTypeLabel(user.user_type)}</p>
                     </div>
                   </div>
 
-                <Button
-                  onClick={handleShare}
-                  variant="ghost"
-                  className={cn(
-                    "h-[52px] px-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-95 group overflow-hidden relative border-none",
-                    hasCustomBanner 
-                      ? "bg-white/20 text-white hover:bg-white/30 backdrop-blur-md border-white/30" 
-                      : "bg-indigo-500 text-white hover:bg-indigo-600 shadow-indigo-500/25"
-                  )}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  <span>{t('profile:actions.share_profile')}</span>
-                </Button>
+                {hasCustomBanner ? (
+                  <Button
+                    onClick={handleShare}
+                    variant="ghost"
+                    className="h-[52px] px-6 rounded-xl font-semibold text-xs uppercase tracking-widest transition-colors inline-flex items-center gap-2 bg-white/20 text-white hover:bg-white/30 border border-white/30"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span>{t('profile:actions.share_profile')}</span>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleShare}
+                    className="corp-btn-primary h-[52px] px-6 rounded-xl font-semibold text-xs uppercase tracking-widest inline-flex items-center gap-2"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span>{t('profile:actions.share_profile')}</span>
+                  </Button>
+                )}
               </div>
             </div>
 
             {/* Desktop Stats Summary */}
             <div className={cn(
-              "hidden xl:flex items-center gap-10 px-8 py-6 rounded-[2rem] backdrop-blur-md border transition-all duration-300 ml-auto self-stretch",
-              hasCustomBanner 
-                ? "bg-black/10 dark:bg-black/20 border-white/20 shadow-xl" 
-                : "bg-white/20 dark:bg-black/20 border-black/5 dark:border-white/10 shadow-lg"
+              "hidden xl:flex items-center gap-10 px-8 py-6 rounded-2xl border transition-colors ml-auto self-stretch",
+              hasCustomBanner
+                ? "bg-black/10 dark:bg-black/20 border-white/20"
+                : "bg-slate-50 dark:bg-[#0d1426] border-slate-200 dark:border-white/10"
             )}>
-              <div className="text-center group cursor-default">
+              <div className="text-center cursor-default">
                 <p className={cn(
-                  "text-3xl font-black leading-none transition-transform group-hover:scale-110",
+                  "text-3xl font-bold leading-none",
                   hasCustomBanner ? "text-white drop-shadow-lg" : "text-slate-900 dark:text-white"
                 )}>{socialStats.followers}</p>
                 <p className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.2em] mt-2 transition-colors",
-                  hasCustomBanner 
-                    ? "text-white/60 group-hover:text-blue-300" 
-                    : "text-slate-500 dark:text-slate-400 group-hover:text-blue-500"
+                  "text-[10px] font-semibold uppercase tracking-[0.2em] mt-2",
+                  hasCustomBanner
+                    ? "text-white/60"
+                    : "text-slate-500 dark:text-slate-400"
                 )}>{t('profile:social.followers')}</p>
               </div>
               <div className={cn(
-                "w-px h-12 transition-colors",
-                hasCustomBanner ? "bg-white/20" : "bg-slate-300 dark:bg-slate-700 opacity-50"
+                "w-px h-12",
+                hasCustomBanner ? "bg-white/20" : "bg-slate-200 dark:bg-white/10"
               )} />
-              <div className="text-center group cursor-default">
+              <div className="text-center cursor-default">
                 <p className={cn(
-                  "text-3xl font-black leading-none transition-transform group-hover:scale-110",
+                  "text-3xl font-bold leading-none",
                   hasCustomBanner ? "text-white drop-shadow-lg" : "text-slate-900 dark:text-white"
                 )}>{socialStats.following}</p>
                 <p className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.2em] mt-2 transition-colors",
-                  hasCustomBanner 
-                    ? "text-white/60 group-hover:text-blue-300" 
-                    : "text-slate-500 dark:text-slate-400 group-hover:text-blue-500"
+                  "text-[10px] font-semibold uppercase tracking-[0.2em] mt-2",
+                  hasCustomBanner
+                    ? "text-white/60"
+                    : "text-slate-500 dark:text-slate-400"
                 )}>{t('profile:social.following')}</p>
               </div>
             </div>
@@ -375,20 +361,15 @@ const Profile = () => {
         </div>
 
         {/* Mobile/Tablet Social Stats — hidden on xl (where the inline panel shows) */}
-        <div className={cn(
-          "xl:hidden flex items-center justify-center gap-8 px-6 py-4 rounded-2xl border transition-all duration-300",
-          hasCustomBanner
-            ? "bg-black/10 dark:bg-black/20 border-white/20"
-            : "bg-white/20 dark:bg-black/20 border-black/5 dark:border-white/10"
-        )}>
+        <div className="xl:hidden corp-panel flex items-center justify-center gap-8 px-6 py-4">
           <div className="text-center">
-            <p className={cn("text-2xl font-black leading-none", hasCustomBanner ? "text-white" : "text-slate-900 dark:text-white")}>{socialStats.followers}</p>
-            <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", hasCustomBanner ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>{t('profile:social.followers')}</p>
+            <p className="text-2xl font-bold leading-none text-slate-900 dark:text-white">{socialStats.followers}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest mt-1 text-slate-500 dark:text-slate-400">{t('profile:social.followers')}</p>
           </div>
-          <div className={cn("w-px h-8", hasCustomBanner ? "bg-white/20" : "bg-slate-300 dark:bg-slate-700 opacity-50")} />
+          <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
           <div className="text-center">
-            <p className={cn("text-2xl font-black leading-none", hasCustomBanner ? "text-white" : "text-slate-900 dark:text-white")}>{socialStats.following}</p>
-            <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", hasCustomBanner ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>{t('profile:social.following')}</p>
+            <p className="text-2xl font-bold leading-none text-slate-900 dark:text-white">{socialStats.following}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest mt-1 text-slate-500 dark:text-slate-400">{t('profile:social.following')}</p>
           </div>
         </div>
 
@@ -397,81 +378,68 @@ const Profile = () => {
           {/* Left Column: Learning & Info */}
           <div className="lg:col-span-8 space-y-8 order-1 lg:order-1">
             <section className="space-y-4">
-              <div className="flex items-center gap-2 px-1">
-                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-400 to-violet-500" />
-                <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.my_achievements')}</h3>
+              <div className="px-1">
+                <h3 className="corp-eyebrow">{t('profile:sections.my_achievements')}</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { title: t('common:dashboard.stats.lessons'), value: lessonsCompleted, lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie", accent: "from-blue-500/20 to-indigo-500/10 border-blue-500/20 shadow-blue-500/10", size: "70px" },
-                  { title: t('common:dashboard.stats.minutes'), value: minutesStudied, lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie", accent: "from-emerald-500/20 to-teal-500/10 border-emerald-500/20 shadow-emerald-500/10", size: "70px" },
-                  { title: t('common:dashboard.stats.points'), value: pointsEarned, lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", accent: "from-blue-500/20 to-indigo-500/10 border-blue-500/20 shadow-blue-500/10", size: "70px" },
-                  { title: t('common:dashboard.stats.streak'), value: currentStreak, lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", accent: "from-rose-500/20 to-violet-500/10 border-rose-500/20 shadow-rose-500/10", size: "60px" }
+                  { title: t('common:dashboard.stats.lessons'), value: lessonsCompleted, lottieSrc: "https://lottie.host/fd6ae247-34b4-4c56-9b11-f2f3687210a5/ydEAxkmQs0.lottie", size: "70px" },
+                  { title: t('common:dashboard.stats.minutes'), value: minutesStudied, lottieSrc: "https://lottie.host/1452b96d-4f8d-4b34-b1ed-88a5e16ff3c3/oM0u7NQXQy.lottie", size: "70px" },
+                  { title: t('common:dashboard.stats.points'), value: pointsEarned, lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", size: "70px" },
+                  { title: t('common:dashboard.stats.streak'), value: currentStreak, lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", size: "60px" }
                 ].map((stat, idx) => (
-                  <GlassPanel key={idx} variant="subtle" className={cn("hover:scale-[1.05] hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 group", `bg-gradient-to-br ${stat.accent}`, stat.value === 0 && "grayscale-[0.5] opacity-70")}>
-                    <div className="p-5 flex flex-col items-center text-center relative">
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 dark:bg-black/10 rounded-bl-full translate-x-4 -translate-y-4 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
-                      <div className="h-16 flex items-center justify-center mb-2 drop-shadow-xl transform group-hover:scale-110 transition-transform">
+                  <div key={idx} className={cn("corp-card", stat.value === 0 && "grayscale-[0.5] opacity-70")}>
+                    <div className="p-5 flex flex-col items-center text-center">
+                      <div className="h-16 flex items-center justify-center mb-2">
                         {/* @ts-ignore */}
                         <dotlottie-wc src={stat.lottieSrc} style={{ width: stat.size, height: stat.size }} autoplay loop />
                       </div>
-                      <span className="text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tight">{stat.value}</span>
-                      <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-2">{stat.title}</span>
+                      <span className="text-3xl font-bold text-slate-900 dark:text-white leading-none tracking-tight">{stat.value}</span>
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-2">{stat.title}</span>
                     </div>
-                  </GlassPanel>
+                  </div>
                 ))}
               </div>
             </section>
 
             <section className="space-y-4">
-              <div className="flex items-center gap-2 px-1">
-                <div className="w-1 h-5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500" />
-                <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.personal_info')}</h3>
+              <div className="px-1">
+                <h3 className="corp-eyebrow">{t('profile:sections.personal_info')}</h3>
               </div>
-              <GlassPanel variant="default" className="liquid-glass-subtle overflow-hidden">
-                <CardContent className="p-6 md:p-8">
+              <div className="corp-panel overflow-hidden">
+                <div className="p-6 md:p-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
-                      { icon: UserCircle, label: t('auth:fields.name.label'), value: user.name, color: "blue" },
-                      { icon: AtSign, label: t('profile:fields.nickname'), value: user.username ? `@${user.username}` : t('common:status.not_configured'), color: "green" },
-                      { icon: Mail, label: t('auth:fields.email.label'), value: user.email, color: "purple" },
-                      { icon: Shield, label: t('profile:fields.user_type'), value: getUserTypeLabel(user.user_type), color: "amber" }
+                      { icon: UserCircle, label: t('auth:fields.name.label'), value: user.name },
+                      { icon: AtSign, label: t('profile:fields.nickname'), value: user.username ? `@${user.username}` : t('common:status.not_configured') },
+                      { icon: Mail, label: t('auth:fields.email.label'), value: user.email },
+                      { icon: Shield, label: t('profile:fields.user_type'), value: getUserTypeLabel(user.user_type) }
                     ].map((item, i) => (
-                      <div key={i} className="group relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl blur opacity-0 group-hover:opacity-10 transition duration-500" />
-                        <div className="relative flex items-center gap-5 p-5 rounded-3xl bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/5 transition-all hover:translate-x-1">
-                          <div className={cn(
-                            "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transition-transform group-hover:rotate-6",
-                            item.color === 'blue' && "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400",
-                            item.color === 'green' && "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400",
-                            item.color === 'purple' && "bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400",
-                            item.color === 'amber' && "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
-                          )}>
-                            <item.icon className="w-6 h-6" />
-                          </div>
-                          <div className="overflow-hidden">
-                            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
-                            <p className="text-lg font-black text-slate-900 dark:text-white truncate" title={item.value}>{item.value}</p>
-                          </div>
+                      <div key={i} className="corp-panel-subtle flex items-center gap-5 p-5">
+                        <div className="corp-icon-chip w-12 h-12 flex-shrink-0">
+                          <item.icon className="w-6 h-6" />
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
+                          <p className="text-lg font-bold text-slate-900 dark:text-white truncate" title={item.value}>{item.value}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </GlassPanel>
+                </div>
+              </div>
             </section>
 
             <section className="lg:hidden">
-              <GlassPanel variant="subtle" className="relative overflow-hidden p-7 flex flex-col items-center text-center gap-5 cursor-pointer hover:scale-[1.01] transition-all duration-300 active:scale-95 border border-blue-500/10 shadow-xl" onClick={() => setIsSearchDialogOpen(true)}>
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-500/15 to-cyan-500/15 rounded-full blur-2xl pointer-events-none" />
-                <div className="relative w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/25">
-                  <UserPlus className="w-8 h-8 text-white" />
+              <div className="corp-card p-7 flex flex-col items-center text-center gap-5 cursor-pointer" onClick={() => setIsSearchDialogOpen(true)}>
+                <div className="corp-icon-chip w-16 h-16 rounded-2xl">
+                  <UserPlus className="w-8 h-8" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase">{t('profile:actions.add_friends')}</h3>
+                  <h3 className="corp-display text-lg font-bold text-slate-900 dark:text-white tracking-tight">{t('profile:actions.add_friends')}</h3>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('profile:actions.add_friends_desc')}</p>
                 </div>
-              </GlassPanel>
+              </div>
             </section>
           </div>
 
@@ -479,52 +447,48 @@ const Profile = () => {
           <div className="hidden lg:block lg:col-span-4 space-y-6 order-2 lg:order-2">
             <div className="space-y-4 lg:sticky lg:top-8">
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-1 h-5 rounded-full bg-gradient-to-b from-blue-500 to-cyan-500" />
-                  <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em]">{t('profile:sections.social')}</h3>
-                </div>
-                <Button variant="ghost" size="sm" className="text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl gap-2 h-8 px-3 text-xs" onClick={() => setActiveSocialTab("search")}>
+                <h3 className="corp-eyebrow">{t('profile:sections.social')}</h3>
+                <Button variant="ghost" size="sm" className="text-indigo-600 dark:text-indigo-300 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl gap-2 h-8 px-3 text-xs" onClick={() => setActiveSocialTab("search")}>
                   <UserPlus className="w-3.5 h-3.5" />
                   {t('profile:social.search')}
                 </Button>
               </div>
 
-              <GlassPanel variant="subtle" className="overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px] shadow-2xl border-2 border-white/30 dark:border-white/5 bg-white/10 dark:bg-slate-900/20 backdrop-blur-3xl rounded-[2.5rem] liquid-glass">
-                <div className="flex border-b border-black/5 dark:border-white/5 shrink-0 overflow-hidden bg-white/5 dark:bg-black/20">
+              <div className="corp-card overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px]">
+                <div className="flex border-b border-slate-200 dark:border-white/10 shrink-0 overflow-hidden">
                   {[
                     { id: "following", label: t('profile:tabs.friends'), icon: Users },
                     { id: "followers", label: t('profile:social.followers'), icon: UserCircle }
                   ].map((tab) => (
-                    <button key={tab.id} onClick={() => setActiveSocialTab(tab.id)} className={cn("flex-1 px-4 py-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative flex items-center justify-center gap-2", activeSocialTab === tab.id ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 hover:text-slate-600 hover:bg-white/10 dark:hover:bg-white/5")}>
-                      <tab.icon className={cn("w-3.5 h-3.5", activeSocialTab === tab.id ? "animate-pulse" : "")} />
+                    <button key={tab.id} onClick={() => setActiveSocialTab(tab.id)} className={cn("flex-1 px-4 py-5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors relative flex items-center justify-center gap-2", activeSocialTab === tab.id ? "text-indigo-600 dark:text-indigo-300" : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300")}>
+                      <tab.icon className="w-3.5 h-3.5" />
                       {tab.label}
-                      {activeSocialTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-t-full shadow-[0_-2px_10px_rgba(99,102,241,0.5)]" />}
+                      {activeSocialTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
                     </button>
                   ))}
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 scrollbar-hide">
                   {requests.length > 0 && activeSocialTab !== "search" && (
-                    <div className="mb-6 p-5 rounded-[2rem] bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/20 animate-in slide-in-from-top duration-500 shadow-lg shadow-indigo-500/5">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="w-1.5 h-4 bg-indigo-500 rounded-full" />
-                        <h4 className="text-[10px] font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-widest leading-none">{t('profile:tabs.requests')} ({requests.length})</h4>
+                    <div className="mb-6 corp-panel-subtle p-5 animate-in slide-in-from-top duration-500">
+                      <div className="mb-4">
+                        <h4 className="corp-eyebrow">{t('profile:tabs.requests')} ({requests.length})</h4>
                       </div>
                       <div className="space-y-3">
                         {requests.map(req => (
-                          <div key={req.public_id} className="flex items-center justify-between p-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md border border-white dark:border-white/5 group transform hover:scale-[1.02] transition-all">
+                          <div key={req.public_id} className="flex items-center justify-between p-4 rounded-xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10">
                             <div className="flex items-center gap-3">
                               <div className="p-0.5 rounded-full ring-2 ring-indigo-500/20">
                                 <AvatarDisplay config={req.avatar_config} size={36} showCTA={false} />
                               </div>
                               <div>
-                                <h4 className="font-black text-slate-800 dark:text-white truncate text-xs">{req.name || `@${req.username}`}</h4>
-                                <p className="text-[9px] font-bold text-slate-400">{t('profile:social.want_to_connect')}</p>
+                                <h4 className="font-bold text-slate-800 dark:text-white truncate text-xs">{req.name || `@${req.username}`}</h4>
+                                <p className="text-[9px] font-semibold text-slate-400 dark:text-slate-500">{t('profile:social.want_to_connect')}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button size="sm" className="h-8 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-black px-3 text-[10px] shadow-lg shadow-indigo-500/20" onClick={() => handleAccept(req.username)}>{t('profile:social.accept')}</Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-xl text-slate-300 hover:bg-red-50 hover:text-red-500 transition-colors" onClick={() => handleReject(req.username)}><X className="w-4 h-4" /></Button>
+                              <Button size="sm" className="corp-btn-primary h-8 rounded-xl font-semibold px-3 text-[10px]" onClick={() => handleAccept(req.username)}>{t('profile:social.accept')}</Button>
+                              <Button size="icon" variant="ghost" className="corp-btn-ghost h-8 w-8 rounded-xl text-slate-400 dark:text-slate-500" onClick={() => handleReject(req.username)}><X className="w-4 h-4" /></Button>
                             </div>
                           </div>
                         ))}
@@ -537,63 +501,62 @@ const Profile = () => {
                   {activeSocialTab === "search" && (
                     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500 h-full flex flex-col">
                       <div className="flex items-center justify-between px-2">
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{t('profile:tabs.search')}</h2>
+                        <h2 className="corp-display text-xl font-bold text-slate-900 dark:text-white tracking-tight">{t('profile:tabs.search')}</h2>
                         <Button variant="ghost" size="icon" onClick={() => setActiveSocialTab("following")} className="rounded-full h-10 w-10"><ArrowLeft className="w-5 h-5 text-slate-400" /></Button>
                       </div>
-                      <form onSubmit={handleSearch} className="relative group shrink-0 flex gap-2 px-1">
+                      <form onSubmit={handleSearch} className="relative shrink-0 flex gap-2 px-1">
                         <div className="relative flex-1">
-                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-                          <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('profile:sections.search_placeholder')} className="pl-12 h-14 rounded-[1.25rem] bg-white/40 dark:bg-black/20 border-2 border-transparent focus-visible:ring-0 focus-visible:border-indigo-500/50 font-bold text-slate-900 dark:text-white" autoFocus />
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                          <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('profile:sections.search_placeholder')} className="corp-input h-14 pl-12 font-semibold" autoFocus />
                         </div>
-                        <Button type="submit" disabled={isSocialLoading || !searchQuery} className="h-14 px-6 rounded-[1.25rem] bg-indigo-500 hover:bg-indigo-600 text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 active:scale-95">{isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}</Button>
+                        <Button type="submit" disabled={isSocialLoading || !searchQuery} className="corp-btn-primary h-14 px-6 rounded-xl font-semibold inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">{isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}</Button>
                       </form>
                       <div className="flex-1 mt-2">
                         {searchResults.length > 0 ? (
                           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500"><UserConnectionsList users={searchResults} /></div>
                         ) : searchQuery && !isSocialLoading ? (
-                          <div className="text-center py-20 space-y-4 animate-in zoom-in-95 duration-500">
-                            <div className="w-20 h-20 bg-white/20 dark:bg-black/10 rounded-[2rem] flex items-center justify-center mx-auto ring-4 ring-white/10"><Search className="w-8 h-8 text-slate-300" /></div>
-                            <p className="text-slate-500 font-bold">{t('profile:sections.no_results')}</p>
+                          <div className="corp-empty py-20 animate-in zoom-in-95 duration-500">
+                            <div className="corp-icon-chip w-20 h-20 rounded-2xl mb-2"><Search className="w-8 h-8" /></div>
+                            <p className="text-slate-500 dark:text-slate-400 font-semibold">{t('profile:sections.no_results')}</p>
                           </div>
                         ) : !searchQuery && !isSocialLoading && (
-                          <div className="text-center py-20 opacity-30 select-none grayscale group-hover:grayscale-0 transition-all duration-1000">
-                            <UserPlus className="w-16 h-16 mx-auto mb-4 text-indigo-500/50 transform group-hover:scale-110 group-hover:rotate-6 transition-transform" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em]">{t('profile:sections.find_friends')}</p>
+                          <div className="corp-empty py-20">
+                            <UserPlus className="w-16 h-16 mx-auto mb-4 text-indigo-500/40 dark:text-indigo-300/40" />
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{t('profile:sections.find_friends')}</p>
                           </div>
                         )}
                       </div>
                     </div>
                   )}
                 </div>
-              </GlassPanel>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <Dialog open={isSearchDialogOpen} onOpenChange={setIsSearchDialogOpen}>
-        <DialogContent className="liquid-glass-strong border-white/20 dark:border-white/10 p-0 overflow-hidden rounded-[3rem] max-w-sm mx-auto shadow-2xl backdrop-blur-3xl bg-white/40 dark:bg-slate-900/60">
-          <div className="p-10 space-y-8 relative">
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-            <DialogHeader className="relative z-10">
-              <DialogTitle className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter text-center">{t('profile:actions.add_friends')}</DialogTitle>
-              <DialogDescription className="text-center font-bold text-slate-500 dark:text-slate-400">{t('profile:actions.add_friends_desc')}</DialogDescription>
+        <DialogContent className="corp corp-dialog rounded-3xl p-0 overflow-hidden max-w-sm mx-auto">
+          <div className="p-8 space-y-8">
+            <DialogHeader>
+              <DialogTitle className="corp-display text-2xl font-bold text-slate-900 dark:text-white tracking-tight text-center">{t('profile:actions.add_friends')}</DialogTitle>
+              <DialogDescription className="text-center font-medium text-slate-500 dark:text-slate-400">{t('profile:actions.add_friends_desc')}</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSearch} className="flex gap-2 relative z-10">
-              <div className="relative flex-1 group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-                <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('profile:sections.search_placeholder')} className="pl-11 h-14 rounded-2xl bg-white/60 dark:bg-black/40 border-2 border-transparent focus:border-indigo-500 font-black" />
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('profile:sections.search_placeholder')} className="corp-input h-14 pl-11 font-semibold" />
               </div>
-              <Button type="submit" disabled={isSocialLoading || !searchQuery} className="h-14 w-14 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black shadow-xl shadow-indigo-500/20 active:scale-95 p-0">{isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-6 h-6" />}</Button>
+              <Button type="submit" disabled={isSocialLoading || !searchQuery} className="corp-btn-primary h-14 w-14 rounded-xl p-0 inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">{isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-6 h-6" />}</Button>
             </form>
-            <div className="min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide pr-1 relative z-10">
-              {isSocialLoading ? <div className="flex justify-center items-center h-[200px]"><Loader2 className="w-10 h-10 animate-spin text-indigo-500" /></div> : (
+            <div className="min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide pr-1">
+              {isSocialLoading ? <div className="flex justify-center items-center h-[200px]"><Loader2 className="w-10 h-10 animate-spin text-indigo-500 dark:text-indigo-300" /></div> : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500"><UserConnectionsList users={searchResults} emptyMessage={t('profile:sections.no_results')} /></div>
               )}
             </div>
-            <div className="pt-6 border-t border-black/5 dark:border-white/5 relative z-10">
-              <Button onClick={handleShare} variant="ghost" className="w-full flex items-center justify-center gap-3 h-16 rounded-[1.5rem] bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-indigo-500/25 transition-all border-none">
-                <div className="p-1.5 bg-white/20 rounded-lg"><Globe className="w-4 h-4 text-white" /></div>
+            <div className="pt-6 border-t border-slate-200 dark:border-white/10">
+              <Button onClick={handleShare} className="corp-btn-primary w-full flex items-center justify-center gap-3 h-12 rounded-xl font-semibold uppercase tracking-[0.2em] text-[10px]">
+                <Globe className="w-4 h-4" />
                 {t('profile:actions.share_profile')}
               </Button>
             </div>

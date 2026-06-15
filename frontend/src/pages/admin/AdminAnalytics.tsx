@@ -5,7 +5,6 @@ import {
   AlertTriangle, Loader2, ArrowLeft, MonitorPlay,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 /** Single source of truth for the external analytics dashboard URL. */
 export const ADMIN_ANALYTICS_URL = 'https://lf-analytics-production-669d.up.railway.app/';
@@ -107,7 +106,7 @@ export const AdminAnalytics: React.FC = () => {
   const loadingOverlay = !loaded && !failed && (
     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/70 dark:bg-slate-950/70 backdrop-blur-sm">
       <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-      <p className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+      <p className="corp-eyebrow">
         {t('analytics.embedAttempt')}
       </p>
     </div>
@@ -115,41 +114,41 @@ export const AdminAnalytics: React.FC = () => {
 
   const fallbackOverlay = failed && (
     <div className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md">
-      <GlassPanel variant="subtle" className="max-w-md w-full p-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10">
+      <div className="corp-panel max-w-md w-full p-8 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 dark:bg-amber-500/10">
           <AlertTriangle className="h-7 w-7 text-amber-500" />
         </div>
-        <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">{t('analytics.loadErrorTitle')}</h3>
+        <h3 className="corp-display text-lg font-bold text-slate-900 dark:text-white mb-2">{t('analytics.loadErrorTitle')}</h3>
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{t('analytics.loadErrorBody')}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={openExternal} className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold">
+          <Button onClick={openExternal} className="corp-btn-primary h-10 px-5 rounded-xl gap-2 text-sm font-semibold">
             <ExternalLink className="h-4 w-4" />
             {t('analytics.openButton')}
           </Button>
-          <Button onClick={backToLauncher} variant="outline" className="gap-2 font-bold">
+          <Button onClick={backToLauncher} className="corp-btn-secondary h-10 px-5 rounded-xl gap-2 text-sm font-semibold">
             <ArrowLeft className="h-4 w-4" />
             {t('analytics.backToLauncher')}
           </Button>
         </div>
-      </GlassPanel>
+      </div>
     </div>
   );
 
   // ── Fullscreen embed ─────────────────────────────────────────────────────
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-[100] flex flex-col bg-white dark:bg-slate-950">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 py-2">
-          <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
+      <div className="fixed inset-0 z-[100] flex flex-col bg-white dark:bg-[#070b14]">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 px-4 py-2">
+          <div className="flex items-center gap-2 corp-eyebrow">
             <BarChart3 className="h-4 w-4 text-indigo-500" />
             {t('analytics.title')}
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={openExternal} variant="ghost" size="sm" className="gap-2">
+            <Button onClick={openExternal} size="sm" className="corp-btn-ghost h-9 px-3 rounded-xl gap-2 text-sm font-semibold">
               <ExternalLink className="h-4 w-4" />
               <span className="hidden sm:inline">{t('analytics.openExternal')}</span>
             </Button>
-            <Button onClick={() => setFullscreen(false)} variant="outline" size="sm" className="gap-2 font-bold">
+            <Button onClick={() => setFullscreen(false)} size="sm" className="corp-btn-secondary h-9 px-3 rounded-xl gap-2 text-sm font-semibold">
               <Minimize2 className="h-4 w-4" />
               {t('analytics.exitFullscreen')}
             </Button>
@@ -166,41 +165,38 @@ export const AdminAnalytics: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-5 h-full p-2 md:p-4">
-      {/* Premium header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-indigo-500/10 dark:border-indigo-500/5 shadow-2xl shrink-0">
-        <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
-          <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-indigo-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-            <BarChart3 className="w-5 h-5 md:w-7 md:h-7 text-white" />
+      {/* Header */}
+      <div className="corp-panel p-5 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shrink-0">
+        <div className="flex flex-row items-center gap-4 md:gap-5">
+          <div className="corp-icon-chip w-10 h-10 md:w-14 md:h-14 shrink-0">
+            <BarChart3 className="w-5 h-5 md:w-7 md:h-7" />
           </div>
           <div className="text-left">
-            <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-1">
+            <span className="corp-eyebrow">{t('analytics.subtitle')}</span>
+            <h1 className="corp-display mt-1 text-xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
               {t('analytics.title')}
             </h1>
-            <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
-              {t('analytics.subtitle')}
-            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 relative z-10 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full md:w-auto">
           {mode === 'embed' && (
             <>
-              <Button onClick={backToLauncher} variant="outline" size="sm" className="h-10 gap-2 rounded-xl font-bold">
+              <Button onClick={backToLauncher} size="sm" className="corp-btn-secondary h-10 px-4 gap-2 rounded-xl text-sm font-semibold">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('analytics.backToLauncher')}</span>
               </Button>
-              <Button onClick={reloadEmbed} variant="outline" size="sm" className="h-10 gap-2 rounded-xl font-bold">
+              <Button onClick={reloadEmbed} size="sm" className="corp-btn-secondary h-10 px-4 gap-2 rounded-xl text-sm font-semibold">
                 <RefreshCw className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('analytics.refresh')}</span>
               </Button>
-              <Button onClick={() => setFullscreen(true)} variant="outline" size="sm" className="h-10 gap-2 rounded-xl font-bold">
+              <Button onClick={() => setFullscreen(true)} size="sm" className="corp-btn-secondary h-10 px-4 gap-2 rounded-xl text-sm font-semibold">
                 <Maximize2 className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('analytics.fullscreen')}</span>
               </Button>
             </>
           )}
-          <Button onClick={openExternal} size="sm" className="h-10 gap-2 rounded-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex-1 md:flex-none">
+          <Button onClick={openExternal} size="sm" className="corp-btn-primary h-10 px-4 gap-2 rounded-xl text-sm font-semibold flex-1 md:flex-none">
             <ExternalLink className="h-4 w-4" />
             <span className="hidden sm:inline">{t('analytics.openExternal')}</span>
           </Button>
@@ -209,39 +205,39 @@ export const AdminAnalytics: React.FC = () => {
 
       {/* Body */}
       {mode === 'launcher' ? (
-        <GlassPanel variant="subtle" className="flex-1 min-h-[420px] flex items-center justify-center p-6 border-indigo-500/10">
+        <div className="corp-panel flex-1 min-h-[420px] flex items-center justify-center p-6">
           <div className="max-w-lg w-full text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/25">
-              <BarChart3 className="h-8 w-8 text-white" />
+            <div className="corp-icon-chip mx-auto mb-5 w-16 h-16">
+              <BarChart3 className="h-8 w-8" />
             </div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">{t('analytics.launcherTitle')}</h2>
+            <h2 className="corp-display text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('analytics.launcherTitle')}</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{t('analytics.launcherBody')}</p>
 
             {embedBlocked && (
-              <div className="mx-auto mb-6 flex items-center gap-2 rounded-xl bg-amber-500/10 px-4 py-2.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <div className="mx-auto mb-6 flex items-center gap-2 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 px-4 py-2.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span className="text-left">{t('analytics.embedBlockedNote')}</span>
               </div>
             )}
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button onClick={openExternal} size="lg" className="gap-2 rounded-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-full sm:w-auto">
+              <Button onClick={openExternal} size="lg" className="corp-btn-primary h-12 px-6 gap-2 rounded-xl text-sm font-semibold w-full sm:w-auto">
                 <ExternalLink className="h-4 w-4" />
                 {t('analytics.openButton')}
               </Button>
-              <Button onClick={startEmbed} size="lg" variant="outline" className="gap-2 rounded-xl font-bold w-full sm:w-auto">
+              <Button onClick={startEmbed} size="lg" className="corp-btn-secondary h-12 px-6 gap-2 rounded-xl text-sm font-semibold w-full sm:w-auto">
                 <MonitorPlay className="h-4 w-4" />
                 {t('analytics.tryEmbed')}
               </Button>
             </div>
           </div>
-        </GlassPanel>
+        </div>
       ) : (
-        <GlassPanel variant="subtle" className="relative flex-1 min-h-[600px] overflow-hidden p-0 border-indigo-500/10">
+        <div className="corp-panel relative flex-1 min-h-[600px] overflow-hidden p-0">
           {loadingOverlay}
           {fallbackOverlay}
           {iframe}
-        </GlassPanel>
+        </div>
       )}
     </div>
   );

@@ -11,12 +11,12 @@ export default function PageUnderConstruction() {
 
     return (
         <DashboardLayout>
-            <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
-                <div className="bg-indigo-100 dark:bg-indigo-900/30 p-8 rounded-full mb-6">
-                    <Construction className="w-24 h-24 text-indigo-600 dark:text-indigo-500" />
+            <div className="corp flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
+                <div className="corp-icon-chip rounded-full w-40 h-40 mb-6">
+                    <Construction className="w-24 h-24" />
                 </div>
 
-                <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent mb-4">
+                <h1 className="corp-display corp-gradient-text text-3xl md:text-5xl font-bold mb-4">
                     {t('in_development.title')}
                 </h1>
 

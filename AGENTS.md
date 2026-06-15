@@ -342,7 +342,8 @@ Hay 3 workflows en `.github/workflows/`:
 
 | Documento | Contenido | Relaciones |
 |---|---|---|
-| **`FRONTEND_GUIDE.md`** | Guía técnica completa del frontend (~600 líneas). Arquitectura, routing completo, páginas, componentes, hooks, juegos, lesson engine, auth, contextos, build, testing. | → `AGENTS.md` (§3 stack, §5 frontend conventions), → `src/` (código fuente), → `src/i18n/README.md` |
+| **`FRONTEND_GUIDE.md`** | Guía técnica completa del frontend (~600 líneas). Arquitectura, routing completo, páginas, componentes, hooks, juegos, lesson engine, auth, contextos, build, testing. | → `AGENTS.md` (§3 stack, §5 frontend conventions), → `src/` (código fuente), → `src/i18n/README.md`, → `DESIGN_SYSTEM.md` |
+| **`DESIGN_SYSTEM.md`** | **Estándar visual "corp"** (autoritativo sobre estilos de Frontend). Catálogo de clases `corp-*`, tokens, roots canónicos, patrones, checklist de migración, y el sub-estándar "Playful" para vistas de niños. Reemplaza el legacy `liquid-glass`/`GlassPanel`. | → `src/index.css` (definiciones CSS), → `CLAUDE.md` (§1 autoridad, §3 convenciones), → `FRONTEND_GUIDE.md` |
 | **`src/i18n/README.md`** | Guía de internacionalización. Idiomas soportados, estructura de archivos, uso en componentes, convenciones, troubleshooting. | → `src/i18n/index.ts`, → `src/i18n/locales/{es,en}/*.json`, → `AGENTS.md` (§5 frontend i18n obligatorio) |
 
 ### 10.4 Mapa de Navegación Rápida para Agentes AI

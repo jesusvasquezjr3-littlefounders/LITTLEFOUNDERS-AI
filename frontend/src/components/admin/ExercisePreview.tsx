@@ -59,11 +59,11 @@ function ItemsList({ items, label }: { items: any[]; label: string }) {
     if (!items?.length) return null;
     return (
         <div className="mt-4">
-            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">{label}</p>
+            <p className="corp-eyebrow mb-2">{label}</p>
             <div className="flex flex-wrap gap-2">
                 {items.map((item: any, i: number) => (
                     <span key={item.id || i}
-                        className="px-3 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 text-sm rounded-lg font-medium border border-purple-200 dark:border-purple-700">
+                        className="px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200 text-sm rounded-lg font-medium border border-indigo-200 dark:border-indigo-700">
                         {item.text || item.name || item.title || item.label || item.word || `#${i + 1}`}
                     </span>
                 ))}
@@ -125,7 +125,7 @@ function SliderPreview({ exercise }: { exercise: any }) {
     return (
         <div className="mt-4 space-y-2">
             <div className="relative h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
             </div>
             <div className="flex justify-between text-xs text-slate-400">
                 <span>{min}{c.unit ? ` ${c.unit}` : ''}</span>
@@ -224,7 +224,7 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
             {/* Simulated progress bar */}
             <div className="flex items-center gap-2 mt-2 mb-4">
                 <div className="flex-1 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full w-1/2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full" />
+                    <div className="h-full w-1/2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full" />
                 </div>
                 <span className="text-xs font-bold text-slate-400">1/5</span>
                 <span className="text-xs">⚡ 5</span>
@@ -314,7 +314,7 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
                     <div className="mt-4 flex flex-wrap gap-1 items-center">
                         {c.segments.map((seg: any, i: number) => (
                             seg.type === 'blank'
-                                ? <span key={i} className="px-3 py-1 border-b-2 border-dashed border-purple-400 text-purple-500 dark:text-purple-400 font-bold text-sm min-w-[60px] text-center">___</span>
+                                ? <span key={i} className="px-3 py-1 border-b-2 border-dashed border-indigo-400 text-indigo-500 dark:text-indigo-400 font-bold text-sm min-w-[60px] text-center">___</span>
                                 : <span key={i} className="text-sm text-slate-700 dark:text-slate-300">{seg.text || ''}</span>
                         ))}
                     </div>

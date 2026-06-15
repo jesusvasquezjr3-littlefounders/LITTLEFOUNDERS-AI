@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminLessons, useDeleteLesson, useDuplicateLesson } from '@/hooks/useAdminLessons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -31,7 +28,6 @@ import {
 } from '@/components/ui/dialog';
 import { Edit, Trash2, Copy, Plus, Search, ChevronUp, ChevronDown, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 interface Lesson {
   public_id: string;
@@ -166,7 +162,7 @@ export const AdminLessons: React.FC = () => {
     children: React.ReactNode;
   }> = ({ field, children }) => (
     <TableHead
-      className="cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-800"
+      className="cursor-pointer select-none"
       onClick={() => handleSort(field)}
     >
       <div className="flex items-center gap-2">
@@ -184,49 +180,40 @@ export const AdminLessons: React.FC = () => {
   return (
     <div className="space-y-6 p-8">
       {/* Premium Admin Header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-indigo-500/10 dark:border-indigo-500/5 shadow-2xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-indigo-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-                  <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white" />
+      <div className="corp-panel p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-5">
+          <div className="flex flex-row items-center gap-4 md:gap-5 w-full md:w-auto">
+              <div className="corp-icon-chip w-12 h-12 md:w-14 md:h-14 shrink-0">
+                  <BookOpen className="w-5 h-5 md:w-7 md:h-7" />
               </div>
               <div className="text-left">
-                  <div className="flex items-center gap-2 mb-0.5">
-                      {/* Branding removed as per user request */}
-                  </div>
-                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                  <span className="corp-eyebrow">{t('lessons.subtitle')}</span>
+                  <h1 className="corp-display mt-1 text-xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                       {t('lessons.title')}
                   </h1>
-                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
-                      {t('lessons.subtitle')}
-                  </p>
               </div>
           </div>
 
-          <Link to="/admin/lessons/new" className="relative z-10 w-full md:w-auto">
-            <Button className="w-full md:w-auto h-11 px-6 rounded-xl md:rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold shadow-lg shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95 gap-2">
+          <Link to="/admin/lessons/new" className="w-full md:w-auto">
+            <button className="corp-btn-primary w-full md:w-auto h-11 px-6 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2">
                 <Plus className="h-4 w-4" />
                 {t('lessons.createNew')}
-            </Button>
+            </button>
           </Link>
       </div>
 
       {/* Filters Card */}
-      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
-        <CardHeader className="py-3 px-6 border-b border-slate-100 dark:border-slate-800/50">
-          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{t('lessons.filters')}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 md:p-6">
+      <div className="corp-panel overflow-hidden">
+        <div className="py-3 px-6 border-b border-slate-200 dark:border-white/10">
+          <span className="corp-eyebrow">{t('lessons.filters')}</span>
+        </div>
+        <div className="p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-5">
             {/* Search */}
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 transition-colors" />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
               <Input
                 placeholder={t('lessons.searchPlaceholder')}
-                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 focus:border-indigo-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11 pl-10"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -240,7 +227,7 @@ export const AdminLessons: React.FC = () => {
               setAdventureFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('lessons.allAdventures')} />
               </SelectTrigger>
               <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
@@ -257,7 +244,7 @@ export const AdminLessons: React.FC = () => {
               setSagaFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('lessons.allSagas')} />
               </SelectTrigger>
               <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
@@ -274,7 +261,7 @@ export const AdminLessons: React.FC = () => {
               setTopicFilter(value);
               setCurrentPage(1);
             }}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('lessons.allTopics')} />
               </SelectTrigger>
               <SelectContent className="dark:bg-slate-900 dark:border-slate-700 rounded-xl overflow-hidden">
@@ -287,9 +274,8 @@ export const AdminLessons: React.FC = () => {
             </Select>
 
             {/* Clear Filters */}
-            <Button
-              variant="outline"
-              className="h-11 rounded-xl font-bold bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            <button
+              className="corp-btn-secondary h-11 rounded-xl px-5 text-sm font-semibold"
               onClick={() => {
                 setSearchTerm('');
                 setAdventureFilter('');
@@ -299,10 +285,10 @@ export const AdminLessons: React.FC = () => {
               }}
             >
               {t('lessons.clearFilters')}
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </GlassPanel>
+        </div>
+      </div>
 
       {/* Results Info */}
       <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -310,8 +296,8 @@ export const AdminLessons: React.FC = () => {
       </div>
 
       {/* Lessons Table */}
-      <Card>
-        <CardContent className="pt-6">
+      <div className="corp-panel overflow-hidden">
+        <div className="p-4 md:p-6">
           {isLoading ? (
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
@@ -320,9 +306,9 @@ export const AdminLessons: React.FC = () => {
             </div>
           ) : paginatedLessons.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="corp-table">
                 <TableHeader>
-                  <TableRow className="border-slate-200 dark:border-slate-700">
+                  <TableRow>
                     <SortHeader field="code">{t('lessons.code')}</SortHeader>
                     <SortHeader field="title">{t('lessons.titleEs')}</SortHeader>
                     <SortHeader field="adventure">{t('lessons.adventure')}</SortHeader>
@@ -335,7 +321,7 @@ export const AdminLessons: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {paginatedLessons.map((lesson) => (
-                    <TableRow key={lesson.public_id} className="border-slate-200 dark:border-slate-700">
+                    <TableRow key={lesson.public_id}>
                       <TableCell className="font-mono font-medium text-sm text-slate-900 dark:text-white">
                         {lesson.lesson_code}
                       </TableCell>
@@ -343,16 +329,16 @@ export const AdminLessons: React.FC = () => {
                         <span title={lesson.title_es}>{lesson.title_es}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{lesson.adventure_level}</Badge>
+                        <span className="corp-badge corp-badge--brand">{lesson.adventure_level}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{lesson.saga_level}</Badge>
+                        <span className="corp-badge">{lesson.saga_level}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{lesson.topic_level}</Badge>
+                        <span className="corp-badge">{lesson.topic_level}</span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-1 rounded text-xs font-semibold">
+                        <span className="corp-badge corp-badge--info">
                           ES: {lesson.exercise_count_es} / EN: {lesson.exercise_count_en}
                         </span>
                       </TableCell>
@@ -362,19 +348,21 @@ export const AdminLessons: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center justify-center gap-2">
                           <Link to={`/admin/lessons/${lesson.public_id}/edit`}>
-                            <Button variant="ghost" size="sm" title={t('lessons.edit')}>
+                            <button
+                              className="corp-btn-ghost h-9 w-9 rounded-lg inline-flex items-center justify-center"
+                              title={t('lessons.edit')}
+                            >
                               <Edit className="h-4 w-4" />
-                            </Button>
+                            </button>
                           </Link>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <button
+                            className="corp-btn-ghost h-9 w-9 rounded-lg inline-flex items-center justify-center"
                             onClick={() => handleDuplicate(lesson.public_id)}
                             disabled={duplicateLesson.isPending}
                             title={t('lessons.duplicate')}
                           >
                             <Copy className="h-4 w-4" />
-                          </Button>
+                          </button>
                           <Dialog
                             open={deleteConfirmId === lesson.public_id}
                             onOpenChange={(open) => {
@@ -382,39 +370,37 @@ export const AdminLessons: React.FC = () => {
                             }}
                           >
                             <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
+                              <button
+                                className="corp-btn-danger h-9 w-9 rounded-lg inline-flex items-center justify-center"
                                 onClick={() => setDeleteConfirmId(lesson.public_id)}
                                 title={t('lessons.delete')}
-                                className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </Button>
+                              </button>
                             </DialogTrigger>
-                            <DialogContent className="dark:bg-slate-900 dark:border-slate-700">
+                            <DialogContent className="corp corp-dialog rounded-3xl sm:max-w-lg p-6">
                               <DialogHeader>
-                                <DialogTitle className="dark:text-white">
+                                <DialogTitle className="text-slate-900 dark:text-white">
                                   {t('lessons.deleteLesson')}
                                 </DialogTitle>
-                                <DialogDescription className="dark:text-slate-400">
+                                <DialogDescription className="text-slate-600 dark:text-slate-400">
                                   {t('lessons.deleteConfirm', { title: lesson.title_es })}
                                 </DialogDescription>
                               </DialogHeader>
                               <div className="flex justify-end gap-3 pt-4">
-                                <Button
-                                  variant="outline"
+                                <button
+                                  className="corp-btn-secondary h-11 rounded-xl px-5 text-sm font-semibold"
                                   onClick={() => setDeleteConfirmId(null)}
                                 >
                                   {t('lessons.cancel')}
-                                </Button>
-                                <Button
-                                  variant="destructive"
+                                </button>
+                                <button
+                                  className="corp-btn-danger h-11 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                                   onClick={() => handleDelete(lesson.public_id)}
                                   disabled={deleteLesson.isPending}
                                 >
                                   {deleteLesson.isPending ? t('lessons.deleting') : t('lessons.delete')}
-                                </Button>
+                                </button>
                               </div>
                             </DialogContent>
                           </Dialog>
@@ -426,18 +412,18 @@ export const AdminLessons: React.FC = () => {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-500 dark:text-slate-400 mb-4">{t('lessons.noLessons')}</p>
+            <div className="corp-empty py-12">
+              <p className="mb-4">{t('lessons.noLessons')}</p>
               <Link to="/admin/lessons/new">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
+                <button className="corp-btn-primary h-11 rounded-xl px-5 text-sm font-semibold inline-flex items-center justify-center gap-2">
+                  <Plus className="h-4 w-4" />
                   {t('lessons.createFirst')}
-                </Button>
+                </button>
               </Link>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
@@ -446,20 +432,20 @@ export const AdminLessons: React.FC = () => {
             {t('lessons.page')} {currentPage} {t('lessons.of')} {totalPages}
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
+            <button
+              className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
               {t('lessons.previous')}
-            </Button>
-            <Button
-              variant="outline"
+            </button>
+            <button
+              className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >
               {t('lessons.next')}
-            </Button>
+            </button>
           </div>
         </div>
       )}

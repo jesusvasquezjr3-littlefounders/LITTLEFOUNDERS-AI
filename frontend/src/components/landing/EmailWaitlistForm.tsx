@@ -53,11 +53,11 @@ export function EmailWaitlistForm({
           <input
             type="email" value={email} onChange={e => setEmail(e.target.value)}
             placeholder={placeholder} required
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-400 dark:focus:ring-pink-500 transition-all placeholder:text-gray-400"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 transition-all placeholder:text-gray-400"
           />
         </div>
         <Button type="submit" disabled={loading}
-          className="btn-press shrink-0 w-72 py-3 rounded-xl font-black bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white border-0 shadow-none inline-flex items-center justify-center gap-2 disabled:opacity-60 mx-auto sm:mx-0">
+          className="btn-press shrink-0 w-72 py-3 rounded-xl font-black bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-400 hover:to-blue-400 text-white border-0 shadow-none inline-flex items-center justify-center gap-2 disabled:opacity-60 mx-auto sm:mx-0">
           {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
           {ctaLabel}
         </Button>

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play, BookOpen, Users, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { AssetImg } from "@/components/ui/AssetImg";
@@ -140,28 +139,22 @@ export default function GamesPage() {
     <Layout>
       <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {/* Premium Header Section */}
-        <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-violet-500/10 dark:border-violet-500/5 shadow-2xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-violet-500/15 to-red-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-indigo-500/10 to-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="corp-panel relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6">
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
-            <div className="p-2 md:p-3 bg-gradient-to-br from-violet-400 to-red-500 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-violet-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
+            <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl md:rounded-2xl shrink-0">
               <Gamepad2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
             </div>
             <div className="text-left">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-black text-violet-500 dark:text-violet-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
-              </div>
-              <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+              <span className="corp-eyebrow">{t('common:app_name')}</span>
+              <h1 className="corp-display mt-1 text-xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-1">
                 {t('games:listing.title')}
               </h1>
-              <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+              <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-tight">
                 {t('games:listing.subtitle')}
               </p>
             </div>
           </div>
-        </GlassPanel>
+        </div>
 
         {/* Games grouped by age */}
         {Object.entries(gamesByAge).map(([ageGroup, games]) => (
@@ -186,7 +179,6 @@ export default function GamesPage() {
                           "relative overflow-hidden rounded-3xl w-full",
                           "liquid-glass",
                           "transition-all duration-300",
-                          "hover:scale-[1.03] hover:shadow-xl hover:shadow-purple-500/10",
                           "active:scale-[0.98]",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                           "text-left h-full flex flex-col",
@@ -216,7 +208,7 @@ export default function GamesPage() {
                           <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
                             <div className={cn(
                               "w-14 h-14 rounded-full flex items-center justify-center",
-                              `bg-${game.accentColor}-500 shadow-lg shadow-${game.accentColor}-500/40`,
+                              "bg-indigo-500 shadow-lg shadow-indigo-500/40",
                               "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
                               "transition-all duration-300",
                             )}>
@@ -237,42 +229,33 @@ export default function GamesPage() {
                       </button>
                     </HoverCardTrigger>
 
-                    <HoverCardContent 
-                      side="top" 
-                      align="center" 
-                      className="w-80 p-0 overflow-hidden border-2 border-white/10 shadow-2xl z-50 backdrop-blur-xl bg-slate-900/95"
+                    <HoverCardContent
+                      side="top"
+                      align="center"
+                      className="w-80 p-0 overflow-hidden border border-white/10 shadow-2xl z-50 bg-slate-900"
                     >
-                      {/* Decorative top bar with game's accent color */}
-                      <div className={cn(
-                        "h-2 w-full",
-                        `bg-${game.accentColor}-500`
-                      )} />
-                      
+                      {/* Decorative top bar — corp brand accent */}
+                      <div className="h-2 w-full bg-gradient-to-r from-indigo-500 to-blue-500" />
+
                       <div className="p-4 space-y-3">
-                        <h4 className="font-black text-base text-white leading-tight">
+                        <h4 className="font-bold text-base text-white leading-tight">
                           {t(game.titleKey)}
                         </h4>
 
-                        <p className="text-sm text-slate-300 leading-relaxed font-bold">
+                        <p className="text-sm text-slate-300 leading-relaxed">
                           {t(`games:gameDescriptions.${game.descriptionKey}.summary`)}
                         </p>
 
                         <div className="space-y-2.5 pt-2 border-t border-white/5">
                           <div className="flex items-start gap-2.5">
-                            <div className={cn(
-                              "mt-0.5 p-1 rounded-md",
-                              `bg-${game.accentColor}-500/20`
-                            )}>
-                              <BookOpen className={cn("w-3.5 h-3.5", `text-${game.accentColor}-400`)} />
+                            <div className="mt-0.5 p-1 rounded-md bg-indigo-500/20">
+                              <BookOpen className="w-3.5 h-3.5 text-indigo-300" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <span className={cn(
-                                "text-[10px] font-black uppercase tracking-widest",
-                                `text-${game.accentColor}-400`
-                              )}>
+                              <span className="corp-eyebrow text-indigo-300">
                                 {t('common:whatItTeaches')}
                               </span>
-                              <p className="text-[11px] text-slate-400 leading-tight mt-0.5 font-medium italic">
+                              <p className="text-[11px] text-slate-400 leading-tight mt-0.5 font-medium">
                                 {t(`games:gameDescriptions.${game.descriptionKey}.teaches`)}
                               </p>
                             </div>
@@ -286,23 +269,23 @@ export default function GamesPage() {
 
               {/* Coming Soon Card - Within each age group */}
               <div className={cn(
-                "relative rounded-2xl sm:rounded-3xl border-2 border-dashed border-white/20 dark:border-white/5",
+                "relative rounded-2xl sm:rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/10",
                 "flex flex-col items-center justify-center gap-3 sm:gap-4 p-4 sm:p-6 text-center",
-                "shadow-xl backdrop-blur-sm bg-gradient-to-br from-slate-600/10 via-slate-500/5 to-slate-400/10",
-                "group overflow-hidden transition-all duration-300",
+                "bg-slate-50 dark:bg-[#0d1426]",
+                "overflow-hidden",
                 "aspect-square sm:aspect-auto sm:min-h-[180px] md:min-h-[200px]"
               )}>
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-1 sm:mb-2 group-hover:scale-110 transition-transform">
-                  <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400 dark:text-slate-600" />
+                <div className="corp-icon-chip w-12 h-12 sm:w-16 sm:h-16 mb-1 sm:mb-2">
+                  <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 px-2">
-                  <p className="text-[10px] sm:text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-tight">
+                  <p className="corp-eyebrow">
                     {t(`games:ageGroups.${getComingSoonKey(ageGroup)}`)}
                   </p>
                   <div className="flex gap-1 justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 animate-pulse"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 animate-pulse [animation-delay:200ms]"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 animate-pulse [animation-delay:400ms]"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
                   </div>
                 </div>
               </div>

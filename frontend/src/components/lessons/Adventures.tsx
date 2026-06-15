@@ -7,7 +7,6 @@ import { useResumeLesson } from './hooks/useResumeLesson';
 import { useSagaData } from './hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '../ui/LoadingScreen';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
@@ -61,25 +60,21 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
     return (
         <div className="adventures-container w-full py-8">
             {/* Premium Header Section */}
-            <GlassPanel variant="strong" className="relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden border border-indigo-500/10 dark:border-indigo-500/5 shadow-2xl">
-                {/* Ambient Glows */}
-                <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-indigo-500/15 to-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-
+            <div className="corp-panel relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6 overflow-hidden">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-5 relative z-10 w-full">
                     <div className="flex flex-row items-center gap-4 md:gap-5 flex-1 w-full">
-                        <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-indigo-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-                            <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white" />
+                        <div className="corp-icon-chip w-10 h-10 md:w-12 md:h-12 shrink-0">
+                            <BookOpen className="w-5 h-5 md:w-7 md:h-7" />
                         </div>
                         <div className="text-left overflow-hidden">
                             <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none">{t('common:app_name')}</span>
+                                <span className="corp-eyebrow">{t('common:app_name')}</span>
                             </div>
-                            <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                            <h1 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-1">
                                 {t('general.title')}
                             </h1>
                             <div className="relative overflow-hidden whitespace-nowrap">
-                                <p className="inline-block text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight animate-marquee-slow sm:animate-none">
+                                <p className="inline-block text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-tight animate-marquee-slow sm:animate-none">
                                     {t('general.subtitle')}
                                 </p>
                             </div>
@@ -92,7 +87,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                             <button
                                 onClick={handleResumeClick}
                                 disabled={isNextLessonLoading}
-                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 md:px-8 md:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl md:rounded-full font-black md:font-bold shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-70 text-xs md:text-base"
+                                className="corp-btn-primary w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-xl font-semibold disabled:opacity-70 text-xs md:text-base"
                             >
                                 {isNextLessonLoading ? (
                                     <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -103,18 +98,18 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                             </button>
                         )}
                         {isFinished && (
-                            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-400 to-violet-500 text-white rounded-full font-bold shadow-lg shadow-blue-500/30">
+                            <div className="corp-badge corp-badge--success inline-flex items-center gap-2 px-6 py-3 text-sm">
                                 🏆 {t('general.all_completed')}
                             </div>
                         )}
                     </div>
                 </div>
-            </GlassPanel>
+            </div>
 
             {/* Separator Decorative Line */}
             <div className="flex items-center gap-4 mb-6 md:mb-10">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
-                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                <span className="corp-eyebrow">
                     {t('general.explorer_label')}
                 </span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
@@ -127,7 +122,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                         key={adventure.id}
                         className={`adventure-wrapper relative transition-all duration-300 ${adventure.status === 'locked'
                             ? 'opacity-70 grayscale cursor-not-allowed'
-                            : 'cursor-pointer hover:scale-[1.02]'
+                            : 'cursor-pointer'
                             }`}
                         onClick={() => handleAdventureClick(adventure)}
                     >

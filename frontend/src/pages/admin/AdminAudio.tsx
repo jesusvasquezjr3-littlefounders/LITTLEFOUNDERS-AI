@@ -1,11 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminAudio, useUploadAudio, useGenerateAudio, useDeleteAudio } from '@/hooks/useAdminAudio';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -30,9 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Play, Trash2, Upload, Zap, Volume2, Search, Plus } from 'lucide-react';
-import { GlassPanel } from '@/components/ui/GlassPanel';
-import { cn } from '@/lib/utils';
+import { Trash2, Upload, Zap, Volume2, Search } from 'lucide-react';
 
 interface AudioSegment {
   public_id: string;
@@ -187,51 +183,45 @@ export const AdminAudio: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 p-8 bg-white dark:bg-slate-900 min-h-screen">
-      {/* Premium Admin Header */}
-      <div className="relative rounded-3xl overflow-hidden liquid-glass-strong px-5 py-5 md:px-7 md:py-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-blue-500/10 dark:border-blue-500/5 shadow-2xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-blue-500/15 to-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-cyan-500/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10 w-full md:w-auto">
-              <div className="p-2 md:p-3 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl md:rounded-[1.25rem] shadow-xl shadow-blue-500/25 transform -rotate-3 transition-transform hover:rotate-0 duration-300 shrink-0">
-                  <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
+    <div className="space-y-6 p-8 bg-white dark:bg-[#070b14] min-h-screen">
+      {/* Admin Header */}
+      <div className="corp-panel p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="flex flex-row items-center gap-4 md:gap-5 w-full md:w-auto">
+              <div className="corp-icon-chip w-11 h-11 md:w-14 md:h-14 shrink-0">
+                  <Volume2 className="w-5 h-5 md:w-7 md:h-7" />
               </div>
               <div className="text-left">
-                  <div className="flex items-center gap-2 mb-0.5">
-                      {/* Branding removed as per user request */}
-                  </div>
-                  <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase md:normal-case leading-tight mb-1">
+                  <span className="corp-eyebrow">{t('app_name', 'LittleFounders')}</span>
+                  <h1 className="corp-display mt-1 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                       {t('audio.title')}
                   </h1>
-                  <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-bold md:font-medium leading-tight">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-tight">
                       {t('audio.description')}
                   </p>
               </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 relative z-10 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="h-11 px-6 rounded-xl md:rounded-full bg-white/50 dark:bg-black/20 backdrop-blur-md border hover:bg-white/80 dark:hover:bg-black/40 transition-all shadow-sm font-bold text-slate-700 dark:text-slate-200 gap-2">
+                <Button className="corp-btn-secondary h-11 px-6 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2">
                   <Upload className="h-4 w-4" />
                   {t('audio.uploadAudio')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <DialogContent className="corp corp-dialog rounded-3xl max-w-md p-6">
                 {/* ... existing content ... */}
               </DialogContent>
             </Dialog>
 
             <Dialog open={generateDialogOpen} onOpenChange={setGenerateDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="h-11 px-6 rounded-xl md:rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 gap-2">
+                <Button className="corp-btn-primary h-11 px-6 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2">
                   <Zap className="h-4 w-4" />
                   {t('audio.generateAudio')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <DialogContent className="corp corp-dialog rounded-3xl max-w-md p-6">
                 {/* ... existing content ... */}
               </DialogContent>
             </Dialog>
@@ -239,18 +229,18 @@ export const AdminAudio: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <GlassPanel variant="subtle" className="p-0 border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
-        <CardHeader className="py-3 px-6 border-b border-slate-100 dark:border-slate-800/50">
-          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{t('common.filters')}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 md:p-6">
+      <div className="corp-panel overflow-hidden">
+        <div className="py-3 px-6 border-b border-slate-200 dark:border-white/10">
+          <span className="corp-eyebrow">{t('common.filters')}</span>
+        </div>
+        <div className="p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-5">
             {/* Search */}
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-blue-500 transition-colors" />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
               <Input
                 placeholder={t('audio.searchPlaceholder')}
-                className="pl-10 h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 transition-all rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11 pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -260,7 +250,7 @@ export const AdminAudio: React.FC = () => {
             <div className="relative">
               <Input
                 placeholder={t('audio.lessonPlaceholder')}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11"
                 value={lessonFilter}
                 onChange={(e) => setLessonFilter(e.target.value)}
               />
@@ -270,7 +260,7 @@ export const AdminAudio: React.FC = () => {
             <div className="relative">
               <Input
                 placeholder={t('audio.characterPlaceholder')}
-                className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 focus:border-blue-500/50 rounded-xl text-slate-900 dark:text-white"
+                className="corp-input h-11"
                 value={characterFilter}
                 onChange={(e) => setCharacterFilter(e.target.value)}
               />
@@ -278,10 +268,10 @@ export const AdminAudio: React.FC = () => {
 
             {/* Language Filter */}
             <Select value={languageFilter ? languageFilter : undefined} onValueChange={(value) => setLanguageFilter(value)}>
-              <SelectTrigger className="h-11 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-100 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white">
+              <SelectTrigger className="corp-input h-11">
                 <SelectValue placeholder={t('audio.allLanguages')} />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+              <SelectContent className="bg-white dark:bg-[#0d1426] border-slate-200 dark:border-white/10 rounded-xl overflow-hidden">
                 {LANGUAGES.map((lang) => (
                   <SelectItem key={lang.code} value={lang.code} className="text-slate-900 dark:text-white">
                     {t(lang.labelKey)}
@@ -299,13 +289,13 @@ export const AdminAudio: React.FC = () => {
                 setCharacterFilter('');
                 setLanguageFilter('');
               }}
-              className="h-11 rounded-xl font-bold bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="corp-btn-secondary h-11 rounded-xl px-5 text-sm font-semibold"
             >
               {t('common.clear')}
             </Button>
           </div>
-        </CardContent>
-      </GlassPanel>
+        </div>
+      </div>
 
       {/* Results Info */}
       <div className="text-sm text-slate-600 dark:text-slate-400">
@@ -313,79 +303,69 @@ export const AdminAudio: React.FC = () => {
       </div>
 
       {/* Audio Table */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-        <CardContent className="pt-6">
+      <div className="corp-panel overflow-hidden p-6">
           {isLoading ? (
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full bg-slate-200 dark:bg-slate-700" />
+                <Skeleton key={i} className="h-12 w-full bg-slate-200 dark:bg-white/10" />
               ))}
             </div>
           ) : filteredAudio.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="corp-table">
                 <TableHeader>
-                  <TableRow className="border-slate-200 dark:border-slate-700">
-                    <TableHead className="text-slate-900 dark:text-white">{t('common.id')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('audio.lesson')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('audio.character')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('audio.emotion')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('audio.language')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('audio.source')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white">{t('common.created')}</TableHead>
-                    <TableHead className="text-slate-900 dark:text-white text-center">{t('common.actions')}</TableHead>
+                  <TableRow>
+                    <TableHead>{t('common.id')}</TableHead>
+                    <TableHead>{t('audio.lesson')}</TableHead>
+                    <TableHead>{t('audio.character')}</TableHead>
+                    <TableHead>{t('audio.emotion')}</TableHead>
+                    <TableHead>{t('audio.language')}</TableHead>
+                    <TableHead>{t('audio.source')}</TableHead>
+                    <TableHead>{t('common.created')}</TableHead>
+                    <TableHead className="text-center">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredAudio.map((segment) => (
-                    <TableRow key={segment.public_id} className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <TableRow key={segment.public_id}>
                       <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate">
                         {segment.public_id}
                       </TableCell>
                       <TableCell>
                         {segment.lesson_id ? (
-                          <Badge variant="outline" className="bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white">
-                            {segment.lesson_id}
-                          </Badge>
+                          <span className="corp-badge">{segment.lesson_id}</span>
                         ) : (
                           <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
                         )}
                       </TableCell>
                       <TableCell>
                         {segment.character_id ? (
-                          <Badge variant="outline" className="bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white">
-                            {segment.character_id}
-                          </Badge>
+                          <span className="corp-badge">{segment.character_id}</span>
                         ) : (
                           <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className="capitalize bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
-                          {segment.emotion}
-                        </Badge>
+                        <span className="corp-badge capitalize">{segment.emotion}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100">
+                        <span className="corp-badge corp-badge--info">
                           {(() => {
                             const lang = LANGUAGES.find((l) => l.code === segment.language_code);
                             return lang ? t(lang.labelKey) : segment.language_code;
                           })()}
-                        </Badge>
+                        </span>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
+                        <span
+                          className={
                             segment.source === 'uploaded'
-                              ? 'default'
-                              : segment.source === 'generated'
-                                ? 'secondary'
-                                : 'outline'
+                              ? 'corp-badge corp-badge--brand capitalize'
+                              : 'corp-badge capitalize'
                           }
-                          className="capitalize bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white"
                         >
                           {segment.source}
-                        </Badge>
+                        </span>
                       </TableCell>
                       <TableCell className="text-sm text-slate-600 dark:text-slate-400">
                         {new Date(segment.created_at).toLocaleDateString()}
@@ -411,13 +391,13 @@ export const AdminAudio: React.FC = () => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setDeleteConfirmId(segment.public_id)}
-                                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                                className="corp-btn-danger h-9 w-9 rounded-lg inline-flex items-center justify-center"
                                 title={t('common.delete')}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                            <DialogContent className="corp corp-dialog rounded-3xl p-6">
                               <DialogHeader>
                                 <DialogTitle className="text-slate-900 dark:text-white">
                                   {t('audio.deleteTitle')}
@@ -430,7 +410,7 @@ export const AdminAudio: React.FC = () => {
                                 <Button
                                   variant="outline"
                                   onClick={() => setDeleteConfirmId(null)}
-                                  className="border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
+                                  className="corp-btn-secondary h-10 rounded-xl px-5 text-sm font-semibold"
                                 >
                                   {t('common.cancel')}
                                 </Button>
@@ -438,6 +418,7 @@ export const AdminAudio: React.FC = () => {
                                   variant="destructive"
                                   onClick={() => handleDelete(segment.public_id)}
                                   disabled={deleteMutation.isPending}
+                                  className="corp-btn-danger h-10 rounded-xl px-5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   {deleteMutation.isPending ? t('common.deleting') : t('common.delete')}
                                 </Button>
@@ -452,13 +433,12 @@ export const AdminAudio: React.FC = () => {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Volume2 className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 mb-4" />
-              <p className="text-slate-500 dark:text-slate-400">{t('audio.noFound')}</p>
+            <div className="corp-empty">
+              <Volume2 className="mx-auto h-12 w-12 mb-4" />
+              <p>{t('audio.noFound')}</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };
