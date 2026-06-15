@@ -125,7 +125,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         playBGM('/sounds/edu/background.mp3', { volume: 0.3 }); // Increased volume to 0.2 as requested
 
         return () => {
-            stopBGM({ fade: true, fadeDuration: 500 });
+            stopBGM({ fade: true, fadeDuration: 1500 });
         };
     }, [playBGM, stopBGM]);
 

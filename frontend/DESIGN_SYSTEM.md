@@ -31,7 +31,7 @@ LittleFounders tiene **dos lenguajes visuales** deliberados:
 | Lenguaje | Para quién / dónde | Tipografía | Identidad |
 |----------|--------------------|-----------|-----------|
 | **Corp** (este doc) | "Chrome serio": marketing, auth, cuenta, dashboards, **admin**, utilitarias, perfil social | Inter (texto) + Sora (títulos) | Limpio, confiable, enterprise, slate + índigo |
-| **Playful** (§9) | Experiencia inmersiva de niños: juegos `/games/*`, motor de lecciones, `/learn`, `/placement` | Nunito | Lúdico, colorido, gamificado |
+| **Playful** (§9) | Experiencia inmersiva de niños: juegos `/games/*`, motor de lecciones inmersivo, celebraciones | Nunito | Lúdico, colorido, gamificado |
 
 > El scope `.corp` existe precisamente para **sacar** un subárbol del Nunito
 > lúdico y meterlo al sistema Inter/Sora profesional.
@@ -43,8 +43,12 @@ LittleFounders tiene **dos lenguajes visuales** deliberados:
 - **Marketing:** `LandingPage`, `landing/FamiliesPage`, `landing/HowItWorksPage`,
   `landing/PricingPage`, `landing/FaqPage` + `LandingLayout` / `LandingNavbar` /
   `LandingFooter`. *(Ya migradas — son la referencia.)*
-- **Auth / onboarding:** `Login`, `Signup`, `Onboarding`, `ForgotPassword`,
-  `ResetPassword`, `AuthCallback`, `Bye`.
+- **Auth / onboarding:** `Login`, `Signup`, `Onboarding`, `PlacementPage`
+  (+ `features/placement/*`), `ForgotPassword`, `ResetPassword`, `AuthCallback`,
+  `Bye`. *(El flujo `Onboarding`/`Placement` usa la paleta corp + fondo standalone
+  (§3.B: `corp-grid-bg`, glow índigo único) + `corp-btn-primary`, pero conserva
+  **Nunito** —sin el scope `.corp`— para la calidez del flujo de niños. Es el
+  patrón de referencia para esas dos vistas.)*
 - **Cuenta** (dentro de `DashboardLayout`): `Profile`, `Settings`,
   `Help`, `AvatarEditor`, `dashboard/ParentDashboard`.
 - **Shell de la app** (compartido): `dashboard/DashboardLayout`,

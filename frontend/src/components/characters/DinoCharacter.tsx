@@ -106,7 +106,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 ref={bubbleRef}
                 className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-8 sm:mt-14",
                     bubblePosition === 'demo' && "-top-2 md:-top-4 left-1/2 -translate-x-1/2",
                     bubblePosition === 'tutorial' && "-top-16 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
                     bubblePosition === 'hero' && "-top-14 left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",
@@ -167,9 +167,48 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
                     </linearGradient>
                     <filter id="dinoShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="5" dy="7" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="1.5" result="blur" />
-                        <feFlood floodColor="#14532D" floodOpacity="0.35" result="color" />
+                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
+                        <feFlood floodColor="#14532D" floodOpacity="0.3" result="dropColor" />
+                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
+                        
+                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
+
+                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
+
+                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
+                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
+                        <feFlood floodColor="#14532D" floodOpacity="0.35" result="isColor" />
+                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
+
+                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
+                        <feFlood floodColor="#064e3b" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
+
+                        <feMerge>
+                            <feMergeNode in="dropShadow" />
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="innerShadow" />
+                            <feMergeNode in="edgeShadow" />
+                            <feMergeNode in="highlight" />
+                            <feMergeNode in="rimLight" />
+                        </feMerge>
+                    </filter>
+                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
+                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
+                        <feFlood floodColor="#14532D" floodOpacity="0.25" result="color" />
                         <feComposite in="color" in2="blur" operator="in" result="shadow" />
                         <feMerge>
                             <feMergeNode in="shadow" />
@@ -208,7 +247,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M170 280 Q 200 290 220 280" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
 
                     {/* FRONT LEG (Right) */}
-                    <g transform="translate(140, 310)">
+                    <g transform="translate(140, 310)" filter="url(#innerDropShadow)">
                         <ellipse cx="30" cy="10" rx="35" ry="35" fill="url(#bodyGradient)" />
                         <path d="M10 30 Q 10 45 20 45 L 50 45 Q 60 45 60 30" fill="#22C55E" />
                         <circle cx="20" cy="45" r="5" fill="#f0fdf4" />
@@ -217,14 +256,14 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     </g>
 
                     {/* ARM */}
-                    <g transform="translate(180, 220) rotate(-20)">
+                    <g transform="translate(180, 220) rotate(-20)" filter="url(#innerDropShadow)">
                         <path d="M0 0 Q 30 10 40 40 Q 10 40 0 0" fill="#22C55E" />
                         <circle cx="40" cy="40" r="4" fill="#f0fdf4" />
                         <circle cx="32" cy="42" r="4" fill="#f0fdf4" />
                     </g>
 
                     {/* HEAD GROUP */}
-                    <g id="head-group" ref={headGroupRef} transform="translate(200, 140)">
+                    <g id="head-group" ref={headGroupRef} transform="translate(200, 140)" filter="url(#innerDropShadow)">
                         {/* Neck */}
                         <path d="M-40 20 Q -20 50 10 40 L 10 0 L -40 0 Z" fill="#4ADE80" />
 

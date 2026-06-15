@@ -203,8 +203,8 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
             {showBubble && (
                 <div className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
-                    bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-6 sm:mt-10",
+                    bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-6 sm:mt-10",
                     showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}>
                     <div className="relative bg-white rounded-2xl shadow-lg px-4 py-2 border border-slate-100 min-w-[180px] max-w-[240px] w-auto text-center">
@@ -262,9 +262,48 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                         <stop offset="100%" style={{ stopColor: "#fde047" }} />
                     </linearGradient>
                     <filter id="dinaShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="5" dy="7" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="1.5" result="blur" />
-                        <feFlood floodColor="#9A3412" floodOpacity="0.35" result="color" />
+                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
+                        <feFlood floodColor="#9A3412" floodOpacity="0.3" result="dropColor" />
+                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
+                        
+                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
+
+                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
+
+                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
+                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
+                        <feFlood floodColor="#9A3412" floodOpacity="0.35" result="isColor" />
+                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
+
+                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
+                        <feFlood floodColor="#7c2d12" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
+
+                        <feMerge>
+                            <feMergeNode in="dropShadow" />
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="innerShadow" />
+                            <feMergeNode in="edgeShadow" />
+                            <feMergeNode in="highlight" />
+                            <feMergeNode in="rimLight" />
+                        </feMerge>
+                    </filter>
+                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
+                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
+                        <feFlood floodColor="#9A3412" floodOpacity="0.25" result="color" />
                         <feComposite in="color" in2="blur" operator="in" result="shadow" />
                         <feMerge>
                             <feMergeNode in="shadow" />
@@ -311,13 +350,13 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     <ellipse cx="240" cy="340" rx="80" ry="60" fill="#ffedd5" opacity="0.4" />
 
                     {/* PATAS FRENTE */}
-                    <g transform="translate(170, 335)">
+                    <g transform="translate(170, 335)" filter="url(#innerDropShadow)">
                         <rect x="0" y="0" width="55" height="90" rx="27.5" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="27" cy="85" r="6" fill="#ffedd5" />
                         <circle cx="41" cy="82" r="6" fill="#ffedd5" />
                     </g>
-                    <g transform="translate(260, 335)">
+                    <g transform="translate(260, 335)" filter="url(#innerDropShadow)">
                         <rect x="0" y="0" width="52" height="90" rx="26" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="26" cy="85" r="6" fill="#ffedd5" />
@@ -330,7 +369,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                         <path d="M340 190 Q 365 160 375 195" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
                         <path d="M290 280 Q 350 250 360 140" stroke="#fb923c" strokeWidth="55" fill="none" strokeLinecap="round" />
 
-                        <g id="dina-head-group" ref={headRef} transform="translate(360, 110)">
+                        <g id="dina-head-group" ref={headRef} transform="translate(360, 110)" filter="url(#innerDropShadow)">
                             <path d="M-10 -48 Q 15 -75 40 -48" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1.5" />
                             <ellipse cx="15" cy="0" rx="65" ry="55" fill="#fb923c" />
                             <circle cx="-28" cy="20" r="16" fill="url(#blushGrad)" />

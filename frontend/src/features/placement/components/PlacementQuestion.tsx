@@ -92,24 +92,15 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
   return (
     <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-400">
       {/* Question number badge */}
-      <div className="self-start mb-3 px-3 py-1 rounded-full bg-indigo-500/10 dark:bg-indigo-400/10 border border-indigo-400/20">
-        <span className="text-[11px] font-black uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
+      <div className="self-start mb-3 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-indigo-600 dark:text-indigo-300">
           #{itemNumber}
         </span>
       </div>
 
       {/* Question card */}
-      <div
-        className={cn(
-          'relative rounded-3xl overflow-hidden w-full',
-          'bg-white/70 border border-white/90',
-          'dark:bg-white/[0.10] dark:border-white/20',
-          'backdrop-blur-2xl saturate-[170%]',
-          'shadow-2xl shadow-black/8 dark:shadow-black/60',
-          'p-6 mb-4',
-        )}
-      >
-        <p className="text-base font-bold text-gray-900 dark:text-white leading-snug text-center">
+      <div className="relative rounded-2xl w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm p-6 mb-4">
+        <p className="text-base font-bold text-slate-900 dark:text-white leading-snug text-center">
           {question}
         </p>
       </div>
@@ -124,22 +115,21 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
               disabled={selected !== null}
               onClick={() => handleSelect(idx)}
               className={cn(
-                'w-full rounded-2xl px-5 py-3.5 text-left font-semibold text-sm transition-all duration-200',
-                'border-2 backdrop-blur-xl',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50',
+                'w-full rounded-xl px-5 py-3.5 text-left font-semibold text-sm transition-all duration-200 border-2',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50',
                 selected === null
-                  ? 'bg-white/55 dark:bg-white/[0.08] border-gray-200/80 dark:border-white/18 hover:bg-white/80 dark:hover:bg-white/[0.15] hover:border-violet-300/50 dark:hover:border-white/35 hover:scale-[1.01] cursor-pointer text-gray-800 dark:text-white'
+                  ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white'
                   : selected === idx
-                  ? 'bg-indigo-500/20 dark:bg-indigo-500/25 border-indigo-400/70 dark:border-white/60 text-gray-900 dark:text-white scale-[1.02]'
-                  : 'bg-white/30 dark:bg-white/[0.04] border-gray-200/40 dark:border-white/10 text-gray-400 dark:text-white/30 cursor-default',
+                  ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500 text-slate-900 dark:text-white'
+                  : 'bg-white dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-400 dark:text-white/30 cursor-default',
               )}
             >
               <span className="flex items-center gap-3">
                 <span className={cn(
-                  'shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-black',
+                  'shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold',
                   selected === idx
                     ? 'bg-indigo-500 border-indigo-500 text-white'
-                    : 'border-gray-300 dark:border-white/30 text-gray-400 dark:text-white/40',
+                    : 'border-slate-300 dark:border-white/30 text-slate-400 dark:text-white/40',
                 )}>
                   {String.fromCharCode(65 + idx)}
                 </span>
@@ -164,14 +154,13 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
                 disabled={selected !== null}
                 onClick={() => handleSelect(val)}
                 className={cn(
-                  'rounded-2xl py-5 font-black text-lg transition-all duration-200',
-                  'border-2 backdrop-blur-xl',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50',
+                  'rounded-xl py-5 font-bold text-lg transition-all duration-200 border-2',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50',
                   selected === null
-                    ? 'bg-white/55 dark:bg-white/[0.08] border-gray-200/80 dark:border-white/18 hover:scale-[1.03] cursor-pointer text-gray-800 dark:text-white'
+                    ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white'
                     : isSelected
-                    ? 'bg-indigo-500/20 dark:bg-indigo-500/25 border-indigo-400/70 dark:border-white/60 text-gray-900 dark:text-white scale-[1.02]'
-                    : 'bg-white/30 dark:bg-white/[0.04] border-gray-200/40 dark:border-white/10 text-gray-400 dark:text-white/30 cursor-default',
+                    ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500 text-slate-900 dark:text-white'
+                    : 'bg-white dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-400 dark:text-white/30 cursor-default',
                 )}
               >
                 <div className="text-2xl mb-1">{emoji}</div>
@@ -185,7 +174,7 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
       {/* Neutral feedback pill — same style for correct and incorrect */}
       {showFeedback && (
         <div className="mt-5 animate-in fade-in zoom-in-95 duration-300">
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-500/10 dark:bg-indigo-400/10 border border-indigo-400/20">
+          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20">
             <span className="text-lg">✨</span>
             <span className="text-sm font-bold text-indigo-600 dark:text-indigo-300">
               {feedbackMsg}

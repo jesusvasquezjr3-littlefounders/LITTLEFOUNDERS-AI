@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { updateGuestProfile } from '@/lib/guestProfile';
 import { trackEvent } from '@/lib/analytics';
 import type { PlacementState } from './types';
@@ -13,18 +12,6 @@ import { PlacementProgressBar } from './components/PlacementProgressBar';
 import { PlacementClosingScreen } from './components/PlacementClosingScreen';
 
 const MAX_ITEMS = 12;
-
-// ─── Ambient orbs (reusing onboarding style) ─────────────────────────────────
-
-function DriftingOrbs() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-[120px] animate-orb-1 bg-violet-400 dark:bg-violet-600 opacity-25 dark:opacity-30 transition-colors duration-[1200ms]" />
-      <div className="absolute -bottom-40 -right-32 w-[420px] h-[420px] rounded-full blur-[100px] animate-orb-2 bg-indigo-300 dark:bg-indigo-500 opacity-20 dark:opacity-25 transition-colors duration-[1200ms]" />
-      <div className="absolute top-1/2 left-1/3 w-[300px] h-[300px] rounded-full blur-[90px] animate-orb-3 bg-violet-400 opacity-10 dark:opacity-15" />
-    </div>
-  );
-}
 
 // ─── Main engine ─────────────────────────────────────────────────────────────
 
@@ -214,26 +201,14 @@ export function PlacementEngine({ name, age }: Props) {
     navigate('/learn');
   }
 
-  // ── Background gradient by phase ────────────────────────────────────────
-  const bgClass = state.phase === 'closing'
-    ? 'from-emerald-100 via-teal-50 to-blue-100 dark:from-[#032b1a] dark:via-[#073b28] dark:to-[#0d1b4b]'
-    : 'from-violet-100 via-indigo-50 to-blue-100 dark:from-[#1a0938] dark:via-[#1e0f5c] dark:to-[#0d1b4b]';
-
   return (
-    <div
-      className={cn(
-        'min-h-screen flex flex-col items-center relative overflow-hidden',
-        'bg-gradient-to-br transition-all duration-[1100ms]',
-        bgClass,
-      )}
-    >
-      <DriftingOrbs />
+    <div className="min-h-screen flex flex-col items-center relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
 
-      {/* Top rim */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.5) 40%,rgba(255,255,255,0.7) 60%,transparent)' }}
-      />
+      {/* Corp grid background */}
+      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
+
+      {/* Ambient glow */}
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
 
       {/* Progress bar — during quiz and closing */}
       {(state.phase === 'quiz' || state.phase === 'closing') && (
@@ -249,15 +224,15 @@ export function PlacementEngine({ name, age }: Props) {
         <button
           type="button"
           onClick={handleExit}
-          className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-black/8 dark:bg-white/10 hover:bg-black/15 dark:hover:bg-white/20 transition-colors"
+          className="absolute top-4 right-4 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-slate-200/70 dark:bg-white/10 hover:bg-slate-300/70 dark:hover:bg-white/20 transition-colors"
           aria-label={t('quiz.exit_aria')}
         >
-          <X className="w-4 h-4 text-gray-500 dark:text-white/60" />
+          <X className="w-4 h-4 text-slate-500 dark:text-white/60" />
         </button>
       )}
 
       {/* Content */}
-      <div className="flex-1 w-full flex flex-col items-center justify-center px-4 py-8 gap-6 max-w-lg mx-auto">
+      <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center px-4 py-8 gap-6 max-w-lg mx-auto">
 
         {state.phase === 'intro' && (
           <PlacementIntroScreen

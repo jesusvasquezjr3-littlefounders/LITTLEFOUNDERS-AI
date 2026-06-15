@@ -113,7 +113,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-7 sm:mt-12",
                 bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 translate-y-4 pointer-events-none"
             )}>
@@ -163,9 +163,48 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                         <line x1="0" y1="10" x2="20" y2="10" stroke="#3498db" strokeWidth="1.5" />
                     </pattern>
                     <filter id="rhoShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="5" dy="7" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="1.5" result="blur" />
-                        <feFlood floodColor="#3D3229" floodOpacity="0.35" result="color" />
+                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
+                        <feFlood floodColor="#3D3229" floodOpacity="0.3" result="dropColor" />
+                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
+                        
+                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
+
+                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
+
+                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
+                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
+                        <feFlood floodColor="#3D3229" floodOpacity="0.35" result="isColor" />
+                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
+
+                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
+                        <feFlood floodColor="#1a1612" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
+
+                        <feMerge>
+                            <feMergeNode in="dropShadow" />
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="innerShadow" />
+                            <feMergeNode in="edgeShadow" />
+                            <feMergeNode in="highlight" />
+                            <feMergeNode in="rimLight" />
+                        </feMerge>
+                    </filter>
+                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
+                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
+                        <feFlood floodColor="#3D3229" floodOpacity="0.25" result="color" />
                         <feComposite in="color" in2="blur" operator="in" result="shadow" />
                         <feMerge>
                             <feMergeNode in="shadow" />
@@ -184,14 +223,14 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 </g>
 
                 {/* Cuerpo */}
-                <g transform="translate(0, 40)">
+                <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
                     <rect x="130" y="270" width="140" height="150" rx="40" fill="url(#plaidPattern)" />
                     <path d="M160 270 Q 200 340 240 270" fill={COLORS.shirt} />
                     <path d="M200 300 L 185 330 L 200 350 L 215 330 Z" fill="#EF5777" />
                 </g>
 
                 {/* Brazos */}
-                <g transform="translate(0, 40)">
+                <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
                     <path d="M135 290 Q 110 350 145 370" stroke={COLORS.shirt} strokeWidth="24" fill="none" />
                     <circle cx="145" cy="370" r="14" fill={COLORS.skin} />
                     <path d="M265 290 Q 290 350 255 370" stroke={COLORS.shirt} strokeWidth="24" fill="none" />
@@ -199,7 +238,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 </g>
 
                 {/* Cabeza */}
-                <g id="dr-rho-head-group" style={{ transformOrigin: '200px 200px', transition: 'transform 0.1s linear' }}>
+                <g id="dr-rho-head-group" style={{ transformOrigin: '200px 200px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
                     <g transform="translate(0, 25)">
                         <circle cx="120" cy="200" r="18" fill={COLORS.skin} />
                         <circle cx="280" cy="200" r="18" fill={COLORS.skin} />
@@ -280,7 +319,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 </g>
 
                 {/* Mapa Rúnico Flotante */}
-                <g transform="translate(280, 340) rotate(10)">
+                <g transform="translate(280, 340) rotate(10)" filter="url(#innerDropShadow)">
                     <g className="animate-[pulse_3s_infinite]">
                         <rect x="-25" y="-35" width="50" height="70" rx="8" fill="#F8EFBA" stroke={COLORS.gold} strokeWidth="4" />
                         <circle cx="0" cy="-10" r="10" fill="none" stroke={COLORS.magic} strokeWidth="3" strokeDasharray="3 3" />

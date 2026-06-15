@@ -119,7 +119,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2",
+                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-8 sm:mt-14",
                 bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 pointer-events-none"
             )}>
@@ -165,9 +165,53 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                         <stop offset="60%" stopColor={COLORS.hair} />
                     </linearGradient>
                     <filter id="zaraShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="5" dy="7" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="1.5" result="blur" />
-                        <feFlood floodColor="#581C24" floodOpacity="0.35" result="color" />
+                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
+                        <feFlood floodColor="#581C24" floodOpacity="0.3" result="dropColor" />
+                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
+                        
+                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
+                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
+                        <feFlood floodColor="#581C24" floodOpacity="0.35" result="isColor" />
+                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
+
+                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
+                        <feFlood floodColor="#310f13" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
+
+                        <feMerge>
+                            <feMergeNode in="dropShadow" />
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="innerShadow" />
+                            <feMergeNode in="edgeShadow" />
+                        </feMerge>
+                    </filter>
+                    <filter id="zaraHairHighlights" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.10" result="hlColor" />
+                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
+
+                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.15" result="rimColor" />
+                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
+
+                        <feMerge>
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="highlight" />
+                            <feMergeNode in="rimLight" />
+                        </feMerge>
+                    </filter>
+                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
+                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
+                        <feFlood floodColor="#581C24" floodOpacity="0.25" result="color" />
                         <feComposite in="color" in2="blur" operator="in" result="shadow" />
                         <feMerge>
                             <feMergeNode in="shadow" />
@@ -178,7 +222,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
                 <g filter="url(#zaraShadow)">
                 {/* === CABELLO TRASERO === */}
-                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} />
+                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} filter="url(#zaraHairHighlights)" />
 
                 {/* === CUERPO INFERIOR === */}
                 <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
@@ -187,34 +231,39 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
 
                 {/* === CUERPO SUPERIOR === */}
-                <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={COLORS.top} />
+                <g filter="url(#innerDropShadow)">
+                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={COLORS.top} />
 
-                {/* Brazos */}
-                <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
-                <circle cx="32" cy="210" r="4.5" fill={COLORS.skin} />
-                <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
-                <circle cx="108" cy="210" r="4.5" fill={COLORS.skin} />
+                    {/* Brazos */}
+                    <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
+                    <circle cx="32" cy="210" r="4.5" fill={COLORS.skin} />
+                    <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
+                    <circle cx="108" cy="210" r="4.5" fill={COLORS.skin} />
 
-                {/* Cuello */}
-                <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    {/* Cuello */}
+                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
 
-                {/* Collar */}
-                <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
-                <path d="M70 126 L 70 130" stroke={COLORS.necklace} strokeWidth="2" />
-                <circle cx="70" cy="132" r="2.5" fill={COLORS.necklace} />
+                    {/* Collar */}
+                    <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
+                    <path d="M70 126 L 70 130" stroke={COLORS.necklace} strokeWidth="2" />
+                    <circle cx="70" cy="132" r="2.5" fill={COLORS.necklace} />
+                </g>
 
                 {/* === CABEZA === */}
-                <g id="zara-head-group" style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }}>
+                <g id="zara-head-group" style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
                     <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
 
-                    {/* Cabello Frontal */}
-                    <path d="M35 45 Q 45 15 70 15 Q 95 15 105 45" fill={COLORS.hair} />
+                    {/* Cabello Frontal y Mechones agrupados para el filtro de luz */}
+                    <g filter="url(#zaraHairHighlights)">
+                        {/* Cabello Frontal */}
+                        <path d="M35 45 Q 45 15 70 15 Q 95 15 105 45" fill={COLORS.hair} />
 
-                    {/* Mechón Izquierdo */}
-                    <path d="M40 38 Q 35 50 40 70 Q 50 50 55 40 Z" fill={COLORS.hair} />
+                        {/* Mechón Izquierdo */}
+                        <path d="M40 38 Q 35 50 40 70 Q 50 50 55 40 Z" fill={COLORS.hair} />
 
-                    {/* Mechón Derecho */}
-                    <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill="url(#hairShine)" />
+                        {/* Mechón Derecho */}
+                        <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill="url(#hairShine)" />
+                    </g>
 
                     {/* Flor SVG (reemplaza emoji) */}
                     <g transform="translate(45, 40) rotate(-15)">

@@ -121,7 +121,7 @@ export default function Onboarding() {
   const [expSelected, setExpSelected] = useState(false);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { playFile, mute } = useSound();
+  const { playFile, mute, playBGM, stopBGM } = useSound();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isNarrationPlaying, setIsNarrationPlaying] = useState(false);
 
@@ -169,6 +169,14 @@ export default function Onboarding() {
       if (audioRef.current === audio) audioRef.current = null;
     };
   }, [step, i18n.language, mute]);
+
+  // ── Background Music ──────────────────────────────────────────────────
+  useEffect(() => {
+    playBGM('/sounds/edu/background.mp3', { volume: 0.3 });
+    return () => {
+      stopBGM({ fade: true, fadeDuration: 1500 });
+    };
+  }, [playBGM, stopBGM]);
 
   // ── Guard: redirect if session already exists ─────────────────────────
   useEffect(() => {
@@ -449,15 +457,15 @@ export default function Onboarding() {
       <ProgressBar step={step} />
 
       {/* ── Step content ──────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center px-4 py-8 gap-6 max-w-lg mx-auto">
+      <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center px-4 py-4 sm:py-8 gap-4 sm:gap-6 max-w-lg mx-auto">
 
         {/* ── STEP 0: Welcome ─────────────────────────────────────────── */}
         {step === 0 && (
           <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
             {/* Single character in spotlight, matching other steps */}
-            <div className="w-36 h-48 mb-2 relative z-10 drop-shadow-xl">
+            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinoCharacter
-                  mood="excited"
+                  mood="happy"
                   showBubble
                   currentText={t("welcome.liruf_bubble")}
                   bubblePosition="standard"
@@ -495,7 +503,7 @@ export default function Onboarding() {
         {/* ── STEP 1: Name ────────────────────────────────────────────── */}
         {step === 1 && (
           <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
-            <div className="w-36 h-48 mb-2 relative z-10 drop-shadow-xl">
+            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinoCharacter
                   mood={nameInput.trim().length > 0 ? "excited" : "happy"}
                   showBubble={!!nameBubble}
@@ -558,7 +566,7 @@ export default function Onboarding() {
         {/* ── STEP 2: Age ─────────────────────────────────────────────── */}
         {step === 2 && (
           <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
-            <div className="w-36 h-48 mb-2 relative z-10 drop-shadow-xl">
+            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinaCharacter
                   expression="happy"
                   showBubble={!!ageBubble}
@@ -640,7 +648,7 @@ export default function Onboarding() {
         {/* ── STEP 3: Interests ───────────────────────────────────────── */}
         {step === 3 && (
           <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
-            <div className="w-28 h-40 mb-2 relative z-10 drop-shadow-xl">
+            <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
                 <DrRhoCharacter
                   mood="explaining"
                   showBubble={!!interestsBubble}
@@ -650,7 +658,7 @@ export default function Onboarding() {
                 />
             </div>
 
-            <div className="text-center mb-6">
+            <div className="text-center mb-4 sm:mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
                 {t("interests.title")}
               </h2>
@@ -659,7 +667,7 @@ export default function Onboarding() {
               </p>
             </div>
 
-            <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+            <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-5">
               {INTERESTS.map((interest) => {
                 const selected = data.interests.includes(interest);
                 return (
@@ -668,7 +676,7 @@ export default function Onboarding() {
                     type="button"
                     onClick={() => toggleInterest(interest)}
                     className={cn(
-                      "relative rounded-xl p-4 text-center transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
+                      "relative rounded-xl p-3 sm:p-4 text-center transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
                       selected
                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-sm"
@@ -680,7 +688,7 @@ export default function Onboarding() {
                         <Check className="w-3 h-3 text-white" />
                       </span>
                     )}
-                    <div className="text-3xl mb-2">
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">
                       {t(`interests.options.${interest}.icon`)}
                     </div>
                     <p className="text-slate-900 dark:text-white font-semibold text-sm">
@@ -709,7 +717,7 @@ export default function Onboarding() {
         {/* ── STEP 4: Experience ──────────────────────────────────────── */}
         {step === 4 && (
           <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
-            <div className="w-28 h-40 mb-2 relative z-10 drop-shadow-xl">
+            <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
                 <ZaraVexCharacter
                   mood={expSelected ? "flirty" : "excited"}
                   showBubble={!!experienceBubble}
@@ -719,7 +727,7 @@ export default function Onboarding() {
                 />
             </div>
 
-            <div className="text-center mb-6">
+            <div className="text-center mb-4 sm:mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1 text-center">
                 {t("experience.title")}
               </h2>
@@ -728,7 +736,7 @@ export default function Onboarding() {
               </p>
             </div>
 
-            <div className="w-full flex flex-col gap-3">
+            <div className="w-full flex flex-col gap-2 sm:gap-3">
               {EXP_LEVELS.map((level) => {
                 const selected = data.experience_level === level;
                 return (
@@ -739,7 +747,7 @@ export default function Onboarding() {
                     onMouseEnter={() => setExpHovered(level)}
                     onMouseLeave={() => setExpHovered(null)}
                     className={cn(
-                      "relative rounded-xl p-4 text-left flex flex-row items-center gap-4 transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
+                      "relative rounded-xl p-3 sm:p-4 text-left flex flex-row items-center gap-3 sm:gap-4 transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
                       selected
                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-sm"
