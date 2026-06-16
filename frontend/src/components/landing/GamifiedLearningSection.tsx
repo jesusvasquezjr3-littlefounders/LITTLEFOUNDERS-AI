@@ -105,11 +105,14 @@ export function GamifiedLearningSection() {
             </div>
 
             {/* Morphing Blob Video Frame — amber/jade brand colors */}
-            <div className="relative w-[340px] h-[340px] sm:w-[460px] sm:h-[460px] lg:w-[500px] lg:h-[500px] flex-shrink-0 morphing-blob-video-frame bg-gradient-to-tr from-[#f6a821]/50 via-white/20 to-[#1a9e7a]/50 dark:from-[#f6a821]/35 dark:via-white/5 dark:to-[#1a9e7a]/35 p-[6px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(246,168,33,0.35)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15 overflow-hidden z-10" style={{ animationDelay: '0.5s' }}>
+            <div className="relative w-[340px] h-[235px] sm:w-[460px] sm:h-[315px] lg:w-[620px] lg:h-[420px] flex-shrink-0 morphing-blob-video-frame bg-gradient-to-tr from-[#f6a821]/50 via-white/20 to-[#1a9e7a]/50 dark:from-[#f6a821]/35 dark:via-white/5 dark:to-[#1a9e7a]/35 p-[6px] backdrop-blur-md shadow-[0_25px_60px_-15px_rgba(246,168,33,0.35)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] border border-white/40 dark:border-white/15 overflow-hidden z-10" style={{ animationDelay: '0.5s' }}>
               <div className="w-full h-full overflow-hidden bg-white/70 dark:bg-slate-900/70 relative" style={{ borderRadius: 'inherit' }}>
-                <img
-                  src="/happy_diverse_kids_learning.png"
-                  alt="Happy diverse children learning financial concepts"
+                <video
+                  src="/video/8747232-sd_960_540_25fps.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                 />
                 {/* Glossy liquid glass reflections */}

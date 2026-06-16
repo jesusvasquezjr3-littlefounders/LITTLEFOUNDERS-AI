@@ -268,8 +268,8 @@ const LandingPage = () => {
             <Reveal variant="left" className="relative z-10">
                 <LiquidGlassMedia
                   type="image"
-                  src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1100&q=80"
-                  alt="Familia aprendiendo finanzas con LittleFounders"
+                  src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1100&q=80"
+                  alt="Happy kids learning finance together with LittleFounders"
                   delay="0.8s"
                 />
             </Reveal>
