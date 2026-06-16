@@ -235,12 +235,14 @@ export function LessonCelebration({
         />
       )}
 
-      {/* ── Background: dark indigo with dot-grid ───────────────────────── */}
+      {/* ── Background: Light/Dark with dot-grid ───────────────────────── */}
       <div
         className={cn(
-          "lp-celebration-bg lp-dot-grid absolute inset-0 z-0 animate-in fade-in duration-700",
+          "bg-slate-50 dark:bg-[#070b14] absolute inset-0 z-0 animate-in fade-in duration-700",
         )}
-      />
+      >
+        <div className="absolute inset-0 corp-grid-bg pointer-events-none opacity-30 dark:opacity-20" />
+      </div>
 
       {/* ── Ambient glow orbs ────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -248,8 +250,8 @@ export function LessonCelebration({
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
           style={{
             background: isPerfect
-              ? "radial-gradient(circle, rgba(91,110,245,0.20) 0%, transparent 65%)"
-              : "radial-gradient(circle, rgba(25,182,126,0.18) 0%, transparent 65%)",
+              ? "radial-gradient(circle, rgba(26,158,122,0.20) 0%, transparent 65%)"
+              : "radial-gradient(circle, rgba(246,168,33,0.18) 0%, transparent 65%)",
             filter: "blur(60px)",
             animation: "streak-glow-pulse 4s ease-in-out infinite",
           }}
@@ -257,7 +259,7 @@ export function LessonCelebration({
         <div
           className="absolute -top-32 -right-20 w-[350px] h-[350px] rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(91,110,245,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(246,168,33,0.12) 0%, transparent 70%)",
             filter: "blur(80px)",
             animation: "streak-orb-float-1 10s ease-in-out infinite",
           }}
@@ -265,7 +267,7 @@ export function LessonCelebration({
         <div
           className="absolute -bottom-24 -left-16 w-[300px] h-[300px] rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(246,168,33,0.10) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(26,158,122,0.10) 0%, transparent 70%)",
             filter: "blur(70px)",
             animation: "streak-orb-float-2 12s ease-in-out infinite",
           }}
@@ -276,7 +278,7 @@ export function LessonCelebration({
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] z-0 opacity-[0.07] rounded-full pointer-events-none"
         style={{
-          background: `repeating-conic-gradient(from 0deg, ${isPerfect ? "#6366f1" : "#10b981"} 0deg 12deg, transparent 12deg 24deg)`,
+          background: `repeating-conic-gradient(from 0deg, ${isPerfect ? "#1a9e7a" : "#f6a821"} 0deg 12deg, transparent 12deg 24deg)`,
           maskImage: "radial-gradient(circle, black 15%, transparent 65%)",
           WebkitMaskImage: "radial-gradient(circle, black 15%, transparent 65%)",
           animation: "spin 40s linear infinite",

@@ -19,12 +19,12 @@ export const LandingParentCTA: React.FC = () => {
   const { t } = useTranslation("landing");
 
   return (
-    <section className="relative py-28 lg:py-36 overflow-hidden text-gray-900 dark:text-white bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-[#0a0520] dark:to-[#060d20]">
+    <section className="relative py-28 lg:py-36 overflow-hidden text-gray-900 dark:text-white bg-slate-50 dark:bg-[#08090e]">
 
       {/* ── Radial starburst from center ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, rgba(59,130,246,0.10) 35%, rgba(14,165,233,0.06) 60%, transparent 80%)' }} />
+          style={{ background: 'radial-gradient(circle, rgba(246,168,33,0.12) 0%, rgba(26,158,122,0.07) 40%, transparent 70%)' }} />
       </div>
 
       {/* ── Dot-grid texture ── */}
@@ -55,8 +55,8 @@ export const LandingParentCTA: React.FC = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
 
         {/* Top badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 text-sm font-bold mb-8 animate-fade-in-up">
-          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-sm font-bold mb-8 animate-fade-in-up">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           {t("cta_parents.disclaimer")}
         </div>
 
@@ -73,7 +73,7 @@ export const LandingParentCTA: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center gap-4 justify-center mb-14 animate-fade-in-up-delay-3">
           <Button asChild size="lg"
             className="btn-press h-14 px-10 text-lg rounded-2xl font-black text-white border-0 shadow-none w-full sm:w-auto"
-            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #3b82f6 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, #f6a821 0%, #1a9e7a 100%)' }}>
             <Link to="/onboarding" className="flex items-center gap-2">
               {t("cta_parents.button")}
               <ArrowRight className="w-5 h-5" />

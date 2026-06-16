@@ -77,9 +77,9 @@ const LandingPage = () => {
   ];
 
   const pillars = [
-    { icon: GraduationCap, color: "from-indigo-500 to-blue-500", title: t("corp.pillars.p1_title"), desc: t("corp.pillars.p1_desc") },
-    { icon: ShieldCheck, color: "from-emerald-500 to-teal-500", title: t("corp.pillars.p2_title"), desc: t("corp.pillars.p2_desc") },
-    { icon: LayoutDashboard, color: "from-violet-500 to-fuchsia-500", title: t("corp.pillars.p3_title"), desc: t("corp.pillars.p3_desc") },
+    { icon: GraduationCap, color: "bg-[#f6a821] shadow-[0_8px_20px_-6px_rgba(246,168,33,0.45)]", title: t("corp.pillars.p1_title"), desc: t("corp.pillars.p1_desc") },
+    { icon: ShieldCheck, color: "bg-[#1a9e7a] shadow-[0_8px_20px_-6px_rgba(26,158,122,0.45)]", title: t("corp.pillars.p2_title"), desc: t("corp.pillars.p2_desc") },
+    { icon: LayoutDashboard, color: "bg-[#2563eb] shadow-[0_8px_20px_-6px_rgba(37,99,235,0.40)]", title: t("corp.pillars.p3_title"), desc: t("corp.pillars.p3_desc") },
   ];
 
   const showcaseItems = [
@@ -116,24 +116,24 @@ const LandingPage = () => {
       {/* ══════════════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════════════ */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+      <header className="relative overflow-hidden bg-gradient-to-b from-amber-50/80 via-white to-white dark:from-[#0f0a05] dark:via-[#070b14] dark:to-[#070b14]">
         {/* Ambient glow + grid */}
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/15 dark:bg-indigo-600/15 blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-sky-400/10 dark:bg-blue-700/10 blur-[120px] pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-amber-400/15 dark:bg-amber-600/10 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-[#1a9e7a]/10 dark:bg-[#1a9e7a]/15 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Copy */}
             <div>
-              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
                 <Sparkles className="w-3.5 h-3.5" /> {t("corp.hero.badge")}
               </Reveal>
 
               <Reveal delay={80}>
                 <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.08] text-slate-900 dark:text-white">
                   {t("corp.hero.title_1")}{" "}
-                  <span className="corp-gradient-text">{t("corp.hero.title_grad")}</span>{" "}
+                  <span className="text-[#1a9e7a] dark:text-[#34d399]">{t("corp.hero.title_grad")}</span>{" "}
                   {t("corp.hero.title_2")}
                 </h1>
               </Reveal>
@@ -155,7 +155,7 @@ const LandingPage = () => {
                   </Link>
                   <Link
                     to="/how-it-works"
-                    className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-[#1a9e7a] hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors"
                   >
                     <PlayCircle className="w-5 h-5" />
                     {t("corp.hero.cta_secondary")}
@@ -208,7 +208,7 @@ const LandingPage = () => {
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               {trustItems.map((item, i) => (
                 <div key={i} className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                  <item.icon className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                  <item.icon className="w-4 h-4 text-[#f6a821]" />
                   {item.label}
                 </div>
               ))}
@@ -225,7 +225,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((s, i) => (
               <Reveal key={i} delay={i * 80} className="text-center">
-                <p className="text-3xl md:text-4xl font-bold corp-gradient-text">{s.value}</p>
+                <p className="text-3xl md:text-4xl font-bold text-[#f6a821]">{s.value}</p>
                 <p className="mt-2 text-sm text-slate-300 dark:text-slate-400">{s.label}</p>
               </Reveal>
             ))}
@@ -246,8 +246,8 @@ const LandingPage = () => {
           <div className="mt-14 grid md:grid-cols-3 gap-6">
             {pillars.map((p, i) => (
               <Reveal key={i} delay={i * 100}>
-                <div className="corp-card h-full p-8">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${p.color} flex items-center justify-center shadow-lg`}>
+                <div className="corp-card h-full p-8 transition-transform hover:-translate-y-1">
+                  <div className={`w-12 h-12 rounded-2xl ${p.color} flex items-center justify-center`}>
                     <p.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="mt-6 text-xl font-bold text-slate-900 dark:text-white">{p.title}</h3>
@@ -285,8 +285,8 @@ const LandingPage = () => {
                 {showcaseItems.map((item, i) => (
                   <Reveal key={i} variant="right" delay={i * 90}>
                     <div className="flex gap-4">
-                      <div className="w-11 h-11 shrink-0 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center">
-                        <item.icon className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
+                      <div className="w-11 h-11 shrink-0 rounded-xl bg-amber-50 dark:bg-amber-500/15 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center">
+                        <item.icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                       </div>
                       <div>
                         <h3 className="text-base font-bold text-slate-900 dark:text-white">{item.title}</h3>
@@ -314,9 +314,9 @@ const LandingPage = () => {
           <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <Reveal key={i} delay={(i % 3) * 90}>
-                <div className="corp-card h-full p-7">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500/10 to-blue-500/10 dark:from-indigo-500/20 dark:to-blue-500/20 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center">
-                    <f.icon className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
+                <div className="corp-card h-full p-7 transition-transform hover:-translate-y-1">
+                  <div className="w-11 h-11 rounded-xl bg-[#1a9e7a]/10 dark:bg-[#1a9e7a]/20 border border-[#1a9e7a]/20 flex items-center justify-center">
+                    <f.icon className="w-5 h-5 text-[#0d7a5f] dark:text-[#34d399]" />
                   </div>
                   <h3 className="mt-5 text-lg font-bold text-slate-900 dark:text-white">{f.title}</h3>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{f.desc}</p>
@@ -341,7 +341,7 @@ const LandingPage = () => {
               <ul className="mt-6 space-y-3">
                 {[t("corp.audience.kids_1"), t("corp.audience.kids_2"), t("corp.audience.kids_3")].map((it, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-                    <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" /> {it}
+                    <CheckCircle2 className="w-5 h-5 text-[#f6a821] shrink-0" /> {it}
                   </li>
                 ))}
               </ul>
@@ -357,7 +357,7 @@ const LandingPage = () => {
               <ul className="mt-6 space-y-3">
                 {[t("corp.audience.parents_1"), t("corp.audience.parents_2"), t("corp.audience.parents_3")].map((it, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" /> {it}
+                    <CheckCircle2 className="w-5 h-5 text-[#1a9e7a] shrink-0" /> {it}
                   </li>
                 ))}
               </ul>
@@ -438,9 +438,10 @@ const LandingPage = () => {
       <section className="relative py-24 bg-white dark:bg-[#070b14]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-gradient-to-br dark:from-indigo-900 dark:to-blue-950 px-6 sm:px-12 py-16 text-center">
+            <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 sm:px-12 py-16 text-center">
               <div className="absolute inset-0 corp-grid-bg opacity-30 pointer-events-none" />
-              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-indigo-500/20 blur-[100px] pointer-events-none" />
+              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-[#f6a821]/15 blur-[100px] pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-[20rem] h-[20rem] rounded-full bg-[#1a9e7a]/20 blur-[100px] pointer-events-none" />
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight max-w-2xl mx-auto">
                   {t("corp.final_cta.title")}
@@ -451,7 +452,7 @@ const LandingPage = () => {
                 <div className="mt-9 flex flex-col sm:flex-row gap-3 justify-center">
                   <Link
                     to={startTo}
-                    className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5 bg-white text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg"
+                    className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5 bg-[#f6a821] text-slate-900 hover:bg-[#e8880a] transition-colors shadow-[0_8px_20px_-6px_rgba(246,168,33,0.5)]"
                   >
                     {session ? t("corp.hero.cta_resume") : t("corp.final_cta.primary")}
                     <ArrowRight className="w-5 h-5" />

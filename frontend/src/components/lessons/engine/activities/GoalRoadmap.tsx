@@ -161,7 +161,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
 
                             {/* Finish Flag */}
                             {orderedGoals.length === goals.length && (
-                                <div className="relative flex items-center gap-4 pl-12 animate-bounce">
+                                <div className="relative flex items-center gap-4 pl-12 animate-float">
                                     <div className="absolute left-3 z-10 w-7 h-7 flex items-center justify-center">
                                         <Flag className="w-7 h-7" style={{ color: 'var(--lp-emerald)' }} />
                                     </div>

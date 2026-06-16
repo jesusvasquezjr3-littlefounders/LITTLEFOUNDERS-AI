@@ -70,28 +70,21 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
       <div
         className={`absolute inset-0 pointer-events-none transition-all duration-1000 ease-out bg-[length:200%_200%] ${
           isVisible
-            ? "bg-gradient-to-br from-blue-100 via-violet-50 to-rose-100 dark:from-[#1a0f2e] dark:via-[#3d1a4a] dark:to-[#1a0f2e] animate-streak-bg"
-            : "bg-stone-100 dark:bg-[#0a0a0a]"
+            ? "bg-gradient-to-br from-amber-50/80 via-white to-orange-50/80 dark:from-[#0a0a0a] dark:via-[#0d0905] dark:to-[#1a0d0a] animate-streak-bg"
+            : "bg-white dark:bg-[#0a0a0a]"
         }`}
       />
 
       {/* Dot-grid overlay — characteristic map-paper texture */}
       {isVisible && (
-        <div
-          className="absolute inset-0 pointer-events-none z-0"
-          style={{
-            backgroundImage: "radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1.4px)",
-            backgroundSize: "26px 26px",
-            opacity: 0.06,
-          }}
-        />
+        <div className="absolute inset-0 corp-grid-bg pointer-events-none opacity-20 dark:opacity-10 z-0" />
       )}
 
       {/* Animated orbs in background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden saturate-[120%] dark:saturate-[150%]">
         {/* Orb 1 - fiery glow */}
         <div
-          className="absolute w-96 h-96 rounded-full blur-[120px] pointer-events-none from-blue-400/40 dark:from-[rgba(255,69,0,0.45)]"
+          className="absolute w-96 h-96 rounded-full blur-[120px] pointer-events-none from-amber-400/40 dark:from-[rgba(255,107,53,0.45)]"
           style={{
             background: "radial-gradient(circle, var(--tw-gradient-from) 0%, transparent 70%)",
             top: "-10%",
@@ -102,7 +95,7 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
 
         {/* Orb 2 - amber glow */}
         <div
-          className="absolute w-80 h-80 rounded-full blur-[100px] pointer-events-none from-violet-400/35 dark:from-[rgba(255,179,0,0.35)]"
+          className="absolute w-80 h-80 rounded-full blur-[100px] pointer-events-none from-orange-400/35 dark:from-[rgba(255,179,0,0.35)]"
           style={{
             background: "radial-gradient(circle, var(--tw-gradient-from) 0%, transparent 70%)",
             bottom: "-8%",

@@ -67,7 +67,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                 <p className="lp-display text-2xl sm:text-3xl leading-tight mb-6" style={{ color: "var(--lp-ink)" }}>
                     {headline}
                 </p>
-                <div className="p-4 rounded-r-xl border-l-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                <div className="p-4 rounded-xl border" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                     <p className="lp-display text-lg" style={{ color: "var(--lp-indigo-ink)" }}>
                         {question}
                     </p>

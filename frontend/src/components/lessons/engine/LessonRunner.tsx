@@ -801,7 +801,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {combo >= 2 && (
                     <div
                         key={`combo-${combo}`}
-                        className="lp-chip flex items-center gap-1 px-2.5 py-1.5 animate-bounce-in-scale"
+                        className="lp-chip flex items-center gap-1 px-2.5 py-1.5 animate-pop"
                         style={{ color: 'var(--lp-amber-ink)' }}
                         aria-label={t('combo', { count: combo, defaultValue: '¡Racha x{{count}}!' })}
                     >
@@ -865,7 +865,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
                         {/* Speech Bubble - ADAPTIVE */}
-                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
+                        <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-pop" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
                                 className="lp-card relative lesson-speech mx-2 px-5 py-3"
                                 role="status"

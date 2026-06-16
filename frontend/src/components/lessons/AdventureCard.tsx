@@ -159,9 +159,8 @@ const ArchipelagoScene = () => (
             <div className="water-shimmer absolute top-[60px] left-0 w-full h-1.5 opacity-50" style={{ animationDelay: '2.4s' }} />
         </div>
 
-        {/* Main Island (shaded sand + grass cap) */}
+        {/* Main Island (shaded sand) */}
         <div className="island-main absolute bottom-10 left-[5%] w-[200px] h-[100px] rounded-t-full z-5 shadow-island bg-gradient-to-b from-[#ffd277] to-[#ee9f3c]">
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-[150px] h-7 rounded-t-full bg-gradient-to-b from-[#83cc6f] to-[#56a44b]" />
             {/* Palm Tree */}
             <div className="palm absolute -top-[70px] left-[60px]">
                 {/* Trunk */}

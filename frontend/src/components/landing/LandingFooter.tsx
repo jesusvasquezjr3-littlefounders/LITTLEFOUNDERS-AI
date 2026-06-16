@@ -26,7 +26,10 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
         <section className="corp relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a] border-t border-slate-200/70 dark:border-white/10">
           <div className="absolute inset-0 corp-grid-bg opacity-60 dark:opacity-40 pointer-events-none" />
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-            <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-blue-600 dark:from-indigo-700 dark:to-blue-800 px-6 sm:px-12 py-12 text-center shadow-[0_30px_80px_-30px_rgba(37,99,235,0.6)]">
+            <div className="rounded-3xl bg-slate-900 px-6 sm:px-12 py-12 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)] relative overflow-hidden">
+              {/* Brand glows — jade + amber, not indigo */}
+              <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-amber-500/12 blur-[80px] pointer-events-none" />
               <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/80">
                 <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
               </span>
@@ -87,7 +90,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
                   <li key={l.to}>
                     <Link
                       to={l.to}
-                      className="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                      className="text-sm text-slate-600 dark:text-slate-300 hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors"
                     >
                       {l.label}
                     </Link>
@@ -103,7 +106,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               </h3>
               <a
                 href="mailto:informame@littlefounders.ai"
-                className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors"
               >
                 <Mail className="w-4 h-4" /> informame@littlefounders.ai
               </a>

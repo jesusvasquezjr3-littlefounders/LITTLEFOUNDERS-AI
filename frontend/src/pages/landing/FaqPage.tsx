@@ -26,9 +26,10 @@ export default function FaqPage() {
   return (
     <LandingLayout hideCTA>
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+      <header className="relative overflow-hidden bg-white dark:bg-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
+        {/* Warm amber glow — on-brand, not generic indigo */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-amber-400/8 dark:bg-amber-500/8 blur-[140px] pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-16 text-center">
           <Reveal as="span" className="corp-eyebrow">{t("nav.faq")}</Reveal>
           <Reveal delay={80}>
@@ -65,8 +66,8 @@ export default function FaqPage() {
                     >
                       <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
                         <div className="flex items-center gap-3 w-full pr-2">
-                          <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center shrink-0">
-                            <Icon className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
+                          <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/12 border border-amber-100 dark:border-amber-500/18 flex items-center justify-center shrink-0">
+                            <Icon className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                           </div>
                           <span className="font-semibold text-slate-900 dark:text-white text-sm leading-snug">
                             {t(item.qKey)}
@@ -91,7 +92,7 @@ export default function FaqPage() {
       <section className="relative py-24 bg-slate-50 dark:bg-[#0a0e1a]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center mx-auto shadow-lg">
+            <div className="w-14 h-14 rounded-2xl bg-[#1a9e7a] shadow-[0_8px_24px_-6px_rgba(26,158,122,0.45)] flex items-center justify-center mx-auto">
               <Mail className="w-7 h-7 text-white" />
             </div>
             <h2 className="mt-6 text-3xl font-bold text-slate-900 dark:text-white">{t("faq.contact_title")}</h2>
@@ -108,7 +109,7 @@ export default function FaqPage() {
               </a>
               <Link
                 to="/onboarding"
-                className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-[#1a9e7a] hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors"
               >
                 {t("corp.hero.cta_primary")}
                 <ArrowRight className="w-5 h-5" />
