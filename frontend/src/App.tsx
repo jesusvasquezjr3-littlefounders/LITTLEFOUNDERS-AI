@@ -32,6 +32,8 @@ import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import PageUnderConstruction from "./pages/PageUnderConstruction";
+// DEV-only: Playful DS v2 reference harness for the Lesson Engine redesign.
+import LessonLab from "./pages/dev/LessonLab";
 import { Navigate } from "react-router-dom";
 
 // Social
@@ -118,6 +120,9 @@ const App = () => (
 
                 {/* Public social profile — standalone, uses DashboardLayout internally */}
                 <Route path="/u/:username" element={<UserProfile />} />
+
+                {/* DEV-only reference harness for the Lesson Engine redesign (Playful DS v2) */}
+                {import.meta.env.DEV && <Route path="/dev/lesson-lab" element={<LessonLab />} />}
 
                 {/* /lessons — legacy redirect */}
                 <Route path="/lessons" element={<Navigate to="/learn" replace />} />
