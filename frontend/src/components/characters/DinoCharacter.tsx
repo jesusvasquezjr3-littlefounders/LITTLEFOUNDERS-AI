@@ -34,13 +34,18 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     const currentHead = useRef({ rot: 0, x: 0, y: 0 });
     const rafId = useRef<number | null>(null);
 
-    // Blinking
+    // Blinking — randomized per-blink for natural rhythm
+    const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
-        const blinkInterval = setInterval(() => {
+        const doBlink = () => {
             setIsBlinking(true);
-            setTimeout(() => setIsBlinking(false), 180);
-        }, 3000 + Math.random() * 2000);
-        return () => clearInterval(blinkInterval);
+            setTimeout(() => {
+                setIsBlinking(false);
+                blinkTimerRef.current = setTimeout(doBlink, 2000 + Math.random() * 2000);
+            }, 160);
+        };
+        blinkTimerRef.current = setTimeout(doBlink, 800 + Math.random() * 1200);
+        return () => { if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current); };
     }, []);
 
     // Mouse tracking with spring interpolation
@@ -166,34 +171,34 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <stop offset="0%" style={{ stopColor: "#dcfce7", stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
                     </linearGradient>
-                    <filter id="dinoShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
-                        <feFlood floodColor="#14532D" floodOpacity="0.3" result="dropColor" />
+                    <filter id="dinoShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
+                        <feFlood floodColor="#0c3d20" floodOpacity="0.22" result="dropColor" />
                         <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-                        
+
                         <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="6" result="hlBlur" />
                         <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="hlColor" />
                         <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
 
                         <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
                         <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="rimColor" />
                         <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
 
                         <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feGaussianBlur in="isOffset" stdDeviation="6" result="isBlur" />
                         <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#14532D" floodOpacity="0.35" result="isColor" />
+                        <feFlood floodColor="#14532D" floodOpacity="0.30" result="isColor" />
                         <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
 
                         <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
                         <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#064e3b" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feFlood floodColor="#064e3b" floodOpacity="0.22" result="edgeShadowColor" />
                         <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
 
                         <feMerge>

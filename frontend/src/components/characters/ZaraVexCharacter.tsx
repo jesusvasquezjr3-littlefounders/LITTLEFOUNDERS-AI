@@ -51,13 +51,18 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     const currentHead = useRef({ x: 0, y: 0, rot: 0 });
     const rafId = useRef<number | null>(null);
 
-    // Blinking
+    // Blinking — randomized per-blink for natural rhythm
+    const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
-        const interval = setInterval(() => {
+        const doBlink = () => {
             setIsBlinking(true);
-            setTimeout(() => setIsBlinking(false), 180);
-        }, 3800 + Math.random() * 1200);
-        return () => clearInterval(interval);
+            setTimeout(() => {
+                setIsBlinking(false);
+                blinkTimerRef.current = setTimeout(doBlink, 2000 + Math.random() * 2000);
+            }, 160);
+        };
+        blinkTimerRef.current = setTimeout(doBlink, 800 + Math.random() * 1200);
+        return () => { if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current); };
     }, []);
 
     // Mouse tracking
@@ -133,11 +138,12 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
             <style>{`
                 .zara-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .zara-mouth-talk { animation: zaraTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+                .zara-mouth-talk { animation: zaraTalkAnim 0.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes zaraTalkAnim {
-                    0%, 100% { transform: scaleY(1); }
-                    50% { transform: scaleY(1.2); }
+                    0%, 100% { transform: scaleY(0.65) scaleX(0.92); }
+                    50% { transform: scaleY(1.7) scaleX(1.05); }
                 }
+                @media (prefers-reduced-motion: reduce) { .zara-mouth-talk { animation: none; } }
                 .zara-idle-float { animation: zaraFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes zaraFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
                 .zara-spring-bounce { animation: zaraSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
@@ -164,22 +170,44 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                         <stop offset="20%" stopColor={COLORS.hairHighlight} />
                         <stop offset="60%" stopColor={COLORS.hair} />
                     </linearGradient>
-                    <filter id="zaraShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
-                        <feFlood floodColor="#581C24" floodOpacity="0.3" result="dropColor" />
+                    {/* Form-shading gradients (light from top-left) */}
+                    <radialGradient id="zaraSkin" cx="40%" cy="34%" r="78%">
+                        <stop offset="0%" stopColor="#FCE0CA" />
+                        <stop offset="58%" stopColor="#F5D0B5" />
+                        <stop offset="100%" stopColor="#E2B190" />
+                    </radialGradient>
+                    <linearGradient id="zaraTop" x1="22%" y1="0%" x2="78%" y2="100%">
+                        <stop offset="0%" stopColor="#A23A4C" />
+                        <stop offset="100%" stopColor="#741F2C" />
+                    </linearGradient>
+                    <filter id="zaraShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feOffset in="SourceAlpha" dx="0" dy="16" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="12" result="dropBlur" />
+                        <feFlood floodColor="#3a1218" floodOpacity="0.22" result="dropColor" />
                         <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-                        
+
+                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="7" result="hlBlur" />
+                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.28" result="hlColor" />
+                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
+
+                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
+                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.32" result="rimColor" />
+                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
+
                         <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feGaussianBlur in="isOffset" stdDeviation="7" result="isBlur" />
                         <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#581C24" floodOpacity="0.35" result="isColor" />
+                        <feFlood floodColor="#581C24" floodOpacity="0.26" result="isColor" />
                         <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
 
                         <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
                         <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#310f13" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feFlood floodColor="#310f13" floodOpacity="0.20" result="edgeShadowColor" />
                         <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
 
                         <feMerge>
@@ -187,6 +215,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                             <feMergeNode in="SourceGraphic" />
                             <feMergeNode in="innerShadow" />
                             <feMergeNode in="edgeShadow" />
+                            <feMergeNode in="highlight" />
+                            <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
                     <filter id="zaraHairHighlights" x="-20%" y="-20%" width="140%" height="140%">
@@ -232,16 +262,16 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
                 {/* === CUERPO SUPERIOR === */}
                 <g filter="url(#innerDropShadow)">
-                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={COLORS.top} />
+                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill="url(#zaraTop)" />
 
                     {/* Brazos */}
-                    <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="32" cy="210" r="4.5" fill={COLORS.skin} />
-                    <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke={COLORS.skin} strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="108" cy="210" r="4.5" fill={COLORS.skin} />
+                    <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
+                    <circle cx="32" cy="210" r="4.5" fill="url(#zaraSkin)" />
+                    <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
+                    <circle cx="108" cy="210" r="4.5" fill="url(#zaraSkin)" />
 
                     {/* Cuello */}
-                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Collar */}
                     <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
@@ -251,7 +281,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
                 {/* === CABEZA === */}
                 <g id="zara-head-group" style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
-                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Cabello Frontal y Mechones agrupados para el filtro de luz */}
                     <g filter="url(#zaraHairHighlights)">
@@ -275,8 +305,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     </g>
 
                     {/* Orejas */}
-                    <ellipse cx="38" cy="65" rx="4" ry="6" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2" />
-                    <ellipse cx="102" cy="65" rx="4" ry="6" fill={COLORS.skin} stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="38" cy="65" rx="4" ry="6" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="102" cy="65" rx="4" ry="6" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2" />
 
                     {/* Rubor */}
                     <ellipse cx="50" cy="75" rx="6" ry="3" fill={COLORS.blush} opacity={c.blush} />
@@ -290,8 +320,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     <g transform="translate(0, 2)">
                         {isBlinking ? (
                             <g>
-                                <path d="M45 62 Q 52 58 59 62" stroke={COLORS.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
-                                <path d="M81 62 Q 88 58 95 62" stroke={COLORS.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
+                                <path d="M45 62 Q 52 66 59 62" stroke={COLORS.stroke} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                                <path d="M81 62 Q 88 66 95 62" stroke={COLORS.stroke} strokeWidth="2.5" fill="none" strokeLinecap="round" />
                             </g>
                         ) : (
                             <>
@@ -346,26 +376,33 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     {/* Nariz */}
                     <path d="M68 75 Q 70 78 72 75" fill="none" stroke={COLORS.skinShadow} strokeWidth="2" strokeLinecap="round" />
 
-                    {/* Boca */}
-                    <g transform="translate(70, 85)" className={cn("zara-face-transition", isTalking ? "zara-mouth-talk" : "")}>
-                        {c.mouth === 'smile' && (
-                            <path d="M-6 -2 Q 0 4 6 -2" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
-                        )}
-                        {c.mouth === 'big' && (
-                            <path d="M-8 -2 Q 0 10 8 -2" fill={COLORS.white} stroke={COLORS.lips} strokeWidth="2" />
-                        )}
-                        {c.mouth === 'smirk' && (
-                            <path d="M-6 0 Q 2 -2 6 -4" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
-                        )}
-                        {c.mouth === 'o' && (
-                            <circle cx="0" cy="0" r="3" fill={COLORS.stroke} />
-                        )}
-                        {c.mouth === 'open' && (
-                            <circle cx="0" cy="0" r="5" fill={COLORS.stroke} />
-                        )}
+                    {/* Boca — el translate va en el grupo externo y la animación de habla en el interno
+                        para que el movimiento de boca NO sobreescriba la posición (la boca ya no desaparece). */}
+                    <g transform="translate(70, 85)" className="zara-face-transition">
+                        <g className={cn(isTalking ? "zara-mouth-talk" : "")}>
+                            {c.mouth === 'smile' && (
+                                <path d="M-6 -2 Q 0 4 6 -2" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
+                            )}
+                            {c.mouth === 'big' && (
+                                <path d="M-8 -2 Q 0 10 8 -2" fill={COLORS.white} stroke={COLORS.lips} strokeWidth="2" />
+                            )}
+                            {c.mouth === 'smirk' && (
+                                <path d="M-6 0 Q 2 -2 6 -4" fill="none" stroke={COLORS.lips} strokeWidth="2.5" strokeLinecap="round" />
+                            )}
+                            {c.mouth === 'o' && (
+                                <circle cx="0" cy="0" r="3" fill={COLORS.stroke} />
+                            )}
+                            {c.mouth === 'open' && (
+                                <circle cx="0" cy="0" r="5" fill={COLORS.stroke} />
+                            )}
+                        </g>
                     </g>
                 </g>
                 </g>
+
+                {/* Pantalón plano — re-pintado por encima del filtro para que no reciba luz clave/rim */}
+                <rect x="45" y="200" width="22" height="110" rx="2" fill={COLORS.pants} />
+                <rect x="73" y="200" width="22" height="110" rx="2" fill={COLORS.pants} />
             </svg>
         </div>
     );

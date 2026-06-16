@@ -568,7 +568,10 @@ export default function Onboarding() {
           <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
             <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinaCharacter
-                  expression="happy"
+                  expression={(() => {
+                    const p = parseInt(ageInput.trim(), 10);
+                    return !isNaN(p) && p >= 6 && p <= 100 ? "surprised" : "wink";
+                  })()}
                   showBubble={!!ageBubble}
                   currentText={ageBubble}
                   bubblePosition="standard"
@@ -719,7 +722,7 @@ export default function Onboarding() {
           <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
             <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
                 <ZaraVexCharacter
-                  mood={expSelected ? "flirty" : "excited"}
+                  mood={expSelected ? "flirty" : expHovered ? "excited" : "happy"}
                   showBubble={!!experienceBubble}
                   currentText={experienceBubble}
                   bubblePosition="top"

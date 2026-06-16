@@ -45,13 +45,18 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     const currentHead = useRef({ x: 0, y: 0, rot: 0 });
     const rafId = useRef<number | null>(null);
 
-    // Blinking
+    // Blinking — randomized per-blink for natural rhythm
+    const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
-        const interval = setInterval(() => {
+        const doBlink = () => {
             setIsBlinking(true);
-            setTimeout(() => setIsBlinking(false), 180);
-        }, 4500 + Math.random() * 1500);
-        return () => clearInterval(interval);
+            setTimeout(() => {
+                setIsBlinking(false);
+                blinkTimerRef.current = setTimeout(doBlink, 2000 + Math.random() * 2000);
+            }, 160);
+        };
+        blinkTimerRef.current = setTimeout(doBlink, 800 + Math.random() * 1200);
+        return () => { if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current); };
     }, []);
 
     // Mouse tracking
@@ -127,11 +132,12 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
 
             <style>{`
                 .rho-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .rho-mouth-talk { animation: rhoTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+                .rho-mouth-talk { animation: rhoTalkAnim 0.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes rhoTalkAnim {
-                    0%, 100% { transform: scaleY(1); }
-                    50% { transform: scaleY(1.2); }
+                    0%, 100% { transform: scaleY(0.6) scaleX(0.9); }
+                    50% { transform: scaleY(1.8) scaleX(1.06); }
                 }
+                @media (prefers-reduced-motion: reduce) { .rho-mouth-talk { animation: none; } }
                 .rho-idle-float { animation: rhoFloat 4s ease-in-out infinite; transform-origin: center bottom; }
                 @keyframes rhoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
                 .rho-spring-bounce { animation: rhoSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
@@ -162,34 +168,57 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                         <line x1="0" y1="0" x2="20" y2="0" stroke="#3498db" strokeWidth="3" />
                         <line x1="0" y1="10" x2="20" y2="10" stroke="#3498db" strokeWidth="1.5" />
                     </pattern>
-                    <filter id="rhoShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
-                        <feFlood floodColor="#3D3229" floodOpacity="0.3" result="dropColor" />
+                    {/* Form-shading gradients (light from top-left) */}
+                    <radialGradient id="rhoSkin" cx="38%" cy="30%" r="78%">
+                        <stop offset="0%" stopColor="#FFE2C8" />
+                        <stop offset="58%" stopColor="#FBD3B6" />
+                        <stop offset="100%" stopColor="#E7B795" />
+                    </radialGradient>
+                    <linearGradient id="rhoHair" x1="20%" y1="0%" x2="80%" y2="100%">
+                        <stop offset="0%" stopColor="#5C4838" />
+                        <stop offset="100%" stopColor="#392A1E" />
+                    </linearGradient>
+                    <linearGradient id="rhoPants" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#69727F" />
+                        <stop offset="100%" stopColor="#474F5B" />
+                    </linearGradient>
+                    <linearGradient id="rhoShirt" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#FFFBF0" />
+                        <stop offset="100%" stopColor="#F2E4C9" />
+                    </linearGradient>
+                    <linearGradient id="rhoFormShade" x1="20%" y1="0%" x2="80%" y2="100%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
+                        <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
+                        <stop offset="100%" stopColor="#2a2018" stopOpacity="0.20" />
+                    </linearGradient>
+                    <filter id="rhoShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feOffset in="SourceAlpha" dx="0" dy="16" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="12" result="dropBlur" />
+                        <feFlood floodColor="#2A2117" floodOpacity="0.22" result="dropColor" />
                         <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-                        
-                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+
+                        <feOffset in="SourceAlpha" dx="7" dy="9" result="hlOffset" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="7" result="hlBlur" />
                         <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.30" result="hlColor" />
                         <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
 
                         <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
                         <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.34" result="rimColor" />
                         <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
 
-                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feOffset in="SourceAlpha" dx="-9" dy="-11" result="isOffset" />
+                        <feGaussianBlur in="isOffset" stdDeviation="7" result="isBlur" />
                         <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#3D3229" floodOpacity="0.35" result="isColor" />
+                        <feFlood floodColor="#3D3229" floodOpacity="0.26" result="isColor" />
                         <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
 
                         <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
                         <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#1a1612" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feFlood floodColor="#241b14" floodOpacity="0.20" result="edgeShadowColor" />
                         <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
 
                         <feMerge>
@@ -216,8 +245,8 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 <g filter="url(#rhoShadow)">
                 {/* Piernas */}
                 <g transform="translate(0, 40)">
-                    <ellipse cx="165" cy="410" rx="20" ry="45" fill={COLORS.pants} />
-                    <ellipse cx="235" cy="410" rx="20" ry="45" fill={COLORS.pants} />
+                    <ellipse cx="165" cy="410" rx="20" ry="45" fill="url(#rhoPants)" />
+                    <ellipse cx="235" cy="410" rx="20" ry="45" fill="url(#rhoPants)" />
                     <ellipse cx="165" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
                     <ellipse cx="235" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
                 </g>
@@ -225,27 +254,28 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 {/* Cuerpo */}
                 <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
                     <rect x="130" y="270" width="140" height="150" rx="40" fill="url(#plaidPattern)" />
-                    <path d="M160 270 Q 200 340 240 270" fill={COLORS.shirt} />
+                    <rect x="130" y="270" width="140" height="150" rx="40" fill="url(#rhoFormShade)" />
+                    <path d="M160 270 Q 200 340 240 270" fill="url(#rhoShirt)" />
                     <path d="M200 300 L 185 330 L 200 350 L 215 330 Z" fill="#EF5777" />
                 </g>
 
                 {/* Brazos */}
                 <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
-                    <path d="M135 290 Q 110 350 145 370" stroke={COLORS.shirt} strokeWidth="24" fill="none" />
-                    <circle cx="145" cy="370" r="14" fill={COLORS.skin} />
-                    <path d="M265 290 Q 290 350 255 370" stroke={COLORS.shirt} strokeWidth="24" fill="none" />
-                    <circle cx="255" cy="370" r="14" fill={COLORS.skin} />
+                    <path d="M135 290 Q 110 350 145 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
+                    <circle cx="145" cy="370" r="14" fill="url(#rhoSkin)" />
+                    <path d="M265 290 Q 290 350 255 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
+                    <circle cx="255" cy="370" r="14" fill="url(#rhoSkin)" />
                 </g>
 
                 {/* Cabeza */}
                 <g id="dr-rho-head-group" style={{ transformOrigin: '200px 200px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
                     <g transform="translate(0, 25)">
-                        <circle cx="120" cy="200" r="18" fill={COLORS.skin} />
-                        <circle cx="280" cy="200" r="18" fill={COLORS.skin} />
-                        <rect x="125" y="100" width="150" height="180" rx="60" fill={COLORS.skin} />
+                        <circle cx="120" cy="200" r="18" fill="url(#rhoSkin)" />
+                        <circle cx="280" cy="200" r="18" fill="url(#rhoSkin)" />
+                        <rect x="125" y="100" width="150" height="180" rx="60" fill="url(#rhoSkin)" />
 
                         {/* Pelo */}
-                        <path d="M125 150 C 125 80, 275 80, 275 150 L 275 160 C 275 160, 260 160, 250 140 C 200 140, 150 140, 150 160 L 125 160 Z" fill={COLORS.hair} />
+                        <path d="M125 150 C 125 80, 275 80, 275 150 L 275 160 C 275 160, 260 160, 250 140 C 200 140, 150 140, 150 160 L 125 160 Z" fill="url(#rhoHair)" />
 
                         {/* Rostro */}
                         <g className="rho-face-transition">
@@ -276,12 +306,12 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                                             <>
                                                 <circle cx="160" cy="195" r="14" fill="white" stroke={COLORS.stroke} strokeWidth="4" />
                                                 <circle cx="160" cy="197" r="6" fill={COLORS.stroke} />
-                                                <path d="M142 190 H 178 V 175 H 142 Z" fill={COLORS.skin} stroke="none" />
+                                                <path d="M142 190 H 178 V 175 H 142 Z" fill="url(#rhoSkin)" stroke="none" />
                                                 <line x1="143" y1="190" x2="177" y2="190" stroke={COLORS.stroke} strokeWidth="4" />
 
                                                 <circle cx="240" cy="195" r="14" fill="white" stroke={COLORS.stroke} strokeWidth="4" />
                                                 <circle cx="240" cy="197" r="6" fill={COLORS.stroke} />
-                                                <path d="M222 190 H 258 V 175 H 222 Z" fill={COLORS.skin} stroke="none" />
+                                                <path d="M222 190 H 258 V 175 H 222 Z" fill="url(#rhoSkin)" stroke="none" />
                                                 <line x1="223" y1="190" x2="257" y2="190" stroke={COLORS.stroke} strokeWidth="4" />
                                             </>
                                         )}
@@ -306,13 +336,15 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                                 <path d="M200 240 Q 220 230 240 240 Q 250 245 245 255 Q 230 265 200 255 Q 170 265 155 255 Q 150 245 160 240 Q 180 230 200 240" fill={COLORS.hair} />
                             </g>
 
-                            {/* Boca */}
-                            <g transform="translate(200, 260)" className={cn(isTalking ? "rho-mouth-talk" : "")}>
-                                {current.mouth === 'smile' && <path d="M-10 0 Q 0 10 10 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
-                                {current.mouth === 'soft_smile' && <path d="M-8 0 Q 0 5 8 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
-                                {current.mouth === 'open' && <path d="M-8 0 Q 0 8 8 0 Z" fill="#4B3621" />}
-                                {current.mouth === 'o' && <circle cx="0" cy="0" r="6" fill="#4B3621" />}
-                                {current.mouth === 'small' && <circle cx="0" cy="0" r="2" fill={COLORS.stroke} />}
+                            {/* Boca — translate externo + animación de habla interna (la boca no desaparece) */}
+                            <g transform="translate(200, 260)">
+                                <g className={cn(isTalking ? "rho-mouth-talk" : "")}>
+                                    {current.mouth === 'smile' && <path d="M-10 0 Q 0 10 10 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
+                                    {current.mouth === 'soft_smile' && <path d="M-8 0 Q 0 5 8 0" stroke={COLORS.stroke} strokeWidth="4" fill="none" />}
+                                    {current.mouth === 'open' && <path d="M-8 0 Q 0 8 8 0 Z" fill="#4B3621" />}
+                                    {current.mouth === 'o' && <circle cx="0" cy="0" r="6" fill="#4B3621" />}
+                                    {current.mouth === 'small' && <circle cx="0" cy="0" r="2" fill={COLORS.stroke} />}
+                                </g>
                             </g>
                         </g>
                     </g>

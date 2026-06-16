@@ -95,16 +95,19 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     const effectiveExpression = isSurprised ? 'surprised' : currentExpression;
     const config = getExpressionConfig(effectiveExpression);
 
-    // ── Blinking (smooth, React-driven) ───────────────────────────────────
+    // ── Blinking — randomized per-blink, works for all expressions ───────
+    const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (currentExpression === 'neutral' || currentExpression === 'surprised') {
-                setIsBlinking(true);
-                setTimeout(() => setIsBlinking(false), 160);
-            }
-        }, 4000 + Math.random() * 1000);
-        return () => clearInterval(interval);
-    }, [currentExpression]);
+        const doBlink = () => {
+            setIsBlinking(true);
+            setTimeout(() => {
+                setIsBlinking(false);
+                blinkTimerRef.current = setTimeout(doBlink, 2000 + Math.random() * 2000);
+            }, 160);
+        };
+        blinkTimerRef.current = setTimeout(doBlink, 800 + Math.random() * 1200);
+        return () => { if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current); };
+    }, []);
 
     // ── Mouse tracking with spring physics ────────────────────────────────
     useEffect(() => {
@@ -226,11 +229,12 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                 .dina-neck-sway { animation: dinaNeckSway 5s ease-in-out infinite alternate; transform-origin: 280px 280px; }
                 @keyframes dinaNeckSway { 0% { transform: rotate(-2deg); } 100% { transform: rotate(4deg); } }
                 .dina-face-element { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .dina-mouth-talk { animation: dinaTalkAnim 0.45s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+                .dina-mouth-talk { animation: dinaTalkAnim 0.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
                 @keyframes dinaTalkAnim {
-                    0%, 100% { transform: scaleY(1); }
-                    50% { transform: scaleY(1.25); }
+                    0%, 100% { transform: scaleY(0.7) scaleX(0.95); }
+                    50% { transform: scaleY(1.7) scaleX(1.05); }
                 }
+                @media (prefers-reduced-motion: reduce) { .dina-mouth-talk { animation: none; } }
                 .dina-spring-bounce { animation: dinaSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
                 @keyframes dinaSpring {
                     0% { transform: scale(1); }
@@ -261,34 +265,34 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                         <stop offset="0%" style={{ stopColor: "#fef3c7" }} />
                         <stop offset="100%" style={{ stopColor: "#fde047" }} />
                     </linearGradient>
-                    <filter id="dinaShadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="12" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="6" result="dropBlur" />
-                        <feFlood floodColor="#9A3412" floodOpacity="0.3" result="dropColor" />
+                    <filter id="dinaShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
+                        <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
+                        <feFlood floodColor="#7a2a0e" floodOpacity="0.22" result="dropColor" />
                         <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-                        
+
                         <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
+                        <feGaussianBlur in="hlOffset" stdDeviation="6" result="hlBlur" />
                         <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.45" result="hlColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="hlColor" />
                         <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
 
                         <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
+                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
                         <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.65" result="rimColor" />
+                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="rimColor" />
                         <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
 
                         <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="5" result="isBlur" />
+                        <feGaussianBlur in="isOffset" stdDeviation="6" result="isBlur" />
                         <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#9A3412" floodOpacity="0.35" result="isColor" />
+                        <feFlood floodColor="#9A3412" floodOpacity="0.30" result="isColor" />
                         <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
 
                         <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="1.5" result="edgeShadowBlur" />
+                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
                         <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#7c2d12" floodOpacity="0.45" result="edgeShadowColor" />
+                        <feFlood floodColor="#7c2d12" floodOpacity="0.22" result="edgeShadowColor" />
                         <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
 
                         <feMerge>
