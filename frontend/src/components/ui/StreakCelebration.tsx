@@ -75,6 +75,18 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
         }`}
       />
 
+      {/* Dot-grid overlay — characteristic map-paper texture */}
+      {isVisible && (
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage: "radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1.4px)",
+            backgroundSize: "26px 26px",
+            opacity: 0.06,
+          }}
+        />
+      )}
+
       {/* Animated orbs in background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden saturate-[120%] dark:saturate-[150%]">
         {/* Orb 1 - fiery glow */}
@@ -443,7 +455,45 @@ export function StreakCelebration({
         }}
       >
         <div className="flex flex-col items-center justify-center flex-1 w-full mt-4">
-          
+
+          {/* ── Micro-stars (appear on ignition) ─────────────────────────── */}
+          {isIgnited && (
+            <>
+              <div
+                className="absolute top-[18%] left-[12%] lp-star-pop pointer-events-none"
+                style={{ animationDelay: "0.05s" }}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="#FFD060" opacity="0.8">
+                  <path d="M10 1l2.4 6.6H19l-5.4 3.9 2 6.6L10 14 4.4 18.1l2-6.6L1 7.6h6.6z" />
+                </svg>
+              </div>
+              <div
+                className="absolute top-[14%] right-[10%] lp-star-pop pointer-events-none"
+                style={{ animationDelay: "0.2s" }}
+              >
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="#FF8C00" opacity="0.7">
+                  <path d="M10 1l2.4 6.6H19l-5.4 3.9 2 6.6L10 14 4.4 18.1l2-6.6L1 7.6h6.6z" />
+                </svg>
+              </div>
+              <div
+                className="absolute top-[35%] right-[6%] lp-star-pop pointer-events-none"
+                style={{ animationDelay: "0.35s" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 20 20" fill="#FFEB3B" opacity="0.6">
+                  <path d="M10 1l2.4 6.6H19l-5.4 3.9 2 6.6L10 14 4.4 18.1l2-6.6L1 7.6h6.6z" />
+                </svg>
+              </div>
+              <div
+                className="absolute top-[40%] left-[7%] lp-star-pop pointer-events-none"
+                style={{ animationDelay: "0.5s" }}
+              >
+                <svg width="12" height="12" viewBox="0 0 20 20" fill="#FFD060" opacity="0.65">
+                  <path d="M10 1l2.4 6.6H19l-5.4 3.9 2 6.6L10 14 4.4 18.1l2-6.6L1 7.6h6.6z" />
+                </svg>
+              </div>
+            </>
+          )}
+
           {/* ── Title ────────────────────────────────────────────────────── */}
           <div
             className={`text-center mb-0 mt-4 transition-all duration-700 delay-100 ${isIgnited ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-8"}`}
@@ -599,29 +649,24 @@ export function StreakCelebration({
         </div>
 
         {/* ── Continue button ──────────────────────────────────────────────── */}
-        <div className="w-full mt-auto pt-4" style={{ pointerEvents: "auto" }}>
+        <div className="lp w-full mt-auto pt-4" style={{ pointerEvents: "auto" }}>
           <div
             className={`w-full transition-all duration-500 delay-500 ${isIgnited ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-8"}`}
           >
             <button
               onClick={handleDismiss}
-              className="relative w-full px-8 py-5 rounded-3xl font-black text-white text-lg cursor-pointer overflow-hidden group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                background: "linear-gradient(135deg, #FF4500 0%, #FF8C00 100%)",
-                boxShadow: "0 20px 40px rgba(255,69,0,0.4), inset 0 2px 0 rgba(255,255,255,0.2)",
-                border: "2px solid rgba(255,179,0,0.4)",
-              }}
+              className="lp-cta lp-cta--go w-full py-5 rounded-3xl text-lg lp-display relative overflow-hidden"
             >
-            {/* Shine/shimmer overlay */}
-            <span
-              className="absolute inset-0 rounded-3xl pointer-events-none"
-              style={{
-                background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
-                animation: "streak-shine 4s ease-in-out infinite 1.6s",
-              }}
-            />
-            <span className="relative drop-shadow-md">{t("streak_celebration.continue")}</span>
-          </button>
+              {/* Shine/shimmer overlay */}
+              <span
+                className="absolute inset-0 rounded-3xl pointer-events-none"
+                style={{
+                  background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.30) 50%, transparent 70%)",
+                  animation: "streak-shine 4s ease-in-out infinite 1.6s",
+                }}
+              />
+              <span className="relative drop-shadow-sm">{t("streak_celebration.continue")}</span>
+            </button>
           </div>
         </div>
       </div>

@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, RotateCcw, LogOut } from "lucide-react";
 import { DinoCharacter } from "@/components/characters/DinoCharacter";
 import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
@@ -10,51 +9,117 @@ import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 
-// Extracted OUTSIDE component to prevent remount on every render
+// ─── Character renderer ───────────────────────────────────────────────────────
+
 function CelebrationCharacter({ characterCode }: { characterCode: string }) {
   switch (characterCode) {
-    case "dina": return <DinaCharacter expression="happy" />;
-    case "dr_rho": return <DrRhoCharacter mood="explaining" />;
-    case "zara_vex": return <ZaraVexCharacter mood="excited" />;
+    case "dina":    return <DinaCharacter expression="happy" />;
+    case "dr_rho":  return <DrRhoCharacter mood="explaining" />;
+    case "zara_vex":return <ZaraVexCharacter mood="excited" />;
     case "liruf":
-    default: return <DinoCharacter mood="excited" showBubble={false} />;
+    default:        return <DinoCharacter mood="excited" showBubble={false} />;
   }
 }
 
-/** Animate a numeric value from 0 to target over `duration` ms */
+// ─── Count-up hook ────────────────────────────────────────────────────────────
+
 function useCountUp(target: number, duration: number = 1200, isVisible: boolean) {
   const [value, setValue] = useState(0);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!isVisible) {
-      setValue(0);
-      return;
-    }
+    if (!isVisible) { setValue(0); return; }
     startTimeRef.current = null;
-
     const step = (timestamp: number) => {
       if (!startTimeRef.current) startTimeRef.current = timestamp;
       const elapsed = timestamp - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setValue(Math.round(eased * target));
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(step);
-      }
+      if (progress < 1) rafRef.current = requestAnimationFrame(step);
     };
-
     rafRef.current = requestAnimationFrame(step);
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [isVisible, target, duration]);
 
   return value;
 }
+
+// ─── Star rating component ────────────────────────────────────────────────────
+
+function StarRating({ accuracy }: { accuracy: number }) {
+  const stars = accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
+  return (
+    <div className="flex items-center justify-center gap-2 mb-3">
+      {[0, 1, 2].map((i) => {
+        const filled = i < stars;
+        const delay = `${i * 0.18}s`;
+        return (
+          <div
+            key={i}
+            className="lp-star-pop"
+            style={{ animationDelay: delay }}
+          >
+            <Star
+              className={cn(
+                "w-9 h-9 drop-shadow-lg transition-all",
+                filled
+                  ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.7)]"
+                  : "text-white/15 fill-white/10"
+              )}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Stat card ────────────────────────────────────────────────────────────────
+
+interface StatCardProps {
+  icon: React.ReactNode;
+  value: string | number;
+  label: string;
+  delay: string;
+  lipColor: string;
+  glowColor: string;
+  prefix?: string;
+}
+
+function StatCard({ icon, value, label, delay, lipColor, glowColor, prefix = "" }: StatCardProps) {
+  return (
+    <div
+      className="lp-stat-pop lp-shimmer-card relative flex flex-col items-center gap-1 rounded-2xl px-3 py-4 flex-1 min-w-0"
+      style={{
+        animationDelay: delay,
+        background: "var(--lp-surface)",
+        border: "1.5px solid var(--lp-line)",
+        boxShadow: `0 6px 0 ${lipColor}, 0 10px 24px -8px ${glowColor}`,
+      }}
+    >
+      {/* Icon */}
+      <div className="mb-1">{icon}</div>
+      {/* Value */}
+      <span
+        className="lp-display text-2xl sm:text-3xl font-black"
+        style={{ color: "var(--lp-ink)" }}
+      >
+        {prefix}{value}
+      </span>
+      {/* Label */}
+      <span
+        className="lp-display text-[9px] sm:text-[10px] font-bold uppercase tracking-widest"
+        style={{ color: "var(--lp-muted)" }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface LessonCelebrationProps {
   isVisible: boolean;
@@ -67,12 +132,14 @@ export interface LessonCelebrationProps {
   basePoints: number;
   durationSeconds: number;
   nextLessonCode: string | null | undefined;
-  characterCode: string; // 'liruf', 'dina', 'dr_rho', 'zara_vex'
+  characterCode: string;
   exerciseStats?: { correct: number; total: number } | null;
   onNext: () => void;
   onExit: () => void;
   onRetry: () => void;
 }
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export function LessonCelebration({
   isVisible,
@@ -88,18 +155,16 @@ export function LessonCelebration({
 }: LessonCelebrationProps) {
   const { t } = useTranslation("lessons");
   const [phase, setPhase] = useState<"entering" | "visible" | "exiting">("entering");
+  const [showFlash, setShowFlash] = useState(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Derived values
-  const pointsTarget = completionResult?.points_earned ?? basePoints;
-  const xpTarget = completionResult?.xp_earned ?? Math.round(basePoints * 0.5);
-  const streakValue = completionResult?.new_streak ?? 0;
-  const isFallback = completionResult?.is_fallback ?? false;
-  const correctCount = exerciseStats?.correct ?? 0;
-  const totalCount = exerciseStats?.total ?? 1;
-  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 100;
+  const pointsTarget  = completionResult?.points_earned ?? basePoints;
+  const xpTarget      = completionResult?.xp_earned     ?? Math.round(basePoints * 0.5);
+  const streakValue   = completionResult?.new_streak     ?? 0;
+  const correctCount  = exerciseStats?.correct           ?? 0;
+  const totalCount    = exerciseStats?.total             ?? 1;
+  const accuracy      = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 100;
 
-  // Dynamic message based on performance
   const getMessageKey = useCallback(() => {
     if (accuracy >= 90) return "status.perfect";
     if (accuracy >= 70) return "status.great_job";
@@ -107,48 +172,42 @@ export function LessonCelebration({
     return "status.completed";
   }, [accuracy]);
 
-  // Count-up animations
   const animatedPoints = useCountUp(pointsTarget, 1200, isVisible);
-  const animatedXP = useCountUp(xpTarget, 1000, isVisible);
-  const animatedStreak = useCountUp(streakValue, 800, isVisible);
+  const animatedXP     = useCountUp(xpTarget,     1000, isVisible);
+  const animatedStreak = useCountUp(streakValue,   800,  isVisible);
 
-  // Format duration consistently: always MM:SS
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    if (mins > 0) {
-      return `${mins}:${String(secs).padStart(2, '0')}`;
-    }
-    return `0:${String(secs).padStart(2, '0')}`;
+    if (mins > 0) return `${mins}:${String(secs).padStart(2, "0")}`;
+    return `0:${String(secs).padStart(2, "0")}`;
   };
 
   useEffect(() => {
-    if (!isVisible) {
-      setPhase("entering");
-      return;
-    }
+    if (!isVisible) { setPhase("entering"); return; }
+
+    setShowFlash(true);
     setPhase("entering");
+
+    const flashTimeout = setTimeout(() => setShowFlash(false), 600);
     const enterTimeout = setTimeout(() => setPhase("visible"), 100);
 
     const confettiTimeout = setTimeout(() => {
-      const colors = accuracy >= 90
-        ? ["#fbbf24", "#f59e0b", "#fcd34d", "#ffffff"] // gold
-        : accuracy >= 70
-          ? ["#10b981", "#34d399", "#6ee7b7", "#ffffff"] // emerald
-          : ["#3b82f6", "#60a5fa", "#93c5fd", "#ffffff"]; // blue
-      confetti({
-        particleCount: 150,
-        spread: 120,
-        origin: { y: 0.4 },
-        colors,
-        startVelocity: 45,
-        gravity: 0.6,
-      });
-    }, 300);
+      const colors =
+        accuracy >= 90
+          ? ["#fbbf24", "#f59e0b", "#fcd34d", "#a78bfa", "#ffffff"]
+          : accuracy >= 70
+          ? ["#10b981", "#34d399", "#6ee7b7", "#5b6ef5", "#ffffff"]
+          : ["#3b82f6", "#60a5fa", "#93c5fd", "#ffffff"];
 
-    timeoutsRef.current.push(enterTimeout, confettiTimeout);
+      confetti({ particleCount: 80, angle: 60,  spread: 55, origin: { x: 0,   y: 0.9 }, colors, startVelocity: 55, gravity: 0.8 });
+      confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1,   y: 0.9 }, colors, startVelocity: 55, gravity: 0.8 });
+      confetti({ particleCount: 40, spread: 80,             origin: { x: 0.5, y: 0.3 }, colors, startVelocity: 30, gravity: 1.0, scalar: 0.8 });
+    }, 350);
 
+    timeoutsRef.current.push(flashTimeout, enterTimeout, confettiTimeout);
     return () => {
+      clearTimeout(flashTimeout);
       clearTimeout(enterTimeout);
       clearTimeout(confettiTimeout);
       timeoutsRef.current = [];
@@ -158,239 +217,247 @@ export function LessonCelebration({
   if (!isVisible) return null;
 
   const messageKey = getMessageKey();
-  const isPerfect = accuracy >= 90;
-  const hasErrors = correctCount < totalCount;
+  const isPerfect  = accuracy >= 90;
+  const accentColor = isPerfect ? "var(--lp-indigo)" : "var(--lp-emerald)";
 
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "rgba(0,0,0,0)" }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="celebration-title"
     >
-      {/* Background gradient */}
-      <div className={cn(
-        "absolute inset-0 z-0 animate-in fade-in duration-1000 backdrop-blur-sm",
-        isPerfect ? "bg-indigo-50/95 dark:bg-indigo-950/95" : "bg-emerald-50/95 dark:bg-emerald-950/95"
-      )} />
-      
-      {/* Drifting Orbs - Subtle, less distracting */}
+      {/* ── Flash burst on entry ─────────────────────────────────────────── */}
+      {showFlash && (
+        <div
+          className="lp-flash-in absolute inset-0 z-[10001] pointer-events-none"
+          style={{ background: "white" }}
+        />
+      )}
+
+      {/* ── Background: dark indigo with dot-grid ───────────────────────── */}
+      <div
+        className={cn(
+          "lp-celebration-bg lp-dot-grid absolute inset-0 z-0 animate-in fade-in duration-700",
+        )}
+      />
+
+      {/* ── Ambient glow orbs ────────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-[120px] bg-emerald-400/10 dark:bg-emerald-600/20 animate-[streak-orb-float-1_10s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-40 -right-32 w-[420px] h-[420px] rounded-full blur-[100px] bg-teal-300/10 dark:bg-teal-500/15 animate-[streak-orb-float-2_12s_ease-in-out_infinite]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[100px] bg-blue-300/10 dark:bg-blue-600/10 animate-[streak-orb-float-3_8s_ease-in-out_infinite]" />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: isPerfect
+              ? "radial-gradient(circle, rgba(91,110,245,0.20) 0%, transparent 65%)"
+              : "radial-gradient(circle, rgba(25,182,126,0.18) 0%, transparent 65%)",
+            filter: "blur(60px)",
+            animation: "streak-glow-pulse 4s ease-in-out infinite",
+          }}
+        />
+        <div
+          className="absolute -top-32 -right-20 w-[350px] h-[350px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(91,110,245,0.12) 0%, transparent 70%)",
+            filter: "blur(80px)",
+            animation: "streak-orb-float-1 10s ease-in-out infinite",
+          }}
+        />
+        <div
+          className="absolute -bottom-24 -left-16 w-[300px] h-[300px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(246,168,33,0.10) 0%, transparent 70%)",
+            filter: "blur(70px)",
+            animation: "streak-orb-float-2 12s ease-in-out infinite",
+          }}
+        />
       </div>
 
-      <div className={cn(
-        "relative z-10 w-full h-[100dvh] flex flex-col items-center justify-between px-4 pb-8 pt-12 max-w-md mx-auto transition-all duration-700 ease-out",
-        phase === "entering" ? "scale-95 opacity-0" : "scale-100 opacity-100"
-      )}>
-           
-        <div className="flex flex-col items-center text-center w-full mt-4">
-            
-          {/* Character Spotlight */}
-          <div className="relative w-full flex justify-center mb-6 pointer-events-none isolate">
-             {/* Central glow */}
-            <div className={cn(
-              "absolute bottom-4 w-56 h-56 rounded-full z-[-1]",
-              isPerfect
-                ? "bg-indigo-400/20 dark:bg-indigo-500/30"
-                : "bg-emerald-400/20 dark:bg-emerald-500/30"
-            )} style={{ filter: "blur(28px)" }} />
-            
-            <div className="relative w-48 h-48 sm:w-56 sm:h-56 drop-shadow-2xl z-10 animate-bounce-in">
+      {/* ── Sunburst (slow rotation) ─────────────────────────────────────── */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] z-0 opacity-[0.07] rounded-full pointer-events-none"
+        style={{
+          background: `repeating-conic-gradient(from 0deg, ${isPerfect ? "#6366f1" : "#10b981"} 0deg 12deg, transparent 12deg 24deg)`,
+          maskImage: "radial-gradient(circle, black 15%, transparent 65%)",
+          WebkitMaskImage: "radial-gradient(circle, black 15%, transparent 65%)",
+          animation: "spin 40s linear infinite",
+        }}
+      />
+
+      {/* ── Main content ─────────────────────────────────────────────────── */}
+      <div
+        className={cn(
+          "lp relative z-10 w-full h-[100dvh] flex flex-col items-center justify-between px-4 pb-6 pt-8 max-w-md mx-auto transition-all duration-700 ease-out",
+          phase === "entering" ? "scale-95 opacity-0" : "scale-100 opacity-100"
+        )}
+      >
+        {/* TOP: character + title + stars + accuracy */}
+        <div className="flex flex-col items-center text-center w-full">
+
+          {/* Character */}
+          <div className="relative flex justify-center mb-3 pointer-events-none isolate">
+            {/* Glow behind character */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 rounded-full z-[-1]"
+              style={{ background: `radial-gradient(circle, ${accentColor}33 0%, transparent 65%)`, filter: "blur(30px)" }}
+            />
+            <div className="lp-bounce-in relative w-44 h-44 sm:w-52 sm:h-52 drop-shadow-2xl z-10 lp-bob">
               <CelebrationCharacter key={characterCode} characterCode={characterCode} />
             </div>
-
-            {/* Sparkle particles */}
-            <div className="absolute top-0 right-10 animate-pulse text-indigo-400 z-10">
-              <Sparkles size={28} />
+            {/* Sparkle accents */}
+            <div className="absolute top-1 right-8 animate-pulse" style={{ color: accentColor, animationDelay: "0.2s" }}>
+              <Sparkles size={22} />
             </div>
-            {isPerfect && (
-              <div className="absolute top-4 left-8 animate-pulse text-indigo-300 z-10" style={{ animationDelay: '0.3s' }}>
-                <Star size={20} className="fill-indigo-300" />
-              </div>
-            )}
+            <div className="absolute top-6 left-6 animate-pulse" style={{ color: "var(--lp-amber)", animationDelay: "0.5s" }}>
+              <Sparkles size={14} />
+            </div>
           </div>
 
-          {/* Dynamic Title */}
-          <h2 id="celebration-title" className={cn(
-            "text-3xl sm:text-4xl font-black mb-2 drop-shadow-sm",
-            isPerfect ? "text-indigo-500 dark:text-indigo-400" : "text-emerald-600 dark:text-emerald-400"
-          )}>
-            {t(messageKey, { defaultValue: "Great Job!" })}
-          </h2>
-          <p className="text-gray-600 dark:text-white/80 text-base sm:text-lg font-medium mb-2">
-            {t("completion.subtitle")}
-          </p>
+          {/* Stars rating */}
+          <div className="lp-title-drop" style={{ animationDelay: "0.1s" }}>
+            <StarRating accuracy={accuracy} />
+          </div>
 
-          {/* Accuracy Bar */}
-          <div className="w-full max-w-xs mb-6 animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-bold text-gray-500 dark:text-white/60 uppercase tracking-wider">
-                {t("completion.accuracy", { defaultValue: "Accuracy" })}
+          {/* Title */}
+          <div className="lp-title-drop" style={{ animationDelay: "0.18s" }}>
+            <h2
+              id="celebration-title"
+              className="lp-display text-3xl sm:text-4xl font-black mb-1"
+              style={{ color: accentColor, textShadow: `0 0 30px ${accentColor}55` }}
+            >
+              {t(messageKey, { defaultValue: "¡Bien hecho!" })}
+            </h2>
+          </div>
+
+          <div className="lp-title-drop mb-4" style={{ animationDelay: "0.24s" }}>
+            <p className="lp-display text-sm sm:text-base font-semibold" style={{ color: "var(--lp-muted)" }}>
+              {t("completion.subtitle")}
+            </p>
+          </div>
+
+          {/* Accuracy bar */}
+          <div
+            className="w-full max-w-xs mb-6 animate-in fade-in duration-500"
+            style={{ animationDelay: "300ms", animationFillMode: "backwards" }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="lp-display text-xs font-bold uppercase tracking-wider" style={{ color: "var(--lp-muted)" }}>
+                {t("completion.accuracy", { defaultValue: "Precisión" })}
               </span>
-              <span className={cn(
-                "text-sm font-black",
-                isPerfect ? "text-indigo-500" : "text-emerald-500"
-              )}>
+              <span className="lp-display text-sm font-black" style={{ color: accentColor }}>
                 {correctCount}/{totalCount}
               </span>
             </div>
-            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="lp-track h-4">
               <div
-                className={cn(
-                  "h-full rounded-full transition-all duration-1000 ease-out",
-                  isPerfect ? "bg-indigo-400" : "bg-emerald-500"
-                )}
+                className="lp-track-fill h-full transition-all duration-1000 ease-out"
                 style={{
                   width: phase === "visible" ? `${accuracy}%` : "0%",
-                  transitionDelay: "400ms",
+                  transitionDelay: "500ms",
+                  background: isPerfect
+                    ? "linear-gradient(90deg, var(--lp-indigo), #818cf8)"
+                    : "linear-gradient(90deg, var(--lp-emerald), #34d399)",
                 }}
               />
             </div>
-            {/* Performance badges */}
-            <div className="flex justify-center gap-2 mt-2">
-              {isPerfect && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
-                  <Star size={10} className="fill-indigo-500 text-indigo-500" />
-                  {t("badges.perfect", { defaultValue: "Perfect" })}
-                </span>
-              )}
-              {completionResult?.new_streak && completionResult.new_streak >= 3 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-[10px] font-bold uppercase tracking-wider">
-                  <Flame size={10} className="text-violet-500" />
-                  {t("badges.streak", { defaultValue: "Streak" })}
-                </span>
-              )}
-              {isFallback && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
-                  <Target size={10} />
-                  {t("badges.estimated", { defaultValue: "Estimated" })}
-                </span>
-              )}
-            </div>
           </div>
 
-          {/* Stats Row - Staggered entrance */}
-          <div className="flex justify-center gap-2 sm:gap-4 w-full mb-6">
-            {/* Points Box */}
-            <div
-              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
-              style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
-            >
-               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
-                  <div className="relative">
-                    <Star className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400 fill-indigo-400 drop-shadow-md" />
-                    <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-indigo-300" />
-                  </div>
-               </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                 +{animatedPoints}
-               </span>
-               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
-                 {t("completion.points_earned", { defaultValue: "Points" })}
-               </span>
-            </div>
+          {/* Stat cards */}
+          <div className="flex gap-2 sm:gap-3 w-full mb-2">
 
-            {/* XP Box */}
-            <div
-              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
-              style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
-            >
-               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
-                  <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 fill-blue-400 drop-shadow-md" />
-               </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                 +{animatedXP}
-               </span>
-               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
-                 XP
-               </span>
-            </div>
+            {/* Points */}
+            <StatCard
+              delay="0.30s"
+              icon={<Star className="w-7 h-7" style={{ color: "var(--lp-indigo)", fill: "var(--lp-indigo)" }} />}
+              value={animatedPoints}
+              label={t("completion.points_earned", { defaultValue: "Puntos" })}
+              prefix="+"
+              lipColor="var(--lp-indigo-lip)"
+              glowColor="rgba(91,110,245,0.25)"
+            />
 
-            {/* Time Box */}
-            <div
-              className="relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500"
-              style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
-            >
-               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
-                  <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400 drop-shadow-md" />
-               </div>
-               <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                 {formatDuration(durationSeconds)}
-               </span>
-               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
-                 {t("completion.time")}
-               </span>
-            </div>
+            {/* XP */}
+            <StatCard
+              delay="0.42s"
+              icon={<Zap className="w-7 h-7" style={{ color: "var(--lp-amber)", fill: "var(--lp-amber)" }} />}
+              value={animatedXP}
+              label="XP"
+              prefix="+"
+              lipColor="var(--lp-amber-lip)"
+              glowColor="rgba(246,168,33,0.25)"
+            />
 
-            {/* Streak Box — ALWAYS visible */}
-            <div
-              className={cn(
-                "relative rounded-3xl p-3 sm:p-4 bg-white dark:bg-slate-800 border-2 shadow-sm flex-1 flex flex-col items-center transition-transform hover:-translate-y-1 animate-in zoom-in-75 fade-in duration-500",
-                streakValue > 0
-                  ? "border-violet-200 dark:border-violet-500/40"
-                  : "border-slate-200 dark:border-slate-700 opacity-60"
-              )}
-              style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
-            >
-               <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center mb-1">
-                  <Flame className={cn(
-                    "w-8 h-8 sm:w-10 sm:h-10 drop-shadow-md",
-                    streakValue > 0 ? "text-violet-500 fill-violet-500" : "text-slate-300 dark:text-slate-600"
-                  )} />
-               </div>
-               <span className={cn(
-                 "text-xl sm:text-2xl font-black",
-                 streakValue > 0 ? "text-violet-500" : "text-gray-400 dark:text-slate-500"
-               )}>
-                 {animatedStreak}
-               </span>
-               <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-white/60 uppercase tracking-widest mt-0.5">
-                 {t("completion.streak")}
-               </span>
-            </div>
+            {/* Time */}
+            <StatCard
+              delay="0.54s"
+              icon={<Clock className="w-7 h-7" style={{ color: "var(--lp-muted)" }} />}
+              value={formatDuration(durationSeconds)}
+              label={t("completion.time")}
+              lipColor="rgba(44,38,64,0.18)"
+              glowColor="rgba(0,0,0,0.15)"
+            />
+
+            {/* Streak */}
+            <StatCard
+              delay="0.66s"
+              icon={
+                <Flame
+                  className="w-7 h-7"
+                  style={{
+                    color: streakValue > 0 ? "var(--lp-amber)" : "var(--lp-muted)",
+                    fill: streakValue > 0 ? "var(--lp-amber)" : "transparent",
+                    filter: streakValue > 0 ? "drop-shadow(0 0 8px rgba(246,168,33,0.6))" : "none",
+                  }}
+                />
+              }
+              value={animatedStreak}
+              label={t("completion.streak")}
+              lipColor={streakValue > 0 ? "var(--lp-amber-lip)" : "rgba(44,38,64,0.18)"}
+              glowColor={streakValue > 0 ? "rgba(246,168,33,0.22)" : "rgba(0,0,0,0.1)"}
+            />
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3 w-full animate-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '650ms', animationFillMode: 'backwards' }}>
-           <button
-               onClick={onNext}
-               disabled={nextLessonCode === undefined}
-               className={cn(
-                 "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2",
-                 isPerfect ? "bg-indigo-500 hover:bg-indigo-600 shadow-[0_4px_0_rgb(161,98,7)] hover:shadow-[0_2px_0_rgb(161,98,7)]" : "bg-green-500 hover:bg-green-600"
-               )}
-           >
-                   {nextLessonCode === undefined ? (
-                       <Loader2 className="w-5 h-5 animate-spin" />
-                   ) : nextLessonCode ? (
-                       <ArrowRight className="w-5 h-5" />
-                   ) : null}
-                   {nextLessonCode === undefined
-                       ? t('loading')
-                       : nextLessonCode
-                           ? t('completion.next_lesson')
-                           : t('completion.back_to_map', { defaultValue: 'Back to Map' })}
-           </button>
-           
-           <div className="flex gap-3">
-               <button
-                   onClick={onExit}
-                   className="flex-1 h-12 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white shadow-[0_4px_0_rgb(148,163,184)] dark:shadow-[0_4px_0_rgb(51,65,85)] hover:shadow-[0_2px_0_rgb(148,163,184)] dark:hover:shadow-[0_2px_0_rgb(51,65,85)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] text-sm sm:text-base transition-all"
-               >
-                   {t('game_over.exit_button')}
-               </button>
-               <button
-                   onClick={onRetry}
-                   className="flex-1 h-12 rounded-xl font-bold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white shadow-[0_4px_0_rgb(148,163,184)] dark:shadow-[0_4px_0_rgb(51,65,85)] hover:shadow-[0_2px_0_rgb(148,163,184)] dark:hover:shadow-[0_2px_0_rgb(51,65,85)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] text-sm sm:text-base transition-all flex items-center justify-center gap-2"
-               >
-                   🎮 {t('actions.retry')}
-               </button>
-           </div>
+        {/* BOTTOM: action buttons */}
+        <div
+          className="flex flex-col gap-3 w-full animate-in slide-in-from-bottom-8 duration-700"
+          style={{ animationDelay: "700ms", animationFillMode: "backwards" }}
+        >
+          {/* Primary: next lesson / back to map */}
+          <button
+            onClick={onNext}
+            disabled={nextLessonCode === undefined}
+            className="lp-cta lp-cta--go w-full h-14 sm:h-16 text-lg sm:text-xl lp-display flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {nextLessonCode === undefined ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : nextLessonCode ? (
+              <ArrowRight className="w-5 h-5" />
+            ) : null}
+            {nextLessonCode === undefined
+              ? t("loading")
+              : nextLessonCode
+              ? t("completion.next_lesson")
+              : t("completion.back_to_map", { defaultValue: "Volver al mapa" })}
+          </button>
+
+          {/* Secondary row */}
+          <div className="flex gap-3">
+            <button
+              onClick={onExit}
+              className="lp-token flex-1 h-12 lp-display text-sm sm:text-base font-bold flex items-center justify-center gap-1.5"
+              style={{ color: "var(--lp-muted)" }}
+            >
+              <LogOut className="w-4 h-4" />
+              {t("game_over.exit_button")}
+            </button>
+            <button
+              onClick={onRetry}
+              className="lp-cta lp-cta--retry flex-1 h-12 lp-display text-sm sm:text-base flex items-center justify-center gap-1.5"
+            >
+              <RotateCcw className="w-4 h-4" />
+              {t("actions.retry")}
+            </button>
+          </div>
         </div>
       </div>
     </div>,
