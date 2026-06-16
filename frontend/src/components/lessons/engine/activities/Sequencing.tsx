@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, Check, X, ArrowRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Check, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SequencingProps {
     exercise: any;
@@ -75,32 +75,34 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
     };
 
     return (
-        <div className="w-full max-w-lg animate-slide-in-bottom">
+        <div className="w-full max-w-lg">
             <div role="list" className="space-y-3 mb-8">
                 {items.map((item, index) => {
                     const isFirst = index === 0;
                     const isLast = index === items.length - 1;
 
-                    // Colors - Sequential or specific? Sequential gradient looks nice
-                    // Or keep brand solid colors based on original index?
-                    // Let's use a nice neutral card with vibrant accent
                     return (
                         <div
                             role="listitem"
                             key={item.id}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                             className={cn(
-                                "flex items-center gap-3 p-4 bg-card border-2 rounded-2xl shadow-sm transition-all duration-300",
-                                isChecked && feedback === 'success' ? "border-green-400 bg-green-50 dark:bg-green-900/20" : "border-border",
-                                isChecked && feedback === 'error' ? "border-red-400 bg-red-50 dark:bg-red-900/20" : ""
+                                "lp-card flex items-center gap-3 p-4 transition-all duration-300",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                isChecked && feedback === 'success' && "border-[var(--lp-emerald)] bg-[var(--lp-emerald-soft)]",
+                                isChecked && feedback === 'error' && "border-[var(--lp-coral)] bg-[var(--lp-coral-soft)]"
                             )}
                         >
                             {/* Order Badge */}
-                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-muted-foreground text-sm shrink-0">
+                            <div
+                                className="lp-badge lp-display w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+                                style={{ background: "var(--lp-indigo)" }}
+                            >
                                 {index + 1}
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 font-bold text-lg">
+                            <div className="lp-display flex-1 text-lg" style={{ color: "var(--lp-ink)" }}>
                                 {item.text}
                             </div>
 
@@ -112,29 +114,29 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                                         onClick={() => handleSwap(index, 'up')}
                                         disabled={isFirst}
                                         className={cn(
-                                            "p-1 rounded-md hover:bg-muted transition-colors",
-                                            isFirst ? "opacity-20 cursor-not-allowed" : "text-purple-600"
+                                            "p-1.5 rounded-lg transition-colors",
+                                            isFirst ? "opacity-20 cursor-not-allowed" : "text-[var(--lp-indigo)] hover:bg-[var(--lp-indigo-soft)]"
                                         )}
                                     >
-                                        <ArrowUp className="w-5 h-5" />
+                                        <ArrowUp className="w-5 h-5" strokeWidth={2.75} />
                                     </button>
                                     <button
                                         aria-label="Mover abajo"
                                         onClick={() => handleSwap(index, 'down')}
                                         disabled={isLast}
                                         className={cn(
-                                            "p-1 rounded-md hover:bg-muted transition-colors",
-                                            isLast ? "opacity-20 cursor-not-allowed" : "text-purple-600"
+                                            "p-1.5 rounded-lg transition-colors",
+                                            isLast ? "opacity-20 cursor-not-allowed" : "text-[var(--lp-indigo)] hover:bg-[var(--lp-indigo-soft)]"
                                         )}
                                     >
-                                        <ArrowDown className="w-5 h-5" />
+                                        <ArrowDown className="w-5 h-5" strokeWidth={2.75} />
                                     </button>
                                 </div>
                             )}
 
                             {/* Result Icon */}
                             {isChecked && feedback === 'success' && (
-                                <Check className="w-6 h-6 text-green-500" />
+                                <Check className="w-6 h-6 shrink-0" strokeWidth={3.5} style={{ color: "var(--lp-emerald)" }} />
                             )}
                         </div>
                     );
@@ -143,28 +145,14 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
 
             {/* Action Button */}
             {!isChecked ? (
-                <Button
-                    onClick={handleCheck}
-                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
-                >
-                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
-                </Button>
+                <QuestButton variant="gold" onClick={handleCheck}>
+                    {t('actions.verify')}
+                </QuestButton>
             ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
-                >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
-                    </span>
-                </Button>
+                <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                </QuestButton>
             )}
         </div>
     );

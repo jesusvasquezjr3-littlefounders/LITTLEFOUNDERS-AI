@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Lightbulb } from 'lucide-react';
+import { ArrowRight, RotateCcw, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface FillBlankProps {
     exercise: any;
@@ -148,8 +148,8 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     return (
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
             {/* Statement Area */}
-            <div className="bg-card p-6 rounded-3xl shadow-sm border-2 border-border mb-6 w-full">
-                <div className="flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl font-medium leading-loose">
+            <div className="lp-card p-6 mb-6 w-full">
+                <div className="lp-display flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl leading-loose" style={{ color: "var(--lp-ink)" }}>
                     {segments.map((segment: any, idx: number) => {
                         if (segment.type === 'text') {
                             return <span key={idx}>{segment.text}</span>;
@@ -161,11 +161,14 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                     key={idx}
                                     onClick={() => filledWord && handleRemoveWord(idx)}
                                     className={cn(
-                                        "min-w-[80px] h-10 px-3 rounded-xl border-2 transition-all mx-1 mb-1 font-bold text-center translate-y-[-2px] shadow-sm",
+                                        "lp-display min-w-[80px] h-11 px-3 rounded-[var(--lp-radius-sm)] border-2 transition-all mx-1 mb-1 text-center",
                                         filledWord
-                                            ? "bg-purple-100 text-purple-700 border-purple-300 hover:bg-red-100 hover:text-red-600 hover:border-red-300"
-                                            : "bg-slate-100 border-slate-300 animate-pulse text-transparent"
+                                            ? "lp-token lp-option lp-option--indigo is-selected"
+                                            : "animate-pulse text-transparent"
                                     )}
+                                    style={filledWord
+                                        ? { color: "var(--lp-indigo-ink)" }
+                                        : { background: "var(--lp-bg-2)", borderColor: "var(--lp-line)" }}
                                 >
                                     {filledWord ? filledWord.text : "____"}
                                 </button>
@@ -181,7 +184,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
 
             {/* Hint */}
             {hint && !isChecked && (
-                <div className="mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm">
+                <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: "var(--lp-indigo-ink)" }}>
                     <Lightbulb className="w-4 h-4" />
                     <span>{hint}</span>
                 </div>
@@ -196,7 +199,8 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                         onChange={(e) => setTextInput(e.target.value)}
                         disabled={isChecked}
                         placeholder={content.placeholder || t('fill_blank.placeholder', { defaultValue: 'Escribe tu respuesta...' })}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg font-medium text-center focus:border-purple-400 focus:outline-none transition-colors disabled:opacity-50"
+                        className="lp-display w-full px-4 py-3 rounded-[var(--lp-radius-sm)] border-2 text-lg text-center focus:outline-none transition-colors disabled:opacity-50 focus:border-[var(--lp-indigo)]"
+                        style={{ background: "var(--lp-surface)", borderColor: "var(--lp-line)", color: "var(--lp-ink)" }}
                     />
                 </div>
             )}
@@ -205,7 +209,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
             {isChecked && (
                 <div className="mb-6 text-center animate-in zoom-in">
                     <span className="text-4xl block mb-2">{feedback === 'success' ? '🎉' : '🤔'}</span>
-                    <p className={cn("font-bold text-xl", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
+                    <p className="lp-display text-xl" style={{ color: feedback === 'success' ? "var(--lp-emerald)" : "var(--lp-coral)" }}>
                         {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                     </p>
                 </div>
@@ -222,11 +226,12 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                 onClick={() => handleWordSelect(word)}
                                 disabled={isUsed || isChecked}
                                 className={cn(
-                                    "px-6 py-3 rounded-2xl font-bold transition-all border-2 text-lg",
+                                    "lp-display px-6 py-3 text-lg transition-all",
                                     isUsed
                                         ? "opacity-0 scale-50 pointer-events-none"
-                                        : "bg-card text-foreground border-border shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+                                        : "lp-token lp-option lp-option--amber"
                                 )}
+                                style={isUsed ? undefined : { color: "var(--lp-ink)" }}
                             >
                                 {word.text}
                             </button>
@@ -236,31 +241,18 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
             )}
 
             {/* Actions */}
-            {!isChecked ? (
-                <Button
-                    onClick={handleCheck}
-                    disabled={!canCheck}
-                    className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
-                >
-                    <span className="relative flex items-center justify-center">{t('actions.verify', { defaultValue: 'Verificar' })}</span>
-                </Button>
-            ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
-                >
-                    <span className="relative flex items-center justify-center">
+            <div className="w-full max-w-sm">
+                {!isChecked ? (
+                    <QuestButton variant="gold" disabled={!canCheck} onClick={handleCheck}>
+                        {t('actions.verify', { defaultValue: 'Verificar' })}
+                    </QuestButton>
+                ) : (
+                    <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                         {feedback === 'success' ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                    </span>
-                </Button>
-            )}
+                        {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                    </QuestButton>
+                )}
+            </div>
         </div>
     );
 };

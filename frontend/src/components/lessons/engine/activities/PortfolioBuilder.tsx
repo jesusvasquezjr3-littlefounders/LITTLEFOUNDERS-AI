@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, PieChart, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, RotateCcw, PieChart, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface PortfolioBuilderProps {
     exercise: any;
@@ -13,12 +13,12 @@ interface PortfolioBuilderProps {
 }
 
 const COLOR_PALETTE = [
-    '#3b82f6',
-    '#10b981',
-    '#f59e0b',
-    '#ef4444',
-    '#8b5cf6',
-    '#ec4899',
+    '#5b6ef5', // indigo
+    '#19b67e', // emerald
+    '#f6a821', // amber
+    '#fb6f6f', // coral
+    '#3a45c4', // indigo-lip
+    '#c47808', // amber-lip
 ];
 
 interface AssetLike {
@@ -50,7 +50,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
         ? rawAssets.map((a: any) => ({
             id: String(a.id),
             name: String(a.name || a.id),
-            color: String(a.color || '#3b82f6'),
+            color: String(a.color || '#5b6ef5'),
             risk: Number(a.risk ?? 5),
         }))
         : isOptions
@@ -152,17 +152,16 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
     if (!isLegacy && !isOptions) {
         return (
             <div className={cn("w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-12")}>
-                <AlertCircle className="w-12 h-12 text-slate-400 mb-4" />
-                <p className="text-slate-600 dark:text-slate-400 text-center">
+                <AlertCircle className="w-12 h-12 mb-4" style={{ color: "var(--lp-muted)" }} />
+                <p className="text-center lp-display" style={{ color: "var(--lp-muted)" }}>
                     {t('portfolio_builder.no_data', { defaultValue: 'No hay datos de portfolio disponibles.' })}
                 </p>
-                <Button
-                    onClick={onNext}
-                    className="mt-6 w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                >
-                    {t('actions.continue', { defaultValue: 'Continuar' })}
-                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                </Button>
+                <div className="mt-6 w-full max-w-md">
+                    <QuestButton variant="brand" onClick={onNext}>
+                        {t('actions.continue', { defaultValue: 'Continuar' })}
+                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </QuestButton>
+                </div>
             </div>
         );
     }
@@ -173,27 +172,27 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {(scenario || instruction || criteria.length > 0) && (
                 <div className="mb-6 space-y-3">
                     {scenario && (
-                        <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-                            <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <div className="lp-card p-4">
+                            <p className="text-sm" style={{ color: "var(--lp-ink)" }}>
                                 {scenario}
                             </p>
                         </div>
                     )}
                     {instruction && (
-                        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
-                            <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
+                        <div className="lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                            <p className="text-sm lp-display" style={{ color: "var(--lp-indigo-ink)" }}>
                                 {instruction}
                             </p>
                         </div>
                     )}
                     {criteria.length > 0 && (
-                        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
-                            <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide mb-2">
+                        <div className="lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                            <p className="text-xs lp-display uppercase tracking-wide mb-2" style={{ color: "var(--lp-indigo-ink)" }}>
                                 {t('portfolio_builder.criteria', { defaultValue: 'Criterios' })}
                             </p>
                             <ul className="list-disc list-inside space-y-1">
                                 {criteria.map((c: string, idx: number) => (
-                                    <li key={idx} className="text-sm text-blue-900 dark:text-blue-200">
+                                    <li key={idx} className="text-sm" style={{ color: "var(--lp-indigo-ink)" }}>
                                         {c}
                                     </li>
                                 ))}
@@ -234,10 +233,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">
+                                <div className="lp-display text-4xl" style={{ color: "var(--lp-ink)" }}>
                                     {allocatedTotal}%
                                 </div>
-                                <div className="text-xs text-slate-600 dark:text-slate-400">
+                                <div className="text-xs" style={{ color: "var(--lp-muted)" }}>
                                     {t('portfolio_builder.allocated', { defaultValue: 'Asignado' })}
                                 </div>
                             </div>
@@ -250,21 +249,21 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {isLegacy && (
                 <div className="mb-6 space-y-3">
                     {assets.map((asset) => (
-                        <div key={asset.id} className="bg-card rounded-2xl p-4 border-2 border-border shadow-sm">
+                        <div key={asset.id} className="lp-card p-4">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <div
                                         className="w-4 h-4 rounded-full"
                                         style={{ backgroundColor: asset.color }}
                                     ></div>
-                                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                                    <span className="lp-display" style={{ color: "var(--lp-ink)" }}>
                                         {asset.name}
                                     </span>
-                                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                                    <span className="text-xs" style={{ color: "var(--lp-muted)" }}>
                                         ({t('portfolio_builder.risk', { defaultValue: 'Riesgo' })}: {asset.risk}/10)
                                     </span>
                                 </div>
-                                <span className="text-lg font-black" style={{ color: asset.color }}>
+                                <span className="lp-display text-lg" style={{ color: asset.color }}>
                                     {allocation[asset.id] || 0}%
                                 </span>
                             </div>
@@ -275,8 +274,8 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                                 step="5"
                                 value={allocation[asset.id] || 0}
                                 onChange={(e) => updateAllocation(asset.id, Number(e.target.value))}
-                                className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
-                                style={{ accentColor: asset.color }}
+                                className="w-full h-3 rounded-lg appearance-none cursor-pointer"
+                                style={{ accentColor: asset.color, background: "var(--lp-bg-2)" }}
                                 aria-label={asset.name}
                                 aria-valuemin={0}
                                 aria-valuemax={100}
@@ -290,26 +289,28 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {/* Options format: Selectable cards */}
             {isOptions && (
                 <div className="mb-6 space-y-3">
-                    {assets.map((asset) => {
+                    {assets.map((asset, idx) => {
                         const isSelected = selectedOptionId === asset.id;
+                        const hue = (['indigo', 'amber', 'emerald', 'coral'] as const)[idx % 4];
                         return (
                             <button
                                 key={asset.id}
                                 onClick={() => handleSelectOption(asset.id)}
                                 className={cn(
-                                    "w-full text-left rounded-2xl p-4 border-2 transition-all duration-200 shadow-sm",
-                                    "hover:shadow-md hover:scale-[1.01] active:scale-[0.99]",
-                                    isSelected
-                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 shadow-blue-200 dark:shadow-blue-900/20"
-                                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600"
+                                    "lp-token lp-option text-left w-full p-4",
+                                    `lp-option--${hue}`,
+                                    isSelected && "is-selected"
                                 )}
                             >
                                 <div className="flex items-center gap-3">
                                     <div
                                         className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                                            isSelected ? "bg-blue-500 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-500"
+                                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors"
                                         )}
+                                        style={{
+                                            background: isSelected ? "var(--hue)" : "var(--lp-bg-2)",
+                                            color: isSelected ? "#fff" : "var(--lp-muted)",
+                                        }}
                                     >
                                         {isSelected ? (
                                             <CheckCircle className="w-5 h-5" />
@@ -321,10 +322,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <span className={cn(
-                                            "font-bold",
-                                            isSelected ? "text-blue-700 dark:text-blue-300" : "text-slate-800 dark:text-slate-200"
-                                        )}>
+                                        <span className="lp-display" style={{ color: "var(--lp-ink)" }}>
                                             {asset.name}
                                         </span>
                                     </div>
@@ -337,17 +335,21 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
             {/* Legacy: Risk Indicator */}
             {isLegacy && (
-                <div className="mb-6 bg-slate-50 dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
+                <div className="mb-6 lp-card p-4">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        <span className="lp-display text-sm" style={{ color: "var(--lp-ink)" }}>
                             {t('portfolio_builder.risk_level', { defaultValue: 'Nivel de riesgo' })}
                         </span>
-                        <span className={cn(
-                            "text-lg font-black",
-                            riskLevel === 'low' && "text-green-600",
-                            riskLevel === 'medium' && "text-indigo-600",
-                            riskLevel === 'high' && "text-red-600"
-                        )}>
+                        <span
+                            className="lp-display text-lg"
+                            style={{
+                                color: riskLevel === 'low'
+                                    ? "var(--lp-emerald-ink)"
+                                    : riskLevel === 'medium'
+                                        ? "var(--lp-indigo-ink)"
+                                        : "var(--lp-coral-ink)",
+                            }}
+                        >
                             {t(`portfolio_builder.${riskLevel}`, { defaultValue: riskLevel })}
                         </span>
                     </div>
@@ -356,10 +358,10 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
             {/* Options format: Selected option summary */}
             {isOptions && selectedOptionId && (
-                <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-4">
+                <div className="mb-6 lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                     <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-bold text-blue-800 dark:text-blue-300">
+                        <CheckCircle className="w-5 h-5" style={{ color: "var(--lp-indigo)" }} />
+                        <span className="text-sm lp-display" style={{ color: "var(--lp-indigo-ink)" }}>
                             {t('portfolio_builder.selected', { defaultValue: 'Opción seleccionada' })}: {assets.find(a => a.id === selectedOptionId)?.name}
                         </span>
                     </div>
@@ -369,32 +371,32 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={!canSubmit}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        <PieChart className="w-5 h-5 sm:w-6 sm:h-6" />
-                        {isOptions
-                            ? t('actions.select_option', { defaultValue: 'Seleccionar opción' })
-                            : t('actions.build_portfolio', { defaultValue: 'Construir portfolio' })
-                        }
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={!canSubmit} onClick={handleSubmit}>
+                            <PieChart className="w-5 h-5 sm:w-6 sm:h-6" />
+                            {isOptions
+                                ? t('actions.select_option', { defaultValue: 'Seleccionar opción' })
+                                : t('actions.build_portfolio', { defaultValue: 'Construir portfolio' })
+                            }
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? "var(--lp-emerald-ink)" : "var(--lp-coral-ink)" }}
+                        >
                             {feedback === 'success'
                                 ? t('feedback.success', { defaultValue: '¡Correcto!' })
                                 : t('feedback.error', { defaultValue: 'Intenta de nuevo' })
                             }
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
-                            {t('actions.continue', { defaultValue: 'Continuar' })}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                                {t('actions.continue', { defaultValue: 'Continuar' })}
+                                {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SavingsRaceProps {
     exercise: any;
@@ -91,22 +91,33 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
 
             {/* Goal Display */}
             <div className="mb-6 text-center">
-                <div className="inline-flex flex-col items-center bg-indigo-500 border-2 border-indigo-600 text-white rounded-2xl px-6 py-4 shadow-sm">
-                    <Trophy className="w-8 h-8 mb-2" />
-                    <span className="text-xs font-medium opacity-90 mb-1">{t('savings_race.goal')}</span>
-                    <div className="text-3xl font-black">${goal}</div>
+                <div
+                    className="inline-flex flex-col items-center rounded-2xl px-6 py-4 sm:px-8 sm:py-5"
+                    style={{
+                        background: 'var(--lp-indigo)',
+                        boxShadow: '0 6px 0 var(--lp-indigo-lip), var(--lp-shadow)',
+                        color: '#fff',
+                    }}
+                >
+                    <Trophy className="w-10 h-10 sm:w-12 sm:h-12 mb-2" style={{ color: 'var(--lp-amber)' }} />
+                    <span className="text-xs font-bold opacity-90 mb-1 uppercase tracking-wide">{t('savings_race.goal')}</span>
+                    <div className="lp-display text-4xl sm:text-5xl">${goal}</div>
                 </div>
             </div>
 
             {/* Progress Bar */}
             {isRacing && (
                 <div className="mb-6">
-                    <div className="bg-slate-200 dark:bg-slate-700 rounded-full h-8 overflow-hidden">
+                    <div className="lp-track h-8">
                         <div
-                            className="h-full bg-green-500 border-b-2 border-green-600 transition-all duration-100 flex items-center justify-end pr-3"
-                            style={{ width: `${progress}%` }}
+                            className="h-full transition-all duration-100 flex items-center justify-end pr-3"
+                            style={{
+                                width: `${progress}%`,
+                                background: 'linear-gradient(90deg, var(--lp-emerald), #5fe3b0)',
+                                boxShadow: 'inset 0 -2px 0 rgba(0,0,0,0.12)',
+                            }}
                         >
-                            <span className="text-white text-sm font-bold">{progress}%</span>
+                            <span className="lp-display text-white text-sm">{progress}%</span>
                         </div>
                     </div>
                 </div>
@@ -114,34 +125,37 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
 
             {/* Strategies */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                {strategies.map((strategy: any) => {
+                {strategies.map((strategy: any, index: number) => {
                     const isSelected = selectedStrategy === strategy.id;
+                    const hue = ['indigo', 'amber', 'emerald', 'coral'][index % 4];
+                    const locked = feedback !== 'none' || isRacing;
 
                     return (
                         <button
                             key={strategy.id}
                             onClick={() => handleSelectStrategy(strategy.id)}
-                            disabled={feedback !== 'none' || isRacing}
+                            disabled={locked}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                             className={cn(
-                                "p-4 rounded-2xl border-2 transition-all duration-300 transform text-left",
-                                "bg-white dark:bg-slate-800",
-                                isSelected && !isRacing && "ring-4 ring-blue-400 dark:ring-blue-600 scale-105 shadow-sm border-blue-500",
-                                !isSelected && !isRacing && "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg hover:-translate-y-1",
-                                isRacing && "opacity-50"
+                                "lp-token lp-option text-left w-full p-4",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                isSelected && !isRacing && "is-selected",
+                                isRacing && "lp-token--locked opacity-50"
                             )}
                         >
-                            <div className="flex items-start gap-3">
-                                <div className="text-3xl">{strategy.icon || '💰'}</div>
+                            <div className="flex items-start gap-3.5">
+                                <div className="text-3xl sm:text-4xl shrink-0">{strategy.icon || '💰'}</div>
                                 <div className="flex-1">
-                                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                                    <h3 className="lp-display text-base sm:text-lg mb-1" style={{ color: 'var(--lp-ink)' }}>
                                         {strategy.name}
                                     </h3>
-                                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                                    <p className="text-xs sm:text-sm mb-2" style={{ color: 'var(--lp-muted)' }}>
                                         {strategy.description}
                                     </p>
                                     <div className="flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                        <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                                        <TrendingUp className="w-4 h-4" style={{ color: 'var(--lp-emerald)' }} />
+                                        <span className="lp-display text-xs sm:text-sm" style={{ color: 'var(--lp-emerald-ink)' }}>
                                             {t('savings_race.speed')}: {strategy.speed}x
                                         </span>
                                     </div>
@@ -155,25 +169,27 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleStartRace}
-                        disabled={!selectedStrategy || isRacing}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        {isRacing ? t('savings_race.racing') : t('savings_race.start_race')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant="gold"
+                            onClick={handleStartRace}
+                            disabled={!selectedStrategy || isRacing}
+                        >
+                            {isRacing ? t('savings_race.racing') : t('savings_race.start_race')}
+                        </QuestButton>
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                    <div className="flex flex-col items-center w-full max-w-md">
+                        <p
+                            className="lp-display text-lg sm:text-xl mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald-ink)' : 'var(--lp-coral-ink)' }}
+                        >
                             {feedback === 'success' ? t('savings_race.goal_reached') : t('feedback.error')}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                             {t('actions.continue')}
                             <ArrowRight className="w-5 h-5" />
-                        </Button>
+                        </QuestButton>
                     </div>
                 )}
             </div>

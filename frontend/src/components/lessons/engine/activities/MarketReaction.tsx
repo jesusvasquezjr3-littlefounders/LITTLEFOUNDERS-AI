@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
+import { ArrowRight, RotateCcw, Newspaper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface MarketReactionProps {
     exercise: any;
@@ -52,52 +52,57 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
     };
 
     return (
-        <div className="w-full max-w-3xl animate-slide-in-bottom">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-3 duration-500">
 
             {/* Newspaper Headline */}
-            <div className="mb-8 bg-card rounded-3xl p-6 sm:p-8 border-2 border-border shadow-sm">
-                <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-400 dark:border-slate-600">
-                    <Newspaper className="w-8 h-8 text-slate-700 dark:text-slate-300" />
-                    <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">
+            <div className="lp-card mb-8 p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b-2" style={{ borderColor: "var(--lp-line)" }}>
+                    <span className="lp-badge lp-option--indigo shrink-0 w-11 h-11 flex items-center justify-center">
+                        <Newspaper className="w-6 h-6" />
+                    </span>
+                    <h2 className="lp-display text-xl sm:text-2xl uppercase tracking-tight" style={{ color: "var(--lp-ink)" }}>
                         {t('market_reaction.breaking_news')}
                     </h2>
                 </div>
-                <p className="text-3xl font-bold text-slate-900 dark:text-slate-50 leading-tight mb-6">
+                <p className="lp-display text-2xl sm:text-3xl leading-tight mb-6" style={{ color: "var(--lp-ink)" }}>
                     {headline}
                 </p>
-                <div className="bg-blue-100 dark:bg-blue-900/30 border-l-4 border-blue-500 dark:border-blue-600 p-4 rounded-r-xl">
-                    <p className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                <div className="p-4 rounded-r-xl border-l-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                    <p className="lp-display text-lg" style={{ color: "var(--lp-indigo-ink)" }}>
                         {question}
                     </p>
                 </div>
             </div>
 
             {/* Prediction Options */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-                {options.map((option: any) => {
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+                {options.map((option: any, index: number) => {
                     const isSelected = selectedOption === option.id;
                     const isCorrect = option.id === exercise.correct_answer?.correctOptionId;
                     const isUp = option.id === 'up';
+                    const hue = index % 2 === 0 ? 'indigo' : 'amber';
+                    const locked = feedback !== 'none';
 
                     return (
                         <button
                             key={option.id}
                             onClick={() => handleSelectOption(option.id)}
                             disabled={feedback !== 'none'}
+                            style={{ animationDelay: `${0.06 + index * 0.07}s` }}
                             className={cn(
-                                "p-4 rounded-[2rem] border-2 transition-all duration-300 transform",
-                                "flex flex-col items-center justify-center gap-4 min-h-[120px]",
-                                "bg-card text-foreground",
-                                isSelected && feedback === 'none' && "border-blue-500 shadow-none ring-4 ring-blue-300 translate-y-[4px]",
-                                !isSelected && feedback === 'none' && "border-border shadow-[0_8px_0_hsl(var(--border))] hover:shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
-                                feedback === 'success' && isSelected && isCorrect && "bg-green-100 dark:bg-green-900/30 border-green-500 ring-4 ring-green-300 scale-105",
-                                feedback === 'error' && isSelected && "bg-red-100 dark:bg-red-900/30 border-red-500 ring-4 ring-red-300",
-                                feedback !== 'none' && !isSelected && "opacity-50 grayscale border-border shadow-none"
+                                "lp-token lp-option p-5 sm:p-6 flex flex-col items-center justify-center gap-3 min-h-[140px] sm:min-h-[160px]",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                locked && "lp-token--locked",
+                                isSelected && feedback === 'none' && "is-selected",
+                                feedback === 'success' && isSelected && isCorrect && "is-correct",
+                                feedback === 'error' && isSelected && "is-wrong",
+                                feedback !== 'none' && !isSelected && "is-dimmed"
                             )}
                         >
                             <div className="text-center">
-                                <div className="text-4xl sm:text-5xl mb-2">{option.icon || '📊'}</div>
-                                <p className="text-base font-bold text-slate-800 dark:text-slate-100">
+                                <div className="text-5xl sm:text-6xl mb-3">{option.icon || '📊'}</div>
+                                <p className="lp-display text-base sm:text-lg" style={{ color: "var(--lp-ink)" }}>
                                     {option.text}
                                 </p>
                             </div>
@@ -108,16 +113,19 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
 
             {/* Explanation (shown after answer) */}
             {feedback !== 'none' && exercise.content.explanation && (
-                <div className="mb-8 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-6 animate-in fade-in slide-in-from-bottom-4">
+                <div
+                    className="mb-8 rounded-2xl p-6 border-2 animate-in fade-in slide-in-from-bottom-4"
+                    style={{ background: "var(--lp-amber-soft)", borderColor: "var(--lp-amber)" }}
+                >
                     <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-lg">💡</span>
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--lp-amber)" }}>
+                            <span className="text-xl">💡</span>
                         </div>
                         <div>
-                            <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-2">
+                            <h4 className="lp-display mb-2" style={{ color: "var(--lp-amber-ink)" }}>
                                 {t('market_reaction.why')}
                             </h4>
-                            <p className="text-blue-800 dark:text-blue-200 leading-relaxed">
+                            <p className="leading-relaxed" style={{ color: "var(--lp-ink)" }}>
                                 {exercise.content.explanation}
                             </p>
                         </div>
@@ -127,31 +135,18 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
 
             {/* Action Buttons */}
             <div className="flex justify-center">
-                {feedback === 'none' ? (
-                    <Button
-                        onClick={handleCheck}
-                        disabled={!selectedOption}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px] flex items-center justify-center gap-2"
-                    >
-                        {t('actions.verify')}
-                    </Button>
-                ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <Button
-                            onClick={handleContinue}
-                            className={cn(
-                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                                "hover:-translate-y-[2px]"
-                            )}
-                        >
+                <div className="w-full max-w-md">
+                    {feedback === 'none' ? (
+                        <QuestButton variant="gold" disabled={!selectedOption} onClick={handleCheck}>
+                            {t('actions.verify')}
+                        </QuestButton>
+                    ) : (
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                             {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
-                    </div>
-                )}
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        </QuestButton>
+                    )}
+                </div>
             </div>
         </div>
     );

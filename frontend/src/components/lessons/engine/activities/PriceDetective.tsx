@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, RotateCcw, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+
+const HUES = ['indigo', 'amber', 'emerald', 'coral'] as const;
 
 interface PriceDetectiveProps {
     exercise: any;
@@ -78,53 +80,54 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
             {/* Detective Tool */}
             {!showUnitPrices && feedback === 'none' && (
                 <div className="mb-8 flex justify-center">
-                    <Button
-                        onClick={handleInvestigate}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-[0_4px_0_rgb(217,119,6)] hover:shadow-[0_2px_0_rgb(217,119,6)] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2"
-                    >
-                        <Search className="w-6 h-6 mr-2" />
+                    <QuestButton variant="brand" onClick={handleInvestigate} className="w-auto px-8">
+                        <Search className="w-6 h-6" />
                         {t('price_detective.investigate')}
-                    </Button>
+                    </QuestButton>
                 </div>
             )}
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                {products.map((product: any) => {
+                {products.map((product: any, index: number) => {
                     const isSelected = selectedId === product.id;
                     const unitPrice = calculateUnitPrice(product);
                     const isCorrect = product.id === exercise.correct_answer?.correctOptionId;
+                    const hue = HUES[index % HUES.length];
+                    const locked = feedback !== 'none';
 
                     return (
                         <button
                             key={product.id}
                             onClick={() => handleSelectProduct(product.id)}
                             disabled={feedback !== 'none'}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                             className={cn(
-                                "relative p-4 rounded-2xl border-[3px] transition-all duration-300 transform",
-                                "bg-white dark:bg-slate-800",
-                                isSelected && feedback === 'none' && "ring-4 ring-purple-400 dark:ring-purple-600 scale-105 shadow-sm",
-                                !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-lg hover:-translate-y-1",
-                                feedback === 'success' && isSelected && isCorrect && "border-green-500 ring-4 ring-green-300 scale-105",
-                                feedback === 'error' && isSelected && "border-red-500 ring-4 ring-red-300",
-                                feedback !== 'none' && !isSelected && "opacity-50 grayscale"
+                                "lp-token lp-option relative p-4 text-left",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                locked && "lp-token--locked",
+                                isSelected && feedback === 'none' && "is-selected",
+                                feedback === 'success' && isSelected && isCorrect && "is-correct",
+                                feedback === 'error' && isSelected && "is-wrong",
+                                feedback !== 'none' && !isSelected && "is-dimmed"
                             )}
                         >
                             {/* Product Info */}
                             <div className="text-center mb-3">
-                                <div className="text-4xl sm:text-5xl mb-2">{product.icon || '📦'}</div>
-                                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
+                                <div className="text-5xl sm:text-6xl mb-2">{product.icon || '📦'}</div>
+                                <h3 className="lp-display text-lg mb-1" style={{ color: 'var(--lp-ink)' }}>
                                     {product.name}
                                 </h3>
-                                <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400">
+                                <div className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-muted)' }}>
                                     <span className="text-xs">{product.quantity} {product.unit}</span>
                                 </div>
                             </div>
 
                             {/* Price Tag */}
-                            <div className="bg-emerald-500 border-2 border-emerald-600 text-white rounded-xl p-3 mb-3">
+                            <div className="rounded-xl p-3 mb-3 text-white" style={{ background: 'var(--lp-emerald)', boxShadow: 'inset 0 -3px 0 var(--lp-emerald-lip)' }}>
                                 <div className="text-xs font-medium opacity-90">{t('price_detective.total_price')}</div>
-                                <div className="text-2xl font-black">${product.price.toFixed(2)}</div>
+                                <div className="lp-display text-2xl">${product.price.toFixed(2)}</div>
                             </div>
 
                             {/* Unit Price Reveal */}
@@ -132,14 +135,14 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                                 "transition-all duration-500 overflow-hidden",
                                 showUnitPrices ? "max-h-32 opacity-100" : "max-h-0 opacity-0"
                             )}>
-                                <div className="bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-700 rounded-xl p-3 flex items-center justify-between">
+                                <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--lp-indigo-soft)', border: '2px solid var(--lp-indigo)' }}>
                                     <div className="flex items-center gap-2">
-                                        <Search className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                        <span className="text-sm font-bold text-blue-800 dark:text-blue-300">
+                                        <Search className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
+                                        <span className="text-sm font-bold" style={{ color: 'var(--lp-indigo-ink)' }}>
                                             {t('price_detective.unit_price')}
                                         </span>
                                     </div>
-                                    <span className="text-xl font-black text-blue-900 dark:text-blue-100">
+                                    <span className="lp-display text-xl" style={{ color: 'var(--lp-indigo-ink)' }}>
                                         ${unitPrice}
                                     </span>
                                 </div>
@@ -147,7 +150,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
 
                             {/* Selection Indicator */}
                             {isSelected && (
-                                <div className="absolute top-4 right-4 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center animate-in zoom-in">
+                                <div className="lp-badge absolute top-4 right-4 w-8 h-8 flex items-center justify-center animate-in zoom-in">
                                     <span className="text-white text-xl">✓</span>
                                 </div>
                             )}
@@ -159,31 +162,23 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleCheck}
-                        disabled={!selectedId || !showUnitPrices}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        {t('actions.verify')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={!selectedId || !showUnitPrices} onClick={handleCheck}>
+                            {t('actions.verify')}
+                        </QuestButton>
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
+                    <div className="flex flex-col items-center w-full max-w-md">
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className={cn(
-                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                                "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                            )}
-                        >
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                             {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
                     </div>
                 )}
             </div>

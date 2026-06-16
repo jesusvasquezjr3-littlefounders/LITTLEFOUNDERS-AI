@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, RotateCw } from 'lucide-react';
+import { ArrowRight, RotateCw, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface WordScrambleProps {
     exercise: any;
@@ -85,15 +85,18 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
     };
 
     return (
-        <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
+        <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both flex flex-col items-center">
 
             {/* Hint / Question */}
             <div className="mb-8 text-center">
-                <p className="text-muted-foreground font-medium mb-2">
+                <p className="lp-display text-lg sm:text-xl mb-3" style={{ color: "var(--lp-ink)" }}>
                     {exercise?.content?.question || t('instructions.word_scramble')}
                 </p>
                 {exercise?.content?.hint && (
-                    <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200 px-4 py-2 rounded-full text-sm inline-block">
+                    <div
+                        className="lp-display px-4 py-2 rounded-full text-sm inline-block"
+                        style={{ background: "var(--lp-indigo-soft)", color: "var(--lp-indigo-ink)" }}
+                    >
                         <span aria-hidden="true">💡 </span>
                         {exercise.content.hint}
                     </div>
@@ -115,11 +118,15 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
                             : t('word_scramble.empty_slot', { position: idx + 1 })
                         }
                         className={cn(
-                            "w-12 h-14 sm:w-14 sm:h-16 rounded-xl border-b-4 text-2xl font-bold flex items-center justify-center transition-all",
+                            "lp-display w-12 h-14 sm:w-14 sm:h-16 text-2xl flex items-center justify-center",
                             id
-                                ? "bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-100 shadow-sm hover:-translate-y-1"
-                                : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 border-dashed"
+                                ? "lp-token"
+                                : "rounded-[16px] border-2 border-dashed"
                         )}
+                        style={id
+                            ? { background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)", boxShadow: "0 5px 0 var(--lp-indigo-lip)", color: "var(--lp-indigo-ink)" }
+                            : { background: "var(--lp-bg-2)", borderColor: "var(--lp-line)" }
+                        }
                     >
                         {id ? id.split('-')[1] : ''}
                     </button>
@@ -137,7 +144,8 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
                         key={id}
                         onClick={() => handleBankClick(id)}
                         aria-label={t('word_scramble.letter_tile', { letter: id.split('-')[1] })}
-                        className="w-12 h-14 sm:w-14 sm:h-16 rounded-xl bg-white dark:bg-slate-700 border-b-4 border-slate-200 dark:border-slate-600 shadow-sm text-2xl font-bold text-slate-700 dark:text-slate-200 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:shadow-none transition-all"
+                        className="lp-token lp-display w-12 h-14 sm:w-14 sm:h-16 text-2xl flex items-center justify-center"
+                        style={{ color: "var(--lp-ink)" }}
                     >
                         {id.split('-')[1]}
                     </button>
@@ -146,38 +154,35 @@ export const WordScramble = ({ exercise, onSubmit, onNext, onRetry }: WordScramb
 
             {/* Actions */}
             {feedback === 'none' ? (
-                <div className="w-full max-w-xs flex gap-3">
-                    <Button
-                        variant="ghost"
+                <div className="w-full max-w-xs flex gap-3 items-stretch">
+                    <button
+                        type="button"
                         onClick={resetGame}
-                        className="h-14 sm:h-16 px-4 rounded-2xl"
+                        className="lp-token shrink-0 w-14 sm:w-16 h-[3.75rem] flex items-center justify-center"
+                        style={{ color: "var(--lp-muted)" }}
                         title={t('actions.reset', { defaultValue: 'Reiniciar' })}
                         aria-label={t('actions.reset', { defaultValue: 'Reiniciar' })}
                     >
                         <RotateCw className="w-6 h-6" />
-                    </Button>
-                    <Button
+                    </button>
+                    <QuestButton
+                        variant="gold"
                         onClick={handleCheck}
                         disabled={slots.some(s => s === null)}
-                        className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+                        className="flex-1"
                     >
                         {t('actions.verify')}
-                    </Button>
+                    </QuestButton>
                 </div>
             ) : (
-                <Button
+                <QuestButton
+                    variant={feedback === 'success' ? 'go' : 'retry'}
                     onClick={handleContinue}
-                    className={cn(
-                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                        "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                    )}
+                    className="max-w-sm"
                 >
                     {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    <ArrowRight className="w-5 h-5" />
-                </Button>
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                </QuestButton>
             )}
         </div>
     );

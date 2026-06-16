@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface MatchingPairsProps {
     exercise: any;
@@ -91,7 +91,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
     const gridCols = cards.length === 4 ? "grid-cols-2 sm:grid-cols-2 max-w-md mx-auto" : "grid-cols-2 sm:grid-cols-3";
 
     return (
-        <div className="w-full max-w-2xl animate-slide-in-bottom">
+        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
             <div className={`grid ${gridCols} gap-3 sm:gap-4 mb-8`}>
                 {cards.map((card, index) => {
                     const isSelected = selectedCards.includes(index);
@@ -102,26 +102,29 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                             key={card.id}
                             onClick={() => handleCardClick(index)}
                             disabled={isMatched || isChecking}
+                            style={{ animationDelay: `${0.04 + index * 0.05}s` }}
                             className={cn(
-                                "h-20 sm:h-24 rounded-2xl border-2 p-2 flex items-center justify-center text-center font-bold text-sm sm:text-base transition-all transform duration-300 perspective-1000",
+                                "lp-token lp-option relative h-20 sm:h-24 p-2 flex items-center justify-center text-center text-sm sm:text-base lp-display",
+                                "animate-in fade-in zoom-in-95 duration-500 fill-mode-both",
                                 isMatched
-                                    ? "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 opacity-50 scale-95"
+                                    ? "lp-option--emerald lp-token--locked is-correct opacity-60 scale-95"
                                     : isSelected
-                                        ? "bg-purple-500 border-purple-700 text-white shadow-none translate-y-[4px] rotate-y-180"
-                                        : "bg-card border-border shadow-[0_4px_0_hsl(var(--border))] hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+                                        ? "lp-option--indigo is-selected"
+                                        : "lp-option--indigo"
                             )}
                         >
-                            <span className="transition-opacity duration-300 opacity-100">
+                            <span className="transition-opacity duration-300 opacity-100" style={{ color: "var(--lp-ink)" }}>
                                 {card.text} {/* Could be Image or Icon too */}
                             </span>
-                            {isMatched && <Check className="absolute top-1 right-1 w-4 h-4 text-green-600" />}
+                            {isMatched && <Check className="absolute top-1 right-1 w-4 h-4" style={{ color: "var(--lp-emerald)" }} strokeWidth={3.5} />}
                         </button>
                     );
                 })}
             </div>
 
             {(feedback === 'success' || feedback === 'error') && (
-                <Button
+                <QuestButton
+                    variant={feedback === 'success' ? 'go' : 'retry'}
                     onClick={() => {
                         if (feedback === 'success') {
                             onNext();
@@ -133,19 +136,10 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                             onRetry();
                         }
                     }}
-                    className={cn(
-                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
                 >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                    </span>
-                </Button>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                </QuestButton>
             )}
         </div>
     );

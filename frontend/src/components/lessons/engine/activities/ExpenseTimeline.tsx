@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Clock, AlertCircle } from 'lucide-react';
+import { ArrowRight, Clock, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface ExpenseTimelineProps {
     exercise: any;
@@ -70,12 +69,12 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
 
     const getExpenseById = (id: string) => expenses.find((exp: any) => exp.id === id);
 
-    const getPriorityColor = (priority: string) => {
+    const getPriorityStyle = (priority: string): React.CSSProperties => {
         switch (priority) {
-            case 'urgent': return 'bg-red-100 dark:bg-red-950/30 border-red-500';
-            case 'important': return 'bg-indigo-100 dark:bg-indigo-950/30 border-indigo-500';
-            case 'can_wait': return 'bg-green-100 dark:bg-green-950/30 border-green-500';
-            default: return 'bg-slate-100 dark:bg-slate-800 border-slate-300';
+            case 'urgent': return { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)', boxShadow: '0 4px 0 var(--lp-coral-lip)' };
+            case 'important': return { background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)', boxShadow: '0 4px 0 var(--lp-amber-lip)' };
+            case 'can_wait': return { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)', boxShadow: '0 4px 0 var(--lp-emerald-lip)' };
+            default: return { background: 'var(--lp-surface)', borderColor: 'var(--lp-line)', boxShadow: '0 4px 0 var(--lp-line)' };
         }
     };
 
@@ -84,9 +83,12 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
 
             {/* Instructions */}
             <div className="mb-6 text-center">
-                <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-950/30 border-2 border-blue-400 dark:border-blue-700 rounded-xl px-4 py-3">
-                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                <div
+                    className="lp-chip inline-flex items-center gap-2 px-4 py-3"
+                    style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
+                >
+                    <Clock className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
+                    <span className="lp-display text-sm" style={{ color: 'var(--lp-indigo-ink)' }}>
                         {t('expense_timeline.instruction')}
                     </span>
                 </div>
@@ -95,24 +97,22 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
             {/* Unordered Expenses */}
             {unorderedExpenses.length > 0 && (
                 <div className="mb-6">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 text-center">
+                    <h3 className="lp-display text-sm mb-3 text-center" style={{ color: 'var(--lp-muted)' }}>
                         {t('expense_timeline.drag_to_timeline')}
                     </h3>
-                    <div className="flex flex-wrap gap-2 justify-center">
+                    <div className="flex flex-wrap gap-3 justify-center">
                         {unorderedExpenses.map((expense: any) => (
                             <div
                                 key={expense.id}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, expense.id)}
-                                className={cn(
-                                    "border-2 rounded-xl p-3 cursor-move hover:shadow-lg transition-all hover:-translate-y-1",
-                                    getPriorityColor(expense.priority)
-                                )}
+                                className="lp-token cursor-move p-3 min-w-[6.5rem]"
+                                style={getPriorityStyle(expense.priority)}
                             >
                                 <div className="text-center">
-                                    <div className="text-2xl mb-1">{expense.icon || '💳'}</div>
-                                    <div className="text-xs font-bold text-slate-800 dark:text-slate-100">{expense.name}</div>
-                                    <div className="text-xs text-slate-600 dark:text-slate-400">${expense.amount}</div>
+                                    <div className="text-3xl sm:text-4xl mb-1.5">{expense.icon || '💳'}</div>
+                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>{expense.name}</div>
+                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>${expense.amount}</div>
                                 </div>
                             </div>
                         ))}
@@ -124,7 +124,10 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
             <div className="mb-6">
                 <div className="relative">
                     {/* Timeline Line */}
-                    <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 via-indigo-500 to-green-500 opacity-50 rounded-full"></div>
+                    <div
+                        className="absolute left-8 top-0 bottom-0 w-1 opacity-60 rounded-full"
+                        style={{ background: 'linear-gradient(to bottom, var(--lp-coral), var(--lp-amber), var(--lp-emerald))' }}
+                    ></div>
 
                     {/* Timeline Slots */}
                     <div className="space-y-3">
@@ -139,38 +142,42 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                                     className="relative pl-16"
                                 >
                                     {/* Timeline Dot */}
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white dark:bg-slate-800 border-4 border-blue-500 z-10"></div>
+                                    <div
+                                        className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full z-10"
+                                        style={{ background: 'var(--lp-surface)', border: '4px solid var(--lp-indigo)' }}
+                                    ></div>
 
                                     {/* Expense Card or Empty Slot */}
                                     {expense ? (
                                         <div
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, expense.id)}
-                                            className={cn(
-                                                "border-2 rounded-xl p-3 cursor-move",
-                                                getPriorityColor(expense.priority)
-                                            )}
+                                            className="lp-token cursor-move p-3"
+                                            style={getPriorityStyle(expense.priority)}
                                         >
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex items-center justify-between gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-2xl">{expense.icon || '💳'}</span>
+                                                    <span className="text-3xl sm:text-4xl">{expense.icon || '💳'}</span>
                                                     <div>
-                                                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                                        <div className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                                                             {expense.name}
                                                         </div>
-                                                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                                                        <div className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>
                                                             {t(`expense_timeline.${expense.priority}`)}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-base font-bold text-slate-800 dark:text-slate-100">
+                                                <div className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                                                     ${expense.amount}
                                                 </div>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-3 bg-slate-50 dark:bg-slate-900/50">
-                                            <div className="flex items-center justify-center h-12 text-slate-400 dark:text-slate-600 text-xs">
+                                        <div
+                                            className="rounded-2xl p-3"
+                                            style={{ border: '2px dashed var(--lp-line)', background: 'var(--lp-bg-2)' }}
+                                        >
+                                            <div className="lp-display flex items-center justify-center h-12 text-xs" style={{ color: 'var(--lp-muted)' }}>
                                                 {t('expense_timeline.drop_here')} #{index + 1}
                                             </div>
                                         </div>
@@ -185,31 +192,30 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleCheck}
-                        disabled={orderedExpenses.length !== expenses.length}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        {t('actions.verify')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant="gold"
+                            onClick={handleCheck}
+                            disabled={orderedExpenses.length !== expenses.length}
+                        >
+                            {t('actions.verify')}
+                        </QuestButton>
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
+                    <div className="flex flex-col items-center w-full max-w-md">
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? t('status.correct') : t('status.incorrect')}
                         </p>
-                        <Button
+                        <QuestButton
+                            variant={feedback === 'success' ? 'go' : 'retry'}
                             onClick={handleContinue}
-                            className={cn(
-                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                                "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                            )}
                         >
                             {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
                     </div>
                 )}
             </div>

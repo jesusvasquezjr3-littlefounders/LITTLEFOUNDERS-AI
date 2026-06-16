@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Check, X, ArrowRight } from 'lucide-react';
+import { Check, X, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface TapActionProps {
     exercise: any;
@@ -12,14 +12,8 @@ interface TapActionProps {
     onRetry: () => void;
 }
 
-const BG_COLORS = [
-    { bg: 'bg-blue-500', hover: 'hover:bg-blue-600', shadow: 'shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)]' },
-    { bg: 'bg-pink-500', hover: 'hover:bg-pink-600', shadow: 'shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)]' },
-    { bg: 'bg-violet-500', hover: 'hover:bg-violet-600', shadow: 'shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]' },
-    { bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600', shadow: 'shadow-[0_4px_0_rgb(16,185,129)] hover:shadow-[0_2px_0_rgb(16,185,129)]' },
-    { bg: 'bg-purple-500', hover: 'hover:bg-purple-600', shadow: 'shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)]' },
-    { bg: 'bg-indigo-500', hover: 'hover:bg-indigo-600', shadow: 'shadow-[0_4px_0_rgb(202,138,4)] hover:shadow-[0_2px_0_rgb(202,138,4)]' },
-];
+// Playful DS v2 hues, cycled across the tappable tokens.
+const HUES = ['indigo', 'amber', 'emerald', 'coral'] as const;
 
 export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProps) => {
     const { t } = useTranslation('lessons');
@@ -90,48 +84,51 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                     // Display Content
                     let content: React.ReactNode = '❓';
                     if (item.image && (item.image.startsWith('/') || item.image.startsWith('http'))) {
-                        content = <img src={item.image} alt={item.text} className="w-16 h-16 object-contain pointer-events-none" />;
+                        content = <img src={item.image} alt={item.text} className="w-20 h-20 sm:w-28 sm:h-28 object-contain pointer-events-none" />;
                     } else if (item.emoji) content = item.emoji;
                     else if (item.text) content = item.text;
                     else if (item.shape === 'circle') content = item.color === 'gold' ? '🪙' : '⭕';
                     else if (item.shape === 'rectangle') content = item.color === 'green' ? '💵' : '📄';
 
-                    const color = BG_COLORS[idx % BG_COLORS.length];
+                    const hue = HUES[idx % HUES.length];
 
                     return (
                         <button
                             key={item.id}
                             onClick={() => handleTapItem(item.id)}
                             disabled={isChecked}
+                            style={{ animationDelay: `${0.04 + idx * 0.05}s` }}
                             className={cn(
-                                "min-w-20 min-h-20 sm:min-w-24 sm:min-h-24 max-w-28 sm:max-w-32 rounded-2xl flex items-center justify-center transition-all duration-200 transform text-white font-bold relative p-3 overflow-hidden",
-                                // Default
-                                !isTapped && !showResult && `${color.bg} ${color.hover} ${color.shadow} hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none`,
+                                "lp-token lp-option relative flex items-center justify-center p-3 overflow-hidden",
+                                "min-w-20 min-h-20 sm:min-w-28 sm:min-h-28 max-w-28 sm:max-w-36",
+                                "animate-in fade-in zoom-in-95 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                isChecked && "lp-token--locked",
 
-                                // Selected
-                                !showResult && isTapped && `${color.bg} translate-y-[4px] shadow-none ring-4 ring-white/60 scale-95 brightness-110`,
+                                // Selected (pre-check)
+                                !showResult && isTapped && "is-selected",
 
                                 // Success Result
-                                showResult && feedback === 'success' && isTapped && itemIsTarget && "bg-green-500 shadow-none ring-4 ring-white scale-105 z-10",
-                                showResult && feedback === 'success' && !isTapped && "opacity-20 grayscale",
+                                showResult && feedback === 'success' && isTapped && itemIsTarget && "is-correct z-10",
+                                showResult && feedback === 'success' && !isTapped && "is-dimmed grayscale",
 
                                 // Error Result
-                                showResult && feedback === 'error' && isTapped && !itemIsTarget && "bg-red-500 shadow-none ring-4 ring-white", // Wrongly tapped
-                                showResult && feedback === 'error' && isTapped && itemIsTarget && "bg-green-500 shadow-none", // Correctly tapped
-                                showResult && feedback === 'error' && !isTapped && "opacity-50 grayscale" // Ignored
+                                showResult && feedback === 'error' && isTapped && !itemIsTarget && "is-wrong", // Wrongly tapped
+                                showResult && feedback === 'error' && isTapped && itemIsTarget && "is-correct", // Correctly tapped
+                                showResult && feedback === 'error' && !isTapped && "is-dimmed grayscale" // Ignored
                             )}
                         >
-                            <span className="relative z-10 drop-shadow-md text-center break-words leading-tight text-xs sm:text-sm">{content}</span>
+                            <span className="relative z-10 lp-display text-center break-words leading-tight text-sm sm:text-base" style={{ color: 'var(--lp-ink)' }}>{content}</span>
 
                             {/* Indicators */}
                             {showResult && feedback === 'success' && isTapped && itemIsTarget && (
-                                <div className="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-6 h-6 flex items-center justify-center shadow-lg text-sm">
-                                    <Check className="w-4 h-4" />
+                                <div className="absolute -top-2 -right-2 rounded-full w-6 h-6 flex items-center justify-center text-white" style={{ background: 'var(--lp-emerald)', boxShadow: '0 3px 0 var(--lp-emerald-lip)' }}>
+                                    <Check className="w-4 h-4" strokeWidth={3.5} />
                                 </div>
                             )}
                             {showResult && feedback === 'error' && isTapped && !itemIsTarget && (
-                                <div className="absolute -top-2 -right-2 bg-white text-red-600 rounded-full w-6 h-6 flex items-center justify-center shadow-lg text-sm">
-                                    <X className="w-4 h-4" />
+                                <div className="absolute -top-2 -right-2 rounded-full w-6 h-6 flex items-center justify-center text-white" style={{ background: 'var(--lp-coral)', boxShadow: '0 3px 0 var(--lp-coral-lip)' }}>
+                                    <X className="w-4 h-4" strokeWidth={3.5} />
                                 </div>
                             )}
                         </button>
@@ -141,29 +138,14 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
 
             {/* Action Button */}
             {!isChecked ? (
-                <Button
-                    onClick={handleCheck}
-                    disabled={tappedItems.size === 0}
-                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
-                >
-                    <span className="relative flex items-center justify-center">🎯 {t('actions.verify')}</span>
-                </Button>
+                <QuestButton variant="gold" disabled={tappedItems.size === 0} onClick={handleCheck}>
+                    🎯 {t('actions.verify')}
+                </QuestButton>
             ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
-                >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? '🎉 ' + t('actions.continue') : '🔄 ' + t('actions.retry')}
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                    </span>
-                </Button>
+                <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                    {feedback === 'success' ? '🎉 ' + t('actions.continue') : '🔄 ' + t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-6 h-6" /> : <RotateCcw className="w-6 h-6" />}
+                </QuestButton>
             )}
         </div>
     );

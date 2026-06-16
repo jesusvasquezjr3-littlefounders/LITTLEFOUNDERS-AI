@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface InterestCalculatorProps {
     exercise: any;
@@ -71,7 +70,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Title */}
             <div className="mb-6 text-center">
-                <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                <h2 className="lp-display text-2xl sm:text-3xl mb-2" style={{ color: 'var(--lp-ink)' }}>
                     {exercise.content.type === 'compound'
                         ? t('interest_calculator.compound_title')
                         : t('interest_calculator.simple_title')
@@ -82,12 +81,12 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
             {/* Sliders */}
             <div className="space-y-6 mb-8">
                 {/* Principal */}
-                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
+                <div className="lp-card p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.principal')}
                         </label>
-                        <span className="text-lg font-black text-green-600 dark:text-green-400">
+                        <span className="lp-display text-lg" style={{ color: 'var(--lp-emerald-ink)' }}>
                             ${principal.toLocaleString()}
                         </span>
                     </div>
@@ -105,17 +104,18 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         aria-valuemin={100}
                         aria-valuemax={maxPrincipal}
                         aria-valuenow={principal}
-                        className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-600"
+                        style={{ accentColor: 'var(--lp-emerald)', background: 'color-mix(in srgb, var(--lp-ink) 12%, transparent)' }}
+                        className="w-full h-3 rounded-lg appearance-none cursor-pointer"
                     />
                 </div>
 
                 {/* Interest Rate */}
-                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
+                <div className="lp-card p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.rate')}
                         </label>
-                        <span className="text-lg font-black text-blue-600 dark:text-blue-400">
+                        <span className="lp-display text-lg" style={{ color: 'var(--lp-indigo-ink)' }}>
                             {rate}%
                         </span>
                     </div>
@@ -133,17 +133,18 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         aria-valuemin={0}
                         aria-valuemax={maxRate}
                         aria-valuenow={rate}
-                        className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                        style={{ accentColor: 'var(--lp-indigo)', background: 'color-mix(in srgb, var(--lp-ink) 12%, transparent)' }}
+                        className="w-full h-3 rounded-lg appearance-none cursor-pointer"
                     />
                 </div>
 
                 {/* Time */}
-                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-4">
+                <div className="lp-card p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                        <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.time')}
                         </label>
-                        <span className="text-lg font-black text-purple-600 dark:text-purple-400">
+                        <span className="lp-display text-lg" style={{ color: 'var(--lp-amber-ink)' }}>
                             {time} {t('interest_calculator.years')}
                         </span>
                     </div>
@@ -161,26 +162,33 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                         aria-valuemin={1}
                         aria-valuemax={maxTime}
                         aria-valuenow={time}
-                        className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                        style={{ accentColor: 'var(--lp-amber)', background: 'color-mix(in srgb, var(--lp-ink) 12%, transparent)' }}
+                        className="w-full h-3 rounded-lg appearance-none cursor-pointer"
                     />
                 </div>
             </div>
 
             {/* Results */}
             <div className="mb-8">
-                <div className="bg-emerald-500 border-2 border-emerald-600 rounded-2xl p-6 text-white shadow-sm">
+                <div
+                    className="rounded-[var(--lp-radius)] p-6 text-white"
+                    style={{
+                        background: 'var(--lp-emerald)',
+                        boxShadow: '0 6px 0 var(--lp-emerald-lip), var(--lp-shadow)',
+                    }}
+                >
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                         <div>
                             <div className="text-xs opacity-80 mb-1">{t('interest_calculator.initial')}</div>
-                            <div className="text-2xl font-black">${principal.toLocaleString()}</div>
+                            <div className="lp-display text-2xl">${principal.toLocaleString()}</div>
                         </div>
                         <div>
                             <div className="text-xs opacity-80 mb-1">{t('interest_calculator.interest_earned')}</div>
-                            <div className="text-2xl font-black">${interest.toFixed(2)}</div>
+                            <div className="lp-display text-2xl">${interest.toFixed(2)}</div>
                         </div>
                         <div>
                             <div className="text-xs opacity-80 mb-1">{t('interest_calculator.total')}</div>
-                            <div className="text-3xl font-black">${totalAmount.toFixed(2)}</div>
+                            <div className="lp-display text-3xl">${totalAmount.toFixed(2)}</div>
                         </div>
                     </div>
                 </div>
@@ -188,18 +196,18 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Visual Chart - Comparative Line Chart */}
             <div className="mb-8">
-                <div className="bg-card border-2 border-border shadow-sm rounded-2xl p-6">
+                <div className="lp-card p-6">
                     {/* Legend */}
                     <div className="flex justify-center gap-6 mb-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-1 bg-blue-500 rounded"></div>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                            <div className="w-4 h-1 rounded" style={{ background: 'var(--lp-indigo)' }}></div>
+                            <span className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>
                                 {t('interest_calculator.simple_interest')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-1 bg-green-500 rounded"></div>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                            <div className="w-4 h-1 rounded" style={{ background: 'var(--lp-emerald)' }}></div>
+                            <span className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>
                                 {t('interest_calculator.compound_interest')}
                             </span>
                         </div>
@@ -216,10 +224,9 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                                     y1={i * 50}
                                     x2="400"
                                     y2={i * 50}
-                                    stroke="currentColor"
+                                    stroke="var(--lp-ink)"
                                     strokeWidth="0.5"
-                                    className="text-slate-300 dark:text-slate-600"
-                                    opacity="0.3"
+                                    opacity="0.15"
                                 />
                             ))}
 
@@ -237,7 +244,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                                     return `${x},${y}`;
                                 }).join(' ')}
                                 fill="none"
-                                stroke="rgb(59, 130, 246)"
+                                stroke="var(--lp-indigo)"
                                 strokeWidth={exercise.content.type === 'simple' ? "3" : "2"}
                                 className={exercise.content.type === 'simple' ? "opacity-100" : "opacity-50"}
                             />
@@ -256,21 +263,21 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                                     return `${x},${y}`;
                                 }).join(' ')}
                                 fill="none"
-                                stroke="rgb(34, 197, 94)"
+                                stroke="var(--lp-emerald)"
                                 strokeWidth={exercise.content.type === 'compound' ? "3" : "2"}
                                 className={exercise.content.type === 'compound' ? "opacity-100" : "opacity-50"}
                             />
                         </svg>
 
                         {/* Y-axis labels */}
-                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-slate-600 dark:text-slate-400 -ml-12">
+                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs -ml-12" style={{ color: 'var(--lp-muted)' }}>
                             <span>${totalAmount.toFixed(0)}</span>
                             <span>${(totalAmount * 0.5).toFixed(0)}</span>
                             <span>${principal}</span>
                         </div>
 
                         {/* X-axis labels */}
-                        <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-slate-600 dark:text-slate-400 -mb-6">
+                        <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs -mb-6" style={{ color: 'var(--lp-muted)' }}>
                             <span>0</span>
                             <span>{Math.floor(time / 2)}</span>
                             <span>{time}</span>
@@ -279,8 +286,8 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
                     {/* Axis labels */}
                     <div className="flex justify-between items-center mt-8">
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{t('interest_calculator.years')}</span>
-                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 -rotate-90 origin-center">{t('interest_calculator.amount')}</span>
+                        <span className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>{t('interest_calculator.years')}</span>
+                        <span className="lp-display text-xs -rotate-90 origin-center" style={{ color: 'var(--lp-muted)' }}>{t('interest_calculator.amount')}</span>
                     </div>
                 </div>
             </div>
@@ -288,25 +295,26 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleSubmit}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                    >
-                        <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
-                        {t('interest_calculator.calculate')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" onClick={handleSubmit}>
+                            <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+                            {t('interest_calculator.calculate')}
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald-ink)' : 'var(--lp-coral-ink)' }}
+                        >
                             {feedback === 'success' ? t('interest_calculator.calculated') : t('feedback.error')}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
-                            {t('actions.continue')}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                                {t('actions.continue')}
+                                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

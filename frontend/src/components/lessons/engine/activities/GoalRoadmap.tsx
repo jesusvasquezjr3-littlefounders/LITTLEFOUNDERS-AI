@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, MapPin, Flag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface GoalRoadmapProps {
     exercise: any;
@@ -69,7 +68,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
             {/* Available Goals */}
             {availableGoals.length > 0 && (
                 <div className="mb-6">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
+                    <h3 className="lp-display text-sm mb-3" style={{ color: 'var(--lp-muted)' }}>
                         {t('goal_roadmap.available_goals')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -77,15 +76,15 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                             <button
                                 key={goal.id}
                                 onClick={() => addGoal(goal.id)}
-                                className="p-4 bg-card border-2 border-border rounded-2xl hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-left"
+                                className="lp-token lp-option lp-option--indigo text-left p-4"
                             >
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-2xl">{goal.icon}</span>
-                                    <span className="font-bold text-foreground">
+                                <div className="flex items-center gap-2.5 mb-2">
+                                    <span className="text-3xl sm:text-4xl">{goal.icon}</span>
+                                    <span className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                                         {goal.title}
                                     </span>
                                 </div>
-                                <div className="text-xs sm:text-sm text-muted-foreground">
+                                <div className="lp-display text-xs sm:text-sm" style={{ color: 'var(--lp-muted)' }}>
                                     {goal.timeframe}
                                 </div>
                             </button>
@@ -95,22 +94,25 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
             )}
 
             {/* Roadmap Timeline */}
-            <div className="mb-6 bg-card border-2 border-border shadow-sm rounded-2xl p-4 sm:p-6">
+            <div className="lp-card mb-6 p-4 sm:p-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="w-5 h-5 text-blue-500" />
-                    <h3 className="text-lg font-black text-foreground">
+                    <MapPin className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
+                    <h3 className="lp-display text-lg" style={{ color: 'var(--lp-ink)' }}>
                         {t('goal_roadmap.your_roadmap')}
                     </h3>
                 </div>
 
                 {orderedGoals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                    <div className="lp-display text-center py-8" style={{ color: 'var(--lp-muted)' }}>
                         {t('goal_roadmap.empty_roadmap')}
                     </div>
                 ) : (
                     <div className="relative">
                         {/* Timeline Line */}
-                        <div className="absolute left-6 top-0 bottom-0 w-1 bg-blue-400 dark:bg-blue-600"></div>
+                        <div
+                            className="absolute left-6 top-0 bottom-0 w-1 rounded-full opacity-70"
+                            style={{ background: 'linear-gradient(to bottom, var(--lp-indigo), var(--lp-amber), var(--lp-emerald))' }}
+                        ></div>
 
                         {/* Goals */}
                         <div className="space-y-4">
@@ -121,28 +123,34 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                                 return (
                                     <div key={goalId} className="relative flex items-start gap-4 pl-12">
                                         {/* Milestone Marker */}
-                                        <div className="absolute left-3 top-3 w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                        <div
+                                            className="lp-badge absolute left-3 top-3 z-10 w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                                            style={{ background: 'var(--lp-indigo)', color: '#fff' }}
+                                        >
                                             {index + 1}
                                         </div>
 
                                         {/* Goal Card */}
                                         <button
                                             onClick={() => removeGoal(goalId)}
-                                            className="flex-1 p-4 bg-card border-2 border-border rounded-2xl shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:border-red-400 dark:hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-left group"
+                                            className="lp-token lp-option lp-option--coral flex-1 p-4 text-left group"
                                         >
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex items-center justify-between gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-3xl">{goal.icon}</span>
+                                                    <span className="text-3xl sm:text-4xl">{goal.icon}</span>
                                                     <div>
-                                                        <div className="font-bold text-foreground">
+                                                        <div className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                                                             {goal.title}
                                                         </div>
-                                                        <div className="text-xs sm:text-sm text-muted-foreground">
+                                                        <div className="lp-display text-xs sm:text-sm" style={{ color: 'var(--lp-muted)' }}>
                                                             {goal.timeframe}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs sm:text-sm font-bold text-red-500 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded-lg">
+                                                <div
+                                                    className="lp-display text-xs sm:text-sm sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-opacity px-2 py-1 rounded-lg"
+                                                    style={{ color: 'var(--lp-coral-ink)', background: 'var(--lp-coral-soft)' }}
+                                                >
                                                     {t('goal_roadmap.remove')}
                                                 </div>
                                             </div>
@@ -154,11 +162,14 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                             {/* Finish Flag */}
                             {orderedGoals.length === goals.length && (
                                 <div className="relative flex items-center gap-4 pl-12 animate-bounce">
-                                    <div className="absolute left-3 w-7 h-7 flex items-center justify-center">
-                                        <Flag className="w-7 h-7 text-green-600" />
+                                    <div className="absolute left-3 z-10 w-7 h-7 flex items-center justify-center">
+                                        <Flag className="w-7 h-7" style={{ color: 'var(--lp-emerald)' }} />
                                     </div>
-                                    <div className="flex-1 p-4 bg-green-100 dark:bg-green-950 rounded-xl border-2 border-green-500">
-                                        <div className="font-bold text-green-800 dark:text-green-200 text-center">
+                                    <div
+                                        className="flex-1 p-4 rounded-2xl border-2"
+                                        style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }}
+                                    >
+                                        <div className="lp-display text-center" style={{ color: 'var(--lp-emerald-ink)' }}>
                                             🎉 {t('goal_roadmap.complete')}
                                         </div>
                                     </div>
@@ -172,32 +183,40 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={orderedGoals.length !== goals.length}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(59,130,246)] hover:shadow-[0_2px_0_rgb(59,130,246)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        {t('actions.create_roadmap')}
-                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant="gold"
+                            onClick={handleSubmit}
+                            disabled={orderedGoals.length !== goals.length}
+                        >
+                            {t('actions.create_roadmap')}
+                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </QuestButton>
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                    <div className="flex flex-col items-center w-full max-w-md">
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
                         </p>
-                        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-xl max-w-2xl">
-                            <p className="text-sm text-blue-900 dark:text-blue-100 text-center">
+                        <div
+                            className="mb-4 p-4 rounded-2xl border-2 max-w-2xl"
+                            style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
+                        >
+                            <p className="lp-display text-sm text-center" style={{ color: 'var(--lp-indigo-ink)' }}>
                                 {t('goal_roadmap.feedback_order')}
                             </p>
                         </div>
 
-                        <Button
+                        <QuestButton
+                            variant={feedback === 'success' ? 'go' : 'retry'}
                             onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(34,197,94)] hover:shadow-[0_2px_0_rgb(34,197,94)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
                         >
                             {t('actions.continue')}
                             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                        </QuestButton>
                     </div>
                 )}
             </div>

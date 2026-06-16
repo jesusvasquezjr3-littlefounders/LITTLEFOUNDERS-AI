@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowDown } from 'lucide-react';
+import { ArrowRight, ArrowDown, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 // Removed unused dnd import
 
 // NOTE: Using simple click-to-order instead of heavy DnD library for simplicity in this swift implementation if possible.
@@ -79,7 +79,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom flex flex-col items-center">
 
-            <h3 className="text-xl font-bold mb-8 text-center">{exercise.content.instruction || exercise.content.question || t('instructions.concept_builder', { defaultValue: 'Ordena los elementos' })}</h3>
+            <h3 className="lp-display text-xl sm:text-2xl mb-8 text-center text-[var(--lp-ink)]">{exercise.content.instruction || exercise.content.question || t('instructions.concept_builder', { defaultValue: 'Ordena los elementos' })}</h3>
 
             {/* Blocks Row */}
             <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-2 mb-10 w-full">
@@ -88,57 +88,47 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
 
                         {/* The Block */}
                         <div className={cn(
-                            "relative px-6 py-4 rounded-xl border-b-4 font-bold text-center min-w-[120px] transition-all",
+                            "lp-display relative px-5 py-4 sm:px-6 text-center min-w-[120px]",
                             block.type === 'connector'
-                                ? "bg-slate-100 text-slate-500 border-slate-300 text-sm"
-                                : "bg-white dark:bg-slate-800 border-purple-200 dark:border-purple-900 shadow-sm text-lg",
-                            feedback === 'success' && "border-green-400 bg-green-50 dark:bg-green-900/20"
+                                ? "lp-chip text-sm text-[var(--lp-muted)] px-4 py-2.5"
+                                : "lp-token text-lg text-[var(--lp-ink)]",
+                            feedback === 'success' && block.type !== 'connector' && "is-correct lp-option lp-option--emerald"
                         )}>
                             {block.label || block.text}
 
                             {/* Controls (Hidden if done) */}
                             {feedback === 'none' && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:opacity-0 sm:hover:opacity-100 opacity-100 transition-opacity bg-white shadow-sm rounded-full px-1">
-                                    <button onClick={() => moveBlock(index, 'left')} className="p-1 hover:text-purple-600" disabled={index === 0} aria-label={t('actions.move_left', { defaultValue: 'Mover izquierda' })}>←</button>
-                                    <button onClick={() => moveBlock(index, 'right')} className="p-1 hover:text-purple-600" disabled={index === blocks.length - 1} aria-label={t('actions.move_right', { defaultValue: 'Mover derecha' })}>→</button>
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:opacity-0 sm:hover:opacity-100 opacity-100 transition-opacity lp-chip px-1.5 py-0.5">
+                                    <button onClick={() => moveBlock(index, 'left')} className="p-1 text-[var(--lp-muted)] hover:text-[var(--lp-indigo)]" disabled={index === 0} aria-label={t('actions.move_left', { defaultValue: 'Mover izquierda' })}>←</button>
+                                    <button onClick={() => moveBlock(index, 'right')} className="p-1 text-[var(--lp-muted)] hover:text-[var(--lp-indigo)]" disabled={index === blocks.length - 1} aria-label={t('actions.move_right', { defaultValue: 'Mover derecha' })}>→</button>
                                 </div>
                             )}
                         </div>
 
                         {/* Visual Connector Arrow (except last) */}
                         {index < blocks.length - 1 && (
-                            <ArrowRight className="hidden md:block w-6 h-6 text-slate-300 mx-2" />
+                            <ArrowRight className="hidden md:block w-6 h-6 text-[var(--lp-muted)] mx-2" />
                         )}
                         {index < blocks.length - 1 && (
-                            <ArrowDown className="block md:hidden w-6 h-6 text-slate-300 my-2" />
+                            <ArrowDown className="block md:hidden w-6 h-6 text-[var(--lp-muted)] my-2" />
                         )}
                     </div>
                 ))}
             </div>
 
             {/* Actions */}
-            {feedback === 'none' ? (
-                <Button
-                    onClick={handleCheck}
-                    className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                >
-                    {t('actions.verify')}
-                </Button>
-            ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                        "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                    )}
-                >
-                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    <ArrowRight className="w-5 h-5" />
-                </Button>
-            )}
+            <div className="w-full max-w-sm">
+                {feedback === 'none' ? (
+                    <QuestButton variant="gold" onClick={handleCheck}>
+                        {t('actions.verify')}
+                    </QuestButton>
+                ) : (
+                    <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                    </QuestButton>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, DollarSign } from 'lucide-react';
+import { ArrowRight, RotateCcw, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface CoinCounterProps {
     exercise: any;
@@ -73,25 +72,25 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
         <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
 
             {/* Goal Display */}
-            <div className="bg-card border-2 border-border shadow-sm p-6 rounded-3xl w-full mb-6 text-center">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">{t('actions.pay_exact')}</span>
-                <div className="text-5xl font-black text-slate-800 dark:text-slate-100 flex items-center justify-center gap-2">
-                    <DollarSign className="w-8 h-8 md:w-10 md:h-10 text-green-500" /> {targetAmount}
+            <div className="lp-card p-6 w-full mb-6 text-center">
+                <span className="lp-display text-xs uppercase tracking-widest block mb-2" style={{ color: "var(--lp-muted)" }}>{t('actions.pay_exact')}</span>
+                <div className="lp-display text-5xl flex items-center justify-center gap-2" style={{ color: "var(--lp-ink)" }}>
+                    <DollarSign className="w-8 h-8 md:w-10 md:h-10" style={{ color: "var(--lp-emerald)" }} /> {targetAmount}
                 </div>
             </div>
 
             {/* Coin/Bill Tray (Source) */}
-            <div className="flex justify-center gap-4 mb-8 bg-black/5 dark:bg-white/5 p-4 rounded-2xl w-full">
+            <div className="flex justify-center flex-wrap gap-4 sm:gap-5 mb-8 p-4 rounded-2xl w-full" style={{ background: "var(--lp-bg-2)" }}>
                 {availableCoins.map((coin: any, idx: number) => (
                     <button
                         key={idx}
                         onClick={() => addCoin(coin.value)}
-                        className="group relative transition-transform hover:-translate-y-2 active:translate-y-0"
+                        className="group lp-token relative w-20 h-20 sm:w-24 sm:h-24 !rounded-full flex flex-col items-center justify-center select-none"
                     >
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white dark:bg-slate-700 shadow-md border-4 border-slate-200 flex items-center justify-center text-2xl md:text-3xl select-none group-hover:shadow-lg transition-all">
+                        <span className="text-3xl sm:text-4xl leading-none">
                             {coin.image || '🪙'}
-                        </div>
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        </span>
+                        <div className="lp-badge absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs px-2.5 py-0.5 !rounded-full">
                             {coin.value}
                         </div>
                     </button>
@@ -99,9 +98,12 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
             </div>
 
             {/* Counting Area (Target) */}
-            <div className="w-full min-h-[160px] bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-6 flex flex-wrap content-start items-start justify-center gap-2 mb-8 relative">
+            <div
+                className="w-full min-h-[160px] rounded-3xl p-6 flex flex-wrap content-start items-start justify-center gap-2 sm:gap-3 mb-8 relative"
+                style={{ background: "var(--lp-bg-2)", border: "2px dashed var(--lp-line)" }}
+            >
                 {selectedCoins.length === 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground opacity-50 font-medium">
+                    <div className="lp-display absolute inset-0 flex items-center justify-center opacity-60" style={{ color: "var(--lp-muted)" }}>
                         {t('instructions.drag_coins_here')}
                     </div>
                 )}
@@ -110,7 +112,8 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
                     <button
                         key={idx}
                         onClick={() => removeCoin(idx)}
-                        className="w-12 h-12 rounded-full bg-indigo-400 border-2 border-indigo-600 shadow-sm flex items-center justify-center font-bold text-indigo-900 animate-in zoom-in hover:scale-110 transition-transform"
+                        className="lp-display w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg animate-in zoom-in transition-transform hover:scale-110"
+                        style={{ background: "var(--lp-indigo-soft)", border: "2px solid var(--lp-indigo)", color: "var(--lp-indigo-ink)" }}
                     >
                         {val}
                     </button>
@@ -118,34 +121,27 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
             </div>
 
             {/* Current Total Indicator */}
-            <div className={cn("text-2xl font-bold mb-6 transition-colors", currentAmount > targetAmount ? "text-red-500" : "text-slate-500")}>
+            <div
+                className="lp-display text-2xl mb-6 transition-colors"
+                style={{ color: currentAmount > targetAmount ? "var(--lp-coral)" : "var(--lp-muted)" }}
+            >
                 {t('economy.total')}: {currentAmount}
             </div>
 
             {/* Actions */}
             {feedback === 'none' ? (
-                <Button
-                    onClick={handleCheck}
-                    className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
-                >
-                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
-                </Button>
+                <QuestButton variant="gold" className="max-w-sm" onClick={handleCheck}>
+                    {t('actions.verify')}
+                </QuestButton>
             ) : (
-                <Button
+                <QuestButton
+                    variant={feedback === 'success' ? 'go' : 'retry'}
+                    className="max-w-sm"
                     onClick={handleContinue}
-                    className={cn(
-                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
                 >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
-                    </span>
-                </Button>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                </QuestButton>
             )}
         </div>
     );

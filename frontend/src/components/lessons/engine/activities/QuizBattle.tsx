@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Zap, Clock, Trophy } from 'lucide-react';
+import { ArrowRight, RotateCcw, Clock, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface QuizBattleProps {
     exercise: any;
@@ -92,14 +93,17 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
 
     if (totalQuestions === 0) {
         return (
-            <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
-                <div className="text-4xl mb-4">📊</div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+            <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
+                <div className="text-6xl mb-4">📊</div>
+                <h3 className="lp-display text-2xl text-center" style={{ color: 'var(--lp-ink)' }}>
                     {t('quiz_battle.no_questions', { defaultValue: 'Sin preguntas disponibles' })}
                 </h3>
-                <Button onClick={onNext} className="mt-6">
-                    {t('actions.continue', { defaultValue: 'Continuar' })}
-                </Button>
+                <div className="mt-8 w-full max-w-md">
+                    <QuestButton variant="brand" onClick={onNext}>
+                        {t('actions.continue', { defaultValue: 'Continuar' })}
+                        <ArrowRight className="w-5 h-5" />
+                    </QuestButton>
+                </div>
             </div>
         );
     }
@@ -151,124 +155,115 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
         <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {feedback !== 'complete' ? (
                 <>
-                    <div className="mb-6 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Trophy className="w-6 h-6 text-indigo-600" />
-                            <span className="text-2xl font-black text-indigo-600">
+                    <div className="mb-5 flex items-center justify-between">
+                        <div className="lp-chip h-11 px-4 flex items-center gap-2" style={{ color: 'var(--lp-amber-ink)' }}>
+                            <Trophy className="w-5 h-5" style={{ color: 'var(--lp-amber)' }} />
+                            <span className="lp-display text-xl tabular-nums">
                                 {score}
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <Clock className={cn(
-                                "w-5 h-5",
-                                timeLeft <= 5 ? "text-red-600 animate-pulse" : "text-blue-600"
-                            )} />
-                            <span className={cn(
-                                "text-xl font-black",
-                                timeLeft <= 5 ? "text-red-600" : "text-blue-600"
-                            )}>
+                        <div
+                            className={cn("lp-chip h-11 px-4 flex items-center gap-2", timeLeft <= 5 && "lp-shake")}
+                            style={{ color: timeLeft <= 5 ? 'var(--lp-coral-ink)' : 'var(--lp-indigo-ink)' }}
+                        >
+                            <Clock
+                                className={cn("w-5 h-5", timeLeft <= 5 && "animate-pulse")}
+                                style={{ color: timeLeft <= 5 ? 'var(--lp-coral)' : 'var(--lp-indigo)' }}
+                            />
+                            <span className="lp-display text-xl tabular-nums">
                                 {timeLeft}s
                             </span>
                         </div>
                     </div>
 
-                    <div className="mb-6 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="lp-track mb-6 h-3.5">
                         <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300"
+                            className="lp-track-fill h-full transition-all duration-300"
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
 
-                    <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 shadow-sm">
-                        <div className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                    <div className="lp-card mb-6 p-6">
+                        <div className="lp-display text-sm mb-2 uppercase tracking-wide" style={{ color: 'var(--lp-muted)' }}>
                             {t('quiz_battle.question', { defaultValue: 'Pregunta' })} {currentQuestion + 1}/{totalQuestions}
                         </div>
-                        <h3 className="text-xl font-black text-blue-900 dark:text-blue-100">
+                        <h3 className="lp-display text-xl sm:text-2xl leading-snug" style={{ color: 'var(--lp-ink)' }}>
                             {question?.question || content.question || ''}
                         </h3>
                     </div>
 
-                    <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(question?.options || []).map((option: any) => {
+                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {(question?.options || []).map((option: any, index: number) => {
                             const isSelected = selectedAnswer === option.id;
                             const correctId = getCorrectId();
                             const isCorrect = option.id === correctId;
                             const showResult = isAnswered;
 
+                            const optionState: OptionState = !showResult
+                                ? (isSelected ? 'selected' : 'idle')
+                                : isCorrect
+                                    ? 'correct'
+                                    : isSelected
+                                        ? 'wrong'
+                                        : 'dimmed';
+
                             return (
-                                <button
+                                <OptionCard
                                     key={option.id}
+                                    index={index}
+                                    text={option.text}
+                                    state={optionState}
                                     onClick={() => handleAnswer(option.id)}
                                     disabled={isAnswered}
-                                    className={cn(
-                                        "p-6 rounded-2xl border-2 transition-all text-left font-bold",
-                                        !showResult && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400",
-                                        showResult && isCorrect && "bg-green-100 dark:bg-green-950 border-green-500",
-                                        showResult && !isCorrect && isSelected && "bg-red-100 dark:bg-red-950 border-red-500",
-                                        showResult && !isCorrect && !isSelected && "opacity-50"
-                                    )}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-slate-800 dark:text-slate-200">
-                                            {option.text}
-                                        </span>
-                                        {showResult && isCorrect && (
-                                            <span className="text-2xl">✓</span>
-                                        )}
-                                        {showResult && !isCorrect && isSelected && (
-                                            <span className="text-2xl">✗</span>
-                                        )}
-                                    </div>
-                                </button>
+                                />
                             );
                         })}
                     </div>
                 </>
             ) : (
                 <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-bottom-4">
-                    <div className="mb-6 p-6 text-center">
-                        <div className={cn(
-                            "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4",
-                            quizPassed ? "bg-green-100 dark:bg-green-900" : "bg-violet-100 dark:bg-violet-900"
-                        )}>
-                            <span className="text-3xl">{quizPassed ? '🎉' : '📊'}</span>
+                    <div className="mb-8 p-6 text-center">
+                        <div
+                            className="w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center mx-auto mb-5 lp-bob"
+                            style={{
+                                background: quizPassed ? 'var(--lp-emerald-soft)' : 'var(--lp-amber-soft)',
+                                border: `2px solid ${quizPassed ? 'var(--lp-emerald)' : 'var(--lp-amber)'}`,
+                            }}
+                        >
+                            <span className="text-5xl sm:text-6xl">{quizPassed ? '🎉' : '📊'}</span>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">
+                        <h3 className="lp-display text-2xl sm:text-3xl mb-3" style={{ color: 'var(--lp-ink)' }}>
                             {quizPassed ? t('quiz_battle.complete', { defaultValue: '¡Completado!' }) : t('quiz_battle.try_again', { defaultValue: 'Necesitas más puntos' })}
                         </h3>
-                        <p className="text-lg font-black text-indigo-600 mb-2">
+                        <p className="lp-display text-xl" style={{ color: 'var(--lp-amber-ink)' }}>
                             {t('quiz_battle.final_score', { defaultValue: 'Puntaje' })}: {score}
                         </p>
                     </div>
 
-                    <Button
-                        onClick={() => {
-                            if (quizPassed) {
-                                onNext();
-                            } else {
-                                setCurrentQuestion(0);
-                                setSelectedAnswer(null);
-                                setScore(0);
-                                scoreRef.current = 0;
-                                setTimeLeft(15);
-                                setIsAnswered(false);
-                                setFeedback('none');
-                                setQuizPassed(false);
-                                onRetry();
-                            }
-                        }}
-                        className={cn(
-                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                            quizPassed
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                            "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                        )}
-                    >
-                        {quizPassed ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
-                        <ArrowRight className="w-5 h-5" />
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant={quizPassed ? 'go' : 'retry'}
+                            onClick={() => {
+                                if (quizPassed) {
+                                    onNext();
+                                } else {
+                                    setCurrentQuestion(0);
+                                    setSelectedAnswer(null);
+                                    setScore(0);
+                                    scoreRef.current = 0;
+                                    setTimeLeft(15);
+                                    setIsAnswered(false);
+                                    setFeedback('none');
+                                    setQuizPassed(false);
+                                    onRetry();
+                                }
+                            }}
+                        >
+                            {quizPassed ? t('actions.continue', { defaultValue: 'Continuar' }) : t('actions.retry', { defaultValue: 'Reintentar' })}
+                            {quizPassed ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
+                    </div>
                 </div>
             )}
         </div>

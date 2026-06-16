@@ -657,14 +657,14 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // ============ LOADING STATE ============
     if (loading) {
         return (
-            <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-4">
+            <div className="lp lp-bg fixed inset-0 flex flex-col items-center justify-center gap-4">
                 <dotlottie-wc
                     src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
                     style={{ width: '300px', height: '300px' }}
                     autoplay
                     loop
                 />
-                <p className="text-lg text-muted-foreground font-medium">{t('loading')}</p>
+                <p className="lp-display text-lg font-medium" style={{ color: 'var(--lp-muted)' }}>{t('loading')}</p>
             </div>
         );
     }
@@ -672,9 +672,9 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
     // ============ ERROR STATE ============
     if (error || !data) {
         return (
-            <div className="fixed inset-0 bg-background flex flex-col items-center justify-center gap-4 p-6">
-                <AlertCircle className="w-16 h-16 text-destructive" />
-                <p className="text-lg text-destructive font-medium text-center">
+            <div className="lp lp-bg fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
+                <AlertCircle className="w-16 h-16" style={{ color: 'var(--lp-coral)' }} />
+                <p className="lp-display text-lg font-medium text-center" style={{ color: 'var(--lp-coral-ink)' }}>
                     {error || t('error')}
                 </p>
                 <Button variant="outline" onClick={handleClose} className="mt-4">
@@ -689,11 +689,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         const startCharacterCode = normalizeCharacterCode(data.timeline[0]?.character_code || 'liruf');
 
         return (
-            <div className="fixed inset-0 bg-background flex flex-col overflow-hidden">
-                {/* Decorative orbs - subtle */}
-                <div className="absolute -top-20 -left-20 w-72 h-72 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-[streak-orb-float-1_12s_ease-in-out_infinite]" />
-                <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl pointer-events-none animate-[streak-orb-float-2_14s_ease-in-out_infinite]" />
-
+            <div className="lp lp-bg fixed inset-0 flex flex-col overflow-hidden">
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
                     {/* Character - with staggered entrance */}
@@ -701,13 +697,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         <div className="animate-float">
                             <div className="animate-breathe">
                                 {startCharacterCode === 'dina' ? (
-                                    <DinaCharacter className="w-full max-w-[260px] sm:max-w-[280px]" expression="happy" />
+                                    <DinaCharacter className="w-full max-w-[300px] sm:max-w-[360px]" expression="happy" />
                                 ) : startCharacterCode === 'dr_rho' ? (
-                                    <DrRhoCharacter className="w-full max-w-[260px] sm:max-w-[280px]" mood="wise" />
+                                    <DrRhoCharacter className="w-full max-w-[300px] sm:max-w-[360px]" mood="wise" />
                                 ) : startCharacterCode === 'zara_vex' ? (
-                                    <ZaraVexCharacter className="w-full max-w-[260px] sm:max-w-[280px]" mood="happy" />
+                                    <ZaraVexCharacter className="w-full max-w-[300px] sm:max-w-[360px]" mood="happy" />
                                 ) : (
-                                    <DinoCharacter className="w-full max-w-[260px] sm:max-w-[280px]" showBubble={false} mood="excited" />
+                                    <DinoCharacter className="w-full max-w-[300px] sm:max-w-[360px]" showBubble={false} mood="excited" />
                                 )}
                             </div>
                         </div>
@@ -715,27 +711,27 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
 
                     {/* Lesson Info Card - staggered entrance */}
                     <div
-                        className="relative bg-card rounded-3xl border-2 border-border px-6 py-6 text-center max-w-sm w-full mb-5 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-700"
+                        className="lp-card relative px-6 py-6 text-center max-w-sm w-full mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700"
                         style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
                     >
-                        <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-2 relative tracking-tight">
+                        <h1 className="lp-display text-2xl sm:text-3xl mb-2 relative" style={{ color: 'var(--lp-ink)' }}>
                             {data.lesson.title}
                         </h1>
-                        <p className="text-muted-foreground mb-5 relative text-base font-medium leading-relaxed">
+                        <p className="mb-5 relative text-base font-medium leading-relaxed" style={{ color: 'var(--lp-muted)' }}>
                             {data.lesson.description}
                         </p>
 
                         {/* Rewards */}
                         <div className="flex justify-center gap-4 relative">
-                            <div className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/20 px-4 py-2 rounded-2xl border-2 border-indigo-400 dark:border-indigo-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}>
-                                <Star className="w-5 h-5 text-indigo-500 fill-indigo-500" />
-                                <span className="font-bold text-indigo-700 dark:text-indigo-400 text-base">
+                            <div className="lp-chip flex items-center gap-2 px-4 py-2 animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards', color: 'var(--lp-amber-ink)' }}>
+                                <Star className="w-5 h-5" style={{ color: 'var(--lp-amber)', fill: 'var(--lp-amber)' }} />
+                                <span className="text-base">
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-500/20 px-4 py-2 rounded-2xl border-2 border-blue-400 dark:border-blue-500/30 shadow-sm animate-in fade-in zoom-in duration-500" style={{ animationDelay: '550ms', animationFillMode: 'backwards' }}>
-                                <Clock className="w-5 h-5 text-blue-500" />
-                                <span className="font-bold text-blue-700 dark:text-blue-400 text-base">
+                            <div className="lp-chip flex items-center gap-2 px-4 py-2 animate-in fade-in zoom-in duration-500" style={{ animationDelay: '550ms', animationFillMode: 'backwards', color: 'var(--lp-indigo-ink)' }}>
+                                <Clock className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
+                                <span className="text-base">
                                     {data.meta.estimated_duration_seconds >= 60
                                         ? `${Math.round(data.meta.estimated_duration_seconds / 60)} min`
                                         : `${data.meta.estimated_duration_seconds}s`
@@ -756,7 +752,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                                 startLesson();
                             }}
                             size="lg"
-                            className="relative w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all overflow-hidden"
+                            className="lp-cta relative w-full h-14 sm:h-16 text-lg sm:text-xl overflow-hidden"
                         >
                             <span className="relative z-10">{t('start.button')}</span>
                             <div className="absolute inset-0 animate-shimmer-sweep pointer-events-none" />
@@ -776,7 +772,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         : progress;
 
     return (
-        <div className="fixed inset-0 bg-background flex flex-col">
+        <div className="lp lp-bg fixed inset-0 flex flex-col">
 
             {/* ===== TOP BAR ===== */}
             <div className="flex items-center gap-3 p-4 pb-2">
@@ -784,15 +780,16 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 <button
                     onClick={handleClose}
                     aria-label={t('actions.close', { defaultValue: 'Close lesson' })}
-                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all flex-shrink-0 border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 active:scale-95 active:translate-y-1 active:shadow-none"
+                    className="lp-token w-10 h-10 flex items-center justify-center flex-shrink-0"
+                    style={{ color: 'var(--lp-muted)' }}
                 >
-                    <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                    <X className="w-5 h-5" strokeWidth={2.5} />
                 </button>
 
                 {/* Progress Bar */}
-                <div className="flex-1 h-5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 relative shadow-inner">
+                <div className="lp-track flex-1 h-3.5 relative">
                     <div
-                        className="h-full bg-green-500 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
+                        className="lp-track-fill h-full transition-all duration-500 ease-out relative overflow-hidden"
                         style={{ width: `${displayProgress}%` }}
                     >
                         <div className="absolute top-1 left-2 right-2 h-1.5 bg-white/30 rounded-full" />
@@ -804,11 +801,12 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {combo >= 2 && (
                     <div
                         key={`combo-${combo}`}
-                        className="flex items-center gap-1 bg-amber-100 dark:bg-amber-500/20 px-2.5 py-1.5 rounded-2xl border-2 border-amber-300 dark:border-amber-500/30 shadow-sm animate-bounce-in-scale"
+                        className="lp-chip flex items-center gap-1 px-2.5 py-1.5 animate-bounce-in-scale"
+                        style={{ color: 'var(--lp-amber-ink)' }}
                         aria-label={t('combo', { count: combo, defaultValue: '¡Racha x{{count}}!' })}
                     >
-                        <Flame className="w-5 h-5 text-amber-500 fill-amber-500" />
-                        <span className="text-base font-bold text-amber-600 dark:text-amber-400">x{combo}</span>
+                        <Flame className="w-5 h-5" style={{ color: 'var(--lp-amber)', fill: 'var(--lp-amber)' }} />
+                        <span className="text-base">x{combo}</span>
                     </div>
                 )}
 
@@ -816,12 +814,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 <div
                     key={`energy-${lifeLossTick}`}
                     className={cn(
-                        "flex items-center gap-1.5 bg-red-100 dark:bg-red-500/20 px-3 py-1.5 rounded-2xl border-2 border-red-200 dark:border-red-500/30 shadow-sm",
+                        "lp-chip flex items-center gap-1.5 px-3 py-1.5",
                         lifeLossTick > 0 && "animate-shake"
                     )}
+                    style={{ color: 'var(--lp-coral-ink)' }}
                 >
-                    <Zap className="w-5 h-5 text-red-500 fill-red-500" />
-                    <span className="text-base font-bold text-red-600 dark:text-red-400">{lives}</span>
+                    <Zap className="w-5 h-5" style={{ color: 'var(--lp-coral)', fill: 'var(--lp-coral)' }} />
+                    <span className="text-base">{lives}</span>
                 </div>
 
                 {/* Audio Toggle */}
@@ -829,12 +828,13 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     onClick={() => setAudioMuted()}
                     aria-label={audioMuted ? t('actions.unmute', { defaultValue: 'Unmute audio' }) : t('actions.mute', { defaultValue: 'Mute audio' })}
                     aria-pressed={audioMuted}
-                    className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 active:scale-95 active:translate-y-1 active:shadow-none"
+                    className="lp-token w-10 h-10 flex items-center justify-center"
+                    style={{ color: 'var(--lp-muted)' }}
                 >
                     {audioMuted ? (
-                        <VolumeX className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                        <VolumeX className="w-5 h-5" />
                     ) : (
-                        <Volume2 className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                        <Volume2 className="w-5 h-5" />
                     )}
                 </button>
             </div>
@@ -846,8 +846,8 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
             {state === 'COMPLETED' && !showSuccess && !showStreakCelebration ? (
                 <div className="flex-1 flex flex-col items-center justify-center px-4 pb-2 pt-4 min-h-0 w-full">
                     <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
-                        <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
-                        <p className="text-lg font-bold text-muted-foreground">
+                        <Loader2 className="w-12 h-12 animate-spin" style={{ color: 'var(--lp-emerald)' }} />
+                        <p className="lp-display text-lg" style={{ color: 'var(--lp-emerald-ink)' }}>
                             {t('completion.finishing', { defaultValue: 'Guardando progreso...' })}
                         </p>
                     </div>
@@ -867,18 +867,18 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         {/* Speech Bubble - ADAPTIVE */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-bounce-in" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
-                                className="relative bg-card rounded-2xl shadow-sm border-2 border-border lesson-speech mx-2 px-5 py-3"
+                                className="lp-card relative lesson-speech mx-2 px-5 py-3"
                                 role="status"
                                 aria-live="polite"
                                 aria-atomic="true"
                             >
-                                <p className="text-center font-bold text-lg text-foreground leading-snug">
+                                <p className="lp-display text-center text-lg leading-snug" style={{ color: 'var(--lp-ink)' }}>
                                     {getCurrentText()}
                                 </p>
                                 {/* Tail */}
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px] border-t-border" />
-                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-card absolute -top-[12px] -left-[8px]" />
+                                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px]" style={{ borderTopColor: 'var(--lp-line)' }} />
+                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] absolute -top-[12px] -left-[8px]" style={{ borderTopColor: 'var(--lp-surface)' }} />
                                 </div>
                             </div>
                         </div>
@@ -1385,17 +1385,17 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     'spot_trap', 'impact_meter', 'mindset_comparison'
                 ].includes(currentExercise.type) && (
                     <div className="w-full max-w-md mx-auto animate-slide-in-bottom">
-                        <div className="bg-card rounded-3xl p-8 text-center space-y-4 border-2 border-border shadow-sm">
+                        <div className="lp-card p-8 text-center space-y-4">
                             <div className="text-4xl">🛠️</div>
-                            <h3 className="text-lg font-bold text-foreground">
+                            <h3 className="lp-display text-lg" style={{ color: 'var(--lp-ink)' }}>
                                 {t('errors.unsupported_exercise', { defaultValue: 'Ejercicio en desarrollo' })}
                             </h3>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                                 {t('errors.unsupported_exercise_desc', { defaultValue: 'Este tipo de ejercicio aún no está disponible. Puedes saltarlo para continuar.' })}
                             </p>
                             <button
                                 onClick={handleNext}
-                                className="w-full h-14 sm:h-16 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white font-bold shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
+                                className="lp-cta lp-cta--brand w-full h-14 sm:h-16 flex items-center justify-center gap-2"
                             >
                                 {t('actions.skip', { defaultValue: 'Saltar ejercicio' })} →
                             </button>
@@ -1406,11 +1406,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 {/* GLOBAL INSTRUCTION FOOTER — moved to end so it appears below ALL exercise types */}
                 {localFeedback === 'none' && currentExercise?.content?.instruction && (
                     <div className="w-full max-w-md mx-auto mt-4 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-500">
-                        <div className="bg-muted/50 dark:bg-muted/30 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 flex items-center justify-center gap-2">
-                            <span className="text-xs font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider">
+                        <div className="lp-chip backdrop-blur-sm px-4 py-2 flex items-center justify-center gap-2">
+                            <span className="lp-display text-xs px-2 py-0.5 rounded-md uppercase tracking-wider" style={{ background: 'var(--lp-indigo-soft)', color: 'var(--lp-indigo-ink)' }}>
                                 {t('tip', { defaultValue: 'Tip' })}
                             </span>
-                            <p className="text-sm font-medium text-muted-foreground text-center">
+                            <p className="text-sm font-medium text-center" style={{ color: 'var(--lp-muted)' }}>
                                 {currentExercise.content.instruction}
                             </p>
                         </div>
@@ -1474,32 +1474,33 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 }}
             >
                 <DialogContent
-                    className="sm:max-w-md bg-card border-2 border-border shadow-sm rounded-3xl"
+                    className="lp lp-card sm:max-w-md border-none"
                     onPointerDownOutside={(e) => e.preventDefault()}
                     onEscapeKeyDown={(e) => e.preventDefault()}
                 >
                     <div className="text-center py-6">
-                        <div className="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <BatteryLow className="w-10 h-10 text-indigo-500" />
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--lp-indigo-soft)' }}>
+                            <BatteryLow className="w-10 h-10" style={{ color: 'var(--lp-indigo)' }} />
                         </div>
 
-                        <DialogTitle className="text-3xl font-bold text-foreground mb-2">
+                        <DialogTitle className="lp-display text-3xl mb-2" style={{ color: 'var(--lp-ink)' }}>
                             {t('game_over.title')}
                         </DialogTitle>
-                        <DialogDescription className="text-lg text-muted-foreground mb-6">
+                        <DialogDescription className="text-lg mb-6" style={{ color: 'var(--lp-muted)' }}>
                             {t('game_over.subtitle')} ⚡
                         </DialogDescription>
 
                         <div className="flex gap-3">
                             <Button
                                 onClick={handleClose}
-                                className="flex-1 h-14 sm:h-16 rounded-2xl font-bold bg-muted text-muted-foreground border-2 border-border shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
+                                className="lp-token flex-1 h-14 sm:h-16 flex items-center justify-center gap-2 bg-transparent hover:bg-transparent"
+                                style={{ color: 'var(--lp-muted)' }}
                             >
                                 {t('game_over.exit_button')}
                             </Button>
                             <Button
                                 onClick={restartLessonRun}
-                                className="flex-1 h-14 sm:h-16 rounded-2xl font-bold bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
+                                className="lp-cta flex-1 h-14 sm:h-16 flex items-center justify-center gap-2"
                             >
                                 <Zap className="w-4 h-4 fill-current" />
                                 {t('game_over.retry_button')}

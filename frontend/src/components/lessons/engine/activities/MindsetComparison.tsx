@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface MindsetComparisonProps {
     exercise: any;
@@ -83,18 +83,16 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         }
     };
 
-    const colorClasses: Record<string, { selected: string; unselected: string; label: string; badge: string }> = {
+    const colorClasses: Record<string, { hue: string; label: string; badge: string }> = {
         red: {
-            selected: 'bg-red-100 dark:bg-red-950 border-red-500 scale-105 shadow-sm',
-            unselected: 'opacity-50',
-            label: 'text-red-700 dark:text-red-400',
-            badge: 'text-red-600',
+            hue: 'lp-option--coral',
+            label: 'text-[var(--lp-coral-ink)]',
+            badge: 'text-[var(--lp-coral-ink)]',
         },
         green: {
-            selected: 'bg-green-100 dark:bg-green-950 border-green-500 scale-105 shadow-sm',
-            unselected: 'opacity-50',
-            label: 'text-green-700 dark:text-green-400',
-            badge: 'text-green-600',
+            hue: 'lp-option--emerald',
+            label: 'text-[var(--lp-emerald-ink)]',
+            badge: 'text-[var(--lp-emerald-ink)]',
         },
     };
 
@@ -102,21 +100,23 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Scenario / Instruction */}
             {scenarioText && (
-                <div className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-500 dark:border-blue-700 rounded-2xl p-6 shadow-sm">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Brain className="w-6 h-6 text-blue-600" />
-                        <h3 className="text-lg font-black text-blue-900 dark:text-blue-100">
+                <div className="lp-card mb-6 p-5 sm:p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                        <span className="lp-badge lp-option--indigo shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center">
+                            <Brain className="w-6 h-6 sm:w-7 sm:h-7" />
+                        </span>
+                        <h3 className="lp-display text-lg sm:text-xl text-[var(--lp-ink)]">
                             {t('mindset_comparison.scenario', { defaultValue: 'Escenario' })}
                         </h3>
                     </div>
-                    <p className="text-slate-700 dark:text-slate-300">
+                    <p className="text-[var(--lp-muted)] text-base leading-relaxed">
                         {scenarioText}
                     </p>
                 </div>
             )}
 
             {/* Mindset Comparison */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 {mindsets.map((mindset) => {
                     const isSelected = selectedId === mindset.id;
                     const otherSelected = selectedId !== null && selectedId !== mindset.id;
@@ -129,28 +129,27 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                             aria-pressed={isSelected}
                             onClick={() => handleSelect(mindset.id)}
                             className={cn(
-                                "p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden cursor-pointer",
-                                isSelected && colors.selected,
-                                otherSelected && colors.unselected,
-                                !selectedId && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300"
+                                "lp-token lp-option p-5 sm:p-6 text-left relative overflow-hidden",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                colors.hue,
+                                isSelected && "is-selected",
+                                otherSelected && "is-dimmed",
                             )}
                         >
-                            <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 ${mindset.color === 'green' ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>
-
                             <div className="relative">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className="text-3xl">{mindset.color === 'green' ? '😊' : '😰'}</span>
-                                    <h3 className={`text-xl font-black ${colors.label}`}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="text-4xl sm:text-5xl leading-none">{mindset.color === 'green' ? '😊' : '😰'}</span>
+                                    <h3 className={`lp-display text-xl sm:text-2xl ${colors.label}`}>
                                         {mindset.label}
                                     </h3>
                                 </div>
 
                                 {mindset.text && (
                                     <div className="mb-4">
-                                        <div className={`text-sm font-bold mb-2 ${colors.badge}`}>
+                                        <div className={`lp-display text-sm mb-2 ${colors.badge}`}>
                                             {t('mindset_comparison.response', { defaultValue: 'Respuesta' })}:
                                         </div>
-                                        <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                                        <p className="text-sm text-[var(--lp-muted)] italic leading-relaxed">
                                             "{mindset.text}"
                                         </p>
                                     </div>
@@ -158,10 +157,10 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
                                 {mindset.consequences.length > 0 && (
                                     <div className="mb-4">
-                                        <div className={`text-sm font-bold mb-2 ${colors.badge}`}>
+                                        <div className={`lp-display text-sm mb-2 ${colors.badge}`}>
                                             {t('mindset_comparison.consequences', { defaultValue: 'Consecuencias' })}:
                                         </div>
-                                        <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                                        <ul className="text-xs text-[var(--lp-muted)] space-y-1">
                                             {mindset.consequences.map((consequence: string, idx: number) => (
                                                 <li key={idx}>{mindset.color === 'green' ? '✅' : '❌'} {consequence}</li>
                                             ))}
@@ -177,21 +176,30 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={!selectedId}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                        {t('actions.compare', { defaultValue: 'Comparar' })}
-                        <ArrowRight className="w-5 h-5" />
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={!selectedId} onClick={handleSubmit}>
+                            {t('actions.compare', { defaultValue: 'Comparar' })}
+                            <ArrowRight className="w-5 h-5" />
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
-                        <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-950/30 border-2 border-purple-300 dark:border-purple-700 rounded-xl max-w-2xl">
-                            <p className="text-sm text-purple-900 dark:text-purple-100 text-center">
+                        <div
+                            className="lp-card mb-4 p-4 max-w-2xl"
+                            style={feedback === 'success'
+                                ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
+                                : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }}
+                        >
+                            <p
+                                className="text-sm text-center"
+                                style={{ color: feedback === 'success' ? 'var(--lp-emerald-ink)' : 'var(--lp-coral-ink)' }}
+                            >
                                 {feedback === 'success'
                                     ? t('mindset_comparison.feedback_abundance', { defaultValue: '¡Mentalidad de abundancia! Piensa en largo plazo.' })
                                     : t('mindset_comparison.feedback_scarcity', { defaultValue: 'La mentalidad de escasez limita tu potencial.' })
@@ -199,13 +207,12 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                             </p>
                         </div>
 
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
-                            {t('actions.continue', { defaultValue: 'Continuar' })}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                                {t('actions.continue', { defaultValue: 'Continuar' })}
+                                <ArrowRight className="w-5 h-5" />
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

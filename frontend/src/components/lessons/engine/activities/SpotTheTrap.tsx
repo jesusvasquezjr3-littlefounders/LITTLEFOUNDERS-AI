@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, AlertTriangle, ShieldCheck, Mail } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SpotTheTrapProps {
     exercise: any;
@@ -108,9 +108,12 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
         <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             <div className="mb-8 text-center">
-                <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-700 rounded-full px-6 py-3">
-                    <AlertTriangle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span className="font-bold text-blue-800 dark:text-blue-200">
+                <div
+                    className="lp-chip inline-flex items-center gap-2 px-6 py-3"
+                    style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}
+                >
+                    <AlertTriangle className="w-5 h-5" style={{ color: 'var(--lp-amber-ink)' }} />
+                    <span className="lp-display" style={{ color: 'var(--lp-amber-ink)' }}>
                         {t('spot_trap.warning', { defaultValue: '¡Cuidado! Identifica las trampas' })}
                     </span>
                 </div>
@@ -137,30 +140,30 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                     }
                                 }}
                                 className={cn(
-                                    "w-full text-left p-4 rounded-xl border-2 transition-all duration-300 relative overflow-hidden cursor-pointer select-none",
-                                    "bg-white dark:bg-slate-800",
-                                    feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2",
-                                    !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg",
-                                    !isRevealed && isSelected && "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900/50 shadow-lg",
-                                    isRevealed && isTrap && "border-red-500 bg-red-50 dark:bg-red-950/30",
-                                    isRevealed && !isTrap && "border-green-500 bg-green-50 dark:bg-green-950/30"
+                                    "lp-token lp-option lp-option--coral w-full text-left p-4 relative overflow-hidden select-none",
+                                    "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                    feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:ring-offset-2",
+                                    isRevealed && "lp-token--locked",
+                                    !isRevealed && isSelected && "is-selected",
+                                    isRevealed && isTrap && "is-wrong",
+                                    isRevealed && !isTrap && "is-correct"
                                 )}
                             >
                                 {/* Message Header */}
                                 <div className="flex items-start justify-between mb-2">
                                     <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <Mail className={cn(
-                                            "w-5 h-5",
-                                            isTrap ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400"
-                                        )} />
+                                        <Mail
+                                            className="w-5 h-5"
+                                            style={{ color: isRevealed ? (isTrap ? 'var(--lp-coral)' : 'var(--lp-emerald)') : 'var(--lp-muted)' }}
+                                        />
                                     </div>
                                     <div className="flex-1 ml-3">
                                         {msg.sender && (
-                                            <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                            <div className="text-xs mb-1" style={{ color: 'var(--lp-muted)' }}>
                                                 {msg.sender}
                                             </div>
                                         )}
-                                        <p className="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+                                        <p className="lp-display text-sm leading-relaxed" style={{ color: 'var(--lp-ink)' }}>
                                             {msg.text}
                                         </p>
                                     </div>
@@ -170,7 +173,11 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 {!isRevealed && msg.hints && msg.hints.length > 0 && (
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         {msg.hints.map((hint: string, idx: number) => (
-                                            <span key={idx} className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                                            <span
+                                                key={idx}
+                                                className="text-xs font-bold px-2 py-1 rounded-full"
+                                                style={{ background: 'var(--lp-indigo-soft)', color: 'var(--lp-indigo-ink)' }}
+                                            >
                                                 {hint}
                                             </span>
                                         ))}
@@ -181,11 +188,17 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 {isRevealed && (
                                     <div className="absolute top-4 right-4 animate-in zoom-in">
                                         {isTrap ? (
-                                            <div className="bg-red-600 text-white font-black text-sm px-4 py-2 rounded-lg rotate-12 shadow-lg border-2 border-red-700">
+                                            <div
+                                                className="lp-display text-white text-sm px-4 py-2 rounded-lg rotate-12 shadow-lg border-2"
+                                                style={{ background: 'var(--lp-coral)', borderColor: 'var(--lp-coral-lip)' }}
+                                            >
                                                 {t('spot_trap.trap', { defaultValue: '¡Trampa!' })} ⚠️
                                             </div>
                                         ) : (
-                                            <div className="bg-green-600 text-white font-black text-sm px-4 py-2 rounded-lg -rotate-12 shadow-lg border-2 border-green-700 flex items-center gap-1">
+                                            <div
+                                                className="lp-display text-white text-sm px-4 py-2 rounded-lg -rotate-12 shadow-lg border-2 flex items-center gap-1"
+                                                style={{ background: 'var(--lp-emerald)', borderColor: 'var(--lp-emerald-lip)' }}
+                                            >
                                                 <ShieldCheck className="w-4 h-4" />
                                                 {t('spot_trap.safe', { defaultValue: 'Seguro' })}
                                             </div>
@@ -195,7 +208,10 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
 
                                 {/* Selection Indicator */}
                                 {!isRevealed && isSelected && (
-                                    <div className="absolute top-4 right-4 w-8 h-8 bg-red-600 rounded-full flex items-center justify-center animate-in zoom-in">
+                                    <div
+                                        className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center animate-in zoom-in"
+                                        style={{ background: 'var(--lp-coral)' }}
+                                    >
                                         <AlertTriangle className="w-5 h-5 text-white" />
                                     </div>
                                 )}
@@ -209,7 +225,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
             {isFallbackMode && (
                 <div className="space-y-4 mb-6">
                     {fallbackText && (
-                        <p className="text-base font-medium text-slate-800 dark:text-slate-100 leading-relaxed text-center">
+                        <p className="lp-display text-base leading-relaxed text-center" style={{ color: 'var(--lp-ink)' }}>
                             {fallbackText}
                         </p>
                     )}
@@ -234,26 +250,26 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                         }
                                     }}
                                     className={cn(
-                                        "w-full text-left p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer select-none",
-                                        "bg-white dark:bg-slate-800",
-                                        feedback === 'none' && "focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2",
-                                        !isRevealed && !isSelected && "border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg",
-                                        !isRevealed && isSelected && "border-red-500 dark:border-red-600 ring-4 ring-red-200 dark:ring-red-900/50 shadow-lg",
-                                        isRevealed && isCorrectAnswer && "border-green-500 bg-green-50 dark:bg-green-950/30",
-                                        isRevealed && !isCorrectAnswer && isSelected && "border-red-500 bg-red-50 dark:bg-red-950/30"
+                                        "lp-token lp-option lp-option--indigo w-full text-left p-4 select-none",
+                                        "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                        feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:ring-offset-2",
+                                        isRevealed && "lp-token--locked",
+                                        !isRevealed && isSelected && "is-selected",
+                                        isRevealed && isCorrectAnswer && "is-correct",
+                                        isRevealed && !isCorrectAnswer && isSelected && "is-wrong"
                                     )}
                                 >
-                                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+                                    <p className="lp-display text-sm leading-relaxed" style={{ color: 'var(--lp-ink)' }}>
                                         {optLabel}
                                     </p>
                                     {isRevealed && isCorrectAnswer && (
-                                        <div className="mt-2 flex items-center gap-1 text-green-600 dark:text-green-400 text-xs font-bold">
+                                        <div className="mt-2 flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--lp-emerald-ink)' }}>
                                             <ShieldCheck className="w-4 h-4" />
                                             {t('spot_trap.safe', { defaultValue: 'Seguro' })}
                                         </div>
                                     )}
                                     {isRevealed && !isCorrectAnswer && isSelected && (
-                                        <div className="mt-2 flex items-center gap-1 text-red-600 dark:text-red-400 text-xs font-bold">
+                                        <div className="mt-2 flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--lp-coral-ink)' }}>
                                             <AlertTriangle className="w-4 h-4" />
                                             {t('spot_trap.trap', { defaultValue: '¡Trampa!' })}
                                         </div>
@@ -268,35 +284,34 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleCheck}
-                        disabled={!isFallbackMode && selectedTraps.size === 0}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-red-500 hover:bg-red-600 text-white rounded-2xl shadow-[0_4px_0_rgb(153,27,27)] hover:shadow-[0_2px_0_rgb(153,27,27)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        {t('actions.verify', { defaultValue: 'Verificar' })}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant="gold"
+                            onClick={handleCheck}
+                            disabled={!isFallbackMode && selectedTraps.size === 0}
+                        >
+                            {t('actions.verify', { defaultValue: 'Verificar' })}
+                        </QuestButton>
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
+                    <div className="flex flex-col items-center w-full max-w-md">
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success'
                                 ? t('status.correct', { defaultValue: '¡Correcto!' })
                                 : t('status.incorrect', { defaultValue: '¡Incorrecto!' })}
                         </p>
-                        <Button
+                        <QuestButton
+                            variant={feedback === 'success' ? 'go' : 'retry'}
                             onClick={handleContinue}
-                            className={cn(
-                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                                "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                            )}
                         >
                             {feedback === 'success'
                                 ? t('actions.continue', { defaultValue: 'Continuar' })
                                 : t('actions.retry', { defaultValue: 'Reintentar' })}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
                     </div>
                 )}
             </div>

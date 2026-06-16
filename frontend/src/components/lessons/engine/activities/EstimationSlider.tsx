@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface EstimationSliderProps {
     exercise: any;
@@ -76,12 +75,12 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
         <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Question Card */}
-            <div className="bg-card border-2 border-border shadow-sm p-8 rounded-3xl mb-10 w-full text-center">
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+            <div className="lp-card p-6 sm:p-8 mb-10 w-full text-center">
+                <h3 className="lp-display text-xl sm:text-2xl mb-4" style={{ color: 'var(--lp-ink)' }}>
                     {content.problem || content.question || t('instructions.estimation_slider', { defaultValue: 'Estima el valor' })}
                 </h3>
-                <div className="text-5xl font-black text-purple-600 dark:text-purple-400">
-                    {value[0]}<span className="text-2xl ml-1 text-slate-400 font-medium">{unit}</span>
+                <div className="lp-display text-5xl sm:text-6xl" style={{ color: 'var(--lp-amber-ink)' }}>
+                    {value[0]}<span className="lp-display text-2xl ml-1 font-medium" style={{ color: 'var(--lp-muted)' }}>{unit}</span>
                 </div>
             </div>
 
@@ -96,7 +95,7 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
                     disabled={feedback !== 'none'}
                     className="py-4 cursor-pointer"
                 />
-                <div className="flex justify-between text-muted-foreground font-bold mt-2">
+                <div className="lp-display flex justify-between mt-2" style={{ color: 'var(--lp-muted)' }}>
                     <span>{min}{unit}</span>
                     <span>{max}{unit}</span>
                 </div>
@@ -106,13 +105,13 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
             {feedback !== 'none' && (
                 <div className="mb-8 text-center animate-in zoom-in">
                     {feedback === 'success' ? (
-                        <div className="text-green-500 font-bold text-xl flex items-center gap-2 justify-center">
+                        <div className="lp-display text-xl flex items-center gap-2 justify-center" style={{ color: 'var(--lp-emerald)' }}>
                             🎉 {t('feedback.exact')}
                         </div>
                     ) : (
                         <div className="flex flex-col gap-1">
                             <span className="text-3xl mb-1">{difference > 0 ? "👇" : "👆"}</span>
-                            <span className="font-bold text-lg text-slate-600 dark:text-slate-300">
+                            <span className="lp-display text-lg" style={{ color: 'var(--lp-ink)' }}>
                                 {difference > 0 ? t('feedback.lower') : t('feedback.higher')}
                             </span>
                         </div>
@@ -122,28 +121,14 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
 
             {/* Actions */}
             {feedback === 'none' ? (
-                <Button
-                    onClick={handleCheck}
-                    className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
-                >
-                    <span className="relative flex items-center justify-center">{t('actions.verify')}</span>
-                </Button>
+                <QuestButton variant="gold" onClick={handleCheck}>
+                    {t('actions.verify')}
+                </QuestButton>
             ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
-                >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
-                    </span>
-                </Button>
+                <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                </QuestButton>
             )}
         </div>
     );

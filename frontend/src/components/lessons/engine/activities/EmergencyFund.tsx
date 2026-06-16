@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, AlertTriangle, Wallet } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface EmergencyFundProps {
     exercise: any;
@@ -38,8 +38,8 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
     if (events.length === 0) {
         return (
             <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
-                <div className="text-4xl mb-4" aria-hidden="true">🚨</div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                <div className="text-6xl sm:text-7xl mb-4 lp-bob" aria-hidden="true">🚨</div>
+                <h3 className="lp-display text-2xl sm:text-3xl mb-2 text-[var(--lp-ink)]">
                     {t('emergency_fund.loading', { defaultValue: 'Cargando emergencias...' })}
                 </h3>
             </div>
@@ -84,8 +84,8 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
     if (!event && feedback === 'none') {
         return (
             <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-20">
-                <div className="text-4xl mb-4" aria-hidden="true">🚨</div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                <div className="text-6xl sm:text-7xl mb-4 lp-bob" aria-hidden="true">🚨</div>
+                <h3 className="lp-display text-2xl sm:text-3xl mb-2 text-[var(--lp-ink)]">
                     {t('emergency_fund.loading', { defaultValue: 'Cargando emergencias...' })}
                 </h3>
             </div>
@@ -93,37 +93,45 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
     }
 
     return (
-        <div className="w-full max-w-3xl animate-slide-in-bottom">
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Fund Balance */}
             <div className="mb-6">
-                <div className={cn(
-                    "text-white rounded-2xl p-6 border-2 text-center shadow-sm",
-                    fundBalance >= 3000 && "bg-green-500 border-green-600",
-                    fundBalance >= 1000 && fundBalance < 3000 && "bg-indigo-500 border-indigo-600",
-                    fundBalance < 1000 && "bg-red-500 border-red-600"
-                )}>
+                <div
+                    className="rounded-2xl p-6 border-2 text-center transition-all duration-500"
+                    style={{
+                        ...(fundBalance >= 3000
+                            ? { background: 'var(--lp-emerald)', borderColor: 'var(--lp-emerald-lip)', color: '#fff' }
+                            : fundBalance >= 1000
+                                ? { background: 'var(--lp-indigo)', borderColor: 'var(--lp-indigo-lip)', color: '#fff' }
+                                : { background: 'var(--lp-coral)', borderColor: 'var(--lp-coral-lip)', color: '#fff' }),
+                        boxShadow: 'var(--lp-shadow)',
+                    }}
+                >
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <Wallet className="w-6 h-6" />
                         <span className="text-sm font-medium opacity-90">
                             {t('emergency_fund.balance')}
                         </span>
                     </div>
-                    <div className="text-5xl font-black">${fundBalance.toLocaleString()}</div>
+                    <div className="lp-display text-5xl sm:text-6xl">${fundBalance.toLocaleString()}</div>
                 </div>
             </div>
 
             {/* Event */}
             {event && feedback === 'none' && (
                 <>
-                    <div className="mb-6 bg-red-100 dark:bg-red-950/30 border-2 border-red-500 dark:border-red-700 rounded-2xl p-4">
+                    <div
+                        className="mb-6 border-2 rounded-2xl p-4 sm:p-5"
+                        style={{ background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }}
+                    >
                         <div className="flex items-start gap-3">
-                            <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-1" />
+                            <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: 'var(--lp-coral)' }} />
                             <div className="flex-1">
-                                <h3 className="text-sm font-bold text-red-800 dark:text-red-200 mb-2">
+                                <h3 className="lp-display text-sm sm:text-base mb-2" style={{ color: 'var(--lp-coral-ink)' }}>
                                     {t('emergency_fund.emergency')} {currentEvent + 1}/{events.length}
                                 </h3>
-                                <p className="text-sm text-red-700 dark:text-red-300">
+                                <p className="lp-display text-base sm:text-lg leading-snug" style={{ color: 'var(--lp-ink)' }}>
                                     {event.description}
                                 </p>
                             </div>
@@ -131,32 +139,35 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                     </div>
 
                     <div className="space-y-3 mb-6">
-                        {event.options.map((option: any) => {
+                        {event.options.map((option: any, idx: number) => {
                             const canAfford = fundBalance >= (option.cost || 0);
+                            const hue = ['indigo', 'amber', 'emerald', 'coral'][idx % 4];
 
                             return (
                                 <button
                                     key={option.id}
                                     onClick={() => handleDecision(option.id)}
                                     disabled={!canAfford}
+                                    style={{ animationDelay: `${0.04 + idx * 0.06}s` }}
                                     className={cn(
-                                        "w-full text-left p-4 rounded-xl border-2 transition-all",
-                                        canAfford && "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg",
-                                        !canAfford && "bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 opacity-50 cursor-not-allowed"
+                                        "lp-token lp-option w-full text-left px-4 py-4",
+                                        "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                        `lp-option--${hue}`,
+                                        !canAfford && "lp-token--locked is-dimmed cursor-not-allowed"
                                     )}
                                 >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    <div className="flex items-center justify-between gap-4 mb-2">
+                                        <p className="lp-display text-sm sm:text-base flex-1 leading-snug" style={{ color: 'var(--lp-ink)' }}>
                                             {option.text}
                                         </p>
-                                        <span className={cn(
-                                            "text-base font-black",
-                                            canAfford ? "text-red-600 dark:text-red-400" : "text-slate-400"
-                                        )}>
+                                        <span
+                                            className="lp-display text-base sm:text-lg shrink-0"
+                                            style={{ color: canAfford ? 'var(--lp-coral-ink)' : 'var(--lp-muted)' }}
+                                        >
                                             ${option.cost?.toLocaleString()}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                                    <p className="text-xs sm:text-sm text-[var(--lp-muted)]">
                                         {option.description}
                                     </p>
                                 </button>
@@ -169,18 +180,20 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             {/* Result */}
             {feedback !== 'none' && (
                 <div className="flex flex-col items-center">
-                    <div className={cn(
-                        "mb-6 p-6 rounded-2xl text-center w-full",
-                        feedback === 'success' && "bg-green-100 dark:bg-green-950/30 border-2 border-green-500",
-                        feedback === 'error' && "bg-red-100 dark:bg-red-950/30 border-2 border-red-500"
-                    )}>
-                        <p className={cn(
-                            "font-bold text-lg mb-2",
-                            feedback === 'success' ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
-                        )}>
+                    <div
+                        className="mb-6 p-6 rounded-2xl text-center w-full border-2 animate-in fade-in zoom-in-95 duration-300"
+                        style={feedback === 'success'
+                            ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
+                            : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }
+                        }
+                    >
+                        <p
+                            className="lp-display text-lg sm:text-xl mb-2"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald-ink)' : 'var(--lp-coral-ink)' }}
+                        >
                             {feedback === 'success' ? t('emergency_fund.survived') : t('emergency_fund.depleted')}
                         </p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                        <p className="text-sm sm:text-base text-[var(--lp-muted)]">
                             {feedback === 'success'
                                 ? t('emergency_fund.success_message')
                                 : t('emergency_fund.error_message')
@@ -188,19 +201,15 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                         </p>
                     </div>
 
-                    <Button
-                        onClick={handleContinue}
-                        className={cn(
-                            "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                            feedback === 'success'
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                            "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                        )}
-                    >
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="w-5 h-5" />
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton
+                            variant={feedback === 'success' ? 'go' : 'retry'}
+                            onClick={handleContinue}
+                        >
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        </QuestButton>
+                    </div>
                 </div>
             )}
         </div>

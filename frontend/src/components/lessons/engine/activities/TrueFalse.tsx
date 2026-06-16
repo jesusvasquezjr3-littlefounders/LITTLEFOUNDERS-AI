@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Check, X, ArrowRight } from 'lucide-react';
+import { Check, X, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface TrueFalseProps {
     exercise: any;
@@ -45,32 +45,32 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
     };
 
     return (
-        <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
+        <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both flex flex-col items-center">
 
             {/* Statement Card */}
-            <div className="bg-card p-6 sm:p-8 rounded-3xl border-2 border-border mb-10 w-full text-center shadow-sm">
-                <h3 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+            <div className="lp-card p-6 sm:p-8 mb-8 sm:mb-10 w-full text-center">
+                <h3 className="lp-display text-2xl sm:text-3xl leading-tight" style={{ color: 'var(--lp-ink)' }}>
                     {exercise.content.statement}
                 </h3>
             </div>
 
             {/* True / False Buttons */}
-            <div className="grid grid-cols-2 gap-4 w-full mb-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full mb-8">
                 {/* TRUE BUTTON */}
                 <button
                     onClick={() => handleAnswer(true)}
                     disabled={answered !== null}
                     className={cn(
-                        "h-32 rounded-[2rem] flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-2 border-transparent",
-                        "bg-blue-500 hover:bg-blue-400 text-white shadow-[0_8px_0_rgb(29,78,216)] hover:shadow-[0_4px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
-                        answered === true && "scale-95 shadow-none translate-y-[8px] ring-4 ring-blue-300",
-                        answered === false && "opacity-30 grayscale",
-                        feedback === 'success' && exercise.correct_answer?.isTrue === true && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105",
-                        feedback === 'error' && answered === true && "bg-red-500 shadow-none ring-4 ring-red-300 shake"
+                        "lp-token lp-option lp-option--emerald h-28 sm:h-32 flex flex-col items-center justify-center gap-2",
+                        answered !== null && "lp-token--locked",
+                        answered === true && "is-selected",
+                        answered === false && "is-dimmed",
+                        feedback === 'success' && exercise.correct_answer?.isTrue === true && "is-correct",
+                        feedback === 'error' && answered === true && "is-wrong lp-shake"
                     )}
                 >
-                    <Check className="w-10 h-10 relative" />
-                    <span className="text-2xl font-black uppercase tracking-wider relative">{t('common:true')}</span>
+                    <Check className="w-10 h-10 sm:w-11 sm:h-11" strokeWidth={3} style={{ color: 'var(--lp-emerald)' }} />
+                    <span className="lp-display text-2xl uppercase tracking-wider" style={{ color: 'var(--lp-ink)' }}>{t('common:true')}</span>
                 </button>
 
                 {/* FALSE BUTTON */}
@@ -78,16 +78,16 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                     onClick={() => handleAnswer(false)}
                     disabled={answered !== null}
                     className={cn(
-                        "h-32 rounded-[2rem] flex flex-col items-center justify-center gap-2 transition-all transform duration-200 border-2 border-transparent",
-                        "bg-violet-500 hover:bg-violet-400 text-white shadow-[0_8px_0_rgb(194,65,12)] hover:shadow-[0_4px_0_rgb(194,65,12)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[8px]",
-                        answered === false && "scale-95 shadow-none translate-y-[8px] ring-4 ring-violet-300",
-                        answered === true && "opacity-30 grayscale",
-                        feedback === 'success' && exercise.correct_answer?.isTrue === false && "bg-green-500 shadow-none ring-4 ring-green-300 scale-105",
-                        feedback === 'error' && answered === false && "bg-red-500 shadow-none ring-4 ring-red-300 shake"
+                        "lp-token lp-option lp-option--coral h-28 sm:h-32 flex flex-col items-center justify-center gap-2",
+                        answered !== null && "lp-token--locked",
+                        answered === false && "is-selected",
+                        answered === true && "is-dimmed",
+                        feedback === 'success' && exercise.correct_answer?.isTrue === false && "is-correct",
+                        feedback === 'error' && answered === false && "is-wrong lp-shake"
                     )}
                 >
-                    <X className="w-10 h-10 relative" />
-                    <span className="text-2xl font-black uppercase tracking-wider relative">{t('common:false')}</span>
+                    <X className="w-10 h-10 sm:w-11 sm:h-11" strokeWidth={3} style={{ color: 'var(--lp-coral)' }} />
+                    <span className="lp-display text-2xl uppercase tracking-wider" style={{ color: 'var(--lp-ink)' }}>{t('common:false')}</span>
                 </button>
             </div>
 
@@ -95,33 +95,25 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
             {answered !== null && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4">
                     {/* Feedback Message */}
-                    <div className="text-center mb-4 font-bold text-xl">
+                    <div className="lp-display text-center mb-4 text-xl">
                         {feedback === 'success' ? (
-                            <span className="text-green-500 flex items-center justify-center gap-2">
-                                <Check className="w-6 h-6" /> {t('feedback.success')}
+                            <span className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-emerald)' }}>
+                                <Check className="w-6 h-6" strokeWidth={3} /> {t('feedback.success')}
                             </span>
                         ) : (
-                            <span className="text-red-500 flex items-center justify-center gap-2">
-                                <X className="w-6 h-6" /> {t('feedback.error')}
+                            <span className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-coral)' }}>
+                                <X className="w-6 h-6" strokeWidth={3} /> {t('feedback.error')}
                             </span>
                         )}
                     </div>
 
-                    <Button
+                    <QuestButton
+                        variant={feedback === 'success' ? 'go' : 'retry'}
                         onClick={handleContinue}
-                        className={cn(
-                            "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                            feedback === 'success'
-                                ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                            "hover:-translate-y-[2px]"
-                        )}
                     >
-                        <span className="relative flex items-center justify-center">
-                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="ml-2 w-6 h-6" />
-                        </span>
-                    </Button>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? <ArrowRight className="w-6 h-6" /> : <RotateCcw className="w-6 h-6" />}
+                    </QuestButton>
                 </div>
             )}
         </div>

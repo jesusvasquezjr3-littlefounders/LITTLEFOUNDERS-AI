@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Briefcase, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SalaryComparisonProps {
     exercise: any;
@@ -17,6 +17,8 @@ const normalizeDescription = (details: any): string => {
     if (Array.isArray(details)) return details.join('\n');
     return String(details || '');
 };
+
+const HUES = ['indigo', 'amber', 'emerald', 'coral'] as const;
 
 export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: SalaryComparisonProps) => {
     const { t } = useTranslation('lessons');
@@ -96,8 +98,8 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                 "w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500",
                 "flex flex-col items-center justify-center py-12 text-center"
             )}>
-                <AlertCircle className="w-12 h-12 text-slate-400 mb-4" />
-                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
+                <AlertCircle className="w-12 h-12 mb-4" style={{ color: 'var(--lp-muted)' }} />
+                <p className="lp-display text-lg" style={{ color: 'var(--lp-muted)' }}>
                     {t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
                 </p>
             </div>
@@ -112,17 +114,17 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
             {!isLegacy && (
                 <div className="mb-6 space-y-3 text-center">
                     {content.scenario && (
-                        <p className="text-base text-slate-700 dark:text-slate-300">
+                        <p className="text-base" style={{ color: 'var(--lp-muted)' }}>
                             {content.scenario}
                         </p>
                     )}
                     {content.question && (
-                        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">
+                        <h2 className="lp-display text-xl sm:text-2xl" style={{ color: 'var(--lp-ink)' }}>
                             {content.question}
                         </h2>
                     )}
                     {content.instruction && (
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <p className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {content.instruction}
                         </p>
                     )}
@@ -136,24 +138,32 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                     ? "grid-cols-1 md:grid-cols-2"
                     : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             )}>
-                {offers.map((offer: any) => {
+                {offers.map((offer: any, index: number) => {
                     const score = calculateScore(offer);
                     const isSelected = selected === offer.id;
+                    const otherSelected = selected !== null && selected !== offer.id;
+                    const hue = HUES[index % HUES.length];
 
                     return (
                         <button
                             key={offer.id}
+                            type="button"
+                            aria-pressed={isSelected}
                             onClick={() => handleSelect(offer.id)}
                             className={cn(
-                                "p-6 rounded-2xl border-2 transition-all text-left",
-                                isSelected
-                                    ? "bg-blue-100 dark:bg-blue-950 border-blue-500 scale-105 shadow-[0_4px_0_rgb(59,130,246)]"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300 hover:-translate-y-1 hover:shadow-sm"
+                                "lp-token lp-option p-5 sm:p-6 text-left",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                isSelected && "is-selected",
+                                otherSelected && "is-dimmed",
                             )}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                         >
-                            <div className="flex items-center gap-2 mb-4">
-                                <Briefcase className="w-5 h-5 text-blue-600" />
-                                <h3 className="text-lg font-black text-slate-800 dark:text-slate-200">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <span className="lp-badge shrink-0 w-10 h-10 flex items-center justify-center">
+                                    <Briefcase className="w-5 h-5" />
+                                </span>
+                                <h3 className="lp-display text-lg sm:text-xl" style={{ color: 'var(--lp-ink)' }}>
                                     {offer.company}
                                 </h3>
                             </div>
@@ -161,47 +171,47 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                             {isLegacy ? (
                                 <div className="space-y-2 mb-4">
                                     <div className="flex justify-between">
-                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                                             {t('salary_comparison.salary', { defaultValue: 'Salary' })}
                                         </span>
-                                        <span className="font-bold text-green-600">
+                                        <span className="lp-display" style={{ color: 'var(--lp-emerald)' }}>
                                             ${offer.salary?.toLocaleString() ?? '0'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                                             {t('salary_comparison.benefits', { defaultValue: 'Benefits' })}
                                         </span>
-                                        <span className="font-bold">{offer.benefits ?? '0'}/10</span>
+                                        <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.benefits ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                                             {t('salary_comparison.location', { defaultValue: 'Location' })}
                                         </span>
-                                        <span className="font-bold">{offer.location ?? '0'}/10</span>
+                                        <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.location ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                                             {t('salary_comparison.growth', { defaultValue: 'Growth' })}
                                         </span>
-                                        <span className="font-bold">{offer.growth ?? '0'}/10</span>
+                                        <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.growth ?? '0'}/10</span>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="mb-4">
-                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--lp-muted)' }}>
                                         {offer.description}
                                     </p>
                                 </div>
                             )}
 
                             {isLegacy && (
-                                <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+                                <div className="pt-3" style={{ borderTop: '1.5px solid var(--lp-line)' }}>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="text-xs" style={{ color: 'var(--lp-muted)' }}>
                                             {t('salary_comparison.score', { defaultValue: 'Score' })}
                                         </span>
-                                        <span className="text-xl font-black text-blue-600">
+                                        <span className="lp-display text-xl" style={{ color: 'var(--lp-indigo)' }}>
                                             {score.toFixed(1)}
                                         </span>
                                     </div>
@@ -215,28 +225,28 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={!selected}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-[0_4px_0_rgb(29,78,216)] hover:shadow-[0_2px_0_rgb(29,78,216)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                        {t('actions.select_offer', { defaultValue: 'Select Offer' })}
-                        <ArrowRight className="w-5 h-5" />
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={!selected} onClick={handleSubmit}>
+                            {t('actions.select_offer', { defaultValue: 'Select Offer' })}
+                            <ArrowRight className="w-5 h-5" />
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success'
                                 ? t('feedback.success', { defaultValue: 'Great job!' })
                                 : t('feedback.error', { defaultValue: 'Not quite right.' })}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
-                            {t('actions.continue', { defaultValue: 'Continue' })}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                                {t('actions.continue', { defaultValue: 'Continue' })}
+                                <ArrowRight className="w-5 h-5" />
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

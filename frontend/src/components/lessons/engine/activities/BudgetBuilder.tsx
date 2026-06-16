@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Wallet, ShoppingCart, AlertCircle } from 'lucide-react';
+import { ArrowRight, RotateCcw, Wallet, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface BudgetBuilderProps {
     exercise: any;
@@ -149,9 +149,9 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
     if (!newSchema && !legacySchema) {
         return (
             <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex items-center justify-center py-12">
-                <div className="text-center text-slate-500 dark:text-slate-400">
+                <div className="text-center" style={{ color: 'var(--lp-muted)' }}>
                     <AlertCircle className="w-10 h-10 mx-auto mb-3 opacity-60" />
-                    <p className="text-sm font-medium">
+                    <p className="lp-display text-sm">
                         {t('budget_builder.no_data', { defaultValue: 'No hay datos disponibles para este ejercicio.' })}
                     </p>
                 </div>
@@ -191,30 +191,31 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
             <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Scenario & Instruction */}
                 {scenario && (
-                    <div className="mb-4 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-200 dark:border-blue-800 shadow-sm">
-                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <div
+                        className="mb-4 p-4 rounded-2xl"
+                        style={{ background: 'var(--lp-indigo-soft)', border: '1.5px solid var(--lp-indigo)' }}
+                    >
+                        <p className="text-sm leading-relaxed" style={{ color: 'var(--lp-ink)' }}>
                             {scenario}
                         </p>
                     </div>
                 )}
                 {instruction && (
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 text-center font-medium">
+                    <p className="lp-display text-sm mb-4 text-center" style={{ color: 'var(--lp-muted)' }}>
                         {instruction}
                     </p>
                 )}
 
                 {/* Budget Display */}
                 <div className="mb-6 text-center">
-                    <div className="inline-flex flex-col items-center bg-green-500 border-2 border-green-600 text-white rounded-2xl px-6 py-4 shadow-sm">
-                        <span className="text-xs font-medium opacity-90 mb-1">
+                    <div className="lp-token lp-token--locked inline-flex flex-col items-center px-6 sm:px-8 py-4 sm:py-5" style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)', boxShadow: '0 5px 0 var(--lp-emerald-lip)' }}>
+                        <span className="lp-display text-xs mb-1" style={{ color: 'var(--lp-emerald-ink)' }}>
                             {t('budget_builder.total_budget', { defaultValue: 'Presupuesto Total' })}
                         </span>
-                        <div className="text-3xl font-black">${totalIncome}</div>
+                        <div className="lp-display text-3xl sm:text-4xl" style={{ color: 'var(--lp-emerald-ink)' }}>${totalIncome}</div>
                         <span
-                            className={cn(
-                                'text-xs mt-1 font-medium',
-                                overBudget ? 'text-red-200' : 'opacity-80'
-                            )}
+                            className="lp-display text-xs mt-1"
+                            style={{ color: overBudget ? 'var(--lp-coral)' : 'var(--lp-muted)' }}
                         >
                             {t('budget_builder.remaining', { defaultValue: 'Restante' })}: ${remaining}
                         </span>
@@ -230,24 +231,24 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                         return (
                             <div
                                 key={category.id}
-                                className={cn(
-                                    'p-4 rounded-2xl border transition-all',
+                                className="lp-card p-4 transition-all"
+                                style={
                                     isDca && !dcaValid && dcaError
-                                        ? 'border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/30'
-                                        : 'border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm'
-                                )}
+                                        ? { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }
+                                        : undefined
+                                }
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    <h3 className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                                         {category.name}
                                     </h3>
                                     <span
-                                        className={cn(
-                                            'text-sm font-bold tabular-nums',
-                                            isDca && !dcaValid && dcaError
-                                                ? 'text-red-600 dark:text-red-400'
-                                                : 'text-green-600 dark:text-green-400'
-                                        )}
+                                        className="lp-display text-sm tabular-nums"
+                                        style={{
+                                            color: isDca && !dcaValid && dcaError
+                                                ? 'var(--lp-coral)'
+                                                : 'var(--lp-emerald)',
+                                        }}
                                     >
                                         ${allocated}
                                     </span>
@@ -264,9 +265,10 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                         handleSliderChange(category.id, Number(e.target.value))
                                     }
                                     className={cn(
-                                        'w-full h-2 rounded-lg appearance-none cursor-pointer accent-green-600 dark:accent-green-500',
+                                        'w-full h-2 rounded-lg appearance-none cursor-pointer',
                                         feedback !== 'none' && 'opacity-60 cursor-not-allowed'
                                     )}
+                                    style={{ accentColor: 'var(--lp-emerald)' }}
                                     aria-label={category.name}
                                     aria-valuemin={0}
                                     aria-valuemax={totalIncome}
@@ -275,12 +277,12 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
 
                                 {isDca && typeof minDca === 'number' && (
                                     <p
-                                        className={cn(
-                                            'text-xs mt-1 font-medium',
-                                            dcaAllocated >= minDca
-                                                ? 'text-green-600 dark:text-green-400'
-                                                : 'text-slate-500 dark:text-slate-400'
-                                        )}
+                                        className="lp-display text-xs mt-1"
+                                        style={{
+                                            color: dcaAllocated >= minDca
+                                                ? 'var(--lp-emerald)'
+                                                : 'var(--lp-muted)',
+                                        }}
                                     >
                                         {t('budget_builder.min_dca_label', {
                                             defaultValue: `Mínimo requerido: $${minDca}`,
@@ -294,8 +296,11 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
 
                 {/* Warnings */}
                 {dcaError && !dcaValid && (
-                    <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-center">
-                        <p className="text-sm font-bold text-red-600 dark:text-red-400">
+                    <div
+                        className="mb-4 p-3 rounded-2xl text-center"
+                        style={{ background: 'var(--lp-coral-soft)', border: '1.5px solid var(--lp-coral)' }}
+                    >
+                        <p className="lp-display text-sm" style={{ color: 'var(--lp-coral)' }}>
                             {t('budget_builder.dca_error', {
                                 defaultValue: `La inversión DCA debe ser al menos $${minDca}`,
                             })}
@@ -304,8 +309,11 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                 )}
 
                 {overBudget && feedback === 'none' && (
-                    <div className="mb-4 p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 text-center">
-                        <p className="text-sm font-bold text-violet-600 dark:text-violet-400">
+                    <div
+                        className="mb-4 p-3 rounded-2xl text-center"
+                        style={{ background: 'var(--lp-coral-soft)', border: '1.5px solid var(--lp-coral)' }}
+                    >
+                        <p className="lp-display text-sm" style={{ color: 'var(--lp-coral)' }}>
                             {t('budget_builder.over_budget', {
                                 defaultValue: 'Has excedido el presupuesto total',
                             })}
@@ -316,40 +324,34 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                 {/* Action Buttons */}
                 <div className="flex justify-center">
                     {feedback === 'none' ? (
-                        <Button
+                        <QuestButton
+                            variant="gold"
                             onClick={handleCheck}
-                            disabled={overBudget || (dcaCategory && !dcaValid)}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
+                            disabled={overBudget || !!(dcaCategory && !dcaValid)}
                         >
                             {t('actions.verify', { defaultValue: 'Verificar' })}
-                        </Button>
+                        </QuestButton>
                     ) : (
                         <div className="flex flex-col items-center w-full">
                             <p
-                                className={cn(
-                                    'font-bold text-lg mb-3',
-                                    feedback === 'success' ? 'text-green-500' : 'text-violet-500'
-                                )}
+                                className="lp-display text-lg mb-3"
+                                style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                             >
                                 {feedback === 'success'
                                     ? t('feedback.success', { defaultValue: '¡Correcto!' })
                                     : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                             </p>
-                            <Button
+                            <QuestButton
+                                variant={feedback === 'success' ? 'go' : 'retry'}
                                 onClick={handleContinue}
-                                className={cn(
-                                    'w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2',
-                                    feedback === 'success'
-                                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]'
-                                        : 'bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
-                                    'hover:-translate-y-[2px]'
-                                )}
                             >
                                 {feedback === 'success'
                                     ? t('actions.continue', { defaultValue: 'Continuar' })
                                     : t('actions.retry', { defaultValue: 'Reintentar' })}
-                                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                            </Button>
+                                {feedback === 'success'
+                                    ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            </QuestButton>
                         </div>
                     )}
                 </div>
@@ -378,12 +380,12 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
         <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Budget Display */}
             <div className="mb-6 text-center">
-                <div className="inline-flex flex-col items-center bg-green-500 border-2 border-green-600 text-white rounded-2xl px-6 py-4 shadow-sm">
-                    <span className="text-xs font-medium opacity-90 mb-1">
+                <div className="lp-token lp-token--locked inline-flex flex-col items-center px-6 sm:px-8 py-4 sm:py-5" style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)', boxShadow: '0 5px 0 var(--lp-emerald-lip)' }}>
+                    <span className="lp-display text-xs mb-1" style={{ color: 'var(--lp-emerald-ink)' }}>
                         {t('budget_builder.total_budget', { defaultValue: 'Presupuesto Total' })}
                     </span>
-                    <div className="text-3xl font-black">${budget}</div>
-                    <span className="text-xs opacity-80 mt-1">
+                    <div className="lp-display text-3xl sm:text-4xl" style={{ color: 'var(--lp-emerald-ink)' }}>${budget}</div>
+                    <span className="lp-display text-xs mt-1" style={{ color: 'var(--lp-muted)' }}>
                         {t('budget_builder.spent', { defaultValue: 'Gastado' })}: ${totalSpent}
                     </span>
                 </div>
@@ -392,23 +394,23 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
             {/* Unallocated Items */}
             {unallocatedItems.length > 0 && (
                 <div className="mb-6">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 text-center">
+                    <h3 className="lp-display text-sm mb-3 text-center" style={{ color: 'var(--lp-muted)' }}>
                         {t('budget_builder.drag_items', { defaultValue: 'Arrastra los items' })}
                     </h3>
-                    <div className="flex flex-wrap gap-2 justify-center">
+                    <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                         {unallocatedItems.map((item: any) => (
                             <div
                                 key={item.id}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, item.id)}
-                                className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl p-3 cursor-move hover:shadow-lg transition-all hover:-translate-y-1"
+                                className="lp-token p-3 cursor-move"
                             >
                                 <div className="text-center">
-                                    <div className="text-2xl mb-1">{item.icon || '📦'}</div>
-                                    <div className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                                    <div className="text-3xl sm:text-4xl mb-1">{item.icon || '📦'}</div>
+                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>
                                         {item.name}
                                     </div>
-                                    <div className="text-xs text-green-600 dark:text-green-400 font-bold">
+                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-emerald)' }}>
                                         ${item.cost}
                                     </div>
                                 </div>
@@ -422,7 +424,8 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                                     setAllocation(prev => ({ ...prev, [item.id]: category }));
                                                 }
                                             }}
-                                            className="text-[10px] px-2 py-1 rounded bg-slate-100 dark:bg-slate-700 font-bold uppercase"
+                                            className="lp-display text-[10px] px-2 py-1 rounded-lg uppercase"
+                                            style={{ background: 'var(--lp-indigo-soft)', color: 'var(--lp-indigo-ink)' }}
                                         >
                                             {t(`budget_builder.${category}`, { defaultValue: category })}
                                         </button>
@@ -443,33 +446,30 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                         0
                     );
 
+                    const accent = category === 'wants' ? 'var(--lp-amber)' : 'var(--lp-indigo)';
+                    const accentSoft = category === 'wants' ? 'var(--lp-amber-soft)' : 'var(--lp-indigo-soft)';
+
                     return (
                         <div
                             key={category}
                             onDrop={(e) => handleDrop(e, category)}
                             onDragOver={handleDragOver}
-                            className={cn(
-                                'min-h-[200px] p-4 rounded-2xl border-2 border-dashed transition-all',
-                                category === 'needs' &&
-                                    'border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-950/30',
-                                category === 'wants' &&
-                                    'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/30',
-                                feedback === 'none' && 'hover:border-solid hover:shadow-lg'
-                            )}
+                            className="min-h-[200px] p-4 rounded-2xl border-2 border-dashed transition-all"
+                            style={{ borderColor: accent, background: accentSoft }}
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                     {category === 'needs' && (
-                                        <Wallet className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                        <Wallet className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
                                     )}
                                     {category === 'wants' && (
-                                        <ShoppingCart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                        <ShoppingCart className="w-5 h-5" style={{ color: 'var(--lp-amber)' }} />
                                     )}
-                                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
+                                    <h3 className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                                         {t(`budget_builder.${category}`, { defaultValue: category })}
                                     </h3>
                                 </div>
-                                <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                                <span className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                                     ${categoryTotal}
                                 </span>
                             </div>
@@ -488,16 +488,17 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                                 });
                                             }
                                         }}
-                                        className="bg-white dark:bg-slate-800 rounded-lg p-2 shadow-sm cursor-pointer"
+                                        className="rounded-xl p-2 cursor-pointer"
+                                        style={{ background: 'var(--lp-surface)', border: '1.5px solid var(--lp-line)' }}
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-lg">{item.icon || '📦'}</span>
-                                                <span className="text-xs font-medium text-slate-800 dark:text-slate-100">
+                                                <span className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>
                                                     {item.name}
                                                 </span>
                                             </div>
-                                            <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                                            <span className="lp-display text-xs" style={{ color: 'var(--lp-emerald)' }}>
                                                 ${item.cost}
                                             </span>
                                         </div>
@@ -506,7 +507,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                             </div>
 
                             {categoryItems.length === 0 && (
-                                <div className="flex items-center justify-center h-32 text-slate-400 dark:text-slate-600 text-sm">
+                                <div className="flex items-center justify-center h-32 lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                                     {t('budget_builder.drop_here', { defaultValue: 'Suelta aquí' })}
                                 </div>
                             )}
@@ -518,40 +519,34 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
+                    <QuestButton
+                        variant="gold"
                         onClick={handleCheck}
                         disabled={unallocatedItems.length > 0}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
                     >
                         {t('actions.verify', { defaultValue: 'Verificar' })}
-                    </Button>
+                    </QuestButton>
                 ) : (
                     <div className="flex flex-col items-center w-full">
                         <p
-                            className={cn(
-                                'font-bold text-lg mb-3',
-                                feedback === 'success' ? 'text-green-500' : 'text-violet-500'
-                            )}
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
                             {feedback === 'success'
                                 ? t('feedback.success', { defaultValue: '¡Correcto!' })
                                 : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
-                        <Button
+                        <QuestButton
+                            variant={feedback === 'success' ? 'go' : 'retry'}
                             onClick={handleContinue}
-                            className={cn(
-                                'w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2',
-                                feedback === 'success'
-                                    ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]'
-                                    : 'bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]',
-                                'hover:-translate-y-[2px]'
-                            )}
                         >
                             {feedback === 'success'
                                 ? t('actions.continue', { defaultValue: 'Continuar' })
                                 : t('actions.retry', { defaultValue: 'Reintentar' })}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                            {feedback === 'success'
+                                ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                                : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        </QuestButton>
                     </div>
                 )}
             </div>

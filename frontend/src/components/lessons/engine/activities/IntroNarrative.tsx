@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { QuestButton } from '../ui/QuestButton';
 import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
@@ -44,7 +44,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             case 'dina':
                 return (
                     <DinaCharacter
-                        className="w-full max-w-[280px] mx-auto"
+                        className="w-44 sm:w-60 md:w-72 mx-auto"
                         expression="happy"
                         isTalking={isAudioPlaying}
                     />
@@ -52,7 +52,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             case 'dr_rho':
                 return (
                     <DrRhoCharacter
-                        className="w-full max-w-[280px] mx-auto"
+                        className="w-44 sm:w-60 md:w-72 mx-auto"
                         mood="wise"
                         isTalking={isAudioPlaying}
                     />
@@ -60,7 +60,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             case 'zara_vex':
                 return (
                     <ZaraVexCharacter
-                        className="w-full max-w-[280px] mx-auto"
+                        className="w-44 sm:w-60 md:w-72 mx-auto"
                         mood="happy"
                         isTalking={isAudioPlaying}
                     />
@@ -68,7 +68,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
             default:
                 return (
                     <DinoCharacter
-                        className="w-full max-w-[280px] mx-auto"
+                        className="w-44 sm:w-60 md:w-72 mx-auto"
                         showBubble={false}
                         mood="excited"
                         isTalking={isAudioPlaying}
@@ -78,39 +78,38 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
     };
 
     return (
-        <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center gap-6">
+        <div className="w-full max-w-lg flex flex-col items-center gap-5 sm:gap-6 animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
             {/* Character */}
-            <div className="flex-shrink-0 mb-4">
+            <div className="flex-shrink-0 lp-bob">
                 {renderCharacter()}
             </div>
 
             {/* Speech Bubble with Narrative */}
-            <div className="w-full flex justify-center">
-                <div className="relative bg-card border-2 border-border rounded-xl shadow-sm px-6 py-4 max-w-md">
-                    <p className="text-center font-medium text-foreground leading-snug">
+            <div className="w-full flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both">
+                <div className="lp-card relative px-6 py-5 max-w-md">
+                    <p className="lp-display text-center text-lg sm:text-xl leading-snug" style={{ color: 'var(--lp-ink)' }}>
                         {narrativeText}
                     </p>
                     {/* Speech bubble arrow */}
-                    <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-4 h-4 bg-card border-l-2 border-t-2 border-border rotate-45" />
+                    <div
+                        className="absolute -top-[9px] left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
+                        style={{ background: 'var(--lp-surface)', borderLeft: '1.5px solid var(--lp-line)', borderTop: '1.5px solid var(--lp-line)' }}
+                    />
                 </div>
             </div>
 
             {/* Audio indicator */}
             {isAudioPlaying && (
-                <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                    <span className="text-sm font-medium">{t('status.speaking')}</span>
+                <div className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-muted)' }}>
+                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--lp-amber)' }} />
+                    <span className="lp-display text-sm">{t('status.speaking')}</span>
                 </div>
             )}
 
             {/* Continue Button */}
-            <Button
-                onClick={onNext}
-                disabled={isAudioPlaying}
-                className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-[0_4px_0_rgb(107,33,168)]"
-            >
-                <span className="relative flex items-center justify-center">{t('actions.continue')}</span>
-            </Button>
+            <QuestButton variant="brand" onClick={onNext} disabled={isAudioPlaying}>
+                {t('actions.continue')}
+            </QuestButton>
         </div>
     );
 };

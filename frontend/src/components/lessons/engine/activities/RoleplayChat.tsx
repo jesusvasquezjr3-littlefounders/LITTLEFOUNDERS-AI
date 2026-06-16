@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface ChatMessage {
     id: string;
@@ -125,37 +126,41 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     const contextText = exercise.content?.scenario || exercise.content?.instruction || "...";
 
     return (
-        <div className="w-full max-w-md animate-slide-in-bottom min-h-[400px] max-h-[70vh] flex flex-col bg-card rounded-3xl overflow-hidden border-2 border-border shadow-sm">
+        <div className="lp-card w-full max-w-md animate-in fade-in slide-in-from-bottom-3 duration-500 min-h-[400px] max-h-[70vh] flex flex-col overflow-hidden">
 
             {/* Header */}
-            <div className="bg-slate-100 dark:bg-slate-800 p-4 border-b dark:border-slate-700 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-xl">
+            <div className="p-4 flex items-center gap-3" style={{ background: "var(--lp-bg-2)", borderBottom: "1.5px solid var(--lp-line)" }}>
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-2xl sm:text-3xl shrink-0" style={{ background: "var(--lp-indigo-soft)" }}>
                     💬
                 </div>
                 <div>
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">{t('status.chat_header')}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{contextText}</p>
+                    <h3 className="lp-display text-sm sm:text-base" style={{ color: "var(--lp-ink)" }}>{t('status.chat_header')}</h3>
+                    <p className="text-xs line-clamp-1" style={{ color: "var(--lp-muted)" }}>{contextText}</p>
                 </div>
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-slate-900/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ background: "var(--lp-bg)" }}>
                 {messages.map((msg) => {
                     const isUser = msg.sender === 'user';
                     return (
                         <div key={msg.id} className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
-                            <div className={cn(
-                                "max-w-[85%] rounded-2xl p-4 text-sm shadow-md animate-in zoom-in-95 slide-in-from-bottom-4 duration-300",
-                                isUser
-                                    ? "bg-purple-600 text-white rounded-tr-none"
-                                    : "bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-tl-none text-slate-800 dark:text-slate-100"
-                            )}>
+                            <div
+                                className={cn(
+                                    "max-w-[85%] rounded-2xl p-4 text-sm animate-in zoom-in-95 slide-in-from-bottom-4 duration-300",
+                                    isUser ? "rounded-tr-none" : "rounded-tl-none"
+                                )}
+                                style={isUser
+                                    ? { background: "var(--lp-indigo)", color: "#fff", boxShadow: "0 5px 0 var(--lp-indigo-lip)" }
+                                    : { background: "var(--lp-surface)", border: "1.5px solid var(--lp-line)", color: "var(--lp-ink)", boxShadow: "var(--lp-shadow)" }
+                                }
+                            >
                                 {!isUser && (
-                                    <p className="text-[10px] font-black opacity-60 mb-1.5 uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                                    <p className="lp-display text-[10px] mb-1.5 uppercase tracking-wider" style={{ color: "var(--lp-indigo-ink)" }}>
                                         {msg.name || msg.sender}
                                     </p>
                                 )}
-                                <p className={cn("leading-relaxed font-medium", isUser ? "text-white" : "text-slate-700 dark:text-slate-200")}>
+                                <p className="leading-relaxed font-medium" style={{ color: isUser ? "#fff" : "var(--lp-ink)" }}>
                                     {msg.text}
                                 </p>
                             </div>
@@ -164,61 +169,51 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                 })}
                 {isTyping && (
                     <div className="flex justify-start w-full">
-                        <div className="bg-slate-200 dark:bg-slate-800 rounded-full px-4 py-2 flex gap-1 animate-pulse">
-                            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-                            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-                            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+                        <div className="rounded-full px-4 py-2 flex gap-1 animate-pulse" style={{ background: "var(--lp-bg-2)", border: "1.5px solid var(--lp-line)" }}>
+                            <span className="w-2 h-2 rounded-full" style={{ background: "var(--lp-muted)" }}></span>
+                            <span className="w-2 h-2 rounded-full" style={{ background: "var(--lp-muted)" }}></span>
+                            <span className="w-2 h-2 rounded-full" style={{ background: "var(--lp-muted)" }}></span>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Input / Choices Area */}
-            <div className="p-4 bg-white dark:bg-slate-900 border-t dark:border-slate-800">
+            <div className="p-4" style={{ background: "var(--lp-surface)", borderTop: "1.5px solid var(--lp-line)" }}>
                 {feedback === 'none' ? (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2.5">
                         {choices.length === 0 && (
                             <div className="text-center space-y-3 py-4">
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm" style={{ color: "var(--lp-muted)" }}>
                                     {t('errors.no_options', { defaultValue: 'No hay opciones disponibles' })}
                                 </p>
-                                <button
-                                    onClick={onNext}
-                                    className="w-full py-3 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition-colors"
-                                >
-                                    {t('actions.skip', { defaultValue: 'Saltar ejercicio' })} →
-                                </button>
+                                <QuestButton variant="brand" onClick={onNext}>
+                                    {t('actions.skip', { defaultValue: 'Saltar ejercicio' })}
+                                    <ArrowRight className="w-5 h-5" />
+                                </QuestButton>
                             </div>
                         )}
-                        {choices.map((choice) => (
-                            <button
+                        {choices.map((choice, index) => (
+                            <OptionCard
                                 key={choice.id}
+                                index={index}
+                                text={choice.text}
+                                state={selectedChoiceId === choice.id ? 'selected' : 'idle'}
                                 onClick={() => handleChoice(choice)}
                                 disabled={selectedChoiceId !== null}
-                                className="w-full text-left p-4 rounded-2xl border-2 border-border hover:border-purple-400 dark:hover:border-purple-500 bg-card hover:bg-purple-50 dark:hover:bg-purple-900/20 shadow-[0_4px_0_hsl(var(--border))] hover:shadow-[0_2px_0_hsl(var(--border))] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-sm sm:text-base font-bold text-foreground disabled:opacity-50 disabled:translate-y-0 disabled:shadow-[0_4px_0_hsl(var(--border))]"
-                            >
-                                {choice.text}
-                            </button>
+                                showLetter={false}
+                            />
                         ))}
                     </div>
                 ) : (
                     <div className="space-y-3">
-                        <div className={cn("text-center font-bold", feedback === 'success' ? "text-green-500" : "text-violet-500")}>
+                        <div className="lp-display text-center" style={{ color: feedback === 'success' ? "var(--lp-emerald)" : "var(--lp-coral)" }}>
                             {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
                         </div>
-                        <Button
-                            onClick={handleContinue}
-                            className={cn(
-                                "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                feedback === 'success'
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                                "hover:-translate-y-[2px]"
-                            )}
-                        >
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                             {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" /> : <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        </QuestButton>
                     </div>
                 )}
             </div>

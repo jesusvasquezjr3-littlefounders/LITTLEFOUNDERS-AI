@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+
+const HUES = ["indigo", "amber", "emerald", "coral"] as const;
 
 interface ImpactMeterProps {
     exercise: any;
@@ -66,16 +68,25 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
 
             {/* Budget Display */}
             <div className="mb-8 text-center">
-                <div className="inline-flex flex-col items-center bg-pink-500 border-2 border-pink-600 text-white rounded-3xl px-8 py-6 shadow-sm">
-                    <span className="text-sm font-medium opacity-90 mb-1">{t('impact_meter.your_donation')}</span>
-                    <div className="text-5xl font-black">${budget}</div>
+                <div
+                    className="inline-flex flex-col items-center rounded-3xl px-10 py-6 animate-in fade-in zoom-in-95 duration-500"
+                    style={{
+                        background: 'var(--lp-amber)',
+                        color: 'var(--lp-amber-ink)',
+                        boxShadow: '0 6px 0 var(--lp-amber-lip), 0 16px 24px -12px color-mix(in srgb, var(--lp-amber) 60%, transparent)',
+                    }}
+                >
+                    <span className="text-sm font-bold opacity-80 mb-1">{t('impact_meter.your_donation')}</span>
+                    <div className="lp-display text-5xl">${budget}</div>
                 </div>
             </div>
 
             {/* Causes Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                {causes.map((cause: any) => {
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                {causes.map((cause: any, index: number) => {
                     const isSelected = selectedCause === cause.id;
+                    const hue = HUES[index % HUES.length];
+                    const locked = feedback !== 'none';
 
                     return (
                         <button
@@ -84,28 +95,36 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                             disabled={feedback !== 'none'}
                             aria-pressed={isSelected}
                             aria-label={cause.name}
+                            style={{ animationDelay: `${0.05 + index * 0.07}s` }}
                             className={cn(
-                                "relative p-4 rounded-2xl border-2 transition-all duration-300 transform",
-                                "bg-white dark:bg-slate-800",
-                                isSelected && feedback === 'none' && "ring-4 ring-pink-400 dark:ring-pink-600 scale-105 shadow-sm",
-                                !isSelected && feedback === 'none' && "border-slate-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-700 hover:shadow-lg hover:-translate-y-1",
-                                feedback === 'success' && isSelected && "border-green-500 ring-4 ring-green-300 scale-105",
-                                feedback !== 'none' && !isSelected && "opacity-50"
+                                "lp-token lp-option relative p-5 text-center",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                `lp-option--${hue}`,
+                                locked && "lp-token--locked",
+                                isSelected && feedback === 'none' && "is-selected",
+                                feedback === 'success' && isSelected && "is-correct",
+                                feedback !== 'none' && !isSelected && "is-dimmed"
                             )}
                         >
                             <div className="text-center">
-                                <div className="text-4xl sm:text-5xl mb-2">{cause.icon}</div>
-                                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                                <div className="text-5xl sm:text-6xl mb-3">{cause.icon}</div>
+                                <h3 className="lp-display text-base mb-1" style={{ color: 'var(--lp-ink)' }}>
                                     {cause.name}
                                 </h3>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                                <p className="text-xs leading-snug" style={{ color: 'var(--lp-muted)' }}>
                                     {cause.impact}
                                 </p>
                             </div>
 
                             {/* Selection Heart */}
                             {isSelected && feedback === 'none' && (
-                                <div className="absolute -top-3 -right-3 w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center animate-in zoom-in shadow-lg">
+                                <div
+                                    className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center animate-in zoom-in"
+                                    style={{
+                                        background: 'var(--lp-coral)',
+                                        boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.18)',
+                                    }}
+                                >
                                     <Heart className="w-5 h-5 text-white fill-white" />
                                 </div>
                             )}
@@ -117,8 +136,10 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                                         {[...Array(6)].map((_, i) => (
                                             <Heart
                                                 key={i}
-                                                className="absolute w-6 h-6 text-pink-500 fill-pink-500 animate-float-away"
+                                                className="absolute w-6 h-6 animate-float-away"
                                                 style={{
+                                                    color: 'var(--lp-coral)',
+                                                    fill: 'var(--lp-coral)',
                                                     animationDelay: `${i * 0.1}s`,
                                                     transform: `rotate(${i * 60}deg) translateY(-${i * 20}px)`
                                                 }}
@@ -135,17 +156,18 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {feedback === 'none' ? (
-                    <Button
-                        onClick={handleDonate}
-                        disabled={!selectedCause}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-pink-500 hover:bg-pink-600 text-white rounded-2xl shadow-[0_4px_0_rgb(190,24,93)] hover:shadow-[0_2px_0_rgb(190,24,93)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        <Heart className="w-5 h-5 fill-white" />
-                        {t('impact_meter.donate')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={!selectedCause} onClick={handleDonate}>
+                            <Heart className="w-5 h-5 fill-current" />
+                            {t('impact_meter.donate')}
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? "text-green-500" : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? (
                                 <>
                                     <Sparkles className="w-5 h-5 inline-block mr-1" />
@@ -155,13 +177,12 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
                                 t('feedback.error')
                             )}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                        >
-                            {t('actions.continue')}
-                            <ArrowRight className="w-5 h-5" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                                {t('actions.continue')}
+                                <ArrowRight className="w-5 h-5" />
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

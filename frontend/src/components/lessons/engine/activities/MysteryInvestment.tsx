@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Minus, Gift, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface MysteryInvestmentProps {
     exercise: any;
@@ -107,16 +106,19 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
 
             {/* Coin Bank */}
             <div className="mb-8 flex justify-center">
-                <div className="bg-indigo-400 text-slate-900 rounded-3xl px-8 py-6 shadow-sm border-4 border-indigo-600">
-                    <div className="text-center">
-                        <span className="text-sm font-bold opacity-80 block mb-1">
+                <div
+                    className="lp-card rounded-3xl px-8 py-6"
+                    style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}
+                >
+                    <div className="text-center" style={{ color: 'var(--lp-amber-ink)' }}>
+                        <span className="lp-display text-sm block mb-1 opacity-90">
                             {t('mystery_investment.your_coins')}
                         </span>
-                        <div className="text-5xl font-black flex items-center gap-2">
+                        <div className="lp-display text-5xl sm:text-6xl flex items-center justify-center gap-2">
                             <span>🪙</span>
                             <span>{remainingCoins}</span>
                         </div>
-                        <span className="text-xs opacity-70">
+                        <span className="text-xs opacity-80">
                             {t('mystery_investment.remaining')}
                         </span>
                     </div>
@@ -134,58 +136,70 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     return (
                         <div
                             key={box.id}
-                            className={cn(
-                                "p-4 rounded-3xl border-2 transition-all duration-300",
-                                "bg-card shadow-sm",
-                                invested > 0 && "ring-4 ring-purple-400 dark:ring-purple-600 shadow-xl",
-                                invested === 0 && "border-border",
-                                showResults && "border-green-500"
-                            )}
+                            className="lp-card p-4 rounded-3xl transition-all duration-300"
+                            style={{
+                                borderColor: showResults
+                                    ? 'var(--lp-emerald)'
+                                    : invested > 0
+                                        ? 'var(--lp-indigo)'
+                                        : 'var(--lp-line)',
+                                boxShadow: invested > 0 && !showResults
+                                    ? '0 0 0 4px var(--lp-indigo-soft), var(--lp-shadow)'
+                                    : undefined,
+                            }}
                         >
                             {/* Box Header */}
                             <div className="text-center mb-3">
-                                <div className="text-3xl sm:text-4xl mb-2">
+                                <div className="text-5xl sm:text-6xl mb-2">
                                     {box.type === 'safe' && '🏆'}
                                     {box.type === 'risky' && '🎲'}
                                     {box.type === 'shared' && '🤝'}
                                 </div>
-                                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                                <h3 className="lp-display text-base mb-1" style={{ color: 'var(--lp-ink)' }}>
                                     {box.name}
                                 </h3>
-                                <p className="text-xs text-slate-600 dark:text-slate-400">
+                                <p className="text-xs" style={{ color: 'var(--lp-muted)' }}>
                                     {box.description}
                                 </p>
                             </div>
 
                             {/* Return Range */}
-                            <div className="bg-slate-100 dark:bg-slate-900 rounded-lg p-2 mb-3 text-center">
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">
+                            <div
+                                className="rounded-lg p-2 mb-3 text-center"
+                                style={{ background: 'var(--lp-bg-2)' }}
+                            >
+                                <span className="text-xs font-bold block mb-1" style={{ color: 'var(--lp-muted)' }}>
                                     {t('mystery_investment.return_range')}
                                 </span>
-                                <span className="text-base font-black text-slate-800 dark:text-slate-100">
+                                <span className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                                     {box.minReturn}x - {box.maxReturn}x
                                 </span>
                             </div>
 
                             {/* Allocation Controls */}
                             {!showResults && (
-                                <div className="flex items-center justify-center gap-2 mb-3">
+                                <div className="flex items-center justify-center gap-3 mb-3">
                                     <button
                                         onClick={() => removeCoin(box.id)}
                                         disabled={!canRemove}
-                                        className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                        className="w-9 h-9 rounded-full text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all active:translate-y-[2px]"
+                                        style={{ background: 'var(--lp-coral)', boxShadow: '0 3px 0 var(--lp-coral-lip)' }}
                                     >
-                                        <Minus className="w-4 h-4" />
+                                        <Minus className="w-4 h-4" strokeWidth={3} />
                                     </button>
-                                    <div className="w-12 h-12 rounded-xl bg-blue-400 flex items-center justify-center text-xl font-black text-slate-900 shadow-sm border-2 border-blue-500">
+                                    <div
+                                        className="lp-display w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                                        style={{ background: 'var(--lp-indigo-soft)', color: 'var(--lp-indigo-ink)', border: '2px solid var(--lp-indigo)' }}
+                                    >
                                         {invested}
                                     </div>
                                     <button
                                         onClick={() => addCoin(box.id)}
                                         disabled={!canAdd}
-                                        className="w-8 h-8 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                        className="w-9 h-9 rounded-full text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all active:translate-y-[2px]"
+                                        style={{ background: 'var(--lp-emerald)', boxShadow: '0 3px 0 var(--lp-emerald-lip)' }}
                                     >
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-4 h-4" strokeWidth={3} />
                                     </button>
                                 </div>
                             )}
@@ -193,20 +207,23 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                             {/* Results */}
                             {showResults && invested > 0 && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                    <div className="bg-green-50 dark:bg-green-950/30 border-2 border-green-400 dark:border-green-700 rounded-xl p-3 shadow-sm">
+                                    <div
+                                        className="rounded-xl p-3"
+                                        style={{ background: 'var(--lp-emerald-soft)', border: '2px solid var(--lp-emerald)' }}
+                                    >
                                         <div className="flex items-center justify-between mb-1">
-                                            <span className="text-xs font-bold text-green-800 dark:text-green-200">
+                                            <span className="text-xs font-bold" style={{ color: 'var(--lp-emerald-ink)' }}>
                                                 {t('mystery_investment.invested')}
                                             </span>
-                                            <span className="text-base font-black text-green-900 dark:text-green-100">
+                                            <span className="lp-display text-base" style={{ color: 'var(--lp-emerald-ink)' }}>
                                                 🪙 {invested}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-bold text-green-800 dark:text-green-200">
+                                            <span className="text-sm font-bold" style={{ color: 'var(--lp-emerald-ink)' }}>
                                                 {t('mystery_investment.returned')}
                                             </span>
-                                            <span className="text-xl font-black text-green-900 dark:text-green-100 flex items-center gap-1">
+                                            <span className="lp-display text-xl flex items-center gap-1" style={{ color: 'var(--lp-emerald-ink)' }}>
                                                 <Sparkles className="w-4 h-4" />
                                                 🪙 {returned}
                                             </span>
@@ -222,15 +239,18 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
             {/* Total Results */}
             {showResults && (
                 <div className="mb-6 text-center animate-in fade-in zoom-in duration-700">
-                    <div className="inline-flex flex-col items-center bg-purple-500 border-2 border-purple-600 text-white rounded-2xl px-8 py-6 shadow-sm">
-                        <span className="text-base font-medium opacity-90 mb-1">
+                    <div
+                        className="inline-flex flex-col items-center rounded-2xl px-8 py-6"
+                        style={{ background: 'var(--lp-amber)', border: '2px solid var(--lp-amber-lip)', color: '#3a2606', boxShadow: '0 6px 0 var(--lp-amber-lip), var(--lp-shadow)' }}
+                    >
+                        <span className="lp-display text-base opacity-90 mb-1">
                             {t('mystery_investment.total_return')}
                         </span>
-                        <div className="text-5xl font-black flex items-center gap-2">
+                        <div className="lp-display text-5xl sm:text-6xl flex items-center gap-2">
                             <span>🪙</span>
                             <span>{totalReturn}</span>
                         </div>
-                        <span className="text-xs opacity-80 mt-1">
+                        <span className="text-xs opacity-80 mt-1 font-bold">
                             {totalReturn > allocatedCoins ? t('mystery_investment.profit') : t('mystery_investment.loss')}
                         </span>
                     </div>
@@ -240,32 +260,26 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
             {/* Action Buttons */}
             <div className="flex justify-center">
                 {!showResults ? (
-                    <Button
-                        onClick={handleInvest}
-                        disabled={remainingCoins > 0}
-                        className="w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-2"
-                    >
-                        <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
-                        {t('mystery_investment.invest')}
-                    </Button>
+                    <div className="w-full max-w-md">
+                        <QuestButton variant="gold" disabled={remainingCoins > 0} onClick={handleInvest}>
+                            <Gift className="w-5 h-5 sm:w-6 sm:h-6" />
+                            {t('mystery_investment.invest')}
+                        </QuestButton>
+                    </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <p className={cn("font-bold text-lg mb-3", feedback === 'success' ? (totalReturn >= totalCoins ? "text-green-500" : "text-violet-500") : "text-red-500")}>
+                        <p
+                            className="lp-display text-lg mb-3"
+                            style={{ color: feedback === 'success' ? (totalReturn >= totalCoins ? 'var(--lp-emerald)' : 'var(--lp-amber-ink)') : 'var(--lp-coral)' }}
+                        >
                             {feedback === 'success' ? (totalReturn >= totalCoins ? t('mystery_investment.profit') : t('mystery_investment.loss')) : t('feedback.error')}
                         </p>
-                        <Button
-                            onClick={handleContinue}
-                            className={cn(
-                                "w-full max-w-md h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                                totalReturn >= totalCoins
-                                    ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                                    : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)] active:shadow-none active:translate-y-[4px]",
-                                "hover:-translate-y-[2px]"
-                            )}
-                        >
-                            {t('actions.continue')}
-                            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </Button>
+                        <div className="w-full max-w-md">
+                            <QuestButton variant={totalReturn >= totalCoins ? 'go' : 'gold'} onClick={handleContinue}>
+                                {t('actions.continue')}
+                                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </QuestButton>
+                        </div>
                     </div>
                 )}
             </div>

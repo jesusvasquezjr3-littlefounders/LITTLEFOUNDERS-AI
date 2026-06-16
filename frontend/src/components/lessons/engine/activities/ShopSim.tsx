@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowRight } from 'lucide-react';
+import { ShoppingCart, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface ShopSimProps {
     exercise: any;
@@ -91,36 +91,40 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Header / HUD */}
-            <div className="w-full flex justify-between items-center mb-6 bg-slate-900 text-white p-4 rounded-2xl shadow-lg">
+            <div className="lp-card w-full flex justify-between items-center mb-6 p-4 sm:p-5">
                 <div className="flex flex-col">
-                    <span className="text-xs font-bold opacity-70 uppercase tracking-widest">{t('economy.budget')}</span>
-                    <span className="text-3xl font-black text-green-400">${budget}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--lp-muted)' }}>{t('economy.budget')}</span>
+                    <span className="lp-display text-3xl sm:text-4xl" style={{ color: 'var(--lp-amber-ink)' }}>${budget}</span>
                 </div>
 
                 <div className="flex flex-col items-end">
-                    <span className="text-xs font-bold opacity-70 uppercase tracking-widest">{t('economy.spent')}</span>
-                    <span className={cn("text-3xl font-black transition-colors", totalSpent > budget ? "text-red-500" : "text-white")}>
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--lp-muted)' }}>{t('economy.spent')}</span>
+                    <span
+                        className="lp-display text-3xl sm:text-4xl transition-colors"
+                        style={{ color: totalSpent > budget ? 'var(--lp-coral)' : 'var(--lp-ink)' }}
+                    >
                         ${totalSpent}
                     </span>
                 </div>
             </div>
 
             {/* Shelf */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full mb-8">
-                {products.map((product: any) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full mb-8">
+                {products.map((product: any, index: number) => {
                     const inCart = cart.includes(product.id);
                     return (
                         <button
                             key={product.id}
                             onClick={() => addToCart(product)}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                             className={cn(
-                                "relative p-4 rounded-xl border-2 flex flex-col items-center transition-all duration-300",
-                                inCart
-                                    ? "bg-green-100 dark:bg-green-900/40 border-green-500 shadow-inner scale-95"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md"
+                                "lp-token lp-option lp-option--amber relative p-3 sm:p-4 flex flex-col items-center",
+                                "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
+                                feedback !== 'none' && "lp-token--locked",
+                                inCart && "is-correct",
                             )}
                         >
-                            <div className="h-20 w-20 mb-3 flex items-center justify-center">
+                            <div className="h-24 w-24 sm:h-32 sm:w-32 mb-3 flex items-center justify-center">
                                 {(product.image && (product.image.startsWith('http') || product.image.startsWith('/'))) ? (
                                     <img
                                         src={product.image}
@@ -128,14 +132,14 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
                                         className="w-full h-full object-contain drop-shadow-md"
                                     />
                                 ) : (
-                                    <span className="text-4xl">{product.image || '📦'}</span>
+                                    <span className="text-5xl sm:text-6xl">{product.image || '📦'}</span>
                                 )}
                             </div>
-                            <div className="font-bold text-slate-700 dark:text-slate-200 text-center leading-tight mb-1">{product.name}</div>
-                            <div className="font-black text-green-600 dark:text-green-400 text-lg">${product.price}</div>
+                            <div className="lp-display text-center leading-tight mb-1" style={{ color: 'var(--lp-ink)' }}>{product.name}</div>
+                            <div className="lp-display text-lg sm:text-xl" style={{ color: 'var(--lp-amber-ink)' }}>${product.price}</div>
 
                             {inCart && (
-                                <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-sm animate-in zoom-in">
+                                <div className="lp-badge absolute top-2 right-2 w-7 h-7 flex items-center justify-center animate-in zoom-in" style={{ background: 'var(--lp-emerald)' }}>
                                     <ShoppingCart className="w-4 h-4" />
                                 </div>
                             )}
@@ -145,28 +149,18 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
             </div>
 
             {/* Actions */}
-            {feedback === 'none' ? (
-                <Button
-                    onClick={handleCheck}
-                    className="w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-2xl shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center justify-center gap-2"
-                >
-                    {t('actions.buy')}
-                </Button>
-            ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full max-w-sm h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all flex items-center justify-center gap-2",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]",
-                        "hover:-translate-y-[2px] active:translate-y-[4px] active:shadow-none"
-                    )}
-                >
-                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    <ArrowRight className="w-5 h-5" />
-                </Button>
-            )}
+            <div className="w-full max-w-sm">
+                {feedback === 'none' ? (
+                    <QuestButton variant="gold" onClick={handleCheck}>
+                        {t('actions.buy')}
+                    </QuestButton>
+                ) : (
+                    <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                    </QuestButton>
+                )}
+            </div>
         </div>
     );
 };
