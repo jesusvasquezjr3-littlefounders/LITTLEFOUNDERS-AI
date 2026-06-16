@@ -37,25 +37,25 @@ export default function FamiliesPage() {
   ];
 
   const marketplaceItems = [
-    { icon: Coins, title: t("families.marketplace.item_1_title"), desc: t("families.marketplace.item_1_desc"), color: "from-amber-500 to-orange-500" },
-    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc"), color: "from-indigo-500 to-blue-500" },
-    { icon: Gift, title: t("families.marketplace.item_3_title"), desc: t("families.marketplace.item_3_desc"), color: "from-emerald-500 to-teal-500" },
+    { icon: Coins, title: t("families.marketplace.item_1_title"), desc: t("families.marketplace.item_1_desc"), color: "bg-[#f6a821]" },
+    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc"), color: "bg-[#2563eb]" },
+    { icon: Gift, title: t("families.marketplace.item_3_title"), desc: t("families.marketplace.item_3_desc"), color: "bg-[#1a9e7a]" },
   ];
 
   const parentInsights = [
-    { icon: TrendingUp, color: "from-indigo-500 to-blue-500", title: t("families.parent_tools.insight_1_title"), desc: t("families.parent_tools.insight_1_desc") },
-    { icon: Coins, color: "from-amber-500 to-orange-500", title: t("families.parent_tools.insight_2_title"), desc: t("families.parent_tools.insight_2_desc") },
-    { icon: MessageCircle, color: "from-indigo-500 to-sky-500", title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
-    { icon: ShieldCheck, color: "from-emerald-500 to-teal-500", title: t("families.parent_tools.insight_4_title"), desc: t("families.parent_tools.insight_4_desc") },
-    { icon: LayoutDashboard, color: "from-sky-500 to-cyan-500", title: t("families.parent_tools.insight_5_title"), desc: t("families.parent_tools.insight_5_desc") },
-    { icon: Star, color: "from-indigo-500 to-blue-500", title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
+    { icon: TrendingUp, color: "bg-[#2563eb]", title: t("families.parent_tools.insight_1_title"), desc: t("families.parent_tools.insight_1_desc") },
+    { icon: Coins, color: "bg-[#f6a821]", title: t("families.parent_tools.insight_2_title"), desc: t("families.parent_tools.insight_2_desc") },
+    { icon: MessageCircle, color: "bg-[#fb6f6f]", title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
+    { icon: ShieldCheck, color: "bg-[#1a9e7a]", title: t("families.parent_tools.insight_4_title"), desc: t("families.parent_tools.insight_4_desc") },
+    { icon: LayoutDashboard, color: "bg-[#8b5cf6]", title: t("families.parent_tools.insight_5_title"), desc: t("families.parent_tools.insight_5_desc") },
+    { icon: Star, color: "bg-[#2563eb]", title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
   ];
 
   const benefits = [
-    { icon: Users, color: "from-indigo-500 to-sky-500", title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
-    { icon: TrendingUp, color: "from-indigo-500 to-blue-500", title: t("families.benefits.benefit_2_title"), desc: t("families.benefits.benefit_2_desc") },
-    { icon: ShieldCheck, color: "from-emerald-500 to-teal-500", title: t("families.benefits.benefit_3_title"), desc: t("families.benefits.benefit_3_desc") },
-    { icon: MessageCircle, color: "from-amber-500 to-orange-500", title: t("families.benefits.benefit_4_title"), desc: t("families.benefits.benefit_4_desc") },
+    { icon: Users, color: "bg-[#2563eb]", title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
+    { icon: TrendingUp, color: "bg-[#fb6f6f]", title: t("families.benefits.benefit_2_title"), desc: t("families.benefits.benefit_2_desc") },
+    { icon: ShieldCheck, color: "bg-[#1a9e7a]", title: t("families.benefits.benefit_3_title"), desc: t("families.benefits.benefit_3_desc") },
+    { icon: MessageCircle, color: "bg-[#f6a821]", title: t("families.benefits.benefit_4_title"), desc: t("families.benefits.benefit_4_desc") },
   ];
 
   const steps = [
@@ -70,24 +70,24 @@ export default function FamiliesPage() {
       {/* ══════════════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════════════ */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+      <header className="relative overflow-hidden bg-white dark:bg-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/15 dark:bg-indigo-600/15 blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-sky-400/10 dark:bg-sky-700/10 blur-[120px] pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-amber-400/8 dark:bg-amber-500/8 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-[#1a9e7a]/8 dark:bg-[#1a9e7a]/10 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Copy */}
             <div>
-              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
                 <Clock className="w-3.5 h-3.5" /> {t("families.hero.coming_soon_label")}
               </Reveal>
 
               <Reveal delay={80}>
                 <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.2rem] font-bold leading-[1.1] text-slate-900 dark:text-white">
                   {t("families.hero.title_part1")}{" "}
-                  <span className="corp-gradient-text">{t("families.hero.title_highlight")}</span>{" "}
+                  <span className="text-[#1a9e7a] dark:text-[#34d399]">{t("families.hero.title_highlight")}</span>{" "}
                   {t("families.hero.title_part2")}
                 </h1>
               </Reveal>
@@ -103,7 +103,7 @@ export default function FamiliesPage() {
                 <div className="mt-8 space-y-3">
                   {steps.map((step) => (
                     <div key={step.n} className="corp-card flex items-center gap-4 px-5 py-3.5">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                      <div className="w-8 h-8 rounded-xl bg-[#1a9e7a] text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
                         {step.n}
                       </div>
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{step.text}</span>
@@ -148,7 +148,7 @@ export default function FamiliesPage() {
                 <ul className="mt-6 space-y-3">
                   {taskManagerFeatures.map((feat, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" /> {feat}
+                      <CheckCircle2 className="w-5 h-5 text-[#1a9e7a] shrink-0" /> {feat}
                     </li>
                   ))}
                 </ul>
@@ -157,14 +157,14 @@ export default function FamiliesPage() {
 
             <div className="grid sm:grid-cols-2 gap-5">
               {[
-                { key: "benefit_1", color: "from-amber-500 to-orange-500", icon: Coins },
-                { key: "benefit_2", color: "from-indigo-500 to-blue-500", icon: TrendingUp },
-                { key: "benefit_3", color: "from-indigo-500 to-blue-500", icon: Gift },
-                { key: "benefit_4", color: "from-emerald-500 to-teal-500", icon: LayoutDashboard },
+                { key: "benefit_1", color: "bg-[#f6a821]", icon: Coins },
+                { key: "benefit_2", color: "bg-[#2563eb]", icon: TrendingUp },
+                { key: "benefit_3", color: "bg-[#1a9e7a]", icon: Gift },
+                { key: "benefit_4", color: "bg-[#fb6f6f]", icon: LayoutDashboard },
               ].map(({ key, color, icon: Icon }, i) => (
                 <Reveal key={key} delay={i * 80}>
                   <div className="corp-card p-6 h-full">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-md`}>
+                    <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shadow-md`}>
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">
@@ -213,7 +213,7 @@ export default function FamiliesPage() {
             {marketplaceItems.map((item, i) => (
               <Reveal key={i} delay={i * 90}>
                 <div className="corp-card h-full p-8">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+                  <div className={`w-12 h-12 rounded-2xl ${item.color} flex items-center justify-center shadow-lg`}>
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="mt-6 text-lg font-bold text-slate-900 dark:text-white">{item.title}</h3>
@@ -248,7 +248,7 @@ export default function FamiliesPage() {
             {parentInsights.map((insight, i) => (
               <Reveal key={i} delay={(i % 3) * 90}>
                 <div className="corp-card h-full p-7">
-                  <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${insight.color} flex items-center justify-center shadow-md`}>
+                  <div className={`w-11 h-11 rounded-xl ${insight.color} flex items-center justify-center shadow-md`}>
                     <insight.icon className="w-5 h-5 text-white" />
                   </div>
                   <h3 className="mt-5 text-base font-bold text-slate-900 dark:text-white">{insight.title}</h3>
@@ -283,7 +283,7 @@ export default function FamiliesPage() {
             {benefits.map((benefit, i) => (
               <Reveal key={i} variant={i % 2 === 0 ? "left" : "right"} delay={i * 80}>
                 <div className="corp-card h-full p-8 flex gap-5">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${benefit.color} flex items-center justify-center shadow-lg shrink-0`}>
+                  <div className={`w-12 h-12 rounded-2xl ${benefit.color} flex items-center justify-center shadow-lg shrink-0`}>
                     <benefit.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -320,9 +320,11 @@ export default function FamiliesPage() {
       <section className="relative py-24 bg-white dark:bg-[#070b14]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-gradient-to-br dark:from-indigo-900 dark:to-blue-950 px-6 sm:px-12 py-16 text-center">
-              <div className="absolute inset-0 corp-grid-bg opacity-30 pointer-events-none" />
-              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-indigo-500/20 blur-[100px] pointer-events-none" />
+            <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 sm:px-12 py-16 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)]">
+              <div className="absolute inset-0 corp-grid-bg opacity-20 pointer-events-none" />
+              {/* Brand glows */}
+              <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#f6a821]/12 blur-[80px] pointer-events-none" />
               <div className="relative z-10">
                 <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70 mb-4">
                   <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}

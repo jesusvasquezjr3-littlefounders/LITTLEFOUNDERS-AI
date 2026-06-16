@@ -193,11 +193,11 @@ export function CompoundInterestRunner() {
                     <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.time_label')}</span>
                     <span className="text-lg font-black text-gray-900 dark:text-white">{t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}</span>
                 </div>
-                <div className="liquid-glass px-4 py-2 rounded-xl border border-indigo-500/30 flex items-center gap-2">
-                    <Coins className="w-5 h-5 text-indigo-500" />
+                <div className="liquid-glass px-4 py-2 rounded-xl border border-[#f6a821]/30 flex items-center gap-2">
+                    <Coins className="w-5 h-5 text-[#f6a821]" />
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.score_label')}</span>
-                        <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-600">
+                        <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 leading-none">{t('runner.current_capital')}</span>
+                        <span className="text-xl font-black text-[#f6a821]">
                             {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                         </span>
                     </div>
@@ -244,9 +244,9 @@ export function CompoundInterestRunner() {
                     className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-none z-10 pointer-events-none"
                     style={{ left: `${playerXRef.current}%`, top: `${playerYRef.current}%` }}
                 >
-                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border-2 border-indigo-500 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/20 to-transparent" />
-                        <span className="text-2xl animate-bounce">🏃</span>
+                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border-2 border-[#f6a821] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#f6a821]/20 to-transparent" />
+                        <span className="text-2xl animate-float">🏃</span>
                     </div>
                 </div>
             )}
@@ -268,7 +268,7 @@ export function CompoundInterestRunner() {
             {gameState === 'idle' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-white/5 dark:bg-black/5 backdrop-blur-[2px]">
                     <div className="liquid-glass p-8 rounded-3xl text-center max-w-sm mx-4 transform transition-all duration-500 hover:scale-105">
-                        <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-6">
+                        <div className="w-16 h-16 bg-[#1a9e7a] rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-[#1a9e7a]/30 mb-6">
                             <TrendingUp className="w-8 h-8 text-white" />
                         </div>
                         <h3 className="text-2xl font-black mb-2 text-gray-900 dark:text-white">
@@ -279,7 +279,7 @@ export function CompoundInterestRunner() {
                         </p>
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-indigo-500/25 transition-all transform hover:-translate-y-1"
+                            className="w-full py-4 px-6 bg-[#1a9e7a] hover:bg-[#158063] text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#1a9e7a]/25 transition-all transform hover:-translate-y-1"
                         >
                             {t('minigame.start')}
                         </button>
@@ -290,14 +290,14 @@ export function CompoundInterestRunner() {
             {/* Game Over Screen */}
             {gameState === 'gameover' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 animate-fade-in bg-white/5 dark:bg-black/5 backdrop-blur-[4px]">
-                    <div className="liquid-glass p-10 rounded-3xl text-center max-w-md mx-4 animate-bounce-in border border-gray-200/50 dark:border-white/20 shadow-2xl">
+                    <div className="liquid-glass p-10 rounded-3xl text-center max-w-md mx-4 animate-fade-in-up border border-gray-200/50 dark:border-white/20 shadow-2xl">
                         <div className={`w-20 h-20 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl ${
                             score > 1500 ? 'bg-gradient-to-tr from-green-400 to-emerald-600 shadow-green-500/30' : 'bg-gradient-to-tr from-red-400 to-rose-600 shadow-red-500/30'
                         }`}>
                             <span className="text-4xl">{score > 1500 ? '🚀' : '💥'}</span>
                         </div>
                         
-                        <h3 className="text-3xl font-black mb-1 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
+                        <h3 className="text-3xl font-black mb-1 text-slate-900 dark:text-white">
                             {t('minigame.game_over')}
                         </h3>
                         
@@ -305,7 +305,7 @@ export function CompoundInterestRunner() {
                             <p className="text-gray-500 dark:text-gray-300 font-medium uppercase tracking-widest text-sm">
                                 {t('minigame.final_capital')}
                             </p>
-                            <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-400 dark:from-green-400 dark:to-emerald-300">
+                            <p className="text-5xl font-black text-[#1a9e7a] dark:text-[#34d399]">
                                 {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                             </p>
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
@@ -315,7 +315,7 @@ export function CompoundInterestRunner() {
                         
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-indigo-500/25 transition-all transform hover:scale-105"
+                            className="w-full py-4 px-6 bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#f6a821]/25 transition-all transform hover:scale-105"
                         >
                             {t('minigame.play_again')}
                         </button>
