@@ -952,10 +952,10 @@ html[data-reduce-motion="true"] *::after {
   overflow: hidden;
 }
 
-/* Character - prominent size for mobile, larger on desktop */
+/* Character - prominent size for mobile, larger on desktop (Playful DS v2: bigger) */
 .lesson-character {
-  width: 140px;
-  height: 140px;
+  width: 184px;
+  height: 184px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1045,8 +1045,8 @@ html[data-reduce-motion="true"] *::after {
 
 @media (min-width: 640px) {
   .lesson-character {
-    width: 160px;
-    height: 160px;
+    width: 232px;
+    height: 232px;
   }
 
   .lesson-speech {

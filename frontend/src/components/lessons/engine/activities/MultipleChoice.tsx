@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { extractCorrectId } from '../hooks/useLessonState';
-import { PopOptionButton } from '../components/PopOptionButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface MultipleChoiceProps {
     exercise: any; // Type should be clearer in a real app
@@ -67,76 +66,39 @@ export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: Multiple
     const correctId = extractCorrectId(exercise.correct_answer);
     const isOddCount = shuffledOptions.length % 2 !== 0;
 
+    const optionState = (id: string): OptionState => {
+        if (!isChecked) return selectedOption === id ? 'selected' : 'idle';
+        if (id === correctId) return 'correct';
+        if (id === selectedOption) return 'wrong';
+        return 'dimmed';
+    };
+
     return (
-        <div className="w-full max-w-2xl animate-slide-in-bottom">
+        <div className="w-full max-w-2xl">
             {/* Options Grid */}
-            <div className={cn(
-                "grid gap-4 mb-6",
-                // Responsive Logic: 
-                // Mobile: 1 col always safe
-                // Tablet/Desktop: 2 cols, UNLESS odd number of items, then maybe 1 col or 3 cols?
-                // User requested: "si son 3, 1x5" (list). 
-                // So if odd count and > 1, use 1 col. If even, 2 cols.
-                isOddCount ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2",
-                "max-h-[50vh] overflow-y-auto p-1 custom-scrollbar" // Scrollable on small screens
-            )}>
-                {shuffledOptions.map((option, index) => {
-                    const isSelected = selectedOption === option.id;
-                    const isCorrect = option.id === correctId;
-                    const showResult = isChecked;
-
-                    const optionColors: Array<'purple' | 'pink' | 'blue' | 'orange'> = [
-                        'purple',
-                        'pink',
-                        'blue',
-                        'orange'
-                    ];
-                    // Keep consistent color mapping based on INDEX in shuffled list 
-                    // (Kahoot positions have fixed colors usually: TopLeft=Red, TopRight=Blue etc.)
-                    const colorTheme = optionColors[index % optionColors.length];
-
-                    return (
-                        <PopOptionButton
-                            key={option.id}
-                            id={option.id}
-                            text={option.text}
-                            colorTheme={colorTheme}
-                            isSelected={isSelected}
-                            isCorrect={isCorrect}
-                            showResult={showResult}
-                            feedback={feedback}
-                            onClick={() => handleSelectOption(option.id)}
-                            disabled={isChecked}
-                        />
-                    );
-                })}
+            <div className={isOddCount ? "grid grid-cols-1 gap-3 mb-6" : "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"}>
+                {shuffledOptions.map((option, index) => (
+                    <OptionCard
+                        key={option.id}
+                        index={index}
+                        text={option.text}
+                        state={optionState(option.id)}
+                        onClick={() => handleSelectOption(option.id)}
+                        disabled={isChecked}
+                    />
+                ))}
             </div>
 
             {/* Action Button */}
             {!isChecked ? (
-                <Button
-                    onClick={handleCheck}
-                    disabled={!selectedOption}
-                    className="w-full h-14 sm:h-16 text-lg sm:text-xl rounded-2xl bg-purple-500 hover:bg-purple-600 text-white shadow-[0_4px_0_rgb(107,33,168)] hover:shadow-[0_2px_0_rgb(107,33,168)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
-                >
+                <QuestButton variant="gold" disabled={!selectedOption} onClick={handleCheck}>
                     {t('actions.verify')}
-                </Button>
+                </QuestButton>
             ) : (
-                <Button
-                    onClick={handleContinue}
-                    className={cn(
-                        "w-full h-14 sm:h-16 text-lg sm:text-xl font-bold rounded-2xl transition-all",
-                        feedback === 'success'
-                            ? "bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] active:shadow-none active:translate-y-[4px]"
-                            : "bg-violet-500 hover:bg-violet-600 text-white shadow-[0_4px_0_rgb(109,40,217)] hover:shadow-[0_2px_0_rgb(109,40,217)] active:shadow-none active:translate-y-[4px]",
-                        "hover:-translate-y-[2px]"
-                    )}
-                >
-                    <span className="relative flex items-center justify-center">
-                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                    </span>
-                </Button>
+                <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                    {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                </QuestButton>
             )}
         </div>
     );

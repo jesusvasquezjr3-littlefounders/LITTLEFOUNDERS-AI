@@ -100,9 +100,9 @@ export default function LessonLab() {
         <RewardScreen coins={coins} onAgain={restart} burstKey={burstKey} />
       ) : (
         <>
-          <div className="relative flex-1 overflow-y-auto px-4 pb-40 pt-3">
+          <div className="relative flex-1 overflow-y-auto px-4 pb-40 pt-3 flex flex-col justify-start sm:justify-center">
             <CoinBurst burstKey={burstKey} />
-            <div key={idx} className="max-w-2xl mx-auto">
+            <div key={idx} className="w-full max-w-2xl mx-auto">
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
                 <span
                   className="lp-chip inline-flex items-center h-8 px-3.5 text-xs"
@@ -110,11 +110,11 @@ export default function LessonLab() {
                 >
                   {step.eyebrow}
                 </span>
-                <div className="flex items-start gap-3.5 mt-4">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 lp-bob">
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="w-28 h-28 sm:w-40 sm:h-40 shrink-0 lp-bob">
                     <DinoCharacter mood={checked ? (isCorrect ? "excited" : "happy") : "happy"} showBubble={false} />
                   </div>
-                  <h1 className="lp-display text-[1.6rem] sm:text-3xl leading-tight pt-1" style={{ color: "var(--lp-ink)" }}>
+                  <h1 className="lp-display text-2xl sm:text-[2rem] leading-tight" style={{ color: "var(--lp-ink)" }}>
                     {step.question}
                   </h1>
                 </div>
@@ -202,7 +202,7 @@ function RewardScreen({ coins, onAgain, burstKey }: { coins: number; onAgain: ()
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center px-6 pb-10 text-center overflow-hidden">
       <CoinBurst burstKey={burstKey} />
-      <div className="w-44 h-44 lp-bob animate-in zoom-in-75 fade-in duration-500 fill-mode-both">
+      <div className="w-56 h-56 sm:w-64 sm:h-64 lp-bob animate-in zoom-in-75 fade-in duration-500 fill-mode-both">
         <DinoCharacter mood="excited" showBubble={false} />
       </div>
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
