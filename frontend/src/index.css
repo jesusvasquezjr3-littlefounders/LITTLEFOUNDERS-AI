@@ -2831,7 +2831,6 @@ html[data-reduce-motion="true"] *::after {
   background:
     radial-gradient(1200px 600px at 50% -10%, var(--lp-bg-2), var(--lp-bg)) ,
     var(--lp-bg);
-  position: relative;
 }
 .lp-bg::before {
   content: "";

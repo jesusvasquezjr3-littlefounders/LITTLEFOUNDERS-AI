@@ -14,7 +14,6 @@ interface IntroNarrativeProps {
 export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrativeProps) => {
     const { t } = useTranslation('lessons');
 
-    // Character code mapping - normalize all variations
     const CHARACTER_CODE_MAP: Record<string, string> = {
         'liruf': 'liruf',
         'dina': 'dina',
@@ -28,88 +27,68 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
         'zara vex': 'zara_vex'
     };
 
-    // Get character code from exercise with normalization
     const rawCode = exercise?.character_code || 'liruf';
     const characterCode = CHARACTER_CODE_MAP[rawCode.toLowerCase().trim()] || CHARACTER_CODE_MAP[rawCode] || 'liruf';
 
-    // Get narrative text
     const narrativeText = exercise?.content?.transcript
         || exercise?.content?.instruction
         || exercise?.content?.context
         || t('intro.welcome');
 
-    // Render the correct character
+    // Size is controlled by the wrapper div — each character fills its container
     const renderCharacter = () => {
         switch (characterCode) {
             case 'dina':
-                return (
-                    <DinaCharacter
-                        className="w-44 sm:w-60 md:w-72 mx-auto"
-                        expression="happy"
-                        isTalking={isAudioPlaying}
-                    />
-                );
+                return <DinaCharacter className="w-full" expression="happy" isTalking={isAudioPlaying} />;
             case 'dr_rho':
-                return (
-                    <DrRhoCharacter
-                        className="w-44 sm:w-60 md:w-72 mx-auto"
-                        mood="wise"
-                        isTalking={isAudioPlaying}
-                    />
-                );
+                return <DrRhoCharacter className="w-full" mood="wise" isTalking={isAudioPlaying} />;
             case 'zara_vex':
-                return (
-                    <ZaraVexCharacter
-                        className="w-44 sm:w-60 md:w-72 mx-auto"
-                        mood="happy"
-                        isTalking={isAudioPlaying}
-                    />
-                );
+                return <ZaraVexCharacter className="w-full" mood="happy" isTalking={isAudioPlaying} />;
             default:
-                return (
-                    <DinoCharacter
-                        className="w-44 sm:w-60 md:w-72 mx-auto"
-                        showBubble={false}
-                        mood="excited"
-                        isTalking={isAudioPlaying}
-                    />
-                );
+                return <DinoCharacter className="w-full" showBubble={false} mood="excited" isTalking={isAudioPlaying} />;
         }
     };
 
     return (
-        <div className="w-full max-w-lg flex flex-col items-center gap-5 sm:gap-6 animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
-            {/* Character */}
-            <div className="flex-shrink-0 lp-bob">
-                {renderCharacter()}
+        <div className="flex-1 w-full flex flex-col min-h-0 animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
+
+            {/* Content — fills available space and centers it vertically */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-4 sm:gap-6 py-4">
+
+                {/* Character — bigger on mobile, generous on desktop */}
+                <div className="flex-shrink-0 lp-bob w-56 sm:w-72 mx-auto">
+                    {renderCharacter()}
+                </div>
+
+                {/* Speech bubble */}
+                <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both">
+                    <div className="lp-card relative px-6 py-5">
+                        <p className="lp-display text-center text-lg sm:text-xl leading-snug" style={{ color: 'var(--lp-ink)' }}>
+                            {narrativeText}
+                        </p>
+                        {/* Arrow pointing UP toward character */}
+                        <div
+                            className="absolute -top-[9px] left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
+                            style={{ background: 'var(--lp-surface)', borderLeft: '1.5px solid var(--lp-line)', borderTop: '1.5px solid var(--lp-line)' }}
+                        />
+                    </div>
+                </div>
+
+                {/* Audio playing indicator */}
+                {isAudioPlaying && (
+                    <div className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-muted)' }}>
+                        <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--lp-amber)' }} />
+                        <span className="lp-display text-sm">{t('status.speaking')}</span>
+                    </div>
+                )}
             </div>
 
-            {/* Speech Bubble with Narrative */}
-            <div className="w-full flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both">
-                <div className="lp-card relative px-6 py-5 max-w-md">
-                    <p className="lp-display text-center text-lg sm:text-xl leading-snug" style={{ color: 'var(--lp-ink)' }}>
-                        {narrativeText}
-                    </p>
-                    {/* Speech bubble arrow */}
-                    <div
-                        className="absolute -top-[9px] left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
-                        style={{ background: 'var(--lp-surface)', borderLeft: '1.5px solid var(--lp-line)', borderTop: '1.5px solid var(--lp-line)' }}
-                    />
-                </div>
+            {/* Footer — button anchored at the bottom of the activity area */}
+            <div className="w-full max-w-2xl mx-auto pb-6 pt-2">
+                <QuestButton variant="go" onClick={onNext} disabled={isAudioPlaying}>
+                    {t('actions.continue')}
+                </QuestButton>
             </div>
-
-            {/* Audio indicator */}
-            {isAudioPlaying && (
-                <div className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-muted)' }}>
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--lp-amber)' }} />
-                    <span className="lp-display text-sm">{t('status.speaking')}</span>
-                </div>
-            )}
-
-            {/* Continue Button */}
-            <QuestButton variant="brand" onClick={onNext} disabled={isAudioPlaying}>
-                {t('actions.continue')}
-            </QuestButton>
         </div>
     );
 };
