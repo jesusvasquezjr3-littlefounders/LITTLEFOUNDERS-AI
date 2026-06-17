@@ -26,6 +26,12 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
     const options = resolveOptions(content, ['options', 'choices']);
     const isOptionMode = options.length > 0;
 
+    // Others expect a non-numeric answer ("sí", "Subió", "5, 3, 2") the keypad can't type
+    // → render a free-text input instead.
+    const ca = exercise?.correct_answer || {};
+    const textCandidate = ca.value ?? ca.answer ?? ca.solution ?? ca.text ?? ca.result ?? ca.correctText ?? ca.calculatedResult;
+    const isTextMode = !isOptionMode && typeof textCandidate === 'string' && /[a-zA-Z,;]/.test(textCandidate);
+
     useEffect(() => {
         setInput('');
         setFeedback('none');
@@ -86,6 +92,32 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                 </div>
                 {feedback === 'none' ? (
                     <QuestButton variant="gold" disabled={!input} onClick={handleCheck}>
+                        {t('actions.verify')}
+                    </QuestButton>
+                ) : (
+                    <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                    </QuestButton>
+                )}
+            </div>
+        );
+    }
+
+    if (isTextMode) {
+        return (
+            <div className="w-full max-w-sm animate-slide-in-bottom flex flex-col items-center">
+                <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => { if (feedback === 'none') setInput(e.target.value); }}
+                    disabled={feedback !== 'none'}
+                    placeholder={t('fill_blank.placeholder', { defaultValue: 'Escribe tu respuesta...' })}
+                    className="lp-display w-full px-4 py-3 mb-6 rounded-[var(--lp-radius-sm)] border-2 text-lg text-center focus:outline-none transition-colors disabled:opacity-50 focus:border-[var(--lp-indigo)]"
+                    style={{ background: 'var(--lp-surface)', borderColor: 'var(--lp-line)', color: 'var(--lp-ink)' }}
+                />
+                {feedback === 'none' ? (
+                    <QuestButton variant="gold" disabled={input.trim().length === 0} onClick={handleCheck}>
                         {t('actions.verify')}
                     </QuestButton>
                 ) : (

@@ -285,6 +285,22 @@ describe('validateAnswer — math_challenge option mode', () => {
         expect(validateAnswer(e, '16')).toBe(true);
         expect(validateAnswer(e, '15')).toBe(false);
     });
+    it('text answer {solution:"Subió"}', () => {
+        const e = ex('math_challenge', {}, { solution: 'Subió' });
+        expect(validateAnswer(e, 'Subió')).toBe(true);
+        expect(validateAnswer(e, 'Bajó')).toBe(false);
+    });
+    it('text answer {value:"sí"}', () => {
+        const e = ex('math_challenge', {}, { value: 'sí' });
+        expect(validateAnswer(e, 'sí')).toBe(true);
+        expect(validateAnswer(e, 'no')).toBe(false);
+    });
+    it('multi-number {answer:"5, 3, 2"} lenient separators', () => {
+        const e = ex('math_challenge', {}, { answer: '5, 3, 2' });
+        expect(validateAnswer(e, '5, 3, 2')).toBe(true);
+        expect(validateAnswer(e, '5,3,2')).toBe(true);
+        expect(validateAnswer(e, '1, 2, 3')).toBe(false);
+    });
 });
 
 describe('validateAnswer — concept_builder', () => {

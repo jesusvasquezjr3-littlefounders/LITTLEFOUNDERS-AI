@@ -57,7 +57,7 @@ cualquier clave de contenido (arrays bajo `options`/`choices`/`offers`/… o for
 | Componente | Frec. | Corrección |
 |---|---|---|
 | **BudgetBuilder** | ~1442 | `isNewSchema` relajado (ya no exige `allocated`); `total_income` derivado de múltiples claves / suma de categorías / asignación correcta / default → sliders usables. Legacy (drag-drop) tiene prioridad si hay `items`. |
-| **MathChallenge** | ~125 | Renderiza opciones (OptionCard) cuando `content.choices`/`options` existen; valida vía `correctOptionId`. Teclado numérico solo para respuestas numéricas. |
+| **MathChallenge** | ~167 | Renderiza opciones cuando hay `choices`/`options` (~125); **input de texto** cuando la respuesta es no-numérica ("sí"/"Subió"/"5, 3, 2", ~42, comparación tolerante a separadores); teclado numérico solo para respuestas numéricas. |
 | **ConceptBuilder** | ~255+ | Lee bloques de `components`/`pieces`/`blocks`/`steps`/… + **modo multi-selección** para shapes de subconjunto (`correctOptionIds`/`selectedIds`/`componentIds`/…). |
 | **RoleplayChat** | ~60 | Lee opciones de `choices`/`responseOptions`/`chatOptions` además de `options`. |
 | **RiskReward** | ~51 | `resolveOptions` (cubre `optionA/optionB`, `choices`, `scenarios`, `portfolios`). |
@@ -81,6 +81,7 @@ Verificación añadida: `src/__tests__/optionSource.test.ts` + nuevas ramas en `
 | **MindsetComparison** | ~2 | Soporta el formato `approach_a/approach_b` / `approachA/approachB`. |
 | **ShopSim** | ~13 | Modo opción única (`options`/`price_options`/`money_options`); +rama `correctPrices` en el validador. |
 | **FillBlank** | ~41 | Banco de palabras sin marcadores `____`: sintetiza slots según el nº de respuestas esperadas. |
+| **Sin callejones sin salida** | — | Los fallbacks "sin datos" de `SalaryComparison` y `BudgetBuilder` ahora incluyen botón Continuar (antes dejaban al usuario atascado). |
 
 ## Trabajo restante (opcional)
 

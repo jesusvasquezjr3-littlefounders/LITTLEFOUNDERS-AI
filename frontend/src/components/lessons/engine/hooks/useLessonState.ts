@@ -206,8 +206,11 @@ function extractCorrectText(correctAnswer: any, content?: any): string | undefin
             ?? correctAnswer.correctWord
             ?? correctAnswer.correctResponse
             ?? correctAnswer.answer
-            ?? correctAnswer.correctAnswer;
-        if (val !== undefined && val !== null) return String(val);
+            ?? correctAnswer.correctAnswer
+            ?? correctAnswer.solution
+            ?? correctAnswer.calculatedResult
+            ?? correctAnswer.value;
+        if (val !== undefined && val !== null && typeof val !== 'object') return String(val);
     }
     if (content !== null && typeof content === 'object') {
         const val = content.word
@@ -651,10 +654,15 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                 if (optId !== undefined) return optionIdMatches(userStr, optId);
             }
             const correctValue = extractCorrectNumeric(correctAnswer, content);
-            if (correctValue === undefined) {
-                // Try text-based fallback
+            if (correctValue === undefined || isNaN(correctValue)) {
+                // Non-numeric correct answer (e.g. "sí", "Subió", "5, 3, 2") → text compare.
                 const correctText = extractCorrectText(correctAnswer, content);
-                if (correctText !== undefined) return stringMatch(userStr, correctText);
+                if (correctText !== undefined) {
+                    if (stringMatch(userStr, correctText)) return true;
+                    // Lenient compare for multi-number / separator-formatted answers.
+                    const norm = (s: string) => String(s).replace(/[\s,;]+/g, ',').replace(/,+$/, '').toLowerCase();
+                    return norm(userStr) === norm(correctText);
+                }
                 return false;
             }
             const tolerance = Number(correctAnswer?.tolerance ?? 0.01);

@@ -167,15 +167,19 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
         }
     };
 
-    // ── Graceful fallback ──
+    // ── Graceful fallback — allow continuing (no dead end) ──
     if (!newSchema && !legacySchema) {
         return (
-            <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex items-center justify-center py-12">
-                <div className="text-center" style={{ color: 'var(--lp-muted)' }}>
-                    <AlertCircle className="w-10 h-10 mx-auto mb-3 opacity-60" />
-                    <p className="lp-display text-sm">
-                        {t('budget_builder.no_data', { defaultValue: 'No hay datos disponibles para este ejercicio.' })}
-                    </p>
+            <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center justify-center py-12 gap-4 text-center">
+                <AlertCircle className="w-10 h-10 opacity-60" style={{ color: 'var(--lp-muted)' }} />
+                <p className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
+                    {content.scenario || content.instruction || t('budget_builder.no_data', { defaultValue: 'No hay datos disponibles para este ejercicio.' })}
+                </p>
+                <div className="w-full">
+                    <QuestButton variant="brand" onClick={onNext}>
+                        {t('actions.continue', { defaultValue: 'Continuar' })}
+                        <ArrowRight className="w-5 h-5" />
+                    </QuestButton>
                 </div>
             </div>
         );

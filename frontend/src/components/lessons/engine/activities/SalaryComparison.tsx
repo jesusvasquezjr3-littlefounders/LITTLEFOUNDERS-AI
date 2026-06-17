@@ -85,17 +85,23 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
         }
     };
 
-    // Graceful fallback if no recognizable data
+    // Graceful fallback if no recognizable data — allow continuing (no dead end).
     if (!isLegacy && offers.length === 0) {
         return (
             <div className={cn(
-                "w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500",
-                "flex flex-col items-center justify-center py-12 text-center"
+                "w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500",
+                "flex flex-col items-center justify-center py-12 text-center gap-4"
             )}>
-                <AlertCircle className="w-12 h-12 mb-4" style={{ color: 'var(--lp-muted)' }} />
-                <p className="lp-display text-lg" style={{ color: 'var(--lp-muted)' }}>
-                    {t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
+                <AlertCircle className="w-12 h-12" style={{ color: 'var(--lp-muted)' }} />
+                <p className="lp-display text-base" style={{ color: 'var(--lp-muted)' }}>
+                    {content.scenario || content.question || t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
                 </p>
+                <div className="w-full">
+                    <QuestButton variant="brand" onClick={onNext}>
+                        {t('actions.continue', { defaultValue: 'Continuar' })}
+                        <ArrowRight className="w-5 h-5" />
+                    </QuestButton>
+                </div>
             </div>
         );
     }
