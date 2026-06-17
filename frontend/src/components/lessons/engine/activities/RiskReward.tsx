@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface RiskRewardProps {
     exercise: any;
@@ -53,7 +54,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
     };
 
     const content = exercise?.content || {};
-    const riskOptions = content.risk_options || content.options || [];
+    const riskOptions = resolveOptions(content, ['risk_options', 'options']);
     const decisionText = content.decision || content.question || content.scenario || t('instructions.risk_reward', { defaultValue: 'Evalúa el riesgo' });
 
     return (

@@ -274,6 +274,39 @@ describe('validateAnswer — fill_blank (multiple formats)', () => {
     });
 });
 
+describe('validateAnswer — math_challenge option mode', () => {
+    it('{correctOptionId} with non-numeric option answer', () => {
+        const e = ex('math_challenge', { question: '8+8?', choices: [{ id: 'a', text: '16' }, { id: 'b', text: '15' }] }, { correctOptionId: 'a' });
+        expect(validateAnswer(e, 'a')).toBe(true);
+        expect(validateAnswer(e, 'b')).toBe(false);
+    });
+    it('numeric answer still validates against {value}', () => {
+        const e = ex('math_challenge', {}, { value: 16 });
+        expect(validateAnswer(e, '16')).toBe(true);
+        expect(validateAnswer(e, '15')).toBe(false);
+    });
+});
+
+describe('validateAnswer — concept_builder', () => {
+    it('ordered {sequence}', () => {
+        const e = ex('concept_builder', { items: [{ id: 's1' }, { id: 's2' }, { id: 's3' }] }, { sequence: ['s1', 's2', 's3'] });
+        expect(validateAnswer(e, ['s1', 's2', 's3'])).toBe(true);
+        expect(validateAnswer(e, ['s2', 's1', 's3'])).toBe(false);
+    });
+    it('multi-select subset {correctOptionIds}', () => {
+        const e = ex('concept_builder', { components: [{ id: 'c1' }, { id: 'c2' }, { id: 'c3' }, { id: 'c4' }] }, { correctOptionIds: ['c1', 'c3'] });
+        expect(validateAnswer(e, ['c1', 'c3'])).toBe(true);
+        expect(validateAnswer(e, ['c3', 'c1'])).toBe(true); // order-insensitive
+        expect(validateAnswer(e, ['c1'])).toBe(false);
+        expect(validateAnswer(e, ['c1', 'c2'])).toBe(false);
+    });
+    it('multi-select subset {componentIds}', () => {
+        const e = ex('concept_builder', {}, { componentIds: ['c1', 'c3'] });
+        expect(validateAnswer(e, ['c1', 'c3'])).toBe(true);
+        expect(validateAnswer(e, ['c1', 'c3', 'c4'])).toBe(false);
+    });
+});
+
 describe('validateAnswer — regression (already-passing types)', () => {
     it('sequencing {sequence}', () => {
         const e = ex('sequencing', { items: [{ id: 's1' }, { id: 's2' }, { id: 's3' }] }, { sequence: ['s1', 's2', 's3'] });

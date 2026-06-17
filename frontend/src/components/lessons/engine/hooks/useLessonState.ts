@@ -104,6 +104,9 @@ export function extractCorrectId(correctAnswer: any): string | undefined {
         ?? correctAnswer.correctMarket
         ?? correctAnswer.correctCity
         ?? correctAnswer.correctItem
+        ?? correctAnswer.selectedPriceId
+        ?? correctAnswer.selectedStoreId
+        ?? correctAnswer.cheaperItemId
         ?? correctAnswer.correctCaseId
         ?? correctAnswer.correctPlan
         ?? correctAnswer.correctModel
@@ -556,6 +559,19 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'sequencing':
         case 'concept_builder':
         case 'goal_roadmap': {
+            // concept_builder multi-select subset shapes: pick exactly this set of ids.
+            if (type === 'concept_builder') {
+                const subset = correctAnswer?.correctOptionIds ?? correctAnswer?.selectedIds
+                    ?? correctAnswer?.componentIds ?? correctAnswer?.correctComponentIds
+                    ?? correctAnswer?.essentialIds ?? correctAnswer?.correctConceptIds
+                    ?? correctAnswer?.requiredIds ?? correctAnswer?.correctIds
+                    ?? correctAnswer?.correctComponents ?? correctAnswer?.correctStatementIds;
+                if (Array.isArray(subset)) {
+                    const want = new Set(subset.map((x: any) => String(x)));
+                    const got = new Set((Array.isArray(answer) ? answer : [answer]).map((x: any) => String(x)));
+                    return want.size === got.size && [...want].every(id => got.has(id));
+                }
+            }
             let correctSequence = correctAnswer?.sequence
                 || correctAnswer?.correctSequence
                 || correctAnswer?.order
@@ -628,6 +644,12 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends string (user's numeric input)
         case 'math_challenge': {
             const userStr = String(answer).trim();
+            // Option-based math_challenge: content carries choices/options and the answer
+            // is an option id (non-numeric). Resolve via extractCorrectId.
+            if (!/^-?\d*\.?\d+$/.test(userStr)) {
+                const optId = extractCorrectId(correctAnswer);
+                if (optId !== undefined) return optionIdMatches(userStr, optId);
+            }
             const correctValue = extractCorrectNumeric(correctAnswer, content);
             if (correctValue === undefined) {
                 // Try text-based fallback

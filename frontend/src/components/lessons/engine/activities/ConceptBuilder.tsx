@@ -22,11 +22,24 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
     const { playSound } = useSound();
 
     const [blocks, setBlocks] = useState<any[]>([]);
+    const [selected, setSelected] = useState<Set<string>>(new Set());
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
+
+    const content = exercise.content || {};
+    // Orderable/selectable blocks live under many content keys across the corpus.
+    const rawSource = content.concepts || content.items || content.components || content.pieces
+        || content.blocks || content.steps || content.buildingBlocks || content.building_blocks
+        || content.elements || content.options || content.parts || content.tags || [];
+
+    // Multi-select mode: the answer is a SUBSET of ids, not an ordering.
+    const SUBSET_KEYS = ['correctOptionIds', 'selectedIds', 'componentIds', 'correctComponentIds',
+        'essentialIds', 'correctConceptIds', 'requiredIds', 'correctIds', 'correctComponents', 'correctStatementIds'];
+    const isSelectMode = SUBSET_KEYS.some((k) => Array.isArray(exercise.correct_answer?.[k]));
 
     useEffect(() => {
         setFeedback('none');
-        const source = exercise.content.concepts || exercise.content.items || [];
+        setSelected(new Set());
+        const source = Array.isArray(rawSource) ? rawSource : [];
         if (source.length > 0) {
             // Shuffle
             const shuffled = [...source];
@@ -38,7 +51,28 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
         } else {
             setBlocks([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [exercise]);
+
+    const toggleSelect = (id: string) => {
+        if (feedback !== 'none') return;
+        playSound('ui_tap');
+        setSelected((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id); else next.add(id);
+            return next;
+        });
+    };
+
+    const handleSelectCheck = () => {
+        const isCorrect = onSubmit([...selected]);
+        setFeedback(isCorrect ? 'success' : 'error');
+    };
+
+    const handleSelectContinue = () => {
+        if (feedback === 'success') { onNext(); }
+        else { setSelected(new Set()); setFeedback('none'); onRetry(); }
+    };
 
     const moveBlock = (index: number, direction: 'left' | 'right') => {
         if (feedback !== 'none') return;
@@ -75,6 +109,49 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
             onRetry();
         }
     };
+
+    // ── Multi-select mode: pick the correct subset of blocks ──
+    if (isSelectMode) {
+        return (
+            <div className="w-full max-w-2xl animate-slide-in-bottom flex flex-col items-center">
+                <h3 className="lp-display text-xl sm:text-2xl mb-8 text-center text-[var(--lp-ink)]">
+                    {content.instruction || content.question || t('instructions.concept_builder', { defaultValue: 'Selecciona los elementos correctos' })}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 w-full">
+                    {blocks.map((block) => {
+                        const isSel = selected.has(block.id);
+                        return (
+                            <button
+                                key={block.id}
+                                onClick={() => toggleSelect(block.id)}
+                                disabled={feedback !== 'none'}
+                                className={cn(
+                                    "lp-token lp-option lp-display text-left px-5 py-4 text-base text-[var(--lp-ink)]",
+                                    "lp-option--indigo",
+                                    isSel && "is-selected",
+                                    feedback !== 'none' && "lp-token--locked"
+                                )}
+                            >
+                                {block.label || block.text}
+                            </button>
+                        );
+                    })}
+                </div>
+                <div className="w-full max-w-sm">
+                    {feedback === 'none' ? (
+                        <QuestButton variant="gold" disabled={selected.size === 0} onClick={handleSelectCheck}>
+                            {t('actions.verify')}
+                        </QuestButton>
+                    ) : (
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleSelectContinue}>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-4xl animate-slide-in-bottom flex flex-col items-center">

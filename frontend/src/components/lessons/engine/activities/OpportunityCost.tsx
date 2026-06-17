@@ -4,6 +4,7 @@ import { ArrowRight, ArrowLeftRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface OpportunityCostProps {
     exercise: any;
@@ -21,7 +22,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
     const content = exercise?.content || {};
-    const options = content.options || [];
+    const options = resolveOptions(content, ['options']);
 
     useEffect(() => {
         setSelected(null);

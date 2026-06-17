@@ -4,6 +4,8 @@ import { ArrowRight, RotateCcw, CreditCard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { resolveOptions } from './optionSource';
 
 interface CreditScoreBuilderProps {
     exercise: any;
@@ -35,6 +37,57 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
     const content = exercise?.content || {};
     const scenarios = content.scenarios || [];
     const scenario = scenarios[currentScenario];
+
+    // Single-choice fallback: some credit_score lessons are a plain profile/option pick
+    // ({correctProfile}/{correctOptionId}) with no scenario simulator.
+    const choiceOptions = scenarios.length === 0
+        ? resolveOptions(content, ['options', 'profiles', 'choices'])
+        : [];
+
+    if (scenarios.length === 0 && choiceOptions.length > 0) {
+        const chosen = decisions[0] ?? null;
+        const pick = (id: string) => {
+            if (feedback !== 'none') return;
+            playSound('ui_tap');
+            setDecisions([id]);
+            const isCorrect = onSubmit([id]);
+            setFeedback(isCorrect ? 'success' : 'error');
+        };
+        const onContinue = () => {
+            if (feedback === 'success') { onNext(); }
+            else { setDecisions([]); setFeedback('none'); onRetry(); }
+        };
+        return (
+            <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {(content.scenario || content.question || content.instruction) && (
+                    <div className="lp-card mb-6 p-5 text-center">
+                        <p className="lp-display text-base sm:text-lg text-[var(--lp-ink)]">
+                            {content.question || content.scenario || content.instruction}
+                        </p>
+                    </div>
+                )}
+                <div className="space-y-3 mb-6">
+                    {choiceOptions.map((opt: any, idx: number) => {
+                        const st: OptionState = feedback === 'none'
+                            ? (chosen === opt.id ? 'selected' : 'idle')
+                            : (chosen === opt.id ? (feedback === 'success' ? 'correct' : 'wrong') : 'dimmed');
+                        return (
+                            <OptionCard key={opt.id} index={idx} text={opt.text} state={st}
+                                onClick={() => pick(opt.id)} disabled={feedback !== 'none'} />
+                        );
+                    })}
+                </div>
+                <div className="w-full max-w-md mx-auto">
+                    {feedback !== 'none' && (
+                        <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={onContinue}>
+                            {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                            {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                        </QuestButton>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     if (scenarios.length === 0) {
         // Graceful degradation: no real data exists for this exercise type

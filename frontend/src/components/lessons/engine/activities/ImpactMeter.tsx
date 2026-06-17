@@ -4,6 +4,7 @@ import { ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 const HUES = ["indigo", "amber", "emerald", "coral"] as const;
 
@@ -32,7 +33,13 @@ export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeter
         };
     }, [exercise]);
 
-    const causes = exercise.content.causes || [];
+    // Causes may live under `causes` or, for choice-style lessons, `options`.
+    const causes = resolveOptions(exercise.content, ['causes', 'options']).map((c: any) => ({
+        ...c,
+        name: c.name ?? c.text ?? '',
+        icon: c.icon ?? '💜',
+        impact: c.impact ?? c.description ?? '',
+    }));
     const budget = exercise.content.budget || 100;
 
     const handleSelectCause = (causeId: string) => {

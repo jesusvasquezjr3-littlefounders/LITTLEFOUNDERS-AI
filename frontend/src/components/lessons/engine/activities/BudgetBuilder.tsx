@@ -12,18 +12,39 @@ interface BudgetBuilderProps {
     onRetry: () => void;
 }
 
+// Slider/allocation mode: categories is a non-empty array of objects with an `id`.
+// (Previously also required `allocated`, which most real lessons omit → nothing rendered.)
 const isNewSchema = (content: any): boolean => {
     if (!content?.categories || !Array.isArray(content.categories)) return false;
     return (
         content.categories.length > 0 &&
         typeof content.categories[0] === 'object' &&
-        'id' in content.categories[0] &&
-        'allocated' in content.categories[0]
+        content.categories[0] !== null &&
+        'id' in content.categories[0]
     );
 };
 
+// Legacy drag-and-drop categorization mode: an `items` array exists.
 const isLegacySchema = (content: any): boolean => {
-    return !!content?.items && Array.isArray(content.items);
+    return Array.isArray(content?.items) && content.items.length > 0;
+};
+
+// Total budget — derive from many possible keys, else the sum of category targets,
+// else the sum of the correct allocation, else a sensible default so sliders are movable.
+const computeTotalIncome = (content: any, correctAnswer: any, categories: any[]): number => {
+    const direct = content.total_income ?? content.totalIncome ?? content.income
+        ?? content.monthlyIncome ?? content.budget ?? content.total ?? content.amount ?? content.totalBudget;
+    if (direct != null && Number(direct) > 0) return Number(direct);
+    const catSum = categories.reduce(
+        (s: number, c: any) => s + Number(c?.target ?? c?.max ?? c?.maxValue ?? c?.allocated ?? c?.amount ?? 0), 0);
+    if (catSum > 0) return catSum;
+    const alloc = correctAnswer?.allocations ?? correctAnswer?.allocation
+        ?? (correctAnswer && typeof correctAnswer === 'object' ? correctAnswer : null);
+    if (alloc && typeof alloc === 'object') {
+        const sum = Object.values(alloc).reduce((s: number, v: any) => s + (typeof v === 'number' ? v : 0), 0);
+        if (sum > 0) return sum;
+    }
+    return 1000;
 };
 
 export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBuilderProps) => {
@@ -35,8 +56,10 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
     const [dcaError, setDcaError] = useState(false);
 
     const content = exercise?.content || {};
-    const newSchema = isNewSchema(content);
-    const legacySchema = !newSchema && isLegacySchema(content);
+    // Legacy (drag-drop) takes priority when an items array exists; otherwise sliders.
+    const legacySchema = isLegacySchema(content);
+    const newSchema = !legacySchema && isNewSchema(content);
+    const totalIncome = computeTotalIncome(content, exercise?.correct_answer, content.categories || []);
 
     useEffect(() => {
         setFeedback('none');
@@ -82,7 +105,6 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
     const handleCheck = () => {
         if (newSchema) {
             const categories = content.categories || [];
-            const totalIncome = content.total_income || 0;
             const minDca = content.min_dca;
 
             const totalAllocated = categories.reduce(
@@ -164,7 +186,6 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
     // ═══════════════════════════════════════
     if (newSchema) {
         const categories = content.categories || [];
-        const totalIncome = content.total_income || 0;
         const minDca = content.min_dca;
         const scenario = content.scenario || '';
         const instruction = content.instruction || '';

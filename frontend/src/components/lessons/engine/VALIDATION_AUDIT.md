@@ -48,33 +48,41 @@ Verificadas por `src/__tests__/validateAnswer.test.ts` (46 casos) y
 | **`mystery_investment`** | `minBoxes` por defecto 2 → falso negativo | Solo exige ≥1 caja salvo `minBoxes` explícito |
 | **`interest_calculator`** | Respuesta-objeto `{principal,rate,time}` → `NaN`/`false` | Acepta objeto (simulador exploratorio) |
 
-## Trabajo restante (capa de RENDER — requiere cambios por componente + verificación con backend)
+## Capa de RENDER — corregido (2do commit)
 
-Estos tipos fallan porque el **componente no renderiza** la forma de contenido real o no puede
-representar la respuesta esperada. La capa central ya valida correctamente una vez el componente
-emite el id/valor adecuado. **No abordados aquí** porque requieren refactor de render y play-through
-con el backend (no disponible en el entorno de preview). Ordenados por impacto:
+Helper compartido `activities/optionSource.ts` (`resolveOptions`): normaliza la fuente de opciones desde
+cualquier clave de contenido (arrays bajo `options`/`choices`/`offers`/… o formas pareadas
+`optionA/optionB`, `strategy_a/strategy_b`, …). Aplicado a los componentes que solo leían una clave:
 
-| Componente | Frec. | Problema |
+| Componente | Frec. | Corrección |
 |---|---|---|
-| **BudgetBuilder** | ~1442 | `isNewSchema`/`isLegacySchema` demasiado estrictos; falta `total_income` → sliders en `max=0` inmovibles |
-| **StoryMode** | ~1027 | Wired como consumo (sin `onSubmit`); los puntos de decisión (`correctOptionId`) no se califican — *decisión de diseño* |
-| **MathChallenge** | ~125 | Teclado solo-numérico no puede representar `{correctOptionId}`/texto; debe renderizar opciones/texto cuando `content.choices`/`options` existen |
-| **ConceptBuilder** | ~255+ | Lee bloques solo de `content.concepts`/`items`; datos reales usan `components`/`pieces`/`blocks`/`steps`/… |
-| **RoleplayChat** | ~60 | Lee solo `content.options`; faltan `choices`/`responseOptions`/`chatSteps`/… |
-| **RiskReward** | ~51 | Lee solo `risk_options`/`options`; muchos usan `optionA/optionB`/`choices`/`scenarios`/`portfolios` |
-| **PriceDetective** | ~9 | Opciones en `prices`/`stores`/`cases`/`itemA-itemB`/`cityA-cityB` |
-| **SalaryComparison** | ~10 | Opciones en `options[]`/`offer_a-offer_b`/`jobA-jobB` (2 son cálculo numérico mal-tipado) |
-| **OpportunityCost** | ~6 | Opciones en `optionA/optionB`/`strategy_a/strategy_b` |
-| **DebtStrategy** | ~4 | Estrategias en `strategyA/strategyB` |
-| **CreditScoreBuilder** | ~2 | Modelo del componente no coincide con NINGÚN dato real |
-| **ImpactMeter / EstimationSlider(zonas) / MindsetComparison(approach)** | ~3 | Claves de contenido alternativas |
+| **BudgetBuilder** | ~1442 | `isNewSchema` relajado (ya no exige `allocated`); `total_income` derivado de múltiples claves / suma de categorías / asignación correcta / default → sliders usables. Legacy (drag-drop) tiene prioridad si hay `items`. |
+| **MathChallenge** | ~125 | Renderiza opciones (OptionCard) cuando `content.choices`/`options` existen; valida vía `correctOptionId`. Teclado numérico solo para respuestas numéricas. |
+| **ConceptBuilder** | ~255+ | Lee bloques de `components`/`pieces`/`blocks`/`steps`/… + **modo multi-selección** para shapes de subconjunto (`correctOptionIds`/`selectedIds`/`componentIds`/…). |
+| **RoleplayChat** | ~60 | Lee opciones de `choices`/`responseOptions`/`chatOptions` además de `options`. |
+| **RiskReward** | ~51 | `resolveOptions` (cubre `optionA/optionB`, `choices`, `scenarios`, `portfolios`). |
+| **PriceDetective** | ~9 | `resolveOptions` (prices/stores/cases/itemA-itemB/…); omite el gating de precio-unitario sin datos de precio. |
+| **SalaryComparison** | ~10 | Ofertas vía `resolveOptions` (`options[]`/`offer_a-offer_b`/`jobA-jobB`). |
+| **OpportunityCost** | ~6 | `resolveOptions` (`optionA/optionB`, `strategy_a/strategy_b`). |
+| **DebtStrategy** | ~4 | Modo opción múltiple vía `resolveOptions` (`strategyA/strategyB`). |
+| **CreditScoreBuilder** | ~2 | Render de opción única cuando no hay `scenarios` pero sí `options`/`profiles`. |
+| **ImpactMeter** | ~1 | Causas desde `causes`/`options`. |
 
-**Otros temas transversales:**
-- **Contradicción de feedback en simuladores** (9 componentes wired a `handleSimulatorSubmit`): el componente
-  muestra error/reintentar desde el retorno de `onSubmit` mientras el runner reproduce éxito. Unificar.
-- **Datos mal-tipados**: varios ejercicios `shop_sim`/`salary_comparison`/`math_challenge` son en realidad
-  `multiple_choice`/`true_false` — candidatos a corrección en el JSON del backend (no en el frontend).
+Verificación añadida: `src/__tests__/optionSource.test.ts` + nuevas ramas en `validateAnswer.test.ts`
+(math_challenge opción, concept_builder subconjunto). Total **79 tests** verdes; `tsc -b` + build OK.
+
+## Trabajo restante (menor / decisión de producto)
+
+- **StoryMode** (~1027): wired como consumo (sin `onSubmit`); los puntos de decisión no se califican.
+  *Decisión de diseño* — la narrativa ramificada no penaliza. Cambiar solo si se desea calificar.
+- **Contradicción de feedback en simuladores** (9 componentes `handleSimulatorSubmit`): el componente
+  muestra error/reintentar desde el retorno de `onSubmit` mientras el runner reproduce éxito. UX a unificar.
+- **EstimationSlider** zonas con `correctRangeId` (render de bandas etiquetadas) y **MindsetComparison**
+  formato `approach_a/approach_b` (~3 casos): claves de contenido alternativas, baja frecuencia.
+- **Datos mal-tipados**: varios `shop_sim`/`salary_comparison`/`math_challenge` son en realidad
+  `multiple_choice`/`true_false` — mejor corregir en el JSON del backend (no en el frontend).
+- **Verificación con backend**: recomendable un play-through real (las lecciones no renderizan en el
+  preview sin backend; la lógica está cubierta por tests unitarios + de corpus).
 
 ## Cómo verificar
 
