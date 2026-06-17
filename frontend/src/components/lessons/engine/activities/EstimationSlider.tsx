@@ -17,8 +17,13 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
     const { playSound } = useSound();
 
     const content = exercise?.content || {};
-    const min = content.min ?? content.range?.min ?? 0;
-    const max = content.max ?? content.range?.max ?? 100;
+    // When the lesson defines labeled ranges/zones, span the slider across their extent
+    // so the user can land inside the correct band (validateAnswer grades the band).
+    const ranges = Array.isArray(content.ranges) ? content.ranges : null;
+    const rangeMin = ranges ? Math.min(...ranges.map((r: any) => Number(r.minValue ?? r.min ?? 0))) : undefined;
+    const rangeMax = ranges ? Math.max(...ranges.map((r: any) => Number(r.maxValue ?? r.max ?? 100))) : undefined;
+    const min = content.min ?? content.range?.min ?? content.sliderMin ?? rangeMin ?? 0;
+    const max = content.max ?? content.range?.max ?? content.sliderMax ?? rangeMax ?? 100;
     const step = content.step ?? content.range?.step ?? 1;
     const unit = content.unit || '';
 

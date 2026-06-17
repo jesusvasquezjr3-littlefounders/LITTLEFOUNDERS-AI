@@ -8,8 +8,9 @@ import DrRhoCharacter, { RhoMood } from '@/components/characters/DrRhoCharacter'
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/characters/ZaraVexCharacter';
 import { normalizeGesture } from '@/utils/gestureMapper';
-import { OptionCard } from '../ui/OptionCard';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
 import { QuestButton } from '../ui/QuestButton';
+import { extractCorrectId } from '../hooks/useLessonState';
 
 interface StoryPage {
     id: string;
@@ -22,17 +23,22 @@ interface StoryPage {
 interface StoryModeProps {
     exercise: any;
     onNext: () => void;
+    onSubmit?: (choiceId: string) => boolean;
     isAudioPlaying?: boolean;
 }
 
-export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryModeProps) => {
+export const StoryMode = ({ exercise, onNext, onSubmit, isAudioPlaying = false }: StoryModeProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
     const [pageIndex, setPageIndex] = useState(0);
     const [history, setHistory] = useState<number[]>([0]);
     const [isAnimating, setIsAnimating] = useState(false);
+    // Graded decision point (non-branching choice + a correct answer): { id, correct }.
+    const [decided, setDecided] = useState<{ id: string; correct: boolean } | null>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const gradedCorrectId = extractCorrectId(exercise?.correct_answer);
 
     // Build virtual pages from real JSON schema if legacy 'pages' is absent
     const pages: StoryPage[] = useMemo(() => {
@@ -79,10 +85,14 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
     useEffect(() => {
         setPageIndex(0);
         setHistory([0]);
+        setDecided(null);
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
     }, [exercise]);
+
+    // Clear a graded decision when moving to another page.
+    useEffect(() => { setDecided(null); }, [pageIndex]);
 
     // Guard against empty pages array — auto-advance (debounced to prevent loops)
     const onNextRef = useRef(onNext);
@@ -94,21 +104,35 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
         }
     }, [pages.length]);
 
-    const handleChoice = (nextPageId?: string) => {
+    const handleChoice = (choice: any) => {
+        if (decided) return;
         playSound('ui_tap');
-        setIsAnimating(true);
-        timeoutRef.current = setTimeout(() => {
-            if (nextPageId) {
-                const nextIdx = pages.findIndex(p => p.id === nextPageId);
+        // Branching narrative → navigate to the linked page.
+        if (choice?.next_page) {
+            setIsAnimating(true);
+            timeoutRef.current = setTimeout(() => {
+                const nextIdx = pages.findIndex(p => p.id === choice.next_page);
                 if (nextIdx !== -1) {
                     setPageIndex(nextIdx);
                     setHistory(prev => [...prev, nextIdx]);
                 } else {
                     handleNext();
                 }
-            } else {
-                handleNext();
-            }
+                setIsAnimating(false);
+            }, 300);
+            return;
+        }
+        // Graded single decision (the exercise has a correct answer) → record the result
+        // and show feedback, without penalizing (gentle). The user continues afterward.
+        if (onSubmit && gradedCorrectId !== undefined) {
+            const ok = onSubmit(choice.id);
+            setDecided({ id: choice.id, correct: ok });
+            return;
+        }
+        // Pure consumption advance.
+        setIsAnimating(true);
+        timeoutRef.current = setTimeout(() => {
+            handleNext();
             setIsAnimating(false);
         }, 300);
     };
@@ -188,15 +212,31 @@ export const StoryMode = ({ exercise, onNext, isAudioPlaying = false }: StoryMod
 
                             <div className="space-y-3">
                                 {currentPage?.choices && currentPage.choices.length > 0 ? (
-                                    currentPage.choices.map((choice, idx) => (
-                                        <OptionCard
-                                            key={choice.id}
-                                            index={idx}
-                                            text={choice.text}
-                                            state="idle"
-                                            onClick={() => handleChoice(choice.next_page)}
-                                        />
-                                    ))
+                                    <>
+                                        {currentPage.choices.map((choice, idx) => {
+                                            const st: OptionState = !decided
+                                                ? 'idle'
+                                                : (gradedCorrectId !== undefined && String(choice.id) === String(gradedCorrectId))
+                                                    ? 'correct'
+                                                    : (choice.id === decided.id ? 'wrong' : 'dimmed');
+                                            return (
+                                                <OptionCard
+                                                    key={choice.id}
+                                                    index={idx}
+                                                    text={choice.text}
+                                                    state={st}
+                                                    onClick={() => handleChoice(choice)}
+                                                    disabled={!!decided}
+                                                />
+                                            );
+                                        })}
+                                        {decided && (
+                                            <QuestButton variant="go" onClick={handleNext}>
+                                                {t('actions.continue', { defaultValue: 'Continuar' })}
+                                                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                                            </QuestButton>
+                                        )}
+                                    </>
                                 ) : (
                                     <div className="flex items-center gap-4">
                                         {history.length > 1 && (

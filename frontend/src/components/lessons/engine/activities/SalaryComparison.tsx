@@ -4,6 +4,7 @@ import { ArrowRight, Briefcase, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface SalaryComparisonProps {
     exercise: any;
@@ -30,7 +31,6 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
     // Determine format and normalize data safely
     const content = exercise?.content || {};
     const isLegacy = Array.isArray(content.offers) && content.offers.length > 0;
-    const isNewFormat = content.optionA && content.optionB;
 
     // Normalize offers for unified rendering
     let offers: any[] = [];
@@ -39,19 +39,13 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
     if (isLegacy) {
         offers = content.offers;
         factors = content.factors || factors;
-    } else if (isNewFormat) {
-        offers = [
-            {
-                id: content.optionA.id || 'A',
-                company: content.optionA.name || '',
-                description: normalizeDescription(content.optionA.details),
-            },
-            {
-                id: content.optionB.id || 'B',
-                company: content.optionB.name || '',
-                description: normalizeDescription(content.optionB.details),
-            },
-        ];
+    } else {
+        // Real lessons use options[] / offer_a-offer_b / optionA-optionB / jobA-jobB.
+        offers = resolveOptions(content, ['offers', 'options']).map((o: any) => ({
+            id: o.id,
+            company: o.company ?? o.name ?? o.title ?? o.text ?? '',
+            description: normalizeDescription(o.details ?? o.description ?? o.text ?? ''),
+        }));
     }
 
     useEffect(() => {
@@ -91,17 +85,23 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
         }
     };
 
-    // Graceful fallback if no recognizable data
-    if (!isLegacy && !isNewFormat) {
+    // Graceful fallback if no recognizable data — allow continuing (no dead end).
+    if (!isLegacy && offers.length === 0) {
         return (
             <div className={cn(
-                "w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500",
-                "flex flex-col items-center justify-center py-12 text-center"
+                "w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500",
+                "flex flex-col items-center justify-center py-12 text-center gap-4"
             )}>
-                <AlertCircle className="w-12 h-12 mb-4" style={{ color: 'var(--lp-muted)' }} />
-                <p className="lp-display text-lg" style={{ color: 'var(--lp-muted)' }}>
-                    {t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
+                <AlertCircle className="w-12 h-12" style={{ color: 'var(--lp-muted)' }} />
+                <p className="lp-display text-base" style={{ color: 'var(--lp-muted)' }}>
+                    {content.scenario || content.question || t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
                 </p>
+                <div className="w-full">
+                    <QuestButton variant="brand" onClick={onNext}>
+                        {t('actions.continue', { defaultValue: 'Continuar' })}
+                        <ArrowRight className="w-5 h-5" />
+                    </QuestButton>
+                </div>
             </div>
         );
     }

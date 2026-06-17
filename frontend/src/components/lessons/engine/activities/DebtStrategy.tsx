@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { OptionCard, type OptionState } from '../ui/OptionCard';
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface DebtStrategyProps {
     exercise: any;
@@ -27,12 +28,13 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
     const debts = content.debts;
     const monthlyPayment = content.monthlyPayment || 500;
 
-    const options = content.options;
     const scenario = content.scenario || '';
     const instruction = content.instruction || '';
 
     const isLegacy = Array.isArray(debts) && debts.length > 0;
-    const isMultipleChoice = !isLegacy && Array.isArray(options) && options.length > 0;
+    // Real lessons also store the choices under strategyA/strategyB, choices, etc.
+    const options = isLegacy ? [] : resolveOptions(content, ['options']);
+    const isMultipleChoice = !isLegacy && options.length > 0;
 
     useEffect(() => {
         setSelectedStrategy('snowball');

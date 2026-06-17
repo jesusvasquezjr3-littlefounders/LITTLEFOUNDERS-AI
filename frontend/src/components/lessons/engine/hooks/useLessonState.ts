@@ -76,8 +76,94 @@ export function extractCorrectId(correctAnswer: any): string | undefined {
         ?? correctAnswer.correctPathId
         ?? correctAnswer.correctStepId
         ?? correctAnswer.correctProfile
+        // ── Additional single-id aliases observed across the real lesson corpus ──
+        // (audit 2026-06-16: many activities use these instead of correctOptionId)
+        ?? correctAnswer.correctOption
+        ?? correctAnswer.correctChoice
+        ?? correctAnswer.chosenOption
+        ?? correctAnswer.betterOption
+        ?? correctAnswer.correctMindset
+        ?? correctAnswer.correctApproach
+        ?? correctAnswer.selectedApproach
+        ?? correctAnswer.betterMindsetId
+        ?? correctAnswer.preferredOptionId
+        ?? correctAnswer.optimalOptionId
+        ?? correctAnswer.optimalChoice
+        ?? correctAnswer.lowerRiskOptionId
+        ?? correctAnswer.correctPortfolio
+        ?? correctAnswer.correctPortfolioId
+        ?? correctAnswer.chosenStrategy
+        ?? correctAnswer.strategyWithHigherOpportunityCost
+        ?? correctAnswer.optionId
+        ?? correctAnswer.selectedOptionId
+        ?? correctAnswer.selectedProductId
+        ?? correctAnswer.selectedItemId
+        ?? correctAnswer.preferredOffer
+        ?? correctAnswer.chosenOffer
+        ?? correctAnswer.selectedOffer
+        ?? correctAnswer.correctMarket
+        ?? correctAnswer.correctCity
+        ?? correctAnswer.correctItem
+        ?? correctAnswer.selectedPriceId
+        ?? correctAnswer.selectedStoreId
+        ?? correctAnswer.cheaperItemId
+        ?? correctAnswer.correctCaseId
+        ?? correctAnswer.correctPlan
+        ?? correctAnswer.correctModel
+        ?? correctAnswer.correctProject
+        ?? correctAnswer.correctEntrepreneur
+        ?? correctAnswer.bestScenarioId
+        // ── spot_trap single-id aliases (the item to flag / the correct spot) ──
+        ?? correctAnswer.targetId
+        ?? correctAnswer.correctStatementId
+        ?? correctAnswer.incorrectStatementId
+        ?? correctAnswer.incorrectPlanId
+        ?? correctAnswer.incorrectOptionId
+        ?? correctAnswer.incorrectStepId
+        ?? correctAnswer.incorrectSegmentId
+        ?? correctAnswer.incorrectLineId
+        ?? correctAnswer.trapStepId
+        ?? correctAnswer.trapSegmentId
+        ?? correctAnswer.trapStatementId
+        ?? correctAnswer.trapOptionId
+        ?? correctAnswer.trapActionId
+        ?? correctAnswer.trapPlanId
+        ?? correctAnswer.trapCaseId
+        ?? correctAnswer.trapScenarioId
+        ?? correctAnswer.trapOfferId
+        ?? correctAnswer.trapItemId
+        ?? correctAnswer.correctReportId
+        ?? correctAnswer.correctZoneId
+        ?? correctAnswer.targetStepId
+        ?? correctAnswer.targetPlanId
+        ?? correctAnswer.trappedProfileId
+        ?? correctAnswer.segmentId
+        ?? correctAnswer.planId
+        ?? correctAnswer.portfolioId
         ?? correctAnswer.decision
         ?? correctAnswer.isCorrect;
+}
+
+/**
+ * Compara una respuesta de opción contra el id correcto de forma tolerante a
+ * esquemas de id distintos entre datos y componente.
+ * Ej.: el componente MindsetComparison emite ids 'A'/'B' pero el dato dice
+ * 'mindsetB'/'approachB'. Hacemos match exacto y, como respaldo, comparando
+ * tras quitar prefijos semánticos comunes en AMBOS lados.
+ */
+function optionIdMatches(answer: any, correctId: any): boolean {
+    const a = String(answer).trim();
+    const c = String(correctId).trim();
+    if (a === c) return true;
+    if (a.toLowerCase() === c.toLowerCase()) return true;
+    const strip = (s: string) =>
+        s.replace(/^(mindset|approach|option|opcion|plan|offer|oferta|strategy|strat|choice|item|product|producto)[\s_-]*/i, '').toLowerCase();
+    const sa = strip(a);
+    const sc = strip(c);
+    // Solo aceptar el match por sufijo cuando realmente removimos un prefijo en
+    // alguno de los dos (evita igualar cadenas no relacionadas) y el resto no es vacío.
+    if (sa && sc && sa === sc && (sa !== a.toLowerCase() || sc !== c.toLowerCase())) return true;
+    return false;
 }
 
 /** Intenta extraer un valor numérico correcto de correct_answer o content */
@@ -120,8 +206,11 @@ function extractCorrectText(correctAnswer: any, content?: any): string | undefin
             ?? correctAnswer.correctWord
             ?? correctAnswer.correctResponse
             ?? correctAnswer.answer
-            ?? correctAnswer.correctAnswer;
-        if (val !== undefined && val !== null) return String(val);
+            ?? correctAnswer.correctAnswer
+            ?? correctAnswer.solution
+            ?? correctAnswer.calculatedResult
+            ?? correctAnswer.value;
+        if (val !== undefined && val !== null && typeof val !== 'object') return String(val);
     }
     if (content !== null && typeof content === 'object') {
         const val = content.word
@@ -134,62 +223,104 @@ function extractCorrectText(correctAnswer: any, content?: any): string | undefin
     return undefined;
 }
 
-/** Normaliza classification correct_answer a Record<itemId, categoryId> */
+/** Construye un resolvedor clave-de-categoría -> cat.id canónico usando content.categories.
+ *  Permite que respuestas invertidas con clave por NOMBRE/slug (p.ej. {ETF:[...]} o
+ *  {"Atención":[...]}) se comparen contra el cat.id que el componente realmente emite. */
+function buildCategoryResolver(content?: any): (key: string) => string {
+    const cats = content?.categories;
+    if (!Array.isArray(cats)) return (k) => String(k);
+    const lookup: Record<string, string> = {};
+    cats.forEach((c: any) => {
+        const id = c?.id ?? c?.value;
+        if (id == null) return;
+        const sid = String(id);
+        lookup[sid.toLowerCase()] = sid;
+        [c?.name, c?.label, c?.title].forEach((n: any) => {
+            if (n != null) lookup[String(n).toLowerCase()] = sid;
+        });
+    });
+    return (k) => lookup[String(k).toLowerCase()] ?? String(k);
+}
+
+/** Construye Record<itemId, categoryId> a partir de un array de objetos
+ *  [{itemId, categoryId}, ...] (también item/id, category/catId, sectionId, columnId). */
+function classificationsFromArray(arr: any[], resolve: (k: string) => string): Record<string, string> | null {
+    const map: Record<string, string> = {};
+    arr.forEach((el: any) => {
+        if (!el || typeof el !== 'object') return;
+        const iid = el.itemId ?? el.item ?? el.id ?? el.elementId;
+        const cid = el.categoryId ?? el.category ?? el.catId ?? el.sectionId ?? el.columnId ?? el.bucketId;
+        if (iid != null && cid != null) map[String(iid)] = resolve(String(cid));
+    });
+    return Object.keys(map).length > 0 ? map : null;
+}
+
+/** Normaliza classification correct_answer a Record<itemId, categoryId>.
+ *  IMPORTANTE: las claves-wrapper nombradas y los arrays-de-objetos se detectan
+ *  ANTES de la detección genérica de formato invertido, para no mal-interpretar
+ *  { categoryAssignments:[...] } / { matches:[...] } como mapas invertidos. */
 function normalizeClassifications(correctAnswer: any, content?: any): Record<string, string> | null {
-    // Direct format: { itemId: categoryId }
+    const resolve = buildCategoryResolver(content);
+
+    // Array-of-objects: [{itemId, categoryId}, ...]
+    if (Array.isArray(correctAnswer)) {
+        return classificationsFromArray(correctAnswer, resolve);
+    }
+
     if (correctAnswer && typeof correctAnswer === 'object') {
+        // 1) Desenvolver claves-wrapper conocidas PRIMERO
+        const WRAPPERS = ['classifications', 'classification', 'categoryAssignments', 'assignments',
+            'categorizations', 'sectionAssignments', 'columnAssignments', 'itemCategoryMap',
+            'mappings', 'mapping', 'matches', 'categoryItems', 'itemsByCategory', 'categories',
+            'placement', 'categoryMatches'];
+        for (const w of WRAPPERS) {
+            if (correctAnswer[w] != null && typeof correctAnswer[w] === 'object') {
+                return normalizeClassifications(correctAnswer[w], content);
+            }
+        }
+
         const keys = Object.keys(correctAnswer);
         if (keys.length > 0) {
-            // Check if it's the inverted format: { categoryId: [itemIds] }
             const firstVal = (correctAnswer as any)[keys[0]];
+            // 2) Formato invertido: { categoryKey: [itemIds] } — resolver categoryKey -> cat.id
             if (Array.isArray(firstVal)) {
                 const inverted: Record<string, string> = {};
-                keys.forEach(catId => {
-                    const items = (correctAnswer as any)[catId];
+                keys.forEach(catKey => {
+                    const items = (correctAnswer as any)[catKey];
                     if (Array.isArray(items)) {
+                        const cid = resolve(catKey);
                         items.forEach((itemId: any) => {
-                            inverted[String(itemId)] = catId;
+                            const iid = (itemId && typeof itemId === 'object')
+                                ? (itemId.id ?? itemId.itemId)
+                                : itemId;
+                            if (iid != null) inverted[String(iid)] = cid;
                         });
                     }
                 });
-                return inverted;
+                return Object.keys(inverted).length > 0 ? inverted : null;
             }
-            // Check if it's direct format: { itemId: categoryId } (values are strings, not arrays)
+            // 3) Formato directo: { itemId: categoryId } (valores string) — resolver valores
             if (typeof firstVal === 'string') {
-                return correctAnswer as Record<string, string>;
+                const direct: Record<string, string> = {};
+                keys.forEach(itemId => {
+                    direct[String(itemId)] = resolve(String((correctAnswer as any)[itemId]));
+                });
+                return direct;
             }
-        }
-        // Nested classifications object
-        if (correctAnswer.classifications && typeof correctAnswer.classifications === 'object') {
-            return normalizeClassifications(correctAnswer.classifications, content);
-        }
-        if (correctAnswer.categoryAssignments && typeof correctAnswer.categoryAssignments === 'object') {
-            return normalizeClassifications(correctAnswer.categoryAssignments, content);
-        }
-        if (correctAnswer.itemCategoryMap && typeof correctAnswer.itemCategoryMap === 'object') {
-            return normalizeClassifications(correctAnswer.itemCategoryMap, content);
-        }
-        if (correctAnswer.mappings && typeof correctAnswer.mappings === 'object') {
-            return normalizeClassifications(correctAnswer.mappings, content);
-        }
-        if (correctAnswer.mapping && typeof correctAnswer.mapping === 'object') {
-            return normalizeClassifications(correctAnswer.mapping, content);
-        }
-        if (correctAnswer.matches && typeof correctAnswer.matches === 'object') {
-            return normalizeClassifications(correctAnswer.matches, content);
-        }
-        if (correctAnswer.categorizations && typeof correctAnswer.categorizations === 'object') {
-            return normalizeClassifications(correctAnswer.categorizations, content);
+            // 4) Valores objeto: intentar como array-de-objetos disfrazado
+            if (firstVal && typeof firstVal === 'object') {
+                const fromArr = classificationsFromArray(keys.map(k => (correctAnswer as any)[k]), resolve);
+                if (fromArr) return fromArr;
+            }
         }
     }
-    // Fallback: build from content.items.correctCategory or correctCategoryId
+
+    // 5) Fallback: construir desde content.items.correctCategory / correctCategoryId
     if (content?.items && Array.isArray(content.items)) {
         const built: Record<string, string> = {};
         content.items.forEach((item: any) => {
             const cat = item?.correctCategory ?? item?.correctCategoryId;
-            if (item?.id && cat) {
-                built[String(item.id)] = String(cat);
-            }
+            if (item?.id && cat) built[String(item.id)] = resolve(String(cat));
         });
         if (Object.keys(built).length > 0) return built;
     }
@@ -257,11 +388,65 @@ function stringMatch(a: string, b: string): boolean {
     return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
 }
 
+/** Extrae la lista ORDENADA de respuestas esperadas para fill_blank desde los
+ *  múltiples formatos reales de correct_answer/content. Los valores pueden ser
+ *  textos o ids de palabra según el dato (el caso compara contra ambas formas). */
+function fillBlankExpected(correctAnswer: any, content?: any): string[] | null {
+    const out: string[] = [];
+    const pushVal = (x: any) => {
+        if (x == null) return;
+        if (typeof x === 'object') {
+            const t = x.text ?? x.correctText ?? x.correctWord ?? x.answer ?? x.word ?? x.wordId ?? x.id;
+            if (t != null) out.push(String(t));
+        } else out.push(String(x));
+    };
+    if (correctAnswer && typeof correctAnswer === 'object' && !Array.isArray(correctAnswer)) {
+        const arrKey = correctAnswer.blanks ?? correctAnswer.blankValues ?? correctAnswer.values
+            ?? correctAnswer.filledBlanks ?? correctAnswer.words ?? correctAnswer.answers
+            ?? correctAnswer.gaps ?? correctAnswer.phrases ?? correctAnswer.correctSequence
+            ?? correctAnswer.correctOrder ?? correctAnswer.correctBlanks ?? correctAnswer.sequence
+            ?? correctAnswer.solution ?? correctAnswer.correctWords;
+        if (Array.isArray(arrKey)) arrKey.forEach(pushVal);
+        if (out.length === 0 && Array.isArray(correctAnswer.blankAnswers)) {
+            correctAnswer.blankAnswers.forEach((b: any) => pushVal(b?.answer ?? b?.text ?? b?.correctText ?? b?.wordId));
+        }
+        if (out.length === 0 && Array.isArray(correctAnswer.blankAssignments)) {
+            correctAnswer.blankAssignments.forEach((b: any) => pushVal(b?.wordId ?? b?.answer ?? b?.text));
+        }
+        // numeric / blankN / bN / __N__ / PN keys, ordered numerically
+        if (out.length === 0) {
+            const numKeys = Object.keys(correctAnswer).filter(k => /^(blank|b|gap|w|__|p|palabra|falta)?_?\d+_?_?$/i.test(k));
+            if (numKeys.length > 0) {
+                numKeys.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                    .forEach(k => pushVal((correctAnswer as any)[k]));
+            }
+        }
+        // single text keys (whole-blank / whole-template)
+        if (out.length === 0) {
+            const single = correctAnswer.text ?? correctAnswer.correctText ?? correctAnswer.word
+                ?? correctAnswer.correctWord ?? correctAnswer.correctOption ?? correctAnswer.correctResponse
+                ?? correctAnswer.value ?? correctAnswer.answer ?? correctAnswer.correctAnswer
+                ?? correctAnswer.filledText ?? correctAnswer.filledTemplate ?? correctAnswer.phrase
+                ?? correctAnswer.blank ?? correctAnswer.filledWord;
+            if (single != null) pushVal(single);
+        }
+    } else if (Array.isArray(correctAnswer)) {
+        correctAnswer.forEach(pushVal);
+    } else if (typeof correctAnswer === 'string' || typeof correctAnswer === 'number') {
+        pushVal(correctAnswer);
+    }
+    if (out.length === 0 && Array.isArray(content?.blanks)) {
+        content.blanks.forEach((b: any) => pushVal(typeof b === 'object'
+            ? (b.correctText ?? b.correctWord ?? b.text ?? b.answer ?? b.word) : b));
+    }
+    return out.length > 0 ? out : null;
+}
+
 // ============================================================
 // HELPER: Validar respuesta según tipo de ejercicio
 // Cada tipo de actividad tiene su propia lógica de validación.
 // ============================================================
-function validateAnswer(exercise: ExerciseData, answer: any): boolean {
+export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
     const type = exercise.type;
     const content = exercise.content as any;
     const correctAnswer = exercise.correct_answer as any;
@@ -281,8 +466,15 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'case_real':
         case 'case_study':
         case 'decision_challenge': {
+            // Multi-answer shape (rare): the user must pick exactly this set of ids.
+            const multi = correctAnswer?.correctOptionIds ?? correctAnswer?.correctChoiceIds ?? correctAnswer?.trueOptionIds;
+            if (Array.isArray(multi)) {
+                const want = new Set(multi.map((x: any) => String(x)));
+                const got = new Set((Array.isArray(answer) ? answer : [answer]).map((x: any) => String(x)));
+                return want.size === got.size && [...want].every(id => got.has(id));
+            }
             const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) return String(answer) === String(correctId);
+            if (correctId !== undefined) return optionIdMatches(answer, correctId);
             // Fallback for types that don't have explicit correct_answer
             return true;
         }
@@ -307,45 +499,62 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends Record<number|string, string> mapping blank index/id to word id
         // OR a plain string for free text input
         case 'fill_blank': {
-            // If answer is a string (free text input), compare directly
+            const expected = fillBlankExpected(correctAnswer, content);
+
+            // Build the user's filled values, both raw and resolved-to-text.
+            let userRaw: string[];
+            let userText: string[];
             if (typeof answer === 'string') {
-                const correctText = extractCorrectText(correctAnswer, content);
-                if (correctText === undefined) return false;
-                return stringMatch(answer, correctText);
+                const s = answer.trim();
+                userRaw = s ? [s] : [];
+                userText = userRaw;
+            } else if (Array.isArray(answer)) {
+                userRaw = answer.map((x: any) => String(x));
+                userText = userRaw;
+            } else if (answer && typeof answer === 'object') {
+                // word-bank: { blankId: wordId } — resolve wordId -> option text when possible
+                const opts = content?.options;
+                const idToText: Record<string, string> = {};
+                if (Array.isArray(opts)) opts.forEach((o: any) => {
+                    if (o && typeof o === 'object' && o.id != null) idToText[String(o.id)] = String(o.text ?? o.label ?? o.id);
+                });
+                const keys = Object.keys(answer).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+                userRaw = keys.map(k => String((answer as any)[k]));
+                userText = userRaw.map(v => idToText[v] ?? v);
+            } else {
+                userRaw = answer != null ? [String(answer)] : [];
+                userText = userRaw;
             }
-            // Word bank / blank mapping mode
-            const correctBlanks = correctAnswer?.blank_ids
-                || correctAnswer?.blanks
-                || correctAnswer?.blankAssignments
-                || correctAnswer?.filledBlanks
-                || {};
-            const userBlanks = answer as Record<string, string>;
 
-            const correctKeys = Object.keys(correctBlanks);
-            if (correctKeys.length === 0) {
-                // If no explicit blank mapping, try to validate against correct text
-                const correctText = extractCorrectText(correctAnswer, content);
-                if (correctText !== undefined) {
-                    const userValues = Object.values(userBlanks).join(' ').trim();
-                    return stringMatch(userValues, correctText);
+            if (!expected) {
+                // Legacy explicit blank-id map { blankId: wordId }
+                const correctBlanks = correctAnswer?.blank_ids;
+                if (correctBlanks && typeof correctBlanks === 'object') {
+                    const ck = Object.keys(correctBlanks).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+                    const exp = ck.map(k => String(correctBlanks[k]));
+                    return exp.length === userRaw.length && exp.every((e, i) => stringMatch(e, userRaw[i]));
                 }
-                return false;
+                // No way to grade → accept (avoid false negatives on ungradeable lessons)
+                return true;
             }
 
-            // Try direct key matching first
-            const directMatch = correctKeys.every(key => userBlanks[key] === correctBlanks[key]);
-            if (directMatch) return true;
+            const norm = (s: string) => String(s).trim().toLowerCase();
+            const matchLists = (exp: string[], got: string[]): boolean => {
+                if (got.length === 0) return false;
+                // Single combined free-text answer vs multiple expected blanks
+                if (got.length === 1 && exp.length > 1) {
+                    const joined = norm(got[0]);
+                    if (joined === norm(exp.join(' '))) return true;
+                    const parts = got[0].split(/[,;]+|\s+/).map(norm).filter(Boolean);
+                    if (parts.length === exp.length && exp.every((e, i) => parts[i] === norm(e))) return true;
+                    return exp.every(e => joined.includes(norm(e)));
+                }
+                if (exp.length === got.length) return exp.every((e, i) => norm(e) === norm(got[i]));
+                return false;
+            };
 
-            // Fallback: match by position (sort both and compare values)
-            const correctValues = correctKeys
-                .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }))
-                .map(k => correctBlanks[k]);
-            const userKeys = Object.keys(userBlanks)
-                .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
-            const userValues = userKeys.map(k => userBlanks[k]);
-
-            return correctValues.length === userValues.length &&
-                correctValues.every((val: string, idx: number) => val === userValues[idx]);
+            // Data may store texts OR word ids — accept a match against either form.
+            return matchLists(expected, userText) || matchLists(expected, userRaw);
         }
 
         // ─── SEQUENCING / CONCEPT BUILDER / GOAL ROADMAP ───
@@ -353,11 +562,31 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'sequencing':
         case 'concept_builder':
         case 'goal_roadmap': {
-            const correctSequence = correctAnswer?.sequence
+            // concept_builder multi-select subset shapes: pick exactly this set of ids.
+            if (type === 'concept_builder') {
+                const subset = correctAnswer?.correctOptionIds ?? correctAnswer?.selectedIds
+                    ?? correctAnswer?.componentIds ?? correctAnswer?.correctComponentIds
+                    ?? correctAnswer?.essentialIds ?? correctAnswer?.correctConceptIds
+                    ?? correctAnswer?.requiredIds ?? correctAnswer?.correctIds
+                    ?? correctAnswer?.correctComponents ?? correctAnswer?.correctStatementIds;
+                if (Array.isArray(subset)) {
+                    const want = new Set(subset.map((x: any) => String(x)));
+                    const got = new Set((Array.isArray(answer) ? answer : [answer]).map((x: any) => String(x)));
+                    return want.size === got.size && [...want].every(id => got.has(id));
+                }
+            }
+            let correctSequence = correctAnswer?.sequence
                 || correctAnswer?.correctSequence
                 || correctAnswer?.order
                 || correctAnswer?.correctOrder
                 || [];
+            // goal_roadmap often stores the order in content.correct_sequence as
+            // [{actionId, position}, ...] with a null correct_answer.
+            if ((!correctSequence || correctSequence.length === 0) && Array.isArray(content?.correct_sequence)) {
+                correctSequence = [...content.correct_sequence]
+                    .sort((a: any, b: any) => Number(a?.position ?? 0) - Number(b?.position ?? 0))
+                    .map((s: any) => String(s?.actionId ?? s?.id ?? s));
+            }
             const userSequence = answer as string[];
             if (!Array.isArray(userSequence)) return false;
             if (correctSequence.length > 0) {
@@ -418,11 +647,22 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends string (user's numeric input)
         case 'math_challenge': {
             const userStr = String(answer).trim();
+            // Option-based math_challenge: content carries choices/options and the answer
+            // is an option id (non-numeric). Resolve via extractCorrectId.
+            if (!/^-?\d*\.?\d+$/.test(userStr)) {
+                const optId = extractCorrectId(correctAnswer);
+                if (optId !== undefined) return optionIdMatches(userStr, optId);
+            }
             const correctValue = extractCorrectNumeric(correctAnswer, content);
-            if (correctValue === undefined) {
-                // Try text-based fallback
+            if (correctValue === undefined || isNaN(correctValue)) {
+                // Non-numeric correct answer (e.g. "sí", "Subió", "5, 3, 2") → text compare.
                 const correctText = extractCorrectText(correctAnswer, content);
-                if (correctText !== undefined) return stringMatch(userStr, correctText);
+                if (correctText !== undefined) {
+                    if (stringMatch(userStr, correctText)) return true;
+                    // Lenient compare for multi-number / separator-formatted answers.
+                    const norm = (s: string) => String(s).replace(/[\s,;]+/g, ',').replace(/,+$/, '').toLowerCase();
+                    return norm(userStr) === norm(correctText);
+                }
                 return false;
             }
             const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
@@ -447,81 +687,101 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── ESTIMATION SLIDER ───
         // Component sends number (slider value)
         case 'estimation_slider': {
-            // Range-based: correctRangeId comparison
+            const userVal = Number(answer);
+            // Range-based: correctRangeId comparison against content.ranges
             const correctRangeId = correctAnswer?.correctRangeId ?? correctAnswer?.rangeId;
             if (correctRangeId !== undefined && content?.ranges && Array.isArray(content.ranges)) {
-                const userVal = Number(answer);
                 const targetRange = content.ranges.find((r: any) => r.id === correctRangeId);
                 if (targetRange) {
                     const min = Number(targetRange.minValue ?? targetRange.min ?? -Infinity);
                     const max = Number(targetRange.maxValue ?? targetRange.max ?? Infinity);
                     return userVal >= min && userVal <= max;
                 }
-                // Fallback: direct string comparison if range not found
                 return String(answer) === String(correctRangeId);
             }
-            // Numeric value comparison
-            const correctVal = extractCorrectNumeric(correctAnswer, content);
-            if (correctVal === undefined) {
-                // Fallback: some JSONs use { range: { min, max } }
-                const range = correctAnswer?.range ?? content?.range;
-                if (range && typeof range === 'object') {
-                    const userVal = Number(answer);
-                    return userVal >= Number(range.min ?? 0) && userVal <= Number(range.max ?? 100);
+
+            // Range answer in object {min,max}/{low,high}, array [min,max], or split keys.
+            const toRange = (r: any): [number, number] | null => {
+                if (Array.isArray(r) && r.length >= 2) return [Number(r[0]), Number(r[1])];
+                if (r && typeof r === 'object') {
+                    const lo = r.min ?? r.low ?? r.start ?? r.rangeStart ?? r.minValue;
+                    const hi = r.max ?? r.high ?? r.end ?? r.rangeEnd ?? r.maxValue;
+                    if (lo !== undefined && hi !== undefined) return [Number(lo), Number(hi)];
                 }
-                return false;
+                return null;
+            };
+            const pairToRange = (lo: any, hi: any) =>
+                (lo !== undefined && hi !== undefined) ? { min: lo, max: hi } : undefined;
+            const rangeCandidate =
+                correctAnswer?.range ?? correctAnswer?.correctRange ?? correctAnswer?.correct_range
+                ?? content?.range ?? content?.correctRange ?? content?.correct_range
+                ?? pairToRange(correctAnswer?.min, correctAnswer?.max)
+                ?? pairToRange(correctAnswer?.rangeStart, correctAnswer?.rangeEnd)
+                ?? pairToRange(content?.correct_range_start, content?.correct_range_end);
+            const rng = toRange(rangeCandidate);
+            if (rng && !isNaN(rng[0]) && !isNaN(rng[1])) {
+                return userVal >= rng[0] && userVal <= rng[1];
             }
-            const tolerance = Number(correctAnswer?.tolerance ?? content?.tolerance ?? 10);
-            return numericMatch(Number(answer), correctVal, tolerance);
+
+            // Numeric value comparison (with tolerance)
+            const correctVal = extractCorrectNumeric(correctAnswer, content)
+                ?? (content?.correct_value !== undefined ? Number(content.correct_value) : undefined);
+            if (correctVal !== undefined && !isNaN(correctVal)) {
+                const tolerance = Number(correctAnswer?.tolerance ?? content?.tolerance ?? 10);
+                return numericMatch(userVal, correctVal, tolerance);
+            }
+
+            // Zone-based: targetZone high/low/mid relative to the slider extent.
+            const zone = correctAnswer?.targetZone ?? content?.targetZone;
+            if (zone) {
+                const sMin = Number(content?.sliderMin ?? content?.min ?? 0);
+                const sMax = Number(content?.sliderMax ?? content?.max ?? 100);
+                const span = (sMax - sMin) || 100;
+                const z = String(zone).toLowerCase();
+                if (z.includes('high') || z.includes('alt')) return userVal >= sMin + span * 0.6;
+                if (z.includes('low') || z.includes('baj')) return userVal <= sMin + span * 0.4;
+                return userVal > sMin + span * 0.3 && userVal < sMin + span * 0.7;
+            }
+
+            // No correct-answer info at all → exploratory estimate, accept (do NOT
+            // mark a correct guess wrong just because the lesson omitted a target).
+            return true;
         }
 
         // ─── SPOT THE TRAP ───
         // Component sends string[] of selected trap IDs
         case 'spot_trap': {
-            const selectedTraps = new Set(Array.isArray(answer) ? answer : [String(answer)]);
-            // Try explicit trap IDs from correct_answer
-            let correctTraps: Set<string> = new Set();
-            if (correctAnswer?.trapIds && Array.isArray(correctAnswer.trapIds)) {
-                correctAnswer.trapIds.forEach((id: any) => correctTraps.add(String(id)));
+            const selectedTraps = new Set((Array.isArray(answer) ? answer : [answer]).map((x: any) => String(x)));
+            const correctTraps: Set<string> = new Set();
+            const addAll = (v: any) => {
+                if (Array.isArray(v)) v.forEach((id: any) => correctTraps.add(String(id)));
+                else if (v !== undefined && v !== null) correctTraps.add(String(v));
+            };
+            // Array / list id keys that denote the item(s) to flag as traps.
+            [correctAnswer?.trapIds, correctAnswer?.correctTrapIds, correctAnswer?.correctTraps,
+            correctAnswer?.targetIds, correctAnswer?.correctOptionIds, correctAnswer?.redFlagIds,
+            correctAnswer?.trapsFound, correctAnswer?.trapSegmentIds, correctAnswer?.trapLineIds]
+                .forEach(addAll);
+
+            // Single-id shapes: correctOptionId, trapId, correctTrapId, targetId,
+            // incorrect*Id, trap*Id, etc. — all resolved centrally via extractCorrectId.
+            if (correctTraps.size === 0) {
+                const singleId = extractCorrectId(correctAnswer);
+                if (singleId !== undefined) {
+                    return selectedTraps.size === 1 && selectedTraps.has(String(singleId));
+                }
             }
-            if (correctAnswer?.correctTrapIds && Array.isArray(correctAnswer.correctTrapIds)) {
-                correctAnswer.correctTrapIds.forEach((id: any) => correctTraps.add(String(id)));
-            }
-            if (correctAnswer?.correctTraps && Array.isArray(correctAnswer.correctTraps)) {
-                correctAnswer.correctTraps.forEach((id: any) => correctTraps.add(String(id)));
-            }
-            if (correctAnswer?.correctTrapId) {
-                correctTraps.add(String(correctAnswer.correctTrapId));
-            }
-            if (correctAnswer?.trapId) {
-                correctTraps.add(String(correctAnswer.trapId));
-            }
-            if (correctAnswer?.targetIds && Array.isArray(correctAnswer.targetIds)) {
-                correctAnswer.targetIds.forEach((id: any) => correctTraps.add(String(id)));
-            }
-            if (correctAnswer?.trapIds && typeof correctAnswer.trapIds === 'string') {
-                correctTraps.add(String(correctAnswer.trapIds));
-            }
-            if (correctTraps.size > 0) {
-                return selectedTraps.size === correctTraps.size &&
-                    [...selectedTraps].every(id => correctTraps.has(id));
-            }
-            // Fallback: build trap IDs from content.scenarios or content.messages
-            if (Array.isArray(content?.scenarios)) {
-                content.scenarios.forEach((s: any) => {
-                    if (s.isTrap && s.id) correctTraps.add(String(s.id));
+
+            // Fallback: derive trap ids from content items flagged isTrap (any container).
+            if (correctTraps.size === 0) {
+                [content?.scenarios, content?.messages, content?.plans, content?.statements,
+                content?.items, content?.segments, content?.options].forEach((arr: any) => {
+                    if (Array.isArray(arr)) arr.forEach((s: any) => {
+                        if ((s?.isTrap || s?.isCorrect) && s?.id) correctTraps.add(String(s.id));
+                    });
                 });
             }
-            if (Array.isArray(content?.messages)) {
-                content.messages.forEach((m: any) => {
-                    if (m.isTrap && m.id) correctTraps.add(String(m.id));
-                });
-            }
-            if (Array.isArray(content?.plans)) {
-                content.plans.forEach((p: any) => {
-                    if (p.isTrap && p.id) correctTraps.add(String(p.id));
-                });
-            }
+
             if (correctTraps.size === 0) return false;
             return selectedTraps.size === correctTraps.size &&
                 [...selectedTraps].every(id => correctTraps.has(id));
@@ -538,26 +798,30 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── SHOP SIM ───
         // Component sends string[] (cart item IDs) OR string (single selected item)
         case 'shop_sim': {
-            // Single selection mode
+            const userItems = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
+            // Single selection mode (correctId resolves optionId/selectedProductId/selectedId/…)
             const correctId = extractCorrectId(correctAnswer);
             if (correctId !== undefined) {
-                return String(answer) === String(correctId);
+                return userItems.size === 1 && optionIdMatches([...userItems][0], correctId);
             }
-            // Multi-selection mode with correctItems
-            if (correctAnswer?.correctItems && Array.isArray(correctAnswer.correctItems)) {
-                const correctItems = new Set<string>(correctAnswer.correctItems.map(String));
-                const userItems = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
-                return correctItems.size === userItems.size &&
-                    [...correctItems].every(id => userItems.has(id));
+            // Multi-selection: exact id-set (correctItems / selectedIds / selectedProductIds / shopItems)
+            const idList = correctAnswer?.correctItems ?? correctAnswer?.selectedIds
+                ?? correctAnswer?.selectedProductIds ?? correctAnswer?.shopItems;
+            if (Array.isArray(idList)) {
+                const want = new Set<string>(idList.map(String));
+                return want.size === userItems.size && [...want].every(id => userItems.has(id));
             }
-            // Legacy shopItems
-            const correctItems = new Set<string>(
-                (correctAnswer?.shopItems || []).map(String)
-            );
-            const userItems = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
-            if (correctItems.size > 0) {
-                return correctItems.size === userItems.size &&
-                    [...correctItems].every(id => userItems.has(id));
+            // Any of several acceptable combinations
+            if (Array.isArray(correctAnswer?.validCombinations)) {
+                return correctAnswer.validCombinations.some((combo: any[]) =>
+                    Array.isArray(combo) && combo.length === userItems.size &&
+                    combo.every((id: any) => userItems.has(String(id)))
+                );
+            }
+            // Price-choice exercises: the selected value(s) must be among correctPrices.
+            if (Array.isArray(correctAnswer?.correctPrices)) {
+                const want = correctAnswer.correctPrices.map(String);
+                return userItems.size > 0 && [...userItems].every(id => want.includes(String(id)));
             }
             // Validate total if specified
             const expectedTotal = extractCorrectNumeric(correctAnswer, content);
@@ -662,23 +926,23 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // ─── EMERGENCY FUND ───
         // Component sends Record<string, string> (eventId -> decisionId)
         case 'emergency_fund': {
-            // Support both array and object formats
-            const decisions = Array.isArray(answer)
-                ? answer
-                : Object.values(answer || {});
-            const initialFund = content?.initialFund || 5000;
             const events = content?.events || [];
-            let balance = initialFund;
-            decisions.forEach((decisionId: any, eventIndex: number) => {
-                const event = events[eventIndex];
-                if (event) {
-                    const option = event.options?.find((opt: any) => opt.id === decisionId);
-                    if (option) {
-                        balance -= option.cost || 0;
-                    }
-                }
+            if (!Array.isArray(events) || events.length === 0) return true;
+            // Map decisions to events BY event.id (object form) or by index (array form).
+            // The component keys its answer object by event.id, so Object.values()
+            // ordering was unreliable — look up each event's own decision instead.
+            const userMap = (answer && typeof answer === 'object' && !Array.isArray(answer))
+                ? answer as Record<string, string>
+                : null;
+            const userArr = Array.isArray(answer) ? answer : null;
+            let balance = Number(content?.initialFund ?? content?.initialBalance ?? 5000);
+            events.forEach((event: any, i: number) => {
+                const decisionId = userMap ? userMap[event.id] : (userArr ? userArr[i] : undefined);
+                const option = event.options?.find((opt: any) => String(opt.id) === String(decisionId));
+                if (option) balance -= Number(option.cost || 0);
             });
-            return balance >= 0;
+            const minBalance = Number(correctAnswer?.minBalance ?? correctAnswer?.minFund ?? 0);
+            return balance >= minBalance;
         }
 
         // ─── SALARY COMPARISON ───
@@ -694,7 +958,11 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'portfolio_builder': {
             const correctId = extractCorrectId(correctAnswer);
             if (correctId !== undefined) {
-                return String(answer) === String(correctId);
+                // OPTIONS mode submits { [selectedOptionId]: 100 }; ASSETS mode a string id.
+                const picked = (answer && typeof answer === 'object' && !Array.isArray(answer))
+                    ? Object.keys(answer)[0]
+                    : answer;
+                return optionIdMatches(picked, correctId);
             }
             // Allocation validation: sum must be ~100%
             const allocation = answer as Record<string, number>;
@@ -720,7 +988,14 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends number (quiz score)
         case 'quiz_battle': {
             const score = Number(answer);
-            const minScore = correctAnswer?.minScore || 200;
+            // The component awards >=100 points per correct answer (QuizBattle.tsx),
+            // so the old hardcoded default of 200 was UNREACHABLE for single-question
+            // quizzes. Derive a reachable threshold from the number of questions:
+            // a perfect run scores >= questionCount * 100.
+            const questionCount = Array.isArray(content?.questions) && content.questions.length > 0
+                ? content.questions.length
+                : 1;
+            const minScore = Number(correctAnswer?.minScore ?? questionCount * 100);
             return score >= minScore;
         }
 
@@ -728,23 +1003,29 @@ function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends Record<string, number> (box ID to coin count) or boolean
         case 'mystery_investment': {
             if (typeof answer === 'boolean') return answer;
-            const allocation = answer as Record<string, number>;
+            const allocation = (answer && typeof answer === 'object') ? answer as Record<string, number> : {};
             const boxesUsed = Object.values(allocation).filter(v => Number(v) > 0).length;
-            const minBoxes = correctAnswer?.minBoxes || 2;
-            return boxesUsed >= minBoxes;
+            // Exploratory simulator: only gate on minBoxes when the lesson explicitly
+            // sets it; otherwise just require that the user actually invested.
+            const minBoxes = correctAnswer?.minBoxes;
+            if (minBoxes !== undefined && minBoxes !== null) return boxesUsed >= Number(minBoxes);
+            return boxesUsed >= 1;
         }
 
         // ─── INTEREST CALCULATOR ───
         // Component sends { principal, rate, time } or number/string
         case 'interest_calculator': {
+            // The calculator/slider sends an object {principal, rate, time}; it is an
+            // exploratory simulator with no single 'correct' id, so accept the object.
+            // (Coercing it to a number/id produced NaN/false → false negatives before.)
+            if (answer && typeof answer === 'object') return true;
             const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) return String(answer) === String(correctId);
+            if (correctId !== undefined) return optionIdMatches(answer, correctId);
             const correctVal = extractCorrectNumeric(correctAnswer, content);
             if (correctVal !== undefined) {
                 const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
                 return numericMatch(Number(answer), correctVal, tolerance);
             }
-            // If it's an object with calculation fields, trust the component
             return true;
         }
 

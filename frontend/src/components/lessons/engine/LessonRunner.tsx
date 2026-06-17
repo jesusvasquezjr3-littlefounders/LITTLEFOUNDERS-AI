@@ -58,6 +58,7 @@ import { GoalRoadmap } from './activities/GoalRoadmap';
 import { MindsetComparison } from './activities/MindsetComparison';
 import { PassiveIncome } from './activities/PassiveIncome';
 import { QuizBattle } from './activities/QuizBattle';
+import { GenericChoice } from './activities/GenericChoice';
 import { LessonCelebration } from './LessonCelebration';
 import { StreakCelebration } from '@/components/ui/StreakCelebration';
 import { getGuestProfile, updateGuestProfile } from '@/lib/guestProfile';
@@ -260,13 +261,20 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         return isCorrect;
     }, [submitAnswer, playSound, playNarrativeFeedback]);
 
-    /** Simulator submit: always succeeds, no life penalty */
+    /** Simulator submit: reflects the REAL result (so the component and the runner
+     *  agree — no more "confetti + success" while the card shows "retry"), but never
+     *  costs a life. Exploratory types validate to true, so they still always succeed. */
     const handleSimulatorSubmit = useCallback((answer: any): boolean => {
         const isCorrect = submitAnswer(answer);
-        playSound('edu_success');
-        confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 }, disableForReducedMotion: true });
-        setLocalFeedback('success');
-        playNarrativeFeedback(true);
+        if (isCorrect) {
+            playSound('edu_success');
+            confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 }, disableForReducedMotion: true });
+            setLocalFeedback('success');
+        } else {
+            playSound('edu_error');
+            setLocalFeedback('error');
+        }
+        playNarrativeFeedback(isCorrect);
         return isCorrect;
     }, [submitAnswer, playSound, playNarrativeFeedback]);
 
@@ -921,6 +929,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                         key={currentExerciseIndex}
                         exercise={currentExercise}
                         onNext={handleNext}
+                        onSubmit={handleSimulatorSubmit}
                         isAudioPlaying={isNarrativeAudioPlaying}
                     />
                 )}
@@ -1370,6 +1379,21 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     />
                 )}
 
+                {/* ===== COMPARISON / CASE / DECISION (generic single-choice) ===== */}
+                {[
+                    'comparison', 'compare', 'comparison_chart', 'comparison_table',
+                    'comparison_slider', 'comparison_matrix', 'comparison_challenge',
+                    'case_study', 'case_real', 'decision_challenge', 'decision_matrix'
+                ].includes(currentExercise?.type || '') && (
+                    <GenericChoice
+                        key={currentExerciseIndex}
+                        exercise={currentExercise}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
+                    />
+                )}
+
                 {/* ===== FALLBACK: Unsupported / Unmapped Exercise Type ===== */}
                 {currentExercise && ![
                     'story_mode', 'intro_narrative', 'multiple_choice', 'true_false',
@@ -1382,7 +1406,10 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                     'portfolio_builder', 'mystery_investment', 'passive_income',
                     'opportunity_cost', 'market_reaction', 'inflation_simulator',
                     'credit_score', 'debt_strategy', 'tax_puzzle', 'salary_comparison',
-                    'spot_trap', 'impact_meter', 'mindset_comparison'
+                    'spot_trap', 'impact_meter', 'mindset_comparison',
+                    'comparison', 'compare', 'comparison_chart', 'comparison_table',
+                    'comparison_slider', 'comparison_matrix', 'comparison_challenge',
+                    'case_study', 'case_real', 'decision_challenge', 'decision_matrix'
                 ].includes(currentExercise.type) && (
                     <div className="w-full max-w-md mx-auto animate-slide-in-bottom">
                         <div className="lp-card p-8 text-center space-y-4">

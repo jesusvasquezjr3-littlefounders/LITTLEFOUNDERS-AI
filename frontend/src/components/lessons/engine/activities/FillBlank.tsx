@@ -32,12 +32,31 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     const statement = content.statement || '';
     const hint = content.hint || '';
 
-    // Build segments from statement if using real JSON format
-    const segments = hasLegacyFormat
+    // How many blanks the answer expects (used when the statement has no ____ tokens).
+    const expectedBlankCount = (): number => {
+        const ca = exercise?.correct_answer || {};
+        for (const k of ['blanks', 'values', 'words', 'filledBlanks', 'answers', 'gaps', 'correctSequence', 'correctOrder', 'correctBlanks']) {
+            if (Array.isArray(ca[k]) && ca[k].length > 0) return ca[k].length;
+        }
+        const numKeys = Object.keys(ca).filter((k) => /^(blank|b|gap|w|__|p)?_?\d+_?_?$/i.test(k));
+        if (numKeys.length > 0) return numKeys.length;
+        return 1;
+    };
+
+    // Build segments from statement if using real JSON format.
+    let segments = hasLegacyFormat
         ? content.segments
-        : (statement
-            ? parseStatementToSegments(statement)
-            : []);
+        : (statement ? parseStatementToSegments(statement) : []);
+
+    // Word-bank exercises whose statement has NO ____ tokens: synthesize blank slots
+    // so the picked words have somewhere to land (otherwise the activity is unanswerable).
+    if (hasWordBank && !hasLegacyFormat && !segments.some((s: any) => s.type === 'blank')) {
+        const n = expectedBlankCount();
+        const synthetic: Array<{ type: 'text' | 'blank'; text?: string; id?: string }> = [];
+        if (statement) synthetic.push({ type: 'text', text: statement + ' ' });
+        for (let i = 0; i < n; i++) synthetic.push({ type: 'blank', id: `blank-${i}` });
+        segments = synthetic;
+    }
 
     useEffect(() => {
         setTextInput('');

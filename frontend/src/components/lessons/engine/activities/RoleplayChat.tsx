@@ -58,7 +58,8 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
         }
 
         setMessages(initialMessages);
-        setChoices(content.options || []);
+        // Choices may live under options / choices / responseOptions / chatOptions.
+        setChoices(content.options || content.choices || content.responseOptions || content.chatOptions || []);
         setOutputState();
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);

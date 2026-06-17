@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 const HUES = ['indigo', 'amber', 'emerald', 'coral'] as const;
 
@@ -29,16 +30,20 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
     }, [exercise]);
 
     const content = exercise?.content || {};
-    const rawProducts = content.products || content.items || [];
+    // Items may live under products/items/options/prices/stores/cases/markets/cities or
+    // pairwise itemA-itemB / marketA-marketB / cityA-cityB shapes.
+    const rawProducts = resolveOptions(content, ['products', 'items', 'options', 'prices', 'stores', 'cases', 'markets', 'cities']);
     // Normalize items to product shape
     const products = rawProducts.map((p: any) => ({
         id: p.id,
-        name: p.name || p.label || '',
-        price: typeof p.price === 'number' ? p.price : parseFloat(String(p.price).replace(/[^0-9.]/g, '')) || 0,
+        name: p.name || p.label || p.text || '',
+        price: typeof p.price === 'number' ? p.price : parseFloat(String(p.price ?? '').replace(/[^0-9.]/g, '')) || 0,
         quantity: p.quantity || 1,
         unit: p.unit || 'unidad',
         icon: p.icon || '🔍',
     }));
+    // Some price_detective lessons are plain choices (no per-unit price data).
+    const hasPriceData = products.some((p: any) => p.price > 0);
 
     const calculateUnitPrice = (product: any) => {
         return (product.price / product.quantity).toFixed(2);
@@ -78,7 +83,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
         <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Detective Tool */}
-            {!showUnitPrices && feedback === 'none' && (
+            {hasPriceData && !showUnitPrices && feedback === 'none' && (
                 <div className="mb-8 flex justify-center">
                     <QuestButton variant="brand" onClick={handleInvestigate} className="w-auto px-8">
                         <Search className="w-6 h-6" />
@@ -125,10 +130,12 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                             </div>
 
                             {/* Price Tag */}
-                            <div className="rounded-xl p-3 mb-3 text-white" style={{ background: 'var(--lp-emerald)', boxShadow: 'inset 0 -3px 0 var(--lp-emerald-lip)' }}>
-                                <div className="text-xs font-medium opacity-90">{t('price_detective.total_price')}</div>
-                                <div className="lp-display text-2xl">${product.price.toFixed(2)}</div>
-                            </div>
+                            {hasPriceData && (
+                                <div className="rounded-xl p-3 mb-3 text-white" style={{ background: 'var(--lp-emerald)', boxShadow: 'inset 0 -3px 0 var(--lp-emerald-lip)' }}>
+                                    <div className="text-xs font-medium opacity-90">{t('price_detective.total_price')}</div>
+                                    <div className="lp-display text-2xl">${product.price.toFixed(2)}</div>
+                                </div>
+                            )}
 
                             {/* Unit Price Reveal */}
                             <div className={cn(
@@ -163,7 +170,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
             <div className="flex justify-center">
                 {feedback === 'none' ? (
                     <div className="w-full max-w-md">
-                        <QuestButton variant="gold" disabled={!selectedId || !showUnitPrices} onClick={handleCheck}>
+                        <QuestButton variant="gold" disabled={!selectedId || (hasPriceData && !showUnitPrices)} onClick={handleCheck}>
                             {t('actions.verify')}
                         </QuestButton>
                     </div>

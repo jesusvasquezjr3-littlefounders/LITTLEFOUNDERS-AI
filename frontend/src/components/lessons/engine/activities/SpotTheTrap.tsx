@@ -28,22 +28,26 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
         setFallbackSelection('');
     }, [exercise]);
 
-    // 1. Try legacy messages format
-    // 2. Fall back to scenarios format and map to message shape
-    const rawMessages = exercise.content?.messages;
-    const rawScenarios = exercise.content?.scenarios;
+    // Selectable items can live under many content keys across the real corpus.
+    // Pick the first present container and normalize to the message shape so the
+    // exercise always renders (options/choices stay as the fallback mode below).
+    const CONTAINER_KEYS = [
+        'messages', 'scenarios', 'traps', 'statements', 'items', 'plans',
+        'planSteps', 'segments', 'textSegments', 'lines', 'redFlags', 'steps',
+    ];
+    const rawList = CONTAINER_KEYS
+        .map((k) => exercise.content?.[k])
+        .find((v) => Array.isArray(v) && v.length > 0);
 
-    const messages = rawMessages
-        ? rawMessages
-        : rawScenarios
-            ? rawScenarios.map((scenario: any) => ({
-                id: scenario.id,
-                text: scenario.text,
-                isTrap: scenario.isTrap,
-                sender: '',
-                hints: [],
-            }))
-            : [];
+    const messages = Array.isArray(rawList)
+        ? rawList.map((it: any, idx: number) => ({
+            id: it?.id ?? `seg${idx}`,
+            text: it?.text ?? it?.label ?? it?.content ?? it?.message ?? it?.statement ?? String(it ?? ''),
+            isTrap: it?.isTrap ?? it?.isCorrect ?? false,
+            sender: it?.sender ?? '',
+            hints: it?.hints ?? [],
+        }))
+        : [];
 
     // Fallback options for when neither messages nor scenarios exist
     const fallbackOptions =

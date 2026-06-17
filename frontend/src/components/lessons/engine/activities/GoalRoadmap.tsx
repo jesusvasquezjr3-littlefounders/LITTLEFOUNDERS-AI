@@ -19,7 +19,20 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
     const [availableGoals, setAvailableGoals] = useState<any[]>([]);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
 
-    const goals = exercise.content.goals || [];
+    // Real lessons store the orderable items under goals | milestones | items |
+    // available_actions, with {id, text} (not {id, icon, title, timeframe}).
+    // Normalize to the shape the render expects so the cards always show up.
+    const rawGoals = exercise.content.goals
+        || exercise.content.milestones
+        || exercise.content.items
+        || exercise.content.available_actions
+        || [];
+    const goals = (Array.isArray(rawGoals) ? rawGoals : []).map((g: any) => ({
+        id: g?.id,
+        icon: g?.icon ?? '🎯',
+        title: g?.title ?? g?.text ?? g?.label ?? g?.name ?? '',
+        timeframe: g?.timeframe ?? g?.deadline ?? g?.when ?? '',
+    }));
 
     useEffect(() => {
         setOrderedGoals([]);
