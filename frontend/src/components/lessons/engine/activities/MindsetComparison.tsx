@@ -45,6 +45,15 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
             { id: String(content.mindset_b.id || 'mb'), label: content.mindset_b.name || 'B', text: content.mindset_b.description || '', consequences: [], color: 'green' },
         ];
     }
+    // Format 3b: approachA/approachB or approach_a/approach_b
+    else if ((content.approachA && content.approachB) || (content.approach_a && content.approach_b)) {
+        const a = content.approachA || content.approach_a;
+        const b = content.approachB || content.approach_b;
+        mindsets = [
+            { id: String(a.id || 'A'), label: a.name || a.title || 'A', text: a.description || a.text || '', consequences: [], color: 'red' },
+            { id: String(b.id || 'B'), label: b.name || b.title || 'B', text: b.description || b.text || '', consequences: [], color: 'green' },
+        ];
+    }
     // Format 4: legacy scenario with scarcity/abundance
     else {
         const scarcity = content.scarcity || { thought: '', consequences: [] };

@@ -68,27 +68,37 @@ cualquier clave de contenido (arrays bajo `options`/`choices`/`offers`/… o for
 | **CreditScoreBuilder** | ~2 | Render de opción única cuando no hay `scenarios` pero sí `options`/`profiles`. |
 | **ImpactMeter** | ~1 | Causas desde `causes`/`options`. |
 
-Verificación añadida: `src/__tests__/optionSource.test.ts` + nuevas ramas en `validateAnswer.test.ts`
-(math_challenge opción, concept_builder subconjunto). Total **79 tests** verdes; `tsc -b` + build OK.
+Verificación añadida: `src/__tests__/optionSource.test.ts` + nuevas ramas en `validateAnswer.test.ts`.
 
-## Trabajo restante (menor / decisión de producto)
+## Capa de RENDER — fase 3 (3er commit)
 
-- **StoryMode** (~1027): wired como consumo (sin `onSubmit`); los puntos de decisión no se califican.
-  *Decisión de diseño* — la narrativa ramificada no penaliza. Cambiar solo si se desea calificar.
-- **Contradicción de feedback en simuladores** (9 componentes `handleSimulatorSubmit`): el componente
-  muestra error/reintentar desde el retorno de `onSubmit` mientras el runner reproduce éxito. UX a unificar.
-- **EstimationSlider** zonas con `correctRangeId` (render de bandas etiquetadas) y **MindsetComparison**
-  formato `approach_a/approach_b` (~3 casos): claves de contenido alternativas, baja frecuencia.
-- **Datos mal-tipados**: varios `shop_sim`/`salary_comparison`/`math_challenge` son en realidad
-  `multiple_choice`/`true_false` — mejor corregir en el JSON del backend (no en el frontend).
-- **Verificación con backend**: recomendable un play-through real (las lecciones no renderizan en el
-  preview sin backend; la lógica está cubierta por tests unitarios + de corpus).
+| Área | Frec. | Corrección |
+|---|---|---|
+| **Tipos sin renderer** (`comparison`, `compare`, `comparison_chart/table/slider/matrix/challenge`, `case_study`, `case_real`, `decision_challenge`, `decision_matrix`) | ~298 | Antes mostraban "Ejercicio en desarrollo". Nuevo componente `GenericChoice` (resolveOptions + estado vacío que permite saltar); ruteados en `LessonRunner` y removidos de la lista de exclusión del fallback. |
+| **Feedback de simuladores** | 9 comp. | `handleSimulatorSubmit` ahora refleja el resultado REAL (componente y runner concuerdan), sin penalizar vidas. Los tipos exploratorios validan a `true` → siguen siendo siempre-éxito. |
+| **StoryMode** | ~1027 | Califica el punto de decisión (cuando hay `correct_answer` y la opción no ramifica): feedback visual + registro del resultado, sin penalizar; preserva la navegación ramificada (`next_page`). |
+| **EstimationSlider** | — | Deriva min/max del slider desde `content.ranges` para alcanzar la banda correcta. |
+| **MindsetComparison** | ~2 | Soporta el formato `approach_a/approach_b` / `approachA/approachB`. |
+| **ShopSim** | ~13 | Modo opción única (`options`/`price_options`/`money_options`); +rama `correctPrices` en el validador. |
+| **FillBlank** | ~41 | Banco de palabras sin marcadores `____`: sintetiza slots según el nº de respuestas esperadas. |
 
-## Cómo verificar
+## Trabajo restante (opcional)
+
+- **Datos mal-tipados**: algunos `shop_sim`/`salary_comparison`/`math_challenge` son en realidad
+  `multiple_choice`/`true_false`. El frontend ya los maneja; lo ideal a futuro es re-tipificarlos en el
+  JSON del backend (limpieza de datos, fuera del alcance del frontend).
+
+## Verificación realizada
+
+- **87 tests** (casos de shapes reales + regresión sobre TODO el corpus, sintetizando la respuesta
+  correcta de cada `multiple_choice`/`true_false`/`sequencing`/`tap_action`/`spot_trap`/`classification`/
+  comparison/case/decision y confirmando que pasa) · `tsc -b` limpio · `npm run build` OK · lint 0 errores.
+- **Play-through real contra el backend de producción** (proxy dev → Railway): la lección `5-4-26-2`
+  (que contiene el `spot_trap` con `{correctOptionId}`, el bug reportado) carga y renderiza sin errores de
+  consola; un `multiple_choice` se respondió correctamente y avanzó (pipeline fetch→render→calificar→avanzar OK).
 
 ```bash
 cd frontend
-npx vitest run src/__tests__/validateAnswer.test.ts        # 46 casos de shapes reales
-npx vitest run src/__tests__/validateAnswer.corpus.test.ts  # regresión contra todo el corpus
-npx tsc -b && npm run build                                 # tipos + build
+npx vitest run                 # suite completa (86)
+npx tsc -b && npm run build    # tipos + build
 ```

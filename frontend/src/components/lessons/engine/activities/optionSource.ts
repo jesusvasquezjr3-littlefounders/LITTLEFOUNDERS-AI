@@ -57,6 +57,13 @@ const PAIRS: Array<[string, string, string, string]> = [
     ['cityA', 'cityB', 'A', 'B'],
     ['planX', 'planY', 'X', 'Y'],
     ['mindsetA', 'mindsetB', 'A', 'B'],
+    ['scenarioA', 'scenarioB', 'A', 'B'],
+    ['scenario_a', 'scenario_b', 'A', 'B'],
+    ['planA', 'planB', 'A', 'B'],
+    ['plan_a', 'plan_b', 'A', 'B'],
+    ['modelA', 'modelB', 'A', 'B'],
+    ['portfolioA', 'portfolioB', 'A', 'B'],
+    ['productA', 'productB', 'A', 'B'],
 ];
 
 /**

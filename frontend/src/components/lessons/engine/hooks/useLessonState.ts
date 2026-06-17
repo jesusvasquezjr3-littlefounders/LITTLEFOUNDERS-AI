@@ -810,6 +810,11 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                     combo.every((id: any) => userItems.has(String(id)))
                 );
             }
+            // Price-choice exercises: the selected value(s) must be among correctPrices.
+            if (Array.isArray(correctAnswer?.correctPrices)) {
+                const want = correctAnswer.correctPrices.map(String);
+                return userItems.size > 0 && [...userItems].every(id => want.includes(String(id)));
+            }
             // Validate total if specified
             const expectedTotal = extractCorrectNumeric(correctAnswer, content);
             if (expectedTotal !== undefined) {

@@ -307,6 +307,46 @@ describe('validateAnswer — concept_builder', () => {
     });
 });
 
+describe('validateAnswer — comparison / case / decision (now renderable via GenericChoice)', () => {
+    it('comparison {correctOptionId}', () => {
+        const e = ex('comparison', { options: [{ id: 'a' }, { id: 'b' }] }, { correctOptionId: 'a' });
+        expect(validateAnswer(e, 'a')).toBe(true);
+        expect(validateAnswer(e, 'b')).toBe(false);
+    });
+    it('comparison {correctScenario}', () => {
+        const e = ex('comparison', { scenarioA: { text: 'x' }, scenarioB: { text: 'y' } }, { correctScenario: 'A' });
+        expect(validateAnswer(e, 'A')).toBe(true);
+        expect(validateAnswer(e, 'B')).toBe(false);
+    });
+    it('comparison {betterOption}', () => {
+        const e = ex('comparison', { optionA: {}, optionB: {} }, { betterOption: 'B' });
+        expect(validateAnswer(e, 'B')).toBe(true);
+        expect(validateAnswer(e, 'A')).toBe(false);
+    });
+    it('case_study {correctOptionId}', () => {
+        const e = ex('case_study', { options: [{ id: 'a' }, { id: 'b' }] }, { correctOptionId: 'b' });
+        expect(validateAnswer(e, 'b')).toBe(true);
+        expect(validateAnswer(e, 'a')).toBe(false);
+    });
+    it('decision_matrix {decision}', () => {
+        const e = ex('decision_matrix', { options: [{ id: 'negotiate' }, { id: 'accept' }] }, { decision: 'negotiate' });
+        expect(validateAnswer(e, 'negotiate')).toBe(true);
+        expect(validateAnswer(e, 'accept')).toBe(false);
+    });
+    it('case_real {correctOptionId}', () => {
+        const e = ex('case_real', { options: [{ id: 'a' }, { id: 'c' }] }, { correctOptionId: 'c' });
+        expect(validateAnswer(e, 'c')).toBe(true);
+    });
+});
+
+describe('validateAnswer — shop_sim {correctPrices}', () => {
+    it('accepts a selected price among correctPrices', () => {
+        const e = ex('shop_sim', { price_options: ['$0.75', '$1.00', '$2.00'] }, { correctPrices: ['$0.75', '$1.00'] });
+        expect(validateAnswer(e, ['$0.75'])).toBe(true);
+        expect(validateAnswer(e, ['$2.00'])).toBe(false);
+    });
+});
+
 describe('validateAnswer — regression (already-passing types)', () => {
     it('sequencing {sequence}', () => {
         const e = ex('sequencing', { items: [{ id: 's1' }, { id: 's2' }, { id: 's3' }] }, { sequence: ['s1', 's2', 's3'] });

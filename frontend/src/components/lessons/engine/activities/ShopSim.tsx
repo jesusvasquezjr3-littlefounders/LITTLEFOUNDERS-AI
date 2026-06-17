@@ -4,6 +4,8 @@ import { ShoppingCart, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { resolveOptions } from './optionSource';
 
 interface ShopSimProps {
     exercise: any;
@@ -19,6 +21,12 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
     const content = exercise?.content || {};
     const budget = content.budget || 20;
     const products = content.products || content.items || [];
+    // Some shop_sim lessons are really single-choice decisions (options / price_options /
+    // money_options) with no purchasable products → render selectable choice cards.
+    const choiceItems = products.length === 0
+        ? resolveOptions(content, ['options', 'price_options', 'money_options', 'choices', 'offers'])
+        : [];
+    const isChoiceMode = choiceItems.length > 0;
 
     const [cart, setCart] = useState<string[]>([]); // Product IDs
     const [totalSpent, setTotalSpent] = useState(0);
@@ -86,6 +94,45 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
             onRetry();
         }
     };
+
+    // ── Single-choice mode (decision / price / money pick) ──
+    if (isChoiceMode) {
+        const correctId = exercise.correct_answer?.correctOptionId ?? exercise.correct_answer?.optionId
+            ?? exercise.correct_answer?.selectedProductId ?? exercise.correct_answer?.selectedId;
+        const chosen = cart[0] ?? null;
+        const optState = (id: string): OptionState => {
+            if (feedback === 'none') return chosen === id ? 'selected' : 'idle';
+            if (correctId != null && String(id) === String(correctId)) return 'correct';
+            if (id === chosen) return 'wrong';
+            return 'dimmed';
+        };
+        return (
+            <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    {choiceItems.map((opt: any, index: number) => (
+                        <OptionCard
+                            key={opt.id}
+                            index={index}
+                            text={opt.text}
+                            state={optState(opt.id)}
+                            onClick={() => { if (feedback === 'none') { setCart([opt.id]); playSound('ui_tap'); } }}
+                            disabled={feedback !== 'none'}
+                        />
+                    ))}
+                </div>
+                {feedback === 'none' ? (
+                    <QuestButton variant="gold" disabled={cart.length === 0} onClick={handleCheck}>
+                        {t('actions.verify')}
+                    </QuestButton>
+                ) : (
+                    <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                        {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
+                        {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+                    </QuestButton>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">

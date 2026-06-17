@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { validateAnswer } from '@/components/lessons/engine/hooks/useLessonState';
+import { validateAnswer, extractCorrectId } from '@/components/lessons/engine/hooks/useLessonState';
 
 /**
  * Corpus-driven regression guard.
@@ -132,6 +132,24 @@ const hasCorpus = existsSync(CORPUS);
             }
         }
         expect(checked).toBeGreaterThan(800);
+        expect(fails.slice(0, 10)).toEqual([]);
+    });
+
+    // ── comparison / case / decision (now renderable): the resolved correct id is accepted ──
+    it('comparison/case/decision: extracted correct id is accepted', () => {
+        const TYPES = ['comparison', 'compare', 'comparison_chart', 'comparison_table',
+            'comparison_slider', 'comparison_matrix', 'comparison_challenge',
+            'case_study', 'case_real', 'decision_challenge', 'decision_matrix'];
+        const fails: string[] = [];
+        let checked = 0;
+        for (const exr of exercises.filter(e => TYPES.includes(e.type))) {
+            const id = extractCorrectId(exr.correct_answer);
+            if (id !== undefined) {
+                checked++;
+                if (!validateAnswer(exr, String(id))) fails.push(`${exr._file} :: ${JSON.stringify(exr.correct_answer)}`);
+            }
+        }
+        expect(checked).toBeGreaterThan(150);
         expect(fails.slice(0, 10)).toEqual([]);
     });
 
