@@ -7,8 +7,8 @@
 
 ## 1. Autoridad de Documentación
 
-1. `CLAUDE.md` — este archivo (máxima autoridad)
-2. `AGENTS.md` — reglas del proyecto, doc map, instrucciones post-cambio
+1. `CLAUDE.md` — este archivo (máxima autoridad). **Nota importante:** `AGENTS.md` debe mantener siempre exactamente las mismas indicaciones y contenido que este archivo, dado que ambos sirven como contexto base para los agentes de IA.
+2. `AGENTS.md` — espejo exacto de `CLAUDE.md` (reglas del proyecto, doc map, instrucciones).
 3. `ROADMAP.md` — plan de arquitectura y sprints
 4. `GLOSSARY.md` — terminología canónica
 5. `repo_map.md` — mapa de código (auto-generado)

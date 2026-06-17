@@ -68,9 +68,7 @@ LITTLEFOUNDERS-AI/
                 gestureMapper.ts
             components/
                 ui/
-                    AnimatedBackground.tsx
                     AssetImg.tsx
-                    GlassPanel.tsx
                     LanguageSelector.tsx
                     LoadingScreen.tsx
                     SpeechBubble.tsx
@@ -134,6 +132,7 @@ LITTLEFOUNDERS-AI/
                     LandingLayout.tsx
                     LandingNavbar.tsx
                     LandingParentCTA.tsx
+                    LiquidGlassMedia.tsx
                     Reveal.tsx
                     StockImage.tsx
                 showreel/
@@ -143,11 +142,11 @@ LITTLEFOUNDERS-AI/
                     AuthLayout.tsx
                     ChildProtectedRoute.tsx
                     GuestBanner.tsx
+                    GuestNudgeModal.tsx
                     LanguageSyncWrapper.tsx
                     ParentProtectedRoute.tsx
                     PasswordStrength.tsx
                     ProtectedRoute.tsx
-                    RegistrationPromptModal.tsx
                 admin/
                     AdminActivityChart.tsx
                     AdminContributionGraph.tsx
@@ -162,7 +161,6 @@ LITTLEFOUNDERS-AI/
                         transformToTimeline.ts
                 animation/
                 dashboard/
-                    ChildDashboard.tsx
                     CustomerAnalytics.tsx
                     DashboardLayout.tsx
                     KPICard.tsx
@@ -170,12 +168,10 @@ LITTLEFOUNDERS-AI/
                     RevenueChart.tsx
                     Sidebar.tsx
                     TopNav.tsx
-                    UniversalDashboard.tsx
                     UserTour.tsx
                 social/
                     UserConnectionsList.tsx
                 common/
-                    InDevelopment.tsx
                     ReportFAB.tsx
                     ReportModal.tsx
                 theme/
@@ -198,6 +194,12 @@ LITTLEFOUNDERS-AI/
                         LessonCelebration.tsx
                         LessonRunner.tsx
                         index.ts
+                        ui/
+                            CoinBurst.tsx
+                            OptionCard.tsx
+                            QuestButton.tsx
+                            QuestProgress.tsx
+                            motion.ts
                         stages/
                             IntroNarrativeStage.tsx
                             MultipleChoiceStage.tsx
@@ -221,6 +223,7 @@ LITTLEFOUNDERS-AI/
                             EstimationSlider.tsx
                             ExpenseTimeline.tsx
                             FillBlank.tsx
+                            GenericChoice.tsx
                             GoalRoadmap.tsx
                             ImpactMeter.tsx
                             InflationSimulator.tsx
@@ -250,6 +253,7 @@ LITTLEFOUNDERS-AI/
                             TaxPuzzle.tsx
                             TrueFalse.tsx
                             WordScramble.tsx
+                            optionSource.ts
                 routing/
                 transitions/
                     AnimatedRoutes.tsx
@@ -266,8 +270,13 @@ LITTLEFOUNDERS-AI/
                     FeatureCard.tsx
             __tests__/
                 lessonEngine.test.ts
+                optionSource.test.ts
                 placeholder.test.ts
                 setup.ts
+                useAdminAlerts.test.tsx
+                useAdminSettings.test.ts
+                validateAnswer.corpus.test.ts
+                validateAnswer.test.ts
             hooks/
                 use-mobile.tsx
                 use-toast.ts
@@ -310,7 +319,6 @@ LITTLEFOUNDERS-AI/
                 Index.tsx
                 LandingPage.tsx
                 LearnPage.tsx
-                Lessons.tsx
                 Login.tsx
                 NotFound.tsx
                 Onboarding.tsx
@@ -340,6 +348,8 @@ LITTLEFOUNDERS-AI/
                     AdminUsers.tsx
                 social/
                     UserProfile.tsx
+                dev/
+                    LessonLab.tsx
             games/
                 paper-coin/
                     PaperCoinPage.tsx
@@ -865,6 +875,26 @@ LITTLEFOUNDERS-AI/
             backend-ci.yml
             cd.yml
             frontend-ci.yml
+        skills/
+            impeccable/
+                scripts/
+                    detector/
+                        shared/
+                        cli/
+                        browser/
+                            injected/
+                        profile/
+                        engines/
+                            regex/
+                            browser/
+                            visual/
+                            static-html/
+                        registry/
+                        rules/
+                        node/
+                    live/
+                    lib/
+                reference/
     api/
         index.py
     .vscode/
@@ -875,7 +905,7 @@ LITTLEFOUNDERS-AI/
 
 ## Archivos de Código (primeras 15 líneas cada uno)
 
-**448 archivos de código** + **23 archivos de configuración**
+**456 archivos de código** + **23 archivos de configuración**
 
 ### `.github/workflows/backend-ci.yml` (Config)
 
@@ -2467,6 +2497,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route } from "react-router-dom";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { AnimatedRoutes } from "@/components/transitions/AnimatedRoutes";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ParentProtectedRoute } from "@/components/auth/ParentProtectedRoute";
@@ -2476,7 +2507,6 @@ import { Analytics } from '@vercel/analytics/react';
 // Pages
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
-import PlacementPage from "./pages/PlacementPage";
 ```
 
 ### `frontend/src/__tests__/lessonEngine.test.ts` (Code)
@@ -2499,6 +2529,26 @@ describe('extractCorrectId', () => {
 
 ```
 
+### `frontend/src/__tests__/optionSource.test.ts` (Code)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { resolveOptions } from '@/components/lessons/engine/activities/optionSource';
+
+describe('resolveOptions', () => {
+    it('returns [] for empty/invalid content', () => {
+        expect(resolveOptions(null)).toEqual([]);
+        expect(resolveOptions({})).toEqual([]);
+    });
+
+    it('reads an array under content.options preserving ids', () => {
+        const r = resolveOptions({ options: [{ id: 'a', text: 'A' }, { id: 'b', text: 'B' }] });
+        expect(r.map(o => o.id)).toEqual(['a', 'b']);
+        expect(r[0].text).toBe('A');
+    });
+
+```
+
 ### `frontend/src/__tests__/placeholder.test.ts` (Code)
 
 ```typescript
@@ -2515,6 +2565,86 @@ describe("placeholder", () => {
 
 ```typescript
 import "@testing-library/jest-dom/vitest";
+```
+
+### `frontend/src/__tests__/useAdminAlerts.test.tsx` (Code)
+
+```typescript
+import React from 'react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// ── Mocks (hoisted so they're available inside vi.mock factories) ──
+const { mockStats, mockList } = vi.hoisted(() => ({
+  mockStats: vi.fn(),
+  mockList: vi.fn(),
+}));
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'es' } }),
+}));
+
+```
+
+### `frontend/src/__tests__/useAdminSettings.test.ts` (Code)
+
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useAdminSettings, ADMIN_SETTINGS_KEY } from '@/hooks/useAdminSettings';
+
+describe('useAdminSettings', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    delete document.documentElement.dataset.reduceMotion;
+  });
+
+  it('returns defaults when nothing is stored', () => {
+    const { result } = renderHook(() => useAdminSettings());
+    expect(result.current.settings).toEqual({
+      reduceMotion: false,
+      showNotifBadge: true,
+```
+
+### `frontend/src/__tests__/validateAnswer.corpus.test.ts` (Code)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { validateAnswer, extractCorrectId } from '@/components/lessons/engine/hooks/useLessonState';
+
+/**
+ * Corpus-driven regression guard.
+ *
+ * For the exercise types whose CORRECT answer can be synthesized deterministically
+ * from the real lesson JSON, we feed that synthesized correct answer to validateAnswer
+ * and assert it is accepted. This catches any regression that would turn a genuinely
+ * correct answer into a false negative (the bug class this work fixes) across the
+ * entire production corpus — not just hand-picked samples.
+ *
+ * If the corpus is not present (e.g. CI without the backend checked out), the suite
+```
+
+### `frontend/src/__tests__/validateAnswer.test.ts` (Code)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { validateAnswer } from '@/components/lessons/engine/hooks/useLessonState';
+
+// Helper: build a minimal exercise object accepted by validateAnswer.
+const ex = (type: string, content: any, correct_answer: any) =>
+    ({ id: 1, type, content, correct_answer } as any);
+
+// Each case mirrors a REAL correct_answer shape from the lesson corpus
+// (backend/lesson_engine/littlefounders_lessons) confirmed by the 2026-06-16 audit.
+
+describe('validateAnswer — option-based (regression)', () => {
+    it('multiple_choice {correctOptionId}', () => {
+        const e = ex('multiple_choice', { options: [{ id: 'a' }, { id: 'b' }] }, { correctOptionId: 'a' });
+        expect(validateAnswer(e, 'a')).toBe(true);
+        expect(validateAnswer(e, 'b')).toBe(false);
 ```
 
 ### `frontend/src/components/admin/AdminActivityChart.tsx` (Code)
@@ -2783,10 +2913,9 @@ export function ChildProtectedRoute({ children }: ChildProtectedRouteProps) {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { X, UserPlus, Sparkles } from "lucide-react";
+import { X, UserPlus, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getGuestProfile } from "@/lib/guestProfile";
-import { cn } from "@/lib/utils";
 
 export function GuestBanner() {
     const { t } = useTranslation('dashboard');
@@ -2795,6 +2924,27 @@ export function GuestBanner() {
 
     if (dismissed || !guest) return null;
 
+    return (
+```
+
+### `frontend/src/components/auth/GuestNudgeModal.tsx` (Code)
+
+```typescript
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { Sparkles, UserPlus } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { getGuestProfile, isGuest } from "@/lib/guestProfile";
+
+/**
+ * GuestNudgeModal — gentle, Duolingo-style reminder for guests to create an
+ * account so their progress becomes permanent. Low-friction by design:
+ *  - Only for guests with no real account (stops automatically once registered).
+ *  - At most once per browser session, and never more often than every 4 hours.
+ *  - Appears a few seconds AFTER entering the app (never blocks the first paint).
+ * The always-visible amber GuestBanner is the persistent reminder; this is the
+ * occasional one.
 ```
 
 ### `frontend/src/components/auth/LanguageSyncWrapper.tsx` (Code)
@@ -2877,32 +3027,13 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAuth = false }: ProtectedRouteProps) {
 ```
 
-### `frontend/src/components/auth/RegistrationPromptModal.tsx` (Code)
-
-```typescript
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { X, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface RegistrationPromptModalProps {
-    open: boolean;
-    onClose: () => void;
-}
-
-export function RegistrationPromptModal({ open, onClose }: RegistrationPromptModalProps) {
-    const { t } = useTranslation('dashboard');
-
-    if (!open) return null;
-```
-
 ### `frontend/src/components/avatar/AvatarDisplay.tsx` (Code)
 
 ```typescript
 import { createAvatar } from '@dicebear/core';
 import * as avataaars from '@dicebear/avataaars';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 
@@ -2914,7 +3045,6 @@ export interface AvatarConfig {
     eyebrows?: string[];
     eyes?: string[];
     facialHair?: string[];
-    facialHairColor?: string[];
 ```
 
 ### `frontend/src/components/characters/DinaCharacter.tsx` (Code)
@@ -2997,26 +3127,6 @@ interface ZaraVexCharacterProps {
 const COLORS = {
 ```
 
-### `frontend/src/components/common/InDevelopment.tsx` (Code)
-
-```typescript
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Hammer, ArrowLeft, Construction } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
-export const InDevelopment = () => {
-    const { t } = useTranslation('common');
-    const navigate = useNavigate();
-
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 space-y-6 animate-fade-in">
-            <div className="relative">
-                <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                <div className="relative bg-white dark:bg-slate-800 p-6 rounded-full shadow-xl border-4 border-blue-100 dark:border-blue-900">
-```
-
 ### `frontend/src/components/common/ReportFAB.tsx` (Code)
 
 ```typescript
@@ -3057,26 +3167,6 @@ interface ReportModalProps {
   /** Called to close the modal */
 ```
 
-### `frontend/src/components/dashboard/ChildDashboard.tsx` (Code)
-
-```typescript
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { Construction } from "lucide-react";
-
-interface ChildDashboardProps {
-  user: any;
-}
-
-export function ChildDashboard({ user }: ChildDashboardProps) {
-  const { t } = useTranslation('common');
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
-      <div className="bg-indigo-100 dark:bg-indigo-900/30 p-8 rounded-full mb-6">
-        <Construction className="w-24 h-24 text-indigo-600 dark:text-indigo-500" />
-```
-
 ### `frontend/src/components/dashboard/CustomerAnalytics.tsx` (Code)
 
 ```typescript
@@ -3101,20 +3191,20 @@ const acquisitionData = [
 
 ```typescript
 import { useState, ReactNode, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { UserTour } from "./UserTour";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
+import { GuestNudgeModal } from "@/components/auth/GuestNudgeModal";
 import { isGuest } from "@/lib/guestProfile";
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
 interface DashboardLayoutProps {
-  children: ReactNode;
-}
+  children?: ReactNode;
 ```
 
 ### `frontend/src/components/dashboard/KPICard.tsx` (Code)
@@ -3152,9 +3242,9 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
   const { t } = useTranslation('common');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
-      <div className="bg-indigo-100 dark:bg-indigo-900/30 p-8 rounded-full mb-6">
-        <Construction className="w-24 h-24 text-indigo-600 dark:text-indigo-500" />
+    <div className="corp flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
+      <div className="corp-icon-chip w-24 h-24 mb-6">
+        <Construction className="w-12 h-12" />
 ```
 
 ### `frontend/src/components/dashboard/RevenueChart.tsx` (Code)
@@ -3217,26 +3307,6 @@ import {
   DropdownMenuItem,
 ```
 
-### `frontend/src/components/dashboard/UniversalDashboard.tsx` (Code)
-
-```typescript
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from "@/components/ui/card";
-import { GlassPanel } from "@/components/ui/GlassPanel";
-
-interface UniversalDashboardProps {
-    user: any;
-}
-
-export function UniversalDashboard({ user }: UniversalDashboardProps) {
-    const { t } = useTranslation('dashboard');
-
-    const stats = [
-        {
-            title: t('stats.lessons_completed'),
-            value: user?.lessons_completed || 0,
-```
-
 ### `frontend/src/components/dashboard/UserTour.tsx` (Code)
 
 ```typescript
@@ -3244,10 +3314,8 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Rocket, ChevronRight, X, Sparkles, GraduationCap } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
-import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
 
 interface TourStep {
     targetId?: string;
@@ -3255,6 +3323,8 @@ interface TourStep {
     description: string;
     position?: "right" | "bottom" | "center";
     mood?: any; // To hold ZaraMood or RhoMood
+}
+
 ```
 
 ### `frontend/src/components/families/BenefitGrid.tsx` (Code)
@@ -3372,9 +3442,9 @@ export function GamifiedLearningSection() {
     t("solution.benefit2"),
     t("solution.benefit3"),
   ];
-
   return (
-    <section className="relative py-20 md:py-28 overflow-hidden transition-colors duration-500 text-gray-900 dark:text-white bg-gradient-to-br from-indigo-50 via-violet-50/50 to-slate-50 dark:from-[#0d0a1f] dark:via-[#130d2e] dark:to-[#0a1628]">
+    <section className="relative py-20 md:py-28 overflow-hidden transition-colors duration-500 text-amber-950 dark:text-white bg-amber-50/50 dark:bg-[#0d0a0a] dark:via-[#0d0905] dark:to-[#0a0e0a]">
+
 ```
 
 ### `frontend/src/components/landing/LandingFooter.tsx` (Code)
@@ -3426,15 +3496,15 @@ import { Menu, X, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { hasSession } from "@/lib/guestProfile";
 
 export const LandingNavbar = () => {
     const { t } = useTranslation('landing');
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
-
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 16);
+    // Returning users get a "Continue" CTA back into the app; new users register.
+    const session = hasSession();
 ```
 
 ### `frontend/src/components/landing/LandingParentCTA.tsx` (Code)
@@ -3455,6 +3525,26 @@ function StatChip({ emoji, value, label }: { emoji: string; value: string; label
       <span className="text-gray-500 dark:text-white/50 text-[11px] font-medium">{label}</span>
     </div>
   );
+```
+
+### `frontend/src/components/landing/LiquidGlassMedia.tsx` (Code)
+
+```typescript
+import React from 'react';
+import { StockImage } from './StockImage';
+
+interface LiquidGlassMediaProps {
+  type: 'image' | 'video';
+  src: string;
+  alt?: string;
+  fallbackClassName?: string;
+  delay?: string;
+  badges?: React.ReactNode;
+}
+
+export const LiquidGlassMedia: React.FC<LiquidGlassMediaProps> = ({
+  type,
+  src,
 ```
 
 ### `frontend/src/components/landing/Reveal.tsx` (Code)
@@ -3529,12 +3619,12 @@ import { useResumeLesson } from './hooks/useResumeLesson';
 import { useSagaData } from './hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '../ui/LoadingScreen';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 interface AdventuresProps {
     onSelectAdventure?: (adventureId: number) => void;
     onResumeMap?: (adventureId: number, sagaId: number, sagaTitle: string) => void;
     userId?: string;
+}
 ```
 
 ### `frontend/src/components/lessons/LessonPath.tsx` (Code)
@@ -3571,10 +3661,10 @@ import { useSagaData, SagaData } from './hooks/useSagaData';
 // ============== COMPONENTS ==============
 
 const SagaHeader: React.FC<{ saga: SagaData }> = ({ saga }) => {
-    const getThemeColor = (theme: string) => {
-        const baseStyle = "border-2 shadow-sm";
-        switch (theme) {
-            case 'amber': return `${baseStyle} bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-800 dark:text-blue-300`;
+    return (
+        <div className="corp-panel p-6 mb-8 rounded-3xl flex items-center justify-between">
+            <div>
+                <span className="corp-eyebrow">{saga.title}</span>
 ```
 
 ### `frontend/src/components/lessons/TopicNode.tsx` (Code)
@@ -3603,8 +3693,7 @@ export interface Topic {
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, RotateCcw, LogOut } from "lucide-react";
 import { DinoCharacter } from "@/components/characters/DinoCharacter";
 import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
@@ -3612,7 +3701,8 @@ import ZaraVexCharacter from "@/components/characters/ZaraVexCharacter";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 
-// Extracted OUTSIDE component to prevent remount on every render
+// ─── Character renderer ───────────────────────────────────────────────────────
+
 function CelebrationCharacter({ characterCode }: { characterCode: string }) {
   switch (characterCode) {
 ```
@@ -3642,10 +3732,10 @@ import { DinoCharacter, DinoMood } from '@/components/characters/DinoCharacter';
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Users, DollarSign } from 'lucide-react';
+import { ArrowRight, RotateCcw, Users, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface BillSplitterProps {
     exercise: any;
@@ -3662,10 +3752,10 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Wallet, ShoppingCart, AlertCircle } from 'lucide-react';
+import { ArrowRight, RotateCcw, Wallet, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface BudgetBuilderProps {
     exercise: any;
@@ -3674,7 +3764,7 @@ interface BudgetBuilderProps {
     onRetry: () => void;
 }
 
-const isNewSchema = (content: any): boolean => {
+// Slider/allocation mode: categories is a non-empty array of objects with an `id`.
 ```
 
 ### `frontend/src/components/lessons/engine/activities/Classification.tsx` (Code)
@@ -3682,10 +3772,10 @@ const isNewSchema = (content: any): boolean => {
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface ClassificationProps {
     exercise: any;
@@ -3701,11 +3791,10 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, DollarSign } from 'lucide-react';
+import { ArrowRight, RotateCcw, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface CoinCounterProps {
     exercise: any;
@@ -3715,6 +3804,7 @@ interface CoinCounterProps {
 }
 
 export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounterProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/ConceptBuilder.tsx` (Code)
@@ -3722,10 +3812,10 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowDown } from 'lucide-react';
+import { ArrowRight, ArrowDown, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 // Removed unused dnd import
 
 // NOTE: Using simple click-to-order instead of heavy DnD library for simplicity in this swift implementation if possible.
@@ -3742,10 +3832,12 @@ interface ConceptBuilderProps {
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard } from 'lucide-react';
+import { ArrowRight, RotateCcw, CreditCard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { resolveOptions } from './optionSource';
 
 interface CreditScoreBuilderProps {
     exercise: any;
@@ -3753,8 +3845,6 @@ interface CreditScoreBuilderProps {
     onNext: () => void;
     onRetry: () => void;
 }
-
-export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: CreditScoreBuilderProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/DebtStrategy.tsx` (Code)
@@ -3762,10 +3852,12 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
 ```typescript
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, TrendingDown } from 'lucide-react';
+import { ArrowRight, RotateCcw, TrendingDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface DebtStrategyProps {
     exercise: any;
@@ -3773,8 +3865,6 @@ interface DebtStrategyProps {
     onNext: () => void;
     onRetry: () => void;
 }
-
-export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrategyProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/EmergencyFund.tsx` (Code)
@@ -3782,10 +3872,10 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, AlertTriangle, Wallet } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface EmergencyFundProps {
     exercise: any;
@@ -3801,12 +3891,11 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface EstimationSliderProps {
     exercise: any;
@@ -3815,17 +3904,17 @@ interface EstimationSliderProps {
     onRetry: () => void;
 }
 
+export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: EstimationSliderProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/ExpenseTimeline.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Clock, AlertCircle } from 'lucide-react';
+import { ArrowRight, Clock, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface ExpenseTimelineProps {
     exercise: any;
@@ -3835,6 +3924,7 @@ interface ExpenseTimelineProps {
 }
 
 export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: ExpenseTimelineProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/FillBlank.tsx` (Code)
@@ -3842,10 +3932,10 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Lightbulb } from 'lucide-react';
+import { ArrowRight, RotateCcw, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface FillBlankProps {
     exercise: any;
@@ -3857,15 +3947,34 @@ interface FillBlankProps {
 export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProps) => {
 ```
 
+### `frontend/src/components/lessons/engine/activities/GenericChoice.tsx` (Code)
+
+```typescript
+import { useState, useEffect } from 'react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { extractCorrectId } from '../hooks/useLessonState';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
+
+interface GenericChoiceProps {
+    exercise: any;
+    onSubmit: (answer: string) => boolean;
+    onNext: () => void;
+    onRetry: () => void;
+}
+
+```
+
 ### `frontend/src/components/lessons/engine/activities/GoalRoadmap.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, MapPin, Flag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface GoalRoadmapProps {
     exercise: any;
@@ -3875,6 +3984,7 @@ interface GoalRoadmapProps {
 }
 
 export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmapProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/ImpactMeter.tsx` (Code)
@@ -3882,30 +3992,29 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
+
+const HUES = ["indigo", "amber", "emerald", "coral"] as const;
 
 interface ImpactMeterProps {
     exercise: any;
     onSubmit: (causeId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
-}
-
-export const ImpactMeter = ({ exercise, onSubmit, onNext, onRetry }: ImpactMeterProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/InflationSimulator.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight, RotateCcw, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface InflationSimulatorProps {
     exercise: any;
@@ -3915,17 +4024,17 @@ interface InflationSimulatorProps {
 }
 
 export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: InflationSimulatorProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/InterestCalculator.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface InterestCalculatorProps {
     exercise: any;
@@ -3935,13 +4044,14 @@ interface InterestCalculatorProps {
 }
 
 export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: InterestCalculatorProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/IntroNarrative.tsx` (Code)
 
 ```typescript
-import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { QuestButton } from '../ui/QuestButton';
 import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
@@ -3962,10 +4072,10 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, TrendingUp, TrendingDown, Newspaper } from 'lucide-react';
+import { ArrowRight, RotateCcw, Newspaper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface MarketReactionProps {
     exercise: any;
@@ -3982,10 +4092,10 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface MatchingPairsProps {
     exercise: any;
@@ -4001,11 +4111,12 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Delete, Eraser } from 'lucide-react';
+import { ArrowRight, Delete, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { resolveOptions } from './optionSource';
 
 interface MathChallengeProps {
     exercise: any;
@@ -4014,7 +4125,6 @@ interface MathChallengeProps {
     onRetry: () => void;
 }
 
-export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChallengeProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/MindsetComparison.tsx` (Code)
@@ -4022,10 +4132,10 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface MindsetComparisonProps {
     exercise: any;
@@ -4041,12 +4151,11 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { extractCorrectId } from '../hooks/useLessonState';
-import { PopOptionButton } from '../components/PopOptionButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface MultipleChoiceProps {
     exercise: any; // Type should be clearer in a real app
@@ -4055,17 +4164,17 @@ interface MultipleChoiceProps {
     onRetry: () => void;
 }
 
+export const MultipleChoice = ({ exercise, onSubmit, onNext, onRetry }: MultipleChoiceProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/MysteryInvestment.tsx` (Code)
 
 ```typescript
 import { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, Minus, Gift, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface MysteryInvestmentProps {
     exercise: any;
@@ -4075,6 +4184,7 @@ interface MysteryInvestmentProps {
 }
 
 export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: MysteryInvestmentProps) => {
+    const { t } = useTranslation('lessons');
 ```
 
 ### `frontend/src/components/lessons/engine/activities/OpportunityCost.tsx` (Code)
@@ -4082,10 +4192,11 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeftRight } from 'lucide-react';
+import { ArrowRight, ArrowLeftRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface OpportunityCostProps {
     exercise: any;
@@ -4094,7 +4205,6 @@ interface OpportunityCostProps {
     onRetry: () => void;
 }
 
-export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: OpportunityCostProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/PassiveIncome.tsx` (Code)
@@ -4102,10 +4212,10 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, DollarSign, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface PassiveIncomeProps {
     exercise: any;
@@ -4122,10 +4232,10 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, PieChart, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, RotateCcw, PieChart, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface PortfolioBuilderProps {
     exercise: any;
@@ -4142,19 +4252,19 @@ const COLOR_PALETTE = [
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, RotateCcw, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
+
+const HUES = ['indigo', 'amber', 'emerald', 'coral'] as const;
 
 interface PriceDetectiveProps {
     exercise: any;
     onSubmit: (choiceId: string) => boolean;
     onNext: () => void;
     onRetry: () => void;
-}
-
-export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDetectiveProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/QuizBattle.tsx` (Code)
@@ -4162,10 +4272,11 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Zap, Clock, Trophy } from 'lucide-react';
+import { ArrowRight, RotateCcw, Clock, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface QuizBattleProps {
     exercise: any;
@@ -4174,7 +4285,6 @@ interface QuizBattleProps {
     onRetry: () => void;
 }
 
-export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattleProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/RiskReward.tsx` (Code)
@@ -4182,10 +4292,11 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
-import { ArrowRight, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface RiskRewardProps {
     exercise: any;
@@ -4194,7 +4305,6 @@ interface RiskRewardProps {
     onRetry: () => void;
 }
 
-export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/RoleplayChat.tsx` (Code)
@@ -4202,10 +4312,11 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface ChatMessage {
     id: string;
@@ -4214,7 +4325,6 @@ interface ChatMessage {
     text: string;
     avatar?: string;
     delay?: number;
-}
 ```
 
 ### `frontend/src/components/lessons/engine/activities/SalaryComparison.tsx` (Code)
@@ -4222,10 +4332,11 @@ interface ChatMessage {
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Briefcase, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { resolveOptions } from './optionSource';
 
 interface SalaryComparisonProps {
     exercise: any;
@@ -4234,7 +4345,6 @@ interface SalaryComparisonProps {
     onRetry: () => void;
 }
 
-const normalizeDescription = (details: any): string => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/SavingsRace.tsx` (Code)
@@ -4242,10 +4352,10 @@ const normalizeDescription = (details: any): string => {
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SavingsRaceProps {
     exercise: any;
@@ -4262,10 +4372,10 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, Check, X, ArrowRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, Check, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SequencingProps {
     exercise: any;
@@ -4282,10 +4392,12 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowRight } from 'lucide-react';
+import { ShoppingCart, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { resolveOptions } from './optionSource';
 
 interface ShopSimProps {
     exercise: any;
@@ -4293,8 +4405,6 @@ interface ShopSimProps {
     onNext: () => void;
     onRetry: () => void;
 }
-
-export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) => {
 ```
 
 ### `frontend/src/components/lessons/engine/activities/SpotTheTrap.tsx` (Code)
@@ -4302,10 +4412,10 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, AlertTriangle, ShieldCheck, Mail } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SpotTheTrapProps {
     exercise: any;
@@ -4322,7 +4432,6 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
 ```typescript
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
@@ -4331,10 +4440,11 @@ import DrRhoCharacter, { RhoMood } from '@/components/characters/DrRhoCharacter'
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/characters/ZaraVexCharacter';
 import { normalizeGesture } from '@/utils/gestureMapper';
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
+import { extractCorrectId } from '../hooks/useLessonState';
 
 interface StoryPage {
-    id: string;
-    text: string;
 ```
 
 ### `frontend/src/components/lessons/engine/activities/SubscriptionTracker.tsx` (Code)
@@ -4342,10 +4452,10 @@ interface StoryPage {
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface SubscriptionTrackerProps {
     exercise: any;
@@ -4362,10 +4472,10 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Check, X, ArrowRight } from 'lucide-react';
+import { Check, X, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface TapActionProps {
     exercise: any;
@@ -4374,18 +4484,18 @@ interface TapActionProps {
     onRetry: () => void;
 }
 
-const BG_COLORS = [
+// Playful DS v2 hues, cycled across the tappable tokens.
 ```
 
 ### `frontend/src/components/lessons/engine/activities/TaxPuzzle.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Calculator } from 'lucide-react';
+import { ArrowRight, RotateCcw, Calculator } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { OptionCard, type OptionState } from '../ui/OptionCard';
+import { QuestButton } from '../ui/QuestButton';
 
 interface TaxPuzzleProps {
     exercise: any;
@@ -4402,10 +4512,10 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 ```typescript
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Check, X, ArrowRight } from 'lucide-react';
+import { Check, X, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from '../ui/QuestButton';
 
 interface TrueFalseProps {
     exercise: any;
@@ -4422,10 +4532,10 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
 ```typescript
 import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, RotateCw } from 'lucide-react';
+import { ArrowRight, RotateCw, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
+import { QuestButton } from "../ui/QuestButton";
 
 interface WordScrambleProps {
     exercise: any;
@@ -4435,6 +4545,26 @@ interface WordScrambleProps {
 }
 
 /** Fisher-Yates shuffle (unbiased) */
+```
+
+### `frontend/src/components/lessons/engine/activities/optionSource.ts` (Code)
+
+```typescript
+/**
+ * optionSource — normalización de la fuente de opciones para actividades tipo "elige una".
+ *
+ * Muchas actividades (risk_reward, opportunity_cost, salary_comparison, debt_strategy,
+ * price_detective, …) leían sus opciones de UNA sola clave de `content` y no renderizaban
+ * nada cuando la lección real usaba otra clave o un formato pareado (optionA/optionB).
+ *
+ * `resolveOptions(content)` devuelve una lista normalizada `{ id, text, ...original }`:
+ *  - Para arrays bajo claves conocidas, conserva el `id` original del item.
+ *  - Para formas pareadas (optionA/optionB, strategy_a/strategy_b, …), sintetiza ids
+ *    de letra ('A'/'B') porque es el esquema que usan los `correct_answer` de esas formas
+ *    (correctOption:'A', betterOption:'B', …). El validador central (optionIdMatches) además
+ *    tolera diferencias de prefijo/caso.
+ *
+ * El esquema de id resultante debe coincidir con el que espera `validateAnswer`; por eso se
 ```
 
 ### `frontend/src/components/lessons/engine/components/PopOptionButton.tsx` (Code)
@@ -4584,6 +4714,106 @@ interface MultipleChoiceStageProps {
 ```typescript
 export { IntroNarrativeStage } from './IntroNarrativeStage';
 export { MultipleChoiceStage } from './MultipleChoiceStage';
+```
+
+### `frontend/src/components/lessons/engine/ui/CoinBurst.tsx` (Code)
+
+```typescript
+/**
+ * Playful DS v2 — CoinBurst.
+ * Celebratory coin particle burst fired on a correct answer. Re-fires whenever
+ * `burstKey` increments. Renders inside a position:relative parent.
+ */
+import { motion, AnimatePresence } from "framer-motion";
+import { Coins } from "lucide-react";
+
+const N = 14;
+
+export function CoinBurst({ burstKey }: { burstKey: number }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center overflow-visible">
+      <AnimatePresence>
+        {burstKey > 0 && (
+```
+
+### `frontend/src/components/lessons/engine/ui/OptionCard.tsx` (Code)
+
+```typescript
+/**
+ * Playful DS v2 — OptionCard.
+ * A tactile "token" answer option: chunky, colored index coin, springy press,
+ * warm correct/wrong states. Shared by multiple-choice, true/false, etc.
+ */
+import { motion } from "framer-motion";
+import { Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type OptionState = "idle" | "selected" | "correct" | "wrong" | "dimmed";
+
+const HUES = ["indigo", "amber", "emerald", "coral"] as const;
+
+interface OptionCardProps {
+  index: number;
+```
+
+### `frontend/src/components/lessons/engine/ui/QuestButton.tsx` (Code)
+
+```typescript
+/**
+ * Playful DS v2 — QuestButton.
+ * The chunky tactile action button (gold "treasure" by default; emerald on
+ * success-continue, coral on retry, indigo for neutral/brand actions).
+ */
+import { cn } from "@/lib/utils";
+
+type Variant = "gold" | "go" | "retry" | "brand";
+
+interface QuestButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  variant?: Variant;
+  className?: string;
+```
+
+### `frontend/src/components/lessons/engine/ui/QuestProgress.tsx` (Code)
+
+```typescript
+/**
+ * Playful DS v2 — QuestProgress (lesson top bar).
+ * Close button, springy gold progress track, coin purse, and hearts.
+ */
+import { motion } from "framer-motion";
+import { X, Heart, Coins } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { spring } from "./motion";
+
+interface QuestProgressProps {
+  value: number; // 0..1
+  coins: number;
+  hearts: number;
+  maxHearts?: number;
+  onClose?: () => void;
+```
+
+### `frontend/src/components/lessons/engine/ui/motion.ts` (Code)
+
+```typescript
+/**
+ * Playful DS v2 — motion presets (framer-motion).
+ * Spring-physics vocabulary shared by every lesson primitive so the whole
+ * engine feels like one tactile, alive world.
+ */
+import type { Variants, Transition } from "framer-motion";
+
+export const spring: Transition = { type: "spring", stiffness: 520, damping: 30, mass: 0.8 };
+export const softSpring: Transition = { type: "spring", stiffness: 240, damping: 22 };
+export const popSpring: Transition = { type: "spring", stiffness: 600, damping: 17 };
+
+/** Parent that staggers children reveals. */
+export const stagger: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
 ```
 
 ### `frontend/src/components/lessons/hooks/useAdventures.ts` (Code)
@@ -4786,26 +5016,6 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({ children }) => {
     if (location.pathname === displayLocation.pathname && location.search === displayLocation.search) {
 ```
 
-### `frontend/src/components/ui/AnimatedBackground.tsx` (Code)
-
-```typescript
-import { Star, Sparkles, Zap, Heart, Coins } from "lucide-react";
-
-export function AnimatedBackground() {
-    return (
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-            {/* Floating Shapes - Coins/Circles */}
-            <div
-                className="absolute top-20 left-10 w-16 h-16 bg-indigo-400 rounded-full opacity-10 animate-bounce"
-                style={{ animationDelay: '0s', animationDuration: '3s' }}
-            ></div>
-            <div
-                className="absolute top-40 right-20 w-12 h-12 bg-green-400 rounded-full opacity-10 animate-bounce"
-                style={{ animationDelay: '1s', animationDuration: '4s' }}
-            ></div>
-            <div
-```
-
 ### `frontend/src/components/ui/AssetImg.tsx` (Code)
 
 ```typescript
@@ -4824,26 +5034,6 @@ interface AssetImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
  */
 export function AssetImg({ assetPath, fallback = null, ...props }: AssetImgProps) {
   const src = useAsset(assetPath);
-```
-
-### `frontend/src/components/ui/GlassPanel.tsx` (Code)
-
-```typescript
-import * as React from "react"
-import { cn } from "@/lib/utils"
-
-export interface GlassPanelProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "subtle" | "strong" | "gradient"
-  gradient?: "indigo" | "purple" | "blue" | "amber" | "emerald"
-}
-
-const GlassPanel = React.forwardRef<HTMLDivElement, GlassPanelProps>(
-  ({ className, variant = "default", gradient = "indigo", ...props }, ref) => {
-    const variantClasses = {
-      default: "liquid-glass",
-      subtle: "liquid-glass-subtle",
-      strong: "liquid-glass-strong",
 ```
 
 ### `frontend/src/components/ui/LanguageSelector.tsx` (Code)
@@ -5958,7 +6148,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { updateGuestProfile } from '@/lib/guestProfile';
 import { trackEvent } from '@/lib/analytics';
 import type { PlacementState } from './types';
@@ -5969,6 +6158,7 @@ import { PlacementProgressBar } from './components/PlacementProgressBar';
 import { PlacementClosingScreen } from './components/PlacementClosingScreen';
 
 const MAX_ITEMS = 12;
+
 ```
 
 ### `frontend/src/features/placement/bank/items.ts` (Code)
@@ -5997,7 +6187,6 @@ const A2_ITEMS: PlacementItem[] = [
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import { StreakCelebration } from '@/components/ui/StreakCelebration';
 import type { PlacementResult } from '@/lib/guestProfile';
@@ -6009,6 +6198,7 @@ interface Props {
 }
 
 export function PlacementClosingScreen({ result, name, onContinue }: Props) {
+  const { t } = useTranslation('placement');
 ```
 
 ### `frontend/src/features/placement/components/PlacementIntroScreen.tsx` (Code)
@@ -6017,7 +6207,6 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
 
 interface Props {
@@ -6029,6 +6218,7 @@ interface Props {
 export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
   const { t, i18n } = useTranslation('placement');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
 ```
 
 ### `frontend/src/features/placement/components/PlacementProgressBar.tsx` (Code)
@@ -6044,10 +6234,10 @@ export function PlacementProgressBar({ current, max, isFinishing }: Props) {
   const pct = isFinishing ? 100 : Math.min(Math.round((current / max) * 100), 95);
 
   return (
-    <div className="w-full px-6 pt-6 pb-1 max-w-lg mx-auto">
-      <div className="relative w-full h-2 bg-black/8 dark:bg-white/10 rounded-full overflow-hidden">
+    <div className="relative z-10 w-full px-6 pt-6 pb-1 max-w-lg mx-auto">
+      <div className="relative w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-700 ease-out"
+          className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-all duration-700 ease-out"
           style={{ width: `${pct}%` }}
 ```
 
@@ -8901,10 +9091,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAvatar } from '@dicebear/core';
 import * as avataaars from '@dicebear/avataaars';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import { ArrowLeft, Shuffle, Save, Check, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { API_URL } from '@/config/api';
@@ -8912,6 +9099,9 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from '@/contexts/SoundContext';
 
 // Avatar option categories with their correct DiceBear values
+const AVATAR_OPTIONS = {
+    top: {
+        label: 'Cabello',
 ```
 
 ### `frontend/src/pages/Bye.tsx` (Code)
@@ -8919,7 +9109,7 @@ import { useSound } from '@/contexts/SoundContext';
 ```typescript
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Star, Rocket } from "lucide-react";
+import { Rocket } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
@@ -8940,29 +9130,27 @@ const Bye = () => {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Mail, Sparkles, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const ForgotPassword = () => {
   const { t } = useTranslation(['auth']);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const { toast } = useToast();
 ```
 
 ### `frontend/src/pages/GamesPage.tsx` (Code)
 
 ```typescript
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Play, BookOpen, Users, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { AssetImg } from "@/components/ui/AssetImg";
@@ -8972,6 +9160,8 @@ interface GameCard {
   path: string;
   titleKey: string;
   subtitleKey: string;
+  gif: string;
+  fallbackEmojis: string[];
 ```
 
 ### `frontend/src/pages/Help.tsx` (Code)
@@ -8979,9 +9169,7 @@ interface GameCard {
 ```typescript
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ReportFAB } from "@/components/common/ReportFAB";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import { cn } from "@/lib/utils";
 import {
   HelpCircle,
@@ -8990,8 +9178,10 @@ import {
   Gamepad2,
   Shield,
   MessageSquare,
-  Sparkles,
 } from "lucide-react";
+
+// ── FAQ Item Component ─────────────────────────────────────────────────────────
+
 ```
 
 ### `frontend/src/pages/Index.tsx` (Code)
@@ -8999,7 +9189,6 @@ import {
 ```typescript
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ParentDashboard } from "@/components/dashboard/ParentDashboard";
 import { isGuest, getPendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { API_URL } from "@/config/api";
@@ -9012,17 +9201,17 @@ const Index = () => {
     if (userData) {
       setUser(JSON.parse(userData));
     }
+
 ```
 
 ### `frontend/src/pages/LandingPage.tsx` (Code)
 
 ```typescript
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { hasSession } from "@/lib/guestProfile";
 import { Reveal } from "@/components/landing/Reveal";
-import { StockImage } from "@/components/landing/StockImage";
+import { LiquidGlassMedia } from "@/components/landing/LiquidGlassMedia";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import {
   ArrowRight,
@@ -9032,6 +9221,7 @@ import {
   BookOpen,
   Gamepad2,
   Bot,
+  LayoutDashboard,
 ```
 
 ### `frontend/src/pages/LearnPage.tsx` (Code)
@@ -9046,32 +9236,12 @@ import {
  * • Full i18n, mobile-first, light/dark compatible, Liquid Glass aesthetic
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { AdventureCard } from '@/components/lessons/AdventureCard';
 import { LessonPath } from '@/components/lessons/LessonPath';
 import { useAdventuresAPI, type Adventure } from '@/components/lessons/hooks/useAdventures';
 import { useLessonsList } from '@/components/lessons/hooks/useLessonsList';
 import { useResumeLesson } from '@/components/lessons/hooks/useResumeLesson';
-```
-
-### `frontend/src/pages/Lessons.tsx` (Code)
-
-```typescript
-import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Adventures } from "@/components/lessons/Adventures";
-import { SagaView } from "@/components/lessons/SagaView";
-import { LessonPath } from "@/components/lessons/LessonPath";
-import { useLessonsList } from "@/components/lessons/hooks/useLessonsList";
-import { useTranslation } from "react-i18next";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { LessonsLoadingScreen } from "@/components/ui/LoadingScreen";
-import { cn } from "@/lib/utils";
-
-// Navigation states
-type ViewState =
-  | { type: 'adventures' }
+import { useSagaData, type SagaData } from '@/components/lessons/hooks/useSagaData';
 ```
 
 ### `frontend/src/pages/Login.tsx` (Code)
@@ -9084,14 +9254,14 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, Sparkles, Rocket, Star } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const Login = () => {
+  const { t } = useTranslation(['auth', 'common', 'errors']);
 ```
 
 ### `frontend/src/pages/NotFound.tsx` (Code)
@@ -9121,7 +9291,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Check, Sparkles, Star, Zap } from "lucide-react";
+import { ChevronRight, Check, Sparkles } from "lucide-react";
 import { DinoCharacter } from "@/components/characters/DinoCharacter";
 import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
@@ -9138,7 +9308,6 @@ const STEP_NAMES: Record<number, string> = {
 
 ```typescript
 import React from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Hammer, Construction } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -9149,9 +9318,10 @@ export default function PageUnderConstruction() {
     const { t } = useTranslation('common');
 
     return (
-        <DashboardLayout>
-            <div className="flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
-                <div className="bg-indigo-100 dark:bg-indigo-900/30 p-8 rounded-full mb-6">
+        <div className="corp flex flex-col items-center justify-center min-h-[80vh] text-center p-4 animate-in fade-in duration-500">
+            <div className="corp-icon-chip rounded-full w-40 h-40 mb-6">
+                <Construction className="w-24 h-24" />
+            </div>
 ```
 
 ### `frontend/src/pages/PlacementPage.tsx` (Code)
@@ -9178,12 +9348,9 @@ export default function PlacementPage() {
 
 ```typescript
 import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
-import { GlassPanel } from "@/components/ui/GlassPanel";
-import { Settings, Trophy, Flame, Star, Mail, Shield, Palette, Loader2, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
+import { Mail, Shield, Palette, Loader2, Globe, AtSign, UserCircle, ArrowLeft, Users, UserPlus, Search, X } from "lucide-react";
 import { socialApi, UserPublicProfile, FollowRequest } from "../lib/api/social";
 import { UserConnectionsList } from "@/components/social/UserConnectionsList";
 import { Input } from "@/components/ui/input";
@@ -9192,6 +9359,9 @@ import { useTranslation } from "react-i18next";
 import {
   Popover,
   PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
 ```
 
 ### `frontend/src/pages/ResetPassword.tsx` (Code)
@@ -9203,22 +9373,21 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Lock, Sparkles, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const ResetPassword = () => {
   const { t } = useTranslation(['auth']);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 ```
 
 ### `frontend/src/pages/Settings.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9232,6 +9401,7 @@ import {
     User as UserIcon,
     AtSign,
     Mail,
+    Lock,
 ```
 
 ### `frontend/src/pages/Signup.tsx` (Code)
@@ -9244,14 +9414,14 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Star, Zap, Heart, Send } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Send, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { savePendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
-import { GlassPanel } from "@/components/ui/GlassPanel";
+
 ```
 
 ### `frontend/src/pages/admin/AdminAnalytics.tsx` (Code)
@@ -9259,19 +9429,19 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 ```typescript
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart3, RefreshCw, ExternalLink, Maximize2, Minimize2, AlertTriangle, Loader2 } from 'lucide-react';
+import {
+  BarChart3, RefreshCw, ExternalLink, Maximize2, Minimize2,
+  AlertTriangle, Loader2, ArrowLeft, MonitorPlay,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 /** Single source of truth for the external analytics dashboard URL. */
 export const ADMIN_ANALYTICS_URL = 'https://lf-analytics-production-669d.up.railway.app/';
 
-/** Time to wait for the iframe to load before assuming embedding is blocked. */
-const LOAD_TIMEOUT_MS = 8000;
-
-export const AdminAnalytics: React.FC = () => {
-  const { t } = useTranslation('admin');
-  const [loaded, setLoaded] = useState(false);
+/**
+ * The dashboard is Metabase, which serves `X-Frame-Options: DENY` +
+ * `frame-ancestors 'none'`, so embedding is blocked by the browser. The page is
+ * therefore "launcher-first": it opens Analytics in a new tab by default, and
 ```
 
 ### `frontend/src/pages/admin/AdminAudio.tsx` (Code)
@@ -9280,11 +9450,9 @@ export const AdminAnalytics: React.FC = () => {
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminAudio, useUploadAudio, useGenerateAudio, useDeleteAudio } from '@/hooks/useAdminAudio';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -9292,6 +9460,8 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 ```
 
 ### `frontend/src/pages/admin/AdminCharacters.tsx` (Code)
@@ -9300,18 +9470,18 @@ import {
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminCharacters } from '@/hooks/useAdminCharacters';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Play, Sparkles } from 'lucide-react';
 import { normalizeGesture } from '@/utils/gestureMapper';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 
 // Character Components
 import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
+import ZaraVexCharacter from '@/components/characters/ZaraVexCharacter';
+
+export const AdminCharacters: React.FC = () => {
 ```
 
 ### `frontend/src/pages/admin/AdminDashboard.tsx` (Code)
@@ -9320,18 +9490,18 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminStats } from '@/hooks/useAdminStats';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BookOpen, Zap, Users, Volume2, TrendingUp, RefreshCw, Shield, Plus, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import { AdminContributionGraph } from '@/components/admin/AdminContributionGraph';
 import { AdminActivityChart } from '@/components/admin/AdminActivityChart';
 
+interface RecentEdit {
+  id: string;
+  editor_user_id: string;
+  editor_name: string;
 ```
 
 ### `frontend/src/pages/admin/AdminHelp.tsx` (Code)
@@ -9340,7 +9510,6 @@ import { AdminActivityChart } from '@/components/admin/AdminActivityChart';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -9352,6 +9521,7 @@ import {
 import {
   BookOpen,
   HelpCircle,
+  GraduationCap,
 ```
 
 ### `frontend/src/pages/admin/AdminHistory.tsx` (Code)
@@ -9360,10 +9530,7 @@ import {
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminHistory, useRollback } from '@/hooks/useAdminHistory';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -9372,6 +9539,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
 ```
 
 ### `frontend/src/pages/admin/AdminLessonEditor.tsx` (Code)
@@ -9387,11 +9557,11 @@ import {
   useValidateLesson,
   Lesson,
 } from '@/hooks/useAdminLessons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 ```
 
 ### `frontend/src/pages/admin/AdminLessons.tsx` (Code)
@@ -9400,10 +9570,7 @@ import { Textarea } from '@/components/ui/textarea';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminLessons, useDeleteLesson, useDuplicateLesson } from '@/hooks/useAdminLessons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -9412,6 +9579,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
 ```
 
 ### `frontend/src/pages/admin/AdminNotifications.tsx` (Code)
@@ -9419,11 +9589,10 @@ import {
 ```typescript
 import { useState, useEffect, useCallback } from "react";
 import {
-  Bell, Plus, Filter, RefreshCw, Search, Send, Archive, Edit2, Eye,
-  Users, User, Globe, Clock, Trash2, X, ChevronDown,
+  Bell, Plus, Filter, RefreshCw, Search, Send, Archive, Edit2,
+  Users, User, Globe, Clock, X,
   Megaphone, UserPlus, Flame, Trophy, BookOpen, Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   notificationsAdminApi,
   type NotificationAdminItem,
@@ -9432,18 +9601,16 @@ import {
 } from "@/lib/api/notifications";
 
 // ── Constants ──
+
 ```
 
 ### `frontend/src/pages/admin/AdminReports.tsx` (Code)
 
 ```typescript
 import { useState, useEffect } from "react";
-import { Flag, AlertCircle, Clock, CheckCircle2, XCircle, Filter, RefreshCw, ExternalLink, ChevronDown, Image, Video, FileText, Eye, Play, Music } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Flag, AlertCircle, Clock, CheckCircle2, XCircle, Filter, RefreshCw, ExternalLink, Video, FileText, Eye, Play, Music } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -9452,6 +9619,9 @@ interface PlatformReport {
   public_id: string;
   reporter_email: string;
   reporter_public_id?: string;
+  report_type: 'bug' | 'abuse' | 'suggestion' | 'content' | 'other';
+  subject: string;
+  reported_url?: string;
 ```
 
 ### `frontend/src/pages/admin/AdminSettings.tsx` (Code)
@@ -9460,18 +9630,18 @@ interface PlatformReport {
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Settings as SettingsIcon, User, Palette, LayoutGrid, Bell, LogOut, Trash2, Info } from 'lucide-react';
-import { GlassPanel } from '@/components/ui/GlassPanel';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import { useToast } from '@/hooks/use-toast';
 import { useAdminSettings } from '@/hooks/useAdminSettings';
-import { cn } from '@/lib/utils';
 
 const SIDEBAR_KEY = 'admin_sidebar_collapsed';
 
+interface AdminUser {
+  name?: string;
+  email?: string;
 ```
 
 ### `frontend/src/pages/admin/AdminUsers.tsx` (Code)
@@ -9480,38 +9650,58 @@ const SIDEBAR_KEY = 'admin_sidebar_collapsed';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAdminUsers, usePromoteUser, useDemoteUser } from '@/hooks/useAdminStats';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+```
+
+### `frontend/src/pages/dev/LessonLab.tsx` (Code)
+
+```typescript
+/**
+ * LessonLab — DEV-ONLY reference harness for the Playful DS v2 ("Founder's Quest").
+ *
+ * Renders the redesigned lesson experience (shell + exercises + reward) with
+ * MOCK data so the new UX/UI bar can be reviewed without the backend. This is
+ * the approval reference; once the direction is signed off, these patterns get
+ * ported into the real LessonRunner + the 43 activity components.
+ *
+ * Route: /dev/lesson-lab (gated to import.meta.env.DEV in App.tsx).
+ */
+import { useState } from "react";
+import { Check, X, ArrowRight, Trophy, RotateCcw, Coins } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { DinoCharacter } from "@/components/characters/DinoCharacter";
+import { QuestProgress } from "@/components/lessons/engine/ui/QuestProgress";
 ```
 
 ### `frontend/src/pages/landing/FamiliesPage.tsx` (Code)
 
 ```typescript
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { LandingLayout } from '@/components/landing/LandingLayout';
+import { useTranslation } from "react-i18next";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+import { Reveal } from "@/components/landing/Reveal";
+import { LiquidGlassMedia } from "@/components/landing/LiquidGlassMedia";
+import { EmailWaitlistForm } from "@/components/landing/EmailWaitlistForm";
 import {
+  Sparkles,
+  CheckCircle2,
   Clock,
-} from 'lucide-react';
-
-/* ─── Wave divider ────────────────────────────────────────────────────────── */
-function WaveDivider({ top = false, fromClass, toClass }: { top?: boolean; fromClass?: string; toClass: string }) {
-  return (
-    <div className={`relative w-full overflow-hidden leading-none pointer-events-none ${top ? '' : ''}`} style={{ height: 64 }}>
-      <svg viewBox="0 0 1440 64" preserveAspectRatio="none" className={`absolute w-full h-full ${top ? 'bottom-0' : 'bottom-0'}`} xmlns="http://www.w3.org/2000/svg">
-        {top
-          ? <path d="M0,64 C360,20 720,64 1080,30 C1260,12 1380,50 1440,40 L1440,64 L0,64 Z" className={toClass} />
-          : <path d="M0,20 C360,60 720,10 1080,45 C1260,60 1380,20 1440,35 L1440,64 L0,64 Z" className={toClass} />
+  Coins,
+  Gift,
+  LayoutDashboard,
+  ShoppingBag,
+  Users,
+  ShieldCheck,
 ```
 
 ### `frontend/src/pages/landing/FaqPage.tsx` (Code)
@@ -9557,21 +9747,21 @@ import {
 ### `frontend/src/pages/landing/PricingPage.tsx` (Code)
 
 ```typescript
-import React from 'react';
-import { LandingLayout } from '@/components/landing/LandingLayout';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Zap, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LandingLayout } from "@/components/landing/LandingLayout";
+import { Reveal } from "@/components/landing/Reveal";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { CheckCircle2, ArrowRight, Zap, Lock, Sparkles, Users, Building2 } from "lucide-react";
 
 /* ── Active tier card ──────────────────────────────────────────────────────── */
-function ActiveCard({ t }: { t: any }) {
+function ActiveCard({ t }: { t: (key: string) => string }) {
   const features = [
-    t('pricing.freemium_feature_1'),
-    t('pricing.freemium_feature_2'),
-    t('pricing.freemium_feature_3'),
-    t('pricing.freemium_feature_4'),
-    t('pricing.freemium_feature_5'),
+    t("pricing.freemium_feature_1"),
+    t("pricing.freemium_feature_2"),
+    t("pricing.freemium_feature_3"),
+    t("pricing.freemium_feature_4"),
+    t("pricing.freemium_feature_5"),
+  ];
 ```
 
 ### `frontend/src/pages/social/UserProfile.tsx` (Code)

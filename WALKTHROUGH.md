@@ -63,6 +63,9 @@ littlefounders.ai
 | 2026-06-11 | UX: Añadidos viñetas descriptivas en Hero section (edad, tiempo y beneficio principal) |
 | 2026-06-14 | UX/UI: Estandarización visual integral bajo el sistema "corp" (`corp-grid-bg`, `corp-card`, `corp-btn-primary`) en todas las páginas de autenticación, onboarding, landings y modales utilitarios |
 | 2026-06-16 | UX/UI (Landing & Lessons): Remoción sistemática de marcadores genéricos de IA (gradientes índigo, animaciones elásticas) en favor de la paleta corporativa y animaciones modernas, validado con `impeccable` (0 anti-patrones). |
+| 2026-06-17 | Lesson Engine: auditoría integral de los 40+ tipos contra el corpus real (2,462 lecciones). Corrección de falsos negativos en `validateAnswer` (la opción correcta marcaba error), nuevos renderers para tipos sin soporte (`comparison`/`case_*`/`decision_*` vía `GenericChoice`), helper `resolveOptions`, feedback de simuladores unificado y StoryMode calificado. Cobertura con tests de corpus. PR #21 → producción. Ver `frontend/src/components/lessons/engine/VALIDATION_AUDIT.md`. |
+| 2026-06-17 | Placement: el flujo "empezar desde lo básico" (skip) ahora navega directo a la primera lección y muestra una pantalla de cierre dedicada (`skipped_title`/`skipped_body`). |
+| 2026-06-17 | UI (Landing): imágenes Hero/showcase actualizadas a fotos de niños usando la plataforma. |
 
 ---
 
@@ -71,7 +74,8 @@ littlefounders.ai
 1. **~150 variables no usadas** en frontend (TS6133) — `noUnusedLocals` desactivado temporalmente
 2. **670 warnings de ESLint** en frontend — pre-existentes, no bloqueantes
 3. **Sin Supabase migrations** — dump inicial pendiente (ejecutar `supabase db dump` local)
-4. **Sin cobertura de tests reales** — solo placeholder tests
+4. **Cobertura de tests parcial** — el Lesson Engine tiene tests reales (unitarios + de corpus sobre las 2,462 lecciones) y los hooks de admin; el resto del frontend aún es limitado
 5. **Sin E2E tests** — solo manuales
 6. **Sin pre-commit hooks** (husky/lint-staged)
 7. **Secrets de CD configurados** — `VERCEL_DEPLOY_HOOK_URL` y `RAILWAY_TOKEN` ✓ (el viejo `RENDER_DEPLOY_HOOK_URL` quedó obsoleto)
+8. **Datos de lecciones mal-tipados (opcional)** — algunos ejercicios en el JSON del backend están tipados como `shop_sim`/`salary_comparison`/`math_challenge` pero son en realidad `multiple_choice`/`true_false`. El frontend ya los maneja defensivamente; re-tipificarlos en el JSON es limpieza de datos pendiente (no funcional)
