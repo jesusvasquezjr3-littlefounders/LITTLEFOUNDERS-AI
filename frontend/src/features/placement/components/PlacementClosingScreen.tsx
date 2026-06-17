@@ -32,10 +32,10 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
 
         <div className="w-full px-2 flex flex-col items-center animate-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            {t('closing.title', { name })}
+            {result?.skipped ? t('closing.skipped_title', { name }) : t('closing.title', { name })}
           </h2>
 
-          {result && (
+          {result && !result.skipped && (
             <div className="flex items-center gap-2 mb-4 px-5 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20">
               <Star className="w-4 h-4 text-indigo-500 dark:text-indigo-400 shrink-0" />
               <span className="text-sm font-bold text-indigo-700 dark:text-indigo-300">
@@ -45,7 +45,7 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
           )}
 
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-8 leading-relaxed max-w-xs">
-            {t('closing.body')}
+            {result?.skipped ? t('closing.skipped_body') : t('closing.body')}
           </p>
 
           <div className="flex items-center justify-center gap-2 mb-8 w-max rounded-full py-1.5 px-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">

@@ -82,7 +82,7 @@ export function PlacementEngine({ name, age }: Props) {
     updateGuestProfile({
       placement: finalResult,
       placement_adventure: finalResult.finalAdventure,
-      next_lesson_code: finalResult.skipped ? null : finalResult.targetLessonCode,
+      next_lesson_code: finalResult.targetLessonCode,
     });
   }
 
@@ -198,7 +198,11 @@ export function PlacementEngine({ name, age }: Props) {
       final_adventure: state.result?.finalAdventure ?? baseAdventure,
       final_saga: state.result?.finalSaga ?? 1,
     });
-    navigate('/learn');
+    if (state.skipped && state.result?.targetLessonCode) {
+      navigate(`/lesson/${state.result.targetLessonCode}`);
+    } else {
+      navigate('/learn');
+    }
   }
 
   return (

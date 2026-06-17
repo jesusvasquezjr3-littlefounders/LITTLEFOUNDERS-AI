@@ -10,8 +10,10 @@
     },
     "closing": {
         "title": "Your map is ready, {{name}}! 🗺️",
+        "skipped_title": "Awesome, {{name}}! 🌱",
         "saga_start": "You'll start at: Adventure {{adventure}} · Saga {{saga}}",
         "body": "We've personalized your learning path. Everything is ready for you to start your adventure!",
+        "skipped_body": "We'll start from the basics to build strong foundations.",
         "streak_label": "STREAK",
         "cta": "Start my adventure!",
         "liruf_bubble": "{{name}}, your map is ready! 🗺️🎉 You'll start at: Adventure {{adventure}} · Saga {{saga}}",
