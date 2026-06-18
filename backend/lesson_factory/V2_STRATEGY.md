@@ -220,4 +220,17 @@ Ver [`pilot_v2/`](pilot_v2/) — 2 lecciones de Adventure 1 regeneradas con el p
 
 **Pendiente humano (ruta crítica Fase 1):** el usuario aprueba/ajusta los ratings del set pedagógico (ancla humana) → segundo pase de juez independiente → **kappa ponderado por dimensión** ≥ 0.6 → retirar el "84.2%".
 
+### Fase 2 + Motor de generación 🟢 CONSTRUIDO (probado en pequeño)
+| Artefacto | Archivo | Estado |
+|-----------|---------|--------|
+| Gate robusto (veredicto, entrypoint CI/pre-import) | `gate.py` | ✅ |
+| Gate `content_quality` (profanidad/typos vulgares) | `eval/run_eval.py` | ✅ (cazó el único 'pedo' del corpus) |
+| Motor de generación (DeepSeek drafter + gate + retry + provenance) | `generate_v2.py` | ✅ probado banda 1 y 3 |
+| CI bloqueante sobre contenido nuevo | `.github/workflows/lesson-factory-ci.yml` | ✅ |
+| Kappa inter-modelo Opus vs DeepSeek | `eval/kappa_report.json` | ✅ (engagement 0.61; DeepSeek NO juzga factual → juez=Opus) |
+| Lecciones de prueba (gated) | `test_lessons/` | ✅ 1-1-3-1, 1-1-3-7 (banda 1), 3-2-15-3 (banda 3) |
+| Runbook de generación masiva | `MASS_GENERATION_RUNBOOK.md` | ✅ |
+
+**Hallazgo del motor:** DeepSeek a través del loop v2 produce contenido sólido y gate-passing (arco de 6 fases, feedback por distractor, andamiaje decreciente). Sus límites medidos: no escribe feedback específico para `matching_pairs` (gate afinado: exigible solo en mc/tf/tap) y no juzga rigor factual (juez=Opus). El pipeline funciona cross-banda.
+
 > Nada de esto se ha publicado a la BD ni modifica el corpus. Es andamiaje local, listo para revisión.

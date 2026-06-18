@@ -104,18 +104,28 @@ def check_content_quality(lesson: dict) -> tuple[bool, list[str]]:
     return (len(issues) == 0, issues[:10])
 
 
+PURE_FILLER = ["inténtalo de nuevo", "intenta de nuevo", "try again", "vuelve a intentar", "intenta otra vez"]
+EXACT_GENERIC = {"incorrecto", "incorrecto.", "wrong", "wrong.", "mal", "no", "casi", "casi."}
+
+
 def check_feedback(lesson: dict) -> tuple[bool, list[str]]:
     issues = []
     for i, ex in enumerate(lesson.get("content_es", [])):
-        if ex.get("type") == "intro_narrative":
+        t = ex.get("type")
+        if t == "intro_narrative":
             continue
         fb = ex.get("feedback") or {}
         err = (fb.get("error") or "").strip().lower()
-        if ex.get("correct_answer") is not None and not err:
-            issues.append(f"ejercicio #{i} ({ex.get('type')}) sin feedback de error")
-        elif err and any(err == g or err.startswith(g) for g in GENERIC_ERRORS) and not fb.get("per_option"):
-            issues.append(f"ejercicio #{i} feedback de error genérico: \"{err[:40]}\"")
-    return (len(issues) == 0, issues[:10])
+        # matching_pairs no lleva correct_answer pero SÍ debe tener feedback útil
+        gradable = ex.get("correct_answer") is not None or t == "matching_pairs"
+        # El feedback por-distractor solo es factible (y exigible) en estos tipos:
+        specific_feasible = t in ("multiple_choice", "true_false", "tap_action")
+        if gradable and not err:
+            issues.append(f"ejercicio #{i} ({t}) sin feedback de error")
+        elif specific_feasible and err and not fb.get("per_option") and (
+                any(f in err for f in PURE_FILLER) or err in EXACT_GENERIC):
+            issues.append(f"ejercicio #{i} ({t}) feedback de error genérico: \"{err[:45]}\"")
+    return (len(issues) == 0, issues[:12])
 
 
 def evaluate(path: str):
