@@ -17,6 +17,7 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import DrRhoCharacter, { RhoMood } from '@/components/characters/DrRhoCharacter';
 import ZaraVexCharacter, { ZaraMood } from '@/components/characters/ZaraVexCharacter';
 import { useLessonData, useLessonState, useLessonAudio, completeLesson, fetchNextLessonCode } from './hooks';
+import type { LessonData } from './hooks/useLessonData';
 import { useSound } from "@/contexts/SoundContext";
 import { MultipleChoice } from './activities/MultipleChoice';
 import { TapAction } from './activities/TapAction';
@@ -83,6 +84,8 @@ import { cn } from '@/lib/utils';
 
 interface LessonRunnerProps {
     lessonCode?: string;
+    /** DEV preview: renderiza estos datos directamente en vez de hacer fetch al backend. */
+    dataOverride?: LessonData | null;
 }
 
 // Character code mapping - normalize all variations to canonical codes
@@ -112,11 +115,12 @@ function normalizeCharacterCode(rawCode: unknown): string {
     return CHARACTER_CODE_MAP[normalized] || CHARACTER_CODE_MAP[String(rawCode)] || 'liruf';
 }
 
-export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) {
+export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: LessonRunnerProps) {
     const { t } = useTranslation('lessons');
     const params = useParams<{ lessonCode: string }>();
     const navigate = useNavigate();
     const code = propLessonCode || params.lessonCode || '';
+    const isPreview = !!dataOverride;
 
     // Use global sound context (SFX: chimes, buzzer)
     const { playSound, mute: audioMuted, toggleMute: setAudioMuted, playBGM, stopBGM } = useSound();
@@ -130,8 +134,11 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
         };
     }, [playBGM, stopBGM]);
 
-    // Fetch lesson data
-    const { data, loading, error } = useLessonData(code);
+    // Fetch lesson data (skipped in preview: dataOverride se usa directamente)
+    const { data: fetchedData, loading: fetchLoading, error: fetchError } = useLessonData(isPreview ? '' : code);
+    const data = dataOverride ?? fetchedData;
+    const loading = isPreview ? false : fetchLoading;
+    const error = isPreview ? null : fetchError;
 
     // Lesson state machine
     const {
@@ -493,7 +500,7 @@ export function LessonRunner({ lessonCode: propLessonCode }: LessonRunnerProps) 
                 }
 
                 // ── Step 2: Fetch next lesson code (independent of step 1) ───
-                const nextCode = await fetchNextLessonCode(code);
+                const nextCode = isPreview ? null : await fetchNextLessonCode(code);
 
                 // ── Step 3: Process result and decide presentation sequence ───
                 let wasFirstToday = false;

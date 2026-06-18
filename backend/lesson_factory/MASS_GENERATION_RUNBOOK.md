@@ -39,6 +39,16 @@ plan (Opus/planner)
 5. **Revisión humana** de una muestra / de las marcadas.
 6. **Import:** `import_lessons.py` con upsert por provenance → solo sube lo nuevo/aprobado.
 
+## Cómo PREVISUALIZAR una lección en el motor real (sin backend)
+
+Para evaluar visualmente una lección generada antes de publicarla:
+1. `cd frontend && npm run dev`
+2. Abrir **`/dev/lesson-preview`** (ruta solo-DEV).
+3. Elegir un fixture (los de `test_lessons/`/`pilot_v2/` están copiados en `frontend/src/pages/dev/fixtures/`) o **pegar el JSON** de cualquier lección.
+4. Se renderiza en el **LessonRunner REAL** (componentes de actividad + grading `validateAnswer` reales), transformado con `transformToTimeline` (mismo shape que `/play`). Toggle ES/EN y reinicio incluidos.
+
+Esto NO toca la BD ni producción. Para añadir una lección nueva al previewer, copiar su JSON a `frontend/src/pages/dev/fixtures/`.
+
 ## La gran optimización: regenerar SOLO lo bajo-la-barra
 
 No regenerar las 2,461. Flujo:
