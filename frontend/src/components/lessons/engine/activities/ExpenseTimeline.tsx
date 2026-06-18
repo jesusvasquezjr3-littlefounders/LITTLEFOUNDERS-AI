@@ -3,6 +3,7 @@ import { ArrowRight, Clock, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from "../ui/QuestButton";
+import { pickText } from './fieldText';
 
 interface ExpenseTimelineProps {
     exercise: any;
@@ -111,7 +112,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                             >
                                 <div className="text-center">
                                     <div className="text-3xl sm:text-4xl mb-1.5">{expense.icon || '💳'}</div>
-                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>{expense.name}</div>
+                                    <div className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>{pickText(expense, ['name', 'label', 'text', 'title'])}</div>
                                     <div className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>${expense.amount}</div>
                                 </div>
                             </div>
@@ -160,7 +161,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                                                     <span className="text-3xl sm:text-4xl">{expense.icon || '💳'}</span>
                                                     <div>
                                                         <div className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
-                                                            {expense.name}
+                                                            {pickText(expense, ['name', 'label', 'text', 'title'])}
                                                         </div>
                                                         <div className="lp-display text-xs" style={{ color: 'var(--lp-muted)' }}>
                                                             {t(`expense_timeline.${expense.priority}`)}

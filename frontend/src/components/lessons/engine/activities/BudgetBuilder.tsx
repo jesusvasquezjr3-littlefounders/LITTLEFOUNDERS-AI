@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, Wallet, ShoppingCart, AlertCircle } from 'lucide
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface BudgetBuilderProps {
     exercise: any;
@@ -265,7 +266,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                             >
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
-                                        {category.name}
+                                        {pickText(category, ['name', 'label', 'text', 'title'])}
                                     </h3>
                                     <span
                                         className="lp-display text-sm tabular-nums"
@@ -294,7 +295,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                         feedback !== 'none' && 'opacity-60 cursor-not-allowed'
                                     )}
                                     style={{ accentColor: 'var(--lp-emerald)' }}
-                                    aria-label={category.name}
+                                    aria-label={pickText(category, ['name', 'label', 'text', 'title'])}
                                     aria-valuemin={0}
                                     aria-valuemax={totalIncome}
                                     aria-valuenow={allocated}
@@ -433,7 +434,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                 <div className="text-center">
                                     <div className="text-3xl sm:text-4xl mb-1">{item.icon || '📦'}</div>
                                     <div className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>
-                                        {item.name}
+                                        {pickText(item)}
                                     </div>
                                     <div className="lp-display text-xs" style={{ color: 'var(--lp-emerald)' }}>
                                         ${item.cost}
@@ -520,7 +521,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                             <div className="flex items-center gap-2">
                                                 <span className="text-lg">{item.icon || '📦'}</span>
                                                 <span className="lp-display text-xs" style={{ color: 'var(--lp-ink)' }}>
-                                                    {item.name}
+                                                    {pickText(item)}
                                                 </span>
                                             </div>
                                             <span className="lp-display text-xs" style={{ color: 'var(--lp-emerald)' }}>

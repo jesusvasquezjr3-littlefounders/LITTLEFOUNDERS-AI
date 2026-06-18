@@ -4,6 +4,7 @@ import { ArrowRight, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface MindsetComparisonProps {
     exercise: any;
@@ -27,22 +28,22 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
     // Format 1: pair.left / pair.right
     if (content.pair?.left && content.pair?.right) {
         mindsets = [
-            { id: String(content.pair.left.id || 'left'), label: t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' }), text: content.pair.left.text || '', consequences: [], color: 'red' },
-            { id: String(content.pair.right.id || 'right'), label: t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' }), text: content.pair.right.text || '', consequences: [], color: 'green' },
+            { id: String(content.pair.left.id || 'left'), label: t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' }), text: pickText(content.pair.left, ['text', 'description', 'thought', 'label', 'name']), consequences: [], color: 'red' },
+            { id: String(content.pair.right.id || 'right'), label: t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' }), text: pickText(content.pair.right, ['text', 'description', 'thought', 'label', 'name']), consequences: [], color: 'green' },
         ];
     }
     // Format 2: mindsetA / mindsetB
     else if (content.mindsetA && content.mindsetB) {
         mindsets = [
-            { id: 'A', label: content.mindsetA.name || 'A', text: content.mindsetA.description || '', consequences: [], color: 'red' },
-            { id: 'B', label: content.mindsetB.name || 'B', text: content.mindsetB.description || '', consequences: [], color: 'green' },
+            { id: 'A', label: pickText(content.mindsetA, ['name', 'label', 'text', 'title']) || 'A', text: pickText(content.mindsetA, ['description', 'text', 'thought', 'label']), consequences: [], color: 'red' },
+            { id: 'B', label: pickText(content.mindsetB, ['name', 'label', 'text', 'title']) || 'B', text: pickText(content.mindsetB, ['description', 'text', 'thought', 'label']), consequences: [], color: 'green' },
         ];
     }
     // Format 3: mindset_a / mindset_b with IDs
     else if (content.mindset_a && content.mindset_b) {
         mindsets = [
-            { id: String(content.mindset_a.id || 'ma'), label: content.mindset_a.name || 'A', text: content.mindset_a.description || '', consequences: [], color: 'red' },
-            { id: String(content.mindset_b.id || 'mb'), label: content.mindset_b.name || 'B', text: content.mindset_b.description || '', consequences: [], color: 'green' },
+            { id: String(content.mindset_a.id || 'ma'), label: pickText(content.mindset_a, ['name', 'label', 'text', 'title']) || 'A', text: pickText(content.mindset_a, ['description', 'text', 'thought', 'label']), consequences: [], color: 'red' },
+            { id: String(content.mindset_b.id || 'mb'), label: pickText(content.mindset_b, ['name', 'label', 'text', 'title']) || 'B', text: pickText(content.mindset_b, ['description', 'text', 'thought', 'label']), consequences: [], color: 'green' },
         ];
     }
     // Format 3b: approachA/approachB or approach_a/approach_b
@@ -50,8 +51,8 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         const a = content.approachA || content.approach_a;
         const b = content.approachB || content.approach_b;
         mindsets = [
-            { id: String(a.id || 'A'), label: a.name || a.title || 'A', text: a.description || a.text || '', consequences: [], color: 'red' },
-            { id: String(b.id || 'B'), label: b.name || b.title || 'B', text: b.description || b.text || '', consequences: [], color: 'green' },
+            { id: String(a.id || 'A'), label: pickText(a, ['name', 'title', 'label', 'text']) || 'A', text: pickText(a, ['description', 'text', 'thought', 'label']), consequences: [], color: 'red' },
+            { id: String(b.id || 'B'), label: pickText(b, ['name', 'title', 'label', 'text']) || 'B', text: pickText(b, ['description', 'text', 'thought', 'label']), consequences: [], color: 'green' },
         ];
     }
     // Format 4: legacy scenario with scarcity/abundance

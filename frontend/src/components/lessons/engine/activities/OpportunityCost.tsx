@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
 import { resolveOptions } from './optionSource';
+import { pickText } from './fieldText';
 
 interface OpportunityCostProps {
     exercise: any;
@@ -77,7 +78,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                     const isSelected = selected === option.id;
                     const isNotSelected = selected && selected !== option.id;
                     const benefits = option.benefits || [];
-                    const title = option.title || option.text || '';
+                    const title = pickText(option, ['title', 'text', 'name', 'label']);
                     const description = option.description || '';
                     const icon = option.icon || '💡';
 

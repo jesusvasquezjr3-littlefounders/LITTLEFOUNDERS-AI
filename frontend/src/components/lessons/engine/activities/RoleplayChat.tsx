@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { OptionCard } from '../ui/OptionCard';
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface ChatMessage {
     id: string;
@@ -80,7 +81,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
         const userMsg: ChatMessage = {
             id: `user-${Date.now()}`,
             sender: 'user',
-            text: choice.text,
+            text: pickText(choice),
             avatar: '👤'
         };
         setMessages(prev => [...prev, userMsg]);
@@ -198,7 +199,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                             <OptionCard
                                 key={choice.id}
                                 index={index}
-                                text={choice.text}
+                                text={pickText(choice)}
                                 state={selectedChoiceId === choice.id ? 'selected' : 'idle'}
                                 onClick={() => handleChoice(choice)}
                                 disabled={selectedChoiceId !== null}

@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface FillBlankProps {
     exercise: any;
@@ -189,7 +190,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                         ? { color: "var(--lp-indigo-ink)" }
                                         : { background: "var(--lp-bg-2)", borderColor: "var(--lp-line)" }}
                                 >
-                                    {filledWord ? filledWord.text : "____"}
+                                    {filledWord ? pickText(filledWord) : "____"}
                                 </button>
                             );
                         }
@@ -252,7 +253,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                 )}
                                 style={isUsed ? undefined : { color: "var(--lp-ink)" }}
                             >
-                                {word.text}
+                                {pickText(word)}
                             </button>
                         );
                     })}

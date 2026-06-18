@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, Newspaper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from "../ui/QuestButton";
+import { pickText } from './fieldText';
 
 interface MarketReactionProps {
     exercise: any;
@@ -103,7 +104,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                             <div className="text-center">
                                 <div className="text-5xl sm:text-6xl mb-3">{option.icon || '📊'}</div>
                                 <p className="lp-display text-base sm:text-lg" style={{ color: "var(--lp-ink)" }}>
-                                    {option.text}
+                                    {pickText(option)}
                                 </p>
                             </div>
                         </button>

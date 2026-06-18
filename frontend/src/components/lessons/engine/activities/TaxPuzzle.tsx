@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { OptionCard, type OptionState } from '../ui/OptionCard';
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface TaxPuzzleProps {
     exercise: any;
@@ -115,7 +116,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                         <OptionCard
                             key={option.id}
                             index={index}
-                            text={option.text}
+                            text={pickText(option)}
                             state={fallbackOptionState(option.id)}
                             onClick={() => handleSelect(option.id)}
                             disabled={fb !== 'none'}
@@ -160,7 +161,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                             <div className="flex items-center gap-2">
                                 <span className="text-2xl">{piece.icon || '🧩'}</span>
                                 <label htmlFor={`piece-${piece.id}`} className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
-                                    {piece.name}
+                                    {pickText(piece, ['name', 'label', 'text', 'title'])}
                                 </label>
                             </div>
                             <span className="lp-display text-lg" style={{ color: 'var(--lp-indigo)' }}>
@@ -180,7 +181,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                             style={{ accentColor: 'var(--lp-indigo)', background: 'var(--lp-bg-2)' }}
                         />
                         <p className="text-xs mt-2" style={{ color: 'var(--lp-muted)' }}>
-                            {piece.description}
+                            {pickText(piece, ['description', 'detail', 'subtitle'])}
                         </p>
                     </div>
                 ))}

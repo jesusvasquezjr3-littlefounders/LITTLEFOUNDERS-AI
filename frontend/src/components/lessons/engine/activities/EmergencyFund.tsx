@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, AlertTriangle, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface EmergencyFundProps {
     exercise: any;
@@ -158,7 +159,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
                                 >
                                     <div className="flex items-center justify-between gap-4 mb-2">
                                         <p className="lp-display text-sm sm:text-base flex-1 leading-snug" style={{ color: 'var(--lp-ink)' }}>
-                                            {option.text}
+                                            {pickText(option)}
                                         </p>
                                         <span
                                             className="lp-display text-base sm:text-lg shrink-0"

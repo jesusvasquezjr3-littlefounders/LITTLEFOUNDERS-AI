@@ -4,6 +4,7 @@ import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from "../ui/QuestButton";
+import { pickText } from './fieldText';
 
 interface MatchingPairsProps {
     exercise: any;
@@ -30,8 +31,8 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
         const pairs: Array<{ id: string, text: string, pairId: string }> = [];
         exercise.content.pairs.forEach((pair: any) => {
             // Create two cards for each pair
-            pairs.push({ id: `${pair.id}-a`, text: pair.left, pairId: pair.id });
-            pairs.push({ id: `${pair.id}-b`, text: pair.right, pairId: pair.id });
+            pairs.push({ id: `${pair.id}-a`, text: pickText(pair.left), pairId: pair.id });
+            pairs.push({ id: `${pair.id}-b`, text: pickText(pair.right), pairId: pair.id });
         });
 
         // Shuffle

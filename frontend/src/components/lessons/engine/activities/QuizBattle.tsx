@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { OptionCard, type OptionState } from '../ui/OptionCard';
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface QuizBattleProps {
     exercise: any;
@@ -212,7 +213,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                                 <OptionCard
                                     key={option.id}
                                     index={index}
-                                    text={option.text}
+                                    text={pickText(option)}
                                     state={optionState}
                                     onClick={() => handleAnswer(option.id)}
                                     disabled={isAnswered}

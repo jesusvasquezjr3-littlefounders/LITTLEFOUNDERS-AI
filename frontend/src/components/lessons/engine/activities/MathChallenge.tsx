@@ -5,6 +5,7 @@ import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from "../ui/QuestButton";
 import { OptionCard, type OptionState } from '../ui/OptionCard';
 import { resolveOptions } from './optionSource';
+import { pickText } from './fieldText';
 
 interface MathChallengeProps {
     exercise: any;
@@ -83,7 +84,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
                         <OptionCard
                             key={opt.id}
                             index={index}
-                            text={opt.text}
+                            text={pickText(opt)}
                             state={optState(opt.id)}
                             onClick={() => { if (feedback === 'none') { setInput(opt.id); playSound('ui_tap'); } }}
                             disabled={feedback !== 'none'}

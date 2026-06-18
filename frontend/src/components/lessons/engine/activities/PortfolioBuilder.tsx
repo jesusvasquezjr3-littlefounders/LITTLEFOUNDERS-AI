@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, PieChart, CheckCircle, AlertCircle } from 'lucid
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface PortfolioBuilderProps {
     exercise: any;
@@ -49,14 +50,14 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
     const assets: AssetLike[] = isLegacy
         ? rawAssets.map((a: any) => ({
             id: String(a.id),
-            name: String(a.name || a.id),
+            name: pickText(a, ['name', 'label', 'text', 'title']) || String(a.id),
             color: String(a.color || '#5b6ef5'),
             risk: Number(a.risk ?? 5),
         }))
         : isOptions
             ? rawOptions.map((o: any, idx: number) => ({
                 id: String(o.id ?? idx),
-                name: String(o.text || o.name || o.id || idx),
+                name: pickText(o) || String(o.id ?? idx),
                 color: COLOR_PALETTE[idx % COLOR_PALETTE.length],
                 risk: 5,
             }))

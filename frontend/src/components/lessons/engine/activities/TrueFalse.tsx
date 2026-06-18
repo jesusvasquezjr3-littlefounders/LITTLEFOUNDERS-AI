@@ -4,6 +4,7 @@ import { Check, X, ArrowRight, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface TrueFalseProps {
     exercise: any;
@@ -50,7 +51,7 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
             {/* Statement Card */}
             <div className="lp-card p-6 sm:p-8 mb-8 sm:mb-10 w-full text-center">
                 <h3 className="lp-display text-2xl sm:text-3xl leading-tight" style={{ color: 'var(--lp-ink)' }}>
-                    {exercise.content.statement}
+                    {pickText(exercise.content, ['statement', 'text', 'question', 'prompt', 'title'])}
                 </h3>
             </div>
 

@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, Users, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface BillSplitterProps {
     exercise: any;
@@ -159,7 +160,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                         {items.map((item: any) => (
                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl" style={{ background: "var(--lp-bg-2)" }}>
                                 <div className="flex-1">
-                                    <span className="lp-display" style={{ color: "var(--lp-ink)" }}>{item.name}</span>
+                                    <span className="lp-display" style={{ color: "var(--lp-ink)" }}>{pickText(item)}</span>
                                     <span className="ml-2 text-sm" style={{ color: "var(--lp-muted)" }}>
                                         ${item.price.toFixed(2)}
                                     </span>
@@ -176,7 +177,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                                             )}
                                             style={{ color: "var(--lp-ink)" }}
                                         >
-                                            {person.name}
+                                            {pickText(person, ['name', 'label', 'text', 'title'])}
                                         </button>
                                     ))}
                                 </div>
@@ -221,7 +222,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                     {people.map((person: any) => (
                         <div key={person.id} className="lp-card p-4">
                             <div className="text-sm mb-1" style={{ color: "var(--lp-muted)" }}>
-                                {person.name}
+                                {pickText(person, ['name', 'label', 'text', 'title'])}
                             </div>
                             <div className="lp-display text-2xl" style={{ color: "var(--lp-indigo-ink)" }}>
                                 ${splits[person.id]?.toFixed(2) || '0.00'}

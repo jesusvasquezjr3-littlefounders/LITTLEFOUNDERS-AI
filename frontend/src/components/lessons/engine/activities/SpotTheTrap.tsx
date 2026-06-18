@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck, Mail } from 'lucide-
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText, speakerOf, messageOf } from './fieldText';
 
 interface SpotTheTrapProps {
     exercise: any;
@@ -42,9 +43,9 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
     const messages = Array.isArray(rawList)
         ? rawList.map((it: any, idx: number) => ({
             id: it?.id ?? `seg${idx}`,
-            text: it?.text ?? it?.label ?? it?.content ?? it?.message ?? it?.statement ?? String(it ?? ''),
+            text: messageOf(it) || pickText(it, ['text', 'label', 'content', 'statement']) || String(it ?? ''),
             isTrap: it?.isTrap ?? it?.isCorrect ?? false,
-            sender: it?.sender ?? '',
+            sender: speakerOf(it),
             hints: it?.hints ?? [],
         }))
         : [];
@@ -236,7 +237,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                     <div className="space-y-3">
                         {fallbackOptions.map((opt: any) => {
                             const optId = opt?.id || opt?.value || opt?.label || JSON.stringify(opt);
-                            const optLabel = opt.label || opt.text || opt.value || String(opt);
+                            const optLabel = pickText(opt) || String(opt);
                             const isSelected = fallbackSelection === optId;
                             const isRevealed = feedback !== 'none';
                             const isCorrectAnswer = correctTraps.has(optId);

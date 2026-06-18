@@ -3,6 +3,7 @@ import { ArrowRight, RotateCcw, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface InflationSimulatorProps {
     exercise: any;
@@ -65,7 +66,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
             <div className="mb-6 text-center">
                 <div className="inline-flex flex-col items-center lp-card px-8 py-5">
                     <div className="text-6xl sm:text-7xl mb-2 lp-bob">{product.icon || '🛒'}</div>
-                    <div className="lp-display text-xl sm:text-2xl" style={{ color: 'var(--lp-ink)' }}>{product.name}</div>
+                    <div className="lp-display text-xl sm:text-2xl" style={{ color: 'var(--lp-ink)' }}>{pickText(product, ['name', 'label', 'text', 'title'])}</div>
                     <div className="text-sm font-semibold" style={{ color: 'var(--lp-muted)' }}>
                         {t('inflation.base_price')}: ${basePrice} ({baseYear})
                     </div>

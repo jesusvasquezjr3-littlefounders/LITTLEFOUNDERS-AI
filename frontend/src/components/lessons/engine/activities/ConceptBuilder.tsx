@@ -4,6 +4,7 @@ import { ArrowRight, ArrowDown, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 // Removed unused dnd import
 
 // NOTE: Using simple click-to-order instead of heavy DnD library for simplicity in this swift implementation if possible.
@@ -132,7 +133,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
                                     feedback !== 'none' && "lp-token--locked"
                                 )}
                             >
-                                {block.label || block.text}
+                                {pickText(block, ['label', 'text', 'name', 'title', 'item', 'word', 'term', 'value'])}
                             </button>
                         );
                     })}
@@ -171,7 +172,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
                                 : "lp-token text-lg text-[var(--lp-ink)]",
                             feedback === 'success' && block.type !== 'connector' && "is-correct lp-option lp-option--emerald"
                         )}>
-                            {block.label || block.text}
+                            {pickText(block, ['label', 'text', 'name', 'title', 'item', 'word', 'term', 'value'])}
 
                             {/* Controls (Hidden if done) */}
                             {feedback === 'none' && (

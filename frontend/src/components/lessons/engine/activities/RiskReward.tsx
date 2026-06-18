@@ -5,6 +5,7 @@ import { useSound } from "@/contexts/SoundContext";
 import { ArrowRight, RotateCcw, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { QuestButton } from '../ui/QuestButton';
 import { resolveOptions } from './optionSource';
+import { pickText } from './fieldText';
 
 interface RiskRewardProps {
     exercise: any;
@@ -97,7 +98,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
 
                             {/* Title */}
                             <h4 className="lp-display text-2xl uppercase tracking-wide mb-2 text-center" style={{ color: 'var(--lp-ink)' }}>
-                                {option.text || option.label || ''}
+                                {pickText(option)}
                             </h4>
 
                             {/* Hidden Reward (Revealed on Select) */}

@@ -4,6 +4,7 @@ import { ArrowRight, Trophy, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { pickText } from './fieldText';
 
 interface SavingsRaceProps {
     exercise: any;
@@ -148,10 +149,10 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
                                 <div className="text-3xl sm:text-4xl shrink-0">{strategy.icon || '💰'}</div>
                                 <div className="flex-1">
                                     <h3 className="lp-display text-base sm:text-lg mb-1" style={{ color: 'var(--lp-ink)' }}>
-                                        {strategy.name}
+                                        {pickText(strategy, ['name', 'label', 'text', 'title'])}
                                     </h3>
                                     <p className="text-xs sm:text-sm mb-2" style={{ color: 'var(--lp-muted)' }}>
-                                        {strategy.description}
+                                        {pickText(strategy, ['description', 'detail', 'subtitle'])}
                                     </p>
                                     <div className="flex items-center gap-2">
                                         <TrendingUp className="w-4 h-4" style={{ color: 'var(--lp-emerald)' }} />
