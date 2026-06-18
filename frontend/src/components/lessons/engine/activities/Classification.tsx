@@ -64,6 +64,9 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
     };
 
     const categories = exercise.content.categories || [];
+    // El corpus usa distintas claves para la etiqueta (name/label/text/title).
+    // Leer solo name||label dejaba ~252 categorías en blanco en producción.
+    const catLabel = (c: any): string => c?.name || c?.label || c?.text || c?.title || '';
 
     return (
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both">
@@ -84,7 +87,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                             style={{ background: catColor.fill, boxShadow: `0 4px 0 ${catColor.lip}` }}
                         >
                             <span className="font-bold">
-                                {catColor.emoji} {category.name || category.label}
+                                {catColor.emoji} {catLabel(category)}
                             </span>
                         </div>
                     );
@@ -131,7 +134,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                                                 )}
                                                 style={{ color: "var(--lp-ink)" }}
                                             >
-                                                {cat.name || cat.label}
+                                                {catLabel(cat)}
                                             </button>
                                         );
                                     })}
