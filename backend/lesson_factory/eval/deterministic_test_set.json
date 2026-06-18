@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "status": "PENDIENTE de aprobación humana",
+  "purpose": "Lecciones que DEBEN ser rechazadas por el gate (determinista o juicio-hard-fail). NO se usan para calibrar las dims subjetivas — su maldad es binaria. Sirven para verificar que el gate las atrapa.",
+  "entries": [
+    {
+      "lesson_code": "6-2-12-9",
+      "band": 6,
+      "known_bad_type": "hard_fail_factual",
+      "caught_by": "judgment",
+      "evidence": "Internal contradiction on the annual gift tax exclusion: ex11 fill_blank states it is $18,000 per person/year (correct for 2024), but ex9 budget_builder constraint states 'Las donaciones directas no pueden superar $30k por hijo por ano (3 hijos)' and uses c3 range $80k-$90k — implying ~$30k/child, which conflicts with the lesson's own $18k figure and overstates the exclusion. This is a misleading financial figure within the same lesson."
+    },
+    {
+      "lesson_code": "1-1-2-8",
+      "band": 1,
+      "known_bad_type": "hard_fail_abstraction",
+      "caught_by": "deterministic",
+      "evidence": "$50/$100 > max_number 20 de banda 1"
+    },
+    {
+      "lesson_code": "3-5-30-5",
+      "band": 3,
+      "known_bad_type": "hard_fail_structural_and_abstraction",
+      "caught_by": "deterministic",
+      "evidence": "correct_answer string '26' (no objeto) + 'interés' en banda 3"
+    },
+    {
+      "lesson_code": "2-2-17-10",
+      "band": 2,
+      "known_bad_type": "hard_fail_factual",
+      "caught_by": "judgment",
+      "evidence": "story_mode (ex8) is internally contradictory. Question asks 'Will Leo reach his goal?' for a $90 telescope; correct answer is 'b' = 'No, he'll be short.' But the SUCCESS feedback computes $5 + (9 x $15) = $140, which EXCEEDS $90, and even says 'It exceeds $90.' So the marked-correct answer ('he'll be short') directly contradicts its own feedback math ($140 > $90 means he reaches and exceeds, i.e. option 'c'). This is a clear internal contradiction / mismarked correct answer."
+    },
+    {
+      "lesson_code": "6-1-1-2",
+      "band": 6,
+      "known_bad_type": "hard_fail_factual",
+      "caught_by": "judgment",
+      "evidence": "ex#5 math is internally contradictory. The problem states formula A = P*(1+r)^n with hint P=$12,000, r=0.07, n=10. Applying it gives 12000*(1.07)^10 ≈ $23,606, NOT the answer 17308 (tol 500). The answer 17308 matches a monthly annuity FV, but the provided formula and hint cannot produce it; success feedback '$5,308 extra' (17308-12000) is consistent with the answer yet not with the stated formula. Formula/hint vs. answer contradict each other."
+    },
+    {
+      "lesson_code": "5-3-19-2",
+      "band": 5,
+      "known_bad_type": "hard_fail_content_quality",
+      "caught_by": "deterministic",
+      "evidence": "content_es[8] sequencing: 'Realizar un pedo por un servicio médico…' (typo vulgar de 'pago'); cazado por el gate content_quality"
+    }
+  ]
+}

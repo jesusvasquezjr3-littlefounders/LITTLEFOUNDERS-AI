@@ -1,0 +1,337 @@
+{
+  "lesson_code": "1-1-1-1",
+  "title_es": "¡Hola, Soy Liruf!",
+  "title_en": "Hello, I'm Liruf!",
+  "description_es": "Conoce a Liruf y descubre el secreto del cofre del tesoro",
+  "description_en": "Meet Liruf and discover the secret of the treasure chest",
+  "duration": 5,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 1,
+  "saga_level": 1,
+  "topic_level": 1,
+  "lesson_number": 1,
+  "lf_meta": {
+    "schema_version": "2.0-pilot",
+    "concept_spine": ["money_purpose", "money_forms_intro"],
+    "phase_map": ["conectar", "conectar", "ensenar", "practicar", "reforzar", "aplicar_variante", "aplicar_variante", "cerrar"],
+    "engagement_design": "Hook por misterio: el cofre está cerrado y Liruf no puede abrirlo solo. Beat de relación: pide ayuda al niño. Cierre con gancho hacia las monedas.",
+    "provenance": {"author": "agent-opus-4.8", "process": "planner->author->critic", "rubric": "v0", "model": "claude-opus-4-8"}
+  },
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! 🦖 Soy Liruf. 🗺️ Encontré un cofre del tesoro. 🔒 Pero está cerrado. Guarda un secreto: el dinero. ¿Me ayudas a abrirlo? 🤔"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "statement": "👋 Toca a Liruf para decir hola",
+        "instruction": "Toca a tu nuevo amigo",
+        "items": [
+          {"id": "i1", "text": "🌴 Palmera", "isTarget": false},
+          {"id": "i2", "text": "🦖 Liruf", "isTarget": true},
+          {"id": "i3", "text": "🐚 Concha", "isTarget": false}
+        ]
+      },
+      "correct_answer": {"targetIds": ["i2"]},
+      "feedback": {
+        "success": "¡Hola, amigo! 🤗 Juntos abriremos el cofre.",
+        "error": "Liruf es el dinosaurio verde. 🦖 ¿Cuál es?",
+        "per_option": {
+          "i1": "Esa es una palmera. 🌴 Busca al dinosaurio verde. 🦖",
+          "i3": "Esa es una concha. 🐚 Busca al dinosaurio verde. 🦖"
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El secreto es este: 💰 el dinero nos ayuda. 🍎 Con dinero compramos comida. 🧸 También compramos juguetes. ¡Por eso es útil!"
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "liruf",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "🤔 ¿Para qué nos sirve el dinero?",
+        "instruction": "Elige la mejor respuesta",
+        "options": [
+          {"id": "a", "text": "🛒 Para comprar cosas"},
+          {"id": "b", "text": "😴 Para dormir"},
+          {"id": "c", "text": "🎵 Para cantar"}
+        ]
+      },
+      "correct_answer": {"correctOptionId": "a"},
+      "feedback": {
+        "success": "¡Sí! 🛒 El dinero sirve para comprar. 🍎🧸",
+        "error": "Piensa en la tienda. 🛒 ¿Qué usamos para comprar?",
+        "per_option": {
+          "a": "¡Exacto! 🛒 Con dinero compramos comida y juguetes.",
+          "b": "Dormir es gratis. 😴 El dinero sirve para comprar. 🛒",
+          "c": "Cantar es gratis. 🎵 El dinero sirve para comprar. 🛒"
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "🍎 Podemos comprar una manzana con dinero",
+        "instruction": "¿Verdadero o Falso?"
+      },
+      "correct_answer": {"isTrue": true},
+      "feedback": {
+        "success": "¡Correcto! 🍎 La manzana se compra con dinero.",
+        "error": "Recuerda: el dinero sirve para comprar. 🛒🍎",
+        "per_option": {
+          "true": "¡Sí! 🍎 En la tienda pagamos con dinero.",
+          "false": "Casi. 🍎 La comida sí se compra con dinero. 🛒"
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": ["money_purpose", "money_forms_intro"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Une cada cosa con su pareja",
+        "pairs": [
+          {"id": "p1", "left": "🦖 Liruf", "right": "Tu amigo"},
+          {"id": "p2", "left": "🗺️ Mapa", "right": "Lleva al cofre"},
+          {"id": "p3", "left": "💰 Dinero", "right": "El secreto"}
+        ]
+      },
+      "feedback": {
+        "success": "¡Muy bien! 🤝 Ya conoces el plan.",
+        "error": "Casi. 🦖 Liruf es tu amigo. 💰 El dinero es el secreto."
+      }
+    },
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Ordena lo que pasó hoy",
+        "items": [
+          {"id": "s1", "text": "1️⃣ Conociste a Liruf 🦖"},
+          {"id": "s2", "text": "2️⃣ Viste el cofre 🔒"},
+          {"id": "s3", "text": "3️⃣ Supiste el secreto 💰"}
+        ]
+      },
+      "correct_answer": {"sequence": ["s1", "s2", "s3"]},
+      "feedback": {
+        "success": "¡Excelente! 📚 Recordaste todo.",
+        "error": "Piensa: ¿qué pasó primero? 🦖 ¿Conocer a Liruf o ver el cofre?"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": ["money_forms_intro"],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "¡Lo lograste! 🏆 El cofre brilla un poco. ✨ Aprendiste un secreto. Faltan más. 🔒 Mañana veremos monedas brillantes. 🪙 ¡Te espero!"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! 🦖 I'm Liruf. 🗺️ I found a treasure chest. 🔒 But it's locked. It holds a secret: money. Will you help me open it? 🤔"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "statement": "👋 Tap Liruf to say hi",
+        "instruction": "Tap your new friend",
+        "items": [
+          {"id": "i1", "text": "🌴 Palm tree", "isTarget": false},
+          {"id": "i2", "text": "🦖 Liruf", "isTarget": true},
+          {"id": "i3", "text": "🐚 Shell", "isTarget": false}
+        ]
+      },
+      "correct_answer": {"targetIds": ["i2"]},
+      "feedback": {
+        "success": "Hi, friend! 🤗 Together we'll open the chest.",
+        "error": "Liruf is the green dinosaur. 🦖 Which one?",
+        "per_option": {
+          "i1": "That's a palm tree. 🌴 Look for the green dinosaur. 🦖",
+          "i3": "That's a shell. 🐚 Look for the green dinosaur. 🦖"
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Here's the secret: 💰 money helps us. 🍎 With money we buy food. 🧸 We also buy toys. That's why it's useful!"
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "liruf",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "🤔 What is money for?",
+        "instruction": "Choose the best answer",
+        "options": [
+          {"id": "a", "text": "🛒 To buy things"},
+          {"id": "b", "text": "😴 To sleep"},
+          {"id": "c", "text": "🎵 To sing"}
+        ]
+      },
+      "correct_answer": {"correctOptionId": "a"},
+      "feedback": {
+        "success": "Yes! 🛒 Money is for buying. 🍎🧸",
+        "error": "Think of the store. 🛒 What do we use to buy?",
+        "per_option": {
+          "a": "Exactly! 🛒 With money we buy food and toys.",
+          "b": "Sleeping is free. 😴 Money is for buying. 🛒",
+          "c": "Singing is free. 🎵 Money is for buying. 🛒"
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": ["money_purpose"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "🍎 We can buy an apple with money",
+        "instruction": "True or False?"
+      },
+      "correct_answer": {"isTrue": true},
+      "feedback": {
+        "success": "Correct! 🍎 The apple is bought with money.",
+        "error": "Remember: money is for buying. 🛒🍎",
+        "per_option": {
+          "true": "Yes! 🍎 At the store we pay with money.",
+          "false": "Almost. 🍎 Food is bought with money. 🛒"
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": ["money_purpose", "money_forms_intro"],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Match each thing with its pair",
+        "pairs": [
+          {"id": "p1", "left": "🦖 Liruf", "right": "Your friend"},
+          {"id": "p2", "left": "🗺️ Map", "right": "Leads to the chest"},
+          {"id": "p3", "left": "💰 Money", "right": "The secret"}
+        ]
+      },
+      "feedback": {
+        "success": "Great! 🤝 Now you know the plan.",
+        "error": "Almost. 🦖 Liruf is your friend. 💰 Money is the secret."
+      }
+    },
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Order what happened today",
+        "items": [
+          {"id": "s1", "text": "1️⃣ You met Liruf 🦖"},
+          {"id": "s2", "text": "2️⃣ You saw the chest 🔒"},
+          {"id": "s3", "text": "3️⃣ You learned the secret 💰"}
+        ]
+      },
+      "correct_answer": {"sequence": ["s1", "s2", "s3"]},
+      "feedback": {
+        "success": "Excellent! 📚 You remembered everything.",
+        "error": "Think: what happened first? 🦖 Meeting Liruf or seeing the chest?"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": ["money_forms_intro"],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "You did it! 🏆 The chest glows a little. ✨ You learned one secret. There are more. 🔒 Tomorrow we'll see shiny coins. 🪙 See you!"
+      }
+    }
+  ]
+}

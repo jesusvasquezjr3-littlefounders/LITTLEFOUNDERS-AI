@@ -1,0 +1,40 @@
+{
+  "lesson_code": "4-9-99-1",
+  "title_es": "Definiciones de Finanzas",
+  "title_en": "Finance Definitions",
+  "description_es": "Repaso de definiciones",
+  "description_en": "Definitions review",
+  "duration": 6,
+  "age_rate": "13-14",
+  "points_reward": 10,
+  "adventure_level": 4,
+  "saga_level": 9,
+  "topic_level": 99,
+  "lesson_number": 1,
+  "lf_meta": {
+    "calibration_fixture": true,
+    "not_production": true,
+    "purpose": "Ancla de extremo-bajo: SOLO nombra definiciones, sin enseñar el porqué, sin aplicación ni transferencia, sin andamiaje, feedback genérico. Esperado: depth 1, engagement 2, scaffolding 2, voice 2-3.",
+    "schema_version": "2.0-fixture"
+  },
+  "content_es": [
+    {"type": "intro_narrative", "character_code": "zara_vex", "content": {"transcript": "Hoy veremos definiciones. Presupuesto, ahorro, ingreso, gasto. Memorízalas."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "¿Qué es un presupuesto?", "instruction": "Elige", "options": [{"id": "a", "text": "Un plan de ingresos y gastos"}, {"id": "b", "text": "Un animal"}, {"id": "c", "text": "Una canción"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "¿Qué es el ahorro?", "instruction": "Elige", "options": [{"id": "a", "text": "Guardar dinero"}, {"id": "b", "text": "Gastar todo"}, {"id": "c", "text": "Correr"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "¿Qué es un ingreso?", "instruction": "Elige", "options": [{"id": "a", "text": "Dinero que entra"}, {"id": "b", "text": "Dinero que sale"}, {"id": "c", "text": "Una planta"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "¿Qué es un gasto?", "instruction": "Elige", "options": [{"id": "a", "text": "Dinero que sale"}, {"id": "b", "text": "Dinero que entra"}, {"id": "c", "text": "Un color"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "true_false", "character_code": "zara_vex", "content": {"statement": "El ahorro es guardar dinero.", "instruction": "¿V o F?"}, "correct_answer": {"isTrue": true}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "¿Qué es un presupuesto otra vez?", "instruction": "Elige", "options": [{"id": "a", "text": "Un plan de ingresos y gastos"}, {"id": "b", "text": "Un juego"}, {"id": "c", "text": "Una nube"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Bien.", "error": "Inténtalo de nuevo."}},
+    {"type": "intro_narrative", "character_code": "zara_vex", "content": {"transcript": "Eso es todo. Ya memorizaste las definiciones."}}
+  ],
+  "content_en": [
+    {"type": "intro_narrative", "character_code": "zara_vex", "content": {"transcript": "Today we review definitions. Budget, saving, income, expense. Memorize them."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "What is a budget?", "instruction": "Choose", "options": [{"id": "a", "text": "A plan of income and expenses"}, {"id": "b", "text": "An animal"}, {"id": "c", "text": "A song"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "What is saving?", "instruction": "Choose", "options": [{"id": "a", "text": "Keeping money"}, {"id": "b", "text": "Spending all"}, {"id": "c", "text": "Running"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "What is income?", "instruction": "Choose", "options": [{"id": "a", "text": "Money coming in"}, {"id": "b", "text": "Money going out"}, {"id": "c", "text": "A plant"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "What is an expense?", "instruction": "Choose", "options": [{"id": "a", "text": "Money going out"}, {"id": "b", "text": "Money coming in"}, {"id": "c", "text": "A color"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "true_false", "character_code": "zara_vex", "content": {"statement": "Saving is keeping money.", "instruction": "T or F?"}, "correct_answer": {"isTrue": true}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "multiple_choice", "character_code": "zara_vex", "content": {"question": "What is a budget again?", "instruction": "Choose", "options": [{"id": "a", "text": "A plan of income and expenses"}, {"id": "b", "text": "A game"}, {"id": "c", "text": "A cloud"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Good.", "error": "Try again."}},
+    {"type": "intro_narrative", "character_code": "zara_vex", "content": {"transcript": "That is all. You memorized the definitions."}}
+  ]
+}

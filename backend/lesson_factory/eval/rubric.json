@@ -1,0 +1,85 @@
+{
+  "rubric_version": "1.0",
+  "description": "Rúbrica analítica del Lesson Factory v2. Reemplaza el '84.2%' relativo al validador por una señal absoluta. 'hard_fail' bloquea la publicación (cualquier fallo → rechazo). 'scored' se puntúa 1-5 y debe superar el umbral. 'check' indica si la dimensión se evalúa por código (determinista) o por el juez LLM (calibrado contra el golden set humano antes de confiar en él).",
+  "scored_threshold": 3.5,
+  "kpi": "media de dimensiones puntuadas + tasa de hard-fail (contra el golden set humano)",
+  "dimensions": [
+    {
+      "id": "structural_validity",
+      "name": "Validez estructural",
+      "type": "hard_fail",
+      "check": "deterministic",
+      "description": "Valida contra LessonV2; tipo en el registro; respuesta gradable por el frontend; paridad ES/EN.",
+      "tool": "schema/lesson_v2.py"
+    },
+    {
+      "id": "abstraction_ceiling",
+      "name": "Techo de abstracción por edad",
+      "type": "hard_fail",
+      "check": "deterministic",
+      "description": "Nada por encima del estadio de desarrollo de la banda (Piaget). Ej.: porcentajes/razones/hipotéticos antes de banda 3 = INVÁLIDO.",
+      "tool": "abstraction_ceiling.json"
+    },
+    {
+      "id": "vocabulary_language",
+      "name": "Vocabulario y lenguaje por banda",
+      "type": "hard_fail",
+      "check": "deterministic",
+      "description": "Respeta reglas de banda: longitud de oración, palabras prohibidas (forbidden_words), emojis donde aplica.",
+      "tool": "pedagogy_rules.json"
+    },
+    {
+      "id": "factual_accuracy",
+      "name": "Exactitud factual",
+      "type": "hard_fail",
+      "check": "llm",
+      "description": "Sin afirmaciones financieras falsas. En bandas 3-6, las afirmaciones numéricas/regulatorias deben tener respaldo (RAG, Fase 4)."
+    },
+    {
+      "id": "pedagogical_shape",
+      "name": "Forma pedagógica (6 fases)",
+      "type": "hard_fail",
+      "check": "llm",
+      "description": "Cubre HOOK→APRENDE→APLICA→CONECTA; las fases requeridas de la banda (conectar/ensenar/practicar/reforzar/aplicar_variante/cerrar) están presentes; primer ejercicio engancha, último conecta con un concepto previo."
+    },
+    {
+      "id": "feedback_explains_why",
+      "name": "Feedback que explica el porqué",
+      "type": "hard_fail",
+      "check": "llm",
+      "description": "Sin 'Inténtalo de nuevo' vacío. Idealmente diagnóstico por distractor (feedback.per_option): cada opción mala nombra la confusión y corrige."
+    },
+    {
+      "id": "engagement_hook",
+      "name": "Engagement / hook emocional",
+      "type": "scored",
+      "check": "llm",
+      "description": "Curiosidad genuina, narrativa/personaje, ≥1 beat de autonomía y ≥1 de relación (Self-Determination Theory).",
+      "scale": {"1": "plano, expositivo, sin gancho", "3": "gancho funcional pero genérico", "5": "curiosidad real, sorpresa/predicción, conexión emocional con el personaje"}
+    },
+    {
+      "id": "depth_transfer",
+      "name": "Profundidad y transferencia",
+      "type": "scored",
+      "check": "llm",
+      "description": "Enseña de verdad (no solo nombra hechos); un mismo concepto reaparece en variante (interleaving); hay un ítem de aplicación/transferencia.",
+      "scale": {"1": "solo nombra/repite hechos", "3": "enseña una regla aplicable", "5": "enseña + aplica en contexto nuevo + conecta con concepto previo"}
+    },
+    {
+      "id": "scaffolding_difficulty",
+      "name": "Andamiaje y dificultad",
+      "type": "scored",
+      "check": "llm",
+      "description": "Andamiaje apropiado y DECRECIENTE (modeled→guided→independent); reto dentro de la ZPD; sin saltos bruscos.",
+      "scale": {"1": "andamiaje constante o reto fuera de la ZPD", "3": "andamiaje presente", "5": "andamiaje claro que se retira; dificultad calibrada"}
+    },
+    {
+      "id": "character_voice",
+      "name": "Tono y voz del personaje",
+      "type": "scored",
+      "check": "llm",
+      "description": "Voz consistente del narrador de la banda; cálido, sin condescendencia ('baby-talk' en bandas mayores).",
+      "scale": {"1": "tono inconsistente o condescendiente", "3": "tono correcto", "5": "voz distintiva, cálida y apropiada a la edad"}
+    }
+  ]
+}

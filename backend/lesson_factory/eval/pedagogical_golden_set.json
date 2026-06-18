@@ -1,0 +1,1090 @@
+{
+  "version": "2.0",
+  "status": "PENDIENTE de aprobación humana (anclas reales + varianza construida)",
+  "method": "Calificado a ciegas (neutralizado). Exemplars = corpus que sacó 5 a ciegas SIN metadata (1-4-41-4, 5-4-24-3, 6-1-1-3). Pilotos = anclas de engagement/voz. Fixtures autorados anclan el extremo bajo (1) que el corpus NO produce.",
+  "variance_finding": "El corpus FLOTA pedagógicamente en 3 (sin 1s; andamiaje nunca <3). La 'maldad' real es determinista, no pedagógica. El extremo bajo se ancla con fixtures.",
+  "rubric_ref": "eval/rubric.json",
+  "scored_dims": [
+    "engagement_hook",
+    "depth_transfer",
+    "scaffolding_difficulty",
+    "character_voice"
+  ],
+  "entries": [
+    {
+      "lesson_code": "4-2-16-2",
+      "band": 4,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Concepts and math correct: ex3 fixed/variable classification accurate (rent & base salary fixed; pizza ingredients & per-campaign ads variable); ex4 break-even $300/($5-$2)=100 units correct, and 'sale 101 begins profit' is right; ex2 definitions (value prop, break-even, target market, cash flow) accurate. No false claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Opens ex0 framing 'un negocio es un sistema' and integration, then teaches via matching definitions (ex2) before harder application. Closing ex12-ex13 ('Celebra este logro... has conectado finanzas, marketing...') connects back. Note: this is a review lesson so it leans on prior teaching, but it still establishes the systemic frame before the synthesis tasks."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains reasoning: ex4 'Primero halla la ganancia por unidad: $5-$2=$3. Luego divide: $300/$3'; ex3 'Los costos fijos no cambian con el volumen de ventas. Los variables sí'; ex6 roleplay 'La opción A puede dañar tus ganancias. La C puede perder al cliente.' Not generic."
+        },
+        "engagement_hook": {
+          "score": 2,
+          "rationale": "Opens with a dry expository teacher re-entry ('Hola de nuevo. Soy el Dr. Rho. En la lección anterior revisamos los pilares... Ahora profundizaremos. Integrar todos los conceptos...') with no scenario, curiosity, or relatable beat at the start. The relatable scenarios (BiciFix, café) come later, not in the opening hook = 2."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches/reviews rules and applies them across multiple NEW contexts: break-even calc, BiciFix discount roleplay, café spot-trap, business-health sequencing, tutoring budget, PDCA concept builder. Integrates several sub-domains (finance, marketing, customer) toward a systemic mindset. Genuinely strong applied transfer = 4, just short of cross-domain 5."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Builds from definitions (modeled) → classification → break-even computation → judgment tasks (roleplay, spot_trap, sequencing) → independent synthesis (budget_builder, concept_builder). Tasks become open-ended and support retreats. Well-graded for 13-14 = 4."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho is consistent and appropriately mature/analytical for 13-14 ('Un negocio es un sistema'), but the voice is a competent generic mentor with little distinctive warmth or personality; no condescension but no real spark = 3."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-1-1-1",
+      "band": 1,
+      "src": "v1.1",
+      "label": "pilot",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "All claims true and age-correct for 5-7: ex3 'el dinero sirve para comprar cosas'; ex4 T/F 'compramos manzana con dinero' true; matching pairs and sequencing are factually consistent with the narrative. No financial or math errors."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Strong narrative hook ex0 (Liruf + locked treasure chest, 'el dinero' is the secret, 'Me ayudas a abrirlo?'), then explicitly TEACHES at ex2 ('el dinero nos ayuda... compramos comida... juguetes') before the question ex3. Closing ex7 resolves the chest glowing and previews coins tomorrow = clear hook + closure."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "For a 5-7 lesson the error feedback gives a reason/cue, not bare 'incorrecto': ex3 'Piensa en la tienda. ¿Qué usamos para comprar?'; ex4 'Recuerda: el dinero sirve para comprar'; ex1 'Liruf es el dinosaurio verde. ¿Cuál es?' Age-appropriate why/redirect = pass."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "Genuine curiosity-driven framing for the age band: a locked treasure chest holding a secret, with a direct invitation to the child ('¿Me ayudas a abrirlo?') giving an autonomy/relationship beat with Liruf. Real narrative pull beyond a dry line, though the mystery is light = 4, not a 5 tension/surprise payoff."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches one applicable idea (money is used to buy things) and reinforces it via T/F, matching, sequencing. The matching/sequencing recall the same facts rather than applying the rule in a genuinely new context; for a foundational 5-7 lesson this is a clean rule taught + practiced = 3."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Activities are present and varied (tap → MC → T/F → matching → sequencing) but difficulty stays roughly flat at recognition/recall level with little visible modeled→guided→independent gradient; appropriate but not clearly graded = 3."
+        },
+        "character_voice": {
+          "score": 5,
+          "rationale": "Liruf is distinctive, warm, and perfectly pitched for 5-7: short playful sentences, consistent dino/treasure-explorer persona, emoji cues, collaborative tone ('Juntos abriremos el cofre', '¡Te espero!'). Consistent and charming throughout = 5."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "4-4-28-9",
+      "band": 4,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math_challenge (ex6): 80% de 1000 = 800 correcto. multiple_choice (ex8): 85% en acciones con caída de mercado 10% => ~8.5% de pérdida es financieramente correcto. Definiciones de perfiles conservador/moderado/agresivo y comparación de riesgo (ex10) precisas."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Abre con intro_narrative + recuperación de conocimiento previo y un 'por qué' (ex1), define el concepto antes de aplicarlo (ex2-4), y cierra conectando con diversificación previa (ex14) y anticipando la próxima lección (ex15). Enseña antes de preguntar."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "El error explica el porqué en todos los graduados: ex6 'Multiplica 1000 por 0.8'; ex10 spot_trap 'El error principal no es el tipo de acción. Es la falta de diversificación'; ex9 roleplay 'Un perfil agresivo lo pondría nervioso'. Ninguno genérico."
+        },
+        "engagement_hook": {
+          "score": 2,
+          "rationale": "Apertura puramente expositiva: 'Hola. Soy el Dr. Rho. Ya conoces los tres perfiles de riesgo. Ahora profundizaremos...' (ex1). Hay una pregunta retórica ('¿Por qué es crucial?') pero no hay escena, tensión ni situación relatable; es una línea seca de transición de curso."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Enseña la regla (mezcla de activos por tolerancia) y la aplica en contextos nuevos: cálculo de asignación (ex6-7), consecuencia de caída de mercado (ex8), asesoría a cliente nervioso (ex9), detección de error conceptual (ex10), y conecta explícitamente con diversificación previa (ex14). No llega a transferir a otro dominio distinto."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Progresión clara: definición (ex2) -> clasificación guiada (ex3) -> cálculo con hint (ex6) -> budget_builder guiado (ex7) -> aplicación independiente en roleplay/spot_trap/concept_builder (ex9-11). Sube y se retira el andamiaje; no es un modelado totalmente explícito al inicio."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho es consistente y apropiado para 13-14 (tono profesoral, claro), pero genérico: no hay marcas distintivas de personalidad ni calidez memorable. Correcto pero plano-formal."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "6-1-1-3",
+      "band": 6,
+      "src": "v1.1",
+      "label": "exemplar",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math_challenge (ex9): 1000*(1.05)^2 = 1102.5 correcto, y el feedback desglosa 50€ año 1 e interés sobre 1050€ año 2. Principios (interés compuesto multiplica capital, diversificación reduce riesgo, vivir por debajo genera excedente) son afirmaciones correctas y no engañosas."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook conceptual al inicio ('Los principios no son islas', ex1-2), integra y aplica, y cierra conectando todo el marco y anticipando aplicación a la vida real (ex16-17). Enseña/relaciona antes de evaluar."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errores explican el porqué: ex9 'El primer año ganas 50€. El segundo año, ganas interés sobre 1,050€'; ex7 spot_trap 'El error está en creer que es privación total... priorizar, no eliminar todo gasto'; ex14 story_mode 'Sin controlar su flujo de caja... su inversión es frágil'. No genéricos."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Apertura es expositiva pero con voz y carga conceptual ('Los principios no son islas... Juntos, son invencibles', ex1-2). Plantea un 'por qué importa' (sistema financiero) relatable para 18+, pero no hay escena concreta ni tensión personal; funcional, no sorprendente."
+        },
+        "depth_transfer": {
+          "score": 5,
+          "rationale": "Enseña múltiples principios, los aplica en contextos nuevos (asesoría a Clara ex5, caso Marcos ex14, presupuesto ex12) y explícitamente cruza/interrelaciona conceptos previos (tiempo x interés compuesto ex6, vivir-por-debajo vs diversificación ex4, síntesis integradora). Transferencia genuina entre dominios financieros y conexión con conceptos previos."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Va de definición (ex3) y emparejamiento (ex4) a cálculo (ex9) y termina con story_mode/budget de síntesis independiente (ex12,14). Sube y retira andamiaje, aunque el orden mezcla dificultades sin un modelado inicial explícito tipo paso-a-paso."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Zara Vex tiene voz con carácter: aforística y firme ('Un principio aislado es débil. Juntos, son invencibles', 'miopía estratégica', 'El viaje continúa'). Cálida-estratégica y consistente, apropiada para 18+; no llega a 5 por momentos algo grandilocuente."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-4-41-4",
+      "band": 1,
+      "src": "v1.1",
+      "label": "exemplar",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Sin matemáticas ni afirmaciones financieras falsas: clasifica necesidades (comida, abrigo, leche, pan) vs deseos (juego, dulce, juguete) correctamente (ex3-4) y la regla 'primero lo necesario' es válida. ex5 'Manzana y abrigo' como necesario es razonable."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook con escena (Liruf con 3 monedas, ex1), enseña la regla antes de evaluar ('Primero lo necesario. Después lo deseado', ex2), y cierra con logro + transición ('El orden te ayuda a cuidar tu dinero', ex9-10)."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errores razonan el porqué a nivel infantil: ex4 '¿Qué necesitas para no tener hambre? Eso va primero'; ex3 '¿qué necesitas para vivir? Eso va primero'; ex8 '¿qué te dejaría sin lo importante? Eso es el error'. No genérico."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "Escena relatable y con autonomía para 5-7: Liruf tiene 3 monedas, quiere muchas cosas y pregunta '¿Qué hago primero?' (ex1), invitando al niño a decidir. Personaje (dinosaurio) y dilema concreto generan curiosidad genuina; no llega a 5 por falta de tensión/sorpresa real."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Enseña una regla aplicable (necesario antes que deseado) y la practica en varios formatos (matching, tap, MC, secuencia). La aplicación se mantiene dentro del mismo escenario de compra; no hay transferencia a un dominio nuevo ni conexión con concepto previo distinto."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Modela la regla (ex2), luego guía con emparejamiento y tap (ex3-4), MC y secuenciación (ex5-6), y termina con identificar el error/mal hábito (ex8) que exige aplicar el criterio solo. Progresión apropiada que sube y se retira."
+        },
+        "character_voice": {
+          "score": 5,
+          "rationale": "Liruf es distintivo, cálido y perfecto para 5-7: frases cortas, emojis, voz de dinosaurio amigable ('¡Hola amigo! 🦕', '¡Sigue así, explorador! 🦕✨'), consistente en toda la lección y emocionalmente conectado con el niño."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-1-2-8",
+      "band": 1,
+      "src": "v1.1",
+      "label": "pilot",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Afirmación central correcta: el valor del dinero lo indica su denominación, no el tamaño físico; una moneda de $10 vale más que un billete de $5 (ex3-4). Math ex8: $5 + $2 = $7 correcto. Ninguna afirmación engañosa."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook con sorpresa (Liruf confiesa su error, ex1), predicción T/F antes de revelar la regla (ex2), enseña el truco 'mira el número' (ex3) y cierra reforzando + anticipando ('Pronto contaremos monedas juntos', ex9). Enseña antes de evaluar a fondo."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errores razonan el porqué a nivel infantil: ex4 'Mira el número, no el tamaño. ¿10 o 5?'; ex5 'Compara los números. ¿Cuál es el más grande?'; ex8 'Suma los números para llegar a $7'. Orientan el razonamiento, no son genéricos."
+        },
+        "engagement_hook": {
+          "score": 5,
+          "rationale": "Hook fuerte para 5-7: Liruf revela una sorpresa contraintuitiva y confiesa vulnerablemente 'Yo pensé que el grande valía más. ¡Me equivoqué! ¿Adivinas por qué?' (ex1), combinando tensión/sorpresa, autonomía (adivina tú) y conexión emocional con el personaje que se equivoca como el niño."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Enseña una regla aplicable (el número manda) y la practica en MC, tap y secuencia; el ex8 (sumar $5+$2 para pagar $7) extiende ligeramente a combinar valores. Aplicación dentro del mismo dominio de valor monetario; sin transferencia a otro dominio ni conexión con concepto previo."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Modela con la confesión y la regla (ex1-3), guía con MC y tap de comparación directa (ex4-5), secuencia el procedimiento (ex6), refuerza con matching (ex7) y sube a sumar para alcanzar un monto (ex8). Progresión que sube y se retira, apropiada a la edad."
+        },
+        "character_voice": {
+          "score": 5,
+          "rationale": "Liruf es distintivo, cálido y perfecto para 5-7: admite su error con humor ('😅 ¡Me equivoqué!'), frases cortas y emojis, tono de descubrimiento compartido ('Eres detective del valor 🏆'), consistente y emocionalmente cercano todo el rato."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-2-11-10",
+      "band": 2,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex6 math correct: $300 + $50 + $30 = $380 (option a). ex8 story_mode correct: $100 - $40 - $10 = $50, not enough for a $55 book. Fixed-expense framing (rent, water, phone always due monthly) is accurate for the age."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex0 hooks ('Ready for the challenge?'); ex2 matching and ex3 classification re-teach/anchor fixed vs variable before testing; ex10 closing connects back ('You now master fixed expenses... we must plan for them'). Hook + teaching + closure present (review-style but still instructs)."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains why, e.g. ex4 true_false 'Water is a fixed service. Its bill comes every single month'; ex8 'Calculate step by step. $100 - $40 - $10 = $50. Is $50 enough for a $55 book?' Not generic."
+        },
+        "engagement_hook": {
+          "score": 2,
+          "rationale": "ex0 ('You already know some expenses are fixed. Let's practice together. Ready for the challenge?') is a dry expository check-in with no scene, curiosity, or tension; it just announces practice. Friendly tone but no relatable situation to pull the learner in."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches an applicable rule (fixed expenses recur monthly regardless of use; plan/budget for them) and applies it in the Maya allowance scenario (ex8) and the budget connection (ex9). Stays at single-context application; no transfer to a genuinely new domain."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Some progression from recognition (ex2 matching, ex3 classification) to a multi-step decision (ex8 story_mode) and a relate-to-budget step (ex9), but difficulty rises only modestly and support is not deliberately withdrawn into an independent task."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dina is friendly and age-appropriate with the dino emoji, but the voice is fairly generic-cheerful ('Amazing work! You now master fixed expenses') without a distinctive personality beat beyond stock encouragement."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "5-4-24-3",
+      "band": 5,
+      "src": "v1.1",
+      "label": "exemplar",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex1 CETES = federal government debt, guaranteed (accurate); ex2 28-day CETES rate as risk-free benchmark (accurate); ex7 math $500*0.11=$55 correct; ex8 nuanced inflation caveat (nominal capital protected but purchasing power can erode) is accurate; ex11 CETES Directo from $100 pesos, no intermediaries (accurate). No false claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex0 hook ('Imagine a place where your money is not only safe but grows with certainty'); ex3 concept_builder and interleaved ex4/ex9 narratives TEACH the strategic role before application; ex12/ex13 closing connects back ('first, protect what you have') and forward to next lesson. Strong hook + teaching + closure."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains why, e.g. ex6 spot_trap 'The error is in allocation. Is it prudent to put all your savings in the most volatile asset, without a safe foundation?'; ex8 'inflation can reduce what that money can buy in the future.' Consistently reasons, never generic."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "ex0 ('Imagine a place where your money is not only safe but grows with certainty. That place exists: CETES') creates genuine curiosity and a slight reveal, and the lesson immediately frames a relatable autonomy stake (your money, your strategy). Strong but not a true tension/surprise peak with deep character connection."
+        },
+        "depth_transfer": {
+          "score": 5,
+          "rationale": "Teaches the risk-free-base rule, applies it in new contexts (Ana's 6-month goal ex5, Luis's mattress ex9, the $5,000 allocation ex12), transfers to an adjacent domain (CETES rate -> loan/mortgage rates ex10) AND connects to prior concepts (inflation/purchasing power ex8, diversification). Full teach + transfer + connection."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Clear modeled (ex1/ex2/ex3 concept) -> guided (ex5 applied advantage, ex7 computation) -> independent judgment (ex9 roleplay, ex12 budget_builder). Difficulty rises and support recedes; just shy of textbook fade with explicit independent capstone tying everything."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Zara_vex is consistent, mature and quietly authoritative ('Mastering CETES is mastering the most important principle of finance: first, protect what you have'), well-pitched for 15-17. Distinctive tone and warmth, though it stays in a single strategist register without much surprise."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "6-6-38-10",
+      "band": 6,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex9 math_challenge: 100/5=20 correct. ex8 classification of synthesis vs isolated questions is sound. ex7 budget_builder allocations sum to 30 (10+15+5) and respect minPerCategory=5. No false financial claims (concepts like ROI, cost of capital, tax structure are referenced accurately and abstractly)."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex1 intro_narrative frames the Final Exam as validation of holistic mastery and announces strategies (hook + teaching frame); ex15/ex16 closing narratives synthesize ('the whole is greater than the sum of its parts') and bridge to the next lesson. Concepts (holism, synthesis) are stated before being quizzed."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains the why throughout: ex2 'La longitud es un desafío, no el propósito. Piensa en qué certifica realmente'; ex9 'divide el total de preguntas entre las áreas'; ex8 'una pregunta de síntesis requiere aplicar conceptos de distintas áreas a un mismo problema'. No bare 'Incorrecto' without reasoning (ex4 says 'Incorrecto' but follows with the explanation)."
+        },
+        "engagement_hook": {
+          "score": 2,
+          "rationale": "Opening is dry and meta: 'El Examen Final del Fundador es un hito. No es solo un test.' It's about how to study FOR an exam, not a relatable real-world finance scenario. No tension, surprise, autonomy beat, or curiosity gap; purely expository framing of test prep. Functional but flat."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches one applicable meta-rule (holistic/synthesis thinking over isolated study) and applies it across exam-prep contexts (study plan, budget of hours, story_mode with an interest-rate question). But it largely re-applies the same meta-concept within the test-prep domain rather than transferring to a genuinely new domain or connecting to a distinct prior concept. The ex13 story touches integration but still serves the same lesson."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Difficulty is present and roughly increasing (MC -> matching -> classification -> spot_trap -> budget_builder -> story_mode synthesis), but support is not clearly withdrawn at the end; the closing story_mode and concept_builder are comparable in support to mid-lesson items. No clear modeled->guided->independent arc."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Zara Vex is consistent and age-appropriate for 18+ (authoritative, systems-thinking, 'la arquitectura del Examen Final'), but voice is generic-mentor with little distinctive personality or warmth. Correct but interchangeable with any serious instructor."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-4-33-9",
+      "band": 2,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex#8 recovery math correct: a 50% drop needs +100% (100→50→100) and a 25% drop needs +33.3% (100→75→100, 25/75). ex#10 Treasury bonds as 2008 safe haven and ex#3 Black Swan defining traits are accurate. (ES typo 'tramla'/'tramля' in ex#7 success is cosmetic, not a factual error.)"
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex#1 hooks with 2008 and COVID as concrete Black Swans, the resilience principle is taught (ex#5 'seismic architecture for your finances') before the math and roleplay, and ex#16/ex#17 build a definition then connect to the next lesson on cognitive biases. Strong arc."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errors are explanatory, e.g. ex#8 'A 50% drop requires a 100% gain to recover... resilience reduces the steepness of recovery' and ex#12 'Judging a hedge by its average return is to misunderstand its function.' No generic fails."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "ex#1 opens with real high-stakes events (2008, COVID) and ex#11 drops the learner into a March-2020 panic-selling decision with a friend shouting 'Sell everything now!' — genuine tension and relatable pressure, with learner autonomy in the choice."
+        },
+        "depth_transfer": {
+          "score": 5,
+          "rationale": "Teaches the resilience principle, applies it in new contexts (roleplay ex#11, story ex#14, budget_builder ex#7), transfers across domains via the seismic-architecture analogy, and explicitly connects to prior (Black Swan theory) and forward (cognitive biases) knowledge. Full chain present."
+        },
+        "scaffolding_difficulty": {
+          "score": 5,
+          "rationale": "Clear modeled→guided→independent: concept defined and analogized, then math worked with a hint, then guided roleplay/story decisions, culminating in the open budget_builder and a synthesized concept_builder definition. Difficulty rises and support is deliberately withdrawn."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Zara Vex is a consistent, authoritative-yet-vivid analyst with memorable framing ('seismic architecture for your finances', 'a system, not a prediction'), well-pitched for 18+. Strong personality; not quite a singular signature voice."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-3-25-2",
+      "band": 1,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Opportunity-cost logic is consistent throughout: ex1 (money for one = buy one), ex3 (choosing car = gave up ball), ex4 true/false (pencil leaves none for eraser = false), ex7 (5 coins on chocolate cannot also buy 5-coin apple = correct 'b'). tap_action targets (ex6) correctly mark buying actions vs non-purchase facts. No math errors, no contradictions."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Liruf opens with a relatable dilemma (one ice cream, two flavors) (ex0), the core idea 'comprar es elegir' is modeled, then practiced via MC, matching, true/false, sequencing, tap_action; closing narrative (ex8) restates the lesson and previews the next (three options). Clear hook, teach, and closure."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback gives reasoning and a guiding question, e.g. ex7 error: 'Si usó sus 5 monedas en el chocolate, ¿le quedan monedas para la manzana? Piensa.' Not a bare 'Inténtalo de nuevo'. Minor: ex1 error 'Casi. Piensa: si el dinero es para uno, ¿puedes comprar dos? Intenta de nuevo' still explains the why via the question."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "The dinosaur Liruf's first-person problem (wants two flavors, only money for one) is a relatable, character-driven hook with a real little dilemma and emoji warmth that suits ages 5-7. Engaging and personal; not a 5 because the tension is gentle and there's no surprise twist."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches one applicable rule (buying one thing means giving up the other) and re-applies it across ice cream, toys, pencils/erasers, cookies/books, coins. Appropriately, for 5-7, it stays within concrete purchase scenarios; it's repeated application of the same rule rather than transfer to a new domain, so 3 is honest."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Steps from a stated rule, to identifying what was given up, to a true/false trap, to a sequencing of the decision process, to a coin-constrained item where the child must reason about exhausted money (ex7). Difficulty rises gently and support is reduced; clean for the age band though not an explicit modeled->independent worked sequence, so 4."
+        },
+        "character_voice": {
+          "score": 5,
+          "rationale": "Liruf is distinctive, warm, and perfectly pitched for 5-7: a dinosaur sharing its own ice-cream dilemma, consistent first-person curiosity, encouraging celebratory feedback ('¡Eres un experto en decisiones! 🦕'), never condescending. The voice carries personality across every screen."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "4-1-6-5",
+      "band": 4,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math_challenge ex4: 110/1.10=100 correct. MCQ ex7: 105/1.07≈98.13 so 100 today>98.13 correct. opportunity_cost ex12: 500 at 8%/yr for 2yr compounding ≈500×1.08²−500=83.20≈€80, option says 'aproximadamente 80 euros' — correct. true_false ex5 (higher rate lowers PV) correct. No false statements."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook ex1 poses the driving question ('¿Por qué 100 euros hoy son mejores que 100 en un año?'); ex3 narrative defines Present Value/discount rate BEFORE the math and applied items; ex13 ties PV to previously studied compound interest ('dos caras de la misma moneda'); closing ex14 previews lump-sum vs annuity. Teach-then-assess intact."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errors are conceptual and specific, e.g. ex5 'Si divides por un número más grande (1+tasa), el resultado es menor'; ex8 'El error no es de cálculo, es de concepto. ¿Compara cantidades en el mismo momento en el tiempo?'. No generic feedback."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Opens with a genuine question hook ('¿Por qué 100 euros hoy son mejores que 100 euros en un año?') which is better than pure exposition, but the framing MCQ and tone stay academic. Relatable sibling-advice roleplay adds some relevance. Functional, not curiosity-igniting; no tension or scene."
+        },
+        "depth_transfer": {
+          "score": 5,
+          "rationale": "Teaches the PV rule, applies it in new contexts (offer comparison, friend's flawed reasoning, sibling bonus advice), AND explicitly bridges to a prior domain — ex13 connects discounting to previously-learned compound interest as inverse operations ('dos caras de la misma moneda'), and opportunity_cost links PV to investment trade-offs. Genuine teach+transfer+connect-to-prior."
+        },
+        "scaffolding_difficulty": {
+          "score": 5,
+          "rationale": "Clear modeled→guided→independent: ex3 narrative models the concept, ex4 math_challenge gives the exact formula+hint (modeled computation), ex7 asks the learner to run the calc themselves with a prompt, then spot_trap/classification/roleplay/opportunity_cost require independent conceptual application with no formula given. Support is explicit early and deliberately withdrawn."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho is consistent, precise, and continuity-aware ('Ya vimos que el dinero hoy vale más'), appropriate for 13-14. But the register is a generic competent-tutor voice with little distinctive warmth or personality beyond accurate explanation."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-5-51-11",
+      "band": 1,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "No math or factual claims to misstate; affective content (effort→pride, saving≠just having money) is age-appropriate and internally consistent. ex5 true_false 'el poder del ahorro es solo tener dinero'=false, reinforced correctly."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex0 hook (Liruf reached his savings goal, '¿quieres ver?') → models pride concept → graded items (true_false, MC, matching, sequencing, tap) → ex8 closing ('Eres un campeón'). Teaches the idea before checking."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback reasons at the child's level, e.g. ex1 '¿Cómo te sientes cuando terminas un rompecabezas? ¡Feliz! Así es lograr una meta.' No bare 'Incorrecto'."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "ex0 Liruf bursting with joy after reaching a goal, inviting the child to 'ver', plus emoji and a relatable ice-cream/toy frame; warm and inviting for 5-7, though the emotional beat is gentle rather than surprising."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches the affective rule (own effort feels better) and applies it across toy/ice-cream/piggy-bank examples and a tap-sort, but stays within the same pride concept; little transfer to a new domain (appropriate for age, capping at 3)."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Sequence of true_false→MC→matching→MC→true_false→sequencing→tap is varied and age-suitable with present scaffolding, but difficulty is fairly flat and support isn't progressively withdrawn."
+        },
+        "character_voice": {
+          "score": 5,
+          "rationale": "Liruf is distinctive and pitch-perfect for 5-7: dinosaur emojis, exclamatory joy ('¡Lo logré!', '¡Eres un campeón!'), warm and never condescending, consistent across every block in both languages."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-5-45-9",
+      "band": 1,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "No numeric claims. tap_action ex#4 (glass + clear plastic transparent; clay + metal not) is correct; MC ex#6/#8 (transparent lets you see) and true_false ex#7 (transparency does matter for motivation) are internally consistent. No false statements."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Opens with Liruf hook (ex#1) and a why-it-matters narrative (ex#2), teaches transparent-vs-opaque via matching before assessing, and closes connecting to consistency + next lesson on savings goals (ex#9-10)."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback gives a reason/cue rather than bare retry: ex#6 'Piensa: ¿cuál tiene paredes que dejan pasar la vista?'; ex#3 'Piensa: ¿cuál te deja ver las monedas adentro?'. Note ex#3 appends 'Intenta de nuevo' but only after a guiding why."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Age-fitting, friendly open ('Mi alcancía transparente está casi llena... Puedo VER cada moneda adentro. ¡Es emocionante!') with emotion, but the curiosity is mild and the single concept offers little tension or surprise."
+        },
+        "depth_transfer": {
+          "score": 2,
+          "rationale": "Teaches one narrow idea (you can see savings in a transparent bank) and applies it repeatedly in near-identical choices; minimal transfer, with only a passing nod to 'ser constante' rather than a new context."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Reasonable for 5-7: match → tap → sequence → MC → true_false → applied MC, but the difficulty stays nearly constant since every item restates the same single distinction; support present but not a clear rise-and-retire."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Liruf is warm, excited and perfectly pitched for 5-7 ('¡Eres un gran ahorrador! 🦕') with consistent emoji-rich enthusiasm that gives the dino genuine personality without condescension."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "6-3-13-9",
+      "band": 6,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Classification i1-i6 to correct risk types is accurate; spot_trap correctly flags bonds also carry liquidity+market(rate) risk; math_challenge ex11 is explicitly conceptual ('no son riesgos independientes') and rejects naive 7% sum in favor of >5% interaction, internally consistent with story_mode causal ordering operational->reputational->regulatory."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Two intro narratives establish 'plan maestro/seis pilares' hook and why-it-matters, definitions taught before application, closing ex16-17 synthesize 'ecosistema de riesgos' and preview measuring/prioritizing."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback names the discriminating cue, e.g. MC ex4 'el problema nace de un fallo interno...no de precios o leyes'; spot_trap error explains rate-driven price drop and sale difficulty."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "'Pilar/fortaleza/amenazas' framing is evocative but abstract and expository; relatable cases (data breach, software defect) appear later rather than as an upfront curiosity hook with stakes."
+        },
+        "depth_transfer": {
+          "score": 5,
+          "rationale": "Teaches six risk types as a system then transfers across domains: tech defect, bonds, startup loan, real estate, social-media privacy law, fintech breach, plus interaction/correlation and a risk-of-not-acting principle, connecting back to the 'whole ecosystem' thesis."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Definitions -> single-risk identification -> multi-risk trap -> profile-building (pick 3) -> interaction math -> causal sequencing; difficulty clearly climbs and support thins toward independent synthesis."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Zara Vex maintains a consistent terse-strategic register appropriate to 18+, but it is a generic authoritative-mentor voice without distinctive personality."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-1-1-7",
+      "band": 2,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "All arithmetic correct: ex1 $3+$7=$10; ex2 $5+$4=$9; ex6 $4+$6+$3=$13; ex7 trap correctly flags missing $8 paints (real total $25); ex8 $22+$18+$5=$45; ex9 $25+$7+$4=$36 in $30-40 range; ex10 $12+$20=$32 ≤ $35 with $3 left. No errors."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook at ex0 (Dina re-introduces, frames why adding gives total) teaches the concept before practice; a mid-lesson teach beat at ex5 names the 'forgetting a price' error before the spot-check ex7. Closing ex11 connects to real-world budgeting and previews next lesson."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback is guiding and reason-based: ex8 'Suma paso a paso: $22+$18=$40. Luego $40+$5'; ex7 'Marcos incluyó el precio de TODOS los artículos? Faltan las pinturas'; ex10 'Calcula el total primero... Luego compara con los $35'. Not generic."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Warm, emoji-rich re-entry from Dina with a relatable shopping framing ('Sumar precios te dice cuánto pagarás en total'), but it's a functional expository restart with no real curiosity or tension. Relatable and friendly = 3, not 4."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches the rule 'add all prices for the total' and applies it across varied shopping contexts (cart, gift-buying, estimation). It catches a NEW twist (the forgotten-item error) but stays squarely within single-domain addition with no transfer to a different concept; solidly a 3."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Difficulty climbs deliberately: 2-addend MC → which-operation classification → 3-item cart → error-detection → larger 3-addend sums → estimation → multi-step story decision. Operands grow and tasks shift from compute to judge/estimate; support retreats. Strong for the band = 4."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Dina the dinosaur is warm, energetic, and consistently age-tuned for 8-9 with playful emojis and encouragement ('¡Muy observador!', '🦕'), giving a bit of genuine personality beyond a flat instructor, though not uniquely distinctive enough for 5."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-4-37-7",
+      "band": 1,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Need-vs-want claims all hold: ex#2 light-up shoes don't add protection (false, correct), ex#7 if two shoes protect equally the price gap is for extras (most-likely framing, sound), ex#8 'always buy the most expensive' is false. No math or false claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex#1 hooks with Liruf needing shoes and asking 'are lights necessary?', the need/want definition is taught at ex#5 before the harder discrimination tasks, and ex#9 closes by tying back and previewing the next lesson. Teaches before evaluating."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errors give reasons appropriate to age, e.g. ex#2 'Do lights make the shoe stronger? No, they just glow' and ex#7 'If they protect the same, the extra price is for something special, like lights.' No bare 'incorrect'."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "ex#1 opens with a relatable, character-driven scene (Liruf looking at his feet, tempted by light-up shoes) that mirrors a real 5-7-year-old desire, creating genuine curiosity and personal relevance rather than a dry prompt."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches the applicable need-vs-want rule and applies it across shoe examples (tap, match, sequence, price reasoning), but stays entirely within the shoe/footwear context with no transfer to another spending domain. Appropriate but not expansive for the age."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Builds from simple true/false to discrimination (tap ex#4), to a definition (ex#5), then to inference about price (ex#7) and a wise-choice sequence (ex#8). Support is present early and the reasoning demand clearly rises; modeling of the rule comes mid-lesson rather than first."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Liruf is a warm, consistent dino with personality ('Look at my little feet', 'You're a genius!') and emoji pacing perfectly tuned to 5-7. Distinctive and encouraging without being condescending."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "3-1-1-1",
+      "band": 3,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex#9 math: $50 + $30 = $80, value 80 correct. Classification ex#3 (deposit=store, loans=lend, card/transfer=pay) accurate; sequencing ex#7 card-payment order correct; spot_trap ex#8 'loan is free money' correctly flagged as the error. No false claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Two intro narratives establish concept + why it matters (ex#1-2), matching_pairs teaches the three functions before assessment, and closes by connecting to next lesson on account types (ex#13). Teaches before evaluating."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains reasoning: ex#8 'No es un regalo, es un acuerdo de devolver el dinero'; ex#5 'Un banco hace más que solo guardar. También presta dinero...'. No bare 'Inténtalo de nuevo'."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Relatable open ('Imagina que tienes dinero... ¿Dónde lo pondrías?') and the 'banks are only for rich people' roleplay add some pull, but framing stays expository ('guardián especializado') without real curiosity or tension."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches the three-function rule and applies it across multiple cases (María saving, Carlos's loan, card payment), but stays within the banking domain; no transfer to a different domain or strong connection to prior learning beyond a forward-pointer."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Builds from matching → classification → applied MC/roleplay → multi-step sequencing → spot_trap → concept_builder synthesis. Support clearly rises then is withdrawn at the fill-in-the-definition stage."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho is consistent and clear ('soy el Dr. Rho... un guardián especializado') and age-appropriate, but the voice is a correct neutral teacher with no distinctive warmth or personality."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "5-5-30-10",
+      "band": 5,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Mexican corporate-law content is accurate: ex3 SAPI allows non-voting shares with economic rights (true, LMV/LGSM); ex4 SC false-statement correctly flagged as unsuitable for VC; ex6 spot_trap correctly identifies 'SAPI es obligatoria' as the conceptual error; matching ex2 definitions (SA stock exchange, SAPI for startups, SAS online/flexible, SC professional) accurate. Minor: en label translates SC as 'Civil Partnership' but Spanish canon is correct. No false financial claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Opens ex0 with the stakes ('La decisión define el futuro de tu startup') and teaches via matching definitions (ex2) before harder strategic application. Closing ex13-ex14 connects structure to funding/exit and frames it as 'el primer acto estratégico'. Hook + connection-closure present."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback gives reasons: ex8 'Una estructura barata hoy puede impedir captar inversión mañana'; ex6 'la afirmación que convierte una opción estratégica en un requisito universal'; ex10 story 'La primera inversión formal sienta las bases legales para las siguientes'. Not generic."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Opens with a stakes statement ('Has llegado al punto crucial... La decisión define el futuro de tu startup') which is relatable and somewhat motivating for the 15-17 founder framing, but it's expository with no concrete scene, tension, or autonomy beat at the start = functional 3."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches structure criteria then applies repeatedly in NEW scenarios: classify three startup cases (ex5), advise/spot the trap (ex6), defend choice to an investor (ex7 roleplay), build the ideal-SAPI profile (ex9), and a full decision in Ana/Luis story (ex10). Connects to funding strategy and exit (ex13). Strong contextual transfer within the domain = 4."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Progresses from recall (definitions, matching) → discrimination (which structure, T/F) → application (classification, spot_trap) → synthesis/judgment (roleplay, concept_builder, story decision, timed quiz_battle). Open-ended construction tasks late, support retreats = 4."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Zara Vex is consistent and pitched maturely for 15-17 with crisp strategic language ('Es una decisión estratégica'), but the persona reads as a generic competent advisor; no distinctive emotional texture or memorable voice = 3."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "5-6-41-8",
+      "band": 5,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "No arithmetic to verify; conceptual claims are sound. true_false ex6 (legacy isn't only a large sum) correctly true; quiz_battle ex16 correctly flags 'focuses solely on monetary value' as NOT a solid-legacy trait; fill_blank ex14 'el conocimiento aumenta al compartirlo' is a defensible economic claim about non-rival knowledge. No contradictions."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Hook ex1 ('¿qué dejarás atrás? El legado más poderoso no cabe en una cuenta bancaria') sets framing; ex4 narrative defines intergenerational wealth before classification; mid ex13 narrative ties to prior topics (budget/investment/credit) as culmination; closing ex16 previews action plan. Teaches before evaluating."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Errors reason through the concept, e.g. spot_trap ex10 '¿Cuál asume que los bienes materiales por sí solos garantizan el bienestar futuro, sin necesidad de educación?'; fill_blank ex14 'Cuando lo enseñas, no pierdes tu parte, sino que creas más'. No generic stems."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "'¿Alguna vez has pensado qué dejarás atrás? El legado más poderoso no cabe en una cuenta bancaria' is genuinely reflective and identity-engaging for 15-17, with personal relevance and autonomy (roleplay as parent). Not 5: evocative but no real surprise/tension, leans aspirational."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches the material-vs-knowledge legacy distinction and applies it in novel contexts (family-business succession story_mode, parent-child roleplay, legacy-plan trap). ex13 explicitly connects to prior budget/investment/credit learning. Short of 5: transfer stays within finance/values, no genuinely different domain."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Builds from recall (matching, classification) to applied judgment (roleplay, spot_trap) to multi-step decision-making (story_mode ex11 with sequential steps) then synthesis (concept_builder, quiz_battle). Difficulty climbs and direct support thins. Not a textbook-explicit modeled phase, so not 5."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Zara Vex is consistent and aspirational ('Hola, visionario', 'Decisión visionaria', 'ladrillo en el legado familiar'), well-pitched for teens and warm with a coaching personality. Not 5: praise occasionally tips into generic ('Excelente', 'Perfecto')."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "3-3-21-7",
+      "band": 3,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "Consumer-literacy content is accurate: ex2 fine print can hide subscriptions/auto-renewals; ex4 entering card details for a 'free' verification is a real red flag; ex5 classification (auto-renewal & 'see fine print' = warning) is sound. No math or false financial claims. (Minor typo 'datos de paje' in ex4 ES error text but content is correct.)"
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex1 hooks by referencing prior theory and posing a challenge ('Are you ready to test your critical eye?'); the lesson is application-of-prior-learning so it activates rather than re-teaches, but it models the 'Before You Accept' habit (ex8 sequencing) and rule (ex10 concept_builder) before/while quizzing. ex12 closing connects fine print to privacy/data and previews next lesson."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains why: ex2 'The danger lies in hidden commitments that affect your money'; ex5 'Auto-renewal is a hidden future commitment'; ex9 'Free forever contradicts the mention of a free trial'. Note ex6 matching_pairs error is generic ('Try again. Think of the safest... action') but matching_pairs has no graded correct_answer block here and other graded items all explain why, so it passes."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Opening is a functional review hook with a mild challenge framing ('test your critical eye'), and subsequent items use relatable kid scenarios (free wallpaper, friend's 'free skins' code). The intro itself lacks genuine tension or surprise, and 'you already know the theory' is a flat opener, so it lands at a competent 3."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Takes a known concept (fine print) and transfers it to multiple NEW everyday contexts: gaming apps, free-wallpaper downloads, card-detail scams, contest data requests, app permissions, and a 7-day-trial dark pattern (ex9). Connects to adjacent domains (privacy, personal data) in ex11. Clearly application-focused with varied contexts, strong for age 10-12."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Variety of formats with rising scenario complexity (spot_trap on visible text -> roleplay -> classification -> story_mode dark pattern), but the difficulty is fairly even-keeled application throughout and support isn't visibly retracted toward an independent capstone. Present and reasonable, not a clean modeled->independent gradient."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho is consistent with a memorable line ('your attention is your superpower') but otherwise reads as a standard encouraging-guide voice. Age-appropriate and correct; warmth is mild, not distinctive enough for 4."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "4-2-13-9",
+      "band": 4,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex#7 math correct: 3000 × 0.08 = 240. ex#1/ex#12 true_false on bootstrapping/equity-vs-debt are accurate. ex#9 comparison: asp1 ('no requires convincing anyone') is genuinely unique to bootstrapping vs FFF (FFF requires convincing family). No internal contradictions or false claims."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex#1 intro hooks with 'why is choosing the right source crucial', teaches concepts before the applied scenario at ex#5, and ex#13/ex#14 closing narratives connect to next lesson (angel investment round). Clear teach-then-evaluate arc."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Every error message gives a reason, e.g. ex#7 error 'Multiply the principal ($3,000) by the rate (8% which is 0.08)' and ex#9 error 'Both FFF and bootstrapping can be fast and interest-free. The key difference is autonomy.' No generic 'try again'."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "ex#1 frames a real decision (control vs risk) and ex#5 puts the learner in a concrete $5,000 funding gap, which is relatable for a teen founder. But it stays expository/analytical with no genuine tension or surprise; competent but not gripping."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Goes beyond naming sources: teaches debt-vs-equity rule, applies it in a new $5,000 scenario (roleplay ex#6), computes interest cost (ex#7), and synthesizes via budget_builder ex#11. Connects to prior knowledge ('you already know the four sources') but stays within the funding domain rather than transferring to a different domain."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Clear modeled→guided→independent progression: concepts established, then ex#5 narrative cues application, then open-ended budget_builder ex#11 with no single answer. Difficulty rises and support is withdrawn, though the modeling of the actual decision process is light."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho is consistent and appropriately analytical for a 13-14 mentor, but the voice is flat and generic-academic ('Bien. Ahora aplica este conocimiento'). Correct and age-suitable, no real personality or warmth."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-1-8-9",
+      "band": 2,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math ex4: 20+20+10=50, leftover 0 correct; story_mode distribution 15+20+5=40 matches totalMoney 40; ex8 distribution 15+10+5=30 of $30 correct."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Dina intro defines presupuesto + 'mapa para tu dinero' hook ex1, teaches before quizzing, mid-lesson re-teach of 'distribuir' ex6, closing ex11 ties to prior savings lesson and next lesson."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback is conceptual not generic, e.g. true_false ex5 'En un presupuesto planeas ANTES de gastar' and math ex4 prompts to add then subtract."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Warm Dina greeting with 'presupuesto mágico' and cake metaphor is relatable and friendly for 8-9, but it's a standard mascot opener without surprise or strong stakes."
+        },
+        "depth_transfer": {
+          "score": 3,
+          "rationale": "Teaches the applicable rule (plan before spending, allocate into categories with limits) and applies it across MC/story_mode, but stays within budgeting; transfer to a new domain is limited."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Progresses recognition -> classification -> guided math -> tap_action -> independent story_mode allocation; support is present early and the final drag-distribution is the independent step."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Dina is consistently warm, encouraging and age-pitched ('¡Eres un genio!', dinosaur + emojis) with a likable personality without being condescending."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-3-26-5",
+      "band": 2,
+      "src": "v1.1",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex5 math_challenge: 100-99=1 correct. ex4 tap_action: $19.99 and $49.95 use the .99/.95 trick (targets i1,i3) while $20, $50, $79.00 don't — correct. ex7 classification by cents is sound. ex6 true_false: '$99.99 is more than $100' = false, correct. ex9 story_mode: $19.99 leaves $0.01, $18.00 leaves $2.00 — arithmetic correct. The 'charm pricing / left-digit' framing is financially accurate."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex1 hooks with a relatable, curiosity-driven frame ('Sellers use pricing tricks... Why does this work? Let's find out') and teaches the mechanism before quizzing. ex11 closing affirms ('Now you're a price detective') and previews the next trick. Concept is explained (ex3 matching shows $99 reads as 'ninety-something') before deeper application."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback explains why: ex5 '$100 minus $99 is just one dollar... a small difference'; ex8 'The trick makes the price seem like a different category'; ex9 '$19.99 is almost $20. The other option leaves more money'. ex4 'Look at the cents. Those ending in .99/.95 are the trick'. No generic-only error messages on graded items."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "Strong curiosity gap: 'Why does $99 instead of $100 work? Let's find out' frames a genuine why-mystery that is relatable to an 8-9 year old shopper, delivered by a named character (Dina) with an explorer vibe. There's authentic curiosity plus a relatable scenario; it stops short of real tension/emotional stakes for a 5."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches the left-digit/charm-pricing rule and applies it in NEW contexts: spotting .99/.95 across mixed prices (ex4), classifying (ex7), a decision-cost scenario where charm pricing nearly drains a $20 budget (ex9 story_mode connects pricing tricks to budgeting/leftover money), and an avoidance procedure (ex10). The budget/leftover link extends the concept toward a related domain. Good applied reach for age 8-9."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Clear build: name the perception (matching) -> spot the trick (tap) -> compute the tiny difference (100-99) -> judge a real purchase trade-off (story_mode) -> internalize an avoidance sequence. Difficulty rises from recognition to applied decision-making and the story_mode is a near-independent application; arc is mostly modeled->guided->independent, just not perfectly retracted."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Dina is consistent, warm, and well-pitched for 8-9 (explorer framing, 'detective de precios', upbeat emoji, encouraging closings). Personality and enthusiasm come through with some distinctiveness; short of a 5 perfectly singular voice but clearly above generic."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "3-1-6-5",
+      "band": 3,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "ex4 math $20+$3=$23 ✓. ex8 slider: $2.50/$17.50=14.3%≈14%, and feedback explicitly states the $17.50 (retiro+comisión) denominator ✓. ex9 true_false (can cancel after fee warning)=true, accurate. Minor wording slip in ex8 ('% del total retirado' but denominator is total debited) is clarified by feedback, no false math."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "ex0 hook (you know how to use an ATM, but it can cost money) → defines fees → graded tasks → ex11 ties to opportunity cost → ex12 closure to next lesson. Teaches before evaluating."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback reasons, e.g. ex8 'Total debitado = $15 + $2.50 = $17.50. Luego, ($2.50 / $17.50) * 100.' and ex6 toll analogy. No generic placeholders."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "ex0 'a veces cuesta dinero... un detalle importante' is a functional curiosity cue (hidden cost) but expository; Carlos roleplay (ex7) adds relatability later rather than at the open."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches the fee rule then applies in classification of ATMs, percentage estimation, a friend roleplay, and explicitly bridges to opportunity cost (ex11) — connects fees to a prior/broader economic concept."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Definition → true_false → classification → simple addition → spot_trap → reasoning MC → roleplay → harder percentage slider → sequence; scaffolding present and the slider raises difficulty, but no clean modeled→guided→independent fade."
+        },
+        "character_voice": {
+          "score": 3,
+          "rationale": "Dr. Rho consistent and clear with a nice toll analogy, but neutral instructor tone without strong distinctive personality."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "6-1-3-5",
+      "band": 6,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math_challenge ex8: €15,000×1.20=€18,000 correct. Classification ex3 sound (confirmation=overvalue favorable info i1, endowment=reject fair offer from attachment i2, anchoring=fixed on first value i3). True/false ex11 (two irrational anchors don't cancel) and all bias definitions accurate. Minor structural bug (two risk_reward/multiple_choice items have correctOptionId='b' while option ids are d1/d2/d3 or opt-style), but intended answer is unambiguous and content is not factually false."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "intro_narrative hook ex1 ('silent thieves of your wealth') teaches framing before evaluating; ex2 establishes why-it-matters; mid-lesson narrative ex14 synthesizes interconnection; closing narrative ex16 connects forward ('build automated defenses'). Teach-before-test present."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Every error message explains the reasoning, e.g. ex8 'Recuerda: Un 20% extra sobre €15,000 es €3,000. Suma eso al valor base'; ex11 'Dos anclajes erróneos no se cancelan. Pueden alejar el resultado del valor justo'. No generic 'inténtalo de nuevo'."
+        },
+        "engagement_hook": {
+          "score": 4,
+          "rationale": "'Los sesgos no son solo errores mentales. Son ladrones silenciosos de tu riqueza' is a vivid, tension-loaded opener with a concrete promise (their real price). Relatable scenarios (crypto-holding friend, inherited family shares) add autonomy. Not a 5: no genuine surprise/twist, hook is assertive rather than scene-immersive."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches each bias's mechanism, applies in novel contexts (portfolio review, negotiation, TV anchoring promo), and quantifies cost via math. ex14 connects biases as an interlocking network (anchoring feeds confirmation). Falls short of 5: stays within personal-finance/behavioral domain, no transfer to a distinct domain."
+        },
+        "scaffolding_difficulty": {
+          "score": 3,
+          "rationale": "Difficulty rises (single-bias ID → multi-bias story_mode ex13 → antidote matching). But no clear modeled→guided→independent arc; the intro narratives state rather than model, and support isn't visibly withdrawn. Present but not architected."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Zara Vex is consistent, sharp, and age-appropriate for 18+ ('Atrapado', 'red de costos', 'fugas de capital'). Warm-with-edge advisory tone. Not 5: occasionally generic praise ('Excelente', 'Perfecto') dilutes the distinctiveness."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "2-5-39-7",
+      "band": 2,
+      "src": "mined",
+      "label": "baseline",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "math ex4: 3+1=$4 correct; classification cost(i1,i3)/price(i2,i4) correct; fill_blank Profit=Price - Cost correct; story ex7 $9 > $4 cost yields profit and is below the $10 market reference, consistent."
+        },
+        "pedagogical_shape": {
+          "pass": true,
+          "evidence": "Dina intro recalls prior 'dos números clave' hook ex1, defines cost then price then profit before the matching/story application, closing ex11 recaps and bridges to setting a smart price."
+        },
+        "feedback_explains_why": {
+          "pass": true,
+          "evidence": "Error feedback is reasoned, e.g. story ex7 'Si vendes a $3 o $4, no ganas nada. Piensa en un precio mayor al costo'; fill_blank error 'vendes a $8 y gastaste $5...Restas'."
+        },
+        "engagement_hook": {
+          "score": 3,
+          "rationale": "Friendly Dina callback ('¿Los recuerdas?') with cookie/bracelet maker scenarios is relatable for 8-9 but a standard mascot recap rather than a surprising or high-stakes hook."
+        },
+        "depth_transfer": {
+          "score": 4,
+          "rationale": "Teaches cost vs price vs profit as applicable rules and applies across multiple maker contexts (cookies, bracelet, drawing) and introduces the profit subtraction formula, building on the prior selling lesson; stays within one domain."
+        },
+        "scaffolding_difficulty": {
+          "score": 4,
+          "rationale": "Definition MC -> myth-busting true_false -> guided cost math -> classification -> independent pricing decision in story_mode -> matching synthesis; support fades as tasks get more open."
+        },
+        "character_voice": {
+          "score": 4,
+          "rationale": "Dina is consistently warm and motivating with personality ('¡Increíble!', dino + themed emojis) and pitched well for 8-9 without talking down."
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "1-9-99-1",
+      "band": 1,
+      "path": "eval/fixtures/fix_flat_b1.json",
+      "label": "fixture_low",
+      "src": "authored",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "sin afirmaciones falsas"
+        },
+        "pedagogical_shape": {
+          "pass": false,
+          "evidence": "no enseña antes de evaluar / sin hook-cierre"
+        },
+        "feedback_explains_why": {
+          "pass": false,
+          "evidence": "feedback genérico"
+        },
+        "engagement_hook": {
+          "score": 1,
+          "rationale": "fixture deliberadamente plano"
+        },
+        "depth_transfer": {
+          "score": 1,
+          "rationale": "solo nombra hechos"
+        },
+        "scaffolding_difficulty": {
+          "score": 1,
+          "rationale": "sin andamiaje"
+        },
+        "character_voice": {
+          "score": 1,
+          "rationale": "voz inexistente/genérica"
+        }
+      },
+      "human_approved": false
+    },
+    {
+      "lesson_code": "4-9-99-1",
+      "band": 4,
+      "path": "eval/fixtures/fix_drill_b4.json",
+      "label": "fixture_low",
+      "src": "authored",
+      "blind_judgment": {
+        "factual_accuracy": {
+          "pass": true,
+          "evidence": "sin afirmaciones falsas"
+        },
+        "pedagogical_shape": {
+          "pass": false,
+          "evidence": "no enseña antes de evaluar / sin hook-cierre"
+        },
+        "feedback_explains_why": {
+          "pass": false,
+          "evidence": "feedback genérico"
+        },
+        "engagement_hook": {
+          "score": 2,
+          "rationale": "fixture deliberadamente plano"
+        },
+        "depth_transfer": {
+          "score": 1,
+          "rationale": "solo nombra hechos"
+        },
+        "scaffolding_difficulty": {
+          "score": 2,
+          "rationale": "sin andamiaje"
+        },
+        "character_voice": {
+          "score": 2,
+          "rationale": "voz inexistente/genérica"
+        }
+      },
+      "human_approved": false
+    }
+  ]
+}

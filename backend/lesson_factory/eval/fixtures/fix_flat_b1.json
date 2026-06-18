@@ -1,0 +1,38 @@
+{
+  "lesson_code": "1-9-99-1",
+  "title_es": "El Dinero",
+  "title_en": "Money",
+  "description_es": "Lección sobre el dinero",
+  "description_en": "Lesson about money",
+  "duration": 5,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 1,
+  "saga_level": 9,
+  "topic_level": 99,
+  "lesson_number": 1,
+  "lf_meta": {
+    "calibration_fixture": true,
+    "not_production": true,
+    "purpose": "Ancla de extremo-bajo: lección DELIBERADAMENTE plana (sin hook, sin enseñanza-antes-de-evaluar, feedback genérico, voz inexistente). Esperado: engagement 1, depth 1, scaffolding 1, voice 2.",
+    "schema_version": "2.0-fixture"
+  },
+  "content_es": [
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "El dinero es importante. Hay monedas y billetes. Vamos a empezar."}},
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "Las monedas son de metal. Los billetes son de papel. Eso es todo."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "¿Qué es una moneda?", "instruction": "Elige", "options": [{"id": "a", "text": "De metal"}, {"id": "b", "text": "De papel"}, {"id": "c", "text": "De agua"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Correcto.", "error": "Incorrecto."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "¿Qué es un billete?", "instruction": "Elige", "options": [{"id": "a", "text": "De metal"}, {"id": "b", "text": "De papel"}, {"id": "c", "text": "De fuego"}]}, "correct_answer": {"correctOptionId": "b"}, "feedback": {"success": "Correcto.", "error": "Incorrecto."}},
+    {"type": "true_false", "character_code": "liruf", "content": {"statement": "El dinero es importante.", "instruction": "¿V o F?"}, "correct_answer": {"isTrue": true}, "feedback": {"success": "Correcto.", "error": "Incorrecto."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "¿De qué es una moneda?", "instruction": "Elige", "options": [{"id": "a", "text": "Metal"}, {"id": "b", "text": "Papel"}, {"id": "c", "text": "Aire"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Correcto.", "error": "Incorrecto."}},
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "Ya terminamos. Fin de la lección."}}
+  ],
+  "content_en": [
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "Money is important. There are coins and bills. Let's start."}},
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "Coins are metal. Bills are paper. That is all."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "What is a coin?", "instruction": "Choose", "options": [{"id": "a", "text": "Metal"}, {"id": "b", "text": "Paper"}, {"id": "c", "text": "Water"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Correct.", "error": "Incorrect."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "What is a bill?", "instruction": "Choose", "options": [{"id": "a", "text": "Metal"}, {"id": "b", "text": "Paper"}, {"id": "c", "text": "Fire"}]}, "correct_answer": {"correctOptionId": "b"}, "feedback": {"success": "Correct.", "error": "Incorrect."}},
+    {"type": "true_false", "character_code": "liruf", "content": {"statement": "Money is important.", "instruction": "T or F?"}, "correct_answer": {"isTrue": true}, "feedback": {"success": "Correct.", "error": "Incorrect."}},
+    {"type": "multiple_choice", "character_code": "liruf", "content": {"question": "What is a coin made of?", "instruction": "Choose", "options": [{"id": "a", "text": "Metal"}, {"id": "b", "text": "Paper"}, {"id": "c", "text": "Air"}]}, "correct_answer": {"correctOptionId": "a"}, "feedback": {"success": "Correct.", "error": "Incorrect."}},
+    {"type": "intro_narrative", "character_code": "liruf", "content": {"transcript": "We are done. End of the lesson."}}
+  ]
+}
