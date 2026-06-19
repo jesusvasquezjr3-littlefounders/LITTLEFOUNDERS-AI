@@ -1,0 +1,844 @@
+{
+  "lesson_code": "3-5-30-8",
+  "title_es": "La Feria de Inversiones: Riesgo y Rendimiento",
+  "description_es": "Compara dos opciones de inversión y descubre por qué la que promete ganar más también puede hacer perder más.",
+  "duration": 25,
+  "age_rate": "10-12",
+  "points_reward": 10,
+  "adventure_level": 3,
+  "saga_level": 5,
+  "topic_level": 30,
+  "lesson_number": 8,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Bienvenido a la Feria de Inversiones de La Ciudad Digital. Mira estos dos puestos. El azul, Caja Segura, devuelve siempre 110 monedas. El naranja, Cohete Veloz, promete 160 monedas... pero a veces solo devuelve 60. ¿Cuál elegirías? Piensa bien."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Saber elegir entre lo seguro y lo que promete más es importante. Toda la vida tomarás decisiones así. Si eliges a ciegas, podrías perder tus monedas. Por eso entenderás hoy el riesgo y el rendimiento."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Rendimiento es lo que puedes ganar. Riesgo es la posibilidad de perder. La Caja Segura siempre da 10 monedas de ganancia, sin riesgo. El Cohete Veloz a veces da 60 de ganancia, pero otras veces pierdes 40. Eso es riesgo."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Riesgo significa la posibilidad de perder dinero.",
+        "instruction": "¿Es verdadero o falso?"
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Correcto. Riesgo es la posibilidad de perder. En el Cohete Veloz, puedes perder 40 monedas.",
+        "error": "No es falso. Riesgo sí es la posibilidad de perder dinero. Por ejemplo, en el Cohete Veloz puedes perder 40 monedas."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Para comparar, mira cuánto puedes ganar y cuánto puedes perder. Caja Segura: ganas 10, pierdes 0. Cohete Veloz: ganas 60 o pierdes 40. ¿Ves? A mayor ganancia posible, mayor pérdida posible."
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Calcula cuánto ganas o pierdes en cada puesto si pones 100 monedas.",
+        "instruction": "Escribe el número (puede ser negativo).",
+        "items": [
+          {
+            "id": "a",
+            "text": "Caja Segura: 110 - 100 = ?"
+          },
+          {
+            "id": "b",
+            "text": "Cohete Veloz (ganas): 160 - 100 = ?"
+          },
+          {
+            "id": "c",
+            "text": "Cohete Veloz (pierdes): 60 - 100 = ?"
+          }
+        ],
+        "answers": {
+          "a": 10,
+          "b": 60,
+          "c": -40
+        }
+      },
+      "correct_answer": {
+        "answers": {
+          "a": 10,
+          "b": 60,
+          "c": -40
+        }
+      },
+      "feedback": {
+        "success": "¡Bien! Caja Segura gana 10, Cohete Veloz gana 60 o pierde 40.",
+        "error": "Revisa: 110 - 100 = 10; 160 - 100 = 60; 60 - 100 = -40."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "decision": "Tienes 100 monedas. ¿Dónde las pones para una semana?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "safe",
+            "title": "Caja Segura",
+            "reward": "Ganas 10 monedas seguras."
+          },
+          {
+            "id": "b",
+            "type": "risk",
+            "title": "Cohete Veloz",
+            "reward": "Puedes ganar 60 o perder 40."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Elegiste la opción segura. Ganas 10 sin riesgo. Si prefieres más riesgo, el Cohete puede darte más o menos.",
+        "error": "Elegiste el Cohete Veloz. Recuerda: puedes ganar 60, pero también perder 40. No hay ganancia sin riesgo.",
+        "per_option": {
+          "a": "Caja Segura: ganas 10 siempre, sin riesgo. Es la opción segura.",
+          "b": "Cohete Veloz: puedes ganar 60, pero también perder 40. Eso es riesgo."
+        }
+      }
+    },
+    {
+      "type": "opportunity_cost",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Elegir un puesto significa renunciar al otro. ¿Qué sacrificas si eliges la Caja Segura?",
+        "options": [
+          {
+            "id": "a",
+            "text": "La oportunidad de ganar 60 monedas con el Cohete Veloz.",
+            "title": "Ganancia mayor",
+            "description": "Pero también evitas perder 40.",
+            "icon": "💰",
+            "benefits": [
+              "Sin riesgo de perder",
+              "Ganancia segura"
+            ]
+          },
+          {
+            "id": "b",
+            "text": "La tranquilidad de no perder dinero.",
+            "title": "Seguridad",
+            "description": "Pero ganas menos.",
+            "icon": "🛡️",
+            "benefits": [
+              "Ganas 10 seguro",
+              "Sin sorpresas"
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. Al elegir la Caja Segura, renuncias a la posibilidad de ganar 60, pero también evitas perder 40.",
+        "error": "No exactamente. Al elegir la Caja Segura, lo que sacrificas es la oportunidad de ganar más con el Cohete Veloz.",
+        "per_option": {
+          "a": "Sí, renuncias a la oportunidad de ganar 60, pero también evitas el riesgo de perder 40.",
+          "b": "Eso es lo que ganas, no lo que sacrificas. Lo que sacrificas es la oportunidad de ganar más."
+        }
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "Ahora hay un tercer puesto: Nave Media. Devuelve siempre 105 monedas (ganas 5). Compara las tres opciones. ¿Cuál tiene mayor riesgo?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "safe",
+            "title": "Caja Segura",
+            "reward": "Ganas 10, riesgo 0."
+          },
+          {
+            "id": "b",
+            "type": "medium",
+            "title": "Nave Media",
+            "reward": "Ganas 5, riesgo muy bajo."
+          },
+          {
+            "id": "c",
+            "type": "risk",
+            "title": "Cohete Veloz",
+            "reward": "Ganas 60 o pierdes 40."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "Correcto. El Cohete Veloz tiene el mayor riesgo porque puedes perder 40. A mayor rendimiento posible, mayor riesgo.",
+        "error": "No es esa. El Cohete Veloz es el que puede hacerte perder más. A mayor rendimiento posible, mayor riesgo.",
+        "per_option": {
+          "a": "Caja Segura no tiene riesgo. Busca la opción con más riesgo.",
+          "b": "Nave Media tiene riesgo muy bajo. El Cohete Veloz tiene más riesgo.",
+          "c": "Sí, el Cohete Veloz tiene el mayor riesgo porque puedes perder 40."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Un vendedor del Cohete Veloz dice: '¡El Cohete siempre te hace rico! Es dinero gratis. No hay riesgo.'",
+        "instruction": "Identifica la trampa en lo que dice.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Decir que 'siempre te hace rico' es falso, porque a veces pierdes.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Llamarlo 'dinero gratis' ignora que puedes perder 40 monedas.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "El Cohete Veloz es una buena inversión.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "¡Bien! Las dos trampas son que 'siempre te hace rico' y 'dinero gratis'. Ignoran el riesgo de perder.",
+        "error": "Revisa. Las afirmaciones engañosas son las que niegan el riesgo. 'Siempre te hace rico' y 'dinero gratis' son trampas.",
+        "per_option": {
+          "t1": "Correcto, es una trampa porque no siempre ganas.",
+          "t2": "Correcto, no es gratis porque puedes perder.",
+          "t3": "Eso no es una trampa, es una opinión. Las trampas son las que niegan el riesgo."
+        }
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu prima tiene 100 monedas y quiere guardarlas una semana para comprar un regalo importante. No puede permitirse perder ni una moneda. ¿Qué puesto le recomiendas?",
+        "instruction": "Elige la mejor opción para ella.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Caja Segura: gana 10 seguro, sin riesgo.",
+            "title": "Seguridad total"
+          },
+          {
+            "id": "b",
+            "text": "Cohete Veloz: puede ganar 60, pero también perder 40.",
+            "title": "Alto riesgo"
+          },
+          {
+            "id": "c",
+            "text": "Nave Media: gana 5, riesgo muy bajo.",
+            "title": "Riesgo bajo"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Excelente! Como no puede perder nada, la Caja Segura es la mejor. Gana 10 sin riesgo.",
+        "error": "Esa opción tiene riesgo. Tu prima no puede perder dinero, así que lo mejor es la Caja Segura, que no tiene riesgo.",
+        "per_option": {
+          "a": "Correcto. Sin riesgo, gana 10 seguro.",
+          "b": "Esa opción tiene riesgo de perder 40. No es adecuada para ella.",
+          "c": "Nave Media tiene riesgo muy bajo, pero aún podría perder algo. La Caja Segura es 100% segura."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hoy aprendiste: lo que puede ganar más, también puede perder más. Elegir según tu tolerancia al riesgo es clave. En la próxima lección veremos cómo el tiempo puede ayudarte a hacer crecer tu dinero de forma segura. ¡Nos vemos!"
+      }
+    }
+  ],
+  "title_en": "The Investment Fair: Risk and Return",
+  "description_en": "Compare two investment options and discover why the one that promises to earn more can also lose more.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Welcome to the Digital City Investment Fair. Look at these two booths. The blue one, Safe Box, always returns 110 coins. The orange one, Fast Rocket, promises 160 coins... but sometimes only returns 60. Which one would you choose? Think carefully."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Knowing how to choose between what is safe and what promises more is important. You will make decisions like this your whole life. If you choose blindly, you could lose your coins. That is why today you will understand risk and return."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Return is what you can gain. Risk is the possibility of losing. Safe Box always gives 10 coins profit, with no risk. Fast Rocket sometimes gives 60 profit, but other times you lose 40. That is risk."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Risk means the possibility of losing money.",
+        "instruction": "Is it true or false?"
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Correct. Risk is the possibility of losing. In Fast Rocket, you can lose 40 coins.",
+        "error": "It is not false. Risk is indeed the possibility of losing money. For example, in Fast Rocket you can lose 40 coins."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "To compare, look at how much you can gain and how much you can lose. Safe Box: gain 10, lose 0. Fast Rocket: gain 60 or lose 40. See? The greater the possible gain, the greater the possible loss."
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Calculate how much you gain or lose at each booth if you put in 100 coins.",
+        "instruction": "Write the number (can be negative).",
+        "items": [
+          {
+            "id": "a",
+            "text": "Safe Box: 110 - 100 = ?"
+          },
+          {
+            "id": "b",
+            "text": "Fast Rocket (you win): 160 - 100 = ?"
+          },
+          {
+            "id": "c",
+            "text": "Fast Rocket (you lose): 60 - 100 = ?"
+          }
+        ],
+        "answers": {
+          "a": 10,
+          "b": 60,
+          "c": -40
+        }
+      },
+      "correct_answer": {
+        "answers": {
+          "a": 10,
+          "b": 60,
+          "c": -40
+        }
+      },
+      "feedback": {
+        "success": "Great! Safe Box gains 10, Fast Rocket gains 60 or loses 40.",
+        "error": "Check: 110 - 100 = 10; 160 - 100 = 60; 60 - 100 = -40."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "decision": "You have 100 coins. Where do you put them for a week?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "safe",
+            "title": "Safe Box",
+            "reward": "You gain 10 safe coins."
+          },
+          {
+            "id": "b",
+            "type": "risk",
+            "title": "Fast Rocket",
+            "reward": "You can gain 60 or lose 40."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "You chose the safe option. You gain 10 with no risk. If you prefer more risk, the Rocket can give you more or less.",
+        "error": "You chose the Fast Rocket. Remember: you can gain 60, but also lose 40. There is no gain without risk.",
+        "per_option": {
+          "a": "Safe Box: you always gain 10, no risk. It is the safe option.",
+          "b": "Fast Rocket: you can gain 60, but also lose 40. That is risk."
+        }
+      }
+    },
+    {
+      "type": "opportunity_cost",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Choosing one booth means giving up the other. What do you sacrifice if you choose Safe Box?",
+        "options": [
+          {
+            "id": "a",
+            "text": "The opportunity to gain 60 coins with Fast Rocket.",
+            "title": "Higher gain",
+            "description": "But you also avoid losing 40.",
+            "icon": "💰",
+            "benefits": [
+              "No risk of losing",
+              "Safe gain"
+            ]
+          },
+          {
+            "id": "b",
+            "text": "The peace of mind of not losing money.",
+            "title": "Security",
+            "description": "But you gain less.",
+            "icon": "🛡️",
+            "benefits": [
+              "You gain 10 safely",
+              "No surprises"
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. By choosing Safe Box, you give up the possibility of gaining 60, but you also avoid losing 40.",
+        "error": "Not exactly. By choosing Safe Box, what you sacrifice is the opportunity to gain more with Fast Rocket.",
+        "per_option": {
+          "a": "Yes, you give up the opportunity to gain 60, but you also avoid the risk of losing 40.",
+          "b": "That is what you gain, not what you sacrifice. What you sacrifice is the opportunity to gain more."
+        }
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "Now there is a third booth: Medium Ship. It always returns 105 coins (you gain 5). Compare the three options. Which one has the highest risk?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "safe",
+            "title": "Safe Box",
+            "reward": "Gain 10, risk 0."
+          },
+          {
+            "id": "b",
+            "type": "medium",
+            "title": "Medium Ship",
+            "reward": "Gain 5, very low risk."
+          },
+          {
+            "id": "c",
+            "type": "risk",
+            "title": "Fast Rocket",
+            "reward": "Gain 60 or lose 40."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "Correct. Fast Rocket has the highest risk because you can lose 40. The higher the possible return, the higher the risk.",
+        "error": "Not that one. Fast Rocket is the one that can make you lose the most. The higher the possible return, the higher the risk.",
+        "per_option": {
+          "a": "Safe Box has no risk. Look for the option with more risk.",
+          "b": "Medium Ship has very low risk. Fast Rocket has more risk.",
+          "c": "Yes, Fast Rocket has the highest risk because you can lose 40."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "higher-reward-higher-risk"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "A Fast Rocket salesman says: 'The Rocket always makes you rich! It's free money. There's no risk.'",
+        "instruction": "Identify the trap in what he says.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Saying 'always makes you rich' is false, because sometimes you lose.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Calling it 'free money' ignores that you can lose 40 coins.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Fast Rocket is a good investment.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "Great! The two traps are 'always makes you rich' and 'free money'. They ignore the risk of losing.",
+        "error": "Check. The misleading statements are those that deny risk. 'Always makes you rich' and 'free money' are traps.",
+        "per_option": {
+          "t1": "Correct, it is a trap because you don't always win.",
+          "t2": "Correct, it is not free because you can lose.",
+          "t3": "That is not a trap, it is an opinion. The traps are those that deny risk."
+        }
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "choose-by-risk-tolerance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your cousin has 100 coins and wants to save them for a week to buy an important gift. She cannot afford to lose a single coin. Which booth do you recommend?",
+        "instruction": "Choose the best option for her.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Safe Box: gain 10 safely, no risk.",
+            "title": "Total security"
+          },
+          {
+            "id": "b",
+            "text": "Fast Rocket: can gain 60, but also lose 40.",
+            "title": "High risk"
+          },
+          {
+            "id": "c",
+            "text": "Medium Ship: gain 5, very low risk.",
+            "title": "Low risk"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Excellent! Since she cannot lose anything, Safe Box is the best. She gains 10 with no risk.",
+        "error": "That option has risk. Your cousin cannot lose money, so the best is Safe Box, which has no risk.",
+        "per_option": {
+          "a": "Correct. No risk, she gains 10 safely.",
+          "b": "That option has risk of losing 40. It is not suitable for her.",
+          "c": "Medium Ship has very low risk, but could still lose something. Safe Box is 100% safe."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "risk-reward-tradeoff"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Today you learned: what can gain more can also lose more. Choosing according to your risk tolerance is key. In the next lesson we will see how time can help you grow your money safely. See you!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "band": 3,
+      "lesson_code": "3-5-30-8",
+      "levels": [
+        3,
+        5,
+        30,
+        8
+      ],
+      "character": "dr_rho",
+      "chosen_topic": "Riesgo y Rendimiento",
+      "micro_objective": "El niño puede comparar dos opciones de inversión y reconocer que la que promete ganar más también puede hacer perder más (a mayor rendimiento posible, mayor riesgo), eligiendo según cuánto está dispuesto a arriesgar.",
+      "concept_ids": [
+        "risk-reward-tradeoff",
+        "higher-reward-higher-risk",
+        "choose-by-risk-tolerance"
+      ],
+      "scenario": "Dr. Rho lleva al niño a la Feria de Inversiones de La Ciudad Digital, donde dos puestos ofrecen guardar sus 100 monedas durante una semana. El puesto azul \"Caja Segura\" devuelve siempre 110 monedas, tranquilo y sin sorpresas. El puesto naranja \"Cohete Veloz\" promete devolver 160 monedas... pero a veces solo devuelve 60. Dr. Rho, analítico y paciente, usa los dos puestos como laboratorio para que el niño descubra por sí mismo por qué la opción que puede ganar más es también la que puede perder más.",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por escena relatable: Dr. Rho presenta los dos puestos de la Feria de Inversiones (Caja Segura vs Cohete Veloz) y reta al niño a predecir cuál elegiría, sembrando intriga sin revelar aún la regla riesgo-rendimiento. Nombra el concepto de forma natural ('riesgo', 'rendimiento')."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Anclaje motivacional: Dr. Rho explica por qué importa entender riesgo y rendimiento — porque toda la vida elegiremos entre lo seguro y lo que promete más, y elegir a ciegas puede costarte tus monedas. Conecta con experiencias del niño (apostar dulces, juegos de azar de feria)."
+        },
+        {
+          "phase": "que_es",
+          "type": "intro_narrative",
+          "purpose": "Definición operativa de UNA idea: 'rendimiento' = lo que puedes ganar; 'riesgo' = la posibilidad de perder. Dr. Rho define ambos términos técnicos con ejemplos concretos de los dos puestos (Caja Segura siempre +10; Cohete Veloz a veces +60, a veces -40)."
+        },
+        {
+          "phase": "que_es",
+          "type": "true_false",
+          "purpose": "Reconocer (objetivo Reconocer): verificación inmediata de la definición — '¿Riesgo significa la posibilidad de perder dinero?' con feedback que reafirma la definición operativa. Reconocimiento simple antes de avanzar."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "intro_narrative",
+          "purpose": "¿Cómo se usa? Dr. Rho modela el criterio guiado: para comparar dos opciones, mira cuánto puedes GANAR y cuánto puedes PERDER en cada una. Muestra paso a paso con los dos puestos usando solo números enteros pequeños (100, 110, 160, 60) — dentro del techo de banda 3."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "math_challenge",
+          "purpose": "Calcular (objetivo Calcular): el niño calcula, con resta de números enteros, cuánto gana o pierde en cada puesto (110-100=+10 seguro; 160-100=+60 o 60-100=-40). Aritmética concreta dentro de max_number 1000, sin porcentajes ni fórmulas."
+        },
+        {
+          "phase": "practicar",
+          "type": "risk_reward",
+          "purpose": "FOCO risk_reward — corazón de la práctica (objetivo Decidir): el niño enfrenta la decisión Caja Segura vs Cohete Veloz para sus 100 monedas y debe elegir entendiendo el trade-off. Feedback por opción explica conceptualmente que más rendimiento posible viene con más riesgo de perder."
+        },
+        {
+          "phase": "practicar",
+          "type": "opportunity_cost",
+          "purpose": "FOCO opportunity_cost (objetivo Comparar): el niño ve que elegir un puesto significa renunciar a lo que ofrecía el otro — la calma de la Caja Segura vs la chispa del Cohete. Compara explícitamente qué se gana y qué se sacrifica al decidir. Tipo distinto al anterior (no repite risk_reward)."
+        },
+        {
+          "phase": "reforzar",
+          "type": "risk_reward",
+          "purpose": "FOCO risk_reward reforzado con variación más desafiante: un tercer puesto 'Nave Media' (siempre devuelve 105, casi sin riesgo, ganancia pequeña) entra en escena; el niño compara TRES opciones y reconoce la curva riesgo-rendimiento. Consolida el concepto en formato variado."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "¿Qué error evitar? El niño detecta la trampa del personaje codicioso que dice 'el Cohete SIEMPRE te hace rico, ¡es dinero gratis!'. Corrige el malentendido común: alto rendimiento prometido NO es ganancia garantizada; ignorar el riesgo es el error clásico."
+        },
+        {
+          "phase": "aplicar",
+          "type": "roleplay_chat",
+          "purpose": "FOCO/Aplicar (objetivo Aplicar): variante en contexto nuevo — la prima del niño le pregunta dónde guardar sus monedas para una meta importante de la próxima semana. El niño aplica el criterio riesgo-rendimiento aconsejando según cuánto puede permitirse arriesgar (choose-by-risk-tolerance). Tipo distinto al spot_trap previo."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Cierre: Dr. Rho celebra el esfuerzo, resume en una frase ('lo que puede ganar más, también puede perder más') y anticipa la próxima lección sobre el interés compuesto y cómo el tiempo ayuda al inversor — conectando el concepto hacia adelante."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 2,
+    "concept_spine": [
+      "risk-reward-tradeoff",
+      "higher-reward-higher-risk",
+      "choose-by-risk-tolerance"
+    ]
+  }
+}

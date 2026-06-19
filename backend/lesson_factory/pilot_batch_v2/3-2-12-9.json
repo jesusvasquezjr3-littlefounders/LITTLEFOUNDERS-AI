@@ -1,0 +1,787 @@
+{
+  "lesson_code": "3-2-12-9",
+  "title_es": "El misterio de los $16 extra: el IVA",
+  "description_es": "Descubre qué es el IVA, cómo calcularlo y por qué aparece en casi todas tus compras. Aprenderás a sumarlo al precio para saber cuánto pagarás realmente.",
+  "duration": 25,
+  "age_rate": "10-12",
+  "points_reward": 10,
+  "adventure_level": 3,
+  "saga_level": 2,
+  "topic_level": 12,
+  "lesson_number": 9,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Escaneas unos audífonos que cuestan $100. Pero en la pantalla aparece $116. ¿De dónde salieron esos $16? No te los cobra la tienda. Vamos a descubrir el misterio."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Esos $16 son el IVA, un impuesto que va al gobierno. Con él se pagan calles, hospitales y escuelas. Casi todo lo que compras tiene IVA. Si no lo prevés, te falta dinero en la caja."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "¿Qué es el IVA?",
+        "instruction": "Elige la mejor definición.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Un impuesto que se suma al precio y va al gobierno."
+          },
+          {
+            "id": "b",
+            "text": "Un descuento que la tienda te da por pagar con tarjeta."
+          },
+          {
+            "id": "c",
+            "text": "Un cargo extra que se queda el vendedor."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! El IVA es un impuesto que se suma al precio y va al gobierno para financiar servicios públicos.",
+        "error": "No es correcto. El IVA no es un descuento ni se lo queda el vendedor. Es un impuesto que se suma al precio.",
+        "per_option": {
+          "a": "¡Exacto! El IVA es un impuesto que se suma al precio y va al gobierno.",
+          "b": "No, el IVA no es un descuento. Al contrario, se suma al precio.",
+          "c": "No, el IVA no se lo queda el vendedor, va al gobierno."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "iva-as-part-of-100",
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El IVA es de 16 de cada 100 pesos. Si algo cuesta $100, el IVA son $16. El total es $100 + $16 = $116. Así funciona siempre: precio más IVA igual a total."
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 200,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "Calcula el IVA de un producto que cuesta $200. Usa la calculadora: el IVA es 16 de cada 100. Luego suma al precio para obtener el total."
+      },
+      "correct_answer": {
+        "value": 232
+      },
+      "feedback": {
+        "success": "¡Muy bien! El IVA de $200 es $32 (16 de cada 100). Total: $200 + $32 = $232.",
+        "error": "Revisa: el IVA es 16 de cada 100. Para $200, son 16+16 = $32. Suma al precio: $200 + $32 = $232."
+      }
+    },
+    {
+      "type": "estimation_slider",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "problem": "Estima cuánto IVA tiene un audífono de $50. El IVA es 16 de cada 100. ¿Cuánto será?",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "unit": "$",
+        "tolerance": 3
+      },
+      "correct_answer": {
+        "value": 8
+      },
+      "feedback": {
+        "success": "¡Bien! El IVA exacto de $50 es $8 (la mitad de 16, porque 50 es la mitad de 100).",
+        "error": "Cerca. Recuerda: 16 de cada 100. Como 50 es la mitad de 100, el IVA es la mitad de 16, o sea $8."
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 300,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "Ahora una mochila de $300. Calcula el IVA y el total."
+      },
+      "correct_answer": {
+        "value": 348
+      },
+      "feedback": {
+        "success": "¡Perfecto! IVA: 16+16+16 = $48. Total: $300 + $48 = $348.",
+        "error": "Revisa: 16 de cada 100. Para 300, son 16x3 = $48. Suma: $300 + $48 = $348."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "El precio que ves en la etiqueta es exactamente lo que pagas en la caja.",
+        "instruction": "¿Verdadero o falso?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "¡Correcto! Casi siempre se suma el IVA al precio de la etiqueta, así que pagas un poco más.",
+        "error": "Falso. El precio de etiqueta no incluye el IVA, por eso al pagar se suma.",
+        "per_option": {
+          "true": "No es verdad. El IVA se suma aparte, así que pagas más que el precio de etiqueta.",
+          "false": "¡Exacto! El IVA se suma en la caja, por eso el total es mayor."
+        }
+      }
+    },
+    {
+      "type": "estimation_slider",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "problem": "Estima el IVA de dos productos: uno de $100 y otro de $200. ¿Cuál tiene más IVA? Desliza para estimar el IVA del de $200.",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "$",
+        "tolerance": 5
+      },
+      "correct_answer": {
+        "value": 32
+      },
+      "feedback": {
+        "success": "¡Bien! El IVA de $200 es $32, que es el doble que el de $100 ($16). A mayor precio, mayor IVA.",
+        "error": "Recuerda: 16 de cada 100. Para $200 son 16+16 = $32."
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Dos tiendas venden el mismo audífono de $100. ¿Cuál cobró el IVA correcto?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Tienda A: total $116"
+          },
+          {
+            "id": "b",
+            "label": "Tienda B: total $120"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! El IVA de $100 es $16, así que el total debe ser $116.",
+        "error": "No. El IVA correcto es 16 de cada 100, o sea $16. El total debe ser $116.",
+        "per_option": {
+          "a": "¡Sí! $100 + $16 = $116.",
+          "b": "No, $120 es más de lo que debería ser. El IVA correcto es $16."
+        }
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 200,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "Tienes $250. Quieres comprar algo de $200. Calcula el total con IVA y decide si te alcanza."
+      },
+      "correct_answer": {
+        "value": 232
+      },
+      "feedback": {
+        "success": "¡Sí alcanza! El total es $232 y tienes $250, así que te sobran $18.",
+        "error": "El total con IVA es $232. Como tienes $250, sí te alcanza y te sobran $18."
+      }
+    },
+    {
+      "type": "fill_blank",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Completa el recibo: precio $100, IVA ____, total ____.",
+        "blanks": [
+          {
+            "id": "b1",
+            "label": "IVA ($)",
+            "correctAnswer": "16"
+          },
+          {
+            "id": "b2",
+            "label": "Total ($)",
+            "correctAnswer": "116"
+          }
+        ]
+      },
+      "correct_answer": {
+        "blanks": {
+          "b1": "16",
+          "b2": "116"
+        }
+      },
+      "feedback": {
+        "success": "¡Perfecto! IVA: $16, Total: $116.",
+        "error": "Revisa: el IVA de $100 es $16, y el total es $100 + $16 = $116."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "¡Gran trabajo! Ahora sabes que el IVA son 16 de cada 100 pesos que van al gobierno para servicios públicos. En la próxima lección veremos cómo cambian los precios cuando hay mucha o poca oferta y demanda. ¡Hasta entonces!"
+      }
+    }
+  ],
+  "title_en": "The Mystery of the Extra $16: VAT",
+  "description_en": "Discover what VAT is, how to calculate it, and why it appears on almost every purchase. You'll learn to add it to the price to know how much you'll actually pay.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "You scan some headphones that cost $100. But on the screen it shows $116. Where did those $16 come from? The store isn't charging you. Let's solve the mystery."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Those $16 are VAT, a tax that goes to the government. It pays for streets, hospitals, and schools. Almost everything you buy has VAT. If you don't plan for it, you'll be short at the register."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "What is VAT?",
+        "instruction": "Choose the best definition.",
+        "options": [
+          {
+            "id": "a",
+            "text": "A tax added to the price that goes to the government."
+          },
+          {
+            "id": "b",
+            "text": "A discount the store gives you for paying with a card."
+          },
+          {
+            "id": "c",
+            "text": "An extra charge that the seller keeps."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! VAT is a tax added to the price that goes to the government to fund public services.",
+        "error": "That's not correct. VAT is not a discount nor does the seller keep it. It's a tax added to the price.",
+        "per_option": {
+          "a": "Exactly! VAT is a tax added to the price that goes to the government.",
+          "b": "No, VAT is not a discount. On the contrary, it's added to the price.",
+          "c": "No, VAT is not kept by the seller; it goes to the government."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "iva-as-part-of-100",
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "VAT is 16 out of every 100 pesos. If something costs $100, VAT is $16. The total is $100 + $16 = $116. That's how it always works: price plus VAT equals total."
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 200,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "Calculate the VAT for a product that costs $200. Use the calculator: VAT is 16 out of every 100. Then add it to the price to get the total."
+      },
+      "correct_answer": {
+        "value": 232
+      },
+      "feedback": {
+        "success": "Very good! The VAT on $200 is $32 (16 out of every 100). Total: $200 + $32 = $232.",
+        "error": "Check: VAT is 16 out of every 100. For $200, that's 16+16 = $32. Add to the price: $200 + $32 = $232."
+      }
+    },
+    {
+      "type": "estimation_slider",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "problem": "Estimate how much VAT a $50 headphone has. VAT is 16 out of every 100. How much will it be?",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "unit": "$",
+        "tolerance": 3
+      },
+      "correct_answer": {
+        "value": 8
+      },
+      "feedback": {
+        "success": "Good! The exact VAT on $50 is $8 (half of 16, because 50 is half of 100).",
+        "error": "Close. Remember: 16 out of every 100. Since 50 is half of 100, VAT is half of 16, which is $8."
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 300,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "Now a backpack costing $300. Calculate the VAT and the total."
+      },
+      "correct_answer": {
+        "value": 348
+      },
+      "feedback": {
+        "success": "Perfect! VAT: 16+16+16 = $48. Total: $300 + $48 = $348.",
+        "error": "Check: 16 out of every 100. For 300, that's 16x3 = $48. Add: $300 + $48 = $348."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "The price you see on the tag is exactly what you pay at the register.",
+        "instruction": "True or false?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correct! Almost always VAT is added to the tag price, so you pay a little more.",
+        "error": "False. The tag price does not include VAT, so it's added when you pay.",
+        "per_option": {
+          "true": "Not true. VAT is added separately, so you pay more than the tag price.",
+          "false": "Exactly! VAT is added at the register, so the total is higher."
+        }
+      }
+    },
+    {
+      "type": "estimation_slider",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "calculate-iva-amount"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "problem": "Estimate the VAT for two products: one for $100 and another for $200. Which has more VAT? Slide to estimate the VAT for the $200 one.",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "$",
+        "tolerance": 5
+      },
+      "correct_answer": {
+        "value": 32
+      },
+      "feedback": {
+        "success": "Good! The VAT on $200 is $32, which is double that of $100 ($16). The higher the price, the higher the VAT.",
+        "error": "Remember: 16 out of every 100. For $200, that's 16+16 = $32."
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Two stores sell the same $100 headphone. Which one charged the correct VAT?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Store A: total $116"
+          },
+          {
+            "id": "b",
+            "label": "Store B: total $120"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! The VAT on $100 is $16, so the total should be $116.",
+        "error": "No. The correct VAT is 16 out of every 100, which is $16. The total should be $116.",
+        "per_option": {
+          "a": "Yes! $100 + $16 = $116.",
+          "b": "No, $120 is more than it should be. The correct VAT is $16."
+        }
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "type": "compound",
+        "defaultPrincipal": 200,
+        "defaultRate": 16,
+        "defaultTime": 1,
+        "maxPrincipal": 1000,
+        "maxRate": 16,
+        "maxTime": 1,
+        "instruction": "You have $250. You want to buy something for $200. Calculate the total with VAT and decide if you have enough."
+      },
+      "correct_answer": {
+        "value": 232
+      },
+      "feedback": {
+        "success": "Yes, you have enough! The total is $232 and you have $250, so you'll have $18 left.",
+        "error": "The total with VAT is $232. Since you have $250, you do have enough and will have $18 left."
+      }
+    },
+    {
+      "type": "fill_blank",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Complete the receipt: price $100, VAT ____, total ____.",
+        "blanks": [
+          {
+            "id": "b1",
+            "label": "VAT ($)",
+            "correctAnswer": "16"
+          },
+          {
+            "id": "b2",
+            "label": "Total ($)",
+            "correctAnswer": "116"
+          }
+        ]
+      },
+      "correct_answer": {
+        "blanks": {
+          "b1": "16",
+          "b2": "116"
+        }
+      },
+      "feedback": {
+        "success": "Perfect! VAT: $16, Total: $116.",
+        "error": "Check: the VAT on $100 is $16, and the total is $100 + $16 = $116."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "what-is-iva"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "Great job! Now you know that VAT is 16 out of every 100 pesos that go to the government for public services. In the next lesson, we'll see how prices change when there is a lot or a little supply and demand. See you then!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "character": "dr_rho",
+      "band": 3,
+      "lesson_code": "3-2-12-9",
+      "levels": [
+        3,
+        2,
+        12,
+        9
+      ],
+      "chosen_topic": "Los Impuestos en las Compras",
+      "micro_objective": "Calcular el monto del IVA (16 de cada 100 pesos) sobre un precio sencillo y sumarlo para obtener el total a pagar.",
+      "concept_ids": [
+        "what-is-iva",
+        "iva-as-part-of-100",
+        "calculate-iva-amount",
+        "price-plus-iva-total"
+      ],
+      "scenario": "En la Ciudad Digital, un niño escanea con su app de pagos un audífono que cuesta $100, pero al confirmar la pantalla muestra $116. Dr. Rho aparece como guía: \"Esos 16 pesos extra no se los queda la tienda. Vamos a descubrir a dónde van y por qué casi todo lo que compras cuesta un poco más en la caja.\"",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por sorpresa: el ticket marca $116 cuando el precio era $100. Dr. Rho intriga al niño con la pregunta '¿de dónde salieron esos 16 pesos?' para activar curiosidad antes de nombrar el IVA."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho explica POR QUÉ importa: el IVA aparece en casi toda compra y financia servicios públicos (calles, hospitales, escuelas). Si no lo prevés, te falta dinero en la caja."
+        },
+        {
+          "phase": "que_es",
+          "type": "multiple_choice",
+          "purpose": "Reconocer (objetivo: Reconocer). Definición operativa del IVA como 'impuesto que va al gobierno y se suma al precio'; el niño elige la descripción correcta entre confusiones comunes."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "intro_narrative",
+          "purpose": "Enseñar el mecanismo con un ejemplo guiado: IVA = 16 de cada 100 pesos. Sobre $100 son $16; el total es 100 + 16 = $116. Modela el cálculo paso a paso antes de evaluar."
+        },
+        {
+          "phase": "practicar",
+          "type": "interest_calculator",
+          "purpose": "Calcular (objetivo: Calcular). FOCO 1: el niño usa la calculadora para hallar el IVA de un precio de $200 (16 de cada 100 -> $32) y obtener el total $232. Práctica central guiada del cálculo enseñado."
+        },
+        {
+          "phase": "practicar",
+          "type": "estimation_slider",
+          "purpose": "Calcular/estimar (refuerza Calcular). FOCO 2: antes de calcular exacto, el niño desliza para estimar cuánto IVA tendrá un audífono de $50 (acercándose a ~$8), entrenando la intuición de que el IVA es una parte pequeña del precio."
+        },
+        {
+          "phase": "reforzar",
+          "type": "interest_calculator",
+          "purpose": "Calcular en contexto nuevo (FOCO 1 repetido con variación). Una mochila de $300: hallar IVA ($48) y total ($348). Misma habilidad, número distinto, sin estar pegado a otro interest_calculator."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "true_false",
+          "purpose": "Decidir/Reconocer error (objetivo: Decidir). Corrige el malentendido común: 'el precio en la etiqueta YA es lo que pagas'. El niño juzga la afirmación y aprende que el IVA puede sumarse en la caja."
+        },
+        {
+          "phase": "reforzar",
+          "type": "estimation_slider",
+          "purpose": "Comparar magnitudes (FOCO 2 + objetivo Comparar). El niño estima el IVA de dos precios distintos y nota que a mayor precio, mayor IVA: refuerza que el IVA crece con el precio (parte proporcional de un todo)."
+        },
+        {
+          "phase": "reforzar",
+          "type": "comparison",
+          "purpose": "Comparar (objetivo: Comparar, refuerzo). Dos tickets de tiendas distintas para el mismo audífono de $100: ¿cuál cobró el IVA correcto ($116) vs uno inflado? El niño compara y detecta el cargo justo."
+        },
+        {
+          "phase": "aplicar",
+          "type": "interest_calculator",
+          "purpose": "Aplicar (objetivo: Aplicar, FOCO 1 en transferencia). Escenario de presupuesto: el niño tiene $250 y quiere algo de $200; calcula precio+IVA ($232) y decide si le alcanza. Une cálculo de IVA con decisión real de compra."
+        },
+        {
+          "phase": "aplicar",
+          "type": "fill_blank",
+          "purpose": "Aplicar/Calcular (variante de formato distinta a interest_calculator). El niño completa los huecos de un mini-recibo: precio $100, IVA ___ ($16), total ___ ($116), consolidando la estructura precio+IVA=total."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho celebra el esfuerzo, resume en una frase que el IVA son 16 de cada 100 que financian servicios públicos, y conecta hacia la próxima lección sobre cómo cambia el precio cuando cambian oferta y demanda."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 2,
+    "concept_spine": [
+      "what-is-iva",
+      "iva-as-part-of-100",
+      "calculate-iva-amount",
+      "price-plus-iva-total"
+    ]
+  }
+}

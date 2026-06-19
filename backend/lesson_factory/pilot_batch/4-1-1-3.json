@@ -1,0 +1,1120 @@
+{
+  "lesson_code": "4-1-1-3",
+  "title_es": "Presupuesto 50/30/20: Controla tu dinero",
+  "title_en": "50/30/20 Budget: Take Control of Your Money",
+  "description_es": "Aprende a repartir tus ingresos en necesidades, deseos y ahorro con la regla 50/30/20, y descubre cómo dividir gastos compartidos sin salirte de tu presupuesto.",
+  "description_en": "Learn to split your income into needs, wants, and savings using the 50/30/20 rule, and find out how to split shared expenses without breaking your budget.",
+  "duration": 25,
+  "age_rate": "13-14",
+  "points_reward": 10,
+  "adventure_level": 4,
+  "saga_level": 1,
+  "topic_level": 1,
+  "lesson_number": 3,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! Soy Dr. Rho. Recibes $2,000 al mes entre mesada y trabajo part-time. ¿Alguna vez llegas a fin de mes sin saber dónde se fue tu dinero? Hoy te reto a construir un presupuesto real para que cada peso tenga un propósito."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Sin presupuesto, el dinero se esfuma. Con la regla 50/30/20, tú decides: 50% para necesidades, 30% para deseos y 20% para ahorro. Así controlas tu dinero, no al revés."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "¿Qué significa la regla 50/30/20?",
+        "instruction": "Elige la opción correcta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "50% necesidades, 30% deseos, 20% ahorro"
+          },
+          {
+            "id": "b",
+            "text": "50% ahorro, 30% necesidades, 20% deseos"
+          },
+          {
+            "id": "c",
+            "text": "50% deseos, 30% ahorro, 20% necesidades"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! 50% necesidades, 30% deseos, 20% ahorro.",
+        "error": "No es correcto. Revisa los porcentajes.",
+        "per_option": {
+          "a": "¡Exacto! Así se distribuye.",
+          "b": "Cuidado: el ahorro es el 20%, no el 50%.",
+          "c": "Casi al revés: las necesidades son el 50%."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Con $2,000 al mes, ¿cuánto va a cada categoría?",
+        "instruction": "Calcula los montos exactos.",
+        "items": [
+          {
+            "id": "necesidades",
+            "label": "Necesidades (50%)",
+            "correctValue": 1000
+          },
+          {
+            "id": "deseos",
+            "label": "Deseos (30%)",
+            "correctValue": 600
+          },
+          {
+            "id": "ahorro",
+            "label": "Ahorro (20%)",
+            "correctValue": 400
+          }
+        ]
+      },
+      "correct_answer": {
+        "values": {
+          "necesidades": 1000,
+          "deseos": 600,
+          "ahorro": 400
+        }
+      },
+      "feedback": {
+        "success": "¡Perfecto! $1,000 necesidades, $600 deseos, $400 ahorro.",
+        "error": "Revisa los cálculos: 50% de 2000 es 1000, 30% es 600, 20% es 400."
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Tienes $2,000. Asigna estos gastos a las categorías sin pasarte: renta de cuarto $500, transporte $200, ropa $150, ahorro $400, videojuegos $100, salidas $200, comida $300, suscripción música $50.",
+        "categories": [
+          {
+            "id": "necesidades",
+            "label": "Necesidades (50% = $1,000)",
+            "max": 1000,
+            "items": [
+              {
+                "id": "renta",
+                "label": "Renta de cuarto",
+                "amount": 500
+              },
+              {
+                "id": "transporte",
+                "label": "Transporte",
+                "amount": 200
+              },
+              {
+                "id": "comida",
+                "label": "Comida",
+                "amount": 300
+              }
+            ]
+          },
+          {
+            "id": "deseos",
+            "label": "Deseos (30% = $600)",
+            "max": 600,
+            "items": [
+              {
+                "id": "ropa",
+                "label": "Ropa",
+                "amount": 150
+              },
+              {
+                "id": "videojuegos",
+                "label": "Videojuegos",
+                "amount": 100
+              },
+              {
+                "id": "salidas",
+                "label": "Salidas",
+                "amount": 200
+              },
+              {
+                "id": "suscripcion",
+                "label": "Suscripción música",
+                "amount": 50
+              }
+            ]
+          },
+          {
+            "id": "ahorro",
+            "label": "Ahorro (20% = $400)",
+            "max": 400,
+            "items": [
+              {
+                "id": "ahorro_fijo",
+                "label": "Ahorro",
+                "amount": 400
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "categories": {
+          "necesidades": [
+            "renta",
+            "transporte",
+            "comida"
+          ],
+          "deseos": [
+            "ropa",
+            "videojuegos",
+            "salidas",
+            "suscripcion"
+          ],
+          "ahorro": [
+            "ahorro_fijo"
+          ]
+        }
+      },
+      "feedback": {
+        "success": "¡Presupuesto armado! Necesidades $1,000, deseos $500 (te sobran $100), ahorro $400.",
+        "error": "Revisa: renta, transporte y comida son necesidades; ropa, videojuegos, salidas y suscripción son deseos; ahorro va a su categoría."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Clasifica cada gasto como necesidad, deseo o ahorro.",
+        "items": [
+          {
+            "id": "utiles",
+            "label": "Útiles escolares",
+            "category": "necesidad"
+          },
+          {
+            "id": "videojuego",
+            "label": "Videojuego nuevo",
+            "category": "deseo"
+          },
+          {
+            "id": "fondo_emergencia",
+            "label": "Fondo de emergencia",
+            "category": "ahorro"
+          },
+          {
+            "id": "comida",
+            "label": "Comida en la escuela",
+            "category": "necesidad"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "utiles": "necesidad",
+          "videojuego": "deseo",
+          "fondo_emergencia": "ahorro",
+          "comida": "necesidad"
+        }
+      },
+      "feedback": {
+        "success": "¡Clasificación correcta!",
+        "error": "Revisa: útiles y comida son necesidades; videojuego es deseo; fondo de emergencia es ahorro."
+      }
+    },
+    {
+      "type": "bill_splitter",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Tú y 3 amigas quieren una suscripción de música de $200 al mes. Deciden dividir el costo en partes iguales.",
+        "question": "¿Cuánto paga cada una?",
+        "instruction": "Calcula y escribe el monto.",
+        "total": 200,
+        "people": 4,
+        "correctShare": 50
+      },
+      "correct_answer": {
+        "share": 50
+      },
+      "feedback": {
+        "success": "¡Correcto! Cada una paga $50.",
+        "error": "Divide $200 entre 4: $50 cada una."
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Compara pagar la suscripción sola vs. compartida.",
+        "items": [
+          {
+            "id": "sola",
+            "label": "Sola: $200",
+            "amount": 200
+          },
+          {
+            "id": "compartida",
+            "label": "Compartida: $50",
+            "amount": 50
+          }
+        ],
+        "question": "Si tu presupuesto de deseos es $600, ¿cuánto te sobra en cada caso?",
+        "instruction": "Escribe los sobrantes.",
+        "correctAnswers": {
+          "sola": 400,
+          "compartida": 550
+        }
+      },
+      "correct_answer": {
+        "values": {
+          "sola": 400,
+          "compartida": 550
+        }
+      },
+      "feedback": {
+        "success": "¡Exacto! Sola te sobran $400, compartida $550.",
+        "error": "Resta: 600 - 200 = 400; 600 - 50 = 550."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Tu amiga dice: 'La suscripción de música es una necesidad porque la uso para estudiar'. ¿Es correcto?",
+        "instruction": "Identifica si es una trampa.",
+        "options": [
+          {
+            "id": "trampa",
+            "text": "Sí, es una trampa: sigue siendo un deseo"
+          },
+          {
+            "id": "correcto",
+            "text": "No, es correcto: es una necesidad"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "trampa"
+      },
+      "feedback": {
+        "success": "¡Bien! Aunque la uses para estudiar, sigue siendo un deseo porque no es indispensable.",
+        "error": "Cuidado: no porque tenga un uso educativo deja de ser un deseo. Las necesidades son esenciales como vivienda o comida.",
+        "per_option": {
+          "trampa": "Correcto, es una trampa común.",
+          "correcto": "Incorrecto, es una justificación para gastar más."
+        }
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "regla-50-30-20",
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Este mes solo ganaste $1,500. Reajusta tu presupuesto 50/30/20. ¿Cuánto va a cada categoría?",
+        "categories": [
+          {
+            "id": "necesidades",
+            "label": "Necesidades (50%)",
+            "max": 750,
+            "items": []
+          },
+          {
+            "id": "deseos",
+            "label": "Deseos (30%)",
+            "max": 450,
+            "items": []
+          },
+          {
+            "id": "ahorro",
+            "label": "Ahorro (20%)",
+            "max": 300,
+            "items": []
+          }
+        ],
+        "question": "Asigna los montos correctos.",
+        "instruction": "Escribe el monto para cada categoría."
+      },
+      "correct_answer": {
+        "values": {
+          "necesidades": 750,
+          "deseos": 450,
+          "ahorro": 300
+        }
+      },
+      "feedback": {
+        "success": "¡Bien! $750 necesidades, $450 deseos, $300 ahorro.",
+        "error": "Calcula: 50% de 1500 = 750, 30% = 450, 20% = 300."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu amiga te propone agregar otra suscripción de $40 al mes, compartida entre 4. Tu presupuesto de deseos es $450. ¿Cabe?",
+        "messages": [
+          {
+            "role": "amiga",
+            "text": "¿Agregamos la suscripción premium? Son $40 entre todas, te toca $10."
+          },
+          {
+            "role": "user",
+            "text": "Responde si puedes o no y por qué."
+          }
+        ],
+        "options": [
+          {
+            "id": "si",
+            "text": "Sí, porque $10 cabe en mi presupuesto de deseos."
+          },
+          {
+            "id": "no",
+            "text": "No, porque aunque quepa, debo priorizar."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "si"
+      },
+      "feedback": {
+        "success": "¡Bien! $10 cabe en tus $450 de deseos.",
+        "error": "Revisa: $10 es menor que tu presupuesto disponible.",
+        "per_option": {
+          "si": "Correcto, cabe sin problema.",
+          "no": "Aunque es válido priorizar, la pregunta es si cabe. Sí cabe."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "dr_rho",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Relaciona cada categoría con su consecuencia.",
+        "pairs": [
+          {
+            "left": "Ahorro 20%",
+            "right": "Flujo de caja positivo"
+          },
+          {
+            "left": "Gastar más de lo que tienes",
+            "right": "Déficit"
+          },
+          {
+            "left": "Necesidades 50%",
+            "right": "Cubrir lo esencial"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! Estas conexiones te preparan para la próxima lección sobre flujo de caja.",
+        "error": "Revisa: ahorro da flujo positivo, gastar de más da déficit, necesidades cubren lo esencial."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "¡Excelente trabajo! Ahora sabes usar la regla 50/30/20 y dividir gastos compartidos. Tienes el control de tus $2,000. En la próxima lección veremos el flujo de caja: ingresos menos egresos. ¡Sigue así!"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! I'm Dr. Rho. You receive $2,000 a month from allowance and part-time work. Have you ever reached the end of the month not knowing where your money went? Today I challenge you to build a real budget so every peso has a purpose."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Without a budget, money disappears. With the 50/30/20 rule, you decide: 50% for needs, 30% for wants, and 20% for savings. You control your money, not the other way around."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "What does the 50/30/20 rule mean?",
+        "instruction": "Choose the correct option.",
+        "options": [
+          {
+            "id": "a",
+            "text": "50% needs, 30% wants, 20% savings"
+          },
+          {
+            "id": "b",
+            "text": "50% savings, 30% needs, 20% wants"
+          },
+          {
+            "id": "c",
+            "text": "50% wants, 30% savings, 20% needs"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! 50% needs, 30% wants, 20% savings.",
+        "error": "Not correct. Check the percentages.",
+        "per_option": {
+          "a": "Exactly! That's the distribution.",
+          "b": "Careful: savings is 20%, not 50%.",
+          "c": "Almost reversed: needs are 50%."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "With $2,000 a month, how much goes to each category?",
+        "instruction": "Calculate the exact amounts.",
+        "items": [
+          {
+            "id": "needs",
+            "label": "Needs (50%)",
+            "correctValue": 1000
+          },
+          {
+            "id": "wants",
+            "label": "Wants (30%)",
+            "correctValue": 600
+          },
+          {
+            "id": "savings",
+            "label": "Savings (20%)",
+            "correctValue": 400
+          }
+        ]
+      },
+      "correct_answer": {
+        "values": {
+          "needs": 1000,
+          "wants": 600,
+          "savings": 400
+        }
+      },
+      "feedback": {
+        "success": "Perfect! $1,000 needs, $600 wants, $400 savings.",
+        "error": "Check calculations: 50% of 2000 is 1000, 30% is 600, 20% is 400."
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "You have $2,000. Assign these expenses to categories without exceeding: room rent $500, transport $200, clothes $150, savings $400, video games $100, outings $200, food $300, music subscription $50.",
+        "categories": [
+          {
+            "id": "needs",
+            "label": "Needs (50% = $1,000)",
+            "max": 1000,
+            "items": [
+              {
+                "id": "rent",
+                "label": "Room rent",
+                "amount": 500
+              },
+              {
+                "id": "transport",
+                "label": "Transport",
+                "amount": 200
+              },
+              {
+                "id": "food",
+                "label": "Food",
+                "amount": 300
+              }
+            ]
+          },
+          {
+            "id": "wants",
+            "label": "Wants (30% = $600)",
+            "max": 600,
+            "items": [
+              {
+                "id": "clothes",
+                "label": "Clothes",
+                "amount": 150
+              },
+              {
+                "id": "videogames",
+                "label": "Video games",
+                "amount": 100
+              },
+              {
+                "id": "outings",
+                "label": "Outings",
+                "amount": 200
+              },
+              {
+                "id": "subscription",
+                "label": "Music subscription",
+                "amount": 50
+              }
+            ]
+          },
+          {
+            "id": "savings",
+            "label": "Savings (20% = $400)",
+            "max": 400,
+            "items": [
+              {
+                "id": "savings_fixed",
+                "label": "Savings",
+                "amount": 400
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "categories": {
+          "needs": [
+            "rent",
+            "transport",
+            "food"
+          ],
+          "wants": [
+            "clothes",
+            "videogames",
+            "outings",
+            "subscription"
+          ],
+          "savings": [
+            "savings_fixed"
+          ]
+        }
+      },
+      "feedback": {
+        "success": "Budget built! Needs $1,000, wants $500 (you have $100 left), savings $400.",
+        "error": "Check: rent, transport and food are needs; clothes, video games, outings and subscription are wants; savings goes to its category."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Classify each expense as need, want or savings.",
+        "items": [
+          {
+            "id": "school_supplies",
+            "label": "School supplies",
+            "category": "need"
+          },
+          {
+            "id": "new_game",
+            "label": "New video game",
+            "category": "want"
+          },
+          {
+            "id": "emergency_fund",
+            "label": "Emergency fund",
+            "category": "savings"
+          },
+          {
+            "id": "school_lunch",
+            "label": "School lunch",
+            "category": "need"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "school_supplies": "need",
+          "new_game": "want",
+          "emergency_fund": "savings",
+          "school_lunch": "need"
+        }
+      },
+      "feedback": {
+        "success": "Correct classification!",
+        "error": "Check: school supplies and lunch are needs; new game is a want; emergency fund is savings."
+      }
+    },
+    {
+      "type": "bill_splitter",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "You and 3 friends want a music subscription for $200 a month. You decide to split the cost equally.",
+        "question": "How much does each person pay?",
+        "instruction": "Calculate and enter the amount.",
+        "total": 200,
+        "people": 4,
+        "correctShare": 50
+      },
+      "correct_answer": {
+        "share": 50
+      },
+      "feedback": {
+        "success": "Correct! Each pays $50.",
+        "error": "Divide $200 by 4: $50 each."
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Compare paying the subscription alone vs. shared.",
+        "items": [
+          {
+            "id": "alone",
+            "label": "Alone: $200",
+            "amount": 200
+          },
+          {
+            "id": "shared",
+            "label": "Shared: $50",
+            "amount": 50
+          }
+        ],
+        "question": "If your wants budget is $600, how much is left in each case?",
+        "instruction": "Enter the leftovers.",
+        "correctAnswers": {
+          "alone": 400,
+          "shared": 550
+        }
+      },
+      "correct_answer": {
+        "values": {
+          "alone": 400,
+          "shared": 550
+        }
+      },
+      "feedback": {
+        "success": "Exactly! Alone you have $400 left, shared $550.",
+        "error": "Subtract: 600 - 200 = 400; 600 - 50 = 550."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Your friend says: 'The music subscription is a need because I use it to study.' Is that correct?",
+        "instruction": "Identify if it's a trap.",
+        "options": [
+          {
+            "id": "trap",
+            "text": "Yes, it's a trap: it's still a want"
+          },
+          {
+            "id": "correct",
+            "text": "No, it's correct: it's a need"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "trap"
+      },
+      "feedback": {
+        "success": "Good! Even if you use it to study, it's still a want because it's not essential.",
+        "error": "Careful: just because it has an educational use doesn't make it a need. Needs are essentials like housing or food.",
+        "per_option": {
+          "trap": "Correct, it's a common trap.",
+          "correct": "Incorrect, it's a justification to spend more."
+        }
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "regla-50-30-20",
+        "categorias-presupuesto"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "This month you only earned $1,500. Readjust your 50/30/20 budget. How much goes to each category?",
+        "categories": [
+          {
+            "id": "needs",
+            "label": "Needs (50%)",
+            "max": 750,
+            "items": []
+          },
+          {
+            "id": "wants",
+            "label": "Wants (30%)",
+            "max": 450,
+            "items": []
+          },
+          {
+            "id": "savings",
+            "label": "Savings (20%)",
+            "max": 300,
+            "items": []
+          }
+        ],
+        "question": "Enter the correct amounts.",
+        "instruction": "Enter the amount for each category."
+      },
+      "correct_answer": {
+        "values": {
+          "needs": 750,
+          "wants": 450,
+          "savings": 300
+        }
+      },
+      "feedback": {
+        "success": "Good! $750 needs, $450 wants, $300 savings.",
+        "error": "Calculate: 50% of 1500 = 750, 30% = 450, 20% = 300."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dividir-gasto-compartido",
+        "regla-50-30-20"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your friend suggests adding another subscription for $40 a month, shared among 4. Your wants budget is $450. Does it fit?",
+        "messages": [
+          {
+            "role": "friend",
+            "text": "Shall we add the premium subscription? It's $40 split, you pay $10."
+          },
+          {
+            "role": "user",
+            "text": "Answer whether you can or not and why."
+          }
+        ],
+        "options": [
+          {
+            "id": "yes",
+            "text": "Yes, because $10 fits in my wants budget."
+          },
+          {
+            "id": "no",
+            "text": "No, even if it fits, I should prioritize."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "yes"
+      },
+      "feedback": {
+        "success": "Good! $10 fits in your $450 wants budget.",
+        "error": "Check: $10 is less than your available budget.",
+        "per_option": {
+          "yes": "Correct, it fits without issue.",
+          "no": "While prioritizing is valid, the question is whether it fits. It does."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "dr_rho",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "regla-50-30-20"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Match each category with its consequence.",
+        "pairs": [
+          {
+            "left": "Savings 20%",
+            "right": "Positive cash flow"
+          },
+          {
+            "left": "Spending more than you have",
+            "right": "Deficit"
+          },
+          {
+            "left": "Needs 50%",
+            "right": "Cover essentials"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Correct! These connections prepare you for the next lesson on cash flow.",
+        "error": "Check: savings gives positive flow, overspending gives deficit, needs cover essentials."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "Great job! Now you know how to use the 50/30/20 rule and split shared expenses. You have control of your $2,000. In the next lesson we'll cover cash flow: income minus expenses. Keep it up!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.0",
+    "drafter": "deepseek-chat",
+    "plan": {
+      "lesson_code": "4-1-1-3",
+      "band": 4,
+      "levels": [
+        4,
+        1,
+        1,
+        3
+      ],
+      "character": "dr_rho",
+      "micro_objective": "El estudiante reparte un ingreso mensual de adolescente en las tres categorias 50/30/20 (necesidades/deseos/ahorro) y, dentro de los deseos, divide en partes iguales el costo de una suscripcion compartida para ver cuanto le toca pagar a cada quien.",
+      "concept_ids": [
+        "regla-50-30-20",
+        "categorias-presupuesto",
+        "dividir-gasto-compartido"
+      ],
+      "scenario": "Dr. Rho le muestra a la estudiante su mesada mas su pago part-time: $2,000 al mes. En vez de gastarlo \"a ojo\", Dr. Rho la reta a construir un presupuesto real con la regla 50/30/20. A mitad del reto aparece una decision concreta: ella y tres amigas quieren una suscripcion de musica de $200 al mes; el reto es ubicarla en la categoria correcta del presupuesto y repartir el costo en partes iguales para saber cuanto le toca a cada una sin romper su 30% de deseos.",
+      "chosen_topic": "El Presupuesto Personal Real",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook relatable: Dr. Rho presenta los $2,000 mensuales de la estudiante y plantea el misterio de por que el dinero 'desaparece' cuando se gasta sin plan. Activa conocimiento previo (mesada, trabajo part-time) y nombra el concepto 'presupuesto personal' con curiosidad."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Anclaje motivacional: Dr. Rho explica que sin un presupuesto el adolescente promedio no sabe a donde se fue su dinero a fin de mes; con uno, decide a proposito. Conecta con la identidad de quien 'controla su propio dinero'."
+        },
+        {
+          "phase": "que_es",
+          "type": "multiple_choice",
+          "purpose": "Definicion operativa de la regla 50/30/20 (50% necesidades, 30% deseos, 20% ahorro). Reconocer la definicion correcta entre distractores plausibles. Objetivo: Reconocer."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "math_challenge",
+          "purpose": "Ejemplo guiado del mecanismo: calcular cuanto dinero corresponde a cada categoria de los $2,000 (50%=$1,000, 30%=$600, 20%=$400). Aplica porcentajes dentro del techo de banda 4. Objetivo: Calcular."
+        },
+        {
+          "phase": "practicar",
+          "type": "budget_builder",
+          "purpose": "TIPO FOCO. Practica nuclear: la estudiante arma el presupuesto completo asignando gastos reales (renta de cuarto, transporte, ropa, ahorro) a las tres categorias 50/30/20 sin exceder los $2,000. Corazon de la leccion. Objetivo: Aplicar."
+        },
+        {
+          "phase": "practicar",
+          "type": "classification",
+          "purpose": "Variar formato sin repetir tipo: clasificar gastos concretos de adolescente (utiles escolares, videojuego, fondo de emergencia, comida) en necesidad / deseo / ahorro. Refuerza el criterio de categorizar antes de presupuestar. Objetivo: Reconocer."
+        },
+        {
+          "phase": "reforzar",
+          "type": "bill_splitter",
+          "purpose": "TIPO FOCO. Refuerzo: la suscripcion de musica de $200 que comparten 4 amigas. La estudiante divide el costo en partes iguales para hallar su parte ($50) y la ubica dentro de su 30% de deseos. Conecta presupuesto con gasto compartido real. Objetivo: Calcular."
+        },
+        {
+          "phase": "reforzar",
+          "type": "comparison",
+          "purpose": "Comparar dos escenarios: pagar la suscripcion sola ($200) vs. compartirla entre 4 ($50 c/u) y ver el impacto en el presupuesto de deseos. Evita repetir bill_splitter de inmediato. Objetivo: Comparar."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "Malentendido comun corregido: tratar un 'deseo' (suscripcion, ropa de marca) como 'necesidad' para justificar gastarlo, inflando el 50% y dejando sin ahorro el 20%. La estudiante detecta la trampa de categorizar mal. Objetivo: Decidir."
+        },
+        {
+          "phase": "aplicar",
+          "type": "budget_builder",
+          "purpose": "TIPO FOCO (variante aplicada). Aplicacion en contexto nuevo: baja el ingreso a $1,500 (mes sin trabajo part-time) y la estudiante reajusta el presupuesto 50/30/20, decidiendo que recortar primero de los deseos. Transferencia y decision. Objetivo: Aplicar."
+        },
+        {
+          "phase": "aplicar",
+          "type": "roleplay_chat",
+          "purpose": "Decision en dialogo: una amiga le propone agregar otra suscripcion compartida; la estudiante decide si cabe en su 30% ya reducido. Evita repetir budget_builder seguido y ejercita justificar la decision. Objetivo: Decidir."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "matching_pairs",
+          "purpose": "Conecta el presupuesto con conceptos vecinos del topic siguiente: enlaza cada categoria con su consecuencia (20% ahorro -> flujo de caja positivo; gastar de mas -> deficit). Tiende el puente hacia 'El Flujo de Caja Personal'. Objetivo: Reconocer."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho celebra el esfuerzo, resume en una frase que el presupuesto 50/30/20 mas dividir gastos compartidos le da el control de sus $2,000, y anticipa la proxima leccion sobre flujo de caja (ingresos menos egresos)."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "regla-50-30-20",
+      "categorias-presupuesto",
+      "dividir-gasto-compartido"
+    ]
+  }
+}

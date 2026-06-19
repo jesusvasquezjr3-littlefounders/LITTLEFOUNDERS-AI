@@ -1,0 +1,1049 @@
+{
+  "lesson_code": "4-4-29-10",
+  "title_es": "Cabeza fría contra FOMO y pánico",
+  "description_es": "Aprende a detectar fraudes de inversión y a reaccionar con calma ante subidas y bajadas del mercado.",
+  "duration": 25,
+  "age_rate": "13-14",
+  "points_reward": 10,
+  "adventure_level": 4,
+  "saga_level": 4,
+  "topic_level": 29,
+  "lesson_number": 10,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zoe, tu primo te envió esto: 'Duplica tu dinero en 7 días, rendimiento garantizado, solo hoy'. Y esa acción que sigues subió 40% en un día. Tu grupo de chat grita '¡compra ya!'. ¿Cuál es la trampa y cuál es solo emoción? Investiguemos."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Como científico, sé que los sesgos emocionales destruyen más portafolios que los errores matemáticos. Perseguir subidas y vender en caídas hace perder dinero a la mayoría. El cerebro caliente toma decisiones que el cerebro frío lamenta."
+      }
+    },
+    {
+      "type": "concept_builder",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling",
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "instruction": "Ordena las definiciones: arrastra cada concepto a su definición correcta.",
+        "items": [
+          {
+            "id": "c1",
+            "text": "FOMO: Miedo a quedarse fuera, compras caro por urgencia."
+          },
+          {
+            "id": "c2",
+            "text": "Panic selling: Vender barato por miedo durante una caída."
+          },
+          {
+            "id": "c3",
+            "text": "Fraude: Promesa de rendimiento garantizado sin riesgo."
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "c1",
+          "c2",
+          "c3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfecto. El FOMO te empuja a comprar caro, el pánico a vender barato, y la garantía es la bandera roja del fraude.",
+        "error": "Revisa: FOMO es miedo a perderse algo, panic selling es vender por miedo, y garantía sin riesgo es fraude."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Cuál de estas frases es una señal de alarma clásica de fraude?",
+        "instruction": "Elige la opción correcta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Rendimiento garantizado, solo hoy."
+          },
+          {
+            "id": "b",
+            "text": "Inversión diversificada con riesgo moderado."
+          },
+          {
+            "id": "c",
+            "text": "Rentabilidad histórica variable, no garantizada."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. 'Garantizado' y 'solo hoy' son señales de alerta. Las inversiones legítimas no prometen rendimientos fijos ni urgencia.",
+        "error": "La opción correcta es la que promete rendimiento garantizado con urgencia. Eso es típico de fraudes.",
+        "per_option": {
+          "a": "Exacto, esa es la señal de alarma.",
+          "b": "Esa describe una inversión legítima, no una trampa.",
+          "c": "Esa es una advertencia realista, no una señal de fraude."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Tu primo insiste: 'Mete $1,000 y en 7 días tienes $2,000. Es garantizado, solo hoy. No seas miedosa.'",
+        "instruction": "Selecciona las banderas rojas en el mensaje.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Promete duplicar el dinero en 7 días.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Dice 'garantizado'.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Incluye urgencia 'solo hoy'.",
+            "isTrap": true
+          },
+          {
+            "id": "t4",
+            "text": "La cantidad es $1,000.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Bien! Las tres son señales de fraude: promesa irreal, garantía falsa y presión de tiempo.",
+        "error": "Faltan banderas. Recuerda: rendimiento garantizado, duplicar en poco tiempo y urgencia son las clásicas.",
+        "per_option": {
+          "t1": "Duplicar en 7 días no es realista. Es una señal de fraude.",
+          "t2": "Ninguna inversión legítima ofrece rendimiento garantizado.",
+          "t3": "La urgencia es una táctica para que no pienses.",
+          "t4": "El monto no es una bandera roja; cualquier cantidad puede ser usada."
+        }
+      }
+    },
+    {
+      "type": "market_reaction",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "cold-head-investing"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "headline": "Acción X sube 40% en un día. Grupo de chat: '¡Compra ya o te lo pierdes!'",
+        "question": "¿Cuál es la reacción de cabeza fría?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Comprar de inmediato para no perder la oportunidad.",
+            "icon": "🔥"
+          },
+          {
+            "id": "b",
+            "text": "Esperar, investigar y no comprar por impulso.",
+            "icon": "🧊"
+          },
+          {
+            "id": "c",
+            "text": "Vender todo lo que tengo para comprar más de esa acción.",
+            "icon": "💸"
+          }
+        ],
+        "explanation": "Comprar tras una subida grande por miedo a perdérselo es FOMO. La cabeza fría investiga antes de actuar."
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correcto. Esperar e investigar evita comprar caro por FOMO.",
+        "error": "La opción correcta es la que no actúa por impulso. Comprar o vender por la emoción del momento suele ser error.",
+        "per_option": {
+          "a": "Eso es FOMO: comprar por miedo a perderse la subida.",
+          "b": "Exacto, esa es la reacción de cabeza fría.",
+          "c": "Eso es vender por pánico para comprar otra cosa, también es emocional."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Si todos están comprando una acción, es señal de que es una buena inversión.",
+        "instruction": "¿Verdadero o falso?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correcto. Seguir a la manada es el error que explota el FOMO. Las buenas inversiones no dependen de lo que hagan los demás.",
+        "error": "Falso. Seguir a la multitud puede llevar a comprar caro en una burbuja. La cabeza fría piensa por sí misma."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Un influencer dice: 'Esta cripto va a la luna. Mira estos testimonios. Quedan 2 horas para la preventa. No te arrepientas.' No dice 'garantizado' pero presiona.",
+        "instruction": "Selecciona las tácticas de presión o engaño.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Usa urgencia con '2 horas'.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Promete que 'va a la luna' sin evidencia.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Muestra testimonios que pueden ser falsos.",
+            "isTrap": true
+          },
+          {
+            "id": "t4",
+            "text": "La cripto es una inversión legítima.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "Bien. Aunque no diga 'garantizado', usa urgencia, promesa exagerada y testimonios dudosos.",
+        "error": "Faltan trampas. La urgencia, la promesa sin fundamento y los testimonios no verificables son señales de alerta.",
+        "per_option": {
+          "t1": "La urgencia es una táctica de presión.",
+          "t2": "Prometer 'a la luna' sin datos es engañoso.",
+          "t3": "Testimonios no verificables pueden ser falsos.",
+          "t4": "No sabemos si es legítima; pero las tácticas son sospechosas."
+        }
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "cold-head-investing"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Compara las dos opciones. ¿Cuál es la inversión legítima?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Oferta A: 'Garantizado, 100% en 7 días, sin riesgo'"
+          },
+          {
+            "id": "b",
+            "label": "Oferta B: ETF diversificado, rendimiento histórico ~7% anual, riesgo declarado"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correcto. La opción B es legítima porque reconoce el riesgo y no promete rendimientos fijos.",
+        "error": "La opción legítima es la que no promete garantías ni rendimientos irreales. La A es una trampa.",
+        "per_option": {
+          "a": "Esa es la trampa: garantía y rendimiento irreal.",
+          "b": "Esa es la inversión legítima: diversificación, riesgo declarado, rendimiento histórico realista."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Si inviertes $1,000 en la oferta del primo, prometen $2,000 en 7 días. ¿Cuánto ganarías en un año si reinviertes cada semana? (Ignora límites, solo para ver lo absurdo)",
+        "instruction": "Calcula cuánto tendrías después de 4 semanas (un mes) si reinviertes todo cada semana.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$16,000"
+          },
+          {
+            "id": "b",
+            "text": "$8,000"
+          },
+          {
+            "id": "c",
+            "text": "$4,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. Duplicar cada semana es insostenible. En 4 semanas serían $16,000, algo imposible en el mundo real.",
+        "error": "La respuesta correcta es $16,000. Cada semana duplicas: $1,000 → $2,000 → $4,000 → $8,000 → $16,000.",
+        "per_option": {
+          "a": "Exacto, $16,000.",
+          "b": "Eso sería después de 3 semanas, no 4.",
+          "c": "Eso sería después de 2 semanas."
+        }
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "cold-head-investing",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu primo insiste: 'No seas miedosa, métete. Todos están ganando. ¿Vas a quedarte fuera?'",
+        "instruction": "Elige la respuesta de cabeza fría.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Tienes razón, voy a meter todo mi dinero."
+          },
+          {
+            "id": "b",
+            "text": "No gracias, prefiero investigar antes. Suena demasiado bueno para ser cierto."
+          },
+          {
+            "id": "c",
+            "text": "Déjame en paz, no me interesa."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Excelente. Respondes con calma, sin ceder a la presión ni enojarte. La cabeza fría investiga antes de decidir.",
+        "error": "La mejor respuesta es la que rechaza la presión sin pelear, manteniendo la calma y la lógica.",
+        "per_option": {
+          "a": "Eso es ceder al FOMO y la presión social.",
+          "b": "Perfecto, es una respuesta asertiva y racional.",
+          "c": "Esa respuesta corta la conversación pero no educa ni muestra tu criterio."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "dr_rho",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling",
+        "guaranteed-return-scam",
+        "cold-head-investing"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Une cada concepto con su antídoto o concepto relacionado.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "FOMO",
+            "right": "Cabeza fría: investigar antes de comprar"
+          },
+          {
+            "id": "p2",
+            "left": "Panic selling",
+            "right": "Horizonte largo: no vender por pánico"
+          },
+          {
+            "id": "p3",
+            "left": "Rendimiento garantizado",
+            "right": "Bandera roja: es fraude"
+          },
+          {
+            "id": "p4",
+            "left": "Diversificación",
+            "right": "ETF: reduce riesgo"
+          }
+        ]
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "Perfecto. Has conectado cada sesgo con su solución. La cabeza fría y la diversificación son tus aliadas.",
+        "error": "Revisa: FOMO se combate con investigación, panic selling con horizonte largo, garantía es fraude, y diversificación se logra con ETFs."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "cold-head-investing"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zoe, lo lograste. Recuerda: el cerebro frío gana al cerebro caliente. Garantizado es mentira. En la próxima lección del Valle, aplicaremos todo lo aprendido sobre inversiones y psicología para construir un portafolio sólido. ¡Nos vemos!"
+      }
+    }
+  ],
+  "title_en": "Cool Head vs. FOMO and Panic",
+  "description_en": "Learn to spot investment scams and react calmly to market ups and downs.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zoe, your cousin sent you this: 'Double your money in 7 days, guaranteed return, today only.' And that stock you follow jumped 40% in one day. Your chat group is screaming 'buy now!'. Which one is a trap and which is just emotion? Let's investigate."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "As a scientist, I know that emotional biases destroy more portfolios than math errors. Chasing highs and selling in downturns makes most people lose money. The hot brain makes decisions that the cool brain regrets."
+      }
+    },
+    {
+      "type": "concept_builder",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling",
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "instruction": "Order the definitions: drag each concept to its correct definition.",
+        "items": [
+          {
+            "id": "c1",
+            "text": "FOMO: Fear of missing out, you buy high out of urgency."
+          },
+          {
+            "id": "c2",
+            "text": "Panic selling: Selling low out of fear during a downturn."
+          },
+          {
+            "id": "c3",
+            "text": "Scam: Promise of guaranteed return with no risk."
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "c1",
+          "c2",
+          "c3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfect. FOMO pushes you to buy high, panic to sell low, and guarantee is the red flag of fraud.",
+        "error": "Review: FOMO is fear of missing out, panic selling is selling out of fear, and guarantee without risk is fraud."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Which of these phrases is a classic red flag of fraud?",
+        "instruction": "Choose the correct option.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Guaranteed return, today only."
+          },
+          {
+            "id": "b",
+            "text": "Diversified investment with moderate risk."
+          },
+          {
+            "id": "c",
+            "text": "Historical variable returns, not guaranteed."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. 'Guaranteed' and 'today only' are warning signs. Legitimate investments don't promise fixed returns or urgency.",
+        "error": "The correct option is the one that promises guaranteed return with urgency. That's typical of frauds.",
+        "per_option": {
+          "a": "Exactly, that's the warning sign.",
+          "b": "That describes a legitimate investment, not a trap.",
+          "c": "That's a realistic warning, not a fraud signal."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Your cousin insists: 'Put in $1,000 and in 7 days you'll have $2,000. It's guaranteed, today only. Don't be scared.'",
+        "instruction": "Select the red flags in the message.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Promises to double money in 7 days.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Says 'guaranteed'.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Includes urgency 'today only'.",
+            "isTrap": true
+          },
+          {
+            "id": "t4",
+            "text": "The amount is $1,000.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "Great! All three are fraud signals: unrealistic promise, false guarantee, and time pressure.",
+        "error": "Missing flags. Remember: guaranteed return, doubling in short time, and urgency are the classic ones.",
+        "per_option": {
+          "t1": "Doubling in 7 days is not realistic. It's a fraud signal.",
+          "t2": "No legitimate investment offers a guaranteed return.",
+          "t3": "Urgency is a tactic to stop you from thinking.",
+          "t4": "The amount is not a red flag; any amount can be used."
+        }
+      }
+    },
+    {
+      "type": "market_reaction",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "cold-head-investing"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "headline": "Stock X jumps 40% in one day. Chat group: 'Buy now or miss out!'",
+        "question": "What is the cool-headed reaction?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Buy immediately to not miss the opportunity.",
+            "icon": "🔥"
+          },
+          {
+            "id": "b",
+            "text": "Wait, research, and don't buy on impulse.",
+            "icon": "🧊"
+          },
+          {
+            "id": "c",
+            "text": "Sell everything I have to buy more of that stock.",
+            "icon": "💸"
+          }
+        ],
+        "explanation": "Buying after a big rise out of fear of missing out is FOMO. The cool head researches before acting."
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct. Waiting and researching avoids buying high due to FOMO.",
+        "error": "The correct option is the one that doesn't act on impulse. Buying or selling based on the emotion of the moment is usually a mistake.",
+        "per_option": {
+          "a": "That's FOMO: buying out of fear of missing the rise.",
+          "b": "Exactly, that's the cool-headed reaction.",
+          "c": "That's panic selling to buy something else, also emotional."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "If everyone is buying a stock, it's a sign that it's a good investment.",
+        "instruction": "True or false?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correct. Following the herd is the mistake that FOMO exploits. Good investments don't depend on what others do.",
+        "error": "False. Following the crowd can lead to buying high in a bubble. The cool head thinks for itself."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "An influencer says: 'This crypto is going to the moon. Look at these testimonials. Only 2 hours left for the presale. Don't regret it.' They don't say 'guaranteed' but they pressure.",
+        "instruction": "Select the pressure or deception tactics.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Uses urgency with '2 hours'.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Promises 'going to the moon' without evidence.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Shows testimonials that could be fake.",
+            "isTrap": true
+          },
+          {
+            "id": "t4",
+            "text": "Crypto is a legitimate investment.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "Good. Even though it doesn't say 'guaranteed', it uses urgency, exaggerated promise, and dubious testimonials.",
+        "error": "Missing traps. Urgency, unfounded promise, and unverifiable testimonials are warning signs.",
+        "per_option": {
+          "t1": "Urgency is a pressure tactic.",
+          "t2": "Promising 'to the moon' without data is deceptive.",
+          "t3": "Unverifiable testimonials could be fake.",
+          "t4": "We don't know if it's legitimate; but the tactics are suspicious."
+        }
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam",
+        "cold-head-investing"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Compare the two options. Which one is the legitimate investment?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Offer A: 'Guaranteed, 100% in 7 days, no risk'"
+          },
+          {
+            "id": "b",
+            "label": "Offer B: Diversified ETF, historical return ~7% annually, stated risk"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct. Option B is legitimate because it acknowledges risk and doesn't promise fixed returns.",
+        "error": "The legitimate option is the one that doesn't promise guarantees or unrealistic returns. A is a trap.",
+        "per_option": {
+          "a": "That's the trap: guarantee and unrealistic return.",
+          "b": "That's the legitimate investment: diversification, stated risk, realistic historical return."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "guaranteed-return-scam"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "If you invest $1,000 in your cousin's offer, they promise $2,000 in 7 days. How much would you have after 4 weeks (one month) if you reinvest everything each week? (Ignore limits, just to see how absurd it is)",
+        "instruction": "Calculate how much you would have after 4 weeks if you reinvest everything each week.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$16,000"
+          },
+          {
+            "id": "b",
+            "text": "$8,000"
+          },
+          {
+            "id": "c",
+            "text": "$4,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. Doubling every week is unsustainable. In 4 weeks it would be $16,000, impossible in the real world.",
+        "error": "The correct answer is $16,000. Each week you double: $1,000 → $2,000 → $4,000 → $8,000 → $16,000.",
+        "per_option": {
+          "a": "Exactly, $16,000.",
+          "b": "That would be after 3 weeks, not 4.",
+          "c": "That would be after 2 weeks."
+        }
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "cold-head-investing",
+        "fomo-trap"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your cousin insists: 'Don't be scared, get in. Everyone is winning. Are you going to stay out?'",
+        "instruction": "Choose the cool-headed response.",
+        "options": [
+          {
+            "id": "a",
+            "text": "You're right, I'll put all my money in."
+          },
+          {
+            "id": "b",
+            "text": "No thanks, I'd rather research first. It sounds too good to be true."
+          },
+          {
+            "id": "c",
+            "text": "Leave me alone, I'm not interested."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Excellent. You respond calmly, without giving in to pressure or getting angry. The cool head researches before deciding.",
+        "error": "The best response is one that rejects pressure without fighting, staying calm and logical.",
+        "per_option": {
+          "a": "That's giving in to FOMO and social pressure.",
+          "b": "Perfect, it's an assertive and rational response.",
+          "c": "That response cuts off the conversation but doesn't educate or show your judgment."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "dr_rho",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling",
+        "guaranteed-return-scam",
+        "cold-head-investing"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Match each concept with its antidote or related concept.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "FOMO",
+            "right": "Cool head: research before buying"
+          },
+          {
+            "id": "p2",
+            "left": "Panic selling",
+            "right": "Long horizon: don't sell out of panic"
+          },
+          {
+            "id": "p3",
+            "left": "Guaranteed return",
+            "right": "Red flag: it's fraud"
+          },
+          {
+            "id": "p4",
+            "left": "Diversification",
+            "right": "ETF: reduces risk"
+          }
+        ]
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "Perfect. You connected each bias with its solution. The cool head and diversification are your allies.",
+        "error": "Review: FOMO is fought with research, panic selling with long horizon, guarantee is fraud, and diversification is achieved with ETFs."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "cold-head-investing"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zoe, you did it. Remember: the cool brain beats the hot brain. Guaranteed is a lie. In the next Valley lesson, we'll apply everything we've learned about investments and psychology to build a solid portfolio. See you!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "4-4-29-10",
+      "band": 4,
+      "levels": [
+        4,
+        4,
+        29,
+        10
+      ],
+      "character": "dr_rho",
+      "micro_objective": "El estudiante distingue una oferta de inversión fraudulenta (que explota el FOMO con promesas de 'rendimiento garantizado') de una legítima, y elige la reacción de cabeza fría correcta cuando el mercado sube o cae de golpe, en lugar de comprar por FOMO o vender por pánico.",
+      "concept_ids": [
+        "fomo-trap",
+        "panic-selling",
+        "guaranteed-return-scam",
+        "cold-head-investing"
+      ],
+      "scenario": "El primo mayor de Zoe le manda un mensaje: una app le 'duplica el dinero en 7 días, rendimiento garantizado, solo hoy'. Esa misma semana, una acción que Zoe sigue sube 40% en un día y un grupo de chat grita '¡compra ya o te lo pierdes!'. Dr. Rho, con su calma de científico, le enseña a Zoe a leer estas dos situaciones con la cabeza fría: a olfatear la trampa del FOMO y a no entrar en pánico cuando el mercado se mueve.",
+      "chosen_topic": "Psicología del Inversor",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por escena relatable: Dr. Rho muestra el mensaje del primo de Zoe ('duplica tu dinero en 7 días, garantizado, solo hoy') y la acción que sube 40% mientras el chat grita '¡compra ya!'. Plantea el misterio: ¿cuál de estas dos cosas es una trampa y cuál solo una emoción peligrosa? Activa la intuición sobre FOMO sin definirlo aún."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho explica con su analogía de científico por qué importa: los sesgos (FOMO, pánico) destruyen más portafolios que las malas matemáticas. El cerebro caliente toma decisiones que el cerebro frío lamenta. Ancla al dato real de que perseguir subidas y vender en caídas hace perder dinero a la mayoría."
+        },
+        {
+          "phase": "que_es",
+          "type": "concept_builder",
+          "purpose": "Enseña las definiciones operativas: FOMO (miedo a quedarse fuera que empuja a comprar caro por urgencia), panic selling (vender barato por miedo en una caída), y la bandera roja universal del fraude: 'rendimiento garantizado / sin riesgo'. El estudiante arma/ordena las piezas del concepto antes de evaluarse. ENSEÑA antes de practicar."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "multiple_choice",
+          "purpose": "Reconocer (objetivo Reconocer): ejemplo guiado de bajo riesgo. Dr. Rho muestra una frase y el estudiante identifica cuál es la señal de alarma clásica del fraude ('rendimiento garantizado, solo hoy'). Consolida la regla antes de los ejercicios foco más exigentes."
+        },
+        {
+          "phase": "practicar",
+          "type": "spot_trap",
+          "purpose": "CORAZON DE LA PRACTICA (tipo foco spot_trap, objetivo Decidir): la oferta de la app del primo. El estudiante debe detectar la trampa señalando las banderas rojas (garantía, urgencia 'solo hoy', duplicar en 7 días) entre datos neutrales. Feedback por opción que explica conceptualmente por qué cada señal delata el fraude."
+        },
+        {
+          "phase": "reforzar",
+          "type": "market_reaction",
+          "purpose": "CORAZON DE LA PRACTICA (tipo foco market_reaction, objetivo Decidir): la acción que sube 40% en un día y el chat grita '¡compra ya!'. El estudiante elige la reacción de cabeza fría (no perseguir la subida por FOMO) frente a las reacciones impulsivas. Distinto del ejercicio anterior: aquí no hay fraude, solo emoción del mercado."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "true_false",
+          "purpose": "Corrige el malentendido común más peligroso: 'si todos están comprando, debe ser buena inversión' / 'una caída significa que debo vender ya'. Verdadero/Falso con feedback que explica por qué seguir a la manada es precisamente el error que el FOMO y el pánico provocan."
+        },
+        {
+          "phase": "aplicar",
+          "type": "spot_trap",
+          "purpose": "APLICAR variante del tipo foco spot_trap (objetivo Aplicar): un caso NUEVO y más sutil: un 'influencer' promociona una cripto con testimonios y un reloj de cuenta regresiva, pero sin garantía explícita. El estudiante aplica el patrón aprendido a un fraude disfrazado, transfiriendo la habilidad a un contexto distinto del ejercicio de práctica."
+        },
+        {
+          "phase": "aplicar",
+          "type": "comparison",
+          "purpose": "Comparar (objetivo Comparar): pone lado a lado una oferta fraudulenta ('garantizado, 100% en 7 días') y una inversión legítima (ETF diversificado, rendimiento histórico variable ~7% anual, con riesgo declarado). El estudiante compara características clave y distingue qué columna es la trampa y por qué."
+        },
+        {
+          "phase": "aplicar",
+          "type": "math_challenge",
+          "purpose": "Calcular (objetivo Calcular, dentro del techo de banda 4: porcentajes, números <=100000, sin fórmula de interés compuesto): verifica por qué 'duplicar en 7 días' es matemáticamente absurdo comparado con un rendimiento realista. Ej. comparar $1,000 que prometen volver $2,000 en una semana vs un 7% anual realista. Usa solo porcentajes y suma/resta simples."
+        },
+        {
+          "phase": "aplicar",
+          "type": "roleplay_chat",
+          "purpose": "Aplicar/Decidir en contexto social-identitario (clave de banda 4): Zoe debe responder por chat a su primo que insiste 'no seas miedosa, métete'. El estudiante elige la respuesta de cabeza fría que rechaza la presión sin pelear, aplicando lo aprendido a la presión social real de un adolescente."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "matching_pairs",
+          "purpose": "Conecta esta lección con conceptos vecinos del topic y la saga: une cada sesgo/señal (FOMO, panic selling, rendimiento garantizado, diversificación) con su antídoto o concepto relacionado (cabeza fría, horizonte largo, bandera roja, ETF). Teje la espina conceptual hacia el portafolio balanceado y el perfil de riesgo ya vistos."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho celebra el esfuerzo de Zoe, resume en una frase la regla de oro ('el cerebro frío gana al cerebro caliente; garantizado = mentira'), y anticipa la siguiente lección del repaso de inversiones del Valle, conectando la psicología del inversor con todo lo aprendido en la saga."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 2,
+    "concept_spine": [
+      "fomo-trap",
+      "panic-selling",
+      "guaranteed-return-scam",
+      "cold-head-investing"
+    ]
+  }
+}

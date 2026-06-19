@@ -1,0 +1,392 @@
+{
+  "version": "1.0",
+  "description": "Contrato de render por tipo: forma de content + correct_answer que el Lesson Engine realmente dibuja/califica. Fuente para el prompt del generador y el gate de render-compat.",
+  "contracts": {
+    "price_detective": {
+      "type": "price_detective",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/PriceDetective.tsx",
+      "gradable": true,
+      "content_shape": "content.items: [{id, name|label|text, price, quantity?, unit?, icon?}, ...]. Supports pairwise shapes (products/items/options/prices/stores/cases/markets/cities per resolveOptions line 35).",
+      "answer_shape": "correct_answer.itemId (canonical) — also accepts: correctProductId, correctId, selectedId, correctOptionId",
+      "render_gotchas": [
+        "resolveOptions must find the items array under one of 7 keys (line 35) — if items live under an unlisted key, component renders empty",
+        "hasPriceData check (line 46) returns false if no product.price > 0 — disables 'Investigate' button and never shows unit prices, component becomes choice-only",
+        "name/label/text fallback (line 39) — if item lacks all three, renders blank product name",
+        "Grader (useLessonState line 459) accepts multi-answer only via correctOptionIds array, not trapIds (which are only for spot_trap)"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Mira el diario de Pablo.\", \"instruction\": \"¿En qué día gastó más dinero?\", \"items\": [{\"id\": \"d1\", \"label\": \"Martes\", \"price\": 6}, {\"id\": \"d2\", \"label\": \"Jueves\", \"price\": 4}, {\"id\": \"d3\", \"label\": \"Sábado\", \"price\": 8}]}, \"correct_answer\": {\"itemId\": \"d3\"}}"
+    },
+    "quiz_battle": {
+      "type": "quiz_battle",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/QuizBattle.tsx",
+      "gradable": true,
+      "content_shape": "content.question: string + content.options: [{id, text|label}, ...] (single-question real JSON format, line 42-48) OR content.questions: [{question, options:[{id, text}], correctId?}, ...] (legacy multi-question, line 39-41). Grader reads options array to locate options; correctId lives in question object or at exercise.correct_answer level.",
+      "answer_shape": "correct_answer.correctOptionId (canonical) — also accepts: correctId, choiceId. Grader line 114 checks question.correctId first (legacy), then exercise.correct_answer.correctOptionId, then exercise.correct_answer.correctId. Component score passed to grader; grader checks score >= minScore (line 998) derived from questionCount * 100.",
+      "render_gotchas": [
+        "questions array must exist; if neither content.questions nor (content.question + content.options) present, renders 'Sin preguntas disponibles' fallback (line 100)",
+        "Grader (useLessonState line 989-999): minScore defaults to questionCount * 100 — for single-question quiz must score >= 100, not the old hardcoded 200",
+        "Component emits score (sum of points), NOT boolean — grader expects numeric comparison vs threshold (line 990)",
+        "options missing from question object → map(option) renders empty array (line 198), component displays no choices"
+      ],
+      "canonical_example": "{\"content\": {\"question\": \"¿Cuál es la diferencia CRUCIAL en el perfil de riesgo entre comprar una propiedad directa e invertir en una FIBRA?\", \"instruction\": \"Selecciona la afirmación más precisa.\", \"options\": [{\"id\": \"a\", \"text\": \"La propiedad directa tiene riesgo de iliquidez y costos altos; la FIBRA tiene riesgo de volatilidad del precio en bolsa.\"}, {\"id\": \"b\", \"text\": \"Ambas tienen exactamente el mismo riesgo porque ambas son bienes raíces.\"}, {\"id\": \"c\", \"text\": \"La FIBRA es más riesgosa porque no puedes vivir en el edificio.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+    },
+    "spot_trap": {
+      "type": "spot_trap",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/SpotTheTrap.tsx",
+      "gradable": true,
+      "content_shape": "content.traps: [{id, text, isTrap}, ...] (primary shape, line 35-40) or content.messages/scenarios/statements/items/plans/segments/etc with isTrap flag. Fallback to content.options/choices if no message/scenario array found. Grader reads from: correctAnswer.trapIds (array), or correctAnswer + any of: correctTraps/targetIds/correctOptionIds/redFlagIds/trapSegmentIds/trapLineIds/trapsFound (line 761-763), or content items with isTrap flag (line 776-781), or extractCorrectId (line 768-771).",
+      "answer_shape": "correct_answer.trapIds: string[] (canonical) — also accepts: correctTraps, targetIds, correctOptionIds, redFlagIds, trapSegmentIds, trapLineIds, trapsFound, or single id via extractCorrectId (targetId, trapId, trapStatementId, etc.). Grader line 753-788 checks selectedTraps (user Set) === correctTraps (Set), exact match of size and membership.",
+      "render_gotchas": [
+        "Container keys tried in order (line 35-40): messages, scenarios, traps, statements, items, plans, planSteps, etc. — if data stored under a key not in this list, fallback mode triggers (line 110 isFallbackMode)",
+        "isTrap flag must exist on trap items; items with neither isTrap nor isCorrect treated as safe (line 47: isTrap = it?.isTrap ?? it?.isCorrect ?? false)",
+        "Fallback mode (line 110) switches to rendering content.options/choices as button list instead of message cards — no trap count validation, just single-select (line 100-106)",
+        "Grader (line 753-788): trapIds array is required; single-id extractCorrectId returns selectedTraps.size === 1 (line 771), not array comparison. Mismatch causes silent 'return false'"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Un amigo te dice: 'Las FIBRAS son la mejor inversión. Su gráfico histórico solo sube y los dividendos son altísimos. Es dinero seguro.'\", \"instruction\": \"Identifica dos 'trampas' o afirmaciones engañosas en su argumento.\", \"traps\": [{\"id\": \"t1\", \"text\": \"Afirmar que el gráfico 'solo sube' ignora las correcciones y caídas periódicas.\", \"isTrap\": true}, {\"id\": \"t2\", \"text\": \"Decir que los dividendos son 'altísimos' sin contexto puede esconder riesgo.\", \"isTrap\": false}, {\"id\": \"t3\", \"text\": \"Llamar 'dinero seguro' a cualquier inversión en bolsa es incorrecto.\", \"isTrap\": true}]}, \"correct_answer\": {\"trapIds\": [\"t1\", \"t3\"]}}"
+    },
+    "classification": {
+      "type": "classification",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/Classification.tsx",
+      "gradable": true,
+      "content_shape": "content.categories: [{id, name|label|text|title}, ...] (line 66, reads catLabel via line 69 fallback chain name||label||text||title). content.items: [{id, text, correctCategoryId|correctCategory}, ...] (line 29-36). Grader normalizeClassifications (line 262-328) accepts: direct Record<itemId, categoryId>, inverted {categoryKey: [itemIds]}, array-of-objects [{itemId, categoryId}], or extracted from content.items.correctCategory.",
+      "answer_shape": "correct_answer: Record<itemId, categoryId> or inverted {categoryKey: [itemIds]} or [{itemId, categoryId}, ...] (grader normalizes all to canonical Record form). Component emits Record<itemId, categoryId> (line 19, 42-45). Grader (line 630-644) normalizes both correct_answer and compares: every item must match.",
+      "render_gotchas": [
+        "catLabel fallback (line 69) critical — reads name||label||text||title in order; if all missing, renders empty category header",
+        "content.items missing or empty → no items render; grader line 641 iterates over content.items, so mismatch in data shape causes 'return false'",
+        "normalizeClassifications wrapper keys (line 272-275): classifications, categoryAssignments, mappings, matches, categoryItems, etc. — if data structure uses different wrapper name, normalization fails, grader 'return true' (line 636 fallback)",
+        "Inverted format {categoryId: [itemId]} resolved via buildCategoryResolver (line 229-243) which matches category name||label||title to id — if category names in data mismatch corpus, resolver returns string(k) unmapped, category comparison fails silently"
+      ],
+      "canonical_example": "{\"content\": {\"statement\": \"Clasifica estos gastos de la semana\", \"instruction\": \"Arrastra cada gasto a su día correcto\", \"categories\": [{\"id\": \"cat1\", \"label\": \"Lunes 🟡\"}, {\"id\": \"cat2\", \"label\": \"Miércoles 🟢\"}, {\"id\": \"cat3\", \"label\": \"Viernes 🔵\"}], \"items\": [{\"id\": \"i1\", \"text\": \"🍦 Helado\", \"correctCategoryId\": \"cat2\"}, {\"id\": \"i2\", \"text\": \"📚 Cuaderno\", \"correctCategoryId\": \"cat1\"}, {\"id\": \"i3\", \"text\": \"🎾 Pelota\", \"correctCategoryId\": \"cat3\"}]}, \"correct_answer\": {\"cat1\": [\"i2\"], \"cat2\": [\"i1\"], \"cat3\": [\"i3\"]}}"
+    },
+    "risk_reward": {
+      "type": "risk_reward",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/RiskReward.tsx",
+      "gradable": true,
+      "content_shape": "content.decision (or content.question, content.scenario) — string; content.risk_options (or content.options) — array of {id: string, type: 'risk'|'safe', text?: string, title?: string, label?: string, reward?: string} — renderer reads option.type to pick icon (AlertTriangle vs ShieldCheck) and option.reward to show on reveal",
+      "answer_shape": "correct_answer.correctOptionId (string) — the canonical risk/safe choice id. Aliases: correctChoiceId, correctId, choiceId, preferredOption, betterOption, selectedId, selectedOptionId. Grader uses optionIdMatches() for tolerance to prefixes (mindset, approach, option, plan, offer, strategy, choice, item, product, etc.)",
+      "render_gotchas": [
+        "risk_options[] not resolved — renderer calls resolveOptions(content, ['risk_options', 'options']) so must provide one of these keys, not bare items",
+        "option.type missing or wrong value — only 'risk' triggers coral icon + AlertTriangle; anything else gets emerald + ShieldCheck. If you mix 'Risk'/'RISK' (capitalized), type coercion fails → all render as safe",
+        "option.reward undefined — Revealed box on select shows 'undefined'. Must provide reward string for every option",
+        "correct_answer with plural form (correctOptionIds array) — grader treats as multi-select, rejects single choice. Use singular correctOptionId for single-select risk_reward",
+        "Decision text (decision/question/scenario) — renderer picks in order (content.decision > content.question > content.scenario > i18n fallback). If none exist, breaks layout. Must provide at least one"
+      ],
+      "canonical_example": "{\"content\": {\"decision\": \"Te ofrecen consolidar deudas en un préstamo más largo. ¿Cuál es el mayor riesgo?\", \"risk_options\": [{\"id\": \"a\", \"type\": \"risk\", \"title\": \"Pagar más intereses\", \"reward\": \"Identificaste el verdadero riesgo.\"}, {\"id\": \"b\", \"type\": \"safe\", \"title\": \"Beneficio garantizado\", \"reward\": \"Menor tasa asegurada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+    },
+    "opportunity_cost": {
+      "type": "opportunity_cost",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/OpportunityCost.tsx",
+      "gradable": true,
+      "content_shape": "content.scenario — string (displayed as soft indigo card); content.options (or resolveOptions fallback: choices, scenarios, plans, offers, items, cases, models, portfolios) — array of {id: string, text?: string, title?: string, label?: string, name?: string, benefits?: string[], description?: string, icon?: string}. Renderer detects rich data via content.options.some(opt => opt.benefits || opt.title || opt.description) — if true, shows Analysis panel with compare-gains-vs-lose table; if false, simple option select",
+      "answer_shape": "correct_answer.correctOptionId (string) — the canonical chosen option id. Aliases: correctChoiceId, selectedId, selectedOptionId, bestOptionId, preferredOption, chosenOption, betterOption, correctChoice, chosenOptionId (full extractCorrectId list of ~80). Grader uses optionIdMatches() with prefix stripping for tolerance",
+      "render_gotchas": [
+        "options [] empty or not provided — renderer gracefully falls back to fallback message but submission handler still runs. If no options resolved, component should skip gracefully but user can still submit with null → validateAnswer returns true (falsy intent)",
+        "benefits array missing — hasRichData check fails even if title/description present. Must provide benefits[] (even empty) to trigger analysis panel. If absent, analysis section doesn't render (confusing UX)",
+        "scenario undefined — optional but if missing and no decision context, user sees blank blue card at top",
+        "options with plain text field instead of structured data — if options.find(opt => !opt.benefits && !opt.title) returns true, hasRichData = false, no Analysis shown even if some options have rich data. All-or-nothing flag → mixing plain + rich breaks UX",
+        "correctOptionIds plural array — if present, grader rejects single-selection submissions. opportunity_cost is single-select via selectedOption state; use singular correctOptionId only"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Elegir opción A: más dinero rápido vs Opción B: crecimiento a largo plazo\", \"options\": [{\"id\": \"a\", \"text\": \"Opción A\", \"title\": \"Ganancia Rápida\", \"description\": \"Efectivo en 3 meses\", \"icon\": \"💰\", \"benefits\": [\"Liquidez inmediata\", \"Sin riesgo\"]}, {\"id\": \"b\", \"text\": \"Opción B\", \"title\": \"Inversión Largo Plazo\", \"description\": \"Retorno 2 años\", \"icon\": \"📈\", \"benefits\": [\"Mayor retorno esperado\", \"Interés compuesto\"]}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}"
+    },
+    "market_reaction": {
+      "type": "market_reaction",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/MarketReaction.tsx",
+      "gradable": true,
+      "content_shape": "content.headline — string (newspaper-style breaking news box); content.question — string (prediction prompt in indigo callout); content.options — array of {id: string, text?: string, label?: string, icon?: string} (2x2 grid by default). Renderer reads content.explanation — string (optional, shown only after feedback if present). Options are hard-coded prediction outcomes: id values like 'up', 'down', 'stable' are typical but any string works",
+      "answer_shape": "correct_answer.correctOptionId (string) — the prediction outcome id (e.g., 'up', 'a', 'increase'). Aliases: correctChoiceId, correctId, choiceId, selectedId, predictedId, correctPrediction. Grader line 82 explicitly checks option.id === exercise.correct_answer?.correctOptionId for is-correct visual state; uses optionIdMatches() fallback if direct match fails",
+      "render_gotchas": [
+        "headline or question empty — renders blank boxes, breaks UX. Market context is critical.",
+        "options missing text/label — option renders as '📊' with no label text. Must provide text or label key.",
+        "options.length != 4 — renderer always uses 2x2 grid CSS (grid-cols-2). If 3 options: 1 orphan in second row. If 5+: overflow outside viewport. Must be exactly 4 or adjust grid dynamically",
+        "correct_answer.correctOptionId not found in options — grader still runs optionIdMatches() so submission can pass, but UI never highlights as-correct on feedback. User sees no is-correct visual, only is-wrong or is-dimmed → silent grading failure",
+        "explanation missing — after feedback, no explanation box renders. Component expects content.explanation to exist; if null, feedback omits educational context (confusing for learning)",
+        "Option ids not matching grader expectations — if option.id is 'option_up' but correct_answer.correctOptionId is 'up', optionIdMatches() falls back to prefix-strip and compares 'up' === 'up' (via normalizeId). This works but is fragile"
+      ],
+      "canonical_example": "{\"content\": {\"headline\": \"Competidor anuncia reducción de precios en 15%\", \"question\": \"¿Cómo reaccionará el mercado?\", \"options\": [{\"id\": \"up\", \"text\": \"Precio Sube\", \"icon\": \"📈\"}, {\"id\": \"down\", \"text\": \"Precio Baja\", \"icon\": \"📉\"}, {\"id\": \"stable\", \"text\": \"Se Mantiene\", \"icon\": \"➡️\"}, {\"id\": \"volatile\", \"text\": \"Volatilidad\", \"icon\": \"⚡\"}], \"explanation\": \"La competencia agresiva típicamente presiona precios a la baja y aumenta volatilidad.\"}, \"correct_answer\": {\"correctOptionId\": \"down\"}}"
+    },
+    "decision_challenge": {
+      "type": "decision_challenge",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/GenericChoice.tsx",
+      "gradable": true,
+      "content_shape": "content.options (or resolveOptions fallback: choices, scenarios, plans, offers, items, cases, models, portfolios) — array of {id: string, text?: string, label?: string, name?: string, title?: string}. Renderer shuffles options on mount (Fisher-Yates). Displays grid 1-col (odd count) or 2-col (even) via isOddCount = shuffled.length % 2 !== 0. component.correctId extracted via extractCorrectId(exercise.correct_answer) used to highlight on feedback only (not during selection)",
+      "answer_shape": "correct_answer.correctOptionId (string) — the canonical best choice id. Aliases: correctChoiceId, correctId, choiceId, selectedId, selectedOptionId, bestOptionId, preferredOption, recommendedOptionId, betterChoiceId, betterStrategyId, optimalOptionId, decidedOptionId, chosenOptionId, chosenStrategy, selectedApproach, correctApproach, etc. (full ~80-alias extractCorrectId list). Grader uses String(id) === String(correctId) after extractCorrectId resolves alias, returns false if no match",
+      "render_gotchas": [
+        "options [] empty — GenericChoice gracefully falls back to skip card 'Continuar'. User can bypass without answering. No validation error on submitAnswer() — returns true (always correct when no options)",
+        "options present but no option.text field — OptionCard child renders option.text as display. If undefined, renders blank button text. Grader still works (id comparison) but UI is broken",
+        "correctOptionId not found in options — grader comparison String(answer) === String(correctId) fails to match. User gets is-wrong even if logically correct. No fuzzy prefix-match in decision_challenge case (unlike risk_reward/opportunity_cost); uses strict String equality. Fragile if option.id format varies",
+        "resolveOptions fallback keys missing — if content.options is not provided, GenericChoice tries ['options', 'choices', 'scenarios', 'plans', 'offers', 'items', 'cases', 'models', 'portfolios']. If none exist, shuffled.length === 0 → graceful fallback, not error",
+        "Multi-select shape (correctOptionIds array) — grader checks for this in line 470–475 of validateAnswer. decision_challenge sent to 'option-based' case. If correctOptionIds array is provided instead of correctOptionId, grader treats as multi-select (user must pick ALL ids in the set), not single-select. This breaks single-answer UX expectation"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Tu amigo tiene una oportunidad de negocio. ¿Cuál es la mejor acción?\", \"options\": [{\"id\": \"a\", \"text\": \"Invertir capital y tiempo en investigación antes de decidir\"}, {\"id\": \"b\", \"text\": \"Saltar inmediatamente sin validar mercado\"}, {\"id\": \"c\", \"text\": \"Ignorar completamente la oportunidad\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+    },
+    "budget_builder": {
+      "type": "budget_builder",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/BudgetBuilder.tsx",
+      "gradable": true,
+      "content_shape": "content.categories: [{id, name, label, text, title, allocated?, target?, max?, maxValue?}] (array) OR content.items: [{id, icon?, text, label, name, title, cost}] (array for legacy drag-drop). Also: content.scenario (string), content.instruction (string), content.budget (number), content.total_budget (number), content.total_income (number), content.totalIncome, content.income, content.monthlyIncome, content.amount (all numeric, fallback chain). For slider mode: categories[] required with id field. content.min_dca (number, optional, triggers DCA validation). Legacy mode: items[] required with id,cost.",
+      "answer_shape": "correct_answer.allocation: Record<categoryId, number> OR correct_answer.allocations: Record<categoryId, number> (nested object with category IDs as keys, amounts as values; component sends Record<string, number>). Also accepts extractCorrectId aliases (correctOptionId, etc.) for option-based validation. Fallback: normalizeBudgetCorrect() checks .allocation/.allocations/.minCategory+.minAmount/.isValid/.isValidAllocation/.isValidBudget. If direct numeric keys exist (e.g., {c1: 100, c2: 250}), treated as allocation map. Answer MUST sum to totalIncome for newSchema sliders. answer_shape primary: \"correct_answer.allocation: Record<categoryId, number>\" or singular key e.g. \"correct_answer.allocation\" (accepted aliases: allocations)",
+      "render_gotchas": [
+        "content.categories[] present but empty → renders fallback no-data screen (line 172-186), does NOT crash",
+        "content.items[] present AND content.categories[] present → legacy drag-drop takes priority (line 61); new schema sliders never render if items exist",
+        "content.categories[].allocated missing → initializes to 0 in newSchema (line 71), visible as slider starts at 0",
+        "Slider validation: totalAllocated > totalIncome triggers 'over budget' error (line 132), Submit returns early, grader never invoked",
+        "DCA validation: if content.min_dca is set, component searches for category.name matching 'dca' OR 'inversion' (case-insensitive, line 121-122); if not found, DCA check skipped silently. Grader never sees minCategory+minAmount shape.",
+        "correct_answer.validation: 'any_allocation' (string key in real lessons, e.g., line 365 adventure_5/saga_3/topic_19/lesson_6.json) → normalizeBudgetCorrect() returns null, component-side validation only, grader returns true (line 863)",
+        "Drag-drop legacy: items[] without cost field → renders '0' cost (line 440 fallback). answer: Record<itemId, categoryName> (string, not number).",
+        "Tolerance: correct_answer.tolerance missing → defaults to 0.01 in grader (line 877), tight tolerance for allocation matching"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Planifica tu presupuesto.\", \"instruction\": \"Asigna los $1000.\", \"categories\": [{\"id\": \"c1\", \"name\": \"Necesidades\"}, {\"id\": \"c2\", \"name\": \"Deseos\"}], \"total_budget\": 1000}, \"correct_answer\": {\"allocation\": {\"c1\": 600, \"c2\": 400}}}"
+    },
+    "concept_builder": {
+      "type": "concept_builder",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/ConceptBuilder.tsx",
+      "gradable": true,
+      "content_shape": "content.concepts OR content.items OR content.components OR content.pieces OR content.blocks OR content.steps OR content.buildingBlocks OR content.building_blocks OR content.elements OR content.options OR content.parts OR content.tags (array of {id, label, text, name, title, item, word, term, value, type?}). content.instruction (string) or content.question (string). If multi-select mode (see answer_shape), component reads correct_answer.correctOptionIds/.selectedIds/.componentIds/.correctComponentIds/.essentialIds/.correctConceptIds/.requiredIds/.correctIds/.correctComponents/.correctStatementIds to detect subset mode (line 36-38).",
+      "answer_shape": "Sequencing (ordering): answer is string[] of ordered block IDs (line 92). CANONIC: correct_answer.sequence OR correct_answer.correctSequence OR correct_answer.order OR correct_answer.correctOrder (array of IDs). Multi-select (subset): answer is string[] of selected block IDs (line 69). CANONIC: correct_answer.correctOptionIds OR correct_answer.selectedIds OR correctComponentIds OR correctConceptIds OR requiredIds OR correctIds OR correctComponents OR correctStatementIds (array of IDs). Component picks mode by checking which key exists in correct_answer (line 38, SUBSET_KEYS list).",
+      "render_gotchas": [
+        "rawSource: multi-fallback chain concepts|items|components|pieces|blocks|steps|buildingBlocks|building_blocks|elements|options|parts|tags (line 31-33). If NONE present → blocks=[], renders empty screen (line 115-154 for subset mode, or blank block row for ordering)",
+        "isSelectMode detection: ANY key from SUBSET_KEYS in correct_answer triggers multi-select mode (line 38). Sequencing and subset modes MUTUALLY EXCLUSIVE. If both keys somehow present, subset wins.",
+        "Shuffle: every render/retry reshuffles blocks (line 46-50). User cannot rely on order matching visual position.",
+        "Sequencing: component reads blocks.map(b => b.id) in current order, sends that as answer (line 92), not original order from content.items",
+        "block.type === 'connector' renders as lp-chip text, not button (line 170-172, grayed text). Non-connector blocks render as lp-token and highlight green on success.",
+        "Empty rawSource → no blocks rendered, but no error screen shown (unlike BudgetBuilder). Component just shows empty flow for ordering mode.",
+        "pickText() fallback chain: label→text→name→title→item→word→term→value (line 136). Missing all keys → renders empty string.",
+        "Tolerance missing from grader: sequencing does exact ID match (line 594), no numeric tolerance applied"
+      ],
+      "canonical_example": "{\"content\": {\"instruction\": \"Ordena los pasos.\", \"items\": [{\"id\": \"step1\", \"text\": \"Paso uno\"}, {\"id\": \"step2\", \"text\": \"Paso dos\"}]}, \"correct_answer\": {\"sequence\": [\"step1\", \"step2\"]}}"
+    },
+    "portfolio_builder": {
+      "type": "portfolio_builder",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/PortfolioBuilder.tsx",
+      "gradable": true,
+      "content_shape": "Legacy (assets) mode: content.assets: [{id, name, label, text, title, color?, risk? (0-10 scale)}] (array). Options (selection) mode: content.options: [{id, text, label, name, title}] (array). Also: content.scenario (string), content.instruction (string), content.criteria: [string] (array of criterion strings). isLegacy = Array.isArray(rawAssets) && rawAssets.length > 0 (line 47). isOptions = !isLegacy && Array.isArray(rawOptions) && rawOptions.length > 0 (line 48).",
+      "answer_shape": "Legacy (allocation): answer is Record<assetId, number> (0-100 percentage per asset). CANONIC KEY in correct_answer: extractCorrectId() first (option ID). If found, compares picked asset ID. Allocation mode: answer sums to 100 (line 970-971). Options (selection) mode: answer is {selectedOptionId: 100} (line 128, submit formats as object). CANONIC: correct_answer.correctOptionId or any extractCorrectId() alias. Allocation expects: answer keys match content.assets[].id, values sum to ~100% (tolerance 0.01).",
+      "render_gotchas": [
+        "No-data fallback: if !isLegacy && !isOptions, renders alertcircle + continue button (line 153-168), no render attempt on empty/missing assets/options",
+        "pickText() for assets: label→text→name→title (line 53, fallback to String(a.id))",
+        "Asset color default: a.color || '#5b6ef5' (indigo fallback, line 54)",
+        "Risk default: a.risk ?? 5 (numeric, line 55)",
+        "Options mode colors: cycled from COLOR_PALETTE by idx%4 (line 61, hardcoded 6-color array replaces asset.color)",
+        "Legacy validation: allocatedTotal !== totalAmount → submit disabled (line 151, line 123 validates exact match, tolerance 0.01 in grader)",
+        "Options validation: !selectedOptionId → submit disabled (line 151), must pick exactly one",
+        "PIE CHART SVG (legacy only): computed on-the-fly from allocation state, no content shape for pie data. Renders null if allocation[asset.id] === 0 (line 217, no slice rendered).",
+        "correct_answer.validation field (e.g., 'any_allocation', line 365 real lesson) NOT checked by grader or component, purely for lesson metadata",
+        "Options mode: can only submit {selectedOptionId: 100} format, not a split allocation"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Arma tu portafolio.\", \"assets\": [{\"id\": \"a1\", \"name\": \"Acciones\", \"risk\": 7}, {\"id\": \"a2\", \"name\": \"Bonos\", \"risk\": 3}]}, \"correct_answer\": {\"allocation\": {\"a1\": 60, \"a2\": 40}}}"
+    },
+    "bill_splitter": {
+      "type": "bill_splitter",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/BillSplitter.tsx",
+      "gradable": false,
+      "content_shape": "content.people: [{id, name, label, text, title}] (array of people who share). content.items: [{id, price (number), text, label, name, title}] (array of items/costs). Renderer computes: total = items.reduce((sum, item) => sum + item.price, 0) (line 27). tip (slider 0-30%, default 15%, line 22). mode: 'equitable' (split total equally) or 'proportional' (split by item assignment, line 20).",
+      "answer_shape": "EXPLORER/SIMULATOR TYPE: answer is Record<personId, number> (amount each person owes after split calculation and tip). correct_answer shape: grader accepts extractCorrectId() OR extractCorrectNumeric() if set, but most lessons omit correct_answer. Exploratory default (line 1082): if correctId or correctVal both undefined, return true (always pass). If correct_answer.tolerance set (numeric comparison), uses it; else defaults 0.01.",
+      "render_gotchas": [
+        "ALWAYS GRADABLE=FALSE for this type: line 1071-1082 in grader validates presence of correctId/correctVal ONLY; if neither exist, return true. Bill splitter is predominantly exploratory simulator.",
+        "Mode toggle: equitable → automatic per-person calc grandTotal/people.length (line 61-64). Proportional → assignment-driven (line 67-76), requires all items assigned before submit (line 85-93 component validation).",
+        "People and items pulled directly from content (line 25-26), no fallback chain. Missing = empty array.",
+        "TipAmount: (total * tip) / 100 (line 28). Slider bounds 0-30%, step 5 (line 203).",
+        "Equitable mode: Submit always enabled, calculates and validates only that tip is 0-30 (line 84, no item assignment check for equitable, line 85-93 only checks proportional)",
+        "Proportional mode: each item must appear in exactly one person's assignments (line 86-93). If not all items assigned, Submit returns early without invoking grader.",
+        "calculateSplits() is deterministic: same inputs → same splits. No randomization.",
+        "Grader feedback on bill_splitter is NEVER shown; only component-side success/error states (line 253-268 feedback card, line 257-258 uses mode-specific i18n keys)",
+        "answers sent to grader: splits object {personId: amount} from calculateSplits(), NOT the assignments or mode. Grader never sees which mode was used."
+      ],
+      "canonical_example": "{\"content\": {\"people\": [{\"id\": \"p1\", \"name\": \"Alice\"}, {\"id\": \"p2\", \"name\": \"Bob\"}], \"items\": [{\"id\": \"i1\", \"price\": 30}, {\"id\": \"i2\", \"price\": 20}]}, \"correct_answer\": null}"
+    },
+    "interest_calculator": {
+      "type": "interest_calculator",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/InterestCalculator.tsx",
+      "gradable": true,
+      "content_shape": "content.defaultPrincipal (number), content.defaultRate (number), content.defaultTime (number), content.parameters.principal (number), content.parameters.annualRate (number), content.maxPrincipal (number), content.maxRate (number), content.maxTime (number), content.type ('simple'|'compound')",
+      "answer_shape": "correct_answer.value (number) OR exploratory if answer is object {principal, rate, time}; canonical: correct_answer.value (single numeric value or omitted for simulator mode)",
+      "render_gotchas": [
+        "answer.object form {principal, rate, time} ALWAYS grades true (line 1021 useLessonState.ts: 'if (answer && typeof answer === 'object') return true') — simulator mode, not gradable",
+        "correct_answer.value missing or null → always returns true (line 1021-1029 fallback)",
+        "confusing content.parameters.annualRate with content.defaultRate — renderer uses defaultRate first, fallback to content.parameters.annualRate (line 29-30)",
+        "content.type 'simple' vs 'compound' MUST match for chart rendering (lines 74-76, 248, 267)"
+      ],
+      "canonical_example": "{\"content\":{\"type\":\"compound\",\"defaultPrincipal\":1000,\"defaultRate\":5,\"defaultTime\":2,\"maxPrincipal\":10000,\"maxRate\":20,\"maxTime\":30},\"correct_answer\":{\"value\":10226}}"
+    },
+    "estimation_slider": {
+      "type": "estimation_slider",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/EstimationSlider.tsx",
+      "gradable": true,
+      "content_shape": "content.problem (string), content.question (string), content.min (number), content.max (number), content.step (number), content.unit (string), content.ranges (array of {id, minValue|min, maxValue|max}), content.correctValue (number), content.tolerance (number), content.range.min (number), content.range.max (number), content.range.step (number)",
+      "answer_shape": "correct_answer.value (number) OR correct_answer.correctValue (number); canonical key: correct_answer.value (number within tolerance). Alias: correct_answer.numericAnswer, correct_answer.correctValue, correct_answer.answer. Also accepts correct_answer with range keys: correct_answer.range {min, max}, correct_answer.min/max pair, correct_answer.rangeStart/rangeEnd",
+      "render_gotchas": [
+        "content.ranges array present AND content.min/max missing → slider min/max extracted from ranges.minValue/maxValue bounds (line 22-24), NOT content.min/max directly",
+        "correct_answer.correctRangeId logic (line 692-700 useLessonState.ts) ONLY works if content.ranges array AND targetRange.minValue/maxValue defined; else fallback to numeric value",
+        "tolerance field reads from correct_answer.tolerance FIRST, then content.tolerance (line 49 EstimationSlider.tsx, line 730 useLessonState.ts)",
+        "component shows 'close' feedback at 2x tolerance (line 62 EstimationSlider.tsx) but grader only knows 'success' or 'error' (line 730-731)",
+        "unit field rendered inline but NOT transmitted to grader (purely display)"
+      ],
+      "canonical_example": "{\"content\":{\"problem\":\"Un cajero cobra $2.50 por retiro. Si retiras $15, ¿qué porcentaje es la comisión? (número entero)\",\"min\":0,\"max\":50,\"step\":1,\"unit\":\"%\",\"tolerance\":2},\"correct_answer\":{\"value\":14}}"
+    },
+    "inflation_simulator": {
+      "type": "inflation_simulator",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/InflationSimulator.tsx",
+      "gradable": true,
+      "content_shape": "content.product {basePrice (number), baseYear (number), name|label|text|title (string), icon (emoji string)}, content.inflationRate (number, as %), content.defaultYearStart (number), content.defaultYearEnd (number), content.minYear (number), content.maxYear (number)",
+      "answer_shape": "correct_answer.yearStart (number) AND correct_answer.yearEnd (number) OR exploratory if none present. Canonical: object {yearStart, yearEnd} or exploratory (return true). useLessonState line 1074 treats 'inflation_simulator' as exploratory—if extractCorrectId/Numeric finds nothing, 'return true'",
+      "render_gotchas": [
+        "component sends {yearStart, yearEnd} as answer; validator expects object OR checks for correctId/numeric value (line 1075-1082 useLessonState.ts)",
+        "no explicit correct_answer validation logic: falls through to line 1082 'return true' (simulators are exploratory by design)",
+        "content.product.name/label/text/title field — pickText() helper (line 6, 69) extracts whichever key is defined; renderer READS first match, not guaranteed order",
+        "baseYear MUST be within minYear/maxYear range or price calculation may show negative/inverted values (line 34-36)",
+        "correctAnswer shape (if provided): must use yearStart/yearEnd keys exactly, not 'startYear'/'endYear'"
+      ],
+      "canonical_example": "{\"content\":{\"product\":{\"basePrice\":100,\"baseYear\":2000,\"name\":\"Comida típica\",\"icon\":\"🍔\"},\"inflationRate\":3,\"defaultYearStart\":2000,\"defaultYearEnd\":2024,\"minYear\":1990,\"maxYear\":2030},\"correct_answer\":null}"
+    },
+    "emergency_fund": {
+      "type": "emergency_fund",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/EmergencyFund.tsx",
+      "gradable": true,
+      "content_shape": "content.events (array of {id (string), description (string), options (array of {id (string), text|label|description (string), cost (number)})}), content.initialFund (number, starting balance)",
+      "answer_shape": "correct_answer.minBalance (number) OR correct_answer.minFund (number). Canonical: correct_answer.minBalance (minimum fund balance user must end with, >=0). Answer is Record<string, string> = {eventId: selectedOptionId, ...} OR array of decision IDs. Grader computes final balance by iterating events and subtracting costs of chosen options",
+      "render_gotchas": [
+        "answer shape is Record<eventId, decisionId> (line 22 EmergencyFund.tsx, line 57 setDecisions) but grader expects object form AND uses event.id to look up (line 934-940 useLessonState.ts: 'const decisionId = userMap ? userMap[event.id] : ...')",
+        "component KEYS decisions by event.id (line 57: '[event.id]: decisionId') but if events array is indexed 0-N, Object.values() ordering FAILS—grader correctly handles this via event.id lookup (line 940), not index",
+        "correct_answer.minBalance numeric threshold: if user balance >= minBalance after all decisions, 'success', else 'error' (line 944-945)",
+        "content.events array MUST have options[].cost defined and numeric, else balance calculation skips (line 942 'Number(option.cost || 0)')",
+        "missing or empty events array → component renders 'Cargando emergencias...' (line 39-48), grader returns true (line 930)"
+      ],
+      "canonical_example": "{\"content\":{\"initialFund\":5000,\"events\":[{\"id\":\"e1\",\"description\":\"Tu calentador se rompió. ¿Qué haces?\",\"options\":[{\"id\":\"opt1\",\"text\":\"Repara en emergencia\",\"cost\":500},{\"id\":\"opt2\",\"text\":\"Usa tarjeta de crédito\",\"cost\":0}]},{\"id\":\"e2\",\"description\":\"Deuda médica inesperada\",\"options\":[{\"id\":\"opt3\",\"text\":\"Paga del fondo\",\"cost\":1200},{\"id\":\"opt4\",\"text\":\"Aplaza\",\"cost\":0}]}]},\"correct_answer\":{\"minBalance\":2000}}"
+    },
+    "tax_puzzle": {
+      "type": "tax_puzzle",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/TaxPuzzle.tsx",
+      "gradable": true,
+      "content_shape": "content.pieces: [{id, name/label, icon, min, max, step, description, defaultValue}], OR fallback content.options: [{id, text/label}], content.puzzle/instruction (title), content.puzzle/income/deductions/taxRate (used in calc display)",
+      "answer_shape": "correct_answer.correctOptionId (string id, fallback case lines 456-479) for multiple-choice mode; Record<string, number> {pieceId: value} for slider mode (lines 27-30, 56). Primary key: correctOptionId (line 77 useLessonState.ts). Normalized via extractCorrectId() aliases: correctChoiceId, correctId, choiceId, betterOption, etc.",
+      "render_gotchas": [
+        "pieces[] mode (sliders) submits Record<string,number> (line 56: onSubmit(pieces)) but grader validateAnswer() case 'tax_puzzle' uses extractCorrectId(), expecting string id, NOT numeric allocation. Fallback to multiple-choice (lines 75-138) if no pieces, but pieces present + no correctOptionId = grader returns true (line 479). Mismatch: renderer can send {income:100, deductions:50} but grader can't grade Record<string,number> against scalar correctOptionId.",
+        "options[] vs pieces[] detection: if content.pieces.length > 0, render slider mode; else if content.options.length > 0, render choice mode (lines 38, 75). Mixed data (both present) renders pieces first, ignoring options. No explicit type flag, ambiguous.",
+        "Calculation display reads pieces object keys directly (lines 39-45: pieces.income, pieces.deductions, pieces.taxRate) - if piece.id doesn't match these exact names, display breaks silently.",
+        "Multiple-choice fallback (lines 75-138) submits selectedOption (string id), which matches grader expectation, but uses separate fb state instead of shared feedback state, causing double-state bug if mixed with pieces mode."
+      ],
+      "canonical_example": "{\"type\":\"tax_puzzle\",\"content\":{\"puzzle\":\"Calcula el impuesto a pagar\",\"pieces\":[{\"id\":\"income\",\"name\":\"Ingresos\",\"defaultValue\":50000,\"min\":0,\"max\":100000,\"step\":1000,\"icon\":\"💰\"},{\"id\":\"deductions\",\"name\":\"Deducciones\",\"defaultValue\":5000,\"min\":0,\"max\":50000,\"step\":1000},{\"id\":\"taxRate\",\"name\":\"Tasa Fiscal\",\"defaultValue\":15,\"min\":0,\"max\":50,\"step\":1}]},\"correct_answer\":{\"correctOptionId\":\"a\"}}"
+    },
+    "salary_comparison": {
+      "type": "salary_comparison",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/SalaryComparison.tsx",
+      "gradable": true,
+      "content_shape": "content.offers: [{id, salary, benefits, location, growth}] (legacy, lines 39-40) OR content.options/optionA/optionB/offer_a/offer_b resolved via resolveOptions() (lines 44-48), normalized to [{id, company, description}]. content.scenario, content.question, content.instruction (optional, lines 116-131). Legacy: calculateScore() weights salary 40%, benefits 30%, location 15%, growth 15% (lines 56-64).",
+      "answer_shape": "correct_answer.correctOptionId (string offer id) or correct_answer.bestOffer (lines 951-953 useLessonState.ts). Primary key: extracted via extractCorrectId() with aliases bestChoiceId, recommendedOptionId, preferredOption, selectedId, etc. Matching is case-insensitive via optionIdMatches() (lines 154-167).",
+      "render_gotchas": [
+        "isLegacy detection (line 33): Array.isArray(content.offers) && content.offers.length > 0. If offers=[] but options[] present, isLegacy=false and legacy features (score calc) not rendered. Real lessons use options[], not offers[].",
+        "resolveOptions() (line 44) may return empty array if content has no recognized structure (optionA, options, offer_a, etc.), triggering fallback (lines 89-107) which allows onNext() without selection. Graceful but masks missing data.",
+        "company field extraction (line 46): tries company ?? name ?? title ?? text in order. If all missing, renders empty header. No validation that extracted values are strings.",
+        "factors[] (line 37) used for legacy scoring but ignored in modern render (lines 200-206). Mismatch: legacy scorecard uses hardcoded factor labels, not from content.factors.",
+        "Multiple offers (3+) use 3-column grid (line 139), but CSS classes (lp-option--indigo, lp-option--amber, etc.) cycle via index, not content id. UI color order breaks if offers reordered."
+      ],
+      "canonical_example": "{\"type\":\"salary_comparison\",\"content\":{\"scenario\":\"Compara dos ofertas\",\"question\":\"¿Cuál elegirías?\",\"options\":[{\"id\":\"offer_a\",\"name\":\"Empresa X\",\"details\":\"Salario $50k + beneficios\"},{\"id\":\"offer_b\",\"name\":\"Empresa Y\",\"details\":\"Salario $55k sin beneficios\"}]},\"correct_answer\":{\"correctOptionId\":\"offer_a\"}}"
+    },
+    "debt_strategy": {
+      "type": "debt_strategy",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/DebtStrategy.tsx",
+      "gradable": true,
+      "content_shape": "Legacy mode (lines 34-36): content.debts [{id, balance, rate, minPayment}], content.monthlyPayment (scalar). Modern mode (lines 36-37): content.options via resolveOptions() (same as SalaryComparison), content.scenario, content.instruction. Legacy also reads content.scenario + content.instruction (lines 31-32) for fallback text.",
+      "answer_shape": "Legacy mode (isLegacy=true): correct_answer field is NOT read by component, submit() sends selectedStrategy string ('snowball'|'avalanche') to grader, which extracts strategy via extractCorrectId() and tries optionIdMatches(). Modern mode: correct_answer.correctOptionId (string option id). Grader case 'debt_strategy' (lines 461-480) treats answer as string, applies extractCorrectId() for multi-choice, falls back to true if no correctId defined (line 479).",
+      "render_gotchas": [
+        "Legacy vs modern detection (line 34): isLegacy = Array.isArray(debts) && debts.length > 0. If debts=[] but options[] present, isMultipleChoice=true, legacy simulator NOT rendered. Two completely different UX paths.",
+        "Legacy simulator calculates both snowball + avalanche (lines 95-96) regardless of selectedStrategy, but only one compares to correctAnswer. If grader has no correctId defined for 'snowball'/'avalanche' string, always returns true (line 479 useLessonState), making both strategies equally correct.",
+        "Modern multiple-choice mode (lines 160-241): submit uses selectedOptionId string, but selectedStrategy state unused in this branch. Confusing state management.",
+        "Fallback (lines 136-155): if !isLegacy && !isMultipleChoice, renders error message + continue button, calling onNext() immediately. No correct_answer graded. Silently skips exercise.",
+        "simulateStrategy() memoized on [debts, monthlyPayment, isLegacy] (line 93), but debts object identity changes each render, causing recalc even if values unchanged.",
+        "Corpus example (lesson_5.json, line 246-272) uses debt_strategy with multiple options (not legacy debts array), but correct_answer has NO correctOptionId or strategy identifier—grader returns true silently."
+      ],
+      "canonical_example": "{\"type\":\"debt_strategy\",\"content\":{\"scenario\":\"Tienes deudas por $15000\",\"instruction\":\"¿Cuál estrategia elegirías?\",\"options\":[{\"id\":\"snowball_opt\",\"text\":\"Estrategia Bola de Nieve\"},{\"id\":\"avalanche_opt\",\"text\":\"Estrategia Avalancha\"}]},\"correct_answer\":{\"correctOptionId\":\"avalanche_opt\"}}"
+    },
+    "savings_race": {
+      "type": "savings_race",
+      "renderer_file": "/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/frontend/src/components/lessons/engine/activities/SavingsRace.tsx",
+      "gradable": true,
+      "content_shape": "content.goal (numeric, displayed in trophy header, line 38), content.strategies: [{id, name/label, description/detail, icon, speed (numeric multiplier)}] (lines 39-40, 129-166). No standard title/scenario field used, only goal.",
+      "answer_shape": "correct_answer field in grader (lines 1074-1082 useLessonState.ts): case 'savings_race' extracts correctId via extractCorrectId() (string strategy id) OR correctVal via extractCorrectNumeric() (numeric goal check). Answer submitted is selectedStrategy string (line 70: onSubmit(selectedStrategy)). Grader optionIdMatches() or numericMatch() applied. If no correct_answer defined, returns true (line 1082).",
+      "render_gotchas": [
+        "Animation-driven UX: progress state (0-100%) driven by interval (line 63-75), NOT by component re-render. If exercise replaced mid-animation, cleanup (lines 32-36) clears interval, but if onSubmit() called async, interval continues updating state after unmount.",
+        "strategies[] index used for hue color assignment (line 131: hue = ['indigo','amber','emerald','coral'][index%4]), not strategy.id. Reordering strategies changes colors unexpectedly.",
+        "selectedStrategy state initially null (line 20), but handleStartRace() requires it non-null (line 48). If user clicks 'Start' without selecting, returns early silently. No error feedback.",
+        "speed multiplier (line 57): duration = 3000 / speed. If speed=0 or undefined, duration=Infinity, animation never completes. No validation.",
+        "Grader expects selectedStrategy string (strategy.id), but renderer never validates that submitted id exists in content.strategies array. If id malformed or missing, grader receives garbage string.",
+        "No lecciones de corpus encontradas aún usando savings_race (searches returned no .json files with type='savings_race'). Contract inferred from component code + grader case logic, untested against real data.",
+        "Progress bar uses transition-all duration-100 (line 114), but interval updates every stepDuration (line 75, ~30ms for 3s animation). Smooth visual but discontinuous state updates risk browser reflow thrashing."
+      ],
+      "canonical_example": "{\"type\":\"savings_race\",\"content\":{\"goal\":5000,\"strategies\":[{\"id\":\"conservative\",\"name\":\"Ahorro Seguro\",\"description\":\"Deposita 500/mes en banco\",\"icon\":\"🏦\",\"speed\":1},{\"id\":\"aggressive\",\"name\":\"Inversión Agresiva\",\"description\":\"Invierte en acciones\",\"icon\":\"📈\",\"speed\":2.5}]},\"correct_answer\":{\"correctOptionId\":\"aggressive\"}}"
+    },
+    "comparison": {
+      "type": "comparison",
+      "renderer_file": "frontend/src/components/lessons/engine/activities/GenericChoice.tsx",
+      "gradable": true,
+      "content_shape": "content.items: [{id, label, text}] OR content.options: [{id, text}] OR pairwise optionA/optionB",
+      "answer_shape": "correct_answer.targetIds: [string] (primary) OR correct_answer.correctId/correctOptionId (single-id aliases resolved via extractCorrectId, lines 49-144)",
+      "render_gotchas": [
+        "Missing 'options'/'items' key → resolveOptions() returns [] → renders graceful fallback card, doesn't error",
+        "Pairwise form (optionA/optionB) synthesizes letter ids 'A'/'B' but grader sees extractCorrectId() aliases → both string match works (line 154-167 optionIdMatches tolerance)",
+        "Using wrong key name: correctChoiceId vs correctOptionId → extractCorrectId has 80+ aliases (lines 49-144) so small variations OK, but test the actual key used in lesson JSON",
+        "targetIds as single id instead of array → spot_trap uses targetIds array but comparison uses targetIds array too; if sent as string will fail Set match (line 1046)"
+      ],
+      "canonical_example": "{\"content\": {\"instruction\": \"Compara estos dos presupuestos. ¿Cuál es mejor?\", \"items\": [{\"id\": \"a\", \"label\": \"Plan A: $20 gastar, $20 material, $10 ahorrar\"}, {\"id\": \"b\", \"label\": \"Plan B: $40 gastar, $10 material, $0 ahorrar\"}]}, \"correct_answer\": {\"targetIds\": [\"a\"]}}"
+    },
+    "case_study": {
+      "type": "case_study",
+      "renderer_file": "frontend/src/components/lessons/engine/activities/GenericChoice.tsx",
+      "gradable": true,
+      "content_shape": "content: {scenario, question?, instruction?, options: [{id, text}]} — resolveOptions() seeks options/choices/scenarios/items (line 37)",
+      "answer_shape": "correct_answer.correctOptionId (primary) OR any of 80+ extractCorrectId() aliases (lines 49-144) — compareAnswer uses optionIdMatches() (lines 154-167)",
+      "render_gotchas": [
+        "Lesson has 'options' but component looks for 'scenarios' first (line 37 prefer keys) — if wrong order, may pick wrong array",
+        "scenario/question text is narrative context, not selectable option; they render as fallback text but choices come from options[] only",
+        "correctId as string vs number: optionIdMatches() coerces both to String (line 156) so '1' === 1 is OK",
+        "Empty options[] → renders continue button, lesson can be skipped silently (lines 76-89)"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Caso: Ana. Ingresos: $300,000. Deducciones: $40,000. Retenciones: $35,000. ISR: $30,000.\", \"question\": \"¿Cuál es la situación final de Ana?\", \"instruction\": \"Selecciona el resultado.\", \"options\": [{\"id\": \"a\", \"text\": \"Tiene saldo a favor de $5,000.\"}, {\"id\": \"b\", \"text\": \"Tiene saldo a pagar de $5,000.\"}, {\"id\": \"c\", \"text\": \"No tiene saldo.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+    },
+    "decision_matrix": {
+      "type": "decision_matrix",
+      "renderer_file": "frontend/src/components/lessons/engine/activities/GenericChoice.tsx",
+      "gradable": true,
+      "content_shape": "content: {instruction, scenario?, criteria?: [{id, text}], question?, options?: [{id, text}]} — renders via resolveOptions (line 37)",
+      "answer_shape": "correct_answer.decision: string (canonical) OR correct_answer.correctOptionId (alias via extractCorrectId line 99)",
+      "render_gotchas": [
+        "criteria[] is display-only text context, NOT the selectable options — options[] is what resolveOptions() reads; if missing, component renders no choices",
+        "decision value can be ANY string ('negotiate_benefits_or_decline', 'accept', etc.); grader compares exact string match (line 1064): String(answer) === String(correctAnswer.decision)",
+        "If lesson provides only criteria[] with no options[], GenericChoice renders fallback (no choices) not error",
+        "decision key is looked up in extractCorrectId() as last-resort alias (line 143), so comparison at line 1064 checks both decision field AND aliases"
+      ],
+      "canonical_example": "{\"content\": {\"instruction\": \"Debes DECIDIR. Evalúa estos criterios.\", \"scenario\": \"Oferta: $41,000. Tu rango: $45,000-$50,000.\", \"criteria\": [{\"id\": \"cr1\", \"text\": \"El salario está muy por debajo.\"}, {\"id\": \"cr2\", \"text\": \"La empresa no es flexible.\"}, {\"id\": \"cr3\", \"text\": \"El rol es excelente.\"}], \"question\": \"¿Qué es lo más estratégico?\"}, \"correct_answer\": {\"decision\": \"negotiate_benefits_or_decline\"}}"
+    },
+    "story_mode": {
+      "type": "story_mode",
+      "renderer_file": "frontend/src/components/lessons/engine/activities/StoryMode.tsx",
+      "gradable": true,
+      "content_shape": "content: {scenario?, question?, instruction?, choices?: [{id, text, next_page?}], options?: [{id, text}]} OR content.pages: [{id, text, character_mood?, choices?: [...]}] (legacy format, lines 43-80)",
+      "answer_shape": "correct_answer.correctOptionId OR extractCorrectId() aliases (lines 49-144) — conditional grading: if gradedCorrectId !== undefined, component calls onSubmit(choiceId) AND records decision (lines 127-131); if undefined, pure consumption tree (line 495)",
+      "render_gotchas": [
+        "pages[] vs choices[] naming: component builds virtual pages from scenario+question+choices if pages[] absent (lines 43-80); mixing legacy 'pages' key with new fields causes duplication or overwrite",
+        "next_page: undefined → navigation ENDS, advances to next exercise; next_page: string → finds page by id; if not found, falls back to handleNext() (lines 114-119)",
+        "Graded decision (onSubmit with correctId) does NOT penalize — it just records decided={id, correct} and shows feedback (lines 127-130), then user can continue (line 234-237)",
+        "character_mood normalization: rawMood mapped via normalizeGesture(characterCode, mood) — invalid mood falls back (line 178)",
+        "If pages[] empty, auto-advances after 100ms debounce (lines 100-105) to prevent loops"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Llegas al puesto de tacos. 🌮 Cuestan $15. ¿Te alcanza en tu cajita de gastar?\", \"choices\": [{\"id\": \"a\", \"text\": \"Sí, tengo $20 en gastar\", \"next_page\": \"scene_2\"}, {\"id\": \"b\", \"text\": \"No, mejor no compro\", \"next_page\": \"scene_2\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+    },
+    "roleplay_chat": {
+      "type": "roleplay_chat",
+      "renderer_file": "frontend/src/components/lessons/engine/activities/RoleplayChat.tsx",
+      "gradable": true,
+      "content_shape": "content: {scenario, instruction?, options: [{id, text}] OR choices: [...] OR responseOptions: [...] OR chatOptions: [...]} (line 63 fallback key search)",
+      "answer_shape": "correct_answer.correctOptionId (primary) OR any extractCorrectId() alias (lines 49-144) — grader calls onSubmit(choiceId: string) and returns boolean isCorrect (line 92)",
+      "render_gotchas": [
+        "options key variants: content.options > content.choices > content.responseOptions > content.chatOptions (line 63); if NONE present, renders 'No options available' with skip button (lines 187-196)",
+        "Answer is ALWAYS a single choiceId string (line 78), not array; multi-select not supported",
+        "feedback.success/feedback.error are optional; if missing, falls back to i18n defaults (lines 99-100)",
+        "Component shows typing delay (1500ms) before NPC response — during delay answer is already submitted to grader (line 92 before timeout), so validation is immediate, UI shows delay only",
+        "Feedback state persists until handleContinue() called (line 115-126); if 'success' user calls onNext(), if 'error' removes last 2 messages and calls onRetry()",
+        "selectedChoiceId lock (line 76 'if (selectedChoiceId) return') prevents double-submission during delay"
+      ],
+      "canonical_example": "{\"content\": {\"scenario\": \"Eres un contribuyente. Tu ISR es $45,000. Crédito fiscal: $38,000. ¿Qué declaras?\", \"instruction\": \"Decide tu respuesta.\", \"options\": [{\"id\": \"a\", \"text\": \"Saldo a favor por $7,000.\"}, {\"id\": \"b\", \"text\": \"Saldo a pagar de $7,000.\"}, {\"id\": \"c\", \"text\": \"No debo nada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}"
+    }
+  }
+}

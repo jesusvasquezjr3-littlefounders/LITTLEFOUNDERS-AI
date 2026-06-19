@@ -1,0 +1,924 @@
+{
+  "lesson_code": "2-2-12-3",
+  "title_es": "Gastos fijos y variables: los dos montones de Dina",
+  "title_en": "Fixed and Variable Expenses: Dina's Two Piles",
+  "description_es": "Aprende a separar los gastos del hogar en fijos (llegan igual cada mes) y variables (cambian según lo que decidimos).",
+  "description_en": "Learn to sort household expenses into fixed (same each month) and variable (change based on decisions).",
+  "duration": 25,
+  "age_rate": "8-9",
+  "points_reward": 10,
+  "adventure_level": 2,
+  "saga_level": 2,
+  "topic_level": 12,
+  "lesson_number": 3,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! 🦊 Soy Dina. 🎒 Mira lo que encontré en mi mochila: ¡recibos y tickets! 📄 Uno de la luz, otro de helados, del agua, y uno de un juguete. Algunos llegan todos los meses, casi iguales. Otros aparecen solo a veces. ¿Me ayudas a separarlos en dos montones? 🤔"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Los gastos FIJOS llegan cada mes, casi iguales. 🏠 Por ejemplo: la renta, la luz, el agua. Los gastos VARIABLES cambian o aparecen solo a veces. 🍦 Como un helado, un juguete o salir a cenar. Pregúntate: ¿llega siempre igual? Si sí, es fijo. Si no, es variable."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "La renta del hogar es un gasto que llega cada mes casi igual.",
+        "instruction": "Elige si es verdadero o falso"
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Correcto! La renta es un gasto fijo porque llega igual cada mes. 🏠",
+        "error": "No es falso. La renta sí llega cada mes casi igual, es un gasto fijo. 🏠"
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Arrastra cada gasto a la canasta correcta: FIJO o VARIABLE",
+        "categories": [
+          {
+            "id": "fijo",
+            "label": "FIJO"
+          },
+          {
+            "id": "variable",
+            "label": "VARIABLE"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Renta de la casa"
+          },
+          {
+            "id": "i2",
+            "text": "Recibo de luz"
+          },
+          {
+            "id": "i3",
+            "text": "Helado de la tienda"
+          },
+          {
+            "id": "i4",
+            "text": "Juguete sorpresa"
+          }
+        ],
+        "correct_mapping": {
+          "i1": "fijo",
+          "i2": "fijo",
+          "i3": "variable",
+          "i4": "variable"
+        }
+      },
+      "feedback": {
+        "success": "¡Bien! Renta y luz son fijos; helado y juguete son variables. 🎯",
+        "error": "Recuerda: fijo llega siempre igual, variable cambia o es a veces. 🤔"
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "En la lista de gastos FIJOS hay un intruso. ¿Cuál es variable?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Renta"
+          },
+          {
+            "id": "i2",
+            "text": "Agua"
+          },
+          {
+            "id": "i3",
+            "text": "Boletos al cine"
+          },
+          {
+            "id": "i4",
+            "text": "Luz"
+          }
+        ],
+        "trap_id": "i3"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Exacto! Los boletos al cine son variables, porque no los compras todos los meses. 🎬",
+        "error": "Casi. Recuerda: fijo llega siempre igual; los boletos al cine no son así. 🎬",
+        "per_option": {
+          "i1": "La renta es fija, no es intruso. 🏠",
+          "i2": "El agua es fija, llega cada mes. 🚰",
+          "i4": "La luz es fija, llega cada mes. 💡"
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Cuál de estos gastos cambia mes a mes?",
+        "instruction": "Elige la mejor respuesta",
+        "options": [
+          {
+            "id": "a",
+            "text": "La cuenta del agua"
+          },
+          {
+            "id": "b",
+            "text": "Una salida a comer tacos"
+          },
+          {
+            "id": "c",
+            "text": "Ambos cambian"
+          },
+          {
+            "id": "d",
+            "text": "Ninguno cambia"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Sí! Salir a comer tacos es variable, porque no siempre lo haces. 🌮",
+        "error": "No es esa. Piensa: ¿cuál gasto decides tú si hacer o no?",
+        "per_option": {
+          "a": "El agua es fija, llega cada mes casi igual. 🚰",
+          "c": "No, solo uno cambia. El agua es fijo. 🚰",
+          "d": "Sí hay uno que cambia: la salida a tacos. 🌮"
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "En el montón de gastos VARIABLES hay un intruso. ¿Cuál es fijo?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Helado"
+          },
+          {
+            "id": "i2",
+            "text": "Juguete"
+          },
+          {
+            "id": "i3",
+            "text": "Luz"
+          },
+          {
+            "id": "i4",
+            "text": "Dulces"
+          }
+        ],
+        "trap_id": "i3"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Perfecto! La luz es fija, llega cada mes. Los demás son variables. 💡",
+        "error": "Casi. La luz no es variable, llega siempre. 💡",
+        "per_option": {
+          "i1": "El helado es variable, lo compras a veces. 🍦",
+          "i2": "El juguete es variable, no siempre lo compras. 🧸",
+          "i4": "Los dulces son variables, los compras cuando quieres. 🍬"
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-variable"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Suma solo los gastos VARIABLES de la semana de Dina: helado $8 y juguete $25. ¿Cuánto suman?",
+        "question": "Helado $8 + Juguete $25 = ?",
+        "options": [
+          {
+            "id": "a",
+            "text": "33"
+          },
+          {
+            "id": "b",
+            "text": "30"
+          },
+          {
+            "id": "c",
+            "text": "35"
+          },
+          {
+            "id": "d",
+            "text": "23"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! 8+25=33. Los variables suman $33. 🎉",
+        "error": "No es esa. Suma 8 y 25: 8+20=28, 28+5=33. 💡",
+        "per_option": {
+          "b": "30 no es correcto. 8+25=33. 🧮",
+          "c": "35 no es correcto. 8+25=33. 🧮",
+          "d": "23 no es correcto. 8+25=33. 🧮"
+        }
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Clasifica estos gastos de tu mesada en FIJO o VARIABLE",
+        "categories": [
+          {
+            "id": "fijo",
+            "label": "FIJO"
+          },
+          {
+            "id": "variable",
+            "label": "VARIABLE"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Abono semanal de transporte"
+          },
+          {
+            "id": "i2",
+            "text": "Comprar estampas"
+          },
+          {
+            "id": "i3",
+            "text": "Dulces"
+          },
+          {
+            "id": "i4",
+            "text": "Suscripción mensual de revista"
+          }
+        ],
+        "correct_mapping": {
+          "i1": "fijo",
+          "i2": "variable",
+          "i3": "variable",
+          "i4": "fijo"
+        }
+      },
+      "feedback": {
+        "success": "¡Muy bien! Abono y suscripción son fijos; estampas y dulces son variables. 🎯",
+        "error": "Recuerda: fijo es lo que pagas siempre igual cada mes. 🤔"
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Dina quiere ahorrar. ¿Cuál gasto NO conviene recortar porque es fijo?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Renta"
+          },
+          {
+            "id": "i2",
+            "text": "Salir a cenar"
+          },
+          {
+            "id": "i3",
+            "text": "Comprar un videojuego"
+          },
+          {
+            "id": "i4",
+            "text": "Helados"
+          }
+        ],
+        "trap_id": "i1"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1"
+        ]
+      },
+      "feedback": {
+        "success": "¡Exacto! La renta es fija, no se puede recortar fácilmente. Los variables sí. 🏠",
+        "error": "Casi. La renta es fija, los otros son variables y se pueden ajustar. 🏠",
+        "per_option": {
+          "i2": "Salir a cenar es variable, se puede recortar. 🍽️",
+          "i3": "Un videojuego es variable, se puede recortar. 🎮",
+          "i4": "Helados son variables, se pueden recortar. 🍦"
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Lo logramos! 🎉 Ahora sabemos: los gastos fijos llegan igual cada mes, los variables cambian y podemos ajustarlos. En la próxima aventura haremos un presupuesto semanal. ¡Nos vemos! 🦊✨"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! 🦊 I'm Dina. 🎒 Look what I found in my backpack: receipts and tickets! 📄 One for electricity, one for ice cream, for water, and one for a toy. Some come every month, almost the same. Others appear only sometimes. Can you help me sort them into two piles? 🤔"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "FIXED expenses come every month, almost the same. 🏠 For example: rent, electricity, water. VARIABLE expenses change or appear only sometimes. 🍦 Like ice cream, a toy, or eating out. Ask yourself: does it always come the same? If yes, it's fixed. If not, it's variable."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "The household rent is an expense that comes every month almost the same.",
+        "instruction": "Choose if it's true or false"
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Correct! Rent is a fixed expense because it comes the same each month. 🏠",
+        "error": "It's not false. Rent does come every month almost the same, it's fixed. 🏠"
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Drag each expense to the correct basket: FIXED or VARIABLE",
+        "categories": [
+          {
+            "id": "fijo",
+            "label": "FIXED"
+          },
+          {
+            "id": "variable",
+            "label": "VARIABLE"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "House rent"
+          },
+          {
+            "id": "i2",
+            "text": "Electricity bill"
+          },
+          {
+            "id": "i3",
+            "text": "Ice cream from the store"
+          },
+          {
+            "id": "i4",
+            "text": "Surprise toy"
+          }
+        ],
+        "correct_mapping": {
+          "i1": "fijo",
+          "i2": "fijo",
+          "i3": "variable",
+          "i4": "variable"
+        }
+      },
+      "feedback": {
+        "success": "Great! Rent and electricity are fixed; ice cream and toy are variable. 🎯",
+        "error": "Remember: fixed always comes the same, variable changes or is sometimes. 🤔"
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "In the list of FIXED expenses there is an intruder. Which one is variable?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Rent"
+          },
+          {
+            "id": "i2",
+            "text": "Water"
+          },
+          {
+            "id": "i3",
+            "text": "Movie tickets"
+          },
+          {
+            "id": "i4",
+            "text": "Electricity"
+          }
+        ],
+        "trap_id": "i3"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Exactly! Movie tickets are variable, because you don't buy them every month. 🎬",
+        "error": "Almost. Remember: fixed always comes the same; movie tickets are not like that. 🎬",
+        "per_option": {
+          "i1": "Rent is fixed, not an intruder. 🏠",
+          "i2": "Water is fixed, comes every month. 🚰",
+          "i4": "Electricity is fixed, comes every month. 💡"
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Which of these expenses changes month to month?",
+        "instruction": "Choose the best answer",
+        "options": [
+          {
+            "id": "a",
+            "text": "The water bill"
+          },
+          {
+            "id": "b",
+            "text": "Going out for tacos"
+          },
+          {
+            "id": "c",
+            "text": "Both change"
+          },
+          {
+            "id": "d",
+            "text": "Neither changes"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Yes! Going out for tacos is variable, because you don't always do it. 🌮",
+        "error": "Not that. Think: which expense do you decide whether to do or not?",
+        "per_option": {
+          "a": "Water is fixed, comes every month almost the same. 🚰",
+          "c": "No, only one changes. Water is fixed. 🚰",
+          "d": "Yes, there is one that changes: the taco outing. 🌮"
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "In the pile of VARIABLE expenses there is an intruder. Which one is fixed?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ice cream"
+          },
+          {
+            "id": "i2",
+            "text": "Toy"
+          },
+          {
+            "id": "i3",
+            "text": "Electricity"
+          },
+          {
+            "id": "i4",
+            "text": "Candy"
+          }
+        ],
+        "trap_id": "i3"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfect! Electricity is fixed, comes every month. The others are variable. 💡",
+        "error": "Almost. Electricity is not variable, it always comes. 💡",
+        "per_option": {
+          "i1": "Ice cream is variable, you buy it sometimes. 🍦",
+          "i2": "Toy is variable, you don't always buy it. 🧸",
+          "i4": "Candy is variable, you buy it when you want. 🍬"
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gasto-variable"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Add only the VARIABLE expenses of Dina's week: ice cream $8 and toy $25. How much is the total?",
+        "question": "Ice cream $8 + Toy $25 = ?",
+        "options": [
+          {
+            "id": "a",
+            "text": "33"
+          },
+          {
+            "id": "b",
+            "text": "30"
+          },
+          {
+            "id": "c",
+            "text": "35"
+          },
+          {
+            "id": "d",
+            "text": "23"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! 8+25=33. The variable expenses total $33. 🎉",
+        "error": "Not that. Add 8 and 25: 8+20=28, 28+5=33. 💡",
+        "per_option": {
+          "b": "30 is not correct. 8+25=33. 🧮",
+          "c": "35 is not correct. 8+25=33. 🧮",
+          "d": "23 is not correct. 8+25=33. 🧮"
+        }
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Classify these expenses from your allowance into FIXED or VARIABLE",
+        "categories": [
+          {
+            "id": "fijo",
+            "label": "FIXED"
+          },
+          {
+            "id": "variable",
+            "label": "VARIABLE"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Weekly transport pass"
+          },
+          {
+            "id": "i2",
+            "text": "Buying stickers"
+          },
+          {
+            "id": "i3",
+            "text": "Candy"
+          },
+          {
+            "id": "i4",
+            "text": "Monthly magazine subscription"
+          }
+        ],
+        "correct_mapping": {
+          "i1": "fijo",
+          "i2": "variable",
+          "i3": "variable",
+          "i4": "fijo"
+        }
+      },
+      "feedback": {
+        "success": "Very good! Transport and subscription are fixed; stickers and candy are variable. 🎯",
+        "error": "Remember: fixed is what you pay the same every month. 🤔"
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Dina wants to save. Which expense is NOT good to cut because it's fixed?",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Rent"
+          },
+          {
+            "id": "i2",
+            "text": "Eating out"
+          },
+          {
+            "id": "i3",
+            "text": "Buying a video game"
+          },
+          {
+            "id": "i4",
+            "text": "Ice cream"
+          }
+        ],
+        "trap_id": "i1"
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1"
+        ]
+      },
+      "feedback": {
+        "success": "Exactly! Rent is fixed, you can't easily cut it. The variable ones can be adjusted. 🏠",
+        "error": "Almost. Rent is fixed, the others are variable and can be adjusted. 🏠",
+        "per_option": {
+          "i2": "Eating out is variable, can be cut. 🍽️",
+          "i3": "A video game is variable, can be cut. 🎮",
+          "i4": "Ice cream is variable, can be cut. 🍦"
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "We did it! 🎉 Now we know: fixed expenses come the same each month, variable expenses change and we can adjust them. In the next adventure we'll make a weekly budget. See you! 🦊✨"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.0",
+    "drafter": "deepseek-chat",
+    "plan": {
+      "lesson_code": "2-2-12-3",
+      "band": 2,
+      "levels": [
+        2,
+        2,
+        12,
+        3
+      ],
+      "character": "dina",
+      "micro_objective": "El niño clasifica un gasto del hogar como FIJO (llega igual cada mes, como la renta o la luz) o VARIABLE (cambia según lo que decidimos, como salir a cenar o comprar un juguete), distinguiendo los dos tipos por su comportamiento mes a mes.",
+      "concept_ids": [
+        "gasto-fijo",
+        "gasto-variable",
+        "clasificar-gastos"
+      ],
+      "scenario": "Dina abre su mochila de exploradora y vacía sobre una roca plana los recibos y tickets que recogió de la casa del Bosque: el de la luz, uno del puesto de helados, el del agua, y uno de un juguete que su hermano compró de sorpresa. Le dice al niño: \"Algunos de estos llegan TODOS los meses, casi iguales. Otros aparecen solo a veces, cuando alguien decide gastarlos. ¿Me ayudas a separarlos en dos montones?\"",
+      "chosen_topic": "Los Gastos Variables",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por escena relatable y misterio de clasificación: Dina vacía su mochila de tickets sobre una roca y reta al niño a separarlos en dos montones, sin decir aún los nombres. Activa la intuición de 'algunos siempre llegan, otros solo a veces' y nombra de forma natural los conceptos gasto fijo y gasto variable."
+        },
+        {
+          "phase": "ensenar",
+          "type": "intro_narrative",
+          "purpose": "Enseña UNA idea con ejemplos concretos del hogar: el gasto FIJO llega cada mes casi igual (renta, luz, agua), y el gasto VARIABLE cambia o aparece solo a veces porque alguien lo decide (helado, juguete, salir a cenar). Da el criterio de decisión: '¿llega siempre igual?' = fijo; '¿cambia o es a veces?' = variable. Enseña ANTES de evaluar."
+        },
+        {
+          "phase": "ensenar",
+          "type": "true_false",
+          "purpose": "Chequeo de reconocimiento inmediato y de baja carga sobre la definición recién dada ('La renta del hogar es un gasto que llega cada mes casi igual'). Objetivo: Reconocer. Feedback por opción que reafirma el criterio fijo vs variable. No repite el tipo anterior."
+        },
+        {
+          "phase": "practicar",
+          "type": "classification",
+          "purpose": "ACTIVIDAD CENTRAL (tipo foco). El niño arrastra 4 gastos del hogar a dos canastas: FIJO y VARIABLE (renta y luz -> fijo; helado y juguete sorpresa -> variable). Objetivo: Reconocer/Clasificar aplicando el criterio. Feedback de error conceptual que recuerda '¿llega siempre igual o solo a veces?'."
+        },
+        {
+          "phase": "practicar",
+          "type": "spot_trap",
+          "purpose": "TIPO FOCO. Entre cuatro gastos presentados como 'la lista de gastos FIJOS de la familia', el niño detecta el intruso que en realidad es variable (p. ej. 'boletos al cine' colado entre renta, agua y luz). Objetivo: Decidir/Detectar. Refuerza el criterio identificando por qué NO encaja. Distinto al tipo anterior."
+        },
+        {
+          "phase": "reforzar",
+          "type": "multiple_choice",
+          "purpose": "Variación del concepto con objetivo Comparar: ante dos gastos (la cuenta del agua vs. una salida a comer tacos), el niño elige cuál es el que cambia mes a mes (variable) y por qué. Cambia el formato respecto a la práctica para consolidar. Feedback por opción que contrasta los dos comportamientos."
+        },
+        {
+          "phase": "reforzar",
+          "type": "spot_trap",
+          "purpose": "TIPO FOCO de nuevo, con presentación invertida y más reto: dentro de 'el montón de gastos VARIABLES' el niño caza el intruso que sí es fijo (p. ej. 'la luz' colada entre helados, juguetes y dulces). Consolida la distinción desde el otro lado. No queda adyacente a otro spot_trap (lo separa el multiple_choice)."
+        },
+        {
+          "phase": "reforzar",
+          "type": "math_challenge",
+          "purpose": "Objetivo Calcular dentro del techo de banda (números enteros <=100): suma solo los gastos VARIABLES de la semana de Dina (helado $8 + juguete $25 = $33) para mostrar que los variables son los que podemos ajustar. Conecta clasificar con manejar el dinero. Tipo distinto a los vecinos."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "classification",
+          "purpose": "TIPO FOCO aplicado en contexto NUEVO: la mesada de Dina. El niño clasifica 4 gastos de un niño (su propio 'abono semanal de transporte' fijo vs. 'comprar estampas' y 'dulces' variables) en FIJO/VARIABLE, transfiriendo el criterio del hogar a su propia vida. Objetivo: Aplicar. No adyacente a la otra classification."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "spot_trap",
+          "purpose": "TIPO FOCO en cierre de práctica con un giro de Decidir: Dina dice 'voy a recortar un gasto para ahorrar; los fijos no puedo, debo buscar entre los variables'. El niño detecta cuál de cuatro gastos NO conviene proponer recortar porque en realidad es fijo (renta). Liga clasificar con decidir qué se puede ajustar. Separado del classification anterior."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Dina celebra el esfuerzo, resume en una frase el criterio aprendido (fijos = llegan igual cada mes; variables = cambian y los podemos ajustar) y conecta hacia adelante: anticipa que en la próxima aventura usarán esta distinción para armar un presupuesto semanal y decidir cuánto ajustar de los gastos variables."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "gasto-fijo",
+      "gasto-variable",
+      "clasificar-gastos"
+    ]
+  }
+}

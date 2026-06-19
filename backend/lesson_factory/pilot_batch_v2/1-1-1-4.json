@@ -1,0 +1,620 @@
+{
+  "lesson_code": "1-1-1-4",
+  "title_es": "La moneda perdida",
+  "description_es": "Ayuda a Liruf a cuidar una moneda que encontró en la playa.",
+  "duration": 10,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 1,
+  "saga_level": 1,
+  "topic_level": 1,
+  "lesson_number": 4,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Clinc! 🦖 Liruf oye algo. Algo brilla en la arena. ✨ Es una moneda perdida. Está sucia. ¿Qué hacemos para no perderla otra vez? 🤔"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for",
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El dinero se guarda con cuidado. 🧹 Primero se limpia. Luego se mete en la alcancía. Así está segura. ¡No se pierde! 🏦"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Toca la moneda brillante en la arena.",
+        "instruction": "Busca la moneda entre estos objetos.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🐚 Concha",
+            "isTarget": false
+          },
+          {
+            "id": "i2",
+            "text": "🌴 Palmera",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "💰 Moneda",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Bien! Esa es la moneda. Ahora hay que cuidarla. 🎉",
+        "error": "No es esa. Busca algo que brille y sea redondo.",
+        "per_option": {
+          "i1": "Esa es una concha. 🐚 La moneda es redonda y brilla.",
+          "i2": "Esa es una palmera. 🌴 La moneda está en la arena."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "El dinero se guarda con cuidado.",
+        "instruction": "¿Es verdad o mentira?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Verdadero"
+          },
+          {
+            "id": "b",
+            "text": "Falso"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Sí! El dinero se guarda con cuidado para que no se pierda. 🎉",
+        "error": "No es falso. El dinero necesita cuidado. Piensa: ¿lo dejarías tirado?",
+        "per_option": {
+          "a": "¡Correcto! El dinero se guarda con cuidado.",
+          "b": "No es falso. El dinero necesita cuidado para no perderse."
+        }
+      }
+    },
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Ordena los pasos para guardar la moneda.",
+        "instruction": "Arrastra cada paso al orden correcto.",
+        "items": [
+          {
+            "id": "s1",
+            "text": "Recoger la moneda"
+          },
+          {
+            "id": "s2",
+            "text": "Limpiar la moneda"
+          },
+          {
+            "id": "s3",
+            "text": "Guardar en la alcancía"
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "s1",
+          "s2",
+          "s3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Perfecto! Primero recoges, luego limpias, después guardas. 🎉",
+        "error": "Casi. ¿Qué haces primero: recoger o limpiar?",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "store-money-safely"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Toca dónde guardar la moneda para que esté segura.",
+        "instruction": "Elige el lugar más seguro.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🏦 Alcancía",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "🌊 Charco",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "🏖️ Suelo",
+            "isTarget": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1"
+        ]
+      },
+      "feedback": {
+        "success": "¡Sí! En la alcancía la moneda está segura. 🎉",
+        "error": "Ese lugar no es seguro. La moneda se puede perder o mojar.",
+        "per_option": {
+          "i1": "¡La alcancía guarda el dinero bien!",
+          "i2": "El charco moja la moneda. No es seguro.",
+          "i3": "En el suelo se puede perder. No es seguro."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "money-is-cared-for",
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Une cada cosa con su cuidado.",
+        "instruction": "Toca una imagen de la izquierda y luego su pareja de la derecha.",
+        "pairs": [
+          {
+            "left": {
+              "id": "l1",
+              "text": "💰 Moneda sucia"
+            },
+            "right": {
+              "id": "r1",
+              "text": "🧹 Limpiarla"
+            }
+          },
+          {
+            "left": {
+              "id": "l2",
+              "text": "✨ Moneda limpia"
+            },
+            "right": {
+              "id": "r2",
+              "text": "🏦 Alcancía"
+            }
+          },
+          {
+            "left": {
+              "id": "l3",
+              "text": "🏦 Alcancía"
+            },
+            "right": {
+              "id": "r3",
+              "text": "🔒 Lugar seguro"
+            }
+          }
+        ]
+      },
+      "feedback": {
+        "success": "¡Muy bien! Cada cosa tiene su cuidado. 🎉",
+        "error": "Revisa: la moneda sucia se limpia, la limpia va a la alcancía, la alcancía es un lugar seguro."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Lo logramos! 🎉 La moneda está a salvo en la alcancía. El dinero se guarda con cuidado. Mañana veremos de qué formas viene: monedas redondas y billetes. 🪙📄"
+      }
+    }
+  ],
+  "title_en": "The Lost Coin",
+  "description_en": "Help Liruf take care of a coin he found on the beach.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Clink! 🦖 Liruf hears something. Something shines in the sand. ✨ It's a lost coin. It's dirty. What should we do so we don't lose it again? 🤔"
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for",
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Money is kept with care. 🧹 First, it gets cleaned. Then, it goes into the piggy bank. That way it's safe. It won't get lost! 🏦"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Tap the shiny coin in the sand.",
+        "instruction": "Find the coin among these objects.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🐚 Shell",
+            "isTarget": false
+          },
+          {
+            "id": "i2",
+            "text": "🌴 Palm tree",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "💰 Coin",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Good job! That's the coin. Now we need to take care of it. 🎉",
+        "error": "That's not it. Look for something shiny and round.",
+        "per_option": {
+          "i1": "That's a shell. 🐚 The coin is round and shiny.",
+          "i2": "That's a palm tree. 🌴 The coin is in the sand."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Money is kept with care.",
+        "instruction": "Is it true or false?",
+        "options": [
+          {
+            "id": "a",
+            "text": "True"
+          },
+          {
+            "id": "b",
+            "text": "False"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Yes! Money is kept with care so it doesn't get lost. 🎉",
+        "error": "It's not false. Money needs care. Think: would you leave it lying around?",
+        "per_option": {
+          "a": "Correct! Money is kept with care.",
+          "b": "It's not false. Money needs care so it doesn't get lost."
+        }
+      }
+    },
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Order the steps to save the coin.",
+        "instruction": "Drag each step to the correct order.",
+        "items": [
+          {
+            "id": "s1",
+            "text": "Pick up the coin"
+          },
+          {
+            "id": "s2",
+            "text": "Clean the coin"
+          },
+          {
+            "id": "s3",
+            "text": "Put it in the piggy bank"
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "s1",
+          "s2",
+          "s3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfect! First you pick it up, then you clean it, then you put it away. 🎉",
+        "error": "Almost. What do you do first: pick up or clean?",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "store-money-safely"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Tap where to keep the coin so it's safe.",
+        "instruction": "Choose the safest place.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🏦 Piggy bank",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "🌊 Puddle",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "🏖️ Ground",
+            "isTarget": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1"
+        ]
+      },
+      "feedback": {
+        "success": "Yes! In the piggy bank the coin is safe. 🎉",
+        "error": "That place isn't safe. The coin could get lost or wet.",
+        "per_option": {
+          "i1": "The piggy bank keeps money safe!",
+          "i2": "The puddle wets the coin. It's not safe.",
+          "i3": "On the ground it can get lost. It's not safe."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "liruf",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "money-is-cared-for",
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Match each thing with its care.",
+        "instruction": "Tap an image on the left and then its match on the right.",
+        "pairs": [
+          {
+            "left": {
+              "id": "l1",
+              "text": "💰 Dirty coin"
+            },
+            "right": {
+              "id": "r1",
+              "text": "🧹 Clean it"
+            }
+          },
+          {
+            "left": {
+              "id": "l2",
+              "text": "✨ Clean coin"
+            },
+            "right": {
+              "id": "r2",
+              "text": "🏦 Piggy bank"
+            }
+          },
+          {
+            "left": {
+              "id": "l3",
+              "text": "🏦 Piggy bank"
+            },
+            "right": {
+              "id": "r3",
+              "text": "🔒 Safe place"
+            }
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Very good! Each thing has its care. 🎉",
+        "error": "Check: the dirty coin gets cleaned, the clean one goes to the piggy bank, the piggy bank is a safe place."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "liruf",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "money-is-cared-for"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "We did it! 🎉 The coin is safe in the piggy bank. Money is kept with care. Tomorrow we'll see the different forms it comes in: round coins and bills. 🪙📄"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "1-1-1-4",
+      "band": 1,
+      "levels": [
+        1,
+        1,
+        1,
+        4
+      ],
+      "character": "liruf",
+      "micro_objective": "El niño aprende que el dinero se guarda con cuidado y ordena los 3 pasos para guardar una moneda encontrada: recogerla, limpiarla y meterla en la alcancía.",
+      "concept_ids": [
+        "money-is-cared-for",
+        "store-money-safely",
+        "save-in-piggy-bank"
+      ],
+      "scenario": "Liruf camina por la playa del archipiélago y, ¡clinc!, ve algo brillante medio escondido en la arena: una moneda perdida. Está sucia de arena. Liruf no sabe qué hacer con ella y le pide al niño que lo ayude a cuidarla bien para no perderla otra vez.",
+      "chosen_topic": "Lecciones Introductorias (topic 1, display_number 1-1-1) — blueprint lesson 4: \"Saber que el dinero se guarda con cuidado\"",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Engancha por misterio sensorial: Liruf oye un 'clinc' y ve algo brillante en la arena. Activa lo ya conocido (el dinero es un secreto valioso del cofre) y presenta el escenario de la moneda perdida y sucia, generando la pregunta: ¿qué hacemos para no perderla otra vez?"
+        },
+        {
+          "phase": "ensenar",
+          "type": "intro_narrative",
+          "purpose": "Enseña UNA idea antes de evaluar: el dinero se guarda con cuidado. Liruf explica con lenguaje simple que una moneda se limpia y se guarda en la alcancía para que esté segura y no se pierda. Sin números ni abstracciones; todo concreto y visual."
+        },
+        {
+          "phase": "practicar",
+          "type": "tap_action",
+          "purpose": "Objetivo Reconocer + tipo FOCO. El niño toca la moneda brillante escondida en la arena entre objetos de la playa (concha, palmera, moneda). Practica reconocer el dinero que hay que cuidar antes de guardarlo. Feedback por opción explica por qué cada cosa no es la moneda."
+        },
+        {
+          "phase": "reforzar",
+          "type": "true_false",
+          "purpose": "Objetivo Decidir/consolidar. Refuerza la regla recién enseñada con otra presentación: '¿Verdadero o falso? El dinero se guarda con cuidado.' Rompe la cadena de tipos para no repetir tap_action seguido y prepara el terreno conceptual para el ordenamiento."
+        },
+        {
+          "phase": "reforzar",
+          "type": "sequencing",
+          "purpose": "CORAZÓN de la práctica + tipo FOCO. El niño ordena los 3 pasos del key_interaction del blueprint: 1) recoger la moneda, 2) limpiarla, 3) guardarla en la alcancía. Aplica activamente la micro-habilidad (máx 3 ítems, dentro del techo de banda 1). Feedback orienta sobre qué va primero sin dar la respuesta."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "tap_action",
+          "purpose": "Variante aplicada + tipo FOCO repetido en contexto nuevo (no adyacente a otro tap_action). El niño toca el lugar correcto donde guardar la moneda: la alcancía, no el suelo ni un charco. Transfiere la regla 'guardar en lugar seguro' a una decisión concreta."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "matching_pairs",
+          "purpose": "Objetivo Aplicar con diversidad de tipo. Empareja cada cosa con su cuidado correcto: moneda sucia → limpiarla, moneda limpia → alcancía, alcancía → lugar seguro. Consolida el concepto de cuidar/guardar enlazando acción con propósito (máx 3 pares)."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Liruf celebra el esfuerzo, resume en una frase ('el dinero se guarda con cuidado para que no se pierda') y conecta hacia adelante: ahora que la moneda está a salvo en la alcancía, mañana descubrirán de qué formas viene el dinero: monedas redondas y billetes."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "money-is-cared-for",
+      "store-money-safely",
+      "save-in-piggy-bank"
+    ]
+  }
+}

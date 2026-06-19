@@ -1,0 +1,424 @@
+[
+  {
+    "lesson_code": "3-3-16-7",
+    "band": 3,
+    "levels": [
+      3,
+      3,
+      16,
+      7
+    ],
+    "character": "dr_rho",
+    "micro_objective": "El niño detecta la señal de alerta de fraude \"precio demasiado bueno para ser verdad\": compara el precio normal de un producto con la oferta sospechosa y decide que un descuento exagerado es motivo para desconfiar y verificar antes de pagar.",
+    "concept_ids": [
+      "scam-red-flags",
+      "too-good-to-be-true-price",
+      "verify-before-paying"
+    ],
+    "scenario": "A Dr. Rho le llega a su pantalla un anuncio brillante en la Ciudad Digital: la consola más popular, que normalmente cuesta cerca de $1000, \"hoy solo por $90, ¡quedan 2 minutos!\". El reloj parpadea y el botón dice \"PAGA YA\". Dr. Rho, siempre analítico, no toca nada: invita al niño a investigar como detective si esa ganga es real o una trampa, comparando precios y buscando otras señales de alerta antes de que alguien pierda su dinero.",
+    "chosen_topic": "Tipos de Fraude Digital",
+    "activity_plan": [
+      {
+        "phase": "conectar",
+        "type": "intro_narrative",
+        "purpose": "Hook por misterio/escena relatable: Dr. Rho muestra el anuncio de la consola de ~$1000 ofrecida a $90 con reloj en cuenta regresiva y botón PAGA YA. Plantea la pregunta de detective: ¿ganga real o trampa? Activa la idea de fraude digital sin resolverla todavía."
+      },
+      {
+        "phase": "por_que_importa",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho explica POR QUE importa: en la Ciudad Digital los estafadores usan precios increibles para que la gente pague rapido y sin pensar; caer cuesta dinero real. Conecta con la experiencia del niño de querer algo barato."
+      },
+      {
+        "phase": "que_es",
+        "type": "true_false",
+        "purpose": "Ensenar QUE ES la senal de alerta con una afirmacion sencilla de reconocimiento: 'Si un precio es muchisimo mas bajo de lo normal, es una senal de alerta de posible fraude.' Reconocer; feedback instructivo que define la regla. Primera evaluacion ligera tras ensenar."
+      },
+      {
+        "phase": "que_es",
+        "type": "multiple_choice",
+        "purpose": "Consolidar QUE ES: elegir cual de varias situaciones es 'demasiado bueno para ser verdad'. Reconocer la senal entre distractores realistas. Refuerza la definicion antes de pasar al calculo/comparacion."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "price_detective",
+        "purpose": "Ensenar COMO SE USA la regla aplicandola por primera vez (FOCO): el nino actua como detective comparando el precio normal de la consola (~$1000) contra la oferta de $90 y marca la oferta como sospechosa. Comparar/Calcular la diferencia de precio como evidencia de trampa."
+      },
+      {
+        "phase": "practicar",
+        "type": "quiz_battle",
+        "purpose": "Practica principal (FOCO quiz_battle, banda 3+): ronda rapida de reconocimiento 'senal de alerta vs. compra segura' con varios items (precio irreal, presion de tiempo, vendedor sin resenas vs. tienda conocida con resenas reales). Comparar/Reconocer bajo ritmo; consolida multiples senales aprendidas."
+      },
+      {
+        "phase": "practicar",
+        "type": "price_detective",
+        "purpose": "Segunda practica con el tipo FOCO price_detective en contexto nuevo (tenis de marca ~$800 ofertados a $70 vs. precio justo en tienda con resenas): el nino vuelve a comparar precios para detectar la ganga falsa. Refuerza la transferencia del metodo de comparacion a otro producto. No repite tipo justo antes (quiz_battle precede)."
+      },
+      {
+        "phase": "reforzar",
+        "type": "spot_trap",
+        "purpose": "Reforzar Decidir: dentro de un mensaje/anuncio el nino toca la senal de alerta (el precio irreal y el 'paga ya' con reloj). Variacion del concepto que pide localizar la trampa en un contexto realista, mas desafiante que reconocerla aislada."
+      },
+      {
+        "phase": "que_error_evitar",
+        "type": "multiple_choice",
+        "purpose": "QUE ERROR EVITAR: corrige el malentendido comun 'si quedan pocos minutos hay que pagar rapido para no perder la oferta'. El nino elige la accion correcta (no pagar bajo presion; un precio irreal + prisa = no confiar). Feedback explica por que el apuro es parte de la trampa."
+      },
+      {
+        "phase": "aplicar",
+        "type": "price_detective",
+        "purpose": "Aplicar el concepto integrando senales (FOCO, variante de aplicacion): nuevo caso donde el nino compara precios de dos ofertas y elige cual es confiable, usando tanto el precio razonable como las resenas/tienda conocida como evidencia. Aplicar el metodo de detective a una decision de compra completa."
+      },
+      {
+        "phase": "aplicar",
+        "type": "roleplay_chat",
+        "purpose": "Aplicar Decidir en dialogo: un amigo le reenvia al nino la oferta de $90 emocionado; el nino responde eligiendo el consejo que aplica la regla aprendida (comparar el precio normal, desconfiar del descuento irreal, verificar antes de pagar). Transfiere el aprendizaje a una situacion social nueva sin repetir tipo previo."
+      },
+      {
+        "phase": "cerrar",
+        "type": "intro_narrative",
+        "purpose": "Cierre: Dr. Rho celebra el esfuerzo del detective, resume en una frase la regla 'precio demasiado bueno para ser verdad = senal de alerta, verifica antes de pagar', y conecta hacia la proxima leccion sobre otras senales de fraude digital (mensajes que piden tu contrasena o datos)."
+      }
+    ]
+  },
+  {
+    "band": 3,
+    "lesson_code": "3-5-30-8",
+    "levels": [
+      3,
+      5,
+      30,
+      8
+    ],
+    "character": "dr_rho",
+    "chosen_topic": "Riesgo y Rendimiento",
+    "micro_objective": "El niño puede comparar dos opciones de inversión y reconocer que la que promete ganar más también puede hacer perder más (a mayor rendimiento posible, mayor riesgo), eligiendo según cuánto está dispuesto a arriesgar.",
+    "concept_ids": [
+      "risk-reward-tradeoff",
+      "higher-reward-higher-risk",
+      "choose-by-risk-tolerance"
+    ],
+    "scenario": "Dr. Rho lleva al niño a la Feria de Inversiones de La Ciudad Digital, donde dos puestos ofrecen guardar sus 100 monedas durante una semana. El puesto azul \"Caja Segura\" devuelve siempre 110 monedas, tranquilo y sin sorpresas. El puesto naranja \"Cohete Veloz\" promete devolver 160 monedas... pero a veces solo devuelve 60. Dr. Rho, analítico y paciente, usa los dos puestos como laboratorio para que el niño descubra por sí mismo por qué la opción que puede ganar más es también la que puede perder más.",
+    "activity_plan": [
+      {
+        "phase": "conectar",
+        "type": "intro_narrative",
+        "purpose": "Hook por escena relatable: Dr. Rho presenta los dos puestos de la Feria de Inversiones (Caja Segura vs Cohete Veloz) y reta al niño a predecir cuál elegiría, sembrando intriga sin revelar aún la regla riesgo-rendimiento. Nombra el concepto de forma natural ('riesgo', 'rendimiento')."
+      },
+      {
+        "phase": "por_que_importa",
+        "type": "intro_narrative",
+        "purpose": "Anclaje motivacional: Dr. Rho explica por qué importa entender riesgo y rendimiento — porque toda la vida elegiremos entre lo seguro y lo que promete más, y elegir a ciegas puede costarte tus monedas. Conecta con experiencias del niño (apostar dulces, juegos de azar de feria)."
+      },
+      {
+        "phase": "que_es",
+        "type": "intro_narrative",
+        "purpose": "Definición operativa de UNA idea: 'rendimiento' = lo que puedes ganar; 'riesgo' = la posibilidad de perder. Dr. Rho define ambos términos técnicos con ejemplos concretos de los dos puestos (Caja Segura siempre +10; Cohete Veloz a veces +60, a veces -40)."
+      },
+      {
+        "phase": "que_es",
+        "type": "true_false",
+        "purpose": "Reconocer (objetivo Reconocer): verificación inmediata de la definición — '¿Riesgo significa la posibilidad de perder dinero?' con feedback que reafirma la definición operativa. Reconocimiento simple antes de avanzar."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "intro_narrative",
+        "purpose": "¿Cómo se usa? Dr. Rho modela el criterio guiado: para comparar dos opciones, mira cuánto puedes GANAR y cuánto puedes PERDER en cada una. Muestra paso a paso con los dos puestos usando solo números enteros pequeños (100, 110, 160, 60) — dentro del techo de banda 3."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "math_challenge",
+        "purpose": "Calcular (objetivo Calcular): el niño calcula, con resta de números enteros, cuánto gana o pierde en cada puesto (110-100=+10 seguro; 160-100=+60 o 60-100=-40). Aritmética concreta dentro de max_number 1000, sin porcentajes ni fórmulas."
+      },
+      {
+        "phase": "practicar",
+        "type": "risk_reward",
+        "purpose": "FOCO risk_reward — corazón de la práctica (objetivo Decidir): el niño enfrenta la decisión Caja Segura vs Cohete Veloz para sus 100 monedas y debe elegir entendiendo el trade-off. Feedback por opción explica conceptualmente que más rendimiento posible viene con más riesgo de perder."
+      },
+      {
+        "phase": "practicar",
+        "type": "opportunity_cost",
+        "purpose": "FOCO opportunity_cost (objetivo Comparar): el niño ve que elegir un puesto significa renunciar a lo que ofrecía el otro — la calma de la Caja Segura vs la chispa del Cohete. Compara explícitamente qué se gana y qué se sacrifica al decidir. Tipo distinto al anterior (no repite risk_reward)."
+      },
+      {
+        "phase": "reforzar",
+        "type": "risk_reward",
+        "purpose": "FOCO risk_reward reforzado con variación más desafiante: un tercer puesto 'Nave Media' (siempre devuelve 105, casi sin riesgo, ganancia pequeña) entra en escena; el niño compara TRES opciones y reconoce la curva riesgo-rendimiento. Consolida el concepto en formato variado."
+      },
+      {
+        "phase": "que_error_evitar",
+        "type": "spot_trap",
+        "purpose": "¿Qué error evitar? El niño detecta la trampa del personaje codicioso que dice 'el Cohete SIEMPRE te hace rico, ¡es dinero gratis!'. Corrige el malentendido común: alto rendimiento prometido NO es ganancia garantizada; ignorar el riesgo es el error clásico."
+      },
+      {
+        "phase": "aplicar",
+        "type": "roleplay_chat",
+        "purpose": "FOCO/Aplicar (objetivo Aplicar): variante en contexto nuevo — la prima del niño le pregunta dónde guardar sus monedas para una meta importante de la próxima semana. El niño aplica el criterio riesgo-rendimiento aconsejando según cuánto puede permitirse arriesgar (choose-by-risk-tolerance). Tipo distinto al spot_trap previo."
+      },
+      {
+        "phase": "cerrar",
+        "type": "intro_narrative",
+        "purpose": "Cierre: Dr. Rho celebra el esfuerzo, resume en una frase ('lo que puede ganar más, también puede perder más') y anticipa la próxima lección sobre el interés compuesto y cómo el tiempo ayuda al inversor — conectando el concepto hacia adelante."
+      }
+    ]
+  },
+  {
+    "character": "dr_rho",
+    "band": 3,
+    "lesson_code": "3-2-12-9",
+    "levels": [
+      3,
+      2,
+      12,
+      9
+    ],
+    "chosen_topic": "Los Impuestos en las Compras",
+    "micro_objective": "Calcular el monto del IVA (16 de cada 100 pesos) sobre un precio sencillo y sumarlo para obtener el total a pagar.",
+    "concept_ids": [
+      "what-is-iva",
+      "iva-as-part-of-100",
+      "calculate-iva-amount",
+      "price-plus-iva-total"
+    ],
+    "scenario": "En la Ciudad Digital, un niño escanea con su app de pagos un audífono que cuesta $100, pero al confirmar la pantalla muestra $116. Dr. Rho aparece como guía: \"Esos 16 pesos extra no se los queda la tienda. Vamos a descubrir a dónde van y por qué casi todo lo que compras cuesta un poco más en la caja.\"",
+    "activity_plan": [
+      {
+        "phase": "conectar",
+        "type": "intro_narrative",
+        "purpose": "Hook por sorpresa: el ticket marca $116 cuando el precio era $100. Dr. Rho intriga al niño con la pregunta '¿de dónde salieron esos 16 pesos?' para activar curiosidad antes de nombrar el IVA."
+      },
+      {
+        "phase": "por_que_importa",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho explica POR QUÉ importa: el IVA aparece en casi toda compra y financia servicios públicos (calles, hospitales, escuelas). Si no lo prevés, te falta dinero en la caja."
+      },
+      {
+        "phase": "que_es",
+        "type": "multiple_choice",
+        "purpose": "Reconocer (objetivo: Reconocer). Definición operativa del IVA como 'impuesto que va al gobierno y se suma al precio'; el niño elige la descripción correcta entre confusiones comunes."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "intro_narrative",
+        "purpose": "Enseñar el mecanismo con un ejemplo guiado: IVA = 16 de cada 100 pesos. Sobre $100 son $16; el total es 100 + 16 = $116. Modela el cálculo paso a paso antes de evaluar."
+      },
+      {
+        "phase": "practicar",
+        "type": "interest_calculator",
+        "purpose": "Calcular (objetivo: Calcular). FOCO 1: el niño usa la calculadora para hallar el IVA de un precio de $200 (16 de cada 100 -> $32) y obtener el total $232. Práctica central guiada del cálculo enseñado."
+      },
+      {
+        "phase": "practicar",
+        "type": "estimation_slider",
+        "purpose": "Calcular/estimar (refuerza Calcular). FOCO 2: antes de calcular exacto, el niño desliza para estimar cuánto IVA tendrá un audífono de $50 (acercándose a ~$8), entrenando la intuición de que el IVA es una parte pequeña del precio."
+      },
+      {
+        "phase": "reforzar",
+        "type": "interest_calculator",
+        "purpose": "Calcular en contexto nuevo (FOCO 1 repetido con variación). Una mochila de $300: hallar IVA ($48) y total ($348). Misma habilidad, número distinto, sin estar pegado a otro interest_calculator."
+      },
+      {
+        "phase": "que_error_evitar",
+        "type": "true_false",
+        "purpose": "Decidir/Reconocer error (objetivo: Decidir). Corrige el malentendido común: 'el precio en la etiqueta YA es lo que pagas'. El niño juzga la afirmación y aprende que el IVA puede sumarse en la caja."
+      },
+      {
+        "phase": "reforzar",
+        "type": "estimation_slider",
+        "purpose": "Comparar magnitudes (FOCO 2 + objetivo Comparar). El niño estima el IVA de dos precios distintos y nota que a mayor precio, mayor IVA: refuerza que el IVA crece con el precio (parte proporcional de un todo)."
+      },
+      {
+        "phase": "reforzar",
+        "type": "comparison",
+        "purpose": "Comparar (objetivo: Comparar, refuerzo). Dos tickets de tiendas distintas para el mismo audífono de $100: ¿cuál cobró el IVA correcto ($116) vs uno inflado? El niño compara y detecta el cargo justo."
+      },
+      {
+        "phase": "aplicar",
+        "type": "interest_calculator",
+        "purpose": "Aplicar (objetivo: Aplicar, FOCO 1 en transferencia). Escenario de presupuesto: el niño tiene $250 y quiere algo de $200; calcula precio+IVA ($232) y decide si le alcanza. Une cálculo de IVA con decisión real de compra."
+      },
+      {
+        "phase": "aplicar",
+        "type": "fill_blank",
+        "purpose": "Aplicar/Calcular (variante de formato distinta a interest_calculator). El niño completa los huecos de un mini-recibo: precio $100, IVA ___ ($16), total ___ ($116), consolidando la estructura precio+IVA=total."
+      },
+      {
+        "phase": "cerrar",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho celebra el esfuerzo, resume en una frase que el IVA son 16 de cada 100 que financian servicios públicos, y conecta hacia la próxima lección sobre cómo cambia el precio cuando cambian oferta y demanda."
+      }
+    ]
+  },
+  {
+    "lesson_code": "4-4-29-10",
+    "band": 4,
+    "levels": [
+      4,
+      4,
+      29,
+      10
+    ],
+    "character": "dr_rho",
+    "micro_objective": "El estudiante distingue una oferta de inversión fraudulenta (que explota el FOMO con promesas de 'rendimiento garantizado') de una legítima, y elige la reacción de cabeza fría correcta cuando el mercado sube o cae de golpe, en lugar de comprar por FOMO o vender por pánico.",
+    "concept_ids": [
+      "fomo-trap",
+      "panic-selling",
+      "guaranteed-return-scam",
+      "cold-head-investing"
+    ],
+    "scenario": "El primo mayor de Zoe le manda un mensaje: una app le 'duplica el dinero en 7 días, rendimiento garantizado, solo hoy'. Esa misma semana, una acción que Zoe sigue sube 40% en un día y un grupo de chat grita '¡compra ya o te lo pierdes!'. Dr. Rho, con su calma de científico, le enseña a Zoe a leer estas dos situaciones con la cabeza fría: a olfatear la trampa del FOMO y a no entrar en pánico cuando el mercado se mueve.",
+    "chosen_topic": "Psicología del Inversor",
+    "activity_plan": [
+      {
+        "phase": "conectar",
+        "type": "intro_narrative",
+        "purpose": "Hook por escena relatable: Dr. Rho muestra el mensaje del primo de Zoe ('duplica tu dinero en 7 días, garantizado, solo hoy') y la acción que sube 40% mientras el chat grita '¡compra ya!'. Plantea el misterio: ¿cuál de estas dos cosas es una trampa y cuál solo una emoción peligrosa? Activa la intuición sobre FOMO sin definirlo aún."
+      },
+      {
+        "phase": "por_que_importa",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho explica con su analogía de científico por qué importa: los sesgos (FOMO, pánico) destruyen más portafolios que las malas matemáticas. El cerebro caliente toma decisiones que el cerebro frío lamenta. Ancla al dato real de que perseguir subidas y vender en caídas hace perder dinero a la mayoría."
+      },
+      {
+        "phase": "que_es",
+        "type": "concept_builder",
+        "purpose": "Enseña las definiciones operativas: FOMO (miedo a quedarse fuera que empuja a comprar caro por urgencia), panic selling (vender barato por miedo en una caída), y la bandera roja universal del fraude: 'rendimiento garantizado / sin riesgo'. El estudiante arma/ordena las piezas del concepto antes de evaluarse. ENSEÑA antes de practicar."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "multiple_choice",
+        "purpose": "Reconocer (objetivo Reconocer): ejemplo guiado de bajo riesgo. Dr. Rho muestra una frase y el estudiante identifica cuál es la señal de alarma clásica del fraude ('rendimiento garantizado, solo hoy'). Consolida la regla antes de los ejercicios foco más exigentes."
+      },
+      {
+        "phase": "practicar",
+        "type": "spot_trap",
+        "purpose": "CORAZON DE LA PRACTICA (tipo foco spot_trap, objetivo Decidir): la oferta de la app del primo. El estudiante debe detectar la trampa señalando las banderas rojas (garantía, urgencia 'solo hoy', duplicar en 7 días) entre datos neutrales. Feedback por opción que explica conceptualmente por qué cada señal delata el fraude."
+      },
+      {
+        "phase": "reforzar",
+        "type": "market_reaction",
+        "purpose": "CORAZON DE LA PRACTICA (tipo foco market_reaction, objetivo Decidir): la acción que sube 40% en un día y el chat grita '¡compra ya!'. El estudiante elige la reacción de cabeza fría (no perseguir la subida por FOMO) frente a las reacciones impulsivas. Distinto del ejercicio anterior: aquí no hay fraude, solo emoción del mercado."
+      },
+      {
+        "phase": "que_error_evitar",
+        "type": "true_false",
+        "purpose": "Corrige el malentendido común más peligroso: 'si todos están comprando, debe ser buena inversión' / 'una caída significa que debo vender ya'. Verdadero/Falso con feedback que explica por qué seguir a la manada es precisamente el error que el FOMO y el pánico provocan."
+      },
+      {
+        "phase": "aplicar",
+        "type": "spot_trap",
+        "purpose": "APLICAR variante del tipo foco spot_trap (objetivo Aplicar): un caso NUEVO y más sutil: un 'influencer' promociona una cripto con testimonios y un reloj de cuenta regresiva, pero sin garantía explícita. El estudiante aplica el patrón aprendido a un fraude disfrazado, transfiriendo la habilidad a un contexto distinto del ejercicio de práctica."
+      },
+      {
+        "phase": "aplicar",
+        "type": "comparison",
+        "purpose": "Comparar (objetivo Comparar): pone lado a lado una oferta fraudulenta ('garantizado, 100% en 7 días') y una inversión legítima (ETF diversificado, rendimiento histórico variable ~7% anual, con riesgo declarado). El estudiante compara características clave y distingue qué columna es la trampa y por qué."
+      },
+      {
+        "phase": "aplicar",
+        "type": "math_challenge",
+        "purpose": "Calcular (objetivo Calcular, dentro del techo de banda 4: porcentajes, números <=100000, sin fórmula de interés compuesto): verifica por qué 'duplicar en 7 días' es matemáticamente absurdo comparado con un rendimiento realista. Ej. comparar $1,000 que prometen volver $2,000 en una semana vs un 7% anual realista. Usa solo porcentajes y suma/resta simples."
+      },
+      {
+        "phase": "aplicar",
+        "type": "roleplay_chat",
+        "purpose": "Aplicar/Decidir en contexto social-identitario (clave de banda 4): Zoe debe responder por chat a su primo que insiste 'no seas miedosa, métete'. El estudiante elige la respuesta de cabeza fría que rechaza la presión sin pelear, aplicando lo aprendido a la presión social real de un adolescente."
+      },
+      {
+        "phase": "con_que_se_relaciona",
+        "type": "matching_pairs",
+        "purpose": "Conecta esta lección con conceptos vecinos del topic y la saga: une cada sesgo/señal (FOMO, panic selling, rendimiento garantizado, diversificación) con su antídoto o concepto relacionado (cabeza fría, horizonte largo, bandera roja, ETF). Teje la espina conceptual hacia el portafolio balanceado y el perfil de riesgo ya vistos."
+      },
+      {
+        "phase": "cerrar",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho celebra el esfuerzo de Zoe, resume en una frase la regla de oro ('el cerebro frío gana al cerebro caliente; garantizado = mentira'), y anticipa la siguiente lección del repaso de inversiones del Valle, conectando la psicología del inversor con todo lo aprendido en la saga."
+      }
+    ]
+  },
+  {
+    "lesson_code": "4-1-1-3",
+    "band": 4,
+    "levels": [
+      4,
+      1,
+      1,
+      3
+    ],
+    "character": "dr_rho",
+    "micro_objective": "El estudiante reparte un ingreso mensual de adolescente en las tres categorias 50/30/20 (necesidades/deseos/ahorro) y, dentro de los deseos, divide en partes iguales el costo de una suscripcion compartida para ver cuanto le toca pagar a cada quien.",
+    "concept_ids": [
+      "regla-50-30-20",
+      "categorias-presupuesto",
+      "dividir-gasto-compartido"
+    ],
+    "scenario": "Dr. Rho le muestra a la estudiante su mesada mas su pago part-time: $2,000 al mes. En vez de gastarlo \"a ojo\", Dr. Rho la reta a construir un presupuesto real con la regla 50/30/20. A mitad del reto aparece una decision concreta: ella y tres amigas quieren una suscripcion de musica de $200 al mes; el reto es ubicarla en la categoria correcta del presupuesto y repartir el costo en partes iguales para saber cuanto le toca a cada una sin romper su 30% de deseos.",
+    "chosen_topic": "El Presupuesto Personal Real",
+    "activity_plan": [
+      {
+        "phase": "conectar",
+        "type": "intro_narrative",
+        "purpose": "Hook relatable: Dr. Rho presenta los $2,000 mensuales de la estudiante y plantea el misterio de por que el dinero 'desaparece' cuando se gasta sin plan. Activa conocimiento previo (mesada, trabajo part-time) y nombra el concepto 'presupuesto personal' con curiosidad."
+      },
+      {
+        "phase": "por_que_importa",
+        "type": "intro_narrative",
+        "purpose": "Anclaje motivacional: Dr. Rho explica que sin un presupuesto el adolescente promedio no sabe a donde se fue su dinero a fin de mes; con uno, decide a proposito. Conecta con la identidad de quien 'controla su propio dinero'."
+      },
+      {
+        "phase": "que_es",
+        "type": "multiple_choice",
+        "purpose": "Definicion operativa de la regla 50/30/20 (50% necesidades, 30% deseos, 20% ahorro). Reconocer la definicion correcta entre distractores plausibles. Objetivo: Reconocer."
+      },
+      {
+        "phase": "como_se_usa",
+        "type": "math_challenge",
+        "purpose": "Ejemplo guiado del mecanismo: calcular cuanto dinero corresponde a cada categoria de los $2,000 (50%=$1,000, 30%=$600, 20%=$400). Aplica porcentajes dentro del techo de banda 4. Objetivo: Calcular."
+      },
+      {
+        "phase": "practicar",
+        "type": "budget_builder",
+        "purpose": "TIPO FOCO. Practica nuclear: la estudiante arma el presupuesto completo asignando gastos reales (renta de cuarto, transporte, ropa, ahorro) a las tres categorias 50/30/20 sin exceder los $2,000. Corazon de la leccion. Objetivo: Aplicar."
+      },
+      {
+        "phase": "practicar",
+        "type": "classification",
+        "purpose": "Variar formato sin repetir tipo: clasificar gastos concretos de adolescente (utiles escolares, videojuego, fondo de emergencia, comida) en necesidad / deseo / ahorro. Refuerza el criterio de categorizar antes de presupuestar. Objetivo: Reconocer."
+      },
+      {
+        "phase": "reforzar",
+        "type": "bill_splitter",
+        "purpose": "TIPO FOCO. Refuerzo: la suscripcion de musica de $200 que comparten 4 amigas. La estudiante divide el costo en partes iguales para hallar su parte ($50) y la ubica dentro de su 30% de deseos. Conecta presupuesto con gasto compartido real. Objetivo: Calcular."
+      },
+      {
+        "phase": "reforzar",
+        "type": "comparison",
+        "purpose": "Comparar dos escenarios: pagar la suscripcion sola ($200) vs. compartirla entre 4 ($50 c/u) y ver el impacto en el presupuesto de deseos. Evita repetir bill_splitter de inmediato. Objetivo: Comparar."
+      },
+      {
+        "phase": "que_error_evitar",
+        "type": "spot_trap",
+        "purpose": "Malentendido comun corregido: tratar un 'deseo' (suscripcion, ropa de marca) como 'necesidad' para justificar gastarlo, inflando el 50% y dejando sin ahorro el 20%. La estudiante detecta la trampa de categorizar mal. Objetivo: Decidir."
+      },
+      {
+        "phase": "aplicar",
+        "type": "budget_builder",
+        "purpose": "TIPO FOCO (variante aplicada). Aplicacion en contexto nuevo: baja el ingreso a $1,500 (mes sin trabajo part-time) y la estudiante reajusta el presupuesto 50/30/20, decidiendo que recortar primero de los deseos. Transferencia y decision. Objetivo: Aplicar."
+      },
+      {
+        "phase": "aplicar",
+        "type": "roleplay_chat",
+        "purpose": "Decision en dialogo: una amiga le propone agregar otra suscripcion compartida; la estudiante decide si cabe en su 30% ya reducido. Evita repetir budget_builder seguido y ejercita justificar la decision. Objetivo: Decidir."
+      },
+      {
+        "phase": "con_que_se_relaciona",
+        "type": "matching_pairs",
+        "purpose": "Conecta el presupuesto con conceptos vecinos del topic siguiente: enlaza cada categoria con su consecuencia (20% ahorro -> flujo de caja positivo; gastar de mas -> deficit). Tiende el puente hacia 'El Flujo de Caja Personal'. Objetivo: Reconocer."
+      },
+      {
+        "phase": "cerrar",
+        "type": "intro_narrative",
+        "purpose": "Dr. Rho celebra el esfuerzo, resume en una frase que el presupuesto 50/30/20 mas dividir gastos compartidos le da el control de sus $2,000, y anticipa la proxima leccion sobre flujo de caja (ingresos menos egresos)."
+      }
+    ]
+  }
+]

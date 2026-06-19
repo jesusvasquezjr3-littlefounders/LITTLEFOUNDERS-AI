@@ -1,0 +1,828 @@
+{
+  "lesson_code": "2-2-13-1",
+  "title_es": "El mapa del dinero de Dina",
+  "title_en": "Dina's Money Map",
+  "description_es": "Dina recibe $50 para la semana y aprende a repartirlos en gastar, material y ahorro para que le alcance.",
+  "description_en": "Dina gets $50 for the week and learns to split it into spend, supplies, and save so it lasts.",
+  "duration": 20,
+  "age_rate": "8-9",
+  "points_reward": 10,
+  "adventure_level": 2,
+  "saga_level": 2,
+  "topic_level": 13,
+  "lesson_number": 1,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! 🦕 Soy Dina. Hoy es domingo y tengo $50 en hojas-moneda para toda la semana. 🍃 ¿Cómo haré para que me alcance hasta el viernes? 🤔"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "statement": "Toca las hojas-moneda para contarlas. Son 5 hojas de $10 cada una.",
+        "instruction": "Toca cada hoja para contar",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🍃 Hoja 1",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "🍃 Hoja 2",
+            "isTarget": true
+          },
+          {
+            "id": "i3",
+            "text": "🍃 Hoja 3",
+            "isTarget": true
+          },
+          {
+            "id": "i4",
+            "text": "🍃 Hoja 4",
+            "isTarget": true
+          },
+          {
+            "id": "i5",
+            "text": "🍃 Hoja 5",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1",
+          "i2",
+          "i3",
+          "i4",
+          "i5"
+        ]
+      },
+      "feedback": {
+        "success": "¡Sí! Son 5 hojas de $10 = $50. 🎉",
+        "error": "Toca todas las hojas verdes. 🍃",
+        "per_option": {
+          "i1": "¡Bien! Sigue tocando las demás.",
+          "i2": "¡Bien! Sigue tocando las demás.",
+          "i3": "¡Bien! Sigue tocando las demás.",
+          "i4": "¡Bien! Sigue tocando las demás.",
+          "i5": "¡Bien! Sigue tocando las demás."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Un mapa del dinero se llama presupuesto. 🗺️ Reparto mis $50 en tres partes: gastar, material y ahorro. Las tres partes juntas deben sumar exactamente $50. Por ejemplo: $20 para gastar + $20 para material + $10 para ahorro = $50. ✅"
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Ayuda a Dina a repartir sus $50 en tres categorías. Ajusta los montos hasta que la suma sea exactamente $50.",
+        "instruction": "Mueve los montos para que sumen $50",
+        "categories": [
+          {
+            "id": "spend",
+            "label": "Gastar (merienda)",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          },
+          {
+            "id": "supplies",
+            "label": "Material escolar",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          },
+          {
+            "id": "save",
+            "label": "Ahorro",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          }
+        ],
+        "total": 50
+      },
+      "correct_answer": {
+        "spend": 20,
+        "supplies": 20,
+        "save": 10
+      },
+      "feedback": {
+        "success": "¡Perfecto! $20 + $20 + $10 = $50. 🎉",
+        "error": "Las partes deben sumar $50. Prueba otra vez.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Dina ya apartó $20 para merienda y $10 para ahorro. ¿Cuánto le queda para material escolar?",
+        "instruction": "Escribe el número que falta",
+        "question": "$50 - $20 - $10 = ?",
+        "answer": 20
+      },
+      "correct_answer": {
+        "answer": 20
+      },
+      "feedback": {
+        "success": "¡Correcto! $50 - $20 - $10 = $20 para material. 📚",
+        "error": "Resta: $50 - $20 = $30, luego $30 - $10 = $20. Intenta de nuevo.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Dina hizo dos presupuestos. ¿Cuál cabe en sus $50?",
+        "instruction": "Elige el presupuesto que suma exactamente $50",
+        "options": [
+          {
+            "id": "a",
+            "text": "Presupuesto A: $20 gastar + $20 material + $10 ahorro = $50"
+          },
+          {
+            "id": "b",
+            "text": "Presupuesto B: $25 gastar + $20 material + $10 ahorro = $55"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Sí! El A suma $50, el B suma $55 y se pasa. 🎯",
+        "error": "El presupuesto B suma $55, que es más que $50. Elige el que suma $50.",
+        "per_option": {
+          "a": "¡Correcto! $20+$20+$10=$50.",
+          "b": "Ese suma $55, que es más de $50. Busca el que suma exactamente $50."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Otra semana Dina recibe $40. Reparte $15 en merienda y $15 en material. ¿Cuánto puede ahorrar?",
+        "instruction": "Escribe el número que falta",
+        "question": "$40 - $15 - $15 = ?",
+        "answer": 10
+      },
+      "correct_answer": {
+        "answer": 10
+      },
+      "feedback": {
+        "success": "¡Bien! $40 - $15 - $15 = $10 para ahorro. 🐷",
+        "error": "Resta: $40 - $15 = $25, luego $25 - $15 = $10. Intenta de nuevo.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "save-a-part"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Un buen presupuesto siempre aparta una parte para ahorrar.",
+        "instruction": "¿Es verdad o mentira?",
+        "options": [
+          {
+            "id": "true",
+            "text": "Verdad"
+          },
+          {
+            "id": "false",
+            "text": "Mentira"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Correcto! Ahorrar siempre es buena idea. 🎯",
+        "error": "Es verdad: ahorrar ayuda para el futuro. Intenta de nuevo.",
+        "per_option": {
+          "true": "¡Sí! Ahorrar es parte del presupuesto.",
+          "false": "No es mentira: ahorrar es importante."
+        }
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Dina va a la tienda del barrio con $30. Debe repartirlos en dos categorías: gastar y ahorro. ¿Cómo lo harías?",
+        "instruction": "Ajusta los montos para que sumen $30",
+        "categories": [
+          {
+            "id": "spend",
+            "label": "Gastar",
+            "min": 0,
+            "max": 30,
+            "initial": 15
+          },
+          {
+            "id": "save",
+            "label": "Ahorro",
+            "min": 0,
+            "max": 30,
+            "initial": 15
+          }
+        ],
+        "total": 30
+      },
+      "correct_answer": {
+        "spend": 20,
+        "save": 10
+      },
+      "feedback": {
+        "success": "¡Bien! $20 + $10 = $30. Dina puede gastar $20 y ahorrar $10. 🛍️",
+        "error": "Las partes deben sumar $30. Prueba otra combinación.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "decision_challenge",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "weekly-budget",
+        "save-a-part"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Dina quiere gastar todo su dinero en dulces hoy. ¿Qué es mejor para un presupuesto semanal?",
+        "instruction": "Elige la mejor decisión",
+        "options": [
+          {
+            "id": "a",
+            "text": "Gastar todo hoy en dulces 🍬"
+          },
+          {
+            "id": "b",
+            "text": "Repartir: gastar un poco hoy y guardar el resto para después 🗂️"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Exacto! Repartir y guardar hace que el dinero dure toda la semana. 🎯",
+        "error": "Si gasta todo hoy, mañana no tendrá nada. Mejor repartir.",
+        "per_option": {
+          "a": "Si gasta todo hoy, se quedará sin dinero el resto de la semana.",
+          "b": "¡Correcto! Así le alcanzará para toda la semana."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "weekly-budget",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Lo logramos! 🎉 Con mi mapa del dinero, las partes suman el total y siempre guardo algo. ¿Y si el dinero se acaba antes del viernes? Eso lo veremos pronto. 🧐"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! 🦕 I'm Dina. Today is Sunday and I have $50 in leaf-money for the whole week. 🍃 How can I make it last until Friday? 🤔"
+      }
+    },
+    {
+      "type": "tap_action",
+      "character_code": "dina",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "statement": "Tap the leaf-money to count them. They are 5 leaves of $10 each.",
+        "instruction": "Tap each leaf to count",
+        "items": [
+          {
+            "id": "i1",
+            "text": "🍃 Leaf 1",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "🍃 Leaf 2",
+            "isTarget": true
+          },
+          {
+            "id": "i3",
+            "text": "🍃 Leaf 3",
+            "isTarget": true
+          },
+          {
+            "id": "i4",
+            "text": "🍃 Leaf 4",
+            "isTarget": true
+          },
+          {
+            "id": "i5",
+            "text": "🍃 Leaf 5",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1",
+          "i2",
+          "i3",
+          "i4",
+          "i5"
+        ]
+      },
+      "feedback": {
+        "success": "Yes! 5 leaves of $10 = $50. 🎉",
+        "error": "Tap all the green leaves. 🍃",
+        "per_option": {
+          "i1": "Good! Keep tapping the others.",
+          "i2": "Good! Keep tapping the others.",
+          "i3": "Good! Keep tapping the others.",
+          "i4": "Good! Keep tapping the others.",
+          "i5": "Good! Keep tapping the others."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "ensenar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "A money map is called a budget. 🗺️ I split my $50 into three parts: spend, supplies, and save. All parts together must add up to exactly $50. For example: $20 to spend + $20 for supplies + $10 to save = $50. ✅"
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Help Dina split her $50 into three categories. Adjust the amounts until the sum is exactly $50.",
+        "instruction": "Move the amounts so they add up to $50",
+        "categories": [
+          {
+            "id": "spend",
+            "label": "Spend (snack)",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          },
+          {
+            "id": "supplies",
+            "label": "School supplies",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          },
+          {
+            "id": "save",
+            "label": "Save",
+            "min": 0,
+            "max": 50,
+            "initial": 10
+          }
+        ],
+        "total": 50
+      },
+      "correct_answer": {
+        "spend": 20,
+        "supplies": 20,
+        "save": 10
+      },
+      "feedback": {
+        "success": "Perfect! $20 + $20 + $10 = $50. 🎉",
+        "error": "The parts must add up to $50. Try again.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Dina already set aside $20 for snack and $10 for saving. How much is left for school supplies?",
+        "instruction": "Type the missing number",
+        "question": "$50 - $20 - $10 = ?",
+        "answer": 20
+      },
+      "correct_answer": {
+        "answer": 20
+      },
+      "feedback": {
+        "success": "Correct! $50 - $20 - $10 = $20 for supplies. 📚",
+        "error": "Subtract: $50 - $20 = $30, then $30 - $10 = $20. Try again.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "comparison",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Dina made two budgets. Which one fits her $50?",
+        "instruction": "Choose the budget that adds up to exactly $50",
+        "options": [
+          {
+            "id": "a",
+            "text": "Budget A: $20 spend + $20 supplies + $10 save = $50"
+          },
+          {
+            "id": "b",
+            "text": "Budget B: $25 spend + $20 supplies + $10 save = $55"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Yes! A adds to $50, B adds to $55 and is over. 🎯",
+        "error": "Budget B adds to $55, which is more than $50. Choose the one that adds to $50.",
+        "per_option": {
+          "a": "Correct! $20+$20+$10=$50.",
+          "b": "That adds to $55, which is more than $50. Look for the one that adds to exactly $50."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Another week Dina gets $40. She puts $15 for snack and $15 for supplies. How much can she save?",
+        "instruction": "Type the missing number",
+        "question": "$40 - $15 - $15 = ?",
+        "answer": 10
+      },
+      "correct_answer": {
+        "answer": 10
+      },
+      "feedback": {
+        "success": "Good! $40 - $15 - $15 = $10 for saving. 🐷",
+        "error": "Subtract: $40 - $15 = $25, then $25 - $15 = $10. Try again.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dina",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "save-a-part"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "A good budget always sets aside a part for saving.",
+        "instruction": "Is it true or false?",
+        "options": [
+          {
+            "id": "true",
+            "text": "True"
+          },
+          {
+            "id": "false",
+            "text": "False"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Correct! Saving is always a good idea. 🎯",
+        "error": "It's true: saving helps for the future. Try again.",
+        "per_option": {
+          "true": "Yes! Saving is part of the budget.",
+          "false": "It's not false: saving is important."
+        }
+      }
+    },
+    {
+      "type": "budget_builder",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Dina goes to the neighborhood store with $30. She must split it into two categories: spend and save. How would you do it?",
+        "instruction": "Adjust the amounts so they add up to $30",
+        "categories": [
+          {
+            "id": "spend",
+            "label": "Spend",
+            "min": 0,
+            "max": 30,
+            "initial": 15
+          },
+          {
+            "id": "save",
+            "label": "Save",
+            "min": 0,
+            "max": 30,
+            "initial": 15
+          }
+        ],
+        "total": 30
+      },
+      "correct_answer": {
+        "spend": 20,
+        "save": 10
+      },
+      "feedback": {
+        "success": "Good! $20 + $10 = $30. Dina can spend $20 and save $10. 🛍️",
+        "error": "The parts must add up to $30. Try another combination.",
+        "per_option": {}
+      }
+    },
+    {
+      "type": "decision_challenge",
+      "character_code": "dina",
+      "phase": "aplicar_variante",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "weekly-budget",
+        "save-a-part"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Dina wants to spend all her money on candy today. What is better for a weekly budget?",
+        "instruction": "Choose the best decision",
+        "options": [
+          {
+            "id": "a",
+            "text": "Spend it all today on candy 🍬"
+          },
+          {
+            "id": "b",
+            "text": "Split: spend a little today and save the rest for later 🗂️"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Exactly! Splitting and saving makes the money last all week. 🎯",
+        "error": "If she spends it all today, she'll have nothing tomorrow. Better to split.",
+        "per_option": {
+          "a": "If she spends it all today, she'll have no money the rest of the week.",
+          "b": "Correct! That way it will last all week."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dina",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "weekly-budget",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "We did it! 🎉 With my money map, the parts add up to the total and I always save some. What if the money runs out before Friday? We'll see that soon. 🧐"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.0",
+    "drafter": "deepseek-chat",
+    "plan": {
+      "lesson_code": "2-2-13-1",
+      "band": 2,
+      "levels": [
+        2,
+        2,
+        13,
+        1
+      ],
+      "character": "dina",
+      "micro_objective": "Dina reparte su dinero de la semana (hasta $50) en 2-3 categorías —gastar, material y ahorro— de modo que la suma de las partes sea exactamente igual al total recibido, sin pasarse ni sobrar.",
+      "concept_ids": [
+        "weekly-budget",
+        "split-into-categories",
+        "sum-equals-total",
+        "save-a-part"
+      ],
+      "scenario": "Es domingo en el Bosque de la Abundancia y Dina recibe su dinero de la semana: $50 en hojas-moneda. Quiere comprar una merienda, guardar para el cuaderno nuevo de la escuela y ahorrar un poco para su meta. Pero si gasta sin pensar, el dinero se le va antes del viernes. Necesita un mapa para su dinero: un presupuesto semanal que reparta los $50 en partes que sumen justo $50.",
+      "chosen_topic": "El Presupuesto Semanal",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook relatable: Dina abre su mano y descubre $50 para toda la semana. Plantea el misterio: ¿cómo hacer que el dinero alcance hasta el viernes? Crea tensión emocional y prepara la idea de 'mapa del dinero' sin enseñar aún."
+        },
+        {
+          "phase": "conectar",
+          "type": "tap_action",
+          "purpose": "Beat de participación: el niño toca las hojas-moneda de Dina para contar que en efecto son $50 (5 hojas de $10). Activa el conteo previo y hace al niño co-dueño del problema antes de instruir."
+        },
+        {
+          "phase": "ensenar",
+          "type": "intro_narrative",
+          "purpose": "ENSEÑA el concepto central antes de evaluar: un presupuesto semanal reparte el dinero en partes (gastar, material, ahorro) y todas las partes juntas deben sumar el total. Modela un ejemplo simple: $50 = $20 + $20 + $10."
+        },
+        {
+          "phase": "practicar",
+          "type": "budget_builder",
+          "purpose": "FOCO. Práctica guiada del corazón de la lección: el niño reparte los $50 de Dina en 3 categorías (merienda, material, ahorro) ajustando montos hasta que la suma sea exactamente $50. Objetivo APLICAR el reparto recién enseñado con andamiaje."
+        },
+        {
+          "phase": "practicar",
+          "type": "math_challenge",
+          "purpose": "FOCO. Calcula: si Dina ya apartó $20 para merienda y $10 para ahorro de sus $50, ¿cuánto queda para el material escolar? Resta dentro del techo (≤100). Objetivo CALCULAR la parte restante del presupuesto."
+        },
+        {
+          "phase": "reforzar",
+          "type": "comparison",
+          "purpose": "Compara dos presupuestos de Dina: uno que suma justo $50 y otro que suma $55 (se pasa). El niño elige cuál cabe en su dinero de la semana. Objetivo COMPARAR; refuerza la regla 'las partes deben sumar el total, no más'."
+        },
+        {
+          "phase": "reforzar",
+          "type": "math_challenge",
+          "purpose": "FOCO. Refuerza el cálculo con un total distinto: Dina recibe $40 esta semana y reparte $15 merienda + $15 material; ¿cuánto puede ahorrar? Suma y resta hasta el total. Objetivo CALCULAR, consolidando la habilidad foco con variación numérica."
+        },
+        {
+          "phase": "reforzar",
+          "type": "true_false",
+          "purpose": "Check conceptual rápido: '¿Es verdad que un buen presupuesto siempre aparta una parte para ahorrar?' Objetivo RECONOCER la regla del ahorro dentro del presupuesto; cambia de modalidad para evitar fatiga y dar diversidad de objetivos."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "budget_builder",
+          "purpose": "FOCO. Transferencia: nuevo contexto en la tienda del barrio. Dina tiene $30 y debe repartirlos en solo 2 categorías (gasto y ahorro) de forma independiente, sin guía. Objetivo APLICAR el reparto a una situación nueva con menos andamiaje."
+        },
+        {
+          "phase": "aplicar_variante",
+          "type": "decision_challenge",
+          "purpose": "Decisión con criterio: a Dina le tienta gastar TODO en dulces hoy. El niño decide qué hace un buen presupuesto semanal (repartir y guardar algo) frente a gastarlo de golpe. Objetivo DECIDIR; conecta el cálculo con el hábito y anticipa el problema de quedarse corto."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Cierre que CONECTA: Dina logró su mapa del dinero y le alcanzó toda la semana. Refuerza 'las partes suman el total y siempre guardo algo'. Gancho hacia la próxima lección (topic 14): '¿y si el dinero se acaba antes del viernes?'."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "weekly-budget",
+      "split-into-categories",
+      "sum-equals-total",
+      "save-a-part"
+    ]
+  }
+}

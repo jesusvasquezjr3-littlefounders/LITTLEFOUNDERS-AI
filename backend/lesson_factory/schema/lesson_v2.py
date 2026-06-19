@@ -45,7 +45,20 @@ ANSWER_OPTIONAL: set[str] = set(REGISTRY["answer_optional_types"])
 BLOOM_LEVELS = {"remember", "understand", "apply", "analyze", "evaluate", "create"}
 SCAFFOLD_LEVELS = {"modeled", "guided", "independent"}
 ENGAGEMENT_ROLES = {"hook", "learn", "apply", "connect"}
+
+# PHASES: vocabulario controlado de fases. Es la UNIÓN de las fases base (bandas 1-2)
+# + las required_phases_coverage de TODAS las bandas en pedagogy_rules.json. Las bandas
+# 3-6 usan fases expandidas (por_que_importa, que_es, como_se_usa, que_error_evitar,
+# aplicar, con_que_se_relaciona, caso_real, sintesis) que también deben ser válidas.
+# El corpus legado deja phase=None, así que solo el contenido v2-generado lo dispara.
 PHASES = {"conectar", "ensenar", "practicar", "reforzar", "aplicar_variante", "cerrar"}
+try:
+    _PED = json.loads((BASE_DIR.parent / "pedagogy_rules.json").read_text(encoding="utf-8"))["adventures"]
+    for _adv in _PED.values():
+        PHASES.update(_adv.get("activity_constraints", {}).get("required_phases_coverage", []))
+except Exception:  # fallback explícito si el archivo no está disponible
+    PHASES |= {"por_que_importa", "que_es", "como_se_usa", "que_error_evitar",
+               "aplicar", "con_que_se_relaciona", "caso_real", "sintesis"}
 
 
 def canonical_type(t: str) -> str:
