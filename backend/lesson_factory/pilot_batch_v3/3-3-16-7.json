@@ -1,0 +1,898 @@
+{
+  "lesson_code": "3-3-16-7",
+  "title_es": "Detective de gangas: ¿oferta real o trampa?",
+  "description_es": "Aprende a detectar la señal de alerta 'precio demasiado bueno para ser verdad' comparando precios y verificando antes de pagar.",
+  "duration": 25,
+  "age_rate": "10-12",
+  "points_reward": 10,
+  "adventure_level": 3,
+  "saga_level": 3,
+  "topic_level": 16,
+  "lesson_number": 7,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! Soy Dr. Rho. En la Ciudad Digital vi este anuncio: una consola que cuesta $1000, hoy solo $90. Quedan 2 minutos. Botón: PAGA YA. ¿Ganga real o trampa? Investiguemos juntos."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "scam-red-flags"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Los estafadores usan precios increíbles para que pagues rápido sin pensar. Si caes, pierdes dinero real. Por eso es importante detectar estas señales."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "Si un precio es muchísimo más bajo de lo normal, es una señal de alerta de posible fraude.",
+        "instruction": "Elige Verdadero o Falso.",
+        "options": [
+          {
+            "id": "true",
+            "text": "Verdadero"
+          },
+          {
+            "id": "false",
+            "text": "Falso"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Correcto! Un precio demasiado bajo comparado con el normal es una señal de alerta.",
+        "error": "No es correcto. Recuerda: si algo parece demasiado bueno para ser verdad, probablemente es una trampa.",
+        "per_option": {
+          "true": "¡Exacto! Esa es la regla de detective.",
+          "false": "Cuidado: un precio muy bajo sí es señal de alerta. Vuelve a pensarlo."
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Cuál de estas situaciones es 'demasiado bueno para ser verdad'?",
+        "instruction": "Elige la opción que sea una señal de alerta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Una bicicleta que cuesta $300 en oferta a $280."
+          },
+          {
+            "id": "b",
+            "text": "Un teléfono de $900 ofrecido a $50."
+          },
+          {
+            "id": "c",
+            "text": "Unos tenis de $800 con descuento a $750."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Correcto! $50 por un teléfono de $900 es demasiado barato. Esa es una señal de alerta.",
+        "error": "No es correcto. Recuerda: la señal es un precio muy por debajo de lo normal.",
+        "per_option": {
+          "a": "Un descuento pequeño no es señal de alerta. Busca precios extremadamente bajos.",
+          "b": "¡Exacto! Esa oferta es sospechosa.",
+          "c": "Un descuento pequeño no es señal de alerta. Busca precios extremadamente bajos."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "El anuncio dice: Consola X normalmente $1000, hoy $90. Tienes que decidir si es confiable.",
+        "instruction": "Compara los precios. ¿Cuál es el precio normal y cuál el de la oferta? Luego elige la opción correcta.",
+        "items": [
+          {
+            "id": "a",
+            "label": "Precio normal $1000, oferta $90",
+            "price": 1000
+          },
+          {
+            "id": "b",
+            "label": "Precio normal $90, oferta $1000",
+            "price": 90
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! El precio normal es $1000 y la oferta es $90. La diferencia es enorme, es una señal de alerta.",
+        "error": "Revisa: el precio normal de la consola es $1000, no $90. La oferta es $90, que es mucho más baja."
+      }
+    },
+    {
+      "type": "quiz_battle",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Cuál de las siguientes es una señal de alerta de fraude?",
+        "instruction": "Elige la opción que indique una posible estafa.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Un reloj de $200 en oferta a $180 en una tienda conocida."
+          },
+          {
+            "id": "b",
+            "text": "Un videojuego de $600 ofrecido a $30, con un reloj que dice 'quedan 2 minutos'."
+          },
+          {
+            "id": "c",
+            "text": "Unos audífonos de $50 con descuento a $45 en una página con reseñas."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Correcto! Precio muy bajo y presión de tiempo son señales de alerta.",
+        "error": "No es correcto. Busca precios extremadamente bajos y urgencia.",
+        "per_option": {
+          "a": "Un descuento pequeño en tienda conocida no es señal de alerta.",
+          "b": "¡Exacto! Esa combinación es sospechosa.",
+          "c": "Un descuento pequeño con reseñas no es señal de alerta."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Ves un anuncio: Tenis de marca normalmente $800, hoy $70. En otra tienda los mismos tenis están $750 con reseñas buenas.",
+        "instruction": "Compara los precios. ¿Cuál oferta es sospechosa?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Oferta de $70 (demasiado baja)",
+            "price": 70
+          },
+          {
+            "id": "b",
+            "label": "Precio normal en tienda con reseñas: $750",
+            "price": 750
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! $70 es mucho menos que $800, es una señal de alerta. La tienda con reseñas y precio normal es más confiable.",
+        "error": "Revisa: el precio normal es $800, la oferta de $70 es demasiado baja. Esa es la sospechosa."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Un mensaje dice: 'Gana una tablet de $500 gratis. Solo paga $10 de envío. ¡Oferta por tiempo limitado! Paga ahora.'",
+        "instruction": "Toca las señales de alerta en el mensaje.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Precio demasiado bueno: tablet de $500 por solo $10",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Presión de tiempo: 'por tiempo limitado'",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Pide pagar ahora sin verificar",
+            "isTrap": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Excelente detective! Identificaste todas las señales: precio irreal, urgencia y pedir pago inmediato.",
+        "error": "Faltan algunas señales. Revisa: el precio es demasiado bajo, hay urgencia y te piden pagar ya."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Un amigo ve la oferta de la consola a $90 y dice: '¡Solo quedan 2 minutos! Debo pagar ya o pierdo la oferta.' ¿Qué deberías hacer?",
+        "instruction": "Elige la mejor acción.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Pagar rápido para no perder la oferta."
+          },
+          {
+            "id": "b",
+            "text": "No pagar, porque el precio es sospechoso y la prisa es parte de la trampa."
+          },
+          {
+            "id": "c",
+            "text": "Pagar y luego verificar si es real."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Correcto! La prisa es una señal de alerta. Nunca pagues bajo presión; verifica primero.",
+        "error": "No es correcto. La urgencia es parte de la trampa. Debes desconfiar y verificar.",
+        "per_option": {
+          "a": "Pagar rápido es lo que quiere el estafador. No caigas en la presión.",
+          "b": "¡Exacto! Esa es la actitud de un detective.",
+          "c": "Si pagas primero, ya perdiste el dinero. Verifica antes de pagar."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Dos ofertas: 1) Tablet nueva $400, oferta $380 en tienda con reseñas. 2) Tablet nueva $400, oferta $40, vendedor desconocido, sin reseñas.",
+        "instruction": "¿Cuál oferta es confiable? Elige la opción correcta.",
+        "items": [
+          {
+            "id": "a",
+            "label": "Oferta 1: $380 en tienda con reseñas",
+            "price": 380
+          },
+          {
+            "id": "b",
+            "label": "Oferta 2: $40, vendedor desconocido",
+            "price": 40
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! La oferta 1 tiene un precio razonable y la tienda es conocida. La oferta 2 es demasiado barata y sin reseñas, es sospechosa.",
+        "error": "Revisa: un precio de $40 por una tablet de $400 es demasiado bajo. Además, el vendedor desconocido es otra señal de alerta."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu amigo te escribe emocionado: '¡Mira! La consola de $1000 la venden a $90. Quedan 2 minutos. ¡Voy a comprarla ya!'",
+        "instruction": "Elige la mejor respuesta para tu amigo.",
+        "options": [
+          {
+            "id": "a",
+            "text": "¡Cómprala rápido, es una ganga!"
+          },
+          {
+            "id": "b",
+            "text": "Espera, ese precio es demasiado bajo. Mejor verifica en otras tiendas antes de pagar."
+          },
+          {
+            "id": "c",
+            "text": "No sé, haz lo que quieras."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Excelente! Le recordaste la regla: precio demasiado bueno = señal de alerta, verifica antes de pagar.",
+        "error": "No es la mejor opción. Debes aconsejarle que desconfíe y verifique.",
+        "per_option": {
+          "a": "Animar a comprar rápido es peligroso. Esa es la trampa.",
+          "b": "¡Perfecto! Le estás ayudando a ser detective.",
+          "c": "Ser indiferente no ayuda a tu amigo. Dale un consejo seguro."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "scam-red-flags"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "¡Gran trabajo, detective! Recuerda: si un precio es demasiado bueno para ser verdad, es una señal de alerta. Siempre verifica antes de pagar. En la próxima lección, descubriremos otras señales, como mensajes que piden tu contraseña. ¡Hasta entonces!"
+      }
+    }
+  ],
+  "title_en": "Bargain Detective: Real Deal or Trap?",
+  "description_en": "Learn to detect the red flag 'price too good to be true' by comparing prices and verifying before paying.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! I'm Dr. Rho. In Digital City I saw this ad: a console that costs $1000, today only $90. 2 minutes left. Button: PAY NOW. Real deal or trap? Let's investigate together."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "scam-red-flags"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Scammers use incredible prices to make you pay quickly without thinking. If you fall for it, you lose real money. That's why it's important to detect these signals."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "question": "If a price is much lower than normal, it is a red flag for possible fraud.",
+        "instruction": "Choose True or False.",
+        "options": [
+          {
+            "id": "true",
+            "text": "True"
+          },
+          {
+            "id": "false",
+            "text": "False"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "Correct! A price too low compared to normal is a red flag.",
+        "error": "Not correct. Remember: if something seems too good to be true, it probably is a trap.",
+        "per_option": {
+          "true": "Exactly! That's the detective rule.",
+          "false": "Careful: a very low price is indeed a red flag. Think again."
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Which of these situations is 'too good to be true'?",
+        "instruction": "Choose the option that is a red flag.",
+        "options": [
+          {
+            "id": "a",
+            "text": "A bike that costs $300 on sale for $280."
+          },
+          {
+            "id": "b",
+            "text": "A phone worth $900 offered for $50."
+          },
+          {
+            "id": "c",
+            "text": "Shoes worth $800 discounted to $750."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct! $50 for a $900 phone is too cheap. That's a red flag.",
+        "error": "Not correct. Remember: the red flag is a price far below normal.",
+        "per_option": {
+          "a": "A small discount is not a red flag. Look for extremely low prices.",
+          "b": "Exactly! That offer is suspicious.",
+          "c": "A small discount is not a red flag. Look for extremely low prices."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "The ad says: Console X normally $1000, today $90. You have to decide if it's trustworthy.",
+        "instruction": "Compare the prices. What is the normal price and what is the offer price? Then choose the correct option.",
+        "items": [
+          {
+            "id": "a",
+            "label": "Normal price $1000, offer $90",
+            "price": 1000
+          },
+          {
+            "id": "b",
+            "label": "Normal price $90, offer $1000",
+            "price": 90
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "Correct! The normal price is $1000 and the offer is $90. The difference is huge, it's a red flag.",
+        "error": "Check: the normal price of the console is $1000, not $90. The offer is $90, which is much lower."
+      }
+    },
+    {
+      "type": "quiz_battle",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Which of the following is a red flag for fraud?",
+        "instruction": "Choose the option that indicates a possible scam.",
+        "options": [
+          {
+            "id": "a",
+            "text": "A watch worth $200 on sale for $180 at a known store."
+          },
+          {
+            "id": "b",
+            "text": "A video game worth $600 offered for $30, with a clock saying '2 minutes left'."
+          },
+          {
+            "id": "c",
+            "text": "Headphones worth $50 discounted to $45 on a page with reviews."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct! Very low price and time pressure are red flags.",
+        "error": "Not correct. Look for extremely low prices and urgency.",
+        "per_option": {
+          "a": "A small discount at a known store is not a red flag.",
+          "b": "Exactly! That combination is suspicious.",
+          "c": "A small discount with reviews is not a red flag."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "You see an ad: Brand sneakers normally $800, today $70. In another store the same sneakers are $750 with good reviews.",
+        "instruction": "Compare the prices. Which offer is suspicious?",
+        "items": [
+          {
+            "id": "a",
+            "label": "Offer of $70 (too low)",
+            "price": 70
+          },
+          {
+            "id": "b",
+            "label": "Normal price in store with reviews: $750",
+            "price": 750
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "Correct! $70 is much less than $800, that's a red flag. The store with reviews and normal price is more trustworthy.",
+        "error": "Check: the normal price is $800, the offer of $70 is too low. That's the suspicious one."
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "dr_rho",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "A message says: 'Win a $500 tablet for free. Just pay $10 shipping. Limited time offer! Pay now.'",
+        "instruction": "Tap the red flags in the message.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Price too good: $500 tablet for only $10",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Time pressure: 'limited time'",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Asks to pay now without verifying",
+            "isTrap": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "Excellent detective! You identified all the red flags: unreal price, urgency, and request for immediate payment.",
+        "error": "Some red flags are missing. Check: the price is too low, there's urgency, and they ask you to pay now."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "dr_rho",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "scam-red-flags",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "A friend sees the console offer at $90 and says: 'Only 2 minutes left! I must pay now or I'll lose the offer.' What should you do?",
+        "instruction": "Choose the best action.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Pay quickly so you don't miss the offer."
+          },
+          {
+            "id": "b",
+            "text": "Don't pay, because the price is suspicious and the rush is part of the trap."
+          },
+          {
+            "id": "c",
+            "text": "Pay and then check if it's real."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct! The rush is a red flag. Never pay under pressure; verify first.",
+        "error": "Not correct. The urgency is part of the trap. You should be suspicious and verify.",
+        "per_option": {
+          "a": "Paying quickly is what the scammer wants. Don't fall for the pressure.",
+          "b": "Exactly! That's the detective attitude.",
+          "c": "If you pay first, you've already lost the money. Verify before paying."
+        }
+      }
+    },
+    {
+      "type": "price_detective",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Two offers: 1) New tablet $400, offer $380 at a store with reviews. 2) New tablet $400, offer $40, unknown seller, no reviews.",
+        "instruction": "Which offer is trustworthy? Choose the correct option.",
+        "items": [
+          {
+            "id": "a",
+            "label": "Offer 1: $380 at store with reviews",
+            "price": 380
+          },
+          {
+            "id": "b",
+            "label": "Offer 2: $40, unknown seller",
+            "price": 40
+          }
+        ]
+      },
+      "correct_answer": {
+        "itemId": "a"
+      },
+      "feedback": {
+        "success": "Correct! Offer 1 has a reasonable price and the store is known. Offer 2 is too cheap and has no reviews, it's suspicious.",
+        "error": "Check: a price of $40 for a $400 tablet is too low. Also, the unknown seller is another red flag."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "dr_rho",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your friend texts you excitedly: 'Look! The $1000 console is being sold for $90. 2 minutes left. I'm going to buy it now!'",
+        "instruction": "Choose the best response for your friend.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Buy it fast, it's a bargain!"
+          },
+          {
+            "id": "b",
+            "text": "Wait, that price is too low. Better check other stores before paying."
+          },
+          {
+            "id": "c",
+            "text": "I don't know, do what you want."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Excellent! You reminded them of the rule: price too good = red flag, verify before paying.",
+        "error": "Not the best option. You should advise them to be suspicious and verify.",
+        "per_option": {
+          "a": "Encouraging a quick buy is dangerous. That's the trap.",
+          "b": "Perfect! You're helping them be a detective.",
+          "c": "Being indifferent doesn't help your friend. Give them safe advice."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "dr_rho",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "scam-red-flags"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "independent",
+      "content": {
+        "transcript": "Great job, detective! Remember: if a price is too good to be true, it's a red flag. Always verify before paying. In the next lesson, we'll discover other signals, like messages asking for your password. Until then!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "3-3-16-7",
+      "band": 3,
+      "levels": [
+        3,
+        3,
+        16,
+        7
+      ],
+      "character": "dr_rho",
+      "micro_objective": "El niño detecta la señal de alerta de fraude \"precio demasiado bueno para ser verdad\": compara el precio normal de un producto con la oferta sospechosa y decide que un descuento exagerado es motivo para desconfiar y verificar antes de pagar.",
+      "concept_ids": [
+        "scam-red-flags",
+        "too-good-to-be-true-price",
+        "verify-before-paying"
+      ],
+      "scenario": "A Dr. Rho le llega a su pantalla un anuncio brillante en la Ciudad Digital: la consola más popular, que normalmente cuesta cerca de $1000, \"hoy solo por $90, ¡quedan 2 minutos!\". El reloj parpadea y el botón dice \"PAGA YA\". Dr. Rho, siempre analítico, no toca nada: invita al niño a investigar como detective si esa ganga es real o una trampa, comparando precios y buscando otras señales de alerta antes de que alguien pierda su dinero.",
+      "chosen_topic": "Tipos de Fraude Digital",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por misterio/escena relatable: Dr. Rho muestra el anuncio de la consola de ~$1000 ofrecida a $90 con reloj en cuenta regresiva y botón PAGA YA. Plantea la pregunta de detective: ¿ganga real o trampa? Activa la idea de fraude digital sin resolverla todavía."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Dr. Rho explica POR QUE importa: en la Ciudad Digital los estafadores usan precios increibles para que la gente pague rapido y sin pensar; caer cuesta dinero real. Conecta con la experiencia del niño de querer algo barato."
+        },
+        {
+          "phase": "que_es",
+          "type": "true_false",
+          "purpose": "Ensenar QUE ES la senal de alerta con una afirmacion sencilla de reconocimiento: 'Si un precio es muchisimo mas bajo de lo normal, es una senal de alerta de posible fraude.' Reconocer; feedback instructivo que define la regla. Primera evaluacion ligera tras ensenar."
+        },
+        {
+          "phase": "que_es",
+          "type": "multiple_choice",
+          "purpose": "Consolidar QUE ES: elegir cual de varias situaciones es 'demasiado bueno para ser verdad'. Reconocer la senal entre distractores realistas. Refuerza la definicion antes de pasar al calculo/comparacion."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "price_detective",
+          "purpose": "Ensenar COMO SE USA la regla aplicandola por primera vez (FOCO): el nino actua como detective comparando el precio normal de la consola (~$1000) contra la oferta de $90 y marca la oferta como sospechosa. Comparar/Calcular la diferencia de precio como evidencia de trampa."
+        },
+        {
+          "phase": "practicar",
+          "type": "quiz_battle",
+          "purpose": "Practica principal (FOCO quiz_battle, banda 3+): ronda rapida de reconocimiento 'senal de alerta vs. compra segura' con varios items (precio irreal, presion de tiempo, vendedor sin resenas vs. tienda conocida con resenas reales). Comparar/Reconocer bajo ritmo; consolida multiples senales aprendidas."
+        },
+        {
+          "phase": "practicar",
+          "type": "price_detective",
+          "purpose": "Segunda practica con el tipo FOCO price_detective en contexto nuevo (tenis de marca ~$800 ofertados a $70 vs. precio justo en tienda con resenas): el nino vuelve a comparar precios para detectar la ganga falsa. Refuerza la transferencia del metodo de comparacion a otro producto. No repite tipo justo antes (quiz_battle precede)."
+        },
+        {
+          "phase": "reforzar",
+          "type": "spot_trap",
+          "purpose": "Reforzar Decidir: dentro de un mensaje/anuncio el nino toca la senal de alerta (el precio irreal y el 'paga ya' con reloj). Variacion del concepto que pide localizar la trampa en un contexto realista, mas desafiante que reconocerla aislada."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "multiple_choice",
+          "purpose": "QUE ERROR EVITAR: corrige el malentendido comun 'si quedan pocos minutos hay que pagar rapido para no perder la oferta'. El nino elige la accion correcta (no pagar bajo presion; un precio irreal + prisa = no confiar). Feedback explica por que el apuro es parte de la trampa."
+        },
+        {
+          "phase": "aplicar",
+          "type": "price_detective",
+          "purpose": "Aplicar el concepto integrando senales (FOCO, variante de aplicacion): nuevo caso donde el nino compara precios de dos ofertas y elige cual es confiable, usando tanto el precio razonable como las resenas/tienda conocida como evidencia. Aplicar el metodo de detective a una decision de compra completa."
+        },
+        {
+          "phase": "aplicar",
+          "type": "roleplay_chat",
+          "purpose": "Aplicar Decidir en dialogo: un amigo le reenvia al nino la oferta de $90 emocionado; el nino responde eligiendo el consejo que aplica la regla aprendida (comparar el precio normal, desconfiar del descuento irreal, verificar antes de pagar). Transfiere el aprendizaje a una situacion social nueva sin repetir tipo previo."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Cierre: Dr. Rho celebra el esfuerzo del detective, resume en una frase la regla 'precio demasiado bueno para ser verdad = senal de alerta, verifica antes de pagar', y conecta hacia la proxima leccion sobre otras senales de fraude digital (mensajes que piden tu contrasena o datos)."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "scam-red-flags",
+      "too-good-to-be-true-price",
+      "verify-before-paying"
+    ]
+  }
+}

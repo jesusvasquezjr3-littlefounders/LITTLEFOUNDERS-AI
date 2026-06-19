@@ -83,6 +83,8 @@ CALIDAD OBLIGATORIA (rúbrica v2):
 - FORMA: cubre las 6 fases conectar→enseñar→practicar→reforzar→aplicar_variante→cerrar. El 1er ejercicio ENGANCHA (misterio/predicción/escena relatable), el último CONECTA con un concepto y anticipa la próxima lección.
 - ENSEÑA antes de evaluar (no lances preguntas sin antes explicar el concepto).
 - FEEDBACK que explica el PORQUÉ. OBLIGATORIO: TODO ejercicio gradable (con correct_answer) DEBE incluir feedback.success Y feedback.error, ambos no vacíos y específicos al concepto — esto aplica TAMBIÉN a math_challenge, interest_calculator, estimation_slider, matching_pairs, classification, etc. Para multiple_choice/true_false añade además feedback.per_option: {{"a":"...","b":"..."}} nombrando la confusión de cada distractor. NUNCA uses "Inténtalo de nuevo" genérico.
+- GRADING INEQUÍVOCO (tipos de decisión: risk_reward, opportunity_cost, roleplay_chat, market_reaction, quiz_battle, portfolio_builder, decision_*): el escenario DEBE incluir una RESTRICCIÓN EXPLÍCITA que haga que UNA sola opción sea objetivamente la mejor (ej.: "necesitas el dinero seguro la próxima semana" → gana la de bajo riesgo). PROHIBIDO marcar una preferencia SUBJETIVA como la única correcta. Si de verdad hay varias opciones válidas, usa correct_answer.correctOptionIds (array). El feedback.per_option de las opciones NO-correctas debe explicar por qué NO son la respuesta — NUNCA afirmar "también es válida" (contradice la clave).
+- RIGOR FACTUAL: NO inventes cifras regulatorias específicas (tablas de ISR/impuestos, tasas legales, montos del SAT/IMSS). Usa números ILUSTRATIVOS redondos enmarcados como ejemplo ("supón que el impuesto es 10 de cada 100") o aproximados bien conocidos. Verifica TODA la aritmética: que el correct_answer sea realmente correcto y que ningún feedback lo contradiga.
 - ENGAGEMENT: ≥1 momento de autonomía o de relación con el personaje. Voz cálida, consistente, sin condescendencia.
 - IDIOMA: genera SOLO el contenido en ESPAÑOL (title_es, description_es, content_es[]). NO generes title_en/description_en/content_en — la versión en inglés se produce en un SEGUNDO paso de traducción (esto evita que el JSON se trunque en lecciones largas).
 - Cada ejercicio lleva tags v2: "phase", "engagement_role" (hook|learn|apply|connect), "concept_ids" (array), "bloom_level", "scaffold_level" (modeled|guided|independent; debe DECRECER a lo largo de la lección).
@@ -242,16 +244,78 @@ def generate_lesson(plan: dict, key: str, max_retries: int = 2) -> dict:
     return {"ok": False, "lesson": lesson, "attempts": attempts}
 
 
+def revise_lesson(lesson: dict, defects: list[str], key: str, max_retries: int = 2) -> dict:
+    """EDITOR del loop crítico: aplica los defectos específicos del crítico Opus.
+    Re-redacta ES con los defectos (+ contrato + issues del gate) como feedback, re-traduce
+    EN, re-gate. El crítico (Opus) lo provee el agente; el editor (DeepSeek) lo aplica aquí."""
+    band = int(lesson.get("adventure_level") or lesson["lesson_code"].split("-")[0])
+    meta = lesson.get("lf_meta") or {}
+    plan = meta.get("plan") or {
+        "lesson_code": lesson["lesson_code"], "band": band,
+        "levels": [lesson["adventure_level"], lesson["saga_level"], lesson["topic_level"], lesson["lesson_number"]],
+        "character": (lesson.get("content_es") or [{}])[0].get("character_code", "liruf"),
+        "concept_ids": meta.get("concept_spine", []),
+    }
+    system = build_system_prompt(band)
+    types = [ex.get("type") for ex in lesson.get("content_es", []) if ex.get("type")]
+    current = {k: lesson[k] for k in ("title_es", "description_es", "content_es") if k in lesson}
+    extra = ""
+    attempts = []
+    merged = lesson
+    for attempt in range(max_retries + 1):
+        fb = "DEFECTOS DEL CRÍTICO (corrige EXACTAMENTE, mantén ids/estructura):\n" + \
+             "\n".join(f"- {d}" for d in defects) + extra + _contract_block(types)
+        user = (f"Revisa la lección {plan['lesson_code']} (banda {band}). Devuelve el JSON completo "
+                f"(title_es, description_es, content_es[]) con la MISMA estructura/ids, corrigiendo:\n{fb}"
+                f"\n\nLECCIÓN ACTUAL:\n{json.dumps(current, ensure_ascii=False)}")
+        es_lesson = call_deepseek(system, user, key)
+        en = translate_to_en(es_lesson, key)
+        merged = _merge_bilingual(es_lesson, en, plan)
+        # la revisión no re-emite el sobre completo → preserva campos del original
+        for k in ("duration",):
+            merged.setdefault(k, lesson.get(k, 5))
+        passed, issues = gate(merged, band)
+        attempts.append({"attempt": attempt + 1, "passed": passed, "issues": issues[:6]})
+        if passed:
+            merged["lf_meta"] = {**meta, "schema_version": "2.0", "prompt_version": PROMPT_VERSION,
+                                 "drafter": "deepseek-chat", "gate": "passed", "revised": True,
+                                 "critic_defects": defects, "revise_attempts": attempt + 1}
+            return {"ok": True, "lesson": merged, "attempts": attempts}
+        current = es_lesson
+        extra = "\nADEMÁS, el gate determinista marcó:\n" + "\n".join(f"- {x}" for x in issues[:6])
+    return {"ok": False, "lesson": merged, "attempts": attempts}
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", required=True)
+    ap.add_argument("--plan", help="ruta a plan(es) JSON para generar")
+    ap.add_argument("--revise", help="ruta a una lección JSON a revisar (loop crítico)")
+    ap.add_argument("--defects", help="ruta a JSON con lista de defectos del crítico Opus (para --revise)")
     ap.add_argument("--out", default="test_lessons")
     args = ap.parse_args()
     key = _deepseek_key()
-    plan = json.loads(Path(args.plan).read_text(encoding="utf-8"))
-    plans = plan if isinstance(plan, list) else [plan]
     outdir = BASE / args.out
     outdir.mkdir(exist_ok=True)
+
+    if args.revise:  # modo EDITOR del loop crítico
+        lesson = json.loads(Path(args.revise).read_text(encoding="utf-8"))
+        defects = json.loads(Path(args.defects).read_text(encoding="utf-8")) if args.defects else []
+        code = lesson["lesson_code"]
+        print(f"\n↻ revisando {code} con {len(defects)} defecto(s) del crítico")
+        r = revise_lesson(lesson, defects, key)
+        for a in r["attempts"]:
+            print(f"   intento {a['attempt']}: {'✅ PASS' if a['passed'] else '❌ ' + '; '.join(a['issues'][:3])}")
+        if r["ok"]:
+            (outdir / f"{code}.json").write_text(json.dumps(r["lesson"], ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"   ✅ revisado → {args.out}/{code}.json")
+        else:
+            print(f"   ❌ no pasó tras {len(r['attempts'])} revisiones")
+        return
+
+    if not args.plan:
+        ap.error("se requiere --plan o --revise")
+    plan = json.loads(Path(args.plan).read_text(encoding="utf-8"))
+    plans = plan if isinstance(plan, list) else [plan]
     for p in plans:
         code = p["lesson_code"]
         outpath = outdir / f"{code}.json"

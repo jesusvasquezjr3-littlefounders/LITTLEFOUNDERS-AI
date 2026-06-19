@@ -1,0 +1,1366 @@
+{
+  "lesson_code": "6-2-8-15",
+  "title_es": "Triage de deuda: qué pagar primero cuando el runway se acaba",
+  "description_es": "Como CFO de emergencia de Nébula Labs, debes ordenar las deudas de la startup para maximizar los meses de operación. Aprende a priorizar entre costo financiero, urgencia legal y riesgo operativo, integrando recortes y financiamiento de emergencia.",
+  "duration": 25,
+  "age_rate": "18+",
+  "points_reward": 10,
+  "adventure_level": 6,
+  "saga_level": 2,
+  "topic_level": 8,
+  "lesson_number": 15,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "runway-pressure"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zara Vex abre los libros de Nébula Labs frente a ti. 'Tenemos 6 meses de runway, tres acreedores presionando, nómina de 8 personas y un cliente ancla que podría retrasar su pago. Necesito que actúes como CFO de emergencia por 72 horas. ¿Por cuál deuda empiezo sin matar la empresa?'"
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "runway-pressure"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Si pagas todas las deudas a prorrata (proporcionalmente) cada mes, ¿qué ocurre al mes 6?",
+        "instruction": "Elige la consecuencia más probable.",
+        "options": [
+          {
+            "id": "a",
+            "text": "La empresa quiebra porque el runway se acaba antes de pagar lo crítico."
+          },
+          {
+            "id": "b",
+            "text": "Los acreedores están contentos y renuevan los créditos."
+          },
+          {
+            "id": "c",
+            "text": "El cliente ancla paga a tiempo y todo se normaliza."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exacto. Pagar a todos por igual diluye los recursos y no evita el default de lo más urgente. El runway se acaba sin haber resuelto las obligaciones críticas.",
+        "error": "No es correcto. Piensa: si los ingresos no alcanzan para todo, pagar a todos un poco deja a todos insatisfechos y la caja se agota igual.",
+        "per_option": {
+          "a": "Correcto. Es la trampa de la equidad mal entendida: tratar a todos igual cuando tienen distinta urgencia.",
+          "b": "Incorrecto. Los acreedores no renuevan si ven que no puedes pagar el total. Además, el proveedor clave puede cortar suministro.",
+          "c": "Incorrecto. El cliente ancla retrasa su pago, no lo adelanta. Confiar en eso es iluso."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El triage de deuda bajo runway significa ordenar las obligaciones según tres criterios: costo (tasa de interés), urgencia legal (embargo, demanda) y riesgo operativo (proveedor que para la producción). Renegociar es cambiar plazos o tasas con el mismo acreedor. Refinanciar es sustituir una deuda cara por otra más barata. Pausar es diferir pagos sin penalización letal. No todas las deudas merecen el mismo trato."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Clasifica cada acreedor de Nébula según su perfil de riesgo.",
+        "instruction": "Arrastra cada acreedor a la categoría que mejor lo describe.",
+        "categories": [
+          {
+            "id": "cat1",
+            "label": "Tóxico por tasa"
+          },
+          {
+            "id": "cat2",
+            "label": "Crítico por operación"
+          },
+          {
+            "id": "cat3",
+            "label": "Flexible / aplazable"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Préstamo bancario con tasa del 24% anual",
+            "correctCategoryId": "cat1"
+          },
+          {
+            "id": "i2",
+            "text": "Proveedor clave de chips que ya venció factura",
+            "correctCategoryId": "cat2"
+          },
+          {
+            "id": "i3",
+            "text": "Línea de crédito revolvente sin usar al 100%",
+            "correctCategoryId": "cat3"
+          }
+        ]
+      },
+      "correct_answer": {
+        "cat1": [
+          "i1"
+        ],
+        "cat2": [
+          "i2"
+        ],
+        "cat3": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Clasificación correcta. El préstamo caro sangra caja, el proveedor para la producción, y la línea revolvente da margen de maniobra.",
+        "error": "Revisa: el préstamo bancario tiene tasa alta (tóxico), el proveedor es crítico para operar, y la línea revolvente es flexible porque no está al tope.",
+        "per_option": {
+          "i1": "Correcto en tóxico por tasa. El 24% anual es muy caro para una startup con poco runway.",
+          "i2": "Correcto en crítico por operación. Sin chips no hay producto.",
+          "i3": "Correcto en flexible. Se puede disponer de ella si es necesario."
+        }
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "simple",
+        "defaultPrincipal": 50000,
+        "defaultRate": 24,
+        "defaultTime": 1,
+        "maxPrincipal": 500000,
+        "maxRate": 50,
+        "maxTime": 12
+      },
+      "correct_answer": {
+        "value": 1000
+      },
+      "feedback": {
+        "success": "Correcto. El préstamo de $50,000 al 24% anual genera $1,000 de interés mensual. Eso es $12,000 al año que podrías usar para otras cosas.",
+        "error": "El cálculo es: principal * (tasa/100) / 12. Para $50,000 al 24%: 50000 * 0.24 / 12 = 1000. Vuelve a intentarlo."
+      }
+    },
+    {
+      "type": "debt_strategy",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Nébula Labs tiene $120,000 en caja, quema $20,000/mes. Deudas: (1) Préstamo bancario $50,000 al 24% anual, pago mensual $1,000 intereses + $2,000 capital; (2) Proveedor chips $30,000 vencido, amenaza con parar envíos; (3) Línea revolvente $20,000 disponible al 18% anual, sin uso actual. Nómina: $12,000/mes. Cliente ancla pagará $80,000 en 60 días (seguro). ¿Qué secuencia de acciones maximiza los meses de runway sin incumplir lo crítico?",
+        "instruction": "Elige la mejor estrategia de triage.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Pagar primero al proveedor (urgencia operativa), renegociar el préstamo bancario a tasa más baja, y usar la línea revolvente solo si es necesario."
+          },
+          {
+            "id": "b",
+            "text": "Pagar el préstamo bancario primero por su tasa alta, luego al proveedor, y dejar la línea para después."
+          },
+          {
+            "id": "c",
+            "text": "Usar la línea revolvente para pagar ambas deudas y concentrarse en cobrar al cliente."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Excelente. Pagar al proveedor evita el paro operativo. Renegociar el préstamo reduce el costo mensual. La línea revolvente es un colchón, no la primera opción.",
+        "error": "Revisa: la prioridad es mantener la operación (proveedor), luego reducir costo financiero (préstamo). Usar la línea para todo aumenta el riesgo si el cliente no paga.",
+        "per_option": {
+          "a": "Correcto. Ataca la urgencia operativa primero, luego el costo, y deja la línea como respaldo.",
+          "b": "Incorrecto. Si el proveedor para, no hay producto que vender. La tasa alta duele, pero no mata hoy.",
+          "c": "Incorrecto. Endeudarse más en la línea para pagar deudas existentes es una apuesta peligrosa si el cliente se retrasa."
+        }
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "cost-cut-vs-refinance"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Una startup similar, 'LunaTech', con $80,000 en caja y quema de $15,000/mes, enfrentaba: deuda bancaria $40,000 al 20% anual, proveedor $20,000 vencido, y nómina de $10,000/mes. Decidió recortar gastos no esenciales (oficina, suscripciones) ahorrando $3,000/mes, renegoció el préstamo al 15% (bajando el pago mensual de $667 a $500), y pagó al proveedor en dos plazos. Así extendió el runway de 5.3 a 8 meses.",
+        "question": "¿Cuál es la lección principal de este caso?",
+        "instruction": "Selecciona la lección transferible.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Siempre es mejor recortar costos antes de renegociar deudas."
+          },
+          {
+            "id": "b",
+            "text": "Renegociar el préstamo fue lo que más extendió el runway."
+          },
+          {
+            "id": "c",
+            "text": "Pagar al proveedor en dos plazos fue un error porque alargó el problema."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. Recortar costos da oxígeno inmediato sin depender de terceros. Luego se renegocia con más poder.",
+        "error": "No es correcto. Piensa: el recorte de $3,000/mes fue inmediato y no requirió acuerdo de nadie. Eso es lo primero.",
+        "per_option": {
+          "a": "Correcto. El recorte de gastos es la palanca más rápida y controlable.",
+          "b": "Incorrecto. La renegociación ayudó, pero el recorte de costos dio el mayor respiro inicial.",
+          "c": "Incorrecto. Diferir el pago al proveedor fue parte de la solución, no un error."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Si Nébula Labs difiere la factura del proveedor ($30,000) por 60 días sin intereses y renegocia el préstamo bancario de 24% a 15% anual, ¿cuántos meses adicionales de runway gana? Asume que la quema mensual sin estos cambios es de $20,000 y que el ahorro mensual del préstamo es la diferencia de intereses (sobre $50,000). Redondea al mes entero.",
+        "instruction": "Calcula los meses adicionales de runway.",
+        "options": [
+          {
+            "id": "a",
+            "text": "1 mes"
+          },
+          {
+            "id": "b",
+            "text": "2 meses"
+          },
+          {
+            "id": "c",
+            "text": "3 meses"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correcto. Diferir $30,000 por 2 meses ahorra $30,000/20,000 = 1.5 meses de quema. Renegociar el préstamo ahorra (24%-15%)*50,000/12 = $375/mes, que suma $750 en 2 meses, equivalente a 0.0375 meses. Total ~1.54 meses, redondeado a 2 meses por el efecto combinado y porque el proveedor no se paga en ese periodo.",
+        "error": "Revisa los cálculos: diferir la factura evita un pago de $30,000, que a $20,000/mes de quema son 1.5 meses. Renegociar el préstamo ahorra (24-15)% de 50,000 anual = $4,500/año = $375/mes. En 2 meses son $750, que apenas suma. El total es ~1.5 meses, pero al redondear y considerar que el proveedor no se paga, se gana aproximadamente 2 meses.",
+        "per_option": {
+          "a": "Incorrecto. El solo diferir la factura ya da 1.5 meses, más el ahorro del préstamo da más de 1 mes.",
+          "b": "Correcto. La suma de ambos efectos da aproximadamente 2 meses de runway adicional.",
+          "c": "Incorrecto. 3 meses sería demasiado optimista; los ahorros no son tan grandes."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Un inversor ángel ofrece $100,000 a Nébula Labs a cambio del 30% de la empresa, con un interés del 20% anual convertible. Zara está tentada a aceptar para 'salvar todo' sin recortar costos.",
+        "instruction": "Identifica la trampa en esta oferta.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Aceptar capital caro sin antes recortar costos diluye a los fundadores y no resuelve la ineficiencia operativa.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "El interés del 20% es menor que el del préstamo bancario, por lo que es una buena oferta.",
+            "isTrap": false
+          },
+          {
+            "id": "t3",
+            "text": "El 30% de la empresa es un precio muy alto por $100,000, especialmente si la empresa vale más.",
+            "isTrap": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "Identificaste las dos trampas. El capital caro sin recorte previo es un parche que diluye y no ataca la raíz del problema.",
+        "error": "Falta alguna trampa. Revisa: la oferta tiene dos problemas graves: dilución excesiva y que no obliga a recortar costos.",
+        "per_option": {
+          "t1": "Correcto. Es una trampa: tomar dinero sin ajustar gastos solo pospone la quiebra.",
+          "t2": "Incorrecto. El 20% es alto para capital de riesgo, y además cedes el 30% de la empresa. No es buena comparación con deuda bancaria.",
+          "t3": "Correcto. $100,000 por el 30% valúa la empresa en ~$333,000, probablemente muy por debajo de su potencial."
+        }
+      }
+    },
+    {
+      "type": "debt_strategy",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "runway-pressure"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "El cliente ancla acaba de notificar que retrasará su pago 30 días. Ahora el runway se reduce a 5 meses. La quema mensual sigue siendo $20,000, pero el pago del cliente llegará en 90 días en lugar de 60. Debes re-secuenciar la estrategia. ¿Cuál es el mejor plan ahora?",
+        "instruction": "Elige la nueva prioridad.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Recortar gastos no esenciales inmediatamente (oficina, suscripciones) para bajar la quema a $17,000/mes, pagar al proveedor en dos plazos, y renegociar el préstamo bancario."
+          },
+          {
+            "id": "b",
+            "text": "Usar la línea revolvente para pagar al proveedor y al banco, y esperar el pago del cliente."
+          },
+          {
+            "id": "c",
+            "text": "Aceptar el capital de rescate del inversor ángel y no recortar gastos."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. Ante un runway más corto, lo primero es reducir la quema. Luego negociar plazos con proveedor y banco. Usar la línea o tomar capital caro sin recortar es más riesgoso.",
+        "error": "Revisa: con menos tiempo, la prioridad es alargar la pista reduciendo gastos. Endeudarse más o diluirse sin ajustar costos no resuelve el problema de fondo.",
+        "per_option": {
+          "a": "Correcto. Recortar gastos da margen inmediato y luego se renegocian las deudas.",
+          "b": "Incorrecto. Usar la línea revolvente aumenta la deuda y el riesgo si el cliente no paga a tiempo.",
+          "c": "Incorrecto. Tomar capital caro sin recortar costos diluye y no extiende el runway significativamente."
+        }
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "El inversor ángel ofrece $100,000 al 20% convertible con 30% de descuento en la próxima ronda. Alternativamente, puedes recortar la nómina despidiendo a 2 personas (ahorro $3,000/mes) y reducir gastos de oficina ($1,000/mes). ¿Qué opción es mejor para la salud a largo plazo de Nébula Labs?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Aceptar el capital de rescate",
+            "reward": "Inyección de efectivo inmediata sin despidos."
+          },
+          {
+            "id": "b",
+            "type": "safe",
+            "title": "Recortar nómina y gastos",
+            "reward": "Menos dilución y control, pero despido de personal."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correcto. Recortar gastos es menos riesgoso a largo plazo: evitas dilución y mantienes el control. El capital de rescate es caro y solo pospone el problema si no ajustas la estructura de costos.",
+        "error": "Reconsidera: el capital de rescate parece fácil, pero su costo (dilución + interés) es alto. Recortar gastos duele pero fortalece la empresa.",
+        "per_option": {
+          "a": "Incorrecto. El capital de rescate es caro y no resuelve la ineficiencia. Además, el descuento del 30% en la próxima ronda diluye aún más a los fundadores.",
+          "b": "Correcto. Aunque es doloroso, recortar gastos mejora la eficiencia y evita dilución. Es la opción más sostenible."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance",
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Conecta cada movimiento de gestión de deuda con el principio financiero que lo respalda.",
+        "instruction": "Empareja cada acción con su fundamento.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "Recortar gastos no esenciales",
+            "right": "Fondo de emergencia personal"
+          },
+          {
+            "id": "p2",
+            "left": "Renegociar tasa de interés",
+            "right": "Costo de capital"
+          },
+          {
+            "id": "p3",
+            "left": "Diferir pago a proveedor",
+            "right": "Flujo de caja"
+          },
+          {
+            "id": "p4",
+            "left": "Rechazar capital de rescate caro",
+            "right": "Tipos de riesgo (dilución vs quiebra)"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Excelente. Cada acción se conecta con un principio clave: recortar gastos es como usar el fondo de emergencia, renegociar afecta el costo de capital, diferir mejora el flujo de caja, y rechazar capital caro evita riesgos de dilución.",
+        "error": "Revisa: recortar gastos se relaciona con fondo de emergencia (ambos son colchones), renegociar con costo de capital, diferir con flujo de caja, y rechazar capital caro con tipos de riesgo."
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance",
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Un emprendedor real, dueño de una tienda de electrónica, enfrentó: deuda con proveedor chino $40,000 (exigible en 30 días), préstamo bancario $60,000 al 22% anual, y tarjeta de crédito corporativa $15,000 al 36% anual. Runway: 4 meses con quema de $25,000/mes. Decidió: (1) negociar con el proveedor un pago en 3 plazos, (2) consolidar el préstamo y la tarjeta en un solo crédito al 18% anual, y (3) recortar gastos de marketing en $5,000/mes. Así extendió el runway a 7 meses.",
+        "question": "¿Cuál es la recomendación integral que le darías a este emprendedor basada en el triage de deuda?",
+        "instruction": "Selecciona la mejor recomendación.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Primero recortar gastos, luego renegociar con el proveedor, y finalmente consolidar las deudas caras."
+          },
+          {
+            "id": "b",
+            "text": "Primero consolidar las deudas para bajar la tasa, luego recortar gastos, y después hablar con el proveedor."
+          },
+          {
+            "id": "c",
+            "text": "Usar la tarjeta de crédito para pagar al proveedor y luego consolidar el resto."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correcto. El orden lógico es: primero reducir la quema (recorte), luego asegurar la operación (proveedor), y después optimizar el costo financiero (consolidación).",
+        "error": "Revisa: consolidar primero no resuelve la urgencia del proveedor. Usar la tarjeta para pagar al proveedor aumenta la deuda cara. El orden importa.",
+        "per_option": {
+          "a": "Correcto. Sigue la secuencia: recortar (más controlable), negociar proveedor (urgencia operativa), consolidar (costo).",
+          "b": "Incorrecto. Consolidar antes de recortar no reduce la quema mensual, y el proveedor sigue presionando.",
+          "c": "Incorrecto. Usar la tarjeta (36% anual) para pagar al proveedor empeora el costo financiero."
+        }
+      }
+    },
+    {
+      "type": "decision_matrix",
+      "character_code": "zara_vex",
+      "phase": "sintesis",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Completa la matriz de decisión para Nébula Labs. Evalúa cada acreedor según costo, urgencia y riesgo operativo, y asigna una acción (renegociar, refinanciar, pausar, pagar).",
+        "scenario": "Acreedores: (1) Préstamo bancario $50,000 al 24%, pago mensual $3,000. (2) Proveedor chips $30,000 vencido, para producción. (3) Línea revolvente $20,000 disponible al 18%.",
+        "criteria": [
+          {
+            "id": "cr1",
+            "text": "Costo: tasa de interés"
+          },
+          {
+            "id": "cr2",
+            "text": "Urgencia: plazo legal o contractual"
+          },
+          {
+            "id": "cr3",
+            "text": "Riesgo operativo: impacto en producción"
+          }
+        ],
+        "question": "¿Cuál es la acción más adecuada para el préstamo bancario?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Renegociar la tasa a la baja"
+          },
+          {
+            "id": "b",
+            "text": "Refinanciar con otro banco"
+          },
+          {
+            "id": "c",
+            "text": "Pausar pagos por 60 días"
+          }
+        ]
+      },
+      "correct_answer": {
+        "decision": "a"
+      },
+      "feedback": {
+        "success": "Correcto. El préstamo bancario tiene alta tasa pero no es urgente legalmente ni para la operación. Renegociar es la mejor opción.",
+        "error": "Revisa: refinanciar toma tiempo y no hay garantías, pausar puede generar penalizaciones. Renegociar es más rápido y factible.",
+        "per_option": {
+          "a": "Correcto. Renegociar reduce el costo sin necesidad de un nuevo crédito.",
+          "b": "Incorrecto. Refinanciar requiere otro banco dispuesto, lo cual es incierto con poco runway.",
+          "c": "Incorrecto. Pausar puede dañar el historial crediticio y generar cargos por mora."
+        }
+      }
+    },
+    {
+      "type": "concept_builder",
+      "character_code": "zara_vex",
+      "phase": "sintesis",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "create",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Ordena los pasos de la heurística general de triage de deuda bajo runway, de primero a último.",
+        "items": [
+          {
+            "id": "step1",
+            "text": "Recortar gastos no esenciales para reducir la quema mensual."
+          },
+          {
+            "id": "step2",
+            "text": "Renegociar plazos o tasas con acreedores no críticos."
+          },
+          {
+            "id": "step3",
+            "text": "Refinanciar deudas tóxicas (tasas muy altas) si hay opción."
+          },
+          {
+            "id": "step4",
+            "text": "Considerar capital de emergencia solo como último recurso."
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+      },
+      "feedback": {
+        "success": "Perfecto. La heurística correcta es: primero controlar lo que puedes (recortes), luego negociar con acreedores, después buscar refinanciamiento, y solo al final aceptar capital caro.",
+        "error": "El orden debe ser de lo más controlable a lo más costoso/dilutivo. Recortar es lo primero, capital caro lo último."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zara cierra los libros con una sonrisa. 'Has demostrado que el triage de deuda no es matemágica: es priorizar con cabeza fría. Recuerda: primero recorta, luego renegocia, después refinancia, y solo al final busca capital caro. En la próxima lección, te enfrentarás a un inversionista en plena recesión. Prepárate.'"
+      }
+    }
+  ],
+  "title_en": "Debt Triage: What to Pay First When Runway is Running Out",
+  "description_en": "As emergency CFO of Nébula Labs, you must prioritize the startup's debts to maximize months of operation. Learn to prioritize between financial cost, legal urgency, and operational risk, integrating cuts and emergency financing.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "runway-pressure"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zara Vex opens Nébula Labs' books in front of you. 'We have 6 months of runway, three creditors pushing, payroll for 8 people, and an anchor client who might delay payment. I need you to act as emergency CFO for 72 hours. Which debt do I start with without killing the company?'"
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "runway-pressure"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "If you pay all debts pro rata (proportionally) each month, what happens by month 6?",
+        "instruction": "Choose the most likely consequence.",
+        "options": [
+          {
+            "id": "a",
+            "text": "The company goes bankrupt because the runway runs out before paying what's critical."
+          },
+          {
+            "id": "b",
+            "text": "The creditors are happy and renew the credits."
+          },
+          {
+            "id": "c",
+            "text": "The anchor client pays on time and everything normalizes."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exactly. Paying everyone equally dilutes resources and doesn't avoid default on the most urgent. The runway runs out without having resolved critical obligations.",
+        "error": "Not correct. Think: if income isn't enough for everything, paying everyone a little leaves everyone unsatisfied and the cash runs out anyway.",
+        "per_option": {
+          "a": "Correct. It's the trap of misunderstood fairness: treating everyone equally when they have different urgency.",
+          "b": "Incorrect. Creditors won't renew if they see you can't pay the total. Also, the key supplier might cut supply.",
+          "c": "Incorrect. The anchor client delays payment, not advances it. Relying on that is naive."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Debt triage under runway means ordering obligations according to three criteria: cost (interest rate), legal urgency (seizure, lawsuit), and operational risk (supplier that stops production). Renegotiating is changing terms or rates with the same creditor. Refinancing is replacing an expensive debt with a cheaper one. Pausing is deferring payments without lethal penalty. Not all debts deserve the same treatment."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Classify each Nébula creditor according to their risk profile.",
+        "instruction": "Drag each creditor to the category that best describes them.",
+        "categories": [
+          {
+            "id": "cat1",
+            "label": "Toxic by rate"
+          },
+          {
+            "id": "cat2",
+            "label": "Critical for operations"
+          },
+          {
+            "id": "cat3",
+            "label": "Flexible / deferrable"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Bank loan with 24% annual rate",
+            "correctCategoryId": "cat1"
+          },
+          {
+            "id": "i2",
+            "text": "Key chip supplier with an overdue invoice",
+            "correctCategoryId": "cat2"
+          },
+          {
+            "id": "i3",
+            "text": "Revolving credit line unused at 100%",
+            "correctCategoryId": "cat3"
+          }
+        ]
+      },
+      "correct_answer": {
+        "cat1": [
+          "i1"
+        ],
+        "cat2": [
+          "i2"
+        ],
+        "cat3": [
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Correct classification. The expensive loan drains cash, the supplier stops production, and the revolving line gives maneuvering room.",
+        "error": "Review: the bank loan has a high rate (toxic), the supplier is critical for operations, and the revolving line is flexible because it's not maxed out.",
+        "per_option": {
+          "i1": "Correct in toxic by rate. 24% annual is very expensive for a startup with little runway.",
+          "i2": "Correct in critical for operations. Without chips, there's no product.",
+          "i3": "Correct in flexible. It can be drawn upon if necessary."
+        }
+      }
+    },
+    {
+      "type": "interest_calculator",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "type": "simple",
+        "defaultPrincipal": 50000,
+        "defaultRate": 24,
+        "defaultTime": 1,
+        "maxPrincipal": 500000,
+        "maxRate": 50,
+        "maxTime": 12
+      },
+      "correct_answer": {
+        "value": 1000
+      },
+      "feedback": {
+        "success": "Correct. The $50,000 loan at 24% annual generates $1,000 in monthly interest. That's $12,000 a year you could use for other things.",
+        "error": "The calculation is: principal * (rate/100) / 12. For $50,000 at 24%: 50000 * 0.24 / 12 = 1000. Try again."
+      }
+    },
+    {
+      "type": "debt_strategy",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Nébula Labs has $120,000 in cash, burns $20,000/month. Debts: (1) Bank loan $50,000 at 24% annual, monthly payment $1,000 interest + $2,000 principal; (2) Chip supplier $30,000 overdue, threatens to stop shipments; (3) Revolving line $20,000 available at 18% annual, currently unused. Payroll: $12,000/month. Anchor client will pay $80,000 in 60 days (secure). Which sequence of actions maximizes months of runway without defaulting on critical obligations?",
+        "instruction": "Choose the best triage strategy.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Pay the supplier first (operational urgency), renegotiate the bank loan to a lower rate, and use the revolving line only if necessary."
+          },
+          {
+            "id": "b",
+            "text": "Pay the bank loan first due to its high rate, then the supplier, and leave the line for later."
+          },
+          {
+            "id": "c",
+            "text": "Use the revolving line to pay both debts and focus on collecting from the client."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Excellent. Paying the supplier avoids operational shutdown. Renegotiating the loan reduces monthly cost. The revolving line is a cushion, not the first option.",
+        "error": "Review: the priority is to keep operations running (supplier), then reduce financial cost (loan). Using the line for everything increases risk if the client doesn't pay.",
+        "per_option": {
+          "a": "Correct. Attack operational urgency first, then cost, and leave the line as backup.",
+          "b": "Incorrect. If the supplier stops, there's no product to sell. The high rate hurts, but it doesn't kill today.",
+          "c": "Incorrect. Taking on more debt on the line to pay existing debts is a dangerous bet if the client delays."
+        }
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "cost-cut-vs-refinance"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "A similar startup, 'LunaTech', with $80,000 in cash and a burn of $15,000/month, faced: bank debt $40,000 at 20% annual, supplier $20,000 overdue, and payroll of $10,000/month. They decided to cut non-essential expenses (office, subscriptions) saving $3,000/month, renegotiated the loan to 15% (lowering monthly payment from $667 to $500), and paid the supplier in two installments. This extended the runway from 5.3 to 8 months.",
+        "question": "What is the main lesson from this case?",
+        "instruction": "Select the transferable lesson.",
+        "options": [
+          {
+            "id": "a",
+            "text": "It's always better to cut costs before renegotiating debts."
+          },
+          {
+            "id": "b",
+            "text": "Renegotiating the loan is what extended the runway the most."
+          },
+          {
+            "id": "c",
+            "text": "Paying the supplier in two installments was a mistake because it prolonged the problem."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. Cutting costs provides immediate oxygen without relying on third parties. Then you renegotiate with more power.",
+        "error": "Not correct. Think: the $3,000/month cut was immediate and didn't require anyone's agreement. That's the first thing.",
+        "per_option": {
+          "a": "Correct. Cutting expenses is the fastest and most controllable lever.",
+          "b": "Incorrect. Renegotiation helped, but cost cutting gave the biggest initial relief.",
+          "c": "Incorrect. Deferring the supplier payment was part of the solution, not a mistake."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "If Nébula Labs defers the supplier invoice ($30,000) for 60 days without interest and renegotiates the bank loan from 24% to 15% annual, how many additional months of runway does it gain? Assume the monthly burn without these changes is $20,000 and the monthly loan savings is the interest difference (on $50,000). Round to the nearest whole month.",
+        "instruction": "Calculate the additional months of runway.",
+        "options": [
+          {
+            "id": "a",
+            "text": "1 month"
+          },
+          {
+            "id": "b",
+            "text": "2 months"
+          },
+          {
+            "id": "c",
+            "text": "3 months"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct. Deferring $30,000 for 2 months saves $30,000/20,000 = 1.5 months of burn. Renegotiating the loan saves (24%-15%)*50,000/12 = $375/month, which adds $750 over 2 months, equivalent to 0.0375 months. Total ~1.54 months, rounded to 2 months due to the combined effect and because the supplier isn't paid in that period.",
+        "error": "Review the calculations: deferring the invoice avoids a $30,000 payment, which at $20,000/month burn is 1.5 months. Renegotiating the loan saves (24-15)% of 50,000 annually = $4,500/year = $375/month. Over 2 months that's $750, barely adding. The total is ~1.5 months, but rounding and considering the supplier isn't paid, you gain approximately 2 months.",
+        "per_option": {
+          "a": "Incorrect. Just deferring the invoice gives 1.5 months, plus the loan savings gives more than 1 month.",
+          "b": "Correct. The sum of both effects gives approximately 2 additional months of runway.",
+          "c": "Incorrect. 3 months would be too optimistic; the savings aren't that large."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "An angel investor offers $100,000 to Nébula Labs in exchange for 30% of the company, with 20% annual convertible interest. Zara is tempted to accept to 'save everything' without cutting costs.",
+        "instruction": "Identify the trap in this offer.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Accepting expensive capital without first cutting costs dilutes the founders and doesn't solve operational inefficiency.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "The 20% interest is lower than the bank loan's, so it's a good offer.",
+            "isTrap": false
+          },
+          {
+            "id": "t3",
+            "text": "30% of the company is a very high price for $100,000, especially if the company is worth more.",
+            "isTrap": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t3"
+        ]
+      },
+      "feedback": {
+        "success": "You identified both traps. Expensive capital without prior cuts is a patch that dilutes and doesn't attack the root of the problem.",
+        "error": "Missing a trap. Review: the offer has two serious problems: excessive dilution and not forcing cost cuts.",
+        "per_option": {
+          "t1": "Correct. It's a trap: taking money without adjusting expenses only postpones bankruptcy.",
+          "t2": "Incorrect. 20% is high for venture capital, and you also give up 30% of the company. It's not a good comparison with bank debt.",
+          "t3": "Correct. $100,000 for 30% values the company at ~$333,000, likely far below its potential."
+        }
+      }
+    },
+    {
+      "type": "debt_strategy",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "runway-pressure"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "The anchor client just notified that they will delay payment by 30 days. Now the runway is reduced to 5 months. The monthly burn is still $20,000, but the client's payment will arrive in 90 days instead of 60. You must re-sequence the strategy. What is the best plan now?",
+        "instruction": "Choose the new priority.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Immediately cut non-essential expenses (office, subscriptions) to lower the burn to $17,000/month, pay the supplier in two installments, and renegotiate the bank loan."
+          },
+          {
+            "id": "b",
+            "text": "Use the revolving line to pay the supplier and the bank, and wait for the client's payment."
+          },
+          {
+            "id": "c",
+            "text": "Accept the angel investor's rescue capital and don't cut expenses."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. Faced with a shorter runway, the first thing is to reduce the burn. Then negotiate terms with the supplier and bank. Using the line or taking expensive capital without cutting is riskier.",
+        "error": "Review: with less time, the priority is to lengthen the runway by reducing expenses. Taking on more debt or diluting without adjusting costs doesn't solve the underlying problem.",
+        "per_option": {
+          "a": "Correct. Cutting expenses gives immediate margin, then renegotiate debts.",
+          "b": "Incorrect. Using the revolving line increases debt and risk if the client doesn't pay on time.",
+          "c": "Incorrect. Taking expensive capital without cutting costs dilutes and doesn't significantly extend the runway."
+        }
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "The angel investor offers $100,000 at 20% convertible with 30% discount on the next round. Alternatively, you can cut payroll by laying off 2 people (saving $3,000/month) and reduce office expenses ($1,000/month). Which option is better for Nébula Labs' long-term health?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Accept the rescue capital",
+            "reward": "Immediate cash injection without layoffs."
+          },
+          {
+            "id": "b",
+            "type": "safe",
+            "title": "Cut payroll and expenses",
+            "reward": "Less dilution and control, but layoffs."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct. Cutting expenses is less risky in the long run: you avoid dilution and maintain control. Rescue capital is expensive and only postpones the problem if you don't adjust the cost structure.",
+        "error": "Reconsider: rescue capital seems easy, but its cost (dilution + interest) is high. Cutting expenses hurts but strengthens the company.",
+        "per_option": {
+          "a": "Incorrect. Rescue capital is expensive and doesn't solve inefficiency. Plus, the 30% discount on the next round dilutes founders even more.",
+          "b": "Correct. Although painful, cutting expenses improves efficiency and avoids dilution. It's the most sustainable option."
+        }
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance",
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Connect each debt management move with the financial principle that supports it.",
+        "instruction": "Match each action with its rationale.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "Cut non-essential expenses",
+            "right": "Personal emergency fund"
+          },
+          {
+            "id": "p2",
+            "left": "Renegotiate interest rate",
+            "right": "Cost of capital"
+          },
+          {
+            "id": "p3",
+            "left": "Defer supplier payment",
+            "right": "Cash flow"
+          },
+          {
+            "id": "p4",
+            "left": "Reject expensive rescue capital",
+            "right": "Types of risk (dilution vs bankruptcy)"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Excellent. Each action connects with a key principle: cutting expenses is like using an emergency fund, renegotiating affects cost of capital, deferring improves cash flow, and rejecting expensive capital avoids dilution risks.",
+        "error": "Review: cutting expenses relates to emergency fund (both are cushions), renegotiating to cost of capital, deferring to cash flow, and rejecting expensive capital to types of risk."
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance",
+        "emergency-capital-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "A real entrepreneur, owner of an electronics store, faced: debt with Chinese supplier $40,000 (due in 30 days), bank loan $60,000 at 22% annual, and corporate credit card $15,000 at 36% annual. Runway: 4 months with burn of $25,000/month. He decided to: (1) negotiate with the supplier a payment in 3 installments, (2) consolidate the loan and credit card into one loan at 18% annual, and (3) cut marketing expenses by $5,000/month. This extended the runway to 7 months.",
+        "question": "What comprehensive recommendation would you give this entrepreneur based on debt triage?",
+        "instruction": "Select the best recommendation.",
+        "options": [
+          {
+            "id": "a",
+            "text": "First cut expenses, then renegotiate with the supplier, and finally consolidate expensive debts."
+          },
+          {
+            "id": "b",
+            "text": "First consolidate debts to lower the rate, then cut expenses, and then talk to the supplier."
+          },
+          {
+            "id": "c",
+            "text": "Use the credit card to pay the supplier and then consolidate the rest."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct. The logical order is: first reduce the burn (cut), then secure operations (supplier), and then optimize financial cost (consolidation).",
+        "error": "Review: consolidating first doesn't solve the supplier's urgency. Using the card to pay the supplier increases expensive debt. Order matters.",
+        "per_option": {
+          "a": "Correct. Follows the sequence: cut (most controllable), negotiate supplier (operational urgency), consolidate (cost).",
+          "b": "Incorrect. Consolidating before cutting doesn't reduce monthly burn, and the supplier is still pressuring.",
+          "c": "Incorrect. Using the card (36% annual) to pay the supplier worsens financial cost."
+        }
+      }
+    },
+    {
+      "type": "decision_matrix",
+      "character_code": "zara_vex",
+      "phase": "sintesis",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Complete the decision matrix for Nébula Labs. Evaluate each creditor by cost, urgency, and operational risk, and assign an action (renegotiate, refinance, pause, pay).",
+        "scenario": "Creditors: (1) Bank loan $50,000 at 24%, monthly payment $3,000. (2) Chip supplier $30,000 overdue, stops production. (3) Revolving line $20,000 available at 18%.",
+        "criteria": [
+          {
+            "id": "cr1",
+            "text": "Cost: interest rate"
+          },
+          {
+            "id": "cr2",
+            "text": "Urgency: legal or contractual deadline"
+          },
+          {
+            "id": "cr3",
+            "text": "Operational risk: impact on production"
+          }
+        ],
+        "question": "What is the most appropriate action for the bank loan?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Renegotiate the rate downward"
+          },
+          {
+            "id": "b",
+            "text": "Refinance with another bank"
+          },
+          {
+            "id": "c",
+            "text": "Pause payments for 60 days"
+          }
+        ]
+      },
+      "correct_answer": {
+        "decision": "a"
+      },
+      "feedback": {
+        "success": "Correct. The bank loan has a high rate but is not legally urgent nor critical for operations. Renegotiating is the best option.",
+        "error": "Review: refinancing takes time and there are no guarantees, pausing may generate penalties. Renegotiating is faster and more feasible.",
+        "per_option": {
+          "a": "Correct. Renegotiating reduces cost without needing a new credit.",
+          "b": "Incorrect. Refinancing requires another willing bank, which is uncertain with little runway.",
+          "c": "Incorrect. Pausing can damage credit history and generate late fees."
+        }
+      }
+    },
+    {
+      "type": "concept_builder",
+      "character_code": "zara_vex",
+      "phase": "sintesis",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "create",
+      "scaffold_level": "independent",
+      "content": {
+        "instruction": "Order the steps of the general debt triage heuristic under runway, from first to last.",
+        "items": [
+          {
+            "id": "step1",
+            "text": "Cut non-essential expenses to reduce monthly burn."
+          },
+          {
+            "id": "step2",
+            "text": "Renegotiate terms or rates with non-critical creditors."
+          },
+          {
+            "id": "step3",
+            "text": "Refinance toxic debts (very high rates) if possible."
+          },
+          {
+            "id": "step4",
+            "text": "Consider emergency capital only as a last resort."
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+      },
+      "feedback": {
+        "success": "Perfect. The correct heuristic is: first control what you can (cuts), then negotiate with creditors, then seek refinancing, and only at the end accept expensive capital.",
+        "error": "The order should be from most controllable to most costly/dilutive. Cutting is first, expensive capital last."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "debt-triage-strategy"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Zara closes the books with a smile. 'You've shown that debt triage isn't math-magic: it's prioritizing with a cool head. Remember: first cut, then renegotiate, then refinance, and only at the end seek expensive capital. In the next lesson, you'll face an investor in the middle of a recession. Get ready.'"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "6-2-8-15",
+      "band": 6,
+      "levels": [
+        6,
+        2,
+        8,
+        15
+      ],
+      "character": "zara_vex",
+      "micro_objective": "Construir y justificar una secuencia de gestión de deuda para una startup con 6 meses de runway: ordenar qué obligaciones renegociar, refinanciar o pausar primero según costo, urgencia y riesgo de quiebra, integrando recorte de costos y financiamiento de emergencia en una sola decisión coherente.",
+      "concept_ids": [
+        "runway-pressure",
+        "debt-triage-strategy",
+        "cost-cut-vs-refinance",
+        "emergency-capital-tradeoff"
+      ],
+      "scenario": "Zara Vex te entrega los libros reales de Nébula Labs, su startup de hardware: 6 meses de runway, tres acreedores presionando (un préstamo bancario con tasa alta, un proveedor clave con factura vencida, y una línea de crédito revolvente), nómina de 8 personas y un cliente ancla que podría retrasar su pago. Como CFO de emergencia por 72 horas, debes decidir qué deuda atacar primero, qué renegociar y si vale la pena tomar capital de rescate caro — defendiendo cada movimiento con números, no con corazonadas.",
+      "chosen_topic": "Caso: El Emprendedor en Crisis",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook de escena relatable y de alta tensión: Zara abre los libros de Nébula Labs frente al niño-CFO, presenta el reloj de 72 horas y los tres acreedores, y plantea el misterio: '¿por cuál empiezo sin matar la empresa?'. Activa todo lo aprendido en bandas previas sin tutoriales."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "multiple_choice",
+          "purpose": "Por qué importa: hace que el aprendiz prediga la consecuencia de no priorizar la deuda (qué pasa al mes 6 si paga todo proporcionalmente). Establece la apuesta emocional y conceptual antes de definir nada."
+        },
+        {
+          "phase": "que_es",
+          "type": "intro_narrative",
+          "purpose": "Ensena (definición operativa): Zara nombra y define 'triage de deuda' bajo runway — ordenar obligaciones por costo (tasa), urgencia legal y riesgo de paro operativo — y distingue renegociar vs refinanciar vs pausar. UNA idea central, con jerga definida en el acto."
+        },
+        {
+          "phase": "que_es",
+          "type": "classification",
+          "purpose": "Reconocer: clasifica cada acreedor de Nébula (banco, proveedor, línea revolvente) según si es 'tóxico por tasa', 'crítico por operación' o 'flexible/aplazable', consolidando la definición recién enseñada antes de calcular."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "interest_calculator",
+          "purpose": "Calcular: aplica el mecanismo — computa el costo real mensual de intereses de cada deuda con los datos del caso para ver objetivamente cuál sangra más caja. Convierte el concepto en números que justificarán la estrategia."
+        },
+        {
+          "phase": "practicar",
+          "type": "debt_strategy",
+          "purpose": "FOCO: práctica principal. El aprendiz ordena la secuencia de gestión de deuda de Nébula (qué renegociar/refinanciar/pausar primero) maximizando meses de runway sin incumplir lo legalmente crítico. Decidir + Aplicar el triage enseñado."
+        },
+        {
+          "phase": "reforzar",
+          "type": "case_study",
+          "purpose": "FOCO: refuerza con un mini-caso real análogo (estilo startup que sobrevivió recortando costos antes de tomar deuda cara) y pide extraer la lección transferible. Diferente presentación del mismo concepto, más exigente."
+        },
+        {
+          "phase": "reforzar",
+          "type": "math_challenge",
+          "purpose": "Calcular: cuantifica cuántos meses de runway adicionales compra una renegociación específica (diferir factura del proveedor + bajar tasa), verificando que la estrategia del paso 6 realmente extiende la pista. Refuerzo numérico que no repite tipo."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "Decidir/Reconocer: detecta la trampa clásica — tomar capital de rescate carísimo o avalar deuda personal para 'salvar todo' en vez de recortar primero. Corrige el malentendido común de la fase con feedback conceptual."
+        },
+        {
+          "phase": "aplicar",
+          "type": "debt_strategy",
+          "purpose": "FOCO (variante de aplicación): nuevo giro del caso — el cliente ancla retrasa su pago 30 días, forzando re-secuenciar la estrategia de deuda bajo runway aún más corto. Aplica el triage a condiciones cambiadas, no idénticas al paso 6."
+        },
+        {
+          "phase": "aplicar",
+          "type": "risk_reward",
+          "purpose": "Comparar/Decidir: evalúa el trade-off de aceptar el capital de emergencia caro vs un recorte agresivo de nómina — sopesa riesgo de dilución/quiebra contra preservación de runway. Integra financiamiento de emergencia en la decisión."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "matching_pairs",
+          "purpose": "Reconocer/Comparar: conecta la estrategia de deuda con conceptos vecinos del currículo (fondo de emergencia, costo de capital, flujo de caja, tipos de riesgo de saga 3) emparejando cada movimiento con el principio que lo respalda."
+        },
+        {
+          "phase": "caso_real",
+          "type": "case_study",
+          "purpose": "FOCO: caso real de cierre — un emprendedor en crisis real con datos completos; el aprendiz produce la recomendación integral de gestión de deuda y la defiende. Decisión de alto impacto con justificación requerida (banda 6)."
+        },
+        {
+          "phase": "sintesis",
+          "type": "decision_matrix",
+          "purpose": "Aplicar/Comparar: síntesis experta — llena una matriz de decisión (acreedor x costo/urgencia/riesgo) que destila todo el caso en un marco reutilizable de triage de deuda. Cristaliza el criterio, no solo la respuesta."
+        },
+        {
+          "phase": "sintesis",
+          "type": "concept_builder",
+          "purpose": "Aplicar: el aprendiz arma en sus propios términos la regla general de triage de deuda bajo runway (orden: recortar caja > renegociar barato > refinanciar tóxico > capital caro como último recurso), consolidando la heurística transferible sin repetir el tipo anterior."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Cierre: Zara celebra el criterio del aprendiz (no solo la respuesta), resume en una frase el principio de triage de deuda, y conecta hacia adelante — anticipa el siguiente caso del simulador real (inversionista en una recesión), cerrando la lección 15/15 con visión."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "runway-pressure",
+      "debt-triage-strategy",
+      "cost-cut-vs-refinance",
+      "emergency-capital-tradeoff"
+    ]
+  }
+}
