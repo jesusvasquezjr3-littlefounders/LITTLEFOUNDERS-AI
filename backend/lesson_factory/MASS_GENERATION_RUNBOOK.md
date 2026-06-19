@@ -37,7 +37,7 @@ plan (Opus/planner)
 3. **Gate:** `python3 gate.py "generated_v2/*.json"` (CI lo corre solo). Exit 1 si alguna falla.
 4. **Crítica de Opus** (factual/forma/engagement) sobre las que pasan el gate determinista — DeepSeek NO sirve como juez factual (medido: no caza contradicciones). En lote por el agente, o vía API de Opus si hay key.
 5. **Revisión humana** de una muestra / de las marcadas.
-6. **Import:** `import_lessons.py` con upsert por provenance → solo sube lo nuevo/aprobado.
+6. **Import (seguro):** primero DRY-RUN `python3 scripts/import_lessons.py --source <dir>` (reporta inserts/updates sin escribir); luego, tras revisión, `--commit --prod` (hace backup automático y upsert idempotente por `lesson_code`). `--require-approved` solo sube lecciones con `lf_meta.gate=='passed'`.
 
 ## Cómo PREVISUALIZAR una lección en el motor real (sin backend)
 
@@ -74,7 +74,7 @@ No regenerar las 2,461. Flujo:
 - ⏳ **Juez Opus programático.** DeepSeek no juzga rigor factual (medido). El juicio corre por el agente en lotes, o requiere **key de Anthropic** para escala desatendida. (En `audio_factory/.env` hay `DEEPSEEK_API_KEY`; NO hay key de Anthropic local.)
 - ⏳ **Cola de escalación.** Lecciones que DeepSeek no logra pasar tras 2 retries → autoría por Opus. (Patrón: persistent-failure → human/stronger queue.)
 - ⏳ **Kappa anclado en humano** para fijar el umbral de calidad con confianza (el inter-LLM dio engagement κ=0.61; resto moderado).
-- ⏳ **import_lessons.py → upsert por provenance** (hoy es wipe-reload).
+- ✅ **import_lessons.py → upsert idempotente por `lesson_code`** (preserva `id` → no rompe FK de `user_lesson_progress`; ya NO hace wipe-reload). DRY-RUN por defecto; escribir requiere `--commit --prod`; backup automático antes de commit; `--source <dir>` publica un dir de la fábrica; `--require-approved` filtra por `lf_meta.gate=='passed'`. ⏳ Pendiente: persistir la provenance en la BD (migración para añadir columna `provenance JSONB`).
 
 ## Modelo de ejecución recomendado (dado que no hay key de Opus local)
 
