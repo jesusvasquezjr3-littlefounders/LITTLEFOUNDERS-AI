@@ -1,0 +1,1083 @@
+{
+  "lesson_code": "5-1-6-14",
+  "title_es": "Tu colchón de emergencia: 3-6 meses que te salvan",
+  "description_es": "Aprende a calcular el fondo de emergencia que necesitas al independizarte y cómo la inflación obliga a actualizarlo cada año.",
+  "duration": 30,
+  "age_rate": "15-17",
+  "points_reward": 10,
+  "adventure_level": 5,
+  "saga_level": 1,
+  "topic_level": 6,
+  "lesson_number": 14,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Bienvenida a tu primer mes sola en Monterrey! Renta: $8,000. Luz: $400. Internet: $600. Súper: $3,500. Transporte: $1,500. Todo bajo control... hasta que el boiler explota. El técnico cobra $2,500. ¿De dónde sacas ese dinero? No lo tienes. Hoy vamos a construir ese colchón que te salva."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Sin un colchón de emergencia, un imprevisto te obliga a usar la tarjeta de crédito o pedir prestado. Eso retrasa tu independencia y te genera deuda. Los adultos que admiras tienen un fondo de 3 a 6 meses de gastos fijos. Así pueden dormir tranquilos."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Qué es un fondo de emergencia?",
+        "instruction": "Elige la definición correcta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Dinero líquido reservado solo para imprevistos, equivalente a 3-6 meses de gastos fijos."
+          },
+          {
+            "id": "b",
+            "text": "Ahorro para unas vacaciones soñadas o para comprar un coche nuevo."
+          },
+          {
+            "id": "c",
+            "text": "Una inversión en acciones o criptomonedas para hacer crecer tu dinero rápido."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Exacto! El fondo de emergencia es dinero líquido que usas solo para imprevistos, y debe cubrir de 3 a 6 meses de tus gastos fijos.",
+        "error": "No es correcto. El fondo de emergencia no es para metas ni para invertir; es para protegerte de lo inesperado.",
+        "per_option": {
+          "a": "Correcto: es dinero disponible para emergencias, no para gastos planeados.",
+          "b": "Eso es ahorro para metas, no un fondo de emergencia. Si lo usas para vacaciones, no estará cuando lo necesites.",
+          "c": "Invertir tu fondo de emergencia es riesgoso porque puede perder valor justo cuando más lo necesitas. Debe ser líquido y seguro."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gastos-fijos-mensuales",
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Tus gastos fijos mensuales son: renta $8,000, luz $400, internet $600, súper $3,500, transporte $1,500. ¿Cuánto necesitas para un fondo de 3 meses?",
+        "instruction": "Calcula el total de gastos fijos al mes y multiplícalo por 3. Escribe solo el número (sin signos ni comas).",
+        "answer": "42000"
+      },
+      "correct_answer": {
+        "answer": "42000"
+      },
+      "feedback": {
+        "success": "¡Correcto! Gastos mensuales: $8,000+$400+$600+$3,500+$1,500 = $14,000. Por 3 meses = $42,000.",
+        "error": "Revisa la suma: renta $8,000 + luz $400 + internet $600 + súper $3,500 + transporte $1,500 = $14,000 al mes. Multiplica por 3: $42,000."
+      }
+    },
+    {
+      "type": "emergency_fund",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "initialFund": 0,
+        "events": [
+          {
+            "id": "e1",
+            "description": "Tienes un sueldo neto de $18,000 al mes. Tus gastos fijos son $14,000. ¿Cuántos meses de colchón quieres construir?",
+            "options": [
+              {
+                "id": "opt1",
+                "text": "3 meses: $42,000. Aportaré $4,000 al mes.",
+                "cost": 0
+              },
+              {
+                "id": "opt2",
+                "text": "6 meses: $84,000. Aportaré $4,000 al mes.",
+                "cost": 0
+              },
+              {
+                "id": "opt3",
+                "text": "No necesito fondo, prefiero gastar el extra en salidas.",
+                "cost": 0
+              }
+            ]
+          },
+          {
+            "id": "e2",
+            "description": "Después de 10 meses ahorrando $4,000 al mes, tu fondo es de $40,000. ¡El boiler se descompone! La reparación cuesta $2,500. ¿Qué haces?",
+            "options": [
+              {
+                "id": "opt4",
+                "text": "Pago la reparación del fondo de emergencia.",
+                "cost": 2500
+              },
+              {
+                "id": "opt5",
+                "text": "Lo pago con tarjeta de crédito para no tocar el fondo.",
+                "cost": 0
+              },
+              {
+                "id": "opt6",
+                "text": "No lo reparo, me baño con agua fría.",
+                "cost": 0
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "minBalance": 37500
+      },
+      "feedback": {
+        "success": "¡Excelente! Elegiste construir un fondo de 3 meses y usarlo para el boiler. Tu fondo queda en $37,500, aún dentro del rango seguro. ¡Bien hecho!",
+        "error": "Revisa tus decisiones. Para que el fondo funcione, debes elegir ahorrar al menos 3 meses y usar el fondo para la emergencia, no la tarjeta."
+      }
+    },
+    {
+      "type": "inflation_simulator",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "inflacion-en-costo-de-vida",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "product": {
+          "basePrice": 14000,
+          "baseYear": 2024,
+          "name": "Gastos fijos mensuales",
+          "icon": "📈"
+        },
+        "inflationRate": 4.5,
+        "defaultYearStart": 2024,
+        "defaultYearEnd": 2025,
+        "minYear": 2024,
+        "maxYear": 2025
+      },
+      "correct_answer": null
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu amigo te dice: 'Tengo $50,000 ahorrados. Vi una oferta de vuelo a Cancún por $8,000. Uso ese dinero porque es mío. Además, el año pasado calculé mi fondo y no ha cambiado.'",
+        "instruction": "Identifica las dos trampas en su razonamiento.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Usar el fondo de emergencia para un vuelo no es una emergencia.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "El fondo debe actualizarse cada año porque la inflación aumenta los gastos fijos.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "El dinero ahorrado es de él y puede gastarlo como quiera.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! Usar el fondo para un vuelo no es una emergencia, y no actualizarlo por inflación deja el fondo insuficiente.",
+        "error": "Revisa: una trampa es gastar el fondo en algo no urgente; otra es no ajustarlo por inflación. La tercera afirmación es cierta, pero no es una trampa."
+      }
+    },
+    {
+      "type": "emergency_fund",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "initialFund": 42000,
+        "events": [
+          {
+            "id": "e1",
+            "description": "Ha pasado un año. La inflación fue del 4.5%. Tus gastos fijos ahora son $14,630 al mes. Tu sueldo subió a $19,000. ¿Cuál es tu nuevo objetivo de fondo para 3 meses?",
+            "options": [
+              {
+                "id": "opt1",
+                "text": "3 meses: $43,890. Aportaré $1,000 al mes.",
+                "cost": 0
+              },
+              {
+                "id": "opt2",
+                "text": "3 meses: $43,890. Aportaré $500 al mes.",
+                "cost": 0
+              },
+              {
+                "id": "opt3",
+                "text": "No necesito ajustar, mi fondo de $42,000 sigue siendo suficiente.",
+                "cost": 0
+              }
+            ]
+          },
+          {
+            "id": "e2",
+            "description": "Tu fondo actual es de $42,000. Necesitas $43,890 para 3 meses. ¿Qué haces para alcanzar la meta?",
+            "options": [
+              {
+                "id": "opt4",
+                "text": "Aporto $1,890 de mi siguiente sueldo y completo el fondo.",
+                "cost": 1890
+              },
+              {
+                "id": "opt5",
+                "text": "No hago nada, $42,000 está cerca de $43,890.",
+                "cost": 0
+              },
+              {
+                "id": "opt6",
+                "text": "Reduzco mis gastos fijos para que el fondo alcance.",
+                "cost": 0
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "minBalance": 42000
+      },
+      "feedback": {
+        "success": "¡Perfecto! Elegiste ajustar el objetivo a $43,890 y completar la diferencia. Tu fondo ahora está actualizado y cubre 3 meses de gastos con inflación.",
+        "error": "Para mantener el colchón, debes reconocer que la inflación aumentó tus gastos. La mejor decisión es ajustar el objetivo y aportar la diferencia."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Relaciona cada concepto con su descripción.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "Fondo de emergencia",
+            "right": "Ahorro líquido para imprevistos"
+          },
+          {
+            "id": "p2",
+            "left": "Gastos fijos mensuales",
+            "right": "Renta, servicios, súper, transporte"
+          },
+          {
+            "id": "p3",
+            "left": "Inflación",
+            "right": "Aumento general de precios en el tiempo"
+          },
+          {
+            "id": "p4",
+            "left": "Ajuste de presupuesto",
+            "right": "Actualizar ingresos y gastos periódicamente"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "¡Muy bien! Has relacionado correctamente los conceptos clave.",
+        "error": "Revisa: el fondo de emergencia es para imprevistos; los gastos fijos son los que se repiten cada mes; la inflación sube los precios; y ajustar el presupuesto es actualizarlo."
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Luis vive en Monterrey, gana $22,000 netos al mes. Sus gastos fijos son: renta $9,000, luz $500, internet $700, súper $4,000, transporte $2,000. Tiene ahorrados $50,000. La inflación anual es del 4.5%.",
+        "question": "¿Cuál es el diagnóstico correcto sobre su fondo de emergencia?",
+        "instruction": "Elige la opción más precisa.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Su fondo de $50,000 cubre 3 meses ($48,600) pero no 6 meses ($97,200). Además, con inflación del 4.5%, el próximo año necesitará $50,787 para 3 meses, por lo que debe aumentarlo."
+          },
+          {
+            "id": "b",
+            "text": "Su fondo de $50,000 es suficiente para 6 meses porque gana $22,000."
+          },
+          {
+            "id": "c",
+            "text": "No necesita fondo porque tiene un buen sueldo."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! Sus gastos mensuales son $16,200. 3 meses = $48,600; 6 meses = $97,200. Con inflación del 4.5%, el próximo año 3 meses costarán $50,787. Su fondo de $50,000 apenas cubre hoy, pero debe aumentarlo.",
+        "error": "Revisa los cálculos: gastos fijos suman $16,200. 3 meses son $48,600; 6 meses son $97,200. Con inflación, el monto necesario sube.",
+        "per_option": {
+          "a": "Correcto: el fondo cubre 3 meses hoy, pero con inflación se queda corto.",
+          "b": "Incorrecto: $50,000 no alcanza para 6 meses ($97,200).",
+          "c": "Incorrecto: incluso con buen sueldo, los imprevistos ocurren y sin fondo te endeudas."
+        }
+      }
+    },
+    {
+      "type": "decision_challenge",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Luis tiene $50,000 ahorrados. Su fondo objetivo para 3 meses es $48,600. De repente, su coche necesita una reparación urgente de $4,000. Luis no quiere usar su fondo porque 'es para emergencias mayores'. ¿Qué debería hacer?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Usar $4,000 del fondo para pagar la reparación y luego reponerlo en los próximos meses."
+          },
+          {
+            "id": "b",
+            "text": "Pagar la reparación con tarjeta de crédito y pagar intereses."
+          },
+          {
+            "id": "c",
+            "text": "No reparar el coche y esperar a juntar el dinero."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Exacto! Una reparación de coche es una emergencia válida. Usar el fondo y reponerlo es la mejor decisión. Su fondo queda en $46,000, aún cerca de $48,600.",
+        "error": "Revisa: el fondo está para emergencias. Usarlo y reponerlo es mejor que endeudarse o no reparar el coche.",
+        "per_option": {
+          "a": "Correcto: usas el fondo para lo que fue creado y luego lo repones.",
+          "b": "Usar tarjeta de crédito genera intereses y deuda innecesaria.",
+          "c": "No reparar el coche puede generar problemas mayores (accidentes, más costos)."
+        }
+      }
+    },
+    {
+      "type": "quiz_battle",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "Si tus gastos fijos mensuales son $14,000 y la inflación es del 5% anual, ¿cuál será tu gasto mensual el próximo año?",
+        "instruction": "Selecciona la respuesta correcta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$14,700"
+          },
+          {
+            "id": "b",
+            "text": "$14,000"
+          },
+          {
+            "id": "c",
+            "text": "$15,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! $14,000 x 1.05 = $14,700. La inflación aumenta tus gastos fijos.",
+        "error": "El cálculo es: gasto actual x (1 + tasa de inflación). $14,000 x 1.05 = $14,700.",
+        "per_option": {
+          "a": "Correcto: $14,000 + 5% = $14,700.",
+          "b": "Incorrecto: la inflación hace que los precios suban, no se quedan igual.",
+          "c": "Incorrecto: $15,000 sería un aumento del 7.14%, no del 5%."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Lo lograste! Ahora sabes que un fondo de 3 a 6 meses de gastos fijos, actualizado cada año por inflación, es lo que hace real tu independencia financiera. En la próxima lección aprenderás a negociar un mejor sueldo para llenar ese fondo más rápido. ¡Nos vemos!"
+      }
+    }
+  ],
+  "title_en": "Your Emergency Cushion: 3-6 Months That Save You",
+  "description_en": "Learn how to calculate the emergency fund you need when you become independent and how inflation forces you to update it every year.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Welcome to your first month alone in Monterrey! Rent: $8,000. Electricity: $400. Internet: $600. Groceries: $3,500. Transportation: $1,500. Everything under control... until the water heater explodes. The technician charges $2,500. Where do you get that money? You don't have it. Today we're going to build that cushion that saves you."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Without an emergency cushion, an unexpected event forces you to use a credit card or borrow money. That delays your independence and creates debt. The adults you admire have a fund of 3 to 6 months of fixed expenses. That way they can sleep peacefully."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "What is an emergency fund?",
+        "instruction": "Choose the correct definition.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Liquid money reserved only for emergencies, equivalent to 3-6 months of fixed expenses."
+          },
+          {
+            "id": "b",
+            "text": "Savings for a dream vacation or to buy a new car."
+          },
+          {
+            "id": "c",
+            "text": "An investment in stocks or cryptocurrencies to grow your money fast."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exactly! The emergency fund is liquid money you use only for emergencies, and it should cover 3 to 6 months of your fixed expenses.",
+        "error": "That's not correct. The emergency fund is not for goals or investing; it's to protect you from the unexpected.",
+        "per_option": {
+          "a": "Correct: it's money available for emergencies, not for planned expenses.",
+          "b": "That's savings for goals, not an emergency fund. If you use it for vacations, it won't be there when you need it.",
+          "c": "Investing your emergency fund is risky because it can lose value just when you need it most. It must be liquid and safe."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gastos-fijos-mensuales",
+        "fondo-de-emergencia"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Your monthly fixed expenses are: rent $8,000, electricity $400, internet $600, groceries $3,500, transportation $1,500. How much do you need for a 3-month fund?",
+        "instruction": "Calculate total fixed expenses per month and multiply by 3. Write only the number (no signs or commas).",
+        "answer": "42000"
+      },
+      "correct_answer": {
+        "answer": "42000"
+      },
+      "feedback": {
+        "success": "Correct! Monthly expenses: $8,000+$400+$600+$3,500+$1,500 = $14,000. For 3 months = $42,000.",
+        "error": "Check the sum: rent $8,000 + electricity $400 + internet $600 + groceries $3,500 + transportation $1,500 = $14,000 per month. Multiply by 3: $42,000."
+      }
+    },
+    {
+      "type": "emergency_fund",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "initialFund": 0,
+        "events": [
+          {
+            "id": "e1",
+            "description": "You have a net salary of $18,000 per month. Your fixed expenses are $14,000. How many months of cushion do you want to build?",
+            "options": [
+              {
+                "id": "opt1",
+                "text": "3 months: $42,000. I'll contribute $4,000 per month.",
+                "cost": 0
+              },
+              {
+                "id": "opt2",
+                "text": "6 months: $84,000. I'll contribute $4,000 per month.",
+                "cost": 0
+              },
+              {
+                "id": "opt3",
+                "text": "I don't need a fund, I prefer to spend the extra on outings.",
+                "cost": 0
+              }
+            ]
+          },
+          {
+            "id": "e2",
+            "description": "After 10 months saving $4,000 per month, your fund is $40,000. The water heater breaks down! The repair costs $2,500. What do you do?",
+            "options": [
+              {
+                "id": "opt4",
+                "text": "I pay for the repair from the emergency fund.",
+                "cost": 2500
+              },
+              {
+                "id": "opt5",
+                "text": "I pay with a credit card so I don't touch the fund.",
+                "cost": 0
+              },
+              {
+                "id": "opt6",
+                "text": "I don't repair it, I'll shower with cold water.",
+                "cost": 0
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "minBalance": 37500
+      },
+      "feedback": {
+        "success": "Excellent! You chose to build a 3-month fund and use it for the water heater. Your fund is now $37,500, still within the safe range. Well done!",
+        "error": "Review your decisions. For the fund to work, you must choose to save at least 3 months and use the fund for the emergency, not the credit card."
+      }
+    },
+    {
+      "type": "inflation_simulator",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "inflacion-en-costo-de-vida",
+        "gastos-fijos-mensuales"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "product": {
+          "basePrice": 14000,
+          "baseYear": 2024,
+          "name": "Monthly fixed expenses",
+          "icon": "📈"
+        },
+        "inflationRate": 4.5,
+        "defaultYearStart": 2024,
+        "defaultYearEnd": 2025,
+        "minYear": 2024,
+        "maxYear": 2025
+      },
+      "correct_answer": null
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your friend tells you: 'I have $50,000 saved. I saw a flight to Cancun on sale for $8,000. I'll use that money because it's mine. Besides, I calculated my fund last year and it hasn't changed.'",
+        "instruction": "Identify the two traps in his reasoning.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Using the emergency fund for a flight is not an emergency.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "The fund must be updated every year because inflation increases fixed expenses.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "The saved money is his and he can spend it however he wants.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "Correct! Using the fund for a flight is not an emergency, and not updating it for inflation leaves the fund insufficient.",
+        "error": "Check: one trap is spending the fund on something non-urgent; another is not adjusting for inflation. The third statement is true, but it's not a trap."
+      }
+    },
+    {
+      "type": "emergency_fund",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "initialFund": 42000,
+        "events": [
+          {
+            "id": "e1",
+            "description": "A year has passed. Inflation was 4.5%. Your fixed expenses are now $14,630 per month. Your salary increased to $19,000. What is your new fund goal for 3 months?",
+            "options": [
+              {
+                "id": "opt1",
+                "text": "3 months: $43,890. I'll contribute $1,000 per month.",
+                "cost": 0
+              },
+              {
+                "id": "opt2",
+                "text": "3 months: $43,890. I'll contribute $500 per month.",
+                "cost": 0
+              },
+              {
+                "id": "opt3",
+                "text": "I don't need to adjust, my $42,000 fund is still enough.",
+                "cost": 0
+              }
+            ]
+          },
+          {
+            "id": "e2",
+            "description": "Your current fund is $42,000. You need $43,890 for 3 months. What do you do to reach the goal?",
+            "options": [
+              {
+                "id": "opt4",
+                "text": "I contribute $1,890 from my next paycheck and complete the fund.",
+                "cost": 1890
+              },
+              {
+                "id": "opt5",
+                "text": "I do nothing, $42,000 is close to $43,890.",
+                "cost": 0
+              },
+              {
+                "id": "opt6",
+                "text": "I reduce my fixed expenses so the fund covers it.",
+                "cost": 0
+              }
+            ]
+          }
+        ]
+      },
+      "correct_answer": {
+        "minBalance": 42000
+      },
+      "feedback": {
+        "success": "Perfect! You chose to adjust the goal to $43,890 and complete the difference. Your fund is now updated and covers 3 months of expenses with inflation.",
+        "error": "To maintain the cushion, you must recognize that inflation increased your expenses. The best decision is to adjust the goal and contribute the difference."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "instruction": "Match each concept with its description.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "Emergency fund",
+            "right": "Liquid savings for emergencies"
+          },
+          {
+            "id": "p2",
+            "left": "Monthly fixed expenses",
+            "right": "Rent, utilities, groceries, transportation"
+          },
+          {
+            "id": "p3",
+            "left": "Inflation",
+            "right": "General increase in prices over time"
+          },
+          {
+            "id": "p4",
+            "left": "Budget adjustment",
+            "right": "Update income and expenses periodically"
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Very good! You have correctly matched the key concepts.",
+        "error": "Check: the emergency fund is for emergencies; fixed expenses are those that repeat each month; inflation raises prices; and adjusting the budget means updating it."
+      }
+    },
+    {
+      "type": "case_study",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Luis lives in Monterrey, earns $22,000 net per month. His fixed expenses are: rent $9,000, electricity $500, internet $700, groceries $4,000, transportation $2,000. He has $50,000 saved. Annual inflation is 4.5%.",
+        "question": "What is the correct diagnosis of his emergency fund?",
+        "instruction": "Choose the most accurate option.",
+        "options": [
+          {
+            "id": "a",
+            "text": "His $50,000 fund covers 3 months ($48,600) but not 6 months ($97,200). Also, with 4.5% inflation, next year he will need $50,787 for 3 months, so he must increase it."
+          },
+          {
+            "id": "b",
+            "text": "His $50,000 fund is enough for 6 months because he earns $22,000."
+          },
+          {
+            "id": "c",
+            "text": "He doesn't need a fund because he has a good salary."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! His monthly expenses are $16,200. 3 months = $48,600; 6 months = $97,200. With 4.5% inflation, next year 3 months will cost $50,787. His $50,000 fund barely covers today, but he must increase it.",
+        "error": "Check the calculations: fixed expenses add up to $16,200. 3 months are $48,600; 6 months are $97,200. With inflation, the required amount goes up.",
+        "per_option": {
+          "a": "Correct: the fund covers 3 months today, but with inflation it falls short.",
+          "b": "Incorrect: $50,000 is not enough for 6 months ($97,200).",
+          "c": "Incorrect: even with a good salary, emergencies happen and without a fund you go into debt."
+        }
+      }
+    },
+    {
+      "type": "decision_challenge",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "ajuste-de-presupuesto"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Luis has $50,000 saved. His target fund for 3 months is $48,600. Suddenly, his car needs an urgent repair of $4,000. Luis doesn't want to use his fund because 'it's for major emergencies.' What should he do?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Use $4,000 from the fund to pay for the repair and then replenish it in the coming months."
+          },
+          {
+            "id": "b",
+            "text": "Pay for the repair with a credit card and pay interest."
+          },
+          {
+            "id": "c",
+            "text": "Don't repair the car and wait to save the money."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exactly! A car repair is a valid emergency. Using the fund and replenishing it is the best decision. His fund remains at $46,000, still close to $48,600.",
+        "error": "Check: the fund is for emergencies. Using it and replenishing it is better than going into debt or not repairing the car.",
+        "per_option": {
+          "a": "Correct: you use the fund for what it was created for and then replenish it.",
+          "b": "Using a credit card generates interest and unnecessary debt.",
+          "c": "Not repairing the car can lead to bigger problems (accidents, more costs)."
+        }
+      }
+    },
+    {
+      "type": "quiz_battle",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "If your monthly fixed expenses are $14,000 and inflation is 5% per year, what will your monthly expense be next year?",
+        "instruction": "Select the correct answer.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$14,700"
+          },
+          {
+            "id": "b",
+            "text": "$14,000"
+          },
+          {
+            "id": "c",
+            "text": "$15,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! $14,000 x 1.05 = $14,700. Inflation increases your fixed expenses.",
+        "error": "The calculation is: current expense x (1 + inflation rate). $14,000 x 1.05 = $14,700.",
+        "per_option": {
+          "a": "Correct: $14,000 + 5% = $14,700.",
+          "b": "Incorrect: inflation causes prices to rise, they don't stay the same.",
+          "c": "Incorrect: $15,000 would be an increase of 7.14%, not 5%."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "inflacion-en-costo-de-vida"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "You did it! Now you know that a fund of 3 to 6 months of fixed expenses, updated every year for inflation, is what makes your financial independence real. In the next lesson, you'll learn how to negotiate a better salary to fill that fund faster. See you!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "5-1-6-14",
+      "band": 5,
+      "levels": [
+        5,
+        1,
+        6,
+        14
+      ],
+      "character": "zara_vex",
+      "micro_objective": "Calcular el colchón de emergencia (3-6 meses de gastos fijos) que necesita un adulto recién independizado y reconocer cómo la inflación encarece esos mismos gastos fijos con el tiempo, ajustando el presupuesto en consecuencia.",
+      "concept_ids": [
+        "fondo-de-emergencia",
+        "gastos-fijos-mensuales",
+        "inflacion-en-costo-de-vida",
+        "ajuste-de-presupuesto"
+      ],
+      "scenario": "Zara Vex acompaña a la estudiante en su primer mes viviendo sola en un departamento en Monterrey: la renta, la luz, el internet y el súper ya están definidos, pero un imprevisto (se descompone el boiler) revela que no tiene de dónde sacar el dinero. Zara la guía a construir un fondo de emergencia real y a entender por qué, un año después, esos mismos gastos cuestan más por la inflación, obligándola a recalcular cuánto debe tener ahorrado.",
+      "chosen_topic": "El Presupuesto del Adulto Independiente",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por escena relatable + mini-misterio: Zara presenta el primer mes sola y el boiler descompuesto que no puede pagar. Plantea la pregunta: ¿de dónde sale ese dinero inesperado? Activa la experiencia real de la edad (independizarse) y nombra 'fondo de emergencia' de forma natural."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "intro_narrative",
+          "purpose": "Anclaje motivacional: sin un colchón, un solo imprevisto te empuja a tarjeta de crédito o a pedir prestado, retrasando la independencia. Conecta con por qué los adultos que admira sí lo tienen."
+        },
+        {
+          "phase": "que_es",
+          "type": "multiple_choice",
+          "purpose": "Reconocer (Reconocer): definir operativamente qué es un fondo de emergencia (dinero líquido reservado solo para imprevistos, equivalente a 3-6 meses de gastos fijos), distinguiéndolo de ahorro para metas o inversión. Feedback por opción que corrige el malentendido."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "math_challenge",
+          "purpose": "Calcular (Calcular): con gastos fijos mensuales reales en MXN (renta + servicios + súper + transporte), calcular el monto objetivo del fondo a 3 y a 6 meses. Ejemplo guiado del mecanismo (gastos_mensuales x meses)."
+        },
+        {
+          "phase": "practicar",
+          "type": "emergency_fund",
+          "purpose": "FOCO 1 - corazón de la práctica (Aplicar/Calcular): simulador de fondo de emergencia. La estudiante decide cuántos meses de colchón fijar y cuánto apartar al mes dado un sueldo neto, viendo cómo crece el fondo y si cubre el imprevisto del boiler. Aplicación directa del micro-objetivo."
+        },
+        {
+          "phase": "reforzar",
+          "type": "inflation_simulator",
+          "purpose": "FOCO 2 - corazón del refuerzo (Comparar/Aplicar): simulador de inflación. Avanza el reloj 1 año: renta y súper suben por inflación, así que los mismos 'gastos fijos' ahora cuestan más. La estudiante observa cómo el fondo calculado antes ya NO cubre 6 meses y debe recalcular. Conecta inflación con costo de vida."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "Decidir (Decidir): detectar la trampa común — tratar el fondo de emergencia como dinero disponible para un antojo/oferta, o no actualizarlo por inflación. La estudiante identifica cuál decisión vacía o erosiona indebidamente el colchón. Feedback conceptual del 'por qué'."
+        },
+        {
+          "phase": "aplicar",
+          "type": "emergency_fund",
+          "purpose": "FOCO 1 reaplicado en contexto nuevo (Aplicar): variante del simulador de fondo — ahora con cifras ajustadas por inflación del año siguiente y un sueldo distinto, la estudiante define el nuevo monto objetivo y el plan de aporte mensual. Integra fondo + ajuste por inflación en una sola decisión."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "matching_pairs",
+          "purpose": "Reconocer/Comparar: relacionar fondo de emergencia, gastos fijos, inflación y ajuste de presupuesto con conceptos vecinos del Reino de los Titanes (presupuesto del adulto, negociación salarial para subir el sueldo neto, evitar deuda de tarjeta). Teje la espina conceptual."
+        },
+        {
+          "phase": "caso_real",
+          "type": "case_study",
+          "purpose": "Aplicar/Decidir en caso real México: un joven en Monterrey con sueldo neto realista, renta e inflación anual del país; debe diagnosticar si su fondo es suficiente y qué hacer. Usa datos e instituciones reales coherentes con la banda."
+        },
+        {
+          "phase": "caso_real",
+          "type": "decision_challenge",
+          "purpose": "Decidir (Decidir) sobre el caso real: ante el imprevisto del boiler con un fondo a medio construir, elegir la mejor jugada (usar parte del fondo y reponerlo vs. tarjeta de crédito vs. no hacer nada). Refuerza el uso correcto del colchón y evita repetir el tipo previo."
+        },
+        {
+          "phase": "reforzar",
+          "type": "quiz_battle",
+          "purpose": "Calcular/Comparar consolidado y dinámico: ronda rápida que mezcla cálculo del monto de fondo, efecto de inflación sobre gastos fijos y distinción fondo vs. inversión. Verificación de precisión conceptual antes del cierre, en formato distinto a los anteriores."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Zara celebra el esfuerzo, resume en una frase (un fondo de 3-6 meses de gastos fijos, actualizado por inflación, es lo que hace real tu independencia) y anticipa la próxima lección: cómo subir tu sueldo neto con una buena negociación salarial para llenar ese fondo más rápido. Conecta hacia adelante."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "fondo-de-emergencia",
+      "gastos-fijos-mensuales",
+      "inflacion-en-costo-de-vida",
+      "ajuste-de-presupuesto"
+    ]
+  }
+}

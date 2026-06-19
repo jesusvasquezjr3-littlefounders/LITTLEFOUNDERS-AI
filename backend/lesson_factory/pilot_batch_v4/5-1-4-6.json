@@ -1,0 +1,1008 @@
+{
+  "lesson_code": "5-1-4-6",
+  "title_es": "Bruto vs Neto: El dinero que realmente llega a tu cuenta",
+  "description_es": "Aprende a calcular el ISR que te descuentan de tu sueldo y descubre por qué el número del contrato no es el dinero que recibes. Compara dos ofertas de trabajo y elige la que realmente paga más.",
+  "duration": 25,
+  "age_rate": "15-17",
+  "points_reward": 10,
+  "adventure_level": 5,
+  "saga_level": 1,
+  "topic_level": 4,
+  "lesson_number": 6,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Hola! Soy Zara Vex. Acabo de ver tus dos ofertas de trabajo. La oferta A paga $18,000 al mes. La oferta B paga $17,200 al mes más vales de despensa. ¿Cuál crees que es mejor? La mayoría elige la A por el número más grande. Pero déjame decirte un secreto: el número del contrato no es el dinero que llega a tu cuenta. Hoy vamos a descubrir por qué."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Zara te pregunta: 'A simple vista, ¿qué oferta tomarías y por qué?'",
+        "instruction": "Elige tu respuesta inicial.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Tomaría la A porque $18,000 es más que $17,200."
+          },
+          {
+            "id": "b",
+            "text": "Tomaría la B porque los vales de despensa suman valor."
+          },
+          {
+            "id": "c",
+            "text": "No sé, necesito más información."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "¡Exacto! Aún no sabes cuánto te descuentan de ISR. El sueldo bruto no es el neto. Vas por buen camino.",
+        "error": "Cualquier respuesta es válida como primera impresión, pero lo importante es que te falta información clave: el ISR que te retienen. Vamos a descubrirlo.",
+        "per_option": {
+          "a": "Es tentador por el número grande, pero el sueldo bruto no considera impuestos. Aún no sabes cuánto te queda neto.",
+          "b": "Los vales de despensa son un beneficio, pero sin saber el neto de cada oferta no puedes comparar realmente.",
+          "c": "¡Correcto! Necesitas más datos: el ISR que te descuentan. Vamos a calcularlo."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El sueldo bruto es lo que dice tu contrato. El sueldo neto es lo que realmente recibes después de las deducciones. La principal deducción es el ISR (Impuesto Sobre la Renta). Tu patrón lo retiene y lo paga al SAT por ti. Por ejemplo, si tu bruto es $10,000 y te retienen $1,500 de ISR, tu neto es $8,500. El neto siempre es menor que el bruto."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Relaciona cada término con su definición.",
+        "instruction": "Arrastra cada término a su definición correcta.",
+        "pairs": [
+          {
+            "id": "p1",
+            "term": "Sueldo bruto",
+            "definition": "Cantidad que aparece en el contrato antes de descuentos."
+          },
+          {
+            "id": "p2",
+            "term": "Sueldo neto",
+            "definition": "Cantidad que realmente recibes en tu cuenta."
+          },
+          {
+            "id": "p3",
+            "term": "ISR",
+            "definition": "Impuesto que el patrón descuenta de tu sueldo."
+          },
+          {
+            "id": "p4",
+            "term": "Retención",
+            "definition": "Acción de descontar una parte del sueldo para pagar impuestos."
+          }
+        ]
+      },
+      "feedback": {
+        "success": "¡Perfecto! Ya dominas los términos clave: bruto es el contrato, neto es lo que recibes, ISR es el impuesto y retención es el descuento.",
+        "error": "Revisa las definiciones. Recuerda: bruto es antes de descuentos, neto es después, ISR es el impuesto y retención es la acción de descontar."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Para calcular el ISR usamos una tabla por rangos. Por ejemplo, si ganas $10,000 al mes, buscas el rango: de $8,000 a $12,000. La tasa es 15% y la cuota fija es $1,200. Entonces ISR = ($10,000 - $8,000) * 15% + $1,200 = $200 + $1,200 = $1,400. Tu neto sería $10,000 - $1,400 = $8,600. Ahora aplica esto a tus ofertas."
+      }
+    },
+    {
+      "type": "tax_puzzle",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "puzzle": "Calcula el ISR para la oferta A: sueldo bruto $18,000. Usa la tabla: rango de $15,000 a $20,000, tasa 20%, cuota fija $2,500.",
+        "instruction": "Elige el ISR correcto.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$3,100"
+          },
+          {
+            "id": "b",
+            "text": "$3,600"
+          },
+          {
+            "id": "c",
+            "text": "$4,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! ISR = ($18,000 - $15,000) * 20% + $2,500 = $3,000 * 0.20 + $2,500 = $600 + $2,500 = $3,100.",
+        "error": "Revisa el cálculo: resta el límite inferior del rango, multiplica por la tasa y suma la cuota fija.",
+        "per_option": {
+          "a": "¡Correcto! $3,100 es el ISR.",
+          "b": "Incorrecto. Quizás usaste una tasa o cuota equivocada. La operación correcta: ($18,000 - $15,000) * 20% + $2,500 = $3,100.",
+          "c": "Incorrecto. Tal vez multiplicaste todo el sueldo por 20% sin restar el límite inferior. La fórmula es: (sueldo - límite inferior) * tasa + cuota fija."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Si el sueldo bruto de la oferta A es $18,000 y el ISR calculado es $3,100, ¿cuál es el sueldo neto?",
+        "instruction": "Escribe el sueldo neto en números (sin comas ni signos).",
+        "answer": 14900
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Exacto! $18,000 - $3,100 = $14,900. Ese es el dinero que realmente llega a tu cuenta.",
+        "error": "Recuerda: neto = bruto - ISR. En este caso, $18,000 - $3,100 = $14,900."
+      }
+    },
+    {
+      "type": "tax_puzzle",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "puzzle": "Ahora calcula el ISR para la oferta B: sueldo bruto $17,200. Usa la misma tabla: rango de $15,000 a $20,000, tasa 20%, cuota fija $2,500.",
+        "instruction": "Elige el ISR correcto.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$2,940"
+          },
+          {
+            "id": "b",
+            "text": "$3,440"
+          },
+          {
+            "id": "c",
+            "text": "$2,500"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! ISR = ($17,200 - $15,000) * 20% + $2,500 = $2,200 * 0.20 + $2,500 = $440 + $2,500 = $2,940.",
+        "error": "Revisa: resta $15,000 a $17,200, multiplica por 20% y suma $2,500.",
+        "per_option": {
+          "a": "¡Correcto! $2,940 es el ISR.",
+          "b": "Incorrecto. Quizás usaste $17,200 * 20% = $3,440, pero debes restar el límite inferior primero.",
+          "c": "Incorrecto. $2,500 es solo la cuota fija, falta sumar el excedente."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Un compañero dice: 'El sueldo bruto más alto siempre te da más dinero en la cuenta. Además, el ISR te lo devuelven completo en la declaración anual.'",
+        "instruction": "Identifica las afirmaciones falsas (trampas).",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "El sueldo bruto más alto siempre da más dinero neto.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "El ISR se devuelve completo en la declaración anual.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "El sueldo neto se calcula restando el ISR al bruto.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "¡Bien! Ambas son falsas. El bruto más alto no siempre da más neto porque las deducciones varían. Y el ISR no se devuelve completo; solo si pagaste de más.",
+        "error": "Revisa: la afirmación verdadera es que el neto se calcula restando el ISR. Las falsas son las otras dos.",
+        "per_option": {
+          "t1": "Falso: el neto depende de las deducciones, no solo del bruto.",
+          "t2": "Falso: el ISR retenido no se devuelve completo; solo si hay saldo a favor.",
+          "t3": "Verdadero: neto = bruto - ISR."
+        }
+      }
+    },
+    {
+      "type": "salary_comparison",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "compare-offers-by-net"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Ya calculaste los netos: Oferta A: $14,900 netos. Oferta B: $17,200 brutos - $2,940 ISR = $14,260 netos, más $1,000 en vales de despensa (equivalentes a efectivo).",
+        "question": "¿Cuál oferta te da más ingreso total neto (incluyendo vales)?",
+        "options": [
+          {
+            "id": "offer_a",
+            "name": "Oferta A",
+            "details": "$14,900 netos sin vales"
+          },
+          {
+            "id": "offer_b",
+            "name": "Oferta B",
+            "details": "$14,260 netos + $1,000 vales = $15,260 total"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "offer_b"
+      },
+      "feedback": {
+        "success": "¡Correcto! La oferta B te da $15,260 total, más que los $14,900 de la A. El número del contrato no lo es todo.",
+        "error": "Compara los totales: oferta A = $14,900; oferta B = $14,260 + $1,000 = $15,260. La B es mejor.",
+        "per_option": {
+          "offer_a": "La oferta A da $14,900 netos, menos que los $15,260 de la B.",
+          "offer_b": "¡Correcto! La oferta B da $15,260 en total, superando a la A."
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Cuando trabajas como empleado, el patrón retiene el ISR y lo paga al SAT. ¿Qué crees que pasa si trabajas como freelancer (por tu cuenta)?",
+        "instruction": "Elige la opción correcta.",
+        "options": [
+          {
+            "id": "a",
+            "text": "El cliente te retiene el ISR igual que un patrón."
+          },
+          {
+            "id": "b",
+            "text": "Tú mismo debes calcular y pagar tu ISR al SAT."
+          },
+          {
+            "id": "c",
+            "text": "No pagas ISR porque eres independiente."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "¡Correcto! Como freelancer, tú eres responsable de declarar y pagar tu ISR. No hay un patrón que lo retenga.",
+        "error": "Revisa: como independiente, no hay retención automática; tú debes hacerlo.",
+        "per_option": {
+          "a": "Incorrecto. Los clientes no retienen ISR como un patrón; tú declaras.",
+          "b": "¡Correcto! Tú mismo pagas tu ISR.",
+          "c": "Incorrecto. Los freelancers también pagan ISR, pero ellos lo calculan y pagan."
+        }
+      }
+    },
+    {
+      "type": "salary_comparison",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "compare-offers-by-net",
+        "isr-withholding"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Tu amigo recibe dos ofertas: como empleado: $25,000 brutos (ISR estimado $4,500). Como freelancer: $27,000 brutos (él paga su ISR, estimado $5,400).",
+        "question": "¿Cuál opción le da mayor ingreso neto mensual?",
+        "options": [
+          {
+            "id": "offer_a",
+            "name": "Empleado",
+            "details": "$25,000 - $4,500 = $20,500 netos"
+          },
+          {
+            "id": "offer_b",
+            "name": "Freelancer",
+            "details": "$27,000 - $5,400 = $21,600 netos"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "offer_b"
+      },
+      "feedback": {
+        "success": "¡Correcto! El freelancer da $21,600 netos, más que los $20,500 del empleado. Aunque el bruto es mayor, también el ISR es mayor, pero aún así gana más.",
+        "error": "Calcula los netos: empleado $25,000 - $4,500 = $20,500; freelancer $27,000 - $5,400 = $21,600. El freelancer da más.",
+        "per_option": {
+          "offer_a": "El empleado da $20,500 netos, menos que el freelancer.",
+          "offer_b": "¡Correcto! El freelancer da $21,600 netos."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "En el caso anterior, como el sueldo bruto del freelancer ($27,000) es mayor que el del empleado ($25,000), entonces el freelancer siempre recibe más dinero neto.",
+        "instruction": "¿Verdadero o falso?",
+        "options": [
+          {
+            "id": "true",
+            "text": "Verdadero"
+          },
+          {
+            "id": "false",
+            "text": "Falso"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "¡Correcto! Es falso porque el neto depende de las deducciones. En este caso el freelancer sí gana más neto, pero no es automático; hay que calcular.",
+        "error": "Es falso: un bruto mayor no garantiza un neto mayor si las deducciones son más altas. Siempre hay que calcular el neto.",
+        "per_option": {
+          "true": "Incorrecto. No siempre un bruto mayor da un neto mayor; depende de las deducciones.",
+          "false": "¡Correcto! No es automático, hay que calcular."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hoy aprendiste que el sueldo que importa es el neto, no el número del contrato. Calculaste ISR, comparaste ofertas y descubriste que la oferta B pagaba más. En la próxima lección veremos cómo leer tu recibo de nómina completo: IMSS, INFONAVIT y otras deducciones. ¡Sigue así!"
+      }
+    }
+  ],
+  "title_en": "Gross vs Net: The Money That Actually Hits Your Account",
+  "description_en": "Learn how to calculate the ISR deducted from your salary and discover why the number on your contract isn't the money you receive. Compare two job offers and choose the one that actually pays more.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Hi! I'm Zara Vex. I just saw your two job offers. Offer A pays $18,000 a month. Offer B pays $17,200 a month plus grocery vouchers. Which one do you think is better? Most people choose A because the number is bigger. But let me tell you a secret: the number on the contract is not the money that hits your account. Today we're going to find out why."
+      }
+    },
+    {
+      "type": "roleplay_chat",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Zara asks you: 'At first glance, which offer would you take and why?'",
+        "instruction": "Choose your initial answer.",
+        "options": [
+          {
+            "id": "a",
+            "text": "I would take A because $18,000 is more than $17,200."
+          },
+          {
+            "id": "b",
+            "text": "I would take B because the grocery vouchers add value."
+          },
+          {
+            "id": "c",
+            "text": "I don't know, I need more information."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "Exactly! You don't know yet how much ISR is deducted. Gross salary is not net. You're on the right track.",
+        "error": "Any answer is valid as a first impression, but the important thing is that you're missing key information: the ISR withheld. Let's find out.",
+        "per_option": {
+          "a": "It's tempting because of the big number, but gross salary doesn't consider taxes. You don't know your net yet.",
+          "b": "Grocery vouchers are a benefit, but without knowing the net of each offer you can't really compare.",
+          "c": "Correct! You need more data: the ISR deducted. Let's calculate it."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Gross salary is what your contract says. Net salary is what you actually receive after deductions. The main deduction is ISR (Income Tax). Your employer withholds it and pays it to the tax authority for you. For example, if your gross is $10,000 and they withhold $1,500 in ISR, your net is $8,500. Net is always less than gross."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Match each term with its definition.",
+        "instruction": "Drag each term to its correct definition.",
+        "pairs": [
+          {
+            "id": "p1",
+            "term": "Gross salary",
+            "definition": "Amount shown on the contract before deductions."
+          },
+          {
+            "id": "p2",
+            "term": "Net salary",
+            "definition": "Amount you actually receive in your account."
+          },
+          {
+            "id": "p3",
+            "term": "ISR",
+            "definition": "Tax that the employer deducts from your salary."
+          },
+          {
+            "id": "p4",
+            "term": "Withholding",
+            "definition": "Action of deducting a portion of salary to pay taxes."
+          }
+        ]
+      },
+      "feedback": {
+        "success": "Perfect! You now master the key terms: gross is the contract, net is what you receive, ISR is the tax, and withholding is the deduction.",
+        "error": "Review the definitions. Remember: gross is before deductions, net is after, ISR is the tax, and withholding is the action of deducting."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "To calculate ISR we use a table by brackets. For example, if you earn $10,000 a month, you look for the bracket: from $8,000 to $12,000. The rate is 15% and the fixed fee is $1,200. So ISR = ($10,000 - $8,000) * 15% + $1,200 = $200 + $1,200 = $1,400. Your net would be $10,000 - $1,400 = $8,600. Now apply this to your offers."
+      }
+    },
+    {
+      "type": "tax_puzzle",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "puzzle": "Calculate the ISR for offer A: gross salary $18,000. Use the table: bracket $15,000 to $20,000, rate 20%, fixed fee $2,500.",
+        "instruction": "Choose the correct ISR.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$3,100"
+          },
+          {
+            "id": "b",
+            "text": "$3,600"
+          },
+          {
+            "id": "c",
+            "text": "$4,000"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! ISR = ($18,000 - $15,000) * 20% + $2,500 = $3,000 * 0.20 + $2,500 = $600 + $2,500 = $3,100.",
+        "error": "Review the calculation: subtract the lower limit of the bracket, multiply by the rate, and add the fixed fee.",
+        "per_option": {
+          "a": "Correct! $3,100 is the ISR.",
+          "b": "Incorrect. Maybe you used the wrong rate or fee. The correct operation: ($18,000 - $15,000) * 20% + $2,500 = $3,100.",
+          "c": "Incorrect. Perhaps you multiplied the whole salary by 20% without subtracting the lower limit. The formula is: (salary - lower limit) * rate + fixed fee."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "If the gross salary of offer A is $18,000 and the calculated ISR is $3,100, what is the net salary?",
+        "instruction": "Write the net salary in numbers (no commas or symbols).",
+        "answer": 14900
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exactly! $18,000 - $3,100 = $14,900. That's the money that actually hits your account.",
+        "error": "Remember: net = gross - ISR. In this case, $18,000 - $3,100 = $14,900."
+      }
+    },
+    {
+      "type": "tax_puzzle",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "puzzle": "Now calculate the ISR for offer B: gross salary $17,200. Use the same table: bracket $15,000 to $20,000, rate 20%, fixed fee $2,500.",
+        "instruction": "Choose the correct ISR.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$2,940"
+          },
+          {
+            "id": "b",
+            "text": "$3,440"
+          },
+          {
+            "id": "c",
+            "text": "$2,500"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Correct! ISR = ($17,200 - $15,000) * 20% + $2,500 = $2,200 * 0.20 + $2,500 = $440 + $2,500 = $2,940.",
+        "error": "Review: subtract $15,000 from $17,200, multiply by 20%, and add $2,500.",
+        "per_option": {
+          "a": "Correct! $2,940 is the ISR.",
+          "b": "Incorrect. Maybe you used $17,200 * 20% = $3,440, but you must subtract the lower limit first.",
+          "c": "Incorrect. $2,500 is just the fixed fee, you need to add the excess."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "A colleague says: 'The highest gross salary always gives you more money in your account. Also, you get all the ISR back in your annual tax return.'",
+        "instruction": "Identify the false statements (traps).",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "The highest gross salary always gives more net money.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "All ISR is refunded in the annual tax return.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Net salary is calculated by subtracting ISR from gross.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "Good! Both are false. The highest gross doesn't always give the highest net because deductions vary. And ISR is not fully refunded; only if you overpaid.",
+        "error": "Review: the true statement is that net is calculated by subtracting ISR. The false ones are the other two.",
+        "per_option": {
+          "t1": "False: net depends on deductions, not just gross.",
+          "t2": "False: withheld ISR is not fully refunded; only if there is a balance in your favor.",
+          "t3": "True: net = gross - ISR."
+        }
+      }
+    },
+    {
+      "type": "salary_comparison",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "compare-offers-by-net"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "You've calculated the nets: Offer A: $14,900 net. Offer B: $17,200 gross - $2,940 ISR = $14,260 net, plus $1,000 in grocery vouchers (equivalent to cash).",
+        "question": "Which offer gives you more total net income (including vouchers)?",
+        "options": [
+          {
+            "id": "offer_a",
+            "name": "Offer A",
+            "details": "$14,900 net, no vouchers"
+          },
+          {
+            "id": "offer_b",
+            "name": "Offer B",
+            "details": "$14,260 net + $1,000 vouchers = $15,260 total"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "offer_b"
+      },
+      "feedback": {
+        "success": "Correct! Offer B gives you $15,260 total, more than Offer A's $14,900. The number on the contract isn't everything.",
+        "error": "Compare the totals: Offer A = $14,900; Offer B = $14,260 + $1,000 = $15,260. Offer B is better.",
+        "per_option": {
+          "offer_a": "Offer A gives $14,900 net, less than Offer B's $15,260.",
+          "offer_b": "Correct! Offer B gives $15,260 total, beating Offer A."
+        }
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "isr-withholding"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "When you work as an employee, the employer withholds ISR and pays it to the tax authority. What do you think happens if you work as a freelancer (self-employed)?",
+        "instruction": "Choose the correct option.",
+        "options": [
+          {
+            "id": "a",
+            "text": "The client withholds ISR just like an employer."
+          },
+          {
+            "id": "b",
+            "text": "You yourself must calculate and pay your ISR to the tax authority."
+          },
+          {
+            "id": "c",
+            "text": "You don't pay ISR because you are independent."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct! As a freelancer, you are responsible for declaring and paying your ISR. There is no employer to withhold it.",
+        "error": "Review: as an independent, there is no automatic withholding; you must do it yourself.",
+        "per_option": {
+          "a": "Incorrect. Clients do not withhold ISR like an employer; you declare.",
+          "b": "Correct! You pay your own ISR.",
+          "c": "Incorrect. Freelancers also pay ISR, but they calculate and pay it themselves."
+        }
+      }
+    },
+    {
+      "type": "salary_comparison",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "compare-offers-by-net",
+        "isr-withholding"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Your friend receives two offers: as an employee: $25,000 gross (estimated ISR $4,500). As a freelancer: $27,000 gross (he pays his own ISR, estimated $5,400).",
+        "question": "Which option gives him a higher monthly net income?",
+        "options": [
+          {
+            "id": "offer_a",
+            "name": "Employee",
+            "details": "$25,000 - $4,500 = $20,500 net"
+          },
+          {
+            "id": "offer_b",
+            "name": "Freelancer",
+            "details": "$27,000 - $5,400 = $21,600 net"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "offer_b"
+      },
+      "feedback": {
+        "success": "Correct! The freelancer gives $21,600 net, more than the employee's $20,500. Even though the gross is higher, the ISR is also higher, but he still earns more.",
+        "error": "Calculate the nets: employee $25,000 - $4,500 = $20,500; freelancer $27,000 - $5,400 = $21,600. The freelancer gives more.",
+        "per_option": {
+          "offer_a": "The employee gives $20,500 net, less than the freelancer.",
+          "offer_b": "Correct! The freelancer gives $21,600 net."
+        }
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "In the previous case, since the freelancer's gross salary ($27,000) is higher than the employee's ($25,000), the freelancer always receives more net money.",
+        "instruction": "True or false?",
+        "options": [
+          {
+            "id": "true",
+            "text": "True"
+          },
+          {
+            "id": "false",
+            "text": "False"
+          }
+        ]
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correct! It is false because net depends on deductions. In this case the freelancer does earn more net, but it's not automatic; you have to calculate.",
+        "error": "It is false: a higher gross does not guarantee a higher net if deductions are higher. You always have to calculate the net.",
+        "per_option": {
+          "true": "Incorrect. A higher gross does not always give a higher net; it depends on deductions.",
+          "false": "Correct! It's not automatic, you have to calculate."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "gross-vs-net-pay"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Today you learned that the salary that matters is the net, not the number on the contract. You calculated ISR, compared offers, and discovered that offer B paid more. In the next lesson we'll see how to read your full pay stub: IMSS, INFONAVIT, and other deductions. Keep it up!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "5-1-4-6",
+      "band": 5,
+      "levels": [
+        5,
+        1,
+        4,
+        6
+      ],
+      "character": "zara_vex",
+      "micro_objective": "Dado un sueldo bruto mensual, el estudiante calcula la retención de ISR aplicando la tabla y obtiene el sueldo neto, y usa ese neto para comparar dos ofertas de trabajo y elegir la que realmente paga más.",
+      "concept_ids": [
+        "gross-vs-net-pay",
+        "isr-withholding",
+        "compare-offers-by-net"
+      ],
+      "chosen_topic": "El Impuesto Sobre la Renta (ISR)",
+      "scenario": "Zara Vex recibe a un estudiante que acaba de conseguir dos ofertas para su primer empleo formal en Monterrey. La oferta A dice \"$18,000 al mes\" y la oferta B dice \"$17,200 al mes con vales de despensa\". El estudiante asume que A es obviamente mejor por el número más grande. Zara sonríe: \"El número del contrato no es el dinero que llega a tu cuenta. Antes de que te emociones, vamos a desempacar tu primer cheque — porque saldrá menos de lo que esperas, y hoy vas a entender exactamente por qué.\" El reto: aprender a leer el bruto vs neto, calcular cuánto ISR retiene el patrón, y decidir cuál oferta paga más de verdad cuando comparas el neto que cae en la cuenta.",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook relatable: Zara presenta las dos ofertas de primer empleo ($18,000 vs $17,200) y planta la intriga de por qué el cheque siempre llega más bajo de lo esperado. Activa la pregunta '¿cuál pago más?' sin resolverla aún."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "roleplay_chat",
+          "purpose": "El estudiante responde a Zara qué oferta tomaría 'a primera vista' y por qué; cualquier elección abre la lección revelando que aún le falta información (el neto). Genera disonancia motivacional antes de enseñar. Objetivo: Decidir."
+        },
+        {
+          "phase": "que_es",
+          "type": "intro_narrative",
+          "purpose": "Enseña UNA idea: sueldo bruto = lo que dice el contrato; sueldo neto = lo que llega a tu cuenta tras deducciones; el ISR es la principal retención que el patrón descuenta. Define los términos con ejemplo concreto, sin evaluar todavía."
+        },
+        {
+          "phase": "que_es",
+          "type": "matching_pairs",
+          "purpose": "Reconocimiento del vocabulario recién enseñado: empareja término (bruto, neto, ISR, retención, deducción) con su definición operativa. Consolida la definición antes de calcular. Objetivo: Reconocer."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "intro_narrative",
+          "purpose": "Ejemplo guiado paso a paso: Zara muestra cómo usar la tabla de ISR para localizar el rango del sueldo, aplicar la tasa y restar la retención del bruto para obtener el neto. Modela el procedimiento con un sueldo de muestra."
+        },
+        {
+          "phase": "practicar",
+          "type": "tax_puzzle",
+          "purpose": "FOCO. Primer cálculo de ISR: dado el sueldo bruto de la Oferta A ($18,000), el estudiante ubica el rango en la tabla y calcula la retención de ISR. Aplica directamente el procedimiento modelado. Objetivo: Calcular."
+        },
+        {
+          "phase": "practicar",
+          "type": "math_challenge",
+          "purpose": "Cierra el cálculo: resta la retención de ISR al sueldo bruto de la Oferta A para obtener el sueldo neto que realmente llega a la cuenta. Refuerza que bruto - retención = neto. Objetivo: Calcular."
+        },
+        {
+          "phase": "reforzar",
+          "type": "tax_puzzle",
+          "purpose": "FOCO, variación. Repite el cálculo de ISR ahora sobre la Oferta B ($17,200), un rango/tasa ligeramente distinto, para consolidar el manejo de la tabla con un caso nuevo. Objetivo: Calcular."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "Detecta el malentendido clásico: 'el sueldo bruto más alto siempre da más dinero en la cuenta' o 'el ISR es opcional/te lo regresan completo'. El estudiante señala la afirmación falsa; feedback corrige conceptualmente. Objetivo: Decidir."
+        },
+        {
+          "phase": "aplicar",
+          "type": "salary_comparison",
+          "purpose": "FOCO, corazón aplicado. Con ambos netos ya calculados (Oferta A vs Oferta B + vales), el estudiante compara y elige cuál oferta paga MÁS de verdad. Conecta todo el cálculo con la decisión real. Objetivo: Comparar."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "multiple_choice",
+          "purpose": "Liga el ISR retenido por el patrón (relación de dependencia) con el caso del freelancer que debe declararlo él mismo, anticipando la diferencia clave del topic. Objetivo: Comparar."
+        },
+        {
+          "phase": "caso_real",
+          "type": "salary_comparison",
+          "purpose": "FOCO, transferencia. Caso nuevo y realista (México): un amigo del estudiante recibe oferta de $25,000 brutos como empleado vs $27,000 brutos como freelancer (donde él paga su propio ISR). El estudiante compara netos y decide, integrando bruto/neto + retención vs autodeclaración. Objetivo: Decidir/Aplicar."
+        },
+        {
+          "phase": "caso_real",
+          "type": "true_false",
+          "purpose": "Chequeo rápido de comprensión sobre el caso real: una afirmación tipo 'el sueldo bruto más alto del freelancer garantiza más dinero neto' verdadero/falso, reforzando que hay que descontar el ISR que él mismo paga. Objetivo: Reconocer."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Zara celebra: resume en una frase que 'el sueldo que importa es el neto, no el número del contrato' y anticipa la próxima lección sobre cómo leer el recibo de nómina completo (IMSS, INFONAVIT) para entender cada deducción."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "gross-vs-net-pay",
+      "isr-withholding",
+      "compare-offers-by-net"
+    ]
+  }
+}

@@ -45,6 +45,8 @@ def _contract_block(types: list[str]) -> str:
         gotcha = (c.get("render_gotchas") or [None])[0]
         if gotcha:
             entry += f"\n  ⚠ EVITA: {gotcha}"
+        if c.get("design_rule"):
+            entry += f"\n  ✚ REGLA DE DISEÑO: {c['design_rule']}"
         lines.append(entry)
     if not lines:
         return ""
@@ -85,6 +87,8 @@ CALIDAD OBLIGATORIA (rúbrica v2):
 - FEEDBACK que explica el PORQUÉ. OBLIGATORIO: TODO ejercicio gradable (con correct_answer) DEBE incluir feedback.success Y feedback.error, ambos no vacíos y específicos al concepto — esto aplica TAMBIÉN a math_challenge, interest_calculator, estimation_slider, matching_pairs, classification, etc. Para multiple_choice/true_false añade además feedback.per_option: {{"a":"...","b":"..."}} nombrando la confusión de cada distractor. NUNCA uses "Inténtalo de nuevo" genérico.
 - GRADING INEQUÍVOCO (tipos de decisión: risk_reward, opportunity_cost, roleplay_chat, market_reaction, quiz_battle, portfolio_builder, decision_*): el escenario DEBE incluir una RESTRICCIÓN EXPLÍCITA que haga que UNA sola opción sea objetivamente la mejor (ej.: "necesitas el dinero seguro la próxima semana" → gana la de bajo riesgo). PROHIBIDO marcar una preferencia SUBJETIVA como la única correcta. Si de verdad hay varias opciones válidas, usa correct_answer.correctOptionIds (array). El feedback.per_option de las opciones NO-correctas debe explicar por qué NO son la respuesta — NUNCA afirmar "también es válida" (contradice la clave).
 - RIGOR FACTUAL: NO inventes cifras regulatorias específicas (tablas de ISR/impuestos, tasas legales, montos del SAT/IMSS). Usa números ILUSTRATIVOS redondos enmarcados como ejemplo ("supón que el impuesto es 10 de cada 100") o aproximados bien conocidos. Verifica TODA la aritmética: que el correct_answer sea realmente correcto y que ningún feedback lo contradiga.
+- FEEDBACK NUNCA CONDICIONAL: el feedback no debe condicionar la corrección a una preferencia ("es válida si no quieres perder", "si prefieres..."). Si te ves escribiendo feedback condicional, el ejercicio ES preference-forcing → reescríbelo con una restricción que haga UNA sola opción correcta. Toda afirmación numérica del feedback debe ser CONSISTENTE con las cantidades del escenario (recalcula: no afirmes "$425 cabe en $450" si ya gastaste $50 antes).
+- SIMULADORES GANABLES (emergency_fund, credit_score, savings_race, mystery_investment): el escenario DEBE ser ganable — verifica numéricamente que las decisiones correctas alcanzan la meta (minBalance/minScore/target); las opciones que enseñan el concepto deben MOVER el balance hacia la meta, no costar 0.
 - ENGAGEMENT: ≥1 momento de autonomía o de relación con el personaje. Voz cálida, consistente, sin condescendencia.
 - IDIOMA: genera SOLO el contenido en ESPAÑOL (title_es, description_es, content_es[]). NO generes title_en/description_en/content_en — la versión en inglés se produce en un SEGUNDO paso de traducción (esto evita que el JSON se trunque en lecciones largas).
 - Cada ejercicio lleva tags v2: "phase", "engagement_role" (hook|learn|apply|connect), "concept_ids" (array), "bloom_level", "scaffold_level" (modeled|guided|independent; debe DECRECER a lo largo de la lección).

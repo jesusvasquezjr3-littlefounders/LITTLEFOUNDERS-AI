@@ -1,0 +1,1066 @@
+{
+  "lesson_code": "5-4-28-12",
+  "title_es": "DCA: Invertir sin adivinar el mercado",
+  "description_es": "Aprende cómo las aportaciones periódicas fijas reducen el riesgo de equivocarte con el timing y construye tu propio plan DCA.",
+  "duration": 30,
+  "age_rate": "15-17",
+  "points_reward": 10,
+  "adventure_level": 5,
+  "saga_level": 4,
+  "topic_level": 28,
+  "lesson_number": 12,
+  "content_es": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Imagina que tienes 25 años y ahorraste $24,000. Zara A mete todo de golpe en un fondo. Zara B reparte $2,000 cada mes durante un año. El mercado sube y baja sin avisar. ¿Cuál de las dos duerme tranquila? Averigüémoslo."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "¿Por qué es tan estresante tratar de adivinar el mejor día para invertir todo de golpe?",
+        "instruction": "Elige la razón principal.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Porque nadie puede predecir si el mercado subirá o bajará mañana."
+          },
+          {
+            "id": "b",
+            "text": "Porque siempre hay que invertir cuando el mercado está bajo."
+          },
+          {
+            "id": "c",
+            "text": "Porque invertir de golpe siempre da más miedo que hacerlo poco a poco."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exacto. Nadie tiene una bola de cristal. Intentar adivinar el momento perfecto se llama 'timing del mercado' y es muy riesgoso.",
+        "error": "No es esa la razón principal. Piensa en la incertidumbre del mercado.",
+        "per_option": {
+          "a": "Correcto. El mercado es impredecible, por eso tratar de adivinarlo es estresante y peligroso.",
+          "b": "Eso sería timing disfrazado. El problema es que no sabes cuándo está 'bajo' hasta después.",
+          "c": "El miedo no es la razón principal; el verdadero problema es la incertidumbre de no saber cuándo entrar."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "El DCA (promedio de costo en dólares) consiste en invertir una cantidad fija de dinero a intervalos regulares, sin importar si el precio sube o baja. Así compras más participaciones cuando el precio está bajo y menos cuando está alto. Es lo contrario de intentar adivinar el momento perfecto."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "DCA significa cambiar la cantidad que inviertes cada mes según si el precio sube o baja.",
+        "instruction": "¿Verdadero o falso?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correcto. En DCA la cantidad es fija; lo que cambia es cuántas participaciones compras con esa cantidad fija.",
+        "error": "Falso. En DCA la cantidad es fija, no variable. Lo que varía es el número de participaciones compradas.",
+        "per_option": {
+          "true": "Incorrecto. DCA usa una cantidad fija cada período, no variable.",
+          "false": "Correcto. La cantidad es fija; el número de participaciones varía según el precio."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Zara invierte $2,000 cada mes. En enero el precio es $100 por participación, en febrero $80, en marzo $50. ¿Cuántas participaciones compra en total?",
+        "instruction": "Calcula el total de participaciones compradas en los tres meses.",
+        "answer_type": "number",
+        "correct_value": 65
+      },
+      "correct_answer": {
+        "correctValue": 65
+      },
+      "feedback": {
+        "success": "¡Correcto! En enero: 20 participaciones ($2000/$100), febrero: 25 ($2000/$80), marzo: 40 ($2000/$50). Total 85. El precio promedio pagado es $6000/85 = $70.59, menor que el promedio simple de precios ($76.67). ¡Eso es el efecto promedio!",
+        "error": "Revisa: enero $2000/$100 = 20, febrero $2000/$80 = 25, marzo $2000/$50 = 40. Suma 85 participaciones."
+      }
+    },
+    {
+      "type": "portfolio_builder",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Zara tiene $24,000 y quiere hacer DCA durante 12 meses. Asigna el monto fijo mensual que debe invertir cada mes para que al final del año haya invertido todo.",
+        "assets": [
+          {
+            "id": "a1",
+            "name": "Aportación mensual fija",
+            "risk": 3
+          }
+        ],
+        "instruction": "Elige el monto fijo mensual correcto."
+      },
+      "correct_answer": {
+        "allocation": {
+          "a1": 100
+        }
+      },
+      "feedback": {
+        "success": "¡Perfecto! $24,000 / 12 meses = $2,000 fijos cada mes. Así aplicas DCA.",
+        "error": "Para repartir $24,000 en 12 meses iguales, divide 24000 entre 12. El resultado es $2,000 mensuales."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "timing-risk-tradeoff",
+        "dca-vs-lump-sum"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "decision": "El mercado tiene meses volátiles: en enero sube 10%, febrero baja 8%, marzo sube 5%, abril baja 12%. Zara A invierte todo en enero (justo antes de la caída de febrero). Zara B hace DCA $2,000 cada mes. ¿Qué opción reduce más el riesgo de mal timing?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Invertir todo en enero (lump sum)",
+            "reward": "Podrías ganar si el mercado sigue subiendo, pero si cae justo después, pierdes mucho."
+          },
+          {
+            "id": "b",
+            "type": "safe",
+            "title": "DCA de $2,000 cada mes",
+            "reward": "Compras cuando baja y cuando sube, promediando el costo y evitando el riesgo de un mal momento."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correcto. Con DCA no dependes de acertar el mejor día; compras en todos los precios y reduces el riesgo de equivocarte.",
+        "error": "Invertir todo de golpe expone a que justo después el mercado caiga. DCA reparte el riesgo en el tiempo.",
+        "per_option": {
+          "a": "Invertir todo en enero es apostar a que ese mes es el mejor. Si el mercado cae después, pierdes más que si hubieras ido poco a poco.",
+          "b": "DCA evita tener que adivinar. Al comprar cada mes, compras barato cuando cae y caro cuando sube, promediando el costo."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Tu amigo te dice: 'El DCA está bien, pero cuando el mercado cae fuerte, mejor pauso mis aportaciones y espero a que toque fondo para meter más. Así compro más barato.'",
+        "instruction": "Identifica la trampa en ese consejo.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Pausar las aportaciones rompe la disciplina del DCA y es una forma de hacer timing.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Esperar a que toque fondo es intentar adivinar el mercado, justo lo que DCA evita.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "Si el mercado cae, es mejor vender todo y comprar después más barato.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "¡Excelente! Pausar o esperar el fondo es hacer timing disfrazado. DCA funciona precisamente porque no intentas adivinar.",
+        "error": "Revisa: pausar las aportaciones y esperar el fondo son dos formas de tratar de adivinar el mercado, lo opuesto al DCA.",
+        "per_option": {
+          "t1": "Correcto. DCA exige constancia, no pausas.",
+          "t2": "Correcto. Esperar el fondo es adivinar.",
+          "t3": "Eso no es una trampa del consejo original, es otra idea. El consejo original no dice que vendas."
+        }
+      }
+    },
+    {
+      "type": "portfolio_builder",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "create",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Ahora tú. Tienes $6,000 para invertir en los próximos 6 meses. Puedes repartirlos entre CETES (bajo riesgo), FIBRA (riesgo medio) y un fondo indexado (riesgo alto). Diseña tu plan DCA: elige un monto fijo mensual total y distribúyelo entre los instrumentos.",
+        "assets": [
+          {
+            "id": "cetes",
+            "name": "CETES",
+            "risk": 1
+          },
+          {
+            "id": "fibra",
+            "name": "FIBRA",
+            "risk": 4
+          },
+          {
+            "id": "index",
+            "name": "Fondo indexado",
+            "risk": 7
+          }
+        ],
+        "instruction": "Asigna el porcentaje de tu aportación mensual fija a cada instrumento. La suma debe ser 100%."
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "¡Bien! Has creado un plan DCA personalizado. Recuerda: la clave es mantener la disciplina mes a mes.",
+        "error": "Asegúrate de que los porcentajes sumen 100. No hay una distribución incorrecta, pero piensa en tu tolerancia al riesgo."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-vs-lump-sum",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Clasifica cada conducta como DCA o Timing del mercado.",
+        "instruction": "Arrastra cada conducta a su categoría.",
+        "categories": [
+          {
+            "id": "dca",
+            "label": "DCA"
+          },
+          {
+            "id": "timing",
+            "label": "Timing del mercado"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Invertir $500 cada quincena sin importar el precio.",
+            "correctCategoryId": "dca"
+          },
+          {
+            "id": "i2",
+            "text": "Esperar a que el mercado baje 10% para comprar.",
+            "correctCategoryId": "timing"
+          },
+          {
+            "id": "i3",
+            "text": "Aumentar la aportación cuando crees que el mercado va a subir.",
+            "correctCategoryId": "timing"
+          },
+          {
+            "id": "i4",
+            "text": "Aportar $1,000 cada mes a un fondo indexado.",
+            "correctCategoryId": "dca"
+          }
+        ]
+      },
+      "correct_answer": {
+        "dca": [
+          "i1",
+          "i4"
+        ],
+        "timing": [
+          "i2",
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfecto. DCA es constancia sin importar el precio; timing es tratar de adivinar el mejor momento.",
+        "error": "Revisa: DCA usa montos fijos y regulares; timing implica decisiones basadas en predicciones del mercado."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Relaciona cada concepto con su vínculo con DCA.",
+        "instruction": "Arrastra cada concepto de la izquierda a su descripción a la derecha.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "CETES Directo programado",
+            "right": "Permite hacer aportaciones periódicas automáticas, similar al DCA."
+          },
+          {
+            "id": "p2",
+            "left": "Diversificación",
+            "right": "DCA reduce el riesgo de timing, pero no diversifica; se complementan."
+          },
+          {
+            "id": "p3",
+            "left": "Horizonte de largo plazo",
+            "right": "DCA funciona mejor cuando se mantiene por años, no meses."
+          }
+        ]
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "Bien. DCA se conecta con aportaciones programadas, diversificación y largo plazo.",
+        "error": "Revisa las relaciones: CETES programado es un ejemplo de DCA, diversificación reduce riesgo de concentración, y el largo plazo permite que el promedio funcione."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-vs-lump-sum",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "Estamos en 2020. El mercado mexicano cae 15% en marzo por la pandemia. Zara tiene un plan DCA de $2,000 mensuales. Sus amigos le recomiendan: a) vender todo para no perder más, b) pausar las aportaciones hasta que se recupere, c) seguir con su DCA normal. ¿Qué debe hacer Zara para mantener la estrategia?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Vender todo por pánico",
+            "reward": "Evitas más pérdidas si el mercado sigue cayendo, pero te pierdes la recuperación."
+          },
+          {
+            "id": "b",
+            "type": "risk",
+            "title": "Pausar aportaciones",
+            "reward": "Dejas de invertir en el peor momento, justo cuando los precios están bajos."
+          },
+          {
+            "id": "c",
+            "type": "safe",
+            "title": "Seguir con el DCA normal",
+            "reward": "Compras más participaciones baratas durante la caída, y cuando el mercado se recupere, tendrás más ganancias."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "¡Exacto! Seguir con DCA durante las caídas es la clave: compras barato y te beneficias de la recuperación.",
+        "error": "Vender por pánico o pausar rompe la disciplina. DCA funciona precisamente porque no detienes las aportaciones en los malos momentos.",
+        "per_option": {
+          "a": "Vender por pánico asegura las pérdidas y te pierdes la recuperación. No es DCA.",
+          "b": "Pausar es tratar de adivinar el fondo, justo lo que DCA evita.",
+          "c": "Correcto. El DCA aprovecha las caídas para comprar más barato."
+        }
+      }
+    },
+    {
+      "type": "fill_blank",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "Completa la regla de oro del DCA: 'En lugar de adivinar el mercado, haz aportaciones ______ de forma ______ y a ______ plazo.'",
+        "instruction": "Escribe las tres palabras que faltan en orden.",
+        "blanks": [
+          {
+            "id": "b1",
+            "correctAnswer": "periódicas"
+          },
+          {
+            "id": "b2",
+            "correctAnswer": "constante"
+          },
+          {
+            "id": "b3",
+            "correctAnswer": "largo"
+          }
+        ]
+      },
+      "correct_answer": {
+        "b1": "periódicas",
+        "b2": "constante",
+        "b3": "largo"
+      },
+      "feedback": {
+        "success": "¡Perfecto! La regla de oro: aportaciones periódicas, constantes y a largo plazo.",
+        "error": "Las palabras clave son: periódicas, constante y largo. Así describes el DCA."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "¡Lo lograste! Ahora sabes que DCA cambia 'adivinar el mercado' por 'ser constante'. En la próxima lección veremos cómo armar un portafolio completo usando lo que aprendiste. ¡Sigue así!"
+      }
+    }
+  ],
+  "title_en": "DCA: Investing Without Timing the Market",
+  "description_en": "Learn how fixed periodic contributions reduce the risk of mistiming the market and build your own DCA plan.",
+  "content_en": [
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "conectar",
+      "engagement_role": "hook",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "Imagine you're 25 and saved $24,000. Zara A puts it all in a fund at once. Zara B spreads $2,000 each month for a year. The market goes up and down without warning. Which one sleeps peacefully? Let's find out."
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "character_code": "zara_vex",
+      "phase": "por_que_importa",
+      "engagement_role": "hook",
+      "concept_ids": [
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Why is it so stressful to try to guess the best day to invest all at once?",
+        "instruction": "Choose the main reason.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Because no one can predict whether the market will go up or down tomorrow."
+          },
+          {
+            "id": "b",
+            "text": "Because you should always invest when the market is low."
+          },
+          {
+            "id": "c",
+            "text": "Because investing all at once is always scarier than doing it little by little."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "Exactly. No one has a crystal ball. Trying to guess the perfect moment is called 'market timing' and it's very risky.",
+        "error": "That's not the main reason. Think about market uncertainty.",
+        "per_option": {
+          "a": "Correct. The market is unpredictable, so trying to guess it is stressful and dangerous.",
+          "b": "That would be timing in disguise. The problem is you don't know when it's 'low' until after.",
+          "c": "Fear isn't the main reason; the real problem is the uncertainty of not knowing when to enter."
+        }
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "DCA (Dollar Cost Averaging) means investing a fixed amount of money at regular intervals, regardless of whether the price goes up or down. That way you buy more shares when the price is low and fewer when it's high. It's the opposite of trying to time the market."
+      }
+    },
+    {
+      "type": "true_false",
+      "character_code": "zara_vex",
+      "phase": "que_es",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "remember",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "DCA means changing the amount you invest each month depending on whether the price goes up or down.",
+        "instruction": "True or false?"
+      },
+      "correct_answer": {
+        "isTrue": false
+      },
+      "feedback": {
+        "success": "Correct. In DCA the amount is fixed; what changes is how many shares you buy with that fixed amount.",
+        "error": "False. In DCA the amount is fixed, not variable. What varies is the number of shares purchased.",
+        "per_option": {
+          "true": "Incorrect. DCA uses a fixed amount each period, not variable.",
+          "false": "Correct. The amount is fixed; the number of shares varies with the price."
+        }
+      }
+    },
+    {
+      "type": "math_challenge",
+      "character_code": "zara_vex",
+      "phase": "como_se_usa",
+      "engagement_role": "learn",
+      "concept_ids": [
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "question": "Zara invests $2,000 each month. In January the price is $100 per share, in February $80, in March $50. How many shares does she buy in total?",
+        "instruction": "Calculate the total shares bought over the three months.",
+        "answer_type": "number",
+        "correct_value": 65
+      },
+      "correct_answer": {
+        "correctValue": 65
+      },
+      "feedback": {
+        "success": "Correct! In January: 20 shares ($2000/$100), February: 25 ($2000/$80), March: 40 ($2000/$50). Total 85. The average price paid is $6000/85 = $70.59, lower than the simple average price ($76.67). That's the averaging effect!",
+        "error": "Check: January $2000/$100 = 20, February $2000/$80 = 25, March $2000/$50 = 40. Sum 85 shares."
+      }
+    },
+    {
+      "type": "portfolio_builder",
+      "character_code": "zara_vex",
+      "phase": "practicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Zara has $24,000 and wants to do DCA over 12 months. Assign the fixed monthly amount she must invest each month so that by the end of the year she has invested everything.",
+        "assets": [
+          {
+            "id": "a1",
+            "name": "Fixed monthly contribution",
+            "risk": 3
+          }
+        ],
+        "instruction": "Choose the correct fixed monthly amount."
+      },
+      "correct_answer": {
+        "allocation": {
+          "a1": 100
+        }
+      },
+      "feedback": {
+        "success": "Perfect! $24,000 / 12 months = $2,000 fixed each month. That's how you apply DCA.",
+        "error": "To spread $24,000 over 12 equal months, divide 24000 by 12. The result is $2,000 per month."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "reforzar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "timing-risk-tradeoff",
+        "dca-vs-lump-sum"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "decision": "The market has volatile months: January up 10%, February down 8%, March up 5%, April down 12%. Zara A invests everything in January (just before the February drop). Zara B does DCA $2,000 each month. Which option reduces the risk of bad timing more?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Invest everything in January (lump sum)",
+            "reward": "You could gain if the market keeps rising, but if it falls right after, you lose a lot."
+          },
+          {
+            "id": "b",
+            "type": "safe",
+            "title": "DCA of $2,000 each month",
+            "reward": "You buy when it falls and when it rises, averaging the cost and avoiding the risk of bad timing."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b"
+      },
+      "feedback": {
+        "success": "Correct. With DCA you don't rely on guessing the best day; you buy at all prices and reduce the risk of being wrong.",
+        "error": "Investing all at once exposes you to a market drop right after. DCA spreads the risk over time.",
+        "per_option": {
+          "a": "Investing everything in January is betting that month is the best. If the market falls later, you lose more than if you had gone little by little.",
+          "b": "DCA avoids having to guess. By buying each month, you buy cheap when it falls and expensive when it rises, averaging the cost."
+        }
+      }
+    },
+    {
+      "type": "spot_trap",
+      "character_code": "zara_vex",
+      "phase": "que_error_evitar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "guided",
+      "content": {
+        "scenario": "Your friend tells you: 'DCA is fine, but when the market drops sharply, I'd rather pause my contributions and wait for it to bottom out to put in more. That way I buy cheaper.'",
+        "instruction": "Identify the trap in that advice.",
+        "traps": [
+          {
+            "id": "t1",
+            "text": "Pausing contributions breaks DCA discipline and is a form of timing.",
+            "isTrap": true
+          },
+          {
+            "id": "t2",
+            "text": "Waiting for the bottom is trying to time the market, exactly what DCA avoids.",
+            "isTrap": true
+          },
+          {
+            "id": "t3",
+            "text": "If the market falls, it's better to sell everything and buy back cheaper later.",
+            "isTrap": false
+          }
+        ]
+      },
+      "correct_answer": {
+        "trapIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "feedback": {
+        "success": "Excellent! Pausing or waiting for the bottom is timing in disguise. DCA works precisely because you don't try to guess.",
+        "error": "Check: pausing contributions and waiting for the bottom are two ways of trying to time the market, the opposite of DCA.",
+        "per_option": {
+          "t1": "Correct. DCA requires consistency, not pauses.",
+          "t2": "Correct. Waiting for the bottom is guessing.",
+          "t3": "That's not a trap in the original advice, it's another idea. The original advice doesn't say to sell."
+        }
+      }
+    },
+    {
+      "type": "portfolio_builder",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "create",
+      "scaffold_level": "independent",
+      "content": {
+        "scenario": "Now it's your turn. You have $6,000 to invest over the next 6 months. You can distribute it among CETES (low risk), FIBRA (medium risk), and an index fund (high risk). Design your DCA plan: choose a total fixed monthly amount and distribute it among the instruments.",
+        "assets": [
+          {
+            "id": "cetes",
+            "name": "CETES",
+            "risk": 1
+          },
+          {
+            "id": "fibra",
+            "name": "FIBRA",
+            "risk": 4
+          },
+          {
+            "id": "index",
+            "name": "Index fund",
+            "risk": 7
+          }
+        ],
+        "instruction": "Assign the percentage of your fixed monthly contribution to each instrument. The total must be 100%."
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "Good! You've created a personalized DCA plan. Remember: the key is to maintain discipline month after month.",
+        "error": "Make sure the percentages add up to 100. There's no wrong distribution, but think about your risk tolerance."
+      }
+    },
+    {
+      "type": "classification",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-vs-lump-sum",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "analyze",
+      "scaffold_level": "independent",
+      "content": {
+        "statement": "Classify each behavior as DCA or Market Timing.",
+        "instruction": "Drag each behavior to its category.",
+        "categories": [
+          {
+            "id": "dca",
+            "label": "DCA"
+          },
+          {
+            "id": "timing",
+            "label": "Market Timing"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Invest $500 every two weeks regardless of price.",
+            "correctCategoryId": "dca"
+          },
+          {
+            "id": "i2",
+            "text": "Wait for the market to drop 10% to buy.",
+            "correctCategoryId": "timing"
+          },
+          {
+            "id": "i3",
+            "text": "Increase your contribution when you think the market will go up.",
+            "correctCategoryId": "timing"
+          },
+          {
+            "id": "i4",
+            "text": "Contribute $1,000 each month to an index fund.",
+            "correctCategoryId": "dca"
+          }
+        ]
+      },
+      "correct_answer": {
+        "dca": [
+          "i1",
+          "i4"
+        ],
+        "timing": [
+          "i2",
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "Perfect. DCA is consistency regardless of price; timing is trying to guess the best moment.",
+        "error": "Check: DCA uses fixed, regular amounts; timing involves decisions based on market predictions."
+      }
+    },
+    {
+      "type": "matching_pairs",
+      "character_code": "zara_vex",
+      "phase": "con_que_se_relaciona",
+      "engagement_role": "connect",
+      "concept_ids": [
+        "dca-periodic-contribution"
+      ],
+      "bloom_level": "understand",
+      "scaffold_level": "guided",
+      "content": {
+        "statement": "Match each concept with its link to DCA.",
+        "instruction": "Drag each concept on the left to its description on the right.",
+        "pairs": [
+          {
+            "id": "p1",
+            "left": "Scheduled CETES Directo",
+            "right": "Allows automatic periodic contributions, similar to DCA."
+          },
+          {
+            "id": "p2",
+            "left": "Diversification",
+            "right": "DCA reduces timing risk, but does not diversify; they complement each other."
+          },
+          {
+            "id": "p3",
+            "left": "Long-term horizon",
+            "right": "DCA works best when maintained for years, not months."
+          }
+        ]
+      },
+      "correct_answer": {},
+      "feedback": {
+        "success": "Good. DCA connects with scheduled contributions, diversification, and long-term horizon.",
+        "error": "Check the relationships: scheduled CETES is an example of DCA, diversification reduces concentration risk, and long-term allows averaging to work."
+      }
+    },
+    {
+      "type": "risk_reward",
+      "character_code": "zara_vex",
+      "phase": "caso_real",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-vs-lump-sum",
+        "timing-risk-tradeoff"
+      ],
+      "bloom_level": "evaluate",
+      "scaffold_level": "independent",
+      "content": {
+        "decision": "It's 2020. The Mexican market drops 15% in March due to the pandemic. Zara has a DCA plan of $2,000 per month. Her friends recommend: a) sell everything to avoid further losses, b) pause contributions until it recovers, c) continue with her normal DCA. What should Zara do to maintain the strategy?",
+        "risk_options": [
+          {
+            "id": "a",
+            "type": "risk",
+            "title": "Sell everything out of panic",
+            "reward": "You avoid more losses if the market keeps falling, but you miss the recovery."
+          },
+          {
+            "id": "b",
+            "type": "risk",
+            "title": "Pause contributions",
+            "reward": "You stop investing at the worst time, just when prices are low."
+          },
+          {
+            "id": "c",
+            "type": "safe",
+            "title": "Continue with normal DCA",
+            "reward": "You buy more cheap shares during the drop, and when the market recovers, you'll have more gains."
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "c"
+      },
+      "feedback": {
+        "success": "Exactly! Continuing DCA during downturns is key: you buy cheap and benefit from the recovery.",
+        "error": "Selling out of panic or pausing breaks discipline. DCA works precisely because you don't stop contributions in bad times.",
+        "per_option": {
+          "a": "Selling out of panic locks in losses and you miss the recovery. That's not DCA.",
+          "b": "Pausing is trying to guess the bottom, exactly what DCA avoids.",
+          "c": "Correct. DCA takes advantage of drops to buy cheaper."
+        }
+      }
+    },
+    {
+      "type": "fill_blank",
+      "character_code": "zara_vex",
+      "phase": "aplicar",
+      "engagement_role": "apply",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "cost-averaging-effect"
+      ],
+      "bloom_level": "apply",
+      "scaffold_level": "independent",
+      "content": {
+        "question": "Complete the golden rule of DCA: 'Instead of timing the market, make ______ contributions ______ and for the ______ term.'",
+        "instruction": "Write the three missing words in order.",
+        "blanks": [
+          {
+            "id": "b1",
+            "correctAnswer": "periodic"
+          },
+          {
+            "id": "b2",
+            "correctAnswer": "consistent"
+          },
+          {
+            "id": "b3",
+            "correctAnswer": "long"
+          }
+        ]
+      },
+      "correct_answer": {
+        "b1": "periódicas",
+        "b2": "constante",
+        "b3": "largo"
+      },
+      "feedback": {
+        "success": "Perfect! The golden rule: periodic, consistent, long-term contributions.",
+        "error": "The key words are: periodic, consistent, and long. That describes DCA."
+      }
+    },
+    {
+      "type": "intro_narrative",
+      "character_code": "zara_vex",
+      "phase": "cerrar",
+      "engagement_role": "connect",
+      "concept_ids": [],
+      "bloom_level": "remember",
+      "scaffold_level": "modeled",
+      "content": {
+        "transcript": "You did it! Now you know that DCA changes 'timing the market' for 'being consistent'. In the next lesson we'll see how to build a complete portfolio using what you learned. Keep it up!"
+      }
+    }
+  ],
+  "lf_meta": {
+    "schema_version": "2.0",
+    "prompt_version": "v2.1",
+    "drafter": "deepseek-chat",
+    "translator": "deepseek-chat",
+    "plan": {
+      "lesson_code": "5-4-28-12",
+      "band": 5,
+      "levels": [
+        5,
+        4,
+        28,
+        12
+      ],
+      "character": "zara_vex",
+      "micro_objective": "Construir un portafolio de aportaciones periódicas fijas (DCA) y justificar por qué promediar el costo a lo largo del tiempo reduce el riesgo de equivocarse con el 'timing' del mercado frente a invertir todo de golpe.",
+      "concept_ids": [
+        "dca-periodic-contribution",
+        "cost-averaging-effect",
+        "timing-risk-tradeoff",
+        "dca-vs-lump-sum"
+      ],
+      "scenario": "Zara Vex le muestra al estudiante dos versiones de sí misma a los 25 años: una intentó adivinar el mejor día para meter sus $24,000 ahorrados de un solo golpe, la otra repartió $2,000 cada mes durante un año en el mismo fondo. El mercado subió y bajó de forma impredecible. El estudiante debe descubrir cuál estrategia (DCA) deja a Zara más tranquila y por qué, y luego armar su propio plan de aportaciones para los próximos 12 meses.",
+      "chosen_topic": "Estrategia DCA (Dollar Cost Averaging)",
+      "activity_plan": [
+        {
+          "phase": "conectar",
+          "type": "intro_narrative",
+          "purpose": "Hook por escena relatable y predicción: Zara presenta a sus dos 'yo' de 25 años (la que metió $24,000 de golpe vs la que aportó $2,000/mes) y reta al estudiante a adivinar cuál duerme tranquila. Activa el dilema del 'timing' antes de definir nada."
+        },
+        {
+          "phase": "por_que_importa",
+          "type": "multiple_choice",
+          "purpose": "Anclaje motivacional: el estudiante elige por qué adivinar el mejor día para invertir es tan estresante y peligroso (nadie predice el mercado), conectando el riesgo de timing con su propio dinero futuro."
+        },
+        {
+          "phase": "que_es",
+          "type": "intro_narrative",
+          "purpose": "Definición operativa de DCA: invertir una cantidad FIJA en intervalos FIJOS sin importar el precio. Se nombra el concepto y se contrasta con el lump-sum, sin pedir aún ningún cálculo."
+        },
+        {
+          "phase": "que_es",
+          "type": "true_false",
+          "purpose": "Chequeo de reconocimiento de la definición: afirmar/negar que DCA significa cambiar el monto según si el precio sube o baja (es falso: el monto es fijo). Reconocer."
+        },
+        {
+          "phase": "como_se_usa",
+          "type": "math_challenge",
+          "purpose": "Ejemplo guiado de cost-averaging: con $2,000 fijos se compran más participaciones cuando el precio baja y menos cuando sube; el estudiante calcula el precio promedio pagado y ve que queda por debajo del promedio simple de precios. Calcular."
+        },
+        {
+          "phase": "practicar",
+          "type": "portfolio_builder",
+          "purpose": "FOCO. Práctica principal: el estudiante arma el plan DCA de Zara distribuyendo $24,000 en 12 aportaciones mensuales fijas de $2,000 en el fondo, en lugar de cargar todo en un solo mes. Aplica la mecánica de aportación periódica."
+        },
+        {
+          "phase": "reforzar",
+          "type": "risk_reward",
+          "purpose": "FOCO. Refuerzo con trade-off: dado un mercado volátil hipotético, el estudiante compara meter todo en el 'mes que cree bueno' (alta recompensa si acierta, alto riesgo si falla) vs DCA (recompensa media, riesgo bajo) y elige la opción que reduce el riesgo de timing. Comparar/Decidir."
+        },
+        {
+          "phase": "que_error_evitar",
+          "type": "spot_trap",
+          "purpose": "Malentendido común: detectar la trampa de 'pausar las aportaciones cuando el mercado cae' o 'esperar a que baje más' — justo lo contrario de DCA, que compra disciplinadamente en las caídas. Corrige el error de querer hacer timing disfrazado."
+        },
+        {
+          "phase": "aplicar",
+          "type": "portfolio_builder",
+          "purpose": "FOCO. Aplicación en contexto nuevo: el estudiante diseña SU propio plan DCA repartiendo una aportación mensual fija entre 2-3 instrumentos (CETES, FIBRA, fondo indexado) durante varios meses, transfiriendo la disciplina de aportación periódica a su portafolio personal."
+        },
+        {
+          "phase": "aplicar",
+          "type": "classification",
+          "purpose": "Aplicación variada (rompe la repetición de builders): clasificar conductas reales en 'esto es DCA' vs 'esto es hacer timing del mercado', consolidando el criterio sin volver a usar un builder seguido."
+        },
+        {
+          "phase": "con_que_se_relaciona",
+          "type": "matching_pairs",
+          "purpose": "Conecta DCA con conceptos vecinos de la saga: aportación periódica con CETES Directo programado, diversificación de cartera y horizonte de largo plazo. Reconocer relaciones."
+        },
+        {
+          "phase": "caso_real",
+          "type": "risk_reward",
+          "purpose": "FOCO. Caso real con datos plausibles: ante un escenario de mercado mexicano que cayó fuerte a mitad de año y se recuperó, el estudiante decide entre vender por pánico, frenar aportaciones o sostener el DCA, evaluando riesgo-recompensa de cada ruta. Decidir."
+        },
+        {
+          "phase": "aplicar",
+          "type": "fill_blank",
+          "purpose": "Síntesis activa del vocabulario clave (aportación periódica, promedio de costo, sin timing, largo plazo) completando la regla de oro del DCA en una frase, antes del cierre. Aplicar."
+        },
+        {
+          "phase": "cerrar",
+          "type": "intro_narrative",
+          "purpose": "Zara celebra el esfuerzo, resume en una frase que DCA cambia 'adivinar el mercado' por 'ser constante', y anticipa el repaso de la saga del Portfolio Manager (lección siguiente), conectando hacia adelante."
+        }
+      ]
+    },
+    "gate": "passed",
+    "attempts": 1,
+    "concept_spine": [
+      "dca-periodic-contribution",
+      "cost-averaging-effect",
+      "timing-risk-tradeoff",
+      "dca-vs-lump-sum"
+    ]
+  }
+}

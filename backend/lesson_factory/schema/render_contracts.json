@@ -28,7 +28,8 @@
         "Component emits score (sum of points), NOT boolean — grader expects numeric comparison vs threshold (line 990)",
         "options missing from question object → map(option) renders empty array (line 198), component displays no choices"
       ],
-      "canonical_example": "{\"content\": {\"question\": \"¿Cuál es la diferencia CRUCIAL en el perfil de riesgo entre comprar una propiedad directa e invertir en una FIBRA?\", \"instruction\": \"Selecciona la afirmación más precisa.\", \"options\": [{\"id\": \"a\", \"text\": \"La propiedad directa tiene riesgo de iliquidez y costos altos; la FIBRA tiene riesgo de volatilidad del precio en bolsa.\"}, {\"id\": \"b\", \"text\": \"Ambas tienen exactamente el mismo riesgo porque ambas son bienes raíces.\"}, {\"id\": \"c\", \"text\": \"La FIBRA es más riesgosa porque no puedes vivir en el edificio.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+      "canonical_example": "{\"content\": {\"question\": \"¿Cuál es la diferencia CRUCIAL en el perfil de riesgo entre comprar una propiedad directa e invertir en una FIBRA?\", \"instruction\": \"Selecciona la afirmación más precisa.\", \"options\": [{\"id\": \"a\", \"text\": \"La propiedad directa tiene riesgo de iliquidez y costos altos; la FIBRA tiene riesgo de volatilidad del precio en bolsa.\"}, {\"id\": \"b\", \"text\": \"Ambas tienen exactamente el mismo riesgo porque ambas son bienes raíces.\"}, {\"id\": \"c\", \"text\": \"La FIBRA es más riesgosa porque no puedes vivir en el edificio.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}",
+      "design_rule": "Cada pregunta DEBE tener UNA sola opción inequívocamente correcta; las demás claramente incorrectas. Si dos opciones son válidas, reformula la pregunta para que solo una lo sea."
     },
     "spot_trap": {
       "type": "spot_trap",
@@ -71,7 +72,8 @@
         "correct_answer with plural form (correctOptionIds array) — grader treats as multi-select, rejects single choice. Use singular correctOptionId for single-select risk_reward",
         "Decision text (decision/question/scenario) — renderer picks in order (content.decision > content.question > content.scenario > i18n fallback). If none exist, breaks layout. Must provide at least one"
       ],
-      "canonical_example": "{\"content\": {\"decision\": \"Te ofrecen consolidar deudas en un préstamo más largo. ¿Cuál es el mayor riesgo?\", \"risk_options\": [{\"id\": \"a\", \"type\": \"risk\", \"title\": \"Pagar más intereses\", \"reward\": \"Identificaste el verdadero riesgo.\"}, {\"id\": \"b\", \"type\": \"safe\", \"title\": \"Beneficio garantizado\", \"reward\": \"Menor tasa asegurada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+      "canonical_example": "{\"content\": {\"decision\": \"Te ofrecen consolidar deudas en un préstamo más largo. ¿Cuál es el mayor riesgo?\", \"risk_options\": [{\"id\": \"a\", \"type\": \"risk\", \"title\": \"Pagar más intereses\", \"reward\": \"Identificaste el verdadero riesgo.\"}, {\"id\": \"b\", \"type\": \"safe\", \"title\": \"Beneficio garantizado\", \"reward\": \"Menor tasa asegurada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}",
+      "design_rule": "El escenario DEBE fijar una RESTRICCIÓN/META explícita que haga UNA opción objetivamente mejor (ej.: 'necesitas el dinero SEGURO la próxima semana'→gana la segura; 'puedes permitirte perder y quieres maximizar'→gana la riesgosa). SIN restricción, elegir riesgo vs seguro es PREFERENCIA → prohibido clave única. El feedback NUNCA condiciona ('si no quieres perder...'): debe ser categórico según la restricción dada."
     },
     "opportunity_cost": {
       "type": "opportunity_cost",
@@ -86,7 +88,8 @@
         "options with plain text field instead of structured data — if options.find(opt => !opt.benefits && !opt.title) returns true, hasRichData = false, no Analysis shown even if some options have rich data. All-or-nothing flag → mixing plain + rich breaks UX",
         "correctOptionIds plural array — if present, grader rejects single-selection submissions. opportunity_cost is single-select via selectedOption state; use singular correctOptionId only"
       ],
-      "canonical_example": "{\"content\": {\"scenario\": \"Elegir opción A: más dinero rápido vs Opción B: crecimiento a largo plazo\", \"options\": [{\"id\": \"a\", \"text\": \"Opción A\", \"title\": \"Ganancia Rápida\", \"description\": \"Efectivo en 3 meses\", \"icon\": \"💰\", \"benefits\": [\"Liquidez inmediata\", \"Sin riesgo\"]}, {\"id\": \"b\", \"text\": \"Opción B\", \"title\": \"Inversión Largo Plazo\", \"description\": \"Retorno 2 años\", \"icon\": \"📈\", \"benefits\": [\"Mayor retorno esperado\", \"Interés compuesto\"]}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}"
+      "canonical_example": "{\"content\": {\"scenario\": \"Elegir opción A: más dinero rápido vs Opción B: crecimiento a largo plazo\", \"options\": [{\"id\": \"a\", \"text\": \"Opción A\", \"title\": \"Ganancia Rápida\", \"description\": \"Efectivo en 3 meses\", \"icon\": \"💰\", \"benefits\": [\"Liquidez inmediata\", \"Sin riesgo\"]}, {\"id\": \"b\", \"text\": \"Opción B\", \"title\": \"Inversión Largo Plazo\", \"description\": \"Retorno 2 años\", \"icon\": \"📈\", \"benefits\": [\"Mayor retorno esperado\", \"Interés compuesto\"]}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}",
+      "design_rule": "La elección correcta debe estar determinada por una META declarada en el escenario, no por gusto. Si ambas opciones son legítimas sin una meta, es preference-forcing."
     },
     "market_reaction": {
       "type": "market_reaction",
@@ -102,7 +105,8 @@
         "explanation missing — after feedback, no explanation box renders. Component expects content.explanation to exist; if null, feedback omits educational context (confusing for learning)",
         "Option ids not matching grader expectations — if option.id is 'option_up' but correct_answer.correctOptionId is 'up', optionIdMatches() falls back to prefix-strip and compares 'up' === 'up' (via normalizeId). This works but is fragile"
       ],
-      "canonical_example": "{\"content\": {\"headline\": \"Competidor anuncia reducción de precios en 15%\", \"question\": \"¿Cómo reaccionará el mercado?\", \"options\": [{\"id\": \"up\", \"text\": \"Precio Sube\", \"icon\": \"📈\"}, {\"id\": \"down\", \"text\": \"Precio Baja\", \"icon\": \"📉\"}, {\"id\": \"stable\", \"text\": \"Se Mantiene\", \"icon\": \"➡️\"}, {\"id\": \"volatile\", \"text\": \"Volatilidad\", \"icon\": \"⚡\"}], \"explanation\": \"La competencia agresiva típicamente presiona precios a la baja y aumenta volatilidad.\"}, \"correct_answer\": {\"correctOptionId\": \"down\"}}"
+      "canonical_example": "{\"content\": {\"headline\": \"Competidor anuncia reducción de precios en 15%\", \"question\": \"¿Cómo reaccionará el mercado?\", \"options\": [{\"id\": \"up\", \"text\": \"Precio Sube\", \"icon\": \"📈\"}, {\"id\": \"down\", \"text\": \"Precio Baja\", \"icon\": \"📉\"}, {\"id\": \"stable\", \"text\": \"Se Mantiene\", \"icon\": \"➡️\"}, {\"id\": \"volatile\", \"text\": \"Volatilidad\", \"icon\": \"⚡\"}], \"explanation\": \"La competencia agresiva típicamente presiona precios a la baja y aumenta volatilidad.\"}, \"correct_answer\": {\"correctOptionId\": \"down\"}}",
+      "design_rule": "La reacción correcta es objetivamente la de cabeza-fría según el evento (no perseguir subidas por FOMO, no vender por pánico); no una preferencia."
     },
     "decision_challenge": {
       "type": "decision_challenge",
@@ -117,7 +121,8 @@
         "resolveOptions fallback keys missing — if content.options is not provided, GenericChoice tries ['options', 'choices', 'scenarios', 'plans', 'offers', 'items', 'cases', 'models', 'portfolios']. If none exist, shuffled.length === 0 → graceful fallback, not error",
         "Multi-select shape (correctOptionIds array) — grader checks for this in line 470–475 of validateAnswer. decision_challenge sent to 'option-based' case. If correctOptionIds array is provided instead of correctOptionId, grader treats as multi-select (user must pick ALL ids in the set), not single-select. This breaks single-answer UX expectation"
       ],
-      "canonical_example": "{\"content\": {\"scenario\": \"Tu amigo tiene una oportunidad de negocio. ¿Cuál es la mejor acción?\", \"options\": [{\"id\": \"a\", \"text\": \"Invertir capital y tiempo en investigación antes de decidir\"}, {\"id\": \"b\", \"text\": \"Saltar inmediatamente sin validar mercado\"}, {\"id\": \"c\", \"text\": \"Ignorar completamente la oportunidad\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}"
+      "canonical_example": "{\"content\": {\"scenario\": \"Tu amigo tiene una oportunidad de negocio. ¿Cuál es la mejor acción?\", \"options\": [{\"id\": \"a\", \"text\": \"Invertir capital y tiempo en investigación antes de decidir\"}, {\"id\": \"b\", \"text\": \"Saltar inmediatamente sin validar mercado\"}, {\"id\": \"c\", \"text\": \"Ignorar completamente la oportunidad\"}]}, \"correct_answer\": {\"correctOptionId\": \"a\"}}",
+      "design_rule": "La mejor decisión debe estar determinada por un criterio objetivo declarado en el escenario, no por preferencia."
     },
     "budget_builder": {
       "type": "budget_builder",
@@ -173,7 +178,8 @@
         "correct_answer.validation field (e.g., 'any_allocation', line 365 real lesson) NOT checked by grader or component, purely for lesson metadata",
         "Options mode: can only submit {selectedOptionId: 100} format, not a split allocation"
       ],
-      "canonical_example": "{\"content\": {\"scenario\": \"Arma tu portafolio.\", \"assets\": [{\"id\": \"a1\", \"name\": \"Acciones\", \"risk\": 7}, {\"id\": \"a2\", \"name\": \"Bonos\", \"risk\": 3}]}, \"correct_answer\": {\"allocation\": {\"a1\": 60, \"a2\": 40}}}"
+      "canonical_example": "{\"content\": {\"scenario\": \"Arma tu portafolio.\", \"assets\": [{\"id\": \"a1\", \"name\": \"Acciones\", \"risk\": 7}, {\"id\": \"a2\", \"name\": \"Bonos\", \"risk\": 3}]}, \"correct_answer\": {\"allocation\": {\"a1\": 60, \"a2\": 40}}}",
+      "design_rule": "Si pides 'diseña TU propio plan/allocation', NO pongas clave única: deja correct_answer SIN id para que el motor valide solo que la suma=100% (cualquier reparto válido pasa). Usa correctOptionId solo con opciones cerradas donde una sea objetivamente mejor bajo una restricción explícita."
     },
     "bill_splitter": {
       "type": "bill_splitter",
@@ -251,7 +257,8 @@
         "content.events array MUST have options[].cost defined and numeric, else balance calculation skips (line 942 'Number(option.cost || 0)')",
         "missing or empty events array → component renders 'Cargando emergencias...' (line 39-48), grader returns true (line 930)"
       ],
-      "canonical_example": "{\"content\":{\"initialFund\":5000,\"events\":[{\"id\":\"e1\",\"description\":\"Tu calentador se rompió. ¿Qué haces?\",\"options\":[{\"id\":\"opt1\",\"text\":\"Repara en emergencia\",\"cost\":500},{\"id\":\"opt2\",\"text\":\"Usa tarjeta de crédito\",\"cost\":0}]},{\"id\":\"e2\",\"description\":\"Deuda médica inesperada\",\"options\":[{\"id\":\"opt3\",\"text\":\"Paga del fondo\",\"cost\":1200},{\"id\":\"opt4\",\"text\":\"Aplaza\",\"cost\":0}]}]},\"correct_answer\":{\"minBalance\":2000}}"
+      "canonical_example": "{\"content\":{\"initialFund\":5000,\"events\":[{\"id\":\"e1\",\"description\":\"Tu calentador se rompió. ¿Qué haces?\",\"options\":[{\"id\":\"opt1\",\"text\":\"Repara en emergencia\",\"cost\":500},{\"id\":\"opt2\",\"text\":\"Usa tarjeta de crédito\",\"cost\":0}]},{\"id\":\"e2\",\"description\":\"Deuda médica inesperada\",\"options\":[{\"id\":\"opt3\",\"text\":\"Paga del fondo\",\"cost\":1200},{\"id\":\"opt4\",\"text\":\"Aplaza\",\"cost\":0}]}]},\"correct_answer\":{\"minBalance\":2000}}",
+      "design_rule": "Diseña el escenario GANABLE: initialFund + las decisiones 'buenas' DEBEN permitir alcanzar minBalance. Verifica numéricamente que existe un camino que cumple la meta (las opciones que enseñan el concepto deben MOVER el balance hacia la meta, no costar 0). El feedback success refleja el balance realmente alcanzable."
     },
     "tax_puzzle": {
       "type": "tax_puzzle",
@@ -313,7 +320,8 @@
         "No lecciones de corpus encontradas aún usando savings_race (searches returned no .json files with type='savings_race'). Contract inferred from component code + grader case logic, untested against real data.",
         "Progress bar uses transition-all duration-100 (line 114), but interval updates every stepDuration (line 75, ~30ms for 3s animation). Smooth visual but discontinuous state updates risk browser reflow thrashing."
       ],
-      "canonical_example": "{\"type\":\"savings_race\",\"content\":{\"goal\":5000,\"strategies\":[{\"id\":\"conservative\",\"name\":\"Ahorro Seguro\",\"description\":\"Deposita 500/mes en banco\",\"icon\":\"🏦\",\"speed\":1},{\"id\":\"aggressive\",\"name\":\"Inversión Agresiva\",\"description\":\"Invierte en acciones\",\"icon\":\"📈\",\"speed\":2.5}]},\"correct_answer\":{\"correctOptionId\":\"aggressive\"}}"
+      "canonical_example": "{\"type\":\"savings_race\",\"content\":{\"goal\":5000,\"strategies\":[{\"id\":\"conservative\",\"name\":\"Ahorro Seguro\",\"description\":\"Deposita 500/mes en banco\",\"icon\":\"🏦\",\"speed\":1},{\"id\":\"aggressive\",\"name\":\"Inversión Agresiva\",\"description\":\"Invierte en acciones\",\"icon\":\"📈\",\"speed\":2.5}]},\"correct_answer\":{\"correctOptionId\":\"aggressive\"}}",
+      "design_rule": "Si es gradable, la meta debe ser alcanzable con las decisiones ofrecidas; si es exploratorio, no pongas correct_answer."
     },
     "comparison": {
       "type": "comparison",
@@ -386,7 +394,8 @@
         "Feedback state persists until handleContinue() called (line 115-126); if 'success' user calls onNext(), if 'error' removes last 2 messages and calls onRetry()",
         "selectedChoiceId lock (line 76 'if (selectedChoiceId) return') prevents double-submission during delay"
       ],
-      "canonical_example": "{\"content\": {\"scenario\": \"Eres un contribuyente. Tu ISR es $45,000. Crédito fiscal: $38,000. ¿Qué declaras?\", \"instruction\": \"Decide tu respuesta.\", \"options\": [{\"id\": \"a\", \"text\": \"Saldo a favor por $7,000.\"}, {\"id\": \"b\", \"text\": \"Saldo a pagar de $7,000.\"}, {\"id\": \"c\", \"text\": \"No debo nada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}"
+      "canonical_example": "{\"content\": {\"scenario\": \"Eres un contribuyente. Tu ISR es $45,000. Crédito fiscal: $38,000. ¿Qué declaras?\", \"instruction\": \"Decide tu respuesta.\", \"options\": [{\"id\": \"a\", \"text\": \"Saldo a favor por $7,000.\"}, {\"id\": \"b\", \"text\": \"Saldo a pagar de $7,000.\"}, {\"id\": \"c\", \"text\": \"No debo nada.\"}]}, \"correct_answer\": {\"correctOptionId\": \"b\"}}",
+      "design_rule": "La respuesta correcta debe estar determinada por la SITUACIÓN (ej.: el vendedor dio cambio de menos→la correcta es señalarlo). Prohibido marcar una preferencia. El feedback de opciones no-correctas explica por qué NO son, sin afirmarlas como válidas."
     }
   }
 }
