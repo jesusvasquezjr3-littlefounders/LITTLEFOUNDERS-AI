@@ -14,7 +14,7 @@
 
 ## Mapa rápido de la carpeta
 
-- `skills/` — contexto/documentación indexada por petición (caché de reglas y APIs externas; p. ej. `notebooklm-py` para grounding con NotebookLM).
+- `skills/` — contexto/documentación indexada por petición. Incluye `notebooklm-py/` (grounding con NotebookLM): `SKILL.md` = referencia autoritativa empaquetada (versión-matcheada, v0.7.2); `README.md` = uso específico del proyecto + credenciales.
 - `schema/` — esquema fuente única (`lesson_v2.py`) + registro de tipos + contratos de render.
 - `eval/` — gate, rúbrica, golden sets y arnés de evaluación.
 - `curriculum/` — currículo fuente (aventuras 1-6).
@@ -24,5 +24,5 @@
 ## Reglas mínimas
 
 - **Nada se publica a la BD sin revisión.** Generación local y supervisada; solo se suben resultados aprobados.
-- **No comitear credenciales.** Las credenciales de Google/NotebookLM y el `.venv/` están cubiertos por el `.gitignore` de esta carpeta.
+- **No comitear credenciales.** Las cookies de sesión de Google/NotebookLM viven en `~/.notebooklm/` y en una copia local `.notebooklm/storage_state.json`; ambas + `.venv/` están gitignored. Cómo usarlas/refrescarlas: ver `skills/notebooklm-py/README.md`.
 - **i18n:** las lecciones se generan bilingües (ES→EN); el vocabulario controlado (tipos, fases) nunca se traduce.
