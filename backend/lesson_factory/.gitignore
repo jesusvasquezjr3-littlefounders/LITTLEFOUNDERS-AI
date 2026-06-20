@@ -1,0 +1,33 @@
+# ───────────────────────────────────────────────────────────────
+# Lesson Factory — local-only artifacts (NEVER commit)
+# ───────────────────────────────────────────────────────────────
+
+# Python virtualenv (notebooklm-py + deps live here)
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── NotebookLM / Google credentials & browser profiles ──
+# notebooklm-py stores Google session cookies + isolated browser
+# profiles locally. NEVER commit these — they grant account access.
+.notebooklm/
+.notebooklm-py/
+.nblm/
+profiles/
+auth/
+*.cookies
+*.cookie
+storage_state*.json
+**/storage_state.json
+*.session
+
+# Playwright / Chromium (downloaded ~170MB on first login)
+.playwright/
+ms-playwright/
+.cache/
+
+# Secrets
+.env
+.env.*
