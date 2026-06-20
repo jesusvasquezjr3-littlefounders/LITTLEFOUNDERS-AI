@@ -1,0 +1,76 @@
+# taxonomy.yaml — Vocabulario CERRADO del cerebro de conocimiento.
+# El gate (tools/gate_kb.py) rechaza cualquier doc cuyo country/domain/subdomain/
+# age_band/depth_tier/volatility/status/language no esté aquí.
+# Ver BRAIN_STRATEGY.md §2.
+schema_version: kb-1.0
+
+countries:
+  mx: { name: "México", currency: MXN, fiscal_authority: SAT, central_bank: Banxico }
+  us: { name: "United States", currency: USD, fiscal_authority: IRS, central_bank: "Federal Reserve" }
+  shared: { name: "Jurisdicción-neutro", currency: null, note: "SOLO conceptos genuinamente neutros (matemática, definiciones universales). En la duda, NO es shared." }
+
+languages: [es, en]   # es = canónico, en = traducción verificada
+
+# 5 tiers de edad. Techo Piaget reusado de ../../abstraction_ceiling.json (HARD-FAIL si se excede).
+age_bands:
+  tier1: { ages: "5-7",   piaget: preoperational,  forbidden: [porcentaje, interés, inversión, deuda, activo, pasivo, dividendo] }
+  tier2: { ages: "8-10",  piaget: concrete_early,   forbidden: [crédito, inflación, portafolio, hipoteca, dividendo] }
+  tier3: { ages: "11-13", piaget: concrete_late,    note: "banca, inversión, impuestos arrancan aquí (%, interés simple)" }
+  tier4: { ages: "14-17", piaget: formal_early,     note: "ratios, proporción, fórmulas" }
+  tier5: { ages: "18+",   piaget: formal_adult,     note: "sin techo: impuestos plenos, crédito, nómina, instituciones, startups/VC" }
+
+depth_tiers: [intro, intermediate, advanced]
+
+volatility_levels: [static, low, medium, high]
+
+statuses: [draft, review, published, stale]
+
+# Los 12 dominios y sus subdominios. El piloto cubre `taxes` end-to-end; el resto se
+# rellena al escalar. Subdominios marcados (*) son los del piloto.
+domains:
+  personal_finance:
+    label: "Finanzas personales"
+    subdomains: [saving, budgeting, credit, debt, credit_history, retirement, insurance, consumer_protection, goals]
+  consumer:
+    label: "Consumo inteligente"
+    subdomains: [price_comparison, quality_vs_price, discounts, impulse, price_psychology, online_buying]
+  entrepreneurship:
+    label: "Emprendimiento"
+    subdomains: [idea_validation, business_formation, business_models, pricing, break_even, mvp, pitch, funding, kpis, valuation, corporate_structures]
+  business_admin:
+    label: "Administración de empresas"
+    subdomains: [operations, cost_structure, hr_labor, supply_chain, foreign_trade, corporate_governance]
+  marketing_sales:
+    label: "Marketing y ventas"
+    subdomains: [four_ps, buyer_persona, copywriting, funnels, digital_marketing, retention_ltv]
+  accounting:
+    label: "Contabilidad / contaduría"
+    subdomains: [bookkeeping, financial_statements, methods_cash_accrual, standards, payroll, electronic_accounting]
+  banking_fintech:
+    label: "Banca y fintech"
+    subdomains: [accounts, cards, payments, deposit_insurance, regulation, financial_inclusion]
+  taxes:
+    label: "Impuestos / fiscal"
+    subdomains:
+      - what_is_a_tax        # * (shared concept)
+      - income_tax          # * MX: ISR / US: federal income tax
+      - consumption_tax     # * MX: IVA / US: sales tax
+      - simplified_regime   # * MX: RESICO (US: n/a)
+      - self_employment     # * US: SE tax / MX: actividad empresarial
+      - invoicing           # * MX: CFDI / US: 1099/W-2 forms
+      - tax_id              # * MX: RFC / US: EIN/SSN
+      - filing              # declaraciones / returns
+      - business_taxes      # estructuras y su tributación
+      - payroll_tax         # FICA / nómina
+  economics:
+    label: "Economía"
+    subdomains: [supply_demand, inflation, central_bank, labor_market, minimum_wage, monetary_policy, macro_indicators, cycles]
+  investing:
+    label: "Inversión"
+    subdomains: [save_vs_invest, risk_return, compound_interest, diversification, asset_classes, analysis, portfolio, dca]
+  risk_wealth:
+    label: "Gestión de riesgo y patrimonio"
+    subdomains: [risk_types, hedging, cognitive_biases, insurance_advanced, fire, passive_income, estate_legacy, esg]
+  financial_security:
+    label: "Seguridad financiera digital"
+    subdomains: [fraud, phishing, data_privacy, fine_print, consumer_recourse]

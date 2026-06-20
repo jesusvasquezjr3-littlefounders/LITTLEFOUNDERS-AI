@@ -1,0 +1,66 @@
+# build_policy.yaml — criterios de STOP y PROFUNDIDAD del pipeline autónomo.
+# Objetivo: que el dataset NO se quede en "lo mínimo" sino que profundice hasta >100MB con rigor.
+# El "stop" global es una CONJUNCIÓN: se sigue construyendo hasta cumplir TODO a la vez.
+schema_version: kb-1.0
+
+# ── Metas globales (stop = se cumplen TODAS) ─────────────────────────────────
+targets:
+  total_size_mb: 100          # el corpus markdown (shared+mx+us) debe pesar >= 100 MB
+  # Si la cobertura está "completa" pero el tamaño < meta, el crítico de completitud DEBE
+  # seguir expandiendo subtemas más profundos. La meta de tamaño FUERZA la profundidad.
+
+# ── Profundidad por subdominio (anti-"mínimo indispensable") ─────────────────
+depth:
+  min_docs_per_subdomain: 8   # cada (country, domain, subdomain) >= 8 documentos distintos
+  min_words_per_doc: 700      # cada doc sustancial (por idioma)
+  min_cited_facts_per_doc: 4  # >= 4 sentinels @fact con fuente
+  min_primary_sources_per_doc: 1
+  require_all_applicable_tiers: true   # cubrir todos los tiers que apliquen al subdominio
+
+# ── Crítico de completitud (loop-until-dry: el motor de "abarcar más") ───────
+completeness:
+  dry_rounds_to_stop: 2       # el crítico debe devolver "nada nuevo" 2 rondas seguidas
+  max_expansion_rounds: 12    # tope de seguridad por subdominio
+  critic_prompt_hint: >
+    Enumera EXHAUSTIVAMENTE los subtemas, casos, excepciones, procedimientos, comparativas y
+    escenarios prácticos que faltan para una cobertura de nivel experto de este subdominio.
+    No te limites a lo básico: incluye casos borde, trámites paso a paso, errores comunes,
+    cambios recientes, e interacciones con otros temas. Prioriza profundidad sobre brevedad.
+
+# ── Barra de calidad (juez Qwen; por debajo => revisar) ──────────────────────
+quality_bar:
+  factual_accuracy: 5
+  country_correctness: 5      # cero fuga de jurisdicción
+  pedagogical_scaffolding: 4
+  translation_fidelity: 4
+  engagement: 4               # exige el mini-ejemplo numérico (convención del piloto)
+  max_revise_rounds: 3        # autor revisa hasta 3 veces ante gate/juez en rojo
+
+# ── Modelos por rol (calidad-precio; configurable) ───────────────────────────
+models:
+  planner: qwen-flash
+  author: qwen-flash
+  judge: qwen-flash
+  verifier: qwen-flash        # decisión del usuario: usar Qwen-Flash en todos los roles
+  grounding_search: true      # enable_search en author/verifier (complementa la evidencia curada)
+  # Precios qwen-flash (USD / 1M tokens), Singapur (verificado jun-2026):
+  price_per_mtok_input: 0.05
+  price_per_mtok_output: 0.40
+
+# ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
+coverage:
+  countries: [shared, mx, us]
+  # 'shared' solo recibe docs de conceptos neutros; mx/us reciben todo lo jurisdiccional.
+  shared_domains: [taxes, personal_finance, accounting, economics, investing, entrepreneurship]
+
+# ── Convención de contenido (heredada del piloto, ahora obligatoria) ─────────
+content_conventions:
+  require_numeric_example: true   # cada doc incluye al menos un mini-ejemplo numérico concreto
+  es_canonical: true              # ES se redacta primero; EN es traducción fiel
+  date_anchor: "2026-06-20"       # fecha "as of" de esta corrida
+
+# ── Robustez de la corrida ───────────────────────────────────────────────────
+run:
+  checkpoint_every: 1         # persistir estado tras cada doc (reanudable)
+  grounding_backend: hybrid   # hybrid = evidencia curada NotebookLM (knowledge/evidence/) + qwen_search de respaldo
+  notebooklm_optional: true   # si falta evidencia para un (país,dominio), el autor cae a qwen_search

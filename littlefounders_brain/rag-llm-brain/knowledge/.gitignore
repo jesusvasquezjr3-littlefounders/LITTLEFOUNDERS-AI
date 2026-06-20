@@ -1,0 +1,8 @@
+# Knowledge index build artifacts (DERIVED — regenerate with tools/build_index.py)
+index/
+*.db
+__pycache__/
+# Evidencia curada de NotebookLM (texto fuente con copyright; insumo de grounding, NO producto)
+evidence/
+# Logs de build del pipeline
+build.log

@@ -8,18 +8,18 @@ name: Lesson Factory CI
 on:
   push:
     paths:
-      - 'backend/lesson_factory/**'
+      - 'littlefounders_brain/lesson_factory/**'
       - '.github/workflows/lesson-factory-ci.yml'
   pull_request:
     paths:
-      - 'backend/lesson_factory/**'
+      - 'littlefounders_brain/lesson_factory/**'
 
 jobs:
   factory-gate:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend/lesson_factory
+        working-directory: littlefounders_brain/lesson_factory
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,7 +41,7 @@ jobs:
         run: |
           python3 schema/gen_frontend_types.py
           if ! git diff --quiet -- ../../frontend/src/components/lessons/engine/generated/; then
-            echo "::error::Los tipos TS generados están desincronizados. Corre: python3 backend/lesson_factory/schema/gen_frontend_types.py"
+            echo "::error::Los tipos TS generados están desincronizados. Corre: python3 littlefounders_brain/lesson_factory/schema/gen_frontend_types.py"
             git --no-pager diff -- ../../frontend/src/components/lessons/engine/generated/
             exit 1
           fi

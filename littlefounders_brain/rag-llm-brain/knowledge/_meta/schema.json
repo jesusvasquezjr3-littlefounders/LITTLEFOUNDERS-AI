@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "littlefounders_brain/knowledge/_meta/schema.json",
+  "title": "Knowledge corpus document frontmatter (kb-1.0)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "doc_id", "title_es", "title_en", "language", "translation_of",
+    "country", "jurisdiction", "domain", "subdomain", "concept_ids",
+    "age_bands", "depth_tier", "volatility", "last_verified_date",
+    "verified_by", "review_due", "sources", "status", "currency", "schema_version"
+  ],
+  "properties": {
+    "doc_id": { "type": "string", "pattern": "^[a-z0-9-]+$",
+      "description": "Estable, == path sin lang ni ext, con guiones (ej. mx-taxes-consumption_tax-iva-basics)" },
+    "title_es": { "type": "string", "minLength": 3 },
+    "title_en": { "type": "string", "minLength": 3 },
+    "language": { "type": "string", "enum": ["es", "en"] },
+    "translation_of": { "type": ["string", "null"],
+      "description": "El .en fija el doc_id del .es; el .es = null" },
+    "country": { "type": "string", "enum": ["mx", "us", "shared"] },
+    "jurisdiction": { "type": "string", "enum": ["MX-FED", "US-FED", "NONE"],
+      "description": "Subdivisiones futuras: MX-CMX, US-CA, US-TX, ..." },
+    "domain": { "type": "string" },
+    "subdomain": { "type": "string" },
+    "concept_ids": { "type": "array", "items": { "type": "string" } },
+    "age_bands": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "string", "enum": ["tier1", "tier2", "tier3", "tier4", "tier5"] }
+    },
+    "depth_tier": { "type": "string", "enum": ["intro", "intermediate", "advanced"] },
+    "volatility": { "type": "string", "enum": ["static", "low", "medium", "high"] },
+    "last_verified_date": { "type": "string", "format": "date", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "verified_by": { "type": "string", "minLength": 1 },
+    "review_due": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "sources": { "type": "array", "items": { "type": "string", "pattern": "^src_[a-z0-9_]+$" } },
+    "status": { "type": "string", "enum": ["draft", "review", "published", "stale"] },
+    "currency": { "type": ["string", "null"], "enum": ["MXN", "USD", null] },
+    "schema_version": { "type": "string", "const": "kb-1.0" }
+  }
+}

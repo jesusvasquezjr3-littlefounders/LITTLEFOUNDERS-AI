@@ -1,0 +1,30 @@
+# volatility_policy.yaml — cadencia de re-verificación por nivel de volatilidad.
+# review_due = last_verified_date + cadence. Un doc con review_due < hoy se marca `stale`
+# y el retriever lo degrada/rehúsa en modo chatbot. Ver BRAIN_STRATEGY.md §4.
+schema_version: kb-1.0
+
+cadences:           # ISO-8601 duration; null = nunca expira
+  static: null      # matemática del interés compuesto, definiciones universales
+  low: P2Y          # principios contables, conceptos estables
+  medium: P1Y       # conceptos económicos, nombres de programas/instituciones
+  high: P3M         # TASAS/brackets, UMA, salario mínimo, límites de aporte, topes de seguro
+
+# Disparadores de re-anclaje conocidos (informativo; el cron usa review_due).
+recheck_triggers:
+  mx:
+    - "Ley de Ingresos anual (ene): RESICO, ISR brackets, estímulos frontera"
+    - "INEGI ene/feb: UMA"
+    - "CONASAMI 1-ene: salario mínimo"
+    - "Banxico ~8 reuniones/año: tasa objetivo"
+    - "RMF anual: CFDI/Anexo 24"
+  us:
+    - "IRS nov: brackets, standard deduction, 401k/IRA limits"
+    - "SSA oct/nov: Social Security wage base"
+    - "FOMC ~8 reuniones/año: federal funds rate"
+    - "BLS mensual: CPI"
+    - "Legislación (OBBBA y sucesoras): CTC, 1099 thresholds, tips/overtime"
+
+# Vencimientos imminentes a vigilar (alta prioridad).
+watch:
+  - { id: mx.iva.frontera, note: "Estímulo IVA 8% / ISR 20% frontera EXPIRA 2026-12-31", recheck_before: 2027-01-01 }
+  - { id: us.obbba.temp, note: "Deducción tips/overtime temporal 2025-2028", recheck_before: 2028-01-01 }

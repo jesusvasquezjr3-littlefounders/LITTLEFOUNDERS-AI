@@ -1,0 +1,557 @@
+# sources.yaml — Registro ÚNICO de fuentes. Los docs citan por `id` en su frontmatter
+# (`sources: [...]`) y en sentinels @fact (`src=<id>`). El gate exige que todo id citado
+# exista aquí, y que docs `volatility>=medium` citen >=1 fuente `tier: primary`.
+# tier: primary (gobierno/regulador/ley) | official_secondary | reputable | tertiary
+schema_version: kb-1.0
+
+sources:
+  # ── MÉXICO ──────────────────────────────────────────────────────────────
+  src_sat_home:
+    title: "Servicio de Administración Tributaria (SAT)"
+    publisher: "Gobierno de México"
+    url: "https://www.sat.gob.mx"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_sat_resico:
+    title: "Régimen Simplificado de Confianza (RESICO) — SAT"
+    publisher: "SAT"
+    url: "https://www.sat.gob.mx/consultas/35025/conoce-el-regimen-simplificado-de-confianza-(resico)"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_sat_cfdi:
+    title: "Factura electrónica / CFDI 4.0 — SAT"
+    publisher: "SAT"
+    url: "https://www.sat.gob.mx/consultas/68823/genera-tu-factura"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_liva:
+    title: "Ley del Impuesto al Valor Agregado (LIVA)"
+    publisher: "Cámara de Diputados"
+    url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_lisr:
+    title: "Ley del Impuesto Sobre la Renta (LISR)"
+    publisher: "Cámara de Diputados"
+    url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_inegi_uma:
+    title: "UMA — Unidad de Medida y Actualización"
+    publisher: "INEGI"
+    url: "https://www.inegi.org.mx/temas/uma/"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_banxico:
+    title: "Banco de México (Banxico)"
+    publisher: "Banxico"
+    url: "https://www.banxico.org.mx"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_condusef:
+    title: "CONDUSEF — protección al usuario financiero"
+    publisher: "Gobierno de México"
+    url: "https://www.condusef.gob.mx"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_conasami:
+    title: "Salario mínimo — CONASAMI"
+    publisher: "Gobierno de México"
+    url: "https://www.gob.mx/conasami"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+  src_tuempresa:
+    title: "Tu Empresa / constitución de sociedades — Secretaría de Economía"
+    publisher: "Gobierno de México"
+    url: "https://www.gob.mx/tuempresa"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-19
+
+  # ── ESTADOS UNIDOS ──────────────────────────────────────────────────────
+  src_irs_home:
+    title: "Internal Revenue Service (IRS)"
+    publisher: "U.S. Government"
+    url: "https://www.irs.gov"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_2026_inflation:
+    title: "IRS tax inflation adjustments for tax year 2026 (incl. OBBBA)"
+    publisher: "IRS"
+    url: "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_obbba:
+    title: "One Big Beautiful Bill — provisions hub"
+    publisher: "IRS"
+    url: "https://www.irs.gov/newsroom/one-big-beautiful-bill-provisions"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_se_tax:
+    title: "Self-Employment Tax (Social Security and Medicare Taxes)"
+    publisher: "IRS"
+    url: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_forms:
+    title: "IRS Forms & Instructions (1040, W-2, 1099, Sch C/SE)"
+    publisher: "IRS"
+    url: "https://www.irs.gov/forms-instructions"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_ein:
+    title: "Apply for an Employer Identification Number (EIN)"
+    publisher: "IRS"
+    url: "https://www.irs.gov/businesses/small-businesses-self-employed/get-an-employer-identification-number"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_irs_business_structures:
+    title: "Business structures"
+    publisher: "IRS"
+    url: "https://www.irs.gov/businesses/small-businesses-self-employed/business-structures"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_sba_structure:
+    title: "Choose a business structure"
+    publisher: "U.S. Small Business Administration (SBA)"
+    url: "https://www.sba.gov/business-guide/launch-your-business/choose-business-structure"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_dol_minwage:
+    title: "Minimum Wage (federal + state)"
+    publisher: "U.S. Department of Labor"
+    url: "https://www.dol.gov/agencies/whd/minimum-wage"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_fed_fomc:
+    title: "FOMC monetary policy (federal funds rate)"
+    publisher: "Federal Reserve"
+    url: "https://www.federalreserve.gov/monetarypolicy/openmarket.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_bls_cpi:
+    title: "Consumer Price Index (CPI)"
+    publisher: "Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+  src_fdic:
+    title: "FDIC deposit insurance"
+    publisher: "FDIC"
+    url: "https://www.fdic.gov/resources/deposit-insurance/"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-19
+
+  # ── NEUTRO / EDUCATIVO ──────────────────────────────────────────────────
+  src_investopedia_tax:
+    title: "Investopedia — Tax concepts (cross-check only)"
+    publisher: "Investopedia"
+    url: "https://www.investopedia.com/taxes-4427724"
+    tier: tertiary
+    jurisdiction: NONE
+    accessed: 2026-06-19
+
+  src_gen_87284c9c:
+    title: "Internal Revenue Code \u00a7 3101 \u2014 Tax on employee"
+    publisher: "Cornell Legal Information Institute (LII), hosting U.S. Code"
+    url: "https://www.law.cornell.edu/uscode/text/26/3101"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_94adae31:
+    title: "Internal Revenue Code \u00a7 3301 \u2014 Tax on employer"
+    publisher: "Cornell Legal Information Institute (LII), hosting U.S. Code"
+    url: "https://www.law.cornell.edu/uscode/text/26/3301"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_eceffed9:
+    title: "IRS Publication 15 (2026) \u2014 Employer\u2019s Tax Guide"
+    publisher: "Internal Revenue Service"
+    url: "https://www.irs.gov/pub/irs-pdf/p15.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_101eb089:
+    title: "Your Social Security Number and Card (Publication No. 05-10039)"
+    publisher: "Social Security Administration"
+    url: "https://www.ssa.gov/pubs/EN-05-10039.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_5d757a59:
+    title: "About Form 941-X, Adjusted Employer's QUARTERLY Federal Tax Return or Claim for Refund"
+    publisher: "Internal Revenue Service"
+    url: "https://www.irs.gov/forms-pubs/about-form-941-x"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_7d13d6fc:
+    title: "42 U.S.C. \u00a7 405 \u2014 Evidence; hearings; judicial review"
+    publisher: "Cornell Legal Information Institute (U.S. Code)"
+    url: "https://www.law.cornell.edu/uscode/text/42/405"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_f6b71ac0:
+    title: "Social Security Numbers: What You Need to Know"
+    publisher: "Social Security Administration (SSA)"
+    url: "https://www.ssa.gov/pubs/EN-05-10002.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_021bfe1e:
+    title: "About Form W-2, Wage and Tax Statement"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/forms-pubs/about-form-w-2"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_f8ac4f17:
+    title: "Individual Taxpayer Identification Number (ITIN)"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/individuals/taxpayer-id-numbers/itins"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_439ab9de:
+    title: "Publication 15-T (2026), Federal Income Tax Withholding Methods"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/pub/irs-pdf/p15t.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_e6edb2b1:
+    title: "About Form W-4, Employee's Withholding Certificate"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/forms-pubs/about-form-w-4"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_fed4b4f3:
+    title: "26 U.S. Code \u00a7 3402 \u2014 Income tax collected at source"
+    publisher: "Cornell Legal Information Institute (U.S. Code)"
+    url: "https://www.law.cornell.edu/uscode/text/26/3402"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_fc17b522:
+    title: "Form W-4 (2020 Rev. October 2023)"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/pub/irs-pdf/fw4.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_d4691b4c:
+    title: "Tax Withholding Estimator (updated for 2025\u20132026 pay periods)"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/individuals/tax-withholding-estimator"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_0015ce4e:
+    title: "IR-2024-198: IRS Announces 2025 Tax Year Inflation Adjustments"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/irb/2024-33_IRB#IR-2024-198"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_ff0a0d7e:
+    title: "FAQs \u2014 Withholding Adjustments"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/faqs/individuals/employees/withholding-adjustments/withholding-adjustments"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_67143a1d:
+    title: "Publication 515 (2025): Withholding of Tax on Nonresident Aliens and Foreign Entities"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p515#en_US_2025_publink1000222134"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_95ae58ce:
+    title: "26 U.S. Code \u00a7 3121 \u2014 Definitions"
+    publisher: "Cornell Legal Information Institute (LII), U.S. House of Representatives"
+    url: "https://www.law.cornell.edu/uscode/text/26/3121"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_919d8793:
+    title: "Foreign Student Employment and FICA Taxes"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/individuals/international-taxpayers/foreign-student-employment-and-fica-taxes"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_f2c713e8:
+    title: "Publication 515 (2025 Edition), Withholding of Tax on Nonresident Aliens and Foreign Entities"
+    publisher: "Internal Revenue Service"
+    url: "https://www.irs.gov/pub/irs-pdf/p515.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_9cfd7217:
+    title: "POMS RS 01802.001 \u2014 Religious Exemptions Under Section 410(a)(8) of the Social Security Act"
+    publisher: "Social Security Administration"
+    url: "https://www.ssa.gov/OP_Home/rulings/rs/01802/01802001.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_19ebaf26:
+    title: "42 U.S.C. \u00a7 410(a)(8) \u2014 Exemption of members of certain religious faiths"
+    publisher: "Cornell Legal Information Institute (U.S. Code)"
+    url: "https://www.law.cornell.edu/uscode/text/42/410"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_5dd0929f:
+    title: "Technical Explanation of the Protocol Amending the U.S.\u2013Canada Income Tax Convention (2023)"
+    publisher: "U.S. Department of the Treasury"
+    url: "https://www.treasury.gov/resource-center/tax-policy/treaties/Documents/canada-te.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_b7e6dc7d:
+    title: "Relative Importance of Components in the CPI-U, 2024"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/tables/relative-importance/2024/relative-importance-2024.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_e34fcda6:
+    title: "Changes to CPI health insurance measurement, effective October 2023"
+    publisher: "BLS Office of Prices and Living Conditions"
+    url: "https://www.bls.gov/opub/ted/2023/article/changes-to-cpi-health-insurance-measurement-202310.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_5f75dc1f:
+    title: "How does the Fed use the PCE price index versus the CPI?"
+    publisher: "Board of Governors of the Federal Reserve System"
+    url: "https://www.federalreserve.gov/faqs/how-does-the-fed-use-the-pce-price-index-versus-the-cpi.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_bf2408e2:
+    title: "Consumer Price Index Technical Questions and Answers"
+    publisher: "U.S. Bureau of Labor Statistics (BLS)"
+    url: "https://www.bls.gov/cpi/technical-q-a.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_3167e023:
+    title: "Relative Importance of Items in the CPI Market Basket, 2023\u20132024 Weights"
+    publisher: "U.S. Bureau of Labor Statistics (BLS)"
+    url: "https://www.bls.gov/cpi/tables/relative-importance/2023-2024.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_433be7f4:
+    title: "CPI Technical Notes: Seasonal Adjustment"
+    publisher: "U.S. Bureau of Labor Statistics (BLS)"
+    url: "https://www.bls.gov/cpi/technical-notes/#seasonal"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_3be4476b:
+    title: "Chain-Linked CPI Indexes: Frequently Asked Questions"
+    publisher: "U.S. Bureau of Labor Statistics (BLS)"
+    url: "https://www.bls.gov/cpi/tables/chain-linked-indexes/2023-2024-chaining-faq.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_b4d0cefb:
+    title: "Frequently Asked Questions: How are health insurance premiums treated in the CPI?"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/cpifaq.htm#question1"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_7203dbd9:
+    title: "Handbook of Methods: Chapter 17 \u2014 Consumer Price Index"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/opub/hom/cpi/"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_2f1fd122:
+    title: "Consumer Price Index Weight Changes, 2022\u20132023 Weighting Pattern (Effective July 2024)"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/tables/weight-changes/2024/weight-changes-2024.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_e95f55aa:
+    title: "Chained Consumer Price Index for All Urban Consumers (C-CPI-U)"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/chained.htm"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_a47cd9f4:
+    title: "Relative Importance of Components in the CPI-U, 2023"
+    publisher: "U.S. Bureau of Labor Statistics"
+    url: "https://www.bls.gov/cpi/tables/relative-importance/2023/"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_7e53e7fa:
+    title: "Reglas T\u00e9cnicas del Sistema de Pagos Electr\u00f3nicos Interbancarios (SPEI) \u2014 Actualizaci\u00f3n 2024"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/cep-spei/spei-reglas-tecnicas.html"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_538a8e77:
+    title: "Circular 1/2024: Modificaciones al Reglamento de Medios de Pago y actualizaci\u00f3n del Anexo 13"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/legislacion/circulares/circular-1-2024.html"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_d1e7d56a:
+    title: "Gu\u00eda de Migraci\u00f3n a ISO 20022 para Participantes del SPEI (Versi\u00f3n 3.1, mayo 2025)"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/cep-spei/documentos/guia-migracion-iso20022-v3.pdf"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_89d1d194:
+    title: "Comunicado 2024-097: Banco de M\u00e9xico reafirma su compromiso con la modernizaci\u00f3n del sistema de pagos"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/prensa-comunicados/2024-097.html"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_4575ebda:
+    title: "Reglamento de Medios de Pago (RMF), publicado en el Diario Oficial de la Federaci\u00f3n el 29 de diciembre de 2022"
+    publisher: "Secretar\u00eda de Hacienda y Cr\u00e9dito P\u00fablico (SHCP)"
+    url: "https://dof.gob.mx/nota_detalle.php?codigo=5670222&fecha=29/12/2022"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_ee38fbce:
+    title: "Gu\u00eda T\u00e9cnica del Sistema de Pagos Electr\u00f3nicos Interbancarios (SPEI) \u2014 Versi\u00f3n 12.3, enero de 2025"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/cep-spei/spei/guia-tecnica-spei.pdf"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_1f24e76b:
+    title: "CENIT: Infraestructura de mensajer\u00eda financiera internacional basada en ISO 20022"
+    publisher: "Banco de M\u00e9xico"
+    url: "https://www.banxico.org.mx/cep-cenit/"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_e04d5966:
+    title: "Title 26, Section 1 of the United States Code - Internal Revenue Code"
+    publisher: "Cornell Law School, Legal Information Institute"
+    url: "https://www.law.cornell.edu/uscode/text/26/1"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_0570878b:
+    title: "H.R.1150 - Consolidated Appropriations Act, 2023"
+    publisher: "U.S. Congress"
+    url: "https://www.congress.gov/bill/117th-congress/house-bill/1150/text"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_ef572a76:
+    title: "Form 1040: U.S. Individual Income Tax Return"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/forms-pubs/about-form-1040"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_6e6d0d28:
+    title: "Child Tax Credit"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/credits-deductions/individuals/child-tax-credit"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_c42190ae:
+    title: "IRS Releases 2024 Tax Inflation Adjustments"
+    publisher: "Internal Revenue Service"
+    url: "https://www.irs.gov/newsroom/irs-releases-2024-tax-inflation-adjustments"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_6a05c39b:
+    title: "United States Code, Title 26 - Internal Revenue Code"
+    publisher: "Cornell Law School"
+    url: "https://www.law.cornell.edu/uscode/text/26"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20

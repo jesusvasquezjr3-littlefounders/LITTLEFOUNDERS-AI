@@ -1,0 +1,37 @@
+name: Brain CI
+
+# Gate determinista del cerebro de conocimiento (littlefounders_brain/knowledge).
+# BLOQUEA contenido del corpus que falle el gate (frontmatter/citas/anti-fuga/vocabulario)
+# o el eval (golden Q&A + FUGA de jurisdicción + frescura). La fuga es siempre bloqueante.
+
+on:
+  push:
+    paths:
+      - 'littlefounders_brain/rag-llm-brain/knowledge/**'
+      - '.github/workflows/brain-ci.yml'
+  pull_request:
+    paths:
+      - 'littlefounders_brain/rag-llm-brain/knowledge/**'
+
+jobs:
+  brain-gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: littlefounders_brain/rag-llm-brain/knowledge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install pyyaml
+
+      - name: GATE — frontmatter, citas, anti-fuga, vocabulario por edad
+        run: python3 tools/gate_kb.py
+
+      - name: Construir índice (embedder determinista, sin dependencias)
+        run: python3 tools/build_index.py
+
+      - name: EVAL — golden Q&A + FUGA de jurisdicción + frescura (bloqueante)
+        run: python3 eval/run_kb_eval.py

@@ -1,0 +1,24 @@
+{
+  "_doc": "Suite B — Fuga de jurisdicción (CRÍTICA). Consultas adversarias diseñadas para jalar el país equivocado. HARD-FAIL si CUALQUIER chunk recuperado pertenece al país opuesto. Esta es la suite que justifica el pre-filtro duro.",
+  "schema_version": "kb-1.0",
+  "items": [
+    { "id": "leak-vat-us", "country": "us", "language": "en",
+      "q": "How much VAT / IVA do I pay? What is the IVA rate?",
+      "forbid_country": "mx", "note": "EE.UU. no tiene IVA federal; jamás debe traer chunks de IVA mexicano" },
+    { "id": "leak-vat-us-es", "country": "us", "language": "es",
+      "q": "¿cuánto es el IVA? tasa de IVA",
+      "forbid_country": "mx", "note": "sesión US en español: aun así nada de MX" },
+    { "id": "leak-deduction-mx", "country": "mx", "language": "es",
+      "q": "¿cuál es la deducción estándar? standard deduction",
+      "forbid_country": "us", "note": "sesión MX no debe traer la standard deduction de EE.UU." },
+    { "id": "leak-sat-us", "country": "us", "language": "en",
+      "q": "How do I register with the SAT and get an RFC and CFDI?",
+      "forbid_country": "mx", "note": "términos MX en sesión US: cero chunks MX" },
+    { "id": "leak-irs-mx", "country": "mx", "language": "es",
+      "q": "¿cómo saco mi EIN del IRS y presento el formulario 1040?",
+      "forbid_country": "us", "note": "términos US en sesión MX: cero chunks US" },
+    { "id": "leak-se-tax-mx", "country": "mx", "language": "en",
+      "q": "self-employment tax 15.3% SE tax",
+      "forbid_country": "us", "note": "concepto US-específico en sesión MX" }
+  ]
+}
