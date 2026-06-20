@@ -1,8 +1,0 @@
-- [Home](Home)
-- [FAQ](FAQ)
-- [Compare Anki's built-in scheduler and FSRS](Compare-Anki's-built-in-scheduler-and-FSRS)
-- [How does the scheduler work?](How-does-the-scheduler-work?)
-- [Set different parameters for specific decks](Set-different-parameters-for-specific-decks)
-- [Advanced methods of optimization](Advanced-methods-of-optimization)
-- [The Optimal Retention](The-Optimal-Retention)
-- [Awesome FSRS](Awesome-FSRS)
