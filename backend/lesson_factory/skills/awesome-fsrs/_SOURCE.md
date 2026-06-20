@@ -1,0 +1,6 @@
+# Source / provenance
+
+- **Repo:** https://github.com/open-spaced-repetition/awesome-fsrs
+- **License:** CC0 1.0 Universal (public domain). See LICENSE.
+- **Fetched:** 2026-06-19 (full verbatim content of the repo at default-branch HEAD; original LICENSE retained where present).
+- **Use here:** internal reference context for the Lesson Factory agent.

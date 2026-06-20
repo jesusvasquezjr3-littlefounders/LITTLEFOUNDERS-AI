@@ -1,0 +1,6 @@
+# Source / provenance
+
+- **Repo:** https://github.com/DojoCodingLabs/instructional-design-toolkit
+- **License:** BSL-1.1 (Business Source License 1.1). See LICENSE.
+- **Fetched:** 2026-06-19 (full verbatim content of the repo at default-branch HEAD; original LICENSE retained where present).
+- **Use here:** internal reference context for the Lesson Factory agent.

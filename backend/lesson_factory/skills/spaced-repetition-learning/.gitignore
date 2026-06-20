@@ -1,0 +1,28 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Build directory
+build/
+dist/
+
+# IDE or editor-specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+.DS_Store
+.env
+*.egg-info/
+.coverage
+
+# cli version
+srl/_version.py
+

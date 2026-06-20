@@ -23,19 +23,19 @@
 
 ## Catálogo de skills (`skills/`)
 
-Contexto indexable por petición para generación de alta calidad. Cargar el/los relevante(s) según la tarea; cada skill trae su `SKILL.md` con detalle, fuente y licencia.
+Contexto indexable por petición para generación de alta calidad. Cargar el/los relevante(s) según la tarea. Cada carpeta contiene el **contenido completo y verbatim** del repo de origen (con su `LICENSE`) + un `_SOURCE.md` con fuente, licencia y fecha.
 
 | Skill | Para qué sirve | Licencia origen |
 |-------|----------------|-----------------|
 | `notebooklm-py/` | Grounding con NotebookLM (API no oficial). `SKILL.md` autoritativo + `README.md` del proyecto. | herramienta (ver doc) |
 | `master-instructional-design/` | Arquitecto de aprendizaje veterano: diseño emocional, seguridad psicológica, Bloom, Gagné (9 eventos), Merrill, arco emocional. Estructurar temarios, mapas de empatía, escenarios no aburridos. | CC BY-NC-ND 4.0 ⚠️ |
 | `instructional-design-toolkit/` | Bloom práctico (memorizar→aplicar→analizar→crear) + plantilla de lección (CONTEXT→CONCEPT→BUILD→SHIP→REFLECT) + evaluación Kirkpatrick. | BSL-1.1 ⚠️ |
-| `awesome-fsrs/` | Algoritmo FSRS de repaso espaciado: modelo DSR (Dificultad/Estabilidad/Recuperabilidad) + fórmulas para programar el repaso justo antes del olvido. | CC0 (dominio público) |
+| `awesome-fsrs/` | Algoritmo FSRS de repaso espaciado: README de recursos + **`fsrs-algorithm-wiki/`** (wiki completa: `The-Algorithm.md`, `ABC-of-FSRS.md`, `The-Optimal-Retention.md`, matemática DSR verbatim). | CC0 (dominio público) |
 | `spaced-repetition-learning/` | Arquitectura SR agnóstica de materia: rating 1-5 de fricción cognitiva → intervalo/dificultad/maestría adaptativos. | MIT |
 | `brain-lift/` | NASA-TLX: medir/estimar carga mental (6 subescalas) y frustración por actividad; presupuestos por banda de edad. | © all rights reserved ⚠️ |
 | `learning-notes/` | Psicología infantil/adolescente: cerebro emocional vs lógico, "name it to tame it", regulación de frustración, motivación. Para tono, feedback y manejo de frustración. | sin licencia OSS ⚠️ |
 
-> ⚠️ = la fuente original tiene **licencia restrictiva o sin licencia OSS**. El contenido se destiló como **referencia interna** (no copia verbatim), con atribución en cada `SKILL.md`. **Uso interno solamente; no redistribuir** el contenido derivado en el producto sin revisar la licencia. FSRS (CC0) y spaced-repetition-learning (MIT) son de uso libre con atribución.
+> ⚠️ = la fuente tiene **licencia restrictiva o sin licencia OSS** y aquí está su **copia verbatim completa**: `master-instructional-design` (CC BY-NC-ND 4.0), `instructional-design-toolkit` (BSL-1.1), `brain-lift` (all rights reserved) y `learning-notes` (sin licencia). **Uso interno como contexto del agente solamente; NO redistribuir** este contenido en el producto sin revisar su licencia (ver `_SOURCE.md`/`LICENSE` de cada carpeta). FSRS (CC0) y spaced-repetition-learning (MIT) son de uso libre con atribución.
 
 ## Reglas mínimas
 

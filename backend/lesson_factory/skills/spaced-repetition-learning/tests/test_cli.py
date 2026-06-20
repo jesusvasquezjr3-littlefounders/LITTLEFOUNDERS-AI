@@ -1,0 +1,243 @@
+import pytest
+
+
+def test_add_by_name(parser):
+    args = parser.parse_args(["add", "-p", "Two Sum", "3"])
+    assert args.command == "add"
+    assert args.name == "Two Sum"
+    assert args.number is None
+    assert args.rating == 3
+
+
+def test_add_by_number(parser):
+    args = parser.parse_args(["add", "-n", "4", "5"])
+    assert args.command == "add"
+    assert args.name is None
+    assert args.number == 4
+    assert args.rating == 5
+
+
+def test_add_mutually_exclusive_both_given(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["add", "Two Sum", "-n", "4", "3"])
+
+
+def test_add_requires_name_or_number(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["add"])
+
+
+def test_add_invalid_rating(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["add", "Two Sum", "7"])
+
+
+def test_list_with_n(parser):
+    args = parser.parse_args(["list", "-n", "5"])
+    assert args.command == "list"
+    assert args.n == 5
+
+
+def test_mastered_count_short_flag(parser):
+    args = parser.parse_args(["mastered", "-c"])
+    assert args.command == "mastered"
+    assert hasattr(args, "handler")
+    assert args.count is True
+
+
+def test_mastered_count_long_flag(parser):
+    args = parser.parse_args(["mastered", "--count"])
+    assert args.command == "mastered"
+    assert hasattr(args, "handler")
+    assert args.count is True
+
+
+def test_nextup_add(parser):
+    args = parser.parse_args(["nextup", "add", "Binary Search"])
+    assert args.command == "nextup"
+    assert args.handler
+    assert args.name == "Binary Search"
+
+
+def test_nextup_add_with_file_short_flag(parser):
+    args = parser.parse_args(["nextup", "add", "-f", "problems.txt"])
+    assert args.command == "nextup"
+    assert args.handler
+    assert args.file == "problems.txt"
+    assert args.name is None
+
+
+def test_nextup_add_with_file_long_flag(parser):
+    args = parser.parse_args(["nextup", "add", "--file", "problems.txt"])
+    assert args.command == "nextup"
+    assert args.handler
+    assert args.file == "problems.txt"
+    assert args.name is None
+
+
+def test_nextup_list(parser):
+    args = parser.parse_args(["nextup", "list"])
+    assert args.command == "nextup"
+    assert args.handler
+
+
+def test_nextup_add_allow_mastered_flag_short(parser):
+    args = parser.parse_args(["nextup", "add", "Binary Search", "--allow-mastered"])
+    assert args.command == "nextup"
+    assert args.handler
+    assert args.name == "Binary Search"
+    assert args.allow_mastered
+
+
+def test_nextup_add_allow_mastered_flag_file(parser):
+    args = parser.parse_args(
+        ["nextup", "add", "-f", "problems.txt", "--allow-mastered"]
+    )
+    assert args.command == "nextup"
+    assert args.handler
+    assert args.file == "problems.txt"
+    assert args.allow_mastered
+
+
+def test_audit_pass(parser):
+    args = parser.parse_args(["audit", "pass"])
+    assert args.command == "audit"
+    assert args.handler
+
+
+def test_audit_fail(parser):
+    args = parser.parse_args(["audit", "fail"])
+    assert args.command == "audit"
+    assert args.handler
+
+
+def test_audit_history(parser):
+    args = parser.parse_args(["audit", "history"])
+    assert args.command == "audit"
+    assert args.handler
+
+
+def test_remove_by_name(parser):
+    args = parser.parse_args(["remove", "Palindrome Number"])
+    assert args.command == "remove"
+    assert args.name == "Palindrome Number"
+    assert args.number is None
+
+
+def test_remove_by_number(parser):
+    args = parser.parse_args(["remove", "-n", "3"])
+    assert args.command == "remove"
+    assert args.name is None
+    assert args.number == 3
+
+
+def test_remove_mutually_exclusive_both_given(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["remove", "Palindrome Number", "-n", "5"])
+
+
+def test_remove_requires_one_option(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["remove"])
+
+
+def test_config_audit_probability(parser):
+    args = parser.parse_args(["config", "--audit-probability", "0.3"])
+    assert args.command == "config"
+    assert args.audit_probability == 0.3
+
+
+def test_config_get(parser):
+    args = parser.parse_args(["config", "--get"])
+    assert args.command == "config"
+    assert args.get is True
+
+
+def test_take_command_basic(parser):
+    args = parser.parse_args(["take", "1"])
+    assert args.command == "take"
+    assert args.number == 1
+
+
+def test_take_command_invalid_index(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["take", "-1"])
+
+    with pytest.raises(SystemExit):
+        parser.parse_args(["take", "0"])
+
+
+def test_calendar_command(parser):
+    args = parser.parse_args(["calendar"])
+    assert args.command == "calendar"
+    assert args.months == 12
+
+
+def test_calendar_with_months_long(parser):
+    args = parser.parse_args(["calendar", "--months", "6"])
+    assert args.command == "calendar"
+    assert args.months == 6
+
+
+def test_calendar_with_months_short(parser):
+    args = parser.parse_args(["calendar", "-m", "3"])
+    assert args.command == "calendar"
+    assert args.months == 3
+
+
+def test_calendar_from_first(parser):
+    args = parser.parse_args(["calendar", "--from-first"])
+    assert args.command == "calendar"
+    assert args.from_first
+
+
+def test_calendar_mutual_exclusion(parser):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["calendar", "--from-first", "-m", "12"])
+
+
+def test_server_defaults(parser):
+    args = parser.parse_args(["server"])
+    assert args.command == "server"
+    assert args.host == "127.0.0.1"
+    assert args.port == 8080
+
+
+def test_server_custom_host_port(parser):
+    args = parser.parse_args(["server", "--host", "0.0.0.0", "--port", "9000"])
+    assert args.command == "server"
+    assert args.host == "0.0.0.0"
+    assert args.port == 9000
+
+
+def test_ledger_command(parser):
+    args = parser.parse_args(["ledger"])
+    assert args.command == "ledger"
+    assert hasattr(args, "handler")
+
+
+def test_ledger_count_short_flag(parser):
+    args = parser.parse_args(["ledger", "-c"])
+    assert args.command == "ledger"
+    assert hasattr(args, "handler")
+    assert args.count is True
+
+
+def test_ledger_count_long_flag(parser):
+    args = parser.parse_args(["ledger", "--count"])
+    assert args.command == "ledger"
+    assert hasattr(args, "handler")
+    assert args.count is True
+
+
+def test_summary_command(parser):
+    args = parser.parse_args(["summary"])
+    assert args.command == "summary"
+    assert hasattr(args, "handler")
+
+
+def test_summary_from_date(parser):
+    args = parser.parse_args(["summary", "--from-date", "2024-01-15"])
+    assert args.command == "summary"
+    assert hasattr(args, "handler")
+    assert args.from_date == "2024-01-15"

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "srl"
+version = "18.1.0"
+description = "Spaced repetition learning CLI tool"
+authors = [{ name = "Hayes Barber" }]
+requires-python = ">=3.10"
+dependencies = [
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+srl = "srl.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+

@@ -1,0 +1,1 @@
+A curated list of awesome FSRS implementations, papers and resources: https://github.com/open-spaced-repetition/awesome-fsrs

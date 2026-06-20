@@ -1,0 +1,31 @@
+ion-card, ion-title, ion-card-subtitle {
+    overflow: visible;
+    text-align: center;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-card {
+    width: 80vw;
+    padding: 15px;
+}
+
+.icon-item {
+    display: flex;
+    align-items: center;
+}
+
+.signup-button {
+    width: 50%;
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 10px;
+
+}
+  

@@ -1,0 +1,88 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Home</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+    <app-nav></app-nav>
+
+
+    <div class="hero">
+        <img src="assets/HeroSample.jpg" alt="Hero Image">
+        <div class="hero-overlay">
+            <div style="background-color: white;">
+                <ion-card-header>
+                    <ion-card-title style="color: black">Welcome to Brain Lift</ion-card-title>
+                    <ion-card-subtitle>Manage Your Cognitive Load</ion-card-subtitle>
+                </ion-card-header>
+            </div>
+
+            <div style="background-color: white;">
+
+                <ion-card-content>
+                    <p>
+                        Reduce cognitive overload and improve your mental health with our app, Brain Lift.
+                        Start your
+                        journey to a
+                        healthier mind today!
+                    </p>
+                    <p>
+                        Experience less cognitive overload by strategically engaging in high or low cognitive activities
+                        when they work best for you.
+                    </p>
+                    <p>
+                        Lower your overall stress and enhance your productivity by planning
+                        your tasks effectively.
+                    </p>
+
+                </ion-card-content>
+            </div>
+
+            <ion-button expand="full" color="primary" class="get-started-button" (click)="goSignup()">Get Started
+            </ion-button>
+
+            <ion-grid class="features-grid">
+                <ion-row>
+                    <ion-col size="6">
+                        <ion-icon name="book-outline" class="feature-icon"></ion-icon>
+                        <h3>Education</h3>
+                        <p>Learn about cognitive load and cognitive overload, and learn about strategies to help you
+                            manage
+                            both.</p>
+                    </ion-col>
+                    <ion-col size="6">
+                        <ion-icon name="timer-outline" class="feature-icon"></ion-icon>
+                        <h3>Time Management</h3>
+                        <p>Use your time effectively to optimize your cognitive performance and reduce
+                            cognitive overload.
+                        </p>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col size="6">
+                        <ion-icon name="heart-outline" class="feature-icon"></ion-icon>
+                        <h3>Mindfulness Exercises</h3>
+                        <p>Practice mindfulness exercises to enhance your focus, reduce stress, and
+                            improve your overall
+                            well-being.
+                        </p>
+                    </ion-col>
+                    <ion-col size="6">
+                        <ion-icon name="clipboard-outline" class="feature-icon"></ion-icon>
+                        <h3>Task Prioritization</h3>
+                        <p>Prioritize your tasks and manage your cognitive load more
+                            efficiently.</p>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+
+            <app-footer></app-footer>
+
+
+        </div>
+    </div>
+
+
+</ion-content>
