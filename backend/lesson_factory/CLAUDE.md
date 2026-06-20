@@ -21,6 +21,22 @@
 - `*.py` — scripts de generación/validación (en reestructuración: cambiarán de nombre/proceso).
 - `*.md` — documentación (estrategia, runbook, reglas, log).
 
+## Catálogo de skills (`skills/`)
+
+Contexto indexable por petición para generación de alta calidad. Cargar el/los relevante(s) según la tarea; cada skill trae su `SKILL.md` con detalle, fuente y licencia.
+
+| Skill | Para qué sirve | Licencia origen |
+|-------|----------------|-----------------|
+| `notebooklm-py/` | Grounding con NotebookLM (API no oficial). `SKILL.md` autoritativo + `README.md` del proyecto. | herramienta (ver doc) |
+| `master-instructional-design/` | Arquitecto de aprendizaje veterano: diseño emocional, seguridad psicológica, Bloom, Gagné (9 eventos), Merrill, arco emocional. Estructurar temarios, mapas de empatía, escenarios no aburridos. | CC BY-NC-ND 4.0 ⚠️ |
+| `instructional-design-toolkit/` | Bloom práctico (memorizar→aplicar→analizar→crear) + plantilla de lección (CONTEXT→CONCEPT→BUILD→SHIP→REFLECT) + evaluación Kirkpatrick. | BSL-1.1 ⚠️ |
+| `awesome-fsrs/` | Algoritmo FSRS de repaso espaciado: modelo DSR (Dificultad/Estabilidad/Recuperabilidad) + fórmulas para programar el repaso justo antes del olvido. | CC0 (dominio público) |
+| `spaced-repetition-learning/` | Arquitectura SR agnóstica de materia: rating 1-5 de fricción cognitiva → intervalo/dificultad/maestría adaptativos. | MIT |
+| `brain-lift/` | NASA-TLX: medir/estimar carga mental (6 subescalas) y frustración por actividad; presupuestos por banda de edad. | © all rights reserved ⚠️ |
+| `learning-notes/` | Psicología infantil/adolescente: cerebro emocional vs lógico, "name it to tame it", regulación de frustración, motivación. Para tono, feedback y manejo de frustración. | sin licencia OSS ⚠️ |
+
+> ⚠️ = la fuente original tiene **licencia restrictiva o sin licencia OSS**. El contenido se destiló como **referencia interna** (no copia verbatim), con atribución en cada `SKILL.md`. **Uso interno solamente; no redistribuir** el contenido derivado en el producto sin revisar la licencia. FSRS (CC0) y spaced-repetition-learning (MIT) son de uso libre con atribución.
+
 ## Reglas mínimas
 
 - **Nada se publica a la BD sin revisión.** Generación local y supervisada; solo se suben resultados aprobados.
