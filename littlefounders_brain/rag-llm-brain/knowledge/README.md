@@ -27,7 +27,7 @@ Cada doc lleva frontmatter (país, dominio, subdominio, tiers de edad, volatilid
 ## Ciclo de trabajo
 
 ```bash
-cd littlefounders_brain
+cd littlefounders_brain/rag-llm-brain
 # 1) Validar el contrato (frontmatter, citas, anti-fuga, vocabulario por edad)
 ./.venv/bin/python knowledge/tools/gate_kb.py
 

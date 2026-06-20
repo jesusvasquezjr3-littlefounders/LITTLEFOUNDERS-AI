@@ -1,0 +1,9 @@
+# Dependencias del venv del cerebro RAG (rag-llm-brain/.venv).
+# Recrear:  python3.11 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+#           ./.venv/bin/python -m playwright install chromium   # navegador para notebooklm-py
+pydantic>=2
+pyyaml
+notebooklm-py[browser]==0.7.2
+# Opcional — embeddings semánticos para el índice de producción (build_index.py --embedder fastembed).
+# Sin esto, el índice usa el embedder hash determinista (suficiente para gate/eval, no para retrieval real).
+fastembed

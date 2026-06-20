@@ -31,3 +31,11 @@ ms-playwright/
 # Secrets
 .env
 .env.*
+# Plantilla SIN secretos (sí se versiona, guía de bootstrap) — comentario en su propia línea:
+!.env.example
+!*.env.example
+
+# Evidencia curada (NotebookLM fulltext, copyright) e índice derivado
+**/evidence/
+**/index/
+build.log

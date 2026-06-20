@@ -17,6 +17,15 @@
 8. `RUNBOOK.md` — respuesta a incidentes
 9. Código fuente — descriptivo, no autoritativo
 
+> **Subsistema aislado — `littlefounders_brain/`:** además de `frontend/` y `backend/`, el repo contiene
+> `littlefounders_brain/`, un subsistema **independiente y NO desplegado** (se integrará a la plataforma
+> después). Tiene DOS subproyectos con documentación propia: **`rag-llm-brain/`** (cerebro de conocimiento
+> RAG — dataset MX/US que alimentará la generación de lecciones y un futuro chatbot) y **`lesson_factory/`**
+> (generador de lecciones JSON). Empieza en [`littlefounders_brain/README.md`](littlefounders_brain/README.md).
+> **Excluido de los despliegues:** Frontend/Backend CI no se disparan con cambios aquí (solo `frontend/**`
+> y `backend/**`), Railway despliega desde `./backend/`, y `.vercelignore` excluye `littlefounders_brain/`.
+> Su CI propia (`brain-ci.yml`, `lesson-factory-ci.yml`) solo PRUEBA, no despliega nada.
+
 ---
 
 ## 2. Requisitos Pre-Commit

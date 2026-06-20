@@ -241,6 +241,11 @@ Ver [`pilot_v2/`](pilot_v2/) — 2 lecciones de Adventure 1 regeneradas con el p
 
 > **Decisión del equipo (este punto marca el cierre de la fase exploratoria v2 y el inicio de una reestructuración).**
 
+> ⚠️ **Nota histórica (2026-06-20):** todo lo de **grounding/NotebookLM/skills de RAG/venv** descrito en esta
+> sección se **separó al cerebro** y hoy vive en `../rag-llm-brain/` (no en `lesson_factory/`). Esta carpeta
+> conserva solo el generador de lecciones (skills `instructional-design-toolkit/`, `learning-notes/`). El
+> piloto `pilot_v2/` fue eliminado. Para el pipeline del cerebro ver `../rag-llm-brain/knowledge/DATASET_BUILD_RUNBOOK.md`.
+
 **Contexto del giro.** La fase v2 estableció con datos la frontera DeepSeek↔Opus: DeepSeek basta para bandas 1-2 pero choca con un techo de razonamiento (~40% auto-pass) en bandas 3-6 (aritmética, mecánica de simuladores, lógica de grading sutil). La conclusión a la que llegamos NO es "subir de modelo a toda costa", sino que **la calidad de un modelo barato depende de qué tan bien definamos las reglas del juego** — el contexto, los contratos y los ejemplos que le damos por petición.
 
 **Nueva dirección.**

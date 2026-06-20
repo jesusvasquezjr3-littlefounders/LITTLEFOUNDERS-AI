@@ -2,7 +2,7 @@
 
 > **Fecha:** 2026-06-19
 > **Estado:** Estrategia aprobada + **PILOTO IMPLEMENTADO** (dominio `impuestos`, MX+US+shared).
-> **Hogar:** ya movido a `littlefounders_brain/` (raíz). El corpus vive en `littlefounders_brain/knowledge/`.
+> **Hogar:** ya movido a `littlefounders_brain/` (raíz). El corpus vive en `littlefounders_brain/rag-llm-brain/knowledge/`.
 >
 > **Implementación (2026-06-19):** movimiento backend→raíz hecho y verificado (CI verde: taxonomía DAG,
 > esquema, tipos FE en sync). Fase 0 (contrato `_meta/` + `gate_kb.py`), piloto de impuestos (22 docs
@@ -81,7 +81,7 @@ Todo documento se clasifica por **País × Dominio × Tier-de-edad × Idioma**.
 ### Folder grammar (rígida)
 
 ```
-littlefounders_brain/knowledge/
+littlefounders_brain/rag-llm-brain/knowledge/
 ├── README.md                      # entrada humana + Obsidian (Map of Content)
 ├── _meta/
 │   ├── taxonomy.yaml              # vocabulario cerrado: dominios, subdominios, age_bands, tiers

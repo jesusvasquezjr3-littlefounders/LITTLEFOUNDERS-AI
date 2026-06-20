@@ -31,7 +31,9 @@ def run(paths: list[str]) -> int:
         files += _glob.glob(p) if any(c in p for c in "*?[") else [p]
     files = sorted(set(files))
     if not files:
-        print("gate: no se encontraron lecciones"); return 1
+        # Sin archivos que evaluar = nada que bloquear (skip). El gate solo debe FALLAR ante
+        # contenido generado DEFECTUOSO, no ante la ausencia de contenido (p.ej. en CI sin lote nuevo).
+        print("gate: no se encontraron lecciones (skip, nada que evaluar)"); return 0
     failed = 0
     for f in files:
         try:

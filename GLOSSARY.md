@@ -49,7 +49,8 @@
 - **Lesson:** Unidad mínima de aprendizaje. Contiene ejercicios, narrativa y evaluación.
 - **Lesson Code:** Identificador jerárquico con formato `{adventure}-{saga}-{topic}-{lesson}` (ej: `1-1-1-1`). Usado como clave única en URLs y referencias.
 - **Lesson Engine:** Sistema backend (`/lesson-engine`) que orquesta la navegación, ejecución y progreso de lecciones. Endpoints públicos con auth opcional. 50+ tipos de ejercicio, audio granular por segmento, y cálculo de rachas.
-- **Lesson Factory:** Pipeline de generación IA de lecciones (DeepSeek) con currículum estructurado, validación pedagógica y 5 fases cognitivas por concepto. Produce los JSON en `lesson_engine/littlefounders_lessons/`.
+- **Lesson Factory:** Pipeline de generación IA de lecciones (modelo agnóstico — alta calidad incluso con modelos económicos) con currículum estructurado, validación pedagógica y 5 fases cognitivas por concepto. Ubicación: `littlefounders_brain/lesson_factory/`. Produce JSON de lecciones que se importan a la BD vía `backend/scripts/import_lessons.py`. (Subsistema aislado, no desplegado — ver `littlefounders_brain/README.md`.)
+- **Cerebro de conocimiento (RAG):** Dataset denso MX/US (finanzas, impuestos, emprendimiento, etc.) en `littlefounders_brain/rag-llm-brain/`, construido por un pipeline autónomo (NotebookLM funda en fuentes primarias + Qwen-Flash redacta/juzga). Alimentará la generación de lecciones y un futuro chatbot.
 - **LF Audio Engine:** Servicio externo de TTS para generación de audio narrativo. Cliente en `backend/scripts/lf_audio_client.py`.
 - **Liruf:** Personaje narrador principal. Código de voz `liruf`. Narrador predeterminado en el sistema de audio.
 

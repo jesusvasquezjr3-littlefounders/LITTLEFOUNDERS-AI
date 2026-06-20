@@ -46,8 +46,8 @@ from llm_qwen import Qwen  # noqa: E402
 TAXO = yaml.safe_load((META / "taxonomy.yaml").read_text())
 POLICY = yaml.safe_load((META / "build_policy.yaml").read_text())
 SOURCES_FILE = META / "sources.yaml"
-STATE_FILE = KB / "index" / "build_state.json"
 DATE = POLICY["content_conventions"]["date_anchor"]
+# Checkpoint = existencia de los pares .es/.md en disco (re-ejecutar salta lo ya hecho).
 MODELS = POLICY["models"]
 
 JURIS = {"mx": "MX-FED", "us": "US-FED", "shared": "NONE"}

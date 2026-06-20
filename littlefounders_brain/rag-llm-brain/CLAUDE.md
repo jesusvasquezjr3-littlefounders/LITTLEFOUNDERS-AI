@@ -31,7 +31,7 @@ rag-llm-brain/
     ├── tools/                 gate_kb · build_index · retriever · kb_common · llm_qwen · build_evidence · build_dataset
     ├── eval/                  golden_qa · leakage_tests · run_kb_eval
     ├── evidence/              (gitignored) caché de fulltext curado de NotebookLM
-    ├── index/                 (gitignored) índice SQLite-vec/FTS5 derivado
+    ├── index/                 (gitignored) índice SQLite derivado (FTS5/BM25 + embeddings float32 en BLOB, fusión RRF)
     ├── README.md  DATASET_BUILD_RUNBOOK.md
 ```
 

@@ -17,7 +17,7 @@ plan (Opus/planner)
   → import_lessons.py (upsert por provenance)  → BD
 ```
 
-## Componentes (todos en `backend/lesson_factory/`)
+## Componentes (todos en `littlefounders_brain/lesson_factory/`)
 
 | Pieza | Archivo | Rol |
 |-------|---------|-----|
@@ -37,7 +37,7 @@ plan (Opus/planner)
 3. **Gate:** `python3 gate.py "generated_v2/*.json"` (CI lo corre solo). Exit 1 si alguna falla.
 4. **Crítica de Opus** (factual/forma/engagement) sobre las que pasan el gate determinista — DeepSeek NO sirve como juez factual (medido: no caza contradicciones). En lote por el agente, o vía API de Opus si hay key.
 5. **Revisión humana** de una muestra / de las marcadas.
-6. **Import (seguro):** primero DRY-RUN `python3 scripts/import_lessons.py --source <dir>` (reporta inserts/updates sin escribir); luego, tras revisión, `--commit --prod` (hace backup automático y upsert idempotente por `lesson_code`). `--require-approved` solo sube lecciones con `lf_meta.gate=='passed'`.
+6. **Import (seguro):** el script vive en `backend/scripts/import_lessons.py` (correr desde `backend/`). Primero DRY-RUN `python3 scripts/import_lessons.py --source <dir>` (reporta inserts/updates sin escribir); luego, tras revisión, `--commit --prod` (hace backup automático y upsert idempotente por `lesson_code`). `--require-approved` solo sube lecciones con `lf_meta.gate=='passed'`.
 
 ## Cómo PREVISUALIZAR una lección en el motor real (sin backend)
 

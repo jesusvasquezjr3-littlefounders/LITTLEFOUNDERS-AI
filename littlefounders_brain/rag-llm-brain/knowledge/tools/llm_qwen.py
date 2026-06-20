@@ -6,7 +6,7 @@ pipeline autónomo. Sólo stdlib (urllib) → corre en cualquier venv sin instal
 Roles (para NO consumir tokens de Claude): planner, author, judge, verifier.
 Capacidades: JSON mode, web grounding (`enable_search`), retry con backoff, tracking de uso.
 
-Credenciales: lee `littlefounders_brain/.env` (gitignored). NUNCA imprime la API key.
+Credenciales: lee `littlefounders_brain/rag-llm-brain/.env` (gitignored). NUNCA imprime la API key.
 
 Uso programático:
     from llm_qwen import Qwen
@@ -48,7 +48,7 @@ class Qwen:
         self.key = env.get("QWEN_API_KEY")
         self.base = (env.get("QWEN_BASE_URL") or "").rstrip("/")
         if not self.key or not self.base:
-            raise QwenError("Faltan QWEN_API_KEY / QWEN_BASE_URL en littlefounders_brain/.env")
+            raise QwenError("Faltan QWEN_API_KEY / QWEN_BASE_URL en littlefounders_brain/rag-llm-brain/.env")
         self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0}
 
     def _post(self, payload: dict, timeout: int) -> dict:

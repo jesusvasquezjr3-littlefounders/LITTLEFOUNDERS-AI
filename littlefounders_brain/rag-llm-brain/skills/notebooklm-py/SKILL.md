@@ -28,9 +28,9 @@ calidad incluso con modelos económicos.
 
 ### Installation (already done)
 
-- venv: `littlefounders_brain/.venv` (Python 3.11) · paquete
+- venv: `littlefounders_brain/rag-llm-brain/.venv` (Python 3.11) · paquete
   `notebooklm-py[browser]` v0.7.2 (gitignored)
-- CLI: `littlefounders_brain/.venv/bin/notebooklm` (or `source .venv/bin/activate`)
+- CLI: `littlefounders_brain/rag-llm-brain/.venv/bin/notebooklm` (or `source .venv/bin/activate`)
 - Library: `from notebooklm import NotebookLMClient`
 
 ### Credentials
@@ -41,9 +41,9 @@ Cookies de sesión de Google (acceso total a la cuenta `jesusv@littlefounders.ai
 | Copia | Ruta | Notas |
 |-------|------|-------|
 | **Default** (la que escribe `login`) | `~/.notebooklm/profiles/default/storage_state.json` | Fuera del repo. Fuente de verdad tras cada login/refresh |
-| **In-folder** (portátil, este repo) | `littlefounders_brain/.notebooklm/storage_state.json` | `chmod 600`, gitignored. Copia manual de la default |
+| **In-folder** (portátil, este repo) | `littlefounders_brain/rag-llm-brain/.notebooklm/storage_state.json` | `chmod 600`, gitignored. Copia manual de la default |
 
-**Usar la copia in-folder** (corriendo desde `littlefounders_brain/`):
+**Usar la copia in-folder** (corriendo desde `littlefounders_brain/rag-llm-brain/`):
 
 ```bash
 # CLI — flag global --storage
@@ -55,7 +55,7 @@ Cookies de sesión de Google (acceso total a la cuenta `jesusv@littlefounders.ai
 # Library — path argument to from_storage()
 from notebooklm import NotebookLMClient
 async with NotebookLMClient.from_storage(
-    path="littlefounders_brain/.notebooklm/storage_state.json"
+    path="littlefounders_brain/rag-llm-brain/.notebooklm/storage_state.json"
 ) as client:
     ...
 ```
@@ -85,7 +85,7 @@ cp ~/.notebooklm/profiles/default/storage_state.json .notebooklm/storage_state.j
 ### Quickstart
 
 ```bash
-cd littlefounders_brain
+cd littlefounders_brain/rag-llm-brain
 S=".notebooklm/storage_state.json"
 ./.venv/bin/notebooklm --storage $S create "LF grounding — banda 1"
 ./.venv/bin/notebooklm --storage $S source add "./fuente.pdf"
