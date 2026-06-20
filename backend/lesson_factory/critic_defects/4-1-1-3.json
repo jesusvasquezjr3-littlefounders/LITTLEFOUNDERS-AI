@@ -1,6 +1,0 @@
-[
-  "roleplay_chat idx10: marca decisión de preferencia como objetivamente correcta. Fix: añadir restricción explícita que haga 'aceptar' inválido (p.ej. 'ya tienes otros deseos comprometidos que suman $400' para que $75 nuevos rompan el límite), o reformular como decisión-justificación sin clave única, o cambiar la cifra para que aceptar realmente exceda el 30%.",
-  "HARD-FAIL pedagogical_shape — roleplay_chat idx10: preference-forcing. Aceptar la 2ª suscripción ($25 c/u) deja solo $75/$450 de deseos usados, NO viola el 30% ni toca el ahorro; sin embargo la clave única marca 'rechazar' como objetivamente correcto. Opción 'a' (aceptar) es financieramente válida y su matemática correcta. El propio per_option de 'a' hedgea ('podrías exceder SI agregas más'), admitiendo que no excede ahora. 2 opciones válidas + clave única.",
-  "FIX idx10: o bien añadir restricción explícita que haga 'aceptar' realmente romper el 30% (p.ej. otros deseos ya comprometidos), o subir la cifra de la nueva suscripción, o convertirlo en decisión-justificación sin clave única.",
-  "Menor (no hard-fail) matching_pairs idx11: 'Ahorrar el 20% → Flujo de caja positivo' conflaciona ahorro (resultado) con flujo de caja positivo (causa). Aceptable a nivel adolescente pero conceptualmente impreciso; considerar 'Gastar dentro del 50/30/20 → flujo positivo'."
-]

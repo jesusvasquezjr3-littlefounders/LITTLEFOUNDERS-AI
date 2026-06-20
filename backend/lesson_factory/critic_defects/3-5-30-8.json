@@ -1,6 +1,0 @@
-[
-  "idx 6 y idx 8 (risk_reward): clave unica para una eleccion de preferencia sin restriccion en el escenario; el feedback condiciona la respuesta ('si no quieres perder') admitiendo que no es objetiva.",
-  "HARD-FAIL pedagogical_shape (preference-forcing) — idx 6 risk_reward: 'Tienes 100 monedas. ¿Cual puesto eliges?' marca 'a' (Caja Segura) como unica correcta sin ninguna restriccion en el escenario; elegir entre seguro y riesgo es una preferencia de tolerancia al riesgo, asi que 'b' es una eleccion valida marcada como error.",
-  "El feedback de idx 6 contradice su propia clave: success 'Es una decision valida si no quieres perder' y error 'Si no estas dispuesto a perder, la Caja Segura es mejor' (lineas 164-165) condicionan la respuesta a una preferencia, admitiendo que NO es objetivamente unica — incongruente con correctOptionId fijo.",
-  "idx 8 risk_reward (reforzar) repite el defecto: descarta el Cohete ('b') como incorrecto sin restriccion; un perfil arriesgado podria elegirlo legitimamente. La dominancia Caja(+10) > Nave(+5) es objetiva, pero excluir la opcion de riesgo no lo es."
-]
