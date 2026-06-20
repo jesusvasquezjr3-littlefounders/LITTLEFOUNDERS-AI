@@ -234,3 +234,26 @@ Ver [`pilot_v2/`](pilot_v2/) — 2 lecciones de Adventure 1 regeneradas con el p
 **Hallazgo del motor:** DeepSeek a través del loop v2 produce contenido sólido y gate-passing (arco de 6 fases, feedback por distractor, andamiaje decreciente). Sus límites medidos: no escribe feedback específico para `matching_pairs` (gate afinado: exigible solo en mc/tf/tap) y no juzga rigor factual (juez=Opus). El pipeline funciona cross-banda.
 
 > Nada de esto se ha publicado a la BD ni modifica el corpus. Es andamiaje local, listo para revisión.
+
+---
+
+## 9. Pivot 2026-06-19 — "Definir las reglas del juego": skills + grounding NotebookLM
+
+> **Decisión del equipo (este punto marca el cierre de la fase exploratoria v2 y el inicio de una reestructuración).**
+
+**Contexto del giro.** La fase v2 estableció con datos la frontera DeepSeek↔Opus: DeepSeek basta para bandas 1-2 pero choca con un techo de razonamiento (~40% auto-pass) en bandas 3-6 (aritmética, mecánica de simuladores, lógica de grading sutil). La conclusión a la que llegamos NO es "subir de modelo a toda costa", sino que **la calidad de un modelo barato depende de qué tan bien definamos las reglas del juego** — el contexto, los contratos y los ejemplos que le damos por petición.
+
+**Nueva dirección.**
+1. **Skills como caché de contexto por petición.** En lugar de depender de la potencia cruda del modelo, se indexa documentación/reglas/contratos en una carpeta `skills/` que se inyecta por petición. Objetivo: salida de calidad **independientemente de que el modelo sea barato**, y sin sesgo por proveedor único.
+2. **Grounding con NotebookLM** (vía API no oficial `notebooklm-py`, Playwright) como fuente de material curado para fundamentar la generación de lecciones.
+3. **Automatizar el proceso completo SIN perder calidad** — lograble solo si las "reglas del juego" (esquema, contratos de render, rúbrica, gate determinista) están bien definidas y se aplican por defecto.
+
+**Reestructuración asociada (esta sesión):**
+- Backup (este commit) de todo el trabajo previo.
+- Limpieza de artefactos caché de pruebas (pilot batches, planes, defects, blind runs) — se conservan docs + scripts + maquinaria (esquema, gate, golden sets, curriculum).
+- Instalación de `notebooklm-py[browser]` en venv local dentro de `lesson_factory/`.
+- Nueva carpeta `skills/` con la doc esencial de la API.
+- `CLAUDE.md` + `AGENTS.md` propios de la carpeta (contexto general del Lesson Factory, espejados).
+- `.gitignore` para no comitear credenciales de Google/NotebookLM.
+
+> Los scripts actuales (`generate_v2.py`, `gate.py`, etc.) se conservan como referencia y **cambiarán de nombre/proceso** en las próximas iteraciones bajo este nuevo enfoque.
