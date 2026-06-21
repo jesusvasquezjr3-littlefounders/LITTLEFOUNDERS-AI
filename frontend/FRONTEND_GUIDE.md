@@ -760,6 +760,19 @@ Todo el proyecto sigue un estándar unificado (índigo/white frosted glass):
 - Actividades del lesson engine en `src/components/lessons/engine/activities/`
 - Componentes reutilizables en `src/components/ui/` (shadcn) o sus subdirectorios
 
+### Skills de Diseño para Agentes AI (Frontend)
+
+Al trabajar en UI Frontend, los agentes AI **deben** invocar las skills especializadas del proyecto (ver `CLAUDE.md` §4 para el catálogo completo):
+
+| Skill | Cuándo usarla | Flujo de trabajo |
+|-------|--------------|-----------------|
+| **agave** | Al crear, revisar o modificar cualquier UI | Invocar antes de generar código UI para aplicar principios de jerarquía visual, color con intención, tipografía estructural y restricción |
+| **emil-design-eng** | Al escribir animaciones o tomar decisiones de motion | Invocar al construir interfaces animadas; cubre easing, timing, springs, clip-path, performance de animaciones |
+| **impeccable** | Al diseñar, rediseñar, auditar o pulir interfaces | Usar subcomandos: `craft`/`shape` (diseño nuevo), `audit`/`polish` (calidad), `animate`/`delight` (mejoras), `harden` (producción) |
+| **review-animations** | Al revisar código de animación/motion existente | Invocar **solo** para review de CSS/JS de motion; no para review general |
+
+**Regla clave:** Las skills complementan el `DESIGN_SYSTEM.md` — no lo reemplazan. Las skills refinan la ejecución; el design system define los tokens y clases `corp-*`.
+
 ---
 
 ## 17. Testing
@@ -784,5 +797,5 @@ npm run test:watch   # modo watch
 
 ---
 
-> **Última actualización:** 2026-06-11
+> **Última actualización:** 2026-06-21
 > **Idioma:** Español

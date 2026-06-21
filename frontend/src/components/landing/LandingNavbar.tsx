@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -10,8 +10,9 @@ export const LandingNavbar = () => {
     const { t } = useTranslation('landing');
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
-    // Returning users get a "Continue" CTA back into the app; new users register.
     const session = hasSession();
     const ctaTo = session ? "/learn" : "/login";
     const ctaLabel = session ? t('nav.resume') : t('nav.register');
@@ -22,6 +23,15 @@ export const LandingNavbar = () => {
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            setIsMenuVisible(true);
+        } else {
+            const timer = setTimeout(() => setIsMenuVisible(false), 200);
+            return () => clearTimeout(timer);
+        }
+    }, [mobileMenuOpen]);
 
     const navLinks = [
         { path: '/how-it-works', label: t('nav.how') },
@@ -35,15 +45,14 @@ export const LandingNavbar = () => {
 
     return (
         <nav
-            className={`corp fixed top-0 w-full z-50 transition-all duration-300 ${
+            className={`corp fixed top-0 w-full z-50 py-3 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ${
                 showSolid
-                    ? 'py-3 bg-white/85 dark:bg-[#0a0e1a]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 shadow-[0_4px_30px_-12px_rgba(15,23,42,0.15)]'
-                    : 'py-4 bg-transparent border-b border-transparent'
+                    ? 'bg-white/85 dark:bg-[#0a0e1a]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 shadow-[0_4px_30px_-12px_rgba(15,23,42,0.15)]'
+                    : 'bg-transparent border-b border-transparent'
             }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center gap-4">
-                    {/* Logo */}
                     <Link
                         to="/"
                         className="flex items-center gap-2 shrink-0"
@@ -56,13 +65,12 @@ export const LandingNavbar = () => {
                         />
                     </Link>
 
-                    {/* Desktop links */}
                     <div className="hidden lg:flex items-center gap-8">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`text-sm font-medium transition-colors ${
+                                className={`text-sm font-medium transition-colors duration-150 ${
                                     isCurrent(link.path)
                                         ? 'text-indigo-600 dark:text-indigo-300'
                                         : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300'
@@ -73,7 +81,6 @@ export const LandingNavbar = () => {
                         ))}
                     </div>
 
-                    {/* Desktop actions */}
                     <div className="hidden lg:flex items-center gap-3">
                         <ThemeToggle />
                         <LanguageSelector variant="simple" />
@@ -86,7 +93,6 @@ export const LandingNavbar = () => {
                         </Link>
                     </div>
 
-                    {/* Mobile toggle */}
                     <div className="flex lg:hidden items-center gap-2">
                         <ThemeToggle />
                         <LanguageSelector variant="simple" />
@@ -101,9 +107,15 @@ export const LandingNavbar = () => {
                 </div>
             </div>
 
-            {/* Mobile menu */}
-            {mobileMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl">
+            {isMenuVisible && (
+                <div
+                    ref={menuRef}
+                    className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl transition-[opacity,transform] duration-200 ease-out"
+                    style={{
+                        opacity: mobileMenuOpen ? 1 : 0,
+                        transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-8px)',
+                    }}
+                >
                     {navLinks.map((link) => (
                         <Link
                             key={link.path}

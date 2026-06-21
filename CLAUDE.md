@@ -1,6 +1,6 @@
 # CLAUDE.md — LittleFounders AI Operating Rules
 
-> **Última actualización:** 2026-06-11
+> **Última actualización:** 2026-06-21
 > **Propósito:** Reglas operativas no negociables para agentes AI.
 
 ---
@@ -16,15 +16,6 @@
 7. `WALKTHROUGH.md` — snapshot informativo
 8. `RUNBOOK.md` — respuesta a incidentes
 9. Código fuente — descriptivo, no autoritativo
-
-> **Subsistema aislado — `littlefounders_brain/`:** además de `frontend/` y `backend/`, el repo contiene
-> `littlefounders_brain/`, un subsistema **independiente y NO desplegado** (se integrará a la plataforma
-> después). Tiene DOS subproyectos con documentación propia: **`rag-llm-brain/`** (cerebro de conocimiento
-> RAG — dataset MX/US que alimentará la generación de lecciones y un futuro chatbot) y **`lesson_factory/`**
-> (generador de lecciones JSON). Empieza en [`littlefounders_brain/README.md`](littlefounders_brain/README.md).
-> **Excluido de los despliegues:** Frontend/Backend CI no se disparan con cambios aquí (solo `frontend/**`
-> y `backend/**`), Railway despliega desde `./backend/`, y `.vercelignore` excluye `littlefounders_brain/`.
-> Su CI propia (`brain-ci.yml`, `lesson-factory-ci.yml`) solo PRUEBA, no despliega nada.
 
 ---
 
@@ -75,7 +66,31 @@ Antes de hacer commit, verificar (checklist unificado):
 
 ---
 
-## 4. Stack Tecnológico
+## 4. Skills de Diseño para Agentes AI
+
+El proyecto incluye **skills** especializadas en `.claude/skills/` que los agentes AI DEBEN invocar al trabajar en tareas Frontend/UI. Estas skills elevan la calidad visual y de interacción del producto.
+
+### 4.1 Catálogo de Skills
+
+| Skill | Cuándo invocarla | Ubicación |
+|-------|-----------------|-----------|
+| **agave** | Al crear, revisar o modificar UI. Da instintos de senior product designer: jerarquía visual, color con intención, tipografía estructural, ritmo de espaciado, restricción, consistencia y personalidad. | `.claude/skills/agave/` |
+| **emil-design-eng** | Al construir interfaces, escribir animaciones, revisar código de motion o tomar decisiones de design engineering. Basada en la filosofía de Emil Kowalski (Vercel/Linear). | `.claude/skills/emil-design-eng/` |
+| **impeccable** | Al diseñar, rediseñar, auditar, pulir, animar o mejorar cualquier interfaz frontend. Cubre landing pages, dashboards, formularios, onboarding, empty states, etc. Tiene subcomandos: `craft`, `shape`, `audit`, `polish`, `animate`, `bolder`, `quieter`, `harden`, `delight`, `live`, etc. | `.claude/skills/impeccable/` |
+| **review-animations** | **Solo** al revisar código de animación/motion (CSS o JS). Revisa contra un estándar alto de craft. Por defecto marca problemas; la aprobación se gana. No para review general. | `.claude/skills/review-animations/` |
+| **customize-opencode** | **Solo** para configuración de opencode (opencode.json, plugins, MCP servers, permisos). No para código de la aplicación. | Built-in (no en `.claude/skills/`) |
+
+### 4.2 Reglas de Uso
+
+1. **Toda tarea Frontend/UI DEBE considerar las skills** `agave`, `emil-design-eng` o `impeccable` según el caso antes de generar código.
+2. **Animaciones/motion:** usar `emil-design-eng` para escribir y `review-animations` para revisar.
+3. **Diseño nuevo o rediseños:** usar `impeccable craft` o `impeccable shape` para planear antes de codificar.
+4. **Las skills NO aplican** a tareas de Backend o lógica no-UI.
+5. **Las skills complementan, NO reemplazan** el estándar visual `corp-*` de `DESIGN_SYSTEM.md`. Las skills refinan la ejecución; el design system define los tokens y clases.
+
+---
+
+## 5. Stack Tecnológico
 
 | Capa | Tecnología |
 |------|-----------|
@@ -93,7 +108,7 @@ Antes de hacer commit, verificar (checklist unificado):
 
 ---
 
-## 5. Seguridad
+## 6. Seguridad
 
 - `.env` en `.gitignore` — nunca comitear secrets
 - JWT expira en 30 min, firmado HS256, `sub` = email
@@ -103,7 +118,7 @@ Antes de hacer commit, verificar (checklist unificado):
 
 ---
 
-## 6. Testing
+## 7. Testing
 
 - **Frontend:** `npm test` (Vitest) en `frontend/`
 - **Backend:** `pytest -v` en `backend/`
@@ -112,24 +127,24 @@ Antes de hacer commit, verificar (checklist unificado):
 
 ---
 
-## 7. Documentación
+## 8. Documentación
 
-### 7.1 Cómo navegar la documentación
+### 8.1 Cómo navegar la documentación
 
 Ver `AGENTS.md §10` (Mapa de Documentación) y `§11` (repo_map.md).
 
-### 7.2 Regla de oro
+### 8.2 Regla de oro
 
 > **Todo cambio sustancial debe documentarse.** Un cambio es sustancial si afecta arquitectura, API, entorno, build, dependencias, estructura de directorios, auth o convenciones. Ver checklist detallado en `AGENTS.md §12.3`.
 
-### 7.3 repo_map.md — Mapa de código
+### 8.3 repo_map.md — Mapa de código
 
 - Archivo auto-generado en raíz del proyecto: `repo_map.md`
 - Contiene árbol de directorios + primeras 15 líneas de cada archivo
 - **Nunca incluir en su totalidad en el prompt** — solo la sección relevante
 - Regenerar con: `python3 scripts/generate_repo_map.py`
 
-### 7.4 Orden de lectura recomendado
+### 8.4 Orden de lectura recomendado
 
 1. `AGENTS.md` — panorama completo
 2. `repo_map.md` — árbol + previews de archivos

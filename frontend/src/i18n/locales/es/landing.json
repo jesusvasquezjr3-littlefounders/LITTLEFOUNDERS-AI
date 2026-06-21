@@ -178,6 +178,7 @@
     "freemium_feature_5": "Sin anuncios",
     "freemium_btn": "Plan Actual",
     "coming_soon": "Próximamente",
+    "coming_soon_price": "Próximamente",
     "very_soon": "Muy Pronto",
     "tier2_title": "Pro Family",
     "tier2_feature_1": "Múltiples perfiles de niños",
@@ -337,6 +338,7 @@
       "microcopy": "Sin tarjeta de crédito · Para edades 6–17 · Cancela cuando quieras"
     },
     "stats": {
+      "heading": "Cifras clave",
       "lessons_value": "120+",
       "lessons_label": "Lecciones interactivas",
       "games_value": "15+",
@@ -464,6 +466,7 @@
     "experience_eyebrow": "Una experiencia para todos",
     "kids_label": "Para los niños",
     "kids_title": "Diversión con propósito",
+    "kids_section_title": "Una experiencia para todos",
     "kids_1": "Misiones y retos que enseñan a decidir",
     "kids_2": "Recompensas, niveles y rachas",
     "kids_3": "Aprenden a su propio ritmo",

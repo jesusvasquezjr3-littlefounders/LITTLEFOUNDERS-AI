@@ -1,6 +1,6 @@
 # DESIGN_SYSTEM.md — Estándar Visual "Corp"
 
-> **Última actualización:** 2026-06-14
+> **Última actualización:** 2026-06-21
 > **Autoridad:** Estándar visual **inmutable** del Frontend. Toda vista de
 > "chrome serio" DEBE cumplirlo. Es subordinado a `CLAUDE.md` y `AGENTS.md`,
 > pero **autoritativo** sobre cualquier estilo ad-hoc de página.
@@ -21,6 +21,11 @@
 4. **i18n obligatorio** (`t()`), **mobile-first** (base = móvil), **sin `any`**.
 5. **No corrompas la lógica:** handlers, estado, fetch, rutas, `id` (anclas /
    tours / tests), props y claves `t()` se preservan **byte por byte**.
+6. **Usa las skills de diseño** al crear/modificar UI (ver catálogo en `CLAUDE.md` §4):
+   - `agave` — instintos de senior product designer antes de generar código UI.
+   - `emil-design-eng` — filosofía de motion/animaciones (escribir) + `review-animations` (revisar).
+   - `impeccable` — rediseños, auditorías, pulido con subcomandos (`craft`, `shape`, `audit`, `polish`, `animate`, etc.).
+   - Las skills **complementan** este design system, no lo reemplazan.
 
 ---
 

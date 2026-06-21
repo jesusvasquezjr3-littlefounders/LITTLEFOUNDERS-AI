@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
 import { CheckCircle2, Mail, Send } from 'lucide-react';
 
 interface EmailWaitlistFormProps {
@@ -38,9 +37,9 @@ export function EmailWaitlistForm({
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300">
+      <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300">
         <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-        <span className="font-bold text-sm">{successMsg}</span>
+        <span className="font-semibold text-sm">{successMsg}</span>
       </div>
     );
   }
@@ -49,18 +48,18 @@ export function EmailWaitlistForm({
     <div className="w-full max-w-md space-y-2">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="email" value={email} onChange={e => setEmail(e.target.value)}
             placeholder={placeholder} required
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 transition-all placeholder:text-gray-400"
+            className="corp-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium"
           />
         </div>
-        <Button type="submit" disabled={loading}
-          className="btn-press shrink-0 w-72 py-3 rounded-xl font-black bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 border-0 shadow-none inline-flex items-center justify-center gap-2 disabled:opacity-60 mx-auto sm:mx-0">
+        <button type="submit" disabled={loading}
+          className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 sm:w-auto w-full disabled:opacity-60 active:scale-[0.97] transition-[transform,background] duration-200">
           {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
           {ctaLabel}
-        </Button>
+        </button>
       </form>
       {error && <p className="text-xs text-red-500 dark:text-red-400 font-medium pl-1">{error}</p>}
     </div>

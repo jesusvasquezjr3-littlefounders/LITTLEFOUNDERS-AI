@@ -183,6 +183,7 @@
     "freemium_feature_5": "Ad-free experience",
     "freemium_btn": "Current Plan",
     "coming_soon": "Coming Soon",
+    "coming_soon_price": "Coming Soon",
     "very_soon": "Very Soon",
     "tier2_title": "Pro Family",
     "tier2_feature_1": "Multiple child profiles",
@@ -342,6 +343,7 @@
       "microcopy": "No credit card · Ages 6–17 · Cancel anytime"
     },
     "stats": {
+      "heading": "Key metrics",
       "lessons_value": "120+",
       "lessons_label": "Interactive lessons",
       "games_value": "15+",
@@ -469,6 +471,7 @@
     "experience_eyebrow": "An experience for everyone",
     "kids_label": "For the kids",
     "kids_title": "Fun with a purpose",
+    "kids_section_title": "An experience for everyone",
     "kids_1": "Missions and challenges that teach decisions",
     "kids_2": "Rewards, levels and streaks",
     "kids_3": "They learn at their own pace",

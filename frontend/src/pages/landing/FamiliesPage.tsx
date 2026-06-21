@@ -15,10 +15,8 @@ import {
   ShieldCheck,
   TrendingUp,
   MessageCircle,
-  Star,
 } from "lucide-react";
 
-/* ─── PAGE ────────────────────────────────────────────────────────────────── */
 export default function FamiliesPage() {
   const { t, i18n } = useTranslation("landing");
   const lang = i18n.language;
@@ -37,25 +35,25 @@ export default function FamiliesPage() {
   ];
 
   const marketplaceItems = [
-    { icon: Coins, title: t("families.marketplace.item_1_title"), desc: t("families.marketplace.item_1_desc"), color: "bg-[#f6a821]" },
-    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc"), color: "bg-[#2563eb]" },
-    { icon: Gift, title: t("families.marketplace.item_3_title"), desc: t("families.marketplace.item_3_desc"), color: "bg-[#1a9e7a]" },
+    { icon: Coins, title: t("families.marketplace.item_1_title"), desc: t("families.marketplace.item_1_desc") },
+    { icon: ShoppingBag, title: t("families.marketplace.item_2_title"), desc: t("families.marketplace.item_2_desc") },
+    { icon: Gift, title: t("families.marketplace.item_3_title"), desc: t("families.marketplace.item_3_desc") },
   ];
 
   const parentInsights = [
-    { icon: TrendingUp, color: "bg-[#2563eb]", title: t("families.parent_tools.insight_1_title"), desc: t("families.parent_tools.insight_1_desc") },
-    { icon: Coins, color: "bg-[#f6a821]", title: t("families.parent_tools.insight_2_title"), desc: t("families.parent_tools.insight_2_desc") },
-    { icon: MessageCircle, color: "bg-[#fb6f6f]", title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
-    { icon: ShieldCheck, color: "bg-[#1a9e7a]", title: t("families.parent_tools.insight_4_title"), desc: t("families.parent_tools.insight_4_desc") },
-    { icon: LayoutDashboard, color: "bg-[#8b5cf6]", title: t("families.parent_tools.insight_5_title"), desc: t("families.parent_tools.insight_5_desc") },
-    { icon: Star, color: "bg-[#2563eb]", title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
+    { icon: TrendingUp, title: t("families.parent_tools.insight_1_title"), desc: t("families.parent_tools.insight_1_desc") },
+    { icon: Coins, title: t("families.parent_tools.insight_2_title"), desc: t("families.parent_tools.insight_2_desc") },
+    { icon: MessageCircle, title: t("families.parent_tools.insight_3_title"), desc: t("families.parent_tools.insight_3_desc") },
+    { icon: ShieldCheck, title: t("families.parent_tools.insight_4_title"), desc: t("families.parent_tools.insight_4_desc") },
+    { icon: LayoutDashboard, title: t("families.parent_tools.insight_5_title"), desc: t("families.parent_tools.insight_5_desc") },
+    { icon: TrendingUp, title: t("families.parent_tools.insight_6_title"), desc: t("families.parent_tools.insight_6_desc") },
   ];
 
   const benefits = [
-    { icon: Users, color: "bg-[#2563eb]", title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
-    { icon: TrendingUp, color: "bg-[#fb6f6f]", title: t("families.benefits.benefit_2_title"), desc: t("families.benefits.benefit_2_desc") },
-    { icon: ShieldCheck, color: "bg-[#1a9e7a]", title: t("families.benefits.benefit_3_title"), desc: t("families.benefits.benefit_3_desc") },
-    { icon: MessageCircle, color: "bg-[#f6a821]", title: t("families.benefits.benefit_4_title"), desc: t("families.benefits.benefit_4_desc") },
+    { icon: Users, title: t("families.benefits.benefit_1_title"), desc: t("families.benefits.benefit_1_desc") },
+    { icon: TrendingUp, title: t("families.benefits.benefit_2_title"), desc: t("families.benefits.benefit_2_desc") },
+    { icon: ShieldCheck, title: t("families.benefits.benefit_3_title"), desc: t("families.benefits.benefit_3_desc") },
+    { icon: MessageCircle, title: t("families.benefits.benefit_4_title"), desc: t("families.benefits.benefit_4_desc") },
   ];
 
   const steps = [
@@ -67,43 +65,37 @@ export default function FamiliesPage() {
   return (
     <LandingLayout>
 
-      {/* ══════════════════════════════════════════════════════════
-          HERO
-      ══════════════════════════════════════════════════════════ */}
       <header className="relative overflow-hidden bg-white dark:bg-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-amber-400/8 dark:bg-amber-500/8 blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 -left-32 w-[32rem] h-[32rem] rounded-full bg-[#1a9e7a]/8 dark:bg-[#1a9e7a]/10 blur-[120px] pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/8 dark:bg-indigo-500/8 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-            {/* Copy */}
             <div>
-              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
+              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
                 <Clock className="w-3.5 h-3.5" /> {t("families.hero.coming_soon_label")}
               </Reveal>
 
-              <Reveal delay={80}>
-                <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[3.2rem] font-bold leading-[1.1] text-slate-900 dark:text-white">
+              <Reveal delay={60}>
+                <h1 className="mt-6 text-3xl sm:text-4xl lg:text-[3.2rem] font-bold leading-[1.1] text-slate-900 dark:text-white">
                   {t("families.hero.title_part1")}{" "}
-                  <span className="text-[#1a9e7a] dark:text-[#34d399]">{t("families.hero.title_highlight")}</span>{" "}
+                  <span className="text-indigo-600 dark:text-indigo-400">{t("families.hero.title_highlight")}</span>{" "}
                   {t("families.hero.title_part2")}
                 </h1>
               </Reveal>
 
-              <Reveal delay={160}>
+              <Reveal delay={120}>
                 <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
                   {t("families.hero.subtitle")}
                 </p>
               </Reveal>
 
-              {/* Steps */}
-              <Reveal delay={240}>
+              <Reveal delay={180}>
                 <div className="mt-8 space-y-3">
                   {steps.map((step) => (
-                    <div key={step.n} className="corp-card flex items-center gap-4 px-5 py-3.5">
-                      <div className="w-8 h-8 rounded-xl bg-[#1a9e7a] text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                    <div key={step.n} className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] flex items-center gap-4 px-5 py-3.5">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
                         {step.n}
                       </div>
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{step.text}</span>
@@ -113,42 +105,37 @@ export default function FamiliesPage() {
               </Reveal>
             </div>
 
-            {/* Media */}
-            <Reveal variant="scale" delay={120} className="relative z-10">
+            <Reveal variant="scale" delay={100} className="relative z-10">
               <LiquidGlassMedia
                 type="image"
                 src="/Hero-Families.png"
                 alt="LittleFounders Families"
-                delay="0.5s"
               />
             </Reveal>
           </div>
         </div>
       </header>
 
-      {/* ══════════════════════════════════════════════════════════
-          TASK MANAGER
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 bg-white dark:bg-[#070b14]">
+      <section className="relative py-20 sm:py-28 bg-white dark:bg-[#070b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
               <Reveal as="span" className="corp-eyebrow">{t("families.task_manager.badge")}</Reveal>
-              <Reveal delay={80}>
-                <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+              <Reveal delay={60}>
+                <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
                   {t("families.task_manager.title")}
                 </h2>
               </Reveal>
-              <Reveal delay={140}>
+              <Reveal delay={120}>
                 <p className="mt-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                   {t("families.task_manager.description")}
                 </p>
               </Reveal>
-              <Reveal delay={200}>
+              <Reveal delay={180}>
                 <ul className="mt-6 space-y-3">
                   {taskManagerFeatures.map((feat, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 className="w-5 h-5 text-[#1a9e7a] shrink-0" /> {feat}
+                      <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" /> {feat}
                     </li>
                   ))}
                 </ul>
@@ -157,14 +144,14 @@ export default function FamiliesPage() {
 
             <div className="grid sm:grid-cols-2 gap-5">
               {[
-                { key: "benefit_1", color: "bg-[#f6a821]", icon: Coins },
-                { key: "benefit_2", color: "bg-[#2563eb]", icon: TrendingUp },
-                { key: "benefit_3", color: "bg-[#1a9e7a]", icon: Gift },
-                { key: "benefit_4", color: "bg-[#fb6f6f]", icon: LayoutDashboard },
-              ].map(({ key, color, icon: Icon }, i) => (
-                <Reveal key={key} delay={i * 80}>
-                  <div className="corp-card p-6 h-full">
-                    <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shadow-md`}>
+                { key: "benefit_1", icon: Coins },
+                { key: "benefit_2", icon: TrendingUp },
+                { key: "benefit_3", icon: Gift },
+                { key: "benefit_4", icon: LayoutDashboard },
+              ].map(({ key, icon: Icon }, i) => (
+                <Reveal key={key} delay={i * 60}>
+                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] p-6 h-full">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">
@@ -181,28 +168,25 @@ export default function FamiliesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          MARKETPLACE
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 bg-slate-50 dark:bg-[#0a0e1a]">
+      <section className="relative py-16 sm:py-24 bg-slate-50 dark:bg-[#0a0e1a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto">
             <Reveal as="span" className="corp-eyebrow">{t("families.marketplace.badge")}</Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+            <Reveal delay={60}>
+              <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                 {t("families.marketplace.title")}
               </h2>
             </Reveal>
-            <Reveal delay={140}>
+            <Reveal delay={120}>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                 {t("families.marketplace.description")}
               </p>
             </Reveal>
-            <Reveal delay={200}>
+            <Reveal delay={180}>
               <ul className="mt-5 flex flex-col items-center gap-2">
                 {marketplaceFeatures.map((feat, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" /> {feat}
+                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" /> {feat}
                   </li>
                 ))}
               </ul>
@@ -211,9 +195,9 @@ export default function FamiliesPage() {
 
           <div className="mt-14 grid md:grid-cols-3 gap-6">
             {marketplaceItems.map((item, i) => (
-              <Reveal key={i} delay={i * 90}>
-                <div className="corp-card h-full p-8">
-                  <div className={`w-12 h-12 rounded-2xl ${item.color} flex items-center justify-center shadow-lg`}>
+              <Reveal key={i} delay={i * 60}>
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] h-full p-8">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg">
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="mt-6 text-lg font-bold text-slate-900 dark:text-white">{item.title}</h3>
@@ -225,34 +209,32 @@ export default function FamiliesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          PARENT TOOLS
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 bg-white dark:bg-[#070b14]">
+      <section className="relative py-16 sm:py-24 bg-white dark:bg-[#070b14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <Reveal as="span" className="corp-eyebrow">{t("families.parent_tools.badge")}</Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+          <div className="max-w-2xl mb-14">
+            <Reveal>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
                 {t("families.parent_tools.title")}
               </h2>
             </Reveal>
-            <Reveal delay={140}>
+            <Reveal delay={60}>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                 {t("families.parent_tools.description")}
               </p>
             </Reveal>
           </div>
 
-          <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
             {parentInsights.map((insight, i) => (
-              <Reveal key={i} delay={(i % 3) * 90}>
-                <div className="corp-card h-full p-7">
-                  <div className={`w-11 h-11 rounded-xl ${insight.color} flex items-center justify-center shadow-md`}>
-                    <insight.icon className="w-5 h-5 text-white" />
+              <Reveal key={i} delay={(i % 3) * 60}>
+                <div className="flex gap-4">
+                  <div className="w-11 h-11 shrink-0 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center">
+                    <insight.icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <h3 className="mt-5 text-base font-bold text-slate-900 dark:text-white">{insight.title}</h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{insight.desc}</p>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{insight.title}</h3>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{insight.desc}</p>
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -260,19 +242,16 @@ export default function FamiliesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          BENEFITS
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 bg-slate-50 dark:bg-[#0a0e1a]">
+      <section className="relative py-16 sm:py-24 bg-slate-50 dark:bg-[#0a0e1a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto">
             <Reveal as="span" className="corp-eyebrow">{t("families.benefits.badge")}</Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+            <Reveal delay={60}>
+              <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                 {t("families.benefits.title")}
               </h2>
             </Reveal>
-            <Reveal delay={140}>
+            <Reveal delay={120}>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                 {t("families.benefits.description")}
               </p>
@@ -281,9 +260,9 @@ export default function FamiliesPage() {
 
           <div className="mt-14 grid md:grid-cols-2 gap-6">
             {benefits.map((benefit, i) => (
-              <Reveal key={i} variant={i % 2 === 0 ? "left" : "right"} delay={i * 80}>
-                <div className="corp-card h-full p-8 flex gap-5">
-                  <div className={`w-12 h-12 rounded-2xl ${benefit.color} flex items-center justify-center shadow-lg shrink-0`}>
+              <Reveal key={i} variant={i % 2 === 0 ? "left" : "right"} delay={i * 60}>
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] h-full p-8 flex gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shrink-0">
                     <benefit.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -295,14 +274,8 @@ export default function FamiliesPage() {
             ))}
           </div>
 
-          {/* Testimonial */}
-          <Reveal delay={200} className="mt-10">
-            <figure className="corp-card max-w-xl mx-auto p-8 text-center">
-              <div className="flex justify-center gap-1 text-amber-400 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" />
-                ))}
-              </div>
+          <Reveal delay={180} className="mt-10">
+            <figure className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] max-w-xl mx-auto p-8 text-center">
               <blockquote className="text-slate-700 dark:text-slate-300 leading-relaxed italic">
                 "{t("families.benefits.testimonial_text")}"
               </blockquote>
@@ -314,45 +287,34 @@ export default function FamiliesPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          CTA — WAITLIST
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 bg-white dark:bg-[#070b14]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 sm:py-28 bg-white dark:bg-[#070b14]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 sm:px-12 py-16 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)]">
-              <div className="absolute inset-0 corp-grid-bg opacity-20 pointer-events-none" />
-              {/* Brand glows */}
-              <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#f6a821]/12 blur-[80px] pointer-events-none" />
-              <div className="relative z-10">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70 mb-4">
-                  <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-400 mb-4">
+              <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+              {t("families.cta.title")}
+            </h2>
+            <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
+              {t("families.hero.notify_desc")}
+            </p>
+            <div className="mt-8 flex justify-center">
+              <EmailWaitlistForm
+                ctaLabel={t("families.hero.notify_cta")}
+                placeholder={t("families.hero.email_placeholder")}
+                successMsg={t("families.hero.email_success")}
+                language={lang}
+                source="families_page"
+              />
+            </div>
+            <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">{t("families.cta.disclaimer")}</p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
+              {[t("families.cta.trust_1"), t("families.cta.trust_2"), t("families.cta.trust_3")].map((trust, i) => (
+                <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <CheckCircle2 className="w-4 h-4 text-indigo-500" /> {trust}
                 </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight max-w-2xl mx-auto">
-                  {t("families.cta.title")}
-                </h2>
-                <p className="mt-4 text-white/70 max-w-xl mx-auto leading-relaxed">
-                  {t("families.hero.notify_desc")}
-                </p>
-                <div className="mt-8 flex justify-center">
-                  <EmailWaitlistForm
-                    ctaLabel={t("families.hero.notify_cta")}
-                    placeholder={t("families.hero.email_placeholder")}
-                    successMsg={t("families.hero.email_success")}
-                    language={lang}
-                    source="families_page"
-                  />
-                </div>
-                <p className="mt-5 text-sm text-white/40">{t("families.cta.disclaimer")}</p>
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
-                  {[t("families.cta.trust_1"), t("families.cta.trust_2"), t("families.cta.trust_3")].map((trust, i) => (
-                    <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold text-white/60">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {trust}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
           </Reveal>
         </div>

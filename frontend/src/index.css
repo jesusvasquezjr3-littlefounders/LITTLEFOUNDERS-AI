@@ -1893,6 +1893,17 @@ html[data-reduce-motion="true"] *::after {
   .animate-bounce,
   .animate-shimmer,
   .animate-ping,
+  .animate-sparkle-1,
+  .animate-sparkle-2,
+  .animate-sparkle-3,
+  .animate-sparkle-4,
+  .animate-sparkle-5,
+  .morphing-rect-frame,
+  .morphing-blob-frame,
+  .morphing-blob-video-frame,
+  .animate-float,
+  .animate-accordion-down,
+  .animate-accordion-up,
   .hero-sunburst::after {
     animation: none !important;
   }
@@ -2182,10 +2193,10 @@ html[data-reduce-motion="true"] *::after {
 /* Duolingo-style press button */
 .btn-press {
   box-shadow: 0 5px 0 0 rgba(0,0,0,0.2);
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  transition: box-shadow 0.12s ease-out, transform 0.12s ease-out;
 }
-.btn-press:hover  { box-shadow: 0 7px 0 0 rgba(0,0,0,0.2); transform: translateY(-2px); }
-.btn-press:active { box-shadow: 0 2px 0 0 rgba(0,0,0,0.2); transform: translateY(3px); }
+.btn-press:hover  { box-shadow: 0 7px 0 0 rgba(0,0,0,0.2); transform: translateY(-2px); transition: box-shadow 0.08s ease-out, transform 0.08s ease-out; }
+.btn-press:active { box-shadow: 0 2px 0 0 rgba(0,0,0,0.2); transform: translateY(3px); transition: box-shadow 0.08s ease-out, transform 0.08s ease-out; }
 
 /* Card tilt hover */
 .card-tilt {
@@ -2301,13 +2312,12 @@ html[data-reduce-motion="true"] *::after {
 /* Twinkle and float animations for sparkles around the premium liquid glass frame */
 @keyframes sparkle-float-twinkle {
   0%, 100% {
-    transform: scale(0) rotate(0deg) translateY(0);
+    transform: scale(0.6) rotate(0deg) translateY(0);
     opacity: 0;
   }
   50% {
     transform: scale(1.1) rotate(90deg) translateY(-8px);
     opacity: 0.95;
-    filter: drop-shadow(0 0 8px rgba(253, 224, 71, 0.8));
   }
 }
 
@@ -2390,6 +2400,7 @@ html[data-reduce-motion="true"] *::after {
 .corp .corp-display {
   font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 /* Brand gradient text used sparingly for emphasis */
@@ -2419,21 +2430,28 @@ html[data-reduce-motion="true"] *::after {
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 1.25rem;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -16px rgba(15, 23, 42, 0.18);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.corp-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 24px 48px -24px rgba(79, 70, 229, 0.35);
-  border-color: rgba(79, 70, 229, 0.22);
+@media (hover: hover) {
+  .corp-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 24px 48px -24px rgba(79, 70, 229, 0.35);
+    border-color: rgba(79, 70, 229, 0.22);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dark .corp-card:hover {
+    border-color: rgba(129, 140, 248, 0.35);
+    box-shadow: 0 24px 48px -24px rgba(79, 70, 229, 0.5);
+  }
 }
 .dark .corp-card {
   background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
 }
-.dark .corp-card:hover {
-  border-color: rgba(129, 140, 248, 0.35);
-  box-shadow: 0 24px 48px -24px rgba(79, 70, 229, 0.5);
+
+.corp-panel {
+  @apply rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426];
 }
 
 /* Static panel for dialogs (avoids overriding translate-x/y on hover) */
@@ -2453,14 +2471,17 @@ html[data-reduce-motion="true"] *::after {
   background-image: linear-gradient(120deg, #4f46e5, #2563eb);
   color: #fff;
   box-shadow: 0 10px 28px -10px rgba(37, 99, 235, 0.6);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.corp-btn-primary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.06);
-  box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.7);
+@media (hover: hover) {
+  .corp-btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.7);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
 }
-.corp-btn-primary:active { transform: translateY(0); }
+.corp-btn-primary:active { transform: scale(0.97); }
 
 /* Subtle dotted/grid backdrops */
 .corp-grid-bg {
@@ -2477,9 +2498,8 @@ html[data-reduce-motion="true"] *::after {
   opacity: 0;
   transform: translateY(28px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal-left  { transform: translateX(-36px); }
 .reveal-right { transform: translateX(36px); }
@@ -2489,7 +2509,15 @@ html[data-reduce-motion="true"] *::after {
   transform: translateX(0) translateY(0) scale(1);
 }
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .reveal,
+  .corp-card,
+  .corp-btn-primary {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .corp-card:hover { transform: none !important; }
+  .corp-btn-primary:hover { transform: none !important; }
 }
 
 /* Slow ken-burns drift for hero background media */

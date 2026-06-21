@@ -1,11 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * useScrollReveal
- * Adds the `is-visible` class to the observed element once it enters the
- * viewport, driving the `.reveal` CSS transitions. One-shot by default so
- * content stays put after the first reveal (feels calmer on a corporate site).
- */
 export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   options: { threshold?: number; rootMargin?: string; once?: boolean } = {}
 ) {
@@ -16,11 +10,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
     const node = ref.current;
     if (!node) return;
 
-    // Respect reduced motion / unsupported environments: show immediately.
-    if (
-      typeof IntersectionObserver === "undefined" ||
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (typeof IntersectionObserver === "undefined") {
       node.classList.add("is-visible");
       return;
     }
