@@ -79,8 +79,13 @@ wise_use:
   facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
   judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
   budget_output_tokens: 0               # 0 = sin tope; >0 = corta al alcanzar ese gasto de salida (autor)
-  budget_usd: 0                         # 0 = sin tope; >0 = corta la corrida al alcanzar ese gasto estimado (USD, todos los proveedores)
-  alert_usd_remaining: 3                # imprime ALERTA cuando (budget_usd - gasto estimado) < este valor (recarga las APIs)
+  budget_usd:                           # tope de gasto estimado POR PROVEEDOR (USD); null = sin tope.
+                                        # Calibrado a los saldos reales 2026-06-21 (con colchón ~10% por
+                                        # error de estimación de precios). AJUSTAR tras cada recarga.
+    deepseek: 7.5                       # saldo real 8.13 (planner; barato → sobra de margen)
+    glm: 9.0                            # saldo real 9.96 (juez+frescura; el proveedor CUELLO DE BOTELLA)
+    qwen: null                          # Alibaba = pago por uso (sin saldo): sin tope, solo se reporta el gasto
+  alert_usd_remaining: 3                # ALERTA por proveedor cuando (tope - gasto estimado) < este valor
 
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
 coverage:

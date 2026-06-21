@@ -55,7 +55,19 @@ CANON_ALL = load_facts(verified_only=True)     # tabla canónica (verdad de base
 STATE_FILE = KB / POLICY["run"].get("state_file", "index/build_state.json")
 _STATE_LOCK = threading.Lock()
 _BUDGET_OUT = int(WISE.get("budget_output_tokens", 0) or 0)
-_BUDGET_USD = float(WISE.get("budget_usd", 0) or 0)
+
+
+def _parse_budget_usd(raw):
+    """Tope de gasto en USD POR PROVEEDOR. Acepta dict {deepseek:8, glm:9, qwen:null} o un número
+    (tratado como tope agregado '_total'). null/ausente = sin tope para ese proveedor."""
+    if isinstance(raw, dict):
+        return {k: float(v) for k, v in raw.items() if v not in (None, "null", "")}
+    if raw:
+        return {"_total": float(raw)}
+    return {}
+
+
+_BUDGET_USD = _parse_budget_usd(WISE.get("budget_usd"))
 _ALERT_USD = float(WISE.get("alert_usd_remaining", 0) or 0)
 PRICING = POLICY.get("pricing_usd_per_mtok", {})
 TARGETS = POLICY["targets"]
@@ -63,7 +75,7 @@ STOP_ON = TARGETS.get("stop_on", "coverage")             # coverage | size
 SIZE_TARGET = float(TARGETS.get("total_size_mb", 10))
 SIZE_SAFETY = float(TARGETS.get("size_safety_cap_mb", 0) or 0)
 _AUTHOR_CLIENT = None     # se fija en main(); usado para presupuesto/alerta y tope de tokens del autor
-_alerted = False
+_alerted: set = set()     # proveedores ya alertados (para no repetir la alerta)
 RETRY_DRAFTS = False     # --retry-drafts: en el resume, regenerar los docs en estado draft
 
 
@@ -91,26 +103,35 @@ def _role_clients():
             (_PLANNER_CLIENT, MODELS["planner"]))
 
 
-def estimated_cost_usd() -> float:
-    """Gasto estimado en USD sumando tokens×precio de los 3 clientes (autor/juez/planner)."""
-    total = 0.0
+def estimated_cost_by_provider() -> dict:
+    """Gasto estimado en USD POR PROVEEDOR (tokens×precio). Clave = provider del cliente."""
+    out: dict = {}
     for client, model in _role_clients():
         if client is None:
             continue
         pr = _price(model)
         u = client.usage
-        total += u.get("prompt_tokens", 0) / 1e6 * pr.get("in", 0.0)
-        total += u.get("completion_tokens", 0) / 1e6 * pr.get("out", 0.0)
-    return total
+        c = (u.get("prompt_tokens", 0) / 1e6 * pr.get("in", 0.0)
+             + u.get("completion_tokens", 0) / 1e6 * pr.get("out", 0.0))
+        out[client.provider] = out.get(client.provider, 0.0) + c
+    return out
+
+
+def estimated_cost_usd() -> float:
+    return sum(estimated_cost_by_provider().values())
 
 
 def budget_exceeded(qw=None) -> bool:
-    """Tope de tokens de salida del autor O tope de gasto en USD (cualquiera corta la corrida)."""
+    """True si el autor superó su tope de tokens, O si ALGÚN proveedor superó su tope en USD
+    (la corrida muere cuando cualquiera de las 3 cuentas se agota)."""
     if _BUDGET_OUT > 0 and _AUTHOR_CLIENT and _AUTHOR_CLIENT.usage.get("completion_tokens", 0) >= _BUDGET_OUT:
         return True
-    if _BUDGET_USD > 0 and estimated_cost_usd() >= _BUDGET_USD:
+    if not _BUDGET_USD:
+        return False
+    costs = estimated_cost_by_provider()
+    if "_total" in _BUDGET_USD and sum(costs.values()) >= _BUDGET_USD["_total"]:
         return True
-    return False
+    return any(costs.get(prov, 0.0) >= cap for prov, cap in _BUDGET_USD.items() if prov != "_total")
 
 
 def size_stop() -> bool:
@@ -121,15 +142,18 @@ def size_stop() -> bool:
 
 
 def budget_alert():
-    """Imprime una ALERTA (una vez) cuando el saldo estimado del presupuesto baja del umbral → recargar APIs."""
-    global _alerted
-    if _alerted or _BUDGET_USD <= 0 or _ALERT_USD <= 0:
+    """Imprime una ALERTA (una vez por proveedor) cuando su saldo estimado baja del umbral → recargar."""
+    if not _BUDGET_USD or _ALERT_USD <= 0:
         return
-    remaining = _BUDGET_USD - estimated_cost_usd()
-    if remaining < _ALERT_USD:
-        _alerted = True
-        print(f"\n⚠️  ALERTA SALDO: presupuesto restante estimado ${remaining:.2f} < ${_ALERT_USD:.2f}. "
-              f"Recarga las APIs (Qwen/GLM/DeepSeek) si vas a continuar.\n", flush=True)
+    costs = estimated_cost_by_provider()
+    for prov, cap in _BUDGET_USD.items():
+        if prov == "_total" or prov in _alerted:
+            continue
+        remaining = cap - costs.get(prov, 0.0)
+        if remaining < _ALERT_USD:
+            _alerted.add(prov)
+            print(f"\n⚠️  ALERTA SALDO {prov.upper()}: restante estimado ${remaining:.2f} < ${_ALERT_USD:.2f}. "
+                  f"Recarga esa API si vas a continuar.\n", flush=True)
 
 
 def save_state(doc_id: str, status: str):
@@ -746,7 +770,8 @@ def run_all(qw, reg, workers, max_docs):
         print(f"usage juez={_JUDGE_CLIENT.usage}", flush=True)
     if _PLANNER_CLIENT:
         print(f"usage planner={_PLANNER_CLIENT.usage}", flush=True)
-    print(f"COSTO ESTIMADO ~${estimated_cost_usd():.2f} USD", flush=True)
+    by = {k: round(v, 3) for k, v in estimated_cost_by_provider().items()}
+    print(f"COSTO ESTIMADO ~${estimated_cost_usd():.2f} USD · por proveedor: {by}", flush=True)
 
 
 if __name__ == "__main__":

@@ -683,3 +683,19 @@ sources:
     tier: primary
     jurisdiction: MX-FED
     accessed: 2026-06-20
+
+  src_gen_da69fc66:
+    title: "Operaciones con criptomonedas — Servicio de Administración Tributaria (SAT)"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/temas/impuestos-sobre-la-renta/operaciones-con-criptomonedas"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_e3d9cbd6:
+    title: "Operaciones con activos virtuales — Servicio de Administración Tributaria (SAT)"
+    publisher: "Servicio de Administración Tributaria"
+    url: "https://www.sat.gob.mx/temas/impuestos-sobre-la-renta/personas-fisicas/operaciones-con-activos-virtuales"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
