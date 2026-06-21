@@ -30,7 +30,9 @@ statuses: [draft, review, published, stale]
 domains:
   personal_finance:
     label: "Finanzas personales"
-    subdomains: [saving, budgeting, credit, debt, credit_history, retirement, insurance, consumer_protection, goals, loans, interest_rates]
+    subdomains: [saving, budgeting, credit, debt, credit_history, retirement, insurance, consumer_protection, goals, loans, interest_rates, earning_income]
+    # earning_income (capital humano, elección de carrera, ingreso bruto vs neto vs gravable) = hueco
+    # NS-PFE 'Earning Income' detectado en el crosswalk (eval 2026-06-21).
   consumer:
     label: "Consumo inteligente"
     subdomains: [price_comparison, quality_vs_price, discounts, impulse, price_psychology, online_buying]
@@ -67,7 +69,7 @@ domains:
     subdomains: [supply_demand, inflation, central_bank, labor_market, minimum_wage, monetary_policy, macro_indicators, cycles]
   investing:
     label: "Inversión"
-    subdomains: [save_vs_invest, risk_return, compound_interest, diversification, asset_classes, analysis, portfolio, dca, stock_market, bonds, crypto, commodities_metals, real_estate]
+    subdomains: [save_vs_invest, risk_return, compound_interest, diversification, asset_classes, analysis, portfolio, dca, stock_market, bonds, crypto, commodities_metals, real_estate, time_value_money]
   risk_wealth:
     label: "Gestión de riesgo y patrimonio"
     subdomains: [risk_types, hedging, cognitive_biases, insurance_advanced, fire, passive_income, estate_legacy, esg]

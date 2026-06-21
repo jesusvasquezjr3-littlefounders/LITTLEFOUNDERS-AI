@@ -8,6 +8,44 @@
 
 ---
 
+## Evaluación crítica del mapa (2026-06-21) — veredicto y correcciones
+
+Evaluación multiagente (auditoría de calidad en 12 celdas + crosswalk vs marcos oficiales + redundancia +
+competency questions). **Veredicto: C+ — NO satisfactorio en el estado evaluado; la meta es alcanzable
+PERO el mapa NO estaba listo para dirigir generación.** Generar contra él habría fabricado miles de docs
+de bajo valor con metadatos no filtrables (rompiendo el pre-filtro DURO). Esto validó posponer la ejecución.
+
+**Fortalezas confirmadas:** cobertura de marco genuina (~90% NS-PFE 2021 US, ~92% CONDUSEF/SEP/SAT-PF MX —
+nuestro cerebro es un *superconjunto* del marco mexicano); las celdas que NO tocaron el cap son 4/5
+(calidad enciclopédica real); diseño jurisdiccional correcto en celdas de país; `schema.json` estricto.
+
+**Problemas hallados (verificados en disco) y su corrección:**
+
+| Hallazgo (severidad) | Fix aplicado |
+|----------------------|--------------|
+| `depth_tier` con 54 valores (esquema=3); 11% fuera de enum — rompía filtrado **(alta)** | ✅ `normalize_concept_map.py`: → {intro,intermediate,advanced} |
+| `age_bands` con 305 valores (rangos demográficos, "adult"…) — **rompía el pre-filtro DURO** **(alta)** | ✅ normalizado → tier1-5 (4,574 corregidos) |
+| `concept_id` 59% no-canónico (códigos opacos, placeholders `missing-*`, colisiones) **(alta)** | ✅ regenerado dotted-determinista `{país.dominio.subdominio.slug}` (11,279/11,279) |
+| Inflado ~2-3× (75 celdas clavadas en cap 60; rellenaba hasta el tope) **(alta)** | ✅ generador: cap 60→35 + parada por SATURACIÓN + prompt anti-relleno |
+| Atomización en lista ('Presupuesto para X' ×24) **(media)** | ✅ `collapse_atomization` (−1,848 temas) + regla en el prompt |
+| Fuga jurisdiccional en celdas shared (IVA/SAT/401k…) **(media)** | ✅ firewall léxico en shared (−58) + en el generador |
+| `errores/FAQ/mitos/tendencias` como temas-doc en 47-65% de celdas **(media)** | ✅ prompt: son SECCIONES dentro del doc, no temas |
+| Faltan básicos NS-PFE/CFA: earning_income, time_value_money **(media)** | ✅ añadidos a `taxonomy.yaml` |
+| RIF obsoleto (→RESICO) en business_formation; cifras volátiles en títulos **(media)** | ⬜ pendiente (corrección puntual + anclar a facts.yaml) |
+| Celdas-puente MX del ENEF (bienestar financiero, defensa CONDUSEF, EACP, trámites SAT-PF) **(baja)** | ⬜ pendiente (enriquecimiento por celda) |
+
+**Resultado de la normalización:** mapa **13,185 → 11,279 temas**, metadatos 100% en-enum, shared sin fuga.
+Competency Questions semilla (48 preguntas, 8 celdas) en `eval/competency_questions.json` (cobertura funcional).
+
+**Lo que falta para "100% útil en industria"** (en orden): (1) **regenerar el mapa con el generador lean**
+(cap 35 + saturación) para bajar de ~11k a un espinazo genuino de ~6-8k *—barato, ~$2 DeepSeek—*; (2)
+correcciones factuales puntuales + anclaje a `facts.yaml`; (3) celdas-puente del ENEF; (4) **ola piloto de
+~50-100 conceptos núcleo**, generar y MEDIR densidad/redundancia/fact-accuracy del CONTENIDO real **antes**
+de comprometer presupuesto en los miles restantes. La ejecución masiva sigue **pospuesta** hasta validar
+esa ola piloto — exactamente la disciplina pedida.
+
+---
+
 ## 0. El hallazgo que cambia el marco
 
 **Nadie mide "cobertura total" contra un *todo* absoluto.** Wikidata, FIBO, CFA — TODOS miden completitud

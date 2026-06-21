@@ -52,10 +52,14 @@ KB = TOOLS.parent
 META = KB / "_meta"
 sys.path.insert(0, str(TOOLS))
 import build_dataset as bd  # noqa: E402  (reusa planner client, all_jobs, TAXO, POLICY, write_atomic)
+from normalize_concept_map import (  # noqa: E402  higiene determinista compartida con el normalizador
+    collapse_atomization, is_jurisdictional, norm_age_bands, norm_concept_id, norm_depth, slugify)
 
 MAP_FILE = META / "concept_map.yaml"
-MAX_TOPICS = 60          # techo por celda (evita runaway; una enciclopedia raramente excede esto por subtema)
-MAX_CRITIC_ROUNDS = 5    # rondas de expansión del crítico de completitud
+# Techo POR CELDA bajado de 60→35 tras la evaluación (el mapa salía inflado ~2-3x por rellenar hasta el
+# cap). La meta es SATURACIÓN real (~15-30 conceptos genuinos/celda), no llenar un número.
+MAX_TOPICS = 35
+MAX_CRITIC_ROUNDS = 4    # rondas de expansión del crítico de completitud (para tras 2 secas)
 _LOCK = threading.Lock()
 
 _AGE = ""
@@ -76,12 +80,17 @@ def _enumerate(country, domain, subdomain) -> list[dict]:
                "'almacenamiento de conocimiento ante catástrofe' (que no falte NADA importante). Devuelve SOLO JSON.")
     user = (
         f"País={country} dominio={domain} subdominio={subdomain}.\n{neutral}"
-        "Enumera TODOS los temas/documentos que una ENCICLOPEDIA COMPLETA tendría para este subdominio. "
-        "Cubre EXHAUSTIVAMENTE: definiciones y fundamentos, mecánica y fórmulas, procedimientos paso a paso, "
-        "marco legal/regulatorio, casos borde, errores comunes y mitos, comparativas, variantes/tipos, "
-        "ejemplos numéricos, preguntas frecuentes, y cambios/tendencias recientes. NO te limites a lo básico: "
-        "apunta a EXHAUSTIVIDAD enciclopédica (típicamente 15-40 temas según el subdominio; no inventes "
-        "relleno trivial ni micro-nichos sin valor educativo).\n"
+        "Enumera los CONCEPTOS distintos y enseñables que una ENCICLOPEDIA tendría para este subdominio: "
+        "fundamentos, mecánica/fórmulas, procedimientos, marco legal, casos borde, variantes/tipos, "
+        "comparativas. REGLAS ANTI-INFLADO (críticas):\n"
+        "  · Para por SATURACIÓN, no por número: lista solo conceptos GENUINAMENTE distintos (típico ~15-30). "
+        "NO rellenes hasta un cap.\n"
+        "  · PROHIBIDO atomizar en listas: NO crees 'Presupuesto para vivienda/transporte/mascotas…' como "
+        "temas separados; eso es UN tema ('categorizar gastos') con ejemplos. Igual para 'Seguro de X', 'Impuesto de X'.\n"
+        "  · 'errores comunes', 'mitos', 'preguntas frecuentes', 'tendencias recientes' NO son temas-documento: "
+        "son SECCIONES dentro de cada doc. NO los enumeres como temas aquí.\n"
+        "  · Evita micro-nichos de nivel especialista (p.ej. precios de transferencia, IMMEX, FIBRAS) salvo que "
+        "sean centrales al subdominio; si los incluyes, márcalos depth_tier=advanced.\n"
         f"Tiers de edad disponibles (techo Piaget):\n{_AGE}\n"
         'Devuelve {"topics":[{"slug":"kebab-case-unico","title_es":"...","title_en":"...","angle":"...",'
         '"age_bands":["tier3","tier4","tier5"],"depth_tier":"intro|intermediate|advanced",'
@@ -131,7 +140,23 @@ def build_cell(country, domain, subdomain) -> list[dict]:
             topics[t["slug"]] = t
             if len(topics) >= MAX_TOPICS:
                 break
-    return list(topics.values())
+    # higiene determinista en la fuente (mismas reglas que normalize_concept_map): enum limpio,
+    # concept_id dotted, firewall léxico en shared, colapso de atomización.
+    clean, seen = [], set()
+    for t in topics.values():
+        if country == "shared" and is_jurisdictional(t):
+            continue
+        slug = slugify(t.get("slug", "")) or slugify(t.get("title_es", ""))
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+        t["slug"] = slug
+        t["depth_tier"] = norm_depth(t.get("depth_tier"))
+        t["age_bands"] = norm_age_bands(t.get("age_bands", []))
+        t["concept_id"] = norm_concept_id(country, domain, subdomain, slug)
+        clean.append(t)
+    clean, _ = collapse_atomization(clean)
+    return clean
 
 
 def load_map() -> dict:

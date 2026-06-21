@@ -35,7 +35,7 @@ rag-llm-brain/
 └── knowledge/                 EL CEREBRO
     ├── _meta/                 contrato: taxonomy · sources · volatility_policy · schema.json · build_policy · facts(canónica)
     ├── shared/ mx/ us/        corpus markdown (fuente de verdad)
-    ├── tools/                 gate_kb · facts_table · build_concept_map · dedup · coverage_report · build_dataset · llm_qwen · preflight · update_facts · build_evidence · build_index · retriever · kb_common
+    ├── tools/                 gate_kb · facts_table · build_concept_map · normalize_concept_map · dedup · coverage_report · build_dataset · llm_qwen · preflight · update_facts · build_evidence · build_index · retriever · kb_common
     ├── eval/                  golden_qa · leakage_tests · run_kb_eval
     ├── evidence/              (gitignored) caché de fulltext curado de NotebookLM
     ├── index/                 (gitignored) índice SQLite + llm_cache/ + build_state.json + build_log.jsonl
@@ -67,6 +67,8 @@ build_dataset.py (DeepSeek+Qwen+GLM) → PLANNER/mapa(DeepSeek V4) → AUTHOR(Qw
 ```bash
 cd littlefounders_brain/rag-llm-brain
 ./.venv/bin/python knowledge/tools/build_concept_map.py --all --workers 5    # espinazo: qué es "TODO" (1ª vez)
+./.venv/bin/python knowledge/tools/normalize_concept_map.py                  # higiene+de-bloat del mapa (OBLIGATORIO antes de --run)
+./.venv/bin/python knowledge/tools/coverage_report.py                        # GRID_Φ / cobertura / concept-recall
 ./.venv/bin/python knowledge/tools/build_concept_map.py --status            # cobertura del mapa
 ./.venv/bin/python knowledge/tools/preflight.py                              # auditoría GO/NO-GO (antes de --run)
 nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 > knowledge/build_v3.log 2>&1 &
