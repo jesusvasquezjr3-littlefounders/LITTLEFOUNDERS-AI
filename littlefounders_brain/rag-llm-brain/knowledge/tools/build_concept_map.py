@@ -69,8 +69,12 @@ except Exception:
     pass
 
 
-def _enumerate(country, domain, subdomain) -> list[dict]:
-    """Enumeración EXHAUSTIVA de temas para una celda (DeepSeek). Devuelve lista de dicts de tema."""
+def _client_model(client, model):
+    return (client or bd._planner_client()), (model or bd.MODELS["planner"])
+
+
+def _enumerate(country, domain, subdomain, client=None, model=None) -> list[dict]:
+    """Enumeración EXHAUSTIVA de temas para una celda. client/model override = bake-off de proveedores."""
     neutral = ("REGLA: 'shared' es NEUTRO — SOLO conceptos universales (qué es, principios, matemática); "
                "NADA de instrumentos, leyes, cifras o nombres de un país (ni IVA/SAT/IRS/etc.). "
                if country == "shared" else "")
@@ -96,13 +100,13 @@ def _enumerate(country, domain, subdomain) -> list[dict]:
         '"age_bands":["tier3","tier4","tier5"],"depth_tier":"intro|intermediate|advanced",'
         '"volatility":"static|low|medium|high","concept_id":"dotted.id"}]}'
     )
-    raw = bd._planner_client().chat(
-        [{"role": "system", "content": sys_msg}, {"role": "user", "content": user}],
-        model=bd.MODELS["planner"], json_mode=True, temperature=0.5, max_tokens=16000, timeout=300)
+    cl, md = _client_model(client, model)
+    raw = cl.chat([{"role": "system", "content": sys_msg}, {"role": "user", "content": user}],
+                  model=md, json_mode=True, temperature=0.5, max_tokens=16000, timeout=300)
     return _extract_topics(raw)   # salvamento: recupera temas completos aunque el JSON venga truncado
 
 
-def _critic(country, domain, subdomain, have_slugs) -> list[dict]:
+def _critic(country, domain, subdomain, have_slugs, client=None, model=None) -> list[dict]:
     """Crítico de completitud: ¿qué temas IMPORTANTES faltan todavía? (para loop-until-dry)."""
     sys_msg = ("Eres crítico de completitud enciclopédica. Tu trabajo es encontrar HUECOS. Devuelve SOLO JSON.")
     user = (
@@ -112,23 +116,24 @@ def _critic(country, domain, subdomain, have_slugs) -> list[dict]:
         'Devuelve {"missing":[{"slug":"...","title_es":"...","title_en":"...","angle":"...",'
         '"age_bands":[...],"depth_tier":"...","volatility":"...","concept_id":"..."}]}'
     )
-    raw = bd._planner_client().chat(
-        [{"role": "system", "content": sys_msg}, {"role": "user", "content": user}],
-        model=bd.MODELS["planner"], json_mode=True, temperature=0.6, max_tokens=12000, timeout=300)
+    cl, md = _client_model(client, model)
+    raw = cl.chat([{"role": "system", "content": sys_msg}, {"role": "user", "content": user}],
+                  model=md, json_mode=True, temperature=0.6, max_tokens=12000, timeout=300)
     return _extract_topics(raw)   # 'missing' son objetos-tema con slug → mismo salvamento
 
 
-def build_cell(country, domain, subdomain) -> list[dict]:
-    """Enumera + expande (loop-until-dry) los temas de una celda hasta agotar o tope."""
+def build_cell(country, domain, subdomain, client=None, model=None) -> list[dict]:
+    """Enumera + expande (loop-until-dry) los temas de una celda hasta agotar o tope.
+    client/model override permite el bake-off de proveedores (misma alimentación, distinto modelo)."""
     topics: dict[str, dict] = {}
-    for t in _enumerate(country, domain, subdomain):
+    for t in _enumerate(country, domain, subdomain, client, model):
         if t.get("slug"):
             topics[t["slug"]] = t
     dry = 0
     for _ in range(MAX_CRITIC_ROUNDS):
         if len(topics) >= MAX_TOPICS:
             break
-        missing = _critic(country, domain, subdomain, set(topics))
+        missing = _critic(country, domain, subdomain, set(topics), client, model)
         fresh = [t for t in missing if t.get("slug") and t["slug"] not in topics]
         if not fresh:
             dry += 1

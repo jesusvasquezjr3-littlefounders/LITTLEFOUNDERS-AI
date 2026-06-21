@@ -46,6 +46,33 @@ esa ola piloto — exactamente la disciplina pedida.
 
 ---
 
+## Bake-off de proveedores del planner (2026-06-21) — DeepSeek confirmado
+
+Para elegir el generador del mapa por EVIDENCIA, no por suposición: los 3 proveedores generaron la MISMA
+muestra (8 celdas diversas) con el prompt lean + higiene idénticos (`mapgen_bakeoff.py`), luego juez ciego.
+
+**Métricas deterministas (100% fiables, 8/8 celdas):**
+
+| Proveedor | avg temas/celda | suciedad (depth/age) | costo (8 celdas) | latencia/celda |
+|-----------|----------------|----------------------|------------------|----------------|
+| **deepseek-v4-flash** | 29.9 (saturación natural) | 0/0 | **$0.034** | **84 s** |
+| qwen-plus-latest | 28.5 | 0/0 | $0.057 | 100 s |
+| glm-4.6 | 35.0 (pegado al cap) | 0/0 | **$0.345 (10×)** | 260 s (3×) |
+
+**Calidad (juez ciego):** de-anonimizado FIABLE solo en 4/8 celdas — **lección metodológica: el juez-LLM
+es frágil para de-anonimizar** (la mitad de los agentes alteraron/inventaron los IDs opacos pese a la
+instrucción; uno escupió los nombres de proveedor). En el subconjunto fiable + métricas: **DeepSeek 3 wins
+(overall 4.75), GLM 1 (4.0, gana en celdas fiscales densas por conceptos genuinos como CUFIN/PTU), Qwen 0
+(3.0; redundancia/atomización/micro-nicho).**
+
+**Veredicto: se mantiene DeepSeek V4 como planner** — más barato (10×), más rápido (3×), salida limpia,
+saturación natural (no pegado al cap como GLM), y calidad ≥. La exhaustividad marginal de GLM en celdas
+densas NO justifica 10× el costo. El bake-off CONFIRMA empíricamente la elección existente (sin cambio de
+pipeline). Lección transversal: **liderar con métricas deterministas; el juez-LLM como desempate de calidad,
+no como fuente de verdad de identidad.**
+
+---
+
 ## 0. El hallazgo que cambia el marco
 
 **Nadie mide "cobertura total" contra un *todo* absoluto.** Wikidata, FIBO, CFA — TODOS miden completitud
