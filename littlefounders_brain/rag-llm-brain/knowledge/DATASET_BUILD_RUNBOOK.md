@@ -1,8 +1,14 @@
 # Runbook — Construcción Autónoma del Dataset (pipeline HÍBRIDO)
 
+> ⚠️ **v3 vigente:** el pipeline evolucionó a **v3** (autor Qwen + **juez GLM con búsqueda** + tabla
+> canónica `_meta/facts.yaml` + breadth-first + resume). El runbook de ejecución **autoritativo** es
+> [`../PLAN_V3_EXECUTION.md`](../PLAN_V3_EXECUTION.md) y el diseño es [`../ARCHITECTURE_V3.md`](../ARCHITECTURE_V3.md).
+> Antes de `--run`, corre `tools/preflight.py` (GO/NO-GO). Lo de abajo describe el flujo base híbrido.
+>
 > Construye el corpus **solo**, sin tokens de Claude. Grounding **híbrido**: **NotebookLM** ingiere
-> fuentes primarias curadas → caché local; **Qwen-Flash** redacta/juzga fundado en esa evidencia (+
-> `qwen_search` de respaldo). **Gate determinista** hace cumplir los invariantes. Estrategia:
+> fuentes primarias curadas → caché local; el **autor (Qwen)** redacta fundado en esa evidencia (+
+> búsqueda de respaldo) y el **juez (GLM/z.ai con búsqueda)** verifica. **Gate determinista** hace cumplir
+> los invariantes (incluido el VALOR de cada cifra contra `facts.yaml`). Estrategia:
 > [`../BRAIN_STRATEGY.md`](../BRAIN_STRATEGY.md). Rutas relativas a `littlefounders_brain/rag-llm-brain/`.
 
 ## 0. Pipeline (por documento)

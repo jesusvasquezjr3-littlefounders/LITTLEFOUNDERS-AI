@@ -41,7 +41,8 @@ KB = Path(__file__).resolve().parent.parent
 META = KB / "_meta"
 TOOLS = KB / "tools"
 sys.path.insert(0, str(TOOLS))
-from llm_qwen import Qwen  # noqa: E402
+from llm_qwen import Qwen, provider_for  # noqa: E402
+from facts_table import canonical_block, load_facts, values_match  # noqa: E402
 
 TAXO = yaml.safe_load((META / "taxonomy.yaml").read_text())
 POLICY = yaml.safe_load((META / "build_policy.yaml").read_text())
@@ -49,6 +50,46 @@ SOURCES_FILE = META / "sources.yaml"
 DATE = POLICY["content_conventions"]["date_anchor"]
 # Checkpoint = existencia de los pares .es/.md en disco (re-ejecutar salta lo ya hecho).
 MODELS = POLICY["models"]
+WISE = POLICY.get("wise_use", {})
+CANON_ALL = load_facts(verified_only=True)     # tabla canónica (verdad de base) para inyectar al autor
+STATE_FILE = KB / POLICY["run"].get("state_file", "index/build_state.json")
+_STATE_LOCK = threading.Lock()
+_BUDGET_OUT = int(WISE.get("budget_output_tokens", 0) or 0)
+RETRY_DRAFTS = False     # --retry-drafts: en el resume, regenerar los docs en estado draft
+
+
+def _is_draft(es_path: Path) -> bool:
+    try:
+        return "status: draft" in es_path.read_text(encoding="utf-8")[:500]
+    except Exception:
+        return False
+
+
+def write_atomic(path: Path, text: str):
+    """Escribe a .tmp y renombra: un corte a mitad NO deja un doc corrupto."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
+def budget_exceeded(qw: "Qwen") -> bool:
+    return _BUDGET_OUT > 0 and qw.usage.get("completion_tokens", 0) >= _BUDGET_OUT
+
+
+def save_state(doc_id: str, status: str):
+    """Manifiesto de progreso (index/build_state.json) para resume/observabilidad. Atómico + lock."""
+    with _STATE_LOCK:
+        STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        state = {}
+        if STATE_FILE.exists():
+            try:
+                state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+            except Exception:
+                state = {}
+        state[doc_id] = {"status": status, "ts": DATE}
+        tmp = STATE_FILE.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(state, ensure_ascii=False, indent=0), encoding="utf-8")
+        tmp.replace(STATE_FILE)
 
 JURIS = {"mx": "MX-FED", "us": "US-FED", "shared": "NONE"}
 CURRENCY = {"mx": "MXN", "us": "USD", "shared": "null"}
@@ -104,9 +145,13 @@ class SourceRegistry:
             h = hashlib.md5(key.encode()).hexdigest()[:8]
             sid = f"src_gen_{h}"
             tier = tier_of_url(url)
-            block = (f"\n  {sid}:\n    title: {json.dumps(title or url)[:200]}\n"
-                     f"    publisher: {json.dumps(publisher or '')}\n"
-                     f"    url: {json.dumps(url)}\n    tier: {tier}\n"
+            # Truncar el TEXTO antes de json.dumps (no después): truncar la salida JSON podía
+            # cortar una secuencia \uXXXX a la mitad → YAML inválido → el gate crasheaba.
+            t = (title or url)[:160]
+            pub = (publisher or "")[:120]
+            block = (f"\n  {sid}:\n    title: {json.dumps(t, ensure_ascii=False)}\n"
+                     f"    publisher: {json.dumps(pub, ensure_ascii=False)}\n"
+                     f"    url: {json.dumps(url, ensure_ascii=False)}\n    tier: {tier}\n"
                      f"    jurisdiction: {jurisdiction or 'NONE'}\n    accessed: {DATE}\n")
             with open(SOURCES_FILE, "a", encoding="utf-8") as f:
                 f.write(block)
@@ -158,9 +203,11 @@ def replace_facts(body, facts, fact_src):
         sid = fact_src.get(fid, "")
         if not sid:
             return ""
-        # sanear el valor: una sola línea y sin '-->' (que cerraría el comentario prematuramente)
-        val = str(f["value"]).replace("\n", " ").replace("-->", "→").strip()
-        return (f'<!-- @fact id={fid} value={val} verified={DATE} '
+        # sanear el valor: una sola línea, sin '-->' (cerraría el comentario) ni comillas internas.
+        # Se CITA con comillas para que valores multi-token (rangos, "3,500,000 MXN") round-trippeen
+        # por el parser del gate sin truncarse en el primer espacio.
+        val = str(f["value"]).replace("\n", " ").replace("-->", "→").replace('"', "'").strip()
+        return (f'<!-- @fact id={fid} value="{val}" verified={DATE} '
                 f'src={sid} volatility={f.get("volatility","medium")} -->')
     return re.sub(r"\[\[fact:([a-zA-Z0-9_.]+)\]\]", repl, body)
 
@@ -172,9 +219,13 @@ def q_planner(qw, country, domain, subdomain):
             "Eres un arquitecto curricular experto en finanzas/impuestos/negocios MX y US. Devuelve SOLO JSON."},
            {"role": "user", "content":
             f"País={country} dominio={domain} subdominio={subdomain}. "
-            f"{POLICY['completeness']['critic_prompt_hint']} "
-            f"Propón una lista EXHAUSTIVA y PROFUNDA de documentos (mínimo {POLICY['depth']['min_docs_per_subdomain']}) "
-            f"para cubrir este subdominio a nivel experto, cada uno con un ángulo distinto "
+            + ("REGLA: 'shared' es el bucket NEUTRO: propón SOLO conceptos universales (qué es, cómo funciona, "
+               "principios, matemática), SIN instrumentos, leyes, cifras ni nombres de un país (nada de IVA, SAT, "
+               "IRS, RESICO, salario mínimo MX/US, etc. — eso va en mx/ o us/). "
+               if country == "shared" else "")
+            + f"{POLICY['completeness']['critic_prompt_hint']} "
+            f"Propón una lista de documentos (mínimo {POLICY['depth']['min_docs_per_subdomain']}) "
+            f"para cubrir bien este subdominio, cada uno con un ángulo distinto y ENSEÑABLE "
             f"(básico, mecánica, casos borde, trámites paso a paso, errores comunes, comparativa, cambios 2026). "
             f"Tiers de edad disponibles (techo Piaget): {band_rules}. "
             'Devuelve {"topics":[{"slug":"kebab-case","title_es":"...","title_en":"...","angle":"...",'
@@ -199,6 +250,16 @@ def load_evidence(country, domain, max_chars=12000):
 def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence=""):
     fix = f"\nCORRIGE estos errores del gate anterior: {gate_errors}" if gate_errors else ""
     forb = TAXO["age_bands"]
+    # CIFRAS CANÓNICAS (verdad de base): el autor DEBE copiar estos id+valor, no inventar.
+    canon = canonical_block(CANON_ALL, JURIS[country])
+    canon_block = (
+        "CIFRAS CANÓNICAS OFICIALES (verdad de base verificada). Si mencionas alguna de estas cifras, "
+        "usa EXACTAMENTE su id en [[fact:id]] y su valor EXACTO — NO inventes ni 'recuerdes' otro número:\n"
+        f"{canon}\n\n===\n\n"
+    ) if canon else ""
+    # Uso sabio: si hay evidencia curada, NO buscar (ahorra tokens); buscar solo si falta.
+    use_search = bool(MODELS["grounding_search"]) and (
+        WISE.get("author_search_when_evidence", False) or not evidence)
     ev_block = (
         "EVIDENCIA CURADA (extraída por NotebookLM de FUENTES PRIMARIAS oficiales). Fundamenta tu "
         "redacción y tus @fact PRIORITARIAMENTE en esta evidencia y cita esas URLs como fuentes. "
@@ -208,7 +269,7 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             "Eres autor experto de contenido educativo bilingüe (ES canónico, EN fiel) de finanzas/impuestos, "
             "edades 5-18+, fundamentado en FUENTES PRIMARIAS (.gov/leyes) y actual a 2026-06-20. Devuelve SOLO JSON."},
            {"role": "user", "content":
-            ev_block +
+            canon_block + ev_block +
             f"País={country} ({JURIS[country]}) dominio={domain} subdominio={subdomain}.\n"
             f"Documento: slug={topic['slug']} | {topic['title_es']} / {topic['title_en']} | ángulo: {topic.get('angle','')}\n"
             f"age_bands={topic['age_bands']} depth_tier={topic['depth_tier']} volatility={topic['volatility']}\n\n"
@@ -224,6 +285,9 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             f"- Marca con [[fact:<id.punteado>]] SOLO las cifras OFICIALES y verificables (tasas, límites, "
             "umbrales, versiones, fechas oficiales) y declára cada una en 'facts' con su fuente PRIMARIA. "
             f"Apunta a >= {POLICY['depth']['min_cited_facts_per_doc']} hechos oficiales si el tema los tiene.\n"
+            "- Si una cifra está en CIFRAS CANÓNICAS, usa su id EXACTO y su valor EXACTO (un gate determinista "
+            "los compara: cualquier diferencia = RECHAZO). Evita citar cifras MUY volátiles (tasas de banco "
+            "central) que no estén en esa lista; si lo haces, hazlo SIEMPRE con su fecha de vigencia.\n"
             "- NO mezcles jurisdicciones: nada de instrumentos del otro país como si aplicaran aquí.\n"
             f"- Usa fuentes REALES y ACTUALES (busca en la web); incluye >= 1 fuente PRIMARIA (.gov/ley) para hechos volátiles.{fix}\n\n"
             'Devuelve {"title_es":"...","title_en":"...","concept_ids":["..."],"age_bands":[...],'
@@ -231,21 +295,45 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             '"sources":[{"url":"https://...","title":"...","publisher":"...","jurisdiction":"MX-FED|US-FED|NONE"}],'
             '"facts":[{"id":"dotted.id","value":"16%","volatility":"medium","source_index":0}],'
             '"body_es":"## For future Claude\\n...","body_en":"## For future Claude\\n..."}'}]
-    return qw.json(msg, model=MODELS["author"], enable_search=MODELS["grounding_search"],
-                   temperature=0.4, max_tokens=4000, timeout=180)
+    return qw.json(msg, model=MODELS["author"], enable_search=use_search,
+                   temperature=0.4, max_tokens=8000, timeout=240)
 
 
-def q_judge(qw, country, es_text):
-    bar = POLICY["quality_bar"]
+def q_judge(qw, country, es_text, evidence=""):
+    """Juez = GLM (z.ai) con BÚSQUEDA WEB (proveedor independiente del autor). Recibe la evidencia
+    curada para verificar por NLI. Las cifras CANÓNICAS ya las valida el gate → el juez NO las re-checa
+    (uso sabio: no se gastan tokens preguntando lo que facts.yaml ya garantiza)."""
+    ev = (f"EVIDENCIA CURADA (fuentes primarias) para contrastar:\n{evidence[:4000]}\n\n===\n\n"
+          if evidence else "")
+    canon_note = (
+        "NOTA: las cifras CANÓNICAS (tasas/umbrales/límites oficiales en la tabla del sistema) ya las valida "
+        "un gate determinista contra una tabla oficial verificada; NO las marques como erróneas. Concéntrate "
+        "en (a) cifras NO canónicas, (b) coherencia y pedagogía, (c) CERO fuga de jurisdicción.\n")
     msg = [{"role": "system", "content":
             "Eres revisor crítico (no sello de goma) de contenido educativo financiero. Verifica hechos vs fuentes "
-            "primarias (busca en la web). Devuelve SOLO JSON."},
+            "primarias (BUSCA EN LA WEB cuando dudes). Devuelve SOLO JSON, sin texto extra."},
            {"role": "user", "content":
-            f"País={country}. Evalúa este documento (1-5 por dimensión) y verifica sus cifras/reglas:\n\n{es_text[:6000]}\n\n"
+            ev + f"País={country}. {canon_note}\nEvalúa este documento (1-5 por dimensión) y verifica sus "
+            f"cifras/reglas NO canónicas:\n\n{es_text[:6000]}\n\n"
+            "REGLA CRÍTICA de wrong_facts: incluye ÚNICAMENTE cifras/afirmaciones del documento que sean "
+            "REALMENTE INCORRECTAS (el valor del documento DIFIERE del valor real verificado). Si una cifra "
+            "es correcta o coincide con la fuente, NO la incluyas. Si no encuentras errores, devuelve []. "
+            "Cada entrada: objeto {\"claim\":\"...\",\"doc_value\":\"...\",\"correct_value\":\"...\"}.\n"
             'Devuelve {"scores":{"factual_accuracy":n,"pedagogical_scaffolding":n,"country_correctness":n,'
             '"translation_fidelity":n,"engagement":n},"hard_fails":[...],"wrong_facts":[...],"verdict":"publish|revise"}'}]
-    return qw.json(msg, model=MODELS["judge"], enable_search=MODELS["grounding_search"],
-                   temperature=0.2, timeout=150)
+    return _judge_client().json(msg, model=MODELS["judge"], enable_search=MODELS["grounding_search"],
+                                temperature=0.2, timeout=240)
+
+
+_JUDGE_CLIENT = None
+
+
+def _judge_client():
+    """Cliente del juez. Proveedor independiente del autor (deduce glm/deepseek/qwen del modelo)."""
+    global _JUDGE_CLIENT
+    if _JUDGE_CLIENT is None:
+        _JUDGE_CLIENT = Qwen(provider=provider_for(MODELS["judge"]))
+    return _JUDGE_CLIENT
 
 
 def q_critic(qw, country, domain, subdomain, existing_slugs):
@@ -288,9 +376,15 @@ def _log(entry):
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+_CONFIRM_RE = re.compile(
+    r"(es correct|son correct|coincide|correctamente|dato correcto|cifra correcta|"
+    r"valor correcto|s[ií] es correct|is correct|are correct|matches|accurate)", re.I)
+
+
 def _real_wrong(wrong):
-    """Filtra falsos positivos del juez (Qwen-Flash a veces lista en wrong_facts hechos cuyo
-    valor del doc COINCIDE con el correcto). Solo cuenta los que realmente difieren."""
+    """Filtra falsos positivos del juez (Qwen-Flash a veces lista en wrong_facts hechos que en
+    realidad CONFIRMA). Cuenta solo los que difieren (dict actual!=correct) o que NO contienen una
+    frase de confirmación (string)."""
     out = []
     for w in (wrong or []):
         if isinstance(w, dict):
@@ -298,6 +392,12 @@ def _real_wrong(wrong):
             correct = str(w.get("expected_value", w.get("correct_value", ""))).strip().lstrip("$").replace(",", "")
             if actual and correct and actual == correct:
                 continue  # coinciden → no es error
+            txt = " ".join(str(v) for v in w.values())
+            if _CONFIRM_RE.search(txt) and not actual:
+                continue
+        elif isinstance(w, str):
+            if _CONFIRM_RE.search(w):
+                continue  # el juez dice que ESTÁ correcto → no es error
         out.append(w)
     return out
 
@@ -312,8 +412,8 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
     slug = topic["slug"]
     es_path = subdir / f"{slug}.es.md"
     en_path = subdir / f"{slug}.en.md"
-    if es_path.exists():
-        return "exists"
+    if es_path.exists() and not (RETRY_DRAFTS and _is_draft(es_path)):
+        return "exists"   # resume: ya hecho (salvo que sea draft y se pida --retry-drafts)
 
     bar = POLICY["quality_bar"]
     feedback, last_issue = "", ""
@@ -321,15 +421,30 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
     u0 = dict(qw.usage)
     for attempt in range(bar["max_revise_rounds"] + 1):
         payload = q_author(qw, country, domain, subdomain, topic, feedback, evidence=evidence)
+        # Guarda contra respuestas JSON incompletas (p.ej. truncadas) → revise en vez de crashear el subdominio
+        missing = [k for k in ("title_es", "title_en", "body_es", "body_en", "age_bands", "depth_tier", "volatility")
+                   if not payload.get(k)]
+        if missing:
+            feedback = (f"Tu JSON quedó INCOMPLETO (faltó: {missing}). Devuelve el JSON COMPLETO con TODOS los "
+                        "campos; sé más conciso si es necesario para que quepa, pero no omitas body_en.")
+            last_issue = f"incomplete:{missing}"
+            continue
+        # Normalizar depth_tier a la enum del esquema (el autor a veces usa 'profundo'/'expert'/etc.)
+        payload["depth_tier"] = {
+            "intro": "intro", "básico": "intro", "basico": "intro", "beginner": "intro", "basic": "intro",
+            "intermediate": "intermediate", "intermedio": "intermediate", "medio": "intermediate",
+            "advanced": "advanced", "avanzado": "advanced", "profundo": "advanced", "experto": "advanced",
+            "expert": "advanced", "deep": "advanced",
+        }.get(str(payload.get("depth_tier", "")).strip().lower(), "intermediate")
         src_ids, fact_src = _register_payload_sources(reg, payload, country)
         if not src_ids:
             feedback = "No devolviste fuentes. Incluye fuentes REALES (>=1 primaria .gov) y regenera."
             last_issue = "no_sources"
             continue
-        es_path.write_text(assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src), encoding="utf-8")
+        es_doc = assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src)
         en_doc = assemble_doc(country, domain, subdomain, slug, "en", payload, src_ids, fact_src)
-        en_path.write_text(en_doc, encoding="utf-8")
-        es_doc = es_path.read_text(encoding="utf-8")
+        write_atomic(es_path, es_doc)
+        write_atomic(en_path, en_doc)
 
         ok, errs = run_gate(f"{country}/{domain}/{subdomain}")
         if not ok:
@@ -338,7 +453,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             continue
 
         try:
-            judged = q_judge(qw, country, es_doc)
+            judged = q_judge(qw, country, es_doc, evidence=evidence)
         except Exception as e:
             last_issue = f"judge_error:{e}"
             break  # gate ya pasó; aceptar pese a fallo del juez (se marca abajo)
@@ -354,24 +469,34 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             last_issue = f"judge wrong={wrong[:2]} below={below}"
             continue
         spent = {k: qw.usage[k] - u0[k] for k in u0}
-        _log({"doc_id": f"{country}-{domain}-{subdomain}-{slug}", "status": "review",
-              "scores": sc, "spent": spent})
+        did = f"{country}-{domain}-{subdomain}-{slug}"
+        _log({"doc_id": did, "status": "review", "scores": sc, "spent": spent})
+        save_state(did, "review")
         return f"built_ok(scores={sc})"
 
     # rondas agotadas con problemas → conservar como draft + registrar
     if es_path.exists():
         for p in (es_path, en_path):
-            p.write_text(p.read_text(encoding="utf-8").replace("status: review", "status: draft", 1), encoding="utf-8")
-    _log({"doc_id": f"{country}-{domain}-{subdomain}-{slug}", "status": "draft", "issue": last_issue})
+            write_atomic(p, p.read_text(encoding="utf-8").replace("status: review", "status: draft", 1))
+    did = f"{country}-{domain}-{subdomain}-{slug}"
+    _log({"doc_id": did, "status": "draft", "issue": last_issue})
+    save_state(did, "draft")
     return f"needs_review({last_issue[:140]})"
 
 
 # ─────────────────────── build one subdomain ───────────────────────
 def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
-    if corpus_size_mb() >= POLICY["targets"]["total_size_mb"]:
+    """max_docs = TOPE TOTAL de docs en la celda (existentes + nuevos), no solo nuevos. Así la
+    orquestación breadth-first puede subir el cap por pasada y cada celda crece de forma incremental."""
+    if corpus_size_mb() >= POLICY["targets"]["total_size_mb"] or budget_exceeded(qw):
         return {}
     subdir = KB / country / domain / subdomain
-    existing = sorted(p.name[:-6] for p in subdir.glob("*.es.md")) if subdir.exists() else []
+    # 'existing' excluye drafts si --retry-drafts (para que se regeneren)
+    existing = sorted(p.name[:-6] for p in subdir.glob("*.es.md")
+                      if not (RETRY_DRAFTS and _is_draft(p))) if subdir.exists() else []
+    have_count = len(existing)
+    if max_docs and have_count >= max_docs:
+        return {}     # esta celda ya alcanzó el cap de esta pasada → no replanear (ahorra tokens)
     topics = q_planner(qw, country, domain, subdomain)
     results = {}
     dry = 0
@@ -387,13 +512,16 @@ def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
         for t in new:
             produced = sum(1 for r in results.values()
                            if r.startswith(("built", "exists", "needs_review")))
-            if max_docs and produced >= max_docs:
+            if max_docs and have_count + produced >= max_docs:
+                return results
+            if corpus_size_mb() >= POLICY["targets"]["total_size_mb"] or budget_exceeded(qw):
                 return results
             results[t["slug"]] = build_topic(qw, reg, country, domain, subdomain, t)
             print(f"  [{country}/{domain}/{subdomain}] {t['slug']}: {results[t['slug']]}", flush=True)
         rounds += 1
+        cap = max_docs or POLICY["depth"]["min_docs_per_subdomain"]
         have = existing + list(results.keys())
-        if len(have) < POLICY["depth"]["min_docs_per_subdomain"] or dry < POLICY["completeness"]["dry_rounds_to_stop"]:
+        if len(have) < cap and dry < POLICY["completeness"]["dry_rounds_to_stop"]:
             topics = q_critic(qw, country, domain, subdomain, have)
         else:
             break
@@ -408,7 +536,25 @@ def corpus_size_mb():
 
 
 def status():
-    print(f"Tamaño corpus: {corpus_size_mb():.2f} MB / meta {POLICY['targets']['total_size_mb']} MB")
+    target = POLICY["targets"]["total_size_mb"]
+    print(f"Tamaño corpus: {corpus_size_mb():.2f} MB / meta {target} MB")
+    review = draft = total = 0
+    for c in ("shared", "mx", "us"):
+        base = KB / c
+        if not base.exists():
+            continue
+        for p in base.rglob("*.es.md"):
+            total += 1
+            head = p.read_text(encoding="utf-8")[:500]
+            if "status: draft" in head:
+                draft += 1
+            elif "status: review" in head:
+                review += 1
+    print(f"Docs (.es): {total}  |  review: {review}  draft(revisión humana): {draft}")
+    jobs = all_jobs()
+    covered = sum(1 for (c, d, s) in jobs
+                  if (KB / c / d / s).exists() and any((KB / c / d / s).glob("*.es.md")))
+    print(f"Amplitud (breadth): {covered}/{len(jobs)} celdas país×dominio×subdominio con ≥1 doc")
     for c in ("shared", "mx", "us"):
         base = KB / c
         if not base.exists():
@@ -428,7 +574,12 @@ def main():
     ap.add_argument("--max-docs", type=int)
     ap.add_argument("--run", action="store_true", help="corrida completa (todos los subdominios)")
     ap.add_argument("--workers", type=int, default=4, help="subdominios en paralelo (concurrencia)")
+    ap.add_argument("--retry-drafts", action="store_true",
+                    help="en el resume, regenerar los docs en estado draft (en vez de saltarlos)")
     args = ap.parse_args()
+
+    global RETRY_DRAFTS
+    RETRY_DRAFTS = args.retry_drafts
 
     if args.status:
         status(); return 0
@@ -458,41 +609,70 @@ def main():
 
 
 def all_jobs():
-    jobs = []
-    for c in POLICY["coverage"]["countries"]:
+    # Construir por país y luego INTERCALAR (round-robin) para que MX/US no se mueran de hambre
+    # mientras 'shared' acapara todos los workers. Prioridad: mx, us (contenido jurisdiccional), shared.
+    order = ["mx", "us", "shared"]
+    per = {c: [] for c in order}
+    for c in order:
+        if c not in POLICY["coverage"]["countries"]:
+            continue
         domains = POLICY["coverage"]["shared_domains"] if c == "shared" else list(TAXO["domains"].keys())
         for d in domains:
             if d not in TAXO["domains"]:
                 continue
             for s in TAXO["domains"][d]["subdomains"]:
-                jobs.append((c, d, s))
+                per[c].append((c, d, s))
+    jobs, i = [], 0
+    while any(i < len(per[c]) for c in order):
+        for c in order:
+            if i < len(per[c]):
+                jobs.append(per[c][i])
+        i += 1
     return jobs
 
 
 def run_all(qw, reg, workers, max_docs):
+    """Orquestación BREADTH-FIRST: varias pasadas con cap creciente de docs/subdominio. La pasada 1
+    cubre TODO el espectro a un baseline; las siguientes profundizan SOLO tras cubrir todo. El stop de
+    tamaño/presupuesto puede cortar en cualquier punto → primero ancho, luego hondo."""
     jobs = all_jobs()
     target = POLICY["targets"]["total_size_mb"]
-    print(f"Cobertura: {len(jobs)} subdominios · meta {target} MB · workers={workers}", flush=True)
+    br = POLICY.get("breadth", {})
+    if max_docs:                                   # --max-docs fuerza una sola pasada con ese cap
+        passes = [max_docs]
+    elif br.get("enabled"):
+        passes = br.get("passes") or [br.get("baseline_docs_per_subdomain", 2)]
+    else:
+        passes = [POLICY["depth"]["min_docs_per_subdomain"]]
+    print(f"Cobertura: {len(jobs)} subdominios · meta {target} MB · workers={workers} · "
+          f"BREADTH-FIRST pasadas(cap)={passes}", flush=True)
 
-    def work(job):
-        if corpus_size_mb() >= target:
+    def work(job, cap):
+        if corpus_size_mb() >= target or budget_exceeded(qw):
             return
         c, d, s = job
-        print(f"== {c}/{d}/{s} ==", flush=True)
         try:
-            build_subdomain(qw, reg, c, d, s, max_docs=max_docs)
+            build_subdomain(qw, reg, c, d, s, max_docs=cap)
         except Exception as e:                       # un subdominio que falle NO tumba la corrida
             print(f"  !! error en {c}/{d}/{s}: {e}", flush=True)
 
-    if workers <= 1:
-        for j in jobs:
-            if corpus_size_mb() >= target:
-                print("META DE TAMAÑO ALCANZADA.", flush=True)
-                break
-            work(j)
-    else:
-        with ThreadPoolExecutor(max_workers=workers) as ex:
-            list(ex.map(work, jobs))
+    for pi, cap in enumerate(passes, 1):
+        if corpus_size_mb() >= target:
+            print("META DE TAMAÑO ALCANZADA.", flush=True)
+            break
+        if budget_exceeded(qw):
+            print("PRESUPUESTO DE TOKENS ALCANZADO.", flush=True)
+            break
+        print(f"\n=== PASADA {pi}/{len(passes)} · cap {cap} docs/subdominio (amplitud→profundidad) ===",
+              flush=True)
+        if workers <= 1:
+            for j in jobs:
+                if corpus_size_mb() >= target or budget_exceeded(qw):
+                    break
+                work(j, cap)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as ex:
+                list(ex.map(lambda j, _c=cap: work(j, _c), jobs))
     status()
     print(f"usage total={qw.usage}", flush=True)
 

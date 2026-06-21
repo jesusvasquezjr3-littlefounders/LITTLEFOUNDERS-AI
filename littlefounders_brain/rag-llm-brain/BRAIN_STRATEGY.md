@@ -1,5 +1,15 @@
 # BRAIN_STRATEGY.md — El Cerebro de Conocimiento de LittleFounders
 
+> ⚠️ **ACTUALIZACIÓN v3 (2026-06-21):** el pipeline evolucionó a **v3** tras un benchmark vs. la industria
+> (Phi/Cosmopedia, BloombergGPT/FinPile, SAFE/FActScore, Constitutional AI). Cambios clave: **(1)** verdad
+> de base estructurada en `_meta/facts.yaml` (tabla canónica de cifras, el gate compara valores —
+> determinista, no consenso de LLMs); **(2)** **juez = GLM (z.ai) con búsqueda web**, proveedor
+> independiente del autor Qwen (DeepSeek retirado: no tenía búsqueda); **(3)** orquestación
+> **breadth-first** (amplitud antes que profundidad); **(4)** robustez: preflight, resume, escritura
+> atómica, presupuesto; **(5)** agente de actualización atómica (`update_facts.py`) para frescura.
+> Diseño autoritativo: [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md) · ejecución: [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md).
+> Lo de abajo es la estrategia base (sigue vigente salvo donde v3 la sustituye).
+
 > **Fecha:** 2026-06-19
 > **Estado:** Estrategia aprobada + **PILOTO IMPLEMENTADO** (dominio `impuestos`, MX+US+shared).
 > **Hogar:** ya movido a `littlefounders_brain/` (raíz). El corpus vive en `littlefounders_brain/rag-llm-brain/knowledge/`.

@@ -1,66 +1,90 @@
-# build_policy.yaml — criterios de STOP y PROFUNDIDAD del pipeline autónomo.
-# Objetivo: que el dataset NO se quede en "lo mínimo" sino que profundice hasta >100MB con rigor.
-# El "stop" global es una CONJUNCIÓN: se sigue construyendo hasta cumplir TODO a la vez.
+# build_policy.yaml — política del pipeline AUTÓNOMO v3 (fact-anchored, Qwen+GLM, breadth-first).
+# Ver ARCHITECTURE_V3.md y PLAN_V3_EXECUTION.md. El "stop" global es una CONJUNCIÓN.
+#
+# CAMBIOS v3 vs v2:
+#  · VERDAD DE BASE: _meta/facts.yaml (tabla canónica). El gate compara cifras contra ella.
+#  · JUEZ con BÚSQUEDA: GLM (z.ai) — proveedor independiente del autor (Qwen) → errores no
+#    correlacionados; SÍ tiene búsqueda web (DeepSeek no la tenía → retirado del rol juez).
+#  · BREADTH-FIRST: cubrir TODO el espectro (todas las celdas país×dominio×subdominio) con un
+#    baseline ANTES de profundizar. El cerebro vale por su AMPLITUD, no por la profundidad de un tema.
+#  · USO SABIO de la API: caché de respuestas, búsqueda solo cuando hace falta, cifras canónicas
+#    validadas por código (no se gastan tokens preguntando al juez lo que ya está en facts.yaml).
 schema_version: kb-1.0
 
 # ── Metas globales (stop = se cumplen TODAS) ─────────────────────────────────
 targets:
-  total_size_mb: 100          # el corpus markdown (shared+mx+us) debe pesar >= 100 MB
-  # Si la cobertura está "completa" pero el tamaño < meta, el crítico de completitud DEBE
-  # seguir expandiendo subtemas más profundos. La meta de tamaño FUERZA la profundidad.
+  total_size_mb: 10           # FASE 10 MB (validación). Misma calidad que 100 MB (mismos gates/juez/
+                              # facts.yaml/quality_bar/grounding); solo cambia el tamaño.
+  require_full_breadth: true  # NO declarar "hecho" mientras queden celdas (país,dominio,subdominio) sin baseline.
 
-# ── Profundidad por subdominio (anti-"mínimo indispensable") ─────────────────
+# ── BREADTH-FIRST: amplitud antes que profundidad (el corazón de la estrategia v3) ──
+breadth:
+  enabled: true
+  baseline_docs_per_subdomain: 2   # PASS 1: cubrir CADA celda con N docs core (qué es + mecánica/ángulo).
+  passes: [2, 4, 8]                # cap de docs/subdominio por pasada; sube SOLO tras cubrir todo el espectro.
+  # Interpretación: pasada 1 cubre todo a 2 docs; pasada 2 profundiza a 4 donde haya señal; etc.
+  # El stop de tamaño puede cortar en cualquier pasada: primero ancho, luego hondo.
+
+# ── Profundidad por subdominio (techo de la última pasada) ───────────────────
 depth:
-  min_docs_per_subdomain: 8   # cada (country, domain, subdomain) >= 8 documentos distintos
-  min_words_per_doc: 700      # cada doc sustancial (por idioma)
-  min_cited_facts_per_doc: 4  # >= 4 sentinels @fact con fuente
+  min_docs_per_subdomain: 8   # objetivo de profundidad máxima (última pasada)
+  min_words_per_doc: 700
+  min_cited_facts_per_doc: 4
   min_primary_sources_per_doc: 1
-  require_all_applicable_tiers: true   # cubrir todos los tiers que apliquen al subdominio
+  require_all_applicable_tiers: true
 
-# ── Crítico de completitud (loop-until-dry: el motor de "abarcar más") ───────
+# ── Crítico de completitud (loop-until-dry dentro de cada subdominio/pasada) ──
 completeness:
-  dry_rounds_to_stop: 2       # el crítico debe devolver "nada nuevo" 2 rondas seguidas
-  max_expansion_rounds: 12    # tope de seguridad por subdominio
+  dry_rounds_to_stop: 2
+  max_expansion_rounds: 3
   critic_prompt_hint: >
-    Enumera EXHAUSTIVAMENTE los subtemas, casos, excepciones, procedimientos, comparativas y
-    escenarios prácticos que faltan para una cobertura de nivel experto de este subdominio.
-    No te limites a lo básico: incluye casos borde, trámites paso a paso, errores comunes,
-    cambios recientes, e interacciones con otros temas. Prioriza profundidad sobre brevedad.
+    Enumera los subtemas, casos, procedimientos y comparativas IMPORTANTES y ENSEÑABLES que falten
+    para una buena cobertura de este subdominio (casos borde, trámites paso a paso, errores comunes,
+    cambios recientes). Mantente en temas REALMENTE útiles para educación financiera 5-18+; evita
+    micro-nichos. Prioriza AMPLITUD y claridad sobre exhaustividad de un solo tema.
 
-# ── Barra de calidad (juez Qwen; por debajo => revisar) ──────────────────────
+# ── Barra de calidad (juez GLM con búsqueda; por debajo => revisar) ──────────
 quality_bar:
   factual_accuracy: 5
   country_correctness: 5      # cero fuga de jurisdicción
   pedagogical_scaffolding: 4
   translation_fidelity: 4
-  engagement: 4               # exige el mini-ejemplo numérico (convención del piloto)
-  max_revise_rounds: 3        # autor revisa hasta 3 veces ante gate/juez en rojo
+  engagement: 4
+  max_revise_rounds: 3
 
-# ── Modelos por rol (calidad-precio; configurable) ───────────────────────────
+# ── Modelos por rol (Qwen autor + GLM juez; ver llm_qwen.py provider_for) ─────
 models:
-  planner: qwen-flash
-  author: qwen-flash
-  judge: qwen-flash
-  verifier: qwen-flash        # decisión del usuario: usar Qwen-Flash en todos los roles
-  grounding_search: true      # enable_search en author/verifier (complementa la evidencia curada)
-  # Precios qwen-flash (USD / 1M tokens), Singapur (verificado jun-2026):
-  price_per_mtok_input: 0.05
-  price_per_mtok_output: 0.40
+  planner: qwen-flash         # estructural/barato, sin búsqueda
+  author: qwen-plus-latest    # AUTOR = Qwen-Plus + enable_search (funda en evidencia + web)
+  judge: glm-4.6              # JUEZ = GLM (z.ai), PROVEEDOR INDEPENDIENTE + búsqueda web
+  verifier: glm-4.6           # mismo cliente que el juez (q_judge usa MODELS['judge'])
+  grounding_search: true      # activa búsqueda en autor (qwen) y juez (glm web_search)
+  # Precios aprox (USD/1M tok): Qwen-Flash 0.05/0.40 · Qwen-Plus 0.40/1.20 · GLM-4.6 ~0.60/2.20.
+
+# ── USO SABIO de la API (no consultas tontas) ────────────────────────────────
+wise_use:
+  cache_llm: true                       # caché content-addressed de respuestas (resume gratis, no re-pagar)
+  author_search_when_evidence: false    # si hay evidencia curada, el autor NO busca (ahorra); busca si falta
+  facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
+  judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
+  budget_output_tokens: 0               # 0 = sin tope; >0 = corta la corrida al alcanzar ese gasto de salida
 
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
 coverage:
-  countries: [shared, mx, us]
-  # 'shared' solo recibe docs de conceptos neutros; mx/us reciben todo lo jurisdiccional.
+  countries: [mx, us, shared]   # orden de prioridad para intercalar (jurisdiccional primero)
   shared_domains: [taxes, personal_finance, accounting, economics, investing, entrepreneurship]
 
-# ── Convención de contenido (heredada del piloto, ahora obligatoria) ─────────
+# ── Convención de contenido ──────────────────────────────────────────────────
 content_conventions:
-  require_numeric_example: true   # cada doc incluye al menos un mini-ejemplo numérico concreto
-  es_canonical: true              # ES se redacta primero; EN es traducción fiel
-  date_anchor: "2026-06-20"       # fecha "as of" de esta corrida
+  require_numeric_example: true
+  es_canonical: true
+  date_anchor: "2026-06-21"       # fecha "as of" de esta corrida (= last_verified de facts.yaml)
 
-# ── Robustez de la corrida ───────────────────────────────────────────────────
+# ── Robustez de la corrida (resume + manejo de errores) ──────────────────────
 run:
-  checkpoint_every: 1         # persistir estado tras cada doc (reanudable)
-  grounding_backend: hybrid   # hybrid = evidencia curada NotebookLM (knowledge/evidence/) + qwen_search de respaldo
-  notebooklm_optional: true   # si falta evidencia para un (país,dominio), el autor cae a qwen_search
+  checkpoint_every: 1           # persistir estado tras cada doc (reanudable)
+  state_file: index/build_state.json   # manifiesto de progreso (resume); index/ está gitignored
+  atomic_writes: true           # escribir .tmp y renombrar (un corte no corrompe un doc a medias)
+  grounding_backend: hybrid     # evidencia curada (NotebookLM) + qwen_search de respaldo
+  notebooklm_optional: true     # si falta evidencia, el autor cae a búsqueda
+  continue_on_subdomain_error: true    # un subdominio que falle NO tumba la corrida

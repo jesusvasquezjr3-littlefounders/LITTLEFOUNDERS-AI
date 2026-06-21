@@ -555,3 +555,131 @@ sources:
     tier: tertiary
     jurisdiction: US-FED
     accessed: 2026-06-20
+
+  src_gen_fe4d73f0:
+    title: "Ley del Impuesto Sobre la Renta (LISR), Artículo 1"
+    publisher: "Servicio de Administración Tributaria (SAT), Gobierno de México"
+    url: "https://www.sat.gob.mx/leyes-y-normas/leyes-fiscales/ley-general-de-impuestos-sobre-la-renta"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_185354fc:
+    title: "IRS Publication 17 (2025), Chapter 1: Your Federal Income Tax"
+    publisher: "Internal Revenue Service, U.S. Department of the Treasury"
+    url: "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_e974cec2:
+    title: "Decreto por el que se modifica la Ley General de Importaciones y Exportaciones, publicado en el Diario Oficial de la Federación"
+    publisher: "Secretaría de Economía, Gobierno de México"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5777376&fecha=29/12/2025"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_92b5cf18:
+    title: "U.S. Internal Revenue Code §2001 — Imposition of tax (Estate Tax)"
+    publisher: "Legal Information Institute, Cornell University"
+    url: "https://www.law.cornell.edu/uscode/text/26/2001"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_b306d4d2:
+    title: "Incremento a los Salarios Mínimos para 2026"
+    publisher: "Comisión Nacional de los Salarios Mínimos (CONASAMI)"
+    url: "https://www.gob.mx/conasami/articulos/incremento-a-los-salarios-minimos-para-2026?idiom=es"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_0403d6ef:
+    title: "Formularios, instrucciones y publicaciones en español"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/SpanishForms"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-20
+
+  src_gen_567a2038:
+    title: "El impacto del salario mínimo en la pobreza durante el periodo 2018–2024"
+    publisher: "CONASAMI"
+    url: "https://www.gob.mx/conasami/articulos/el-impacto-del-salario-minimo-en-la-pobreza-durante-el-periodo-2018-2024?idiom=es"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_41774c6a:
+    title: "Programa Institucional 2025-2030 de la Conasami"
+    publisher: "CONASAMI"
+    url: "https://www.gob.mx/conasami/articulos/programa-institucional-2025-2030-de-la-conasami?idiom=es"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_724f8a88:
+    title: "Decreto por el que se reforman y adicionan diversas disposiciones del Reglamento de la Ley Federal para la Prevención e Identificación de Operaciones con Recurs"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5721982&fecha=27/03/2026"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_d891029e:
+    title: "Ley del Impuesto sobre la Renta (LISR), última reforma vigente al 1 de enero de 2026"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/consultas/118517/leyes-y-reglamentos-fiscales"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_3fc36e55:
+    title: "Reglamento de la Ley del Impuesto sobre la Renta, publicado en DOF el 31 de diciembre de 2025"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/consultas/118518/reglamento-de-la-ley-del-impuesto-sobre-la-renta"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_51414515:
+    title: "Consulta del monto de la retención de ISR para el pago de nómina"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/consultas/118977/consulta-del-monto-de-la-retencion-de-isr-para-el-pago-de-nomina"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_8a996ded:
+    title: "Ley del Impuesto sobre la Renta (LISR), última reforma publicada en el DOF el 31 de diciembre de 2025, vigente para el ejercicio 2026"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicacion/legislacion/leyes/109782/ley-del-impuesto-sobre-la-renta"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_46ab9225:
+    title: "Resolución Miscelánea Fiscal para 2026 (RMF 2026), publicada en el DOF el 29 de diciembre de 2025"
+    publisher: "SAT"
+    url: "https://www.sat.gob.mx/aplicacion/legislacion/resoluciones/110245/resolucion-miscelanea-fiscal-para-2026"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_2e162f95:
+    title: "Decreto que modifica el Código Fiscal de la Federación, publicado en el Diario Oficial de la Federación el 27 de marzo de 2026"
+    publisher: "Secretaría de Hacienda y Crédito Público (SHCP)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5704552&fecha=27/03/2026"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20
+
+  src_gen_76db77dc:
+    title: "Código Fiscal de la Federación (CFF), vigente a 20 de junio de 2026, última actualización oficial"
+    publisher: "SAT"
+    url: "https://www.sat.gob.mx/aplicacion/legislacion/codigos/109781/codigo-fiscal-de-la-federacion"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-20

@@ -1,0 +1,476 @@
+# facts.yaml — TABLA CANÓNICA DE HECHOS (verdad de base estructurada).  schema: kb-facts-1.0
+# ─────────────────────────────────────────────────────────────────────────────
+# Ésta es la ÚNICA verdad de las CIFRAS volátiles del cerebro. El LLM NO inventa
+# números: los TOMA de aquí (el autor recibe esta tabla inyectada) y el GATE
+# (tools/gate_kb.py) COMPARA cada @fact cuyo id exista aquí contra este valor —
+# si difiere ⇒ HARD-FAIL. Así la corrección de cifras es DETERMINISTA, no depende
+# del consenso de dos LLMs (ver ARCHITECTURE_V3.md §"Ancla de verdad").
+#
+# CAMPOS DE CONTROL:
+#   verified: true|false  → solo los `true` se inyectan al autor y se exigen.
+#       false = placeholder/objetivo, en espera de confirmación (update_facts.py / SME).
+#   enforce: true|false   → si true (default) el gate COMPARA el valor del @fact contra éste.
+#       false = valor compuesto/descriptivo (rangos, condiciones) que el gate NO compara
+#       carácter-a-carácter, pero que SÍ se inyecta al autor como información canónica.
+#
+# FRESCURA: cada hecho lleva volatility + last_verified + effective_to. review_due se deriva
+#   de volatility (volatility_policy.yaml). El agente tools/update_facts.py re-verifica SOLO
+#   los hechos vencidos con UNA consulta ATÓMICA por hecho y marca para regeneración los
+#   docs afectados. Un humano (contador/fiscalista) valida antes de marcar verified.
+#
+# Esta tabla fue sembrada y verificada el 2026-06-21 con verificación adversarial contra
+# fuentes PRIMARIAS (DOF, SAT, LISR/LIVA, INEGI, CONASAMI, Banxico, IRS Rev.Proc/IRB, SSA, Fed).
+schema_version: kb-facts-1.0
+
+facts:
+  # ══════════════════════════ MÉXICO (MX-FED) ══════════════════════════
+  mx.iva.general:
+    value: "16%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa general del IVA"
+    effective_from: "2010-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+    source_publisher: "Ley del IVA, art. 1 (DOF)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim art. 1 LIVA. Estable desde 2010. RMF 2026 no la modifica."
+
+  mx.iva.zero:
+    value: "0%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa 0% del IVA (alimentos básicos, medicinas, exportación)"
+    effective_from: "1980-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+    source_publisher: "Ley del IVA, art. 2o.-A"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim art. 2o.-A LIVA. Distinto de 'exento': la tasa 0% sí da derecho a acreditar."
+
+  mx.iva.frontera:
+    value: "8%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "IVA estímulo Zona Libre de la Frontera Norte (crédito 50% sobre 16%)"
+    effective_from: "2019-01-01"
+    effective_to: "2026-12-31"   # ⚠️ EXPIRA — prórroga acotada a 2026 (DOF 31-12-2025, cód. 5777697)
+    volatility: high
+    enforce: true
+    source_url: "https://www.sat.gob.mx/minisitio/EstimulosFiscalesFronteraNorteSur/region_fronteriza_norte_iva/index.html"
+    source_publisher: "SAT / Decreto DOF 31-12-2025"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "ESTÍMULO (no tasa de ley): crédito 50% reduce 16%→8%. Prórroga SOLO hasta 2026-12-31; confirmar renovación antes de 2027."
+
+  mx.isr.pm_rate:
+    value: "30%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa de ISR para personas morales (Régimen General, corporativo)"
+    effective_from: "2014-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 9"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim art. 9 LISR. Sin cambios para 2026."
+
+  mx.isr.pf_top_rate:
+    value: "35%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa marginal máxima de ISR para personas físicas (tarifa anual)"
+    effective_from: "2021-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-8-RMF-2026_DOF-28122025.pdf"
+    source_publisher: "SAT/DOF — Anexo 8 RMF 2026 (arts. 97/152 LISR)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Tope marginal estable; los UMBRALES de la tarifa SÍ se actualizan por inflación (factor 2026 ≈ 1.1321)."
+
+  mx.isr.pf_brackets:
+    value: "11"
+    unit: count
+    jurisdiction: MX-FED
+    label_es: "Número de escalones de la tarifa de ISR personas físicas"
+    effective_from: "2021-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-8-RMF-2026_DOF-28122025.pdf"
+    source_publisher: "SAT/DOF — Anexo 8 RMF 2026"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "11 escalones: 1.92/6.40/10.88/16.00/17.92/21.36/23.52/30.00/32.00/34.00/35.00%."
+
+  mx.resico.pf_cap:
+    value: "3,500,000 MXN"
+    unit: MXN_per_year
+    jurisdiction: MX-FED
+    label_es: "Tope de ingresos anuales — RESICO personas físicas"
+    effective_from: "2022-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 113-E"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim art. 113-E LISR ('tres millones quinientos mil pesos'). Sin cambios 2026."
+
+  mx.resico.pf_rate_range:
+    value: "1% a 2.5%"
+    unit: percent_range
+    jurisdiction: MX-FED
+    label_es: "Rango de tasas de ISR — RESICO personas físicas (tabla mensual)"
+    effective_from: "2022-01-01"
+    effective_to: null
+    volatility: low
+    enforce: false   # rango descriptivo; el gate no lo compara carácter-a-carácter
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 113-E (tabla mensual)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Tabla 113-E: 1.00/1.10/1.50/2.00/2.50%. NO marginal (sobre total cobrado). Distinta de la retención 1.25% del art. 113-J."
+
+  mx.resico.pm_cap:
+    value: "35,000,000 MXN"
+    unit: MXN_per_year
+    jurisdiction: MX-FED
+    label_es: "Tope de ingresos anuales — RESICO personas morales"
+    effective_from: "2022-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 206"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim art. 206 LISR ('35 millones de pesos'). Sin cambios 2026."
+
+  mx.salario_minimo.general:
+    value: "315.04 MXN"
+    unit: MXN_per_day
+    jurisdiction: MX-FED
+    label_es: "Salario mínimo general diario (2026)"
+    effective_from: "2026-01-01"
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: "https://www.gob.mx/conasami/articulos/incremento-a-los-salarios-minimos-para-2026"
+    source_publisher: "CONASAMI (DOF 09-12-2025)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Sube de 278.80 (2025) a 315.04 desde 1-ene-2026 (+13%: MIR 17.01 + 6.5%). Re-verificar para 2027."
+
+  mx.salario_minimo.frontera:
+    value: "440.87 MXN"
+    unit: MXN_per_day
+    jurisdiction: MX-FED
+    label_es: "Salario mínimo diario Zona Libre Frontera Norte (2026)"
+    effective_from: "2026-01-01"
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: "https://www.gob.mx/conasami/articulos/incremento-a-los-salarios-minimos-para-2026"
+    source_publisher: "CONASAMI (DOF 09-12-2025)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Sube de 419.88 (2025) a 440.87 desde 1-ene-2026 (+5%). Re-verificar para 2027."
+
+  mx.uma.diaria:
+    value: "117.31 MXN"
+    unit: MXN_per_day
+    jurisdiction: MX-FED
+    label_es: "UMA diaria (2026)"
+    effective_from: "2026-02-01"
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: "https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/uma/uma2026.pdf"
+    source_publisher: "INEGI, Comunicado 1/26 (DOF 09-01-2026)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Vigente desde 1-feb-2026 (NO 1-ene). Mensual 3,566.22; anual 42,794.64. +3.69%. Re-verificar feb-2027."
+
+  mx.banxico.tasa_objetivo:
+    value: "6.50%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa de interés objetivo de Banxico (más reciente)"
+    effective_from: "2026-05-08"
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: "https://www.banxico.org.mx/publicaciones-y-prensa/anuncios-de-las-decisiones-de-politica-monetaria/"
+    source_publisher: "Banco de México — Anuncio 07-05-2026"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Decisión 7-may-2026 (−25 pb). PRÓXIMA decisión 25-jun-2026 → re-verificar entonces. Evitar citar en docs sin fecha explícita."
+
+  # ══════════════════════════ ESTADOS UNIDOS (US-FED) ══════════════════════════
+  us.federal.top_rate:
+    value: "37%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Tasa marginal federal máxima (individual income tax)"
+    effective_from: "2018-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-32"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "OBBBA hizo permanentes las tasas TCJA. 2026: el 37% inicia en $640,600 (single) / $768,700 (MFJ)."
+
+  us.std_deduction.single:
+    value: "16,100 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Standard deduction — soltero (año fiscal 2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-32, §3.14 / IR-2025-103"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $16,100 (sube de $15,750 en 2025). MFS también $16,100. Re-verificar para 2027."
+
+  us.std_deduction.mfj:
+    value: "32,200 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Standard deduction — casados declarando juntos (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-32, §3.14 / IR-2025-103"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $32,200 (sube de $31,500 en 2025). Re-verificar para 2027."
+
+  us.capital_gains.rates:
+    value: "0% / 15% / 20%"
+    unit: percent_set
+    jurisdiction: US-FED
+    label_es: "Tasas de ganancias de capital de largo plazo"
+    effective_from: "2018-01-01"
+    effective_to: null
+    volatility: low
+    enforce: false   # las TASAS son fijas; los UMBRALES (abajo, en notes) cambian cada año
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-32, §3.03"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Umbrales 2026 — Single: 0% hasta $49,450; 15% hasta $545,500; 20% encima. MFJ: 0% hasta $98,900; 15% hasta $613,700; 20% encima."
+
+  us.se_tax.rate:
+    value: "15.3%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Self-employment tax total (12.4% SS + 2.9% Medicare)"
+    effective_from: "1990-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes"
+    source_publisher: "IRS"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Verbatim IRS. La porción SS (12.4%) solo aplica hasta el wage base (ver us.ss.wage_base); Medicare sin tope."
+
+  us.se_tax.ss_portion:
+    value: "12.4%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Porción de Seguro Social (OASDI) del SE/FICA"
+    effective_from: "1990-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes"
+    source_publisher: "IRS / SSA"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Aplica hasta el Social Security wage base."
+
+  us.se_tax.medicare_portion:
+    value: "2.9%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Porción de Medicare del SE/FICA"
+    effective_from: "1986-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes"
+    source_publisher: "IRS"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Sin tope de ingresos."
+
+  us.medicare.additional:
+    value: "0.9%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Additional Medicare Tax (ingresos altos)"
+    effective_from: "2013-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc560"
+    source_publisher: "IRS Topic 560"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Umbrales (no indexados): $250k MFJ, $125k MFS, $200k otros. Reportado en Form 8959."
+
+  us.ss.wage_base:
+    value: "184,500 USD"
+    unit: USD_per_year
+    jurisdiction: US-FED
+    label_es: "Social Security wage base (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.ssa.gov/oact/cola/cbb.html"
+    source_publisher: "SSA (anuncio COLA 24-10-2025)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $184,500 (sube de $176,100). Tope de la porción de SS. Re-verificar oct-2026 para 2027."
+
+  us.401k.limit:
+    value: "24,500 USD"
+    unit: USD_per_year
+    jurisdiction: US-FED
+    label_es: "Límite de aporte 401(k) del empleado (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500"
+    source_publisher: "IRS IR-2025-111 / Notice 2025-67"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $24,500 (sube de $23,500). Catch-up 50+ = $8,000; super catch-up 60-63 = $11,250."
+
+  us.ira.limit:
+    value: "7,500 USD"
+    unit: USD_per_year
+    jurisdiction: US-FED
+    label_es: "Límite de aporte IRA (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500"
+    source_publisher: "IRS IR-2025-111 / Notice 2025-67"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $7,500 (sube de $7,000). Catch-up 50+ = $1,100."
+
+  us.hsa.limit_self:
+    value: "4,400 USD"
+    unit: USD_per_year
+    jurisdiction: US-FED
+    label_es: "Límite de aporte HSA — cobertura individual (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-19, §2.01"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $4,400 (sube de $4,300). Catch-up 55+ = $1,000."
+
+  us.hsa.limit_family:
+    value: "8,750 USD"
+    unit: USD_per_year
+    jurisdiction: US-FED
+    label_es: "Límite de aporte HSA — cobertura familiar (2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-19, §2.01"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "2026 = $8,750 (sube de $8,550). Catch-up 55+ = $1,000 por cónyuge cubierto."
+
+  us.ctc.amount:
+    value: "2,200 USD"
+    unit: USD_per_child
+    jurisdiction: US-FED
+    label_es: "Child Tax Credit máximo por hijo (2026, post-OBBBA)"
+    effective_from: "2026-01-01"
+    effective_to: null
+    volatility: medium
+    enforce: true
+    source_url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+    source_publisher: "IRS Rev. Proc. 2025-32, §3.05 / OBBBA"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "OBBBA fijó el máximo en $2,200 (permanente, indexado desde 2027). Porción reembolsable (ACTC) = $1,700. Phase-out $400k MFJ / $200k otros."
+
+  us.1099k.threshold:
+    value: "$20,000 y más de 200 transacciones"
+    unit: USD_and_count
+    jurisdiction: US-FED
+    label_es: "Umbral de reporte Form 1099-K (TPSO), 2026"
+    effective_from: "2025-01-01"
+    effective_to: null
+    volatility: low
+    enforce: false   # condición compuesta (monto AND conteo); el gate no la compara literal
+    source_url: "https://www.irs.gov/newsroom/irs-issues-faqs-on-form-1099-k-threshold-under-the-one-big-beautiful-bill-dollar-limit-reverts-to-20000"
+    source_publisher: "IRS IR-2025-107 / FS-2025-08"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "OBBBA revirtió al umbral pre-ARPA: >$20,000 Y >200 transacciones (ambas condiciones). Adiós al plan de $600."
+
+  us.1099nec.threshold:
+    value: "2,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Umbral de reporte Form 1099-NEC (2026)"
+    effective_from: "2026-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.irs.gov/publications/p1099"
+    source_publisher: "IRS Publication 1099 (2026) / OBBBA §70433"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "OBBBA SUBIÓ de $600 a $2,000 desde 2026 (indexado desde 2027). El $600 solo aplica hasta 2025."
+
+  us.fed.funds_rate:
+    value: "3.50%-3.75%"
+    unit: percent_range
+    jurisdiction: US-FED
+    label_es: "Federal funds target rate (más reciente)"
+    effective_from: "2026-06-18"
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm"
+    source_publisher: "Federal Reserve (FOMC 16-17 jun 2026)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Mantenida en '3-1/2 a 3-3/4%' (4ª reunión seguida, 12-0). Próxima reunión FOMC → re-verificar. Evitar citar en docs sin fecha."

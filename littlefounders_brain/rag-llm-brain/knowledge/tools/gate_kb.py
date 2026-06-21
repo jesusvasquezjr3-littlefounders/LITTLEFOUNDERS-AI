@@ -48,6 +48,12 @@ TAXO = yaml.safe_load((META / "taxonomy.yaml").read_text(encoding="utf-8"))
 SOURCES = yaml.safe_load((META / "sources.yaml").read_text(encoding="utf-8"))["sources"]
 VPOL = yaml.safe_load((META / "volatility_policy.yaml").read_text(encoding="utf-8"))["cadences"]
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from facts_table import load_facts, values_match  # noqa: E402
+# Tabla CANÓNICA: solo hechos verificados Y enforce!=false (valores escalares comparables).
+# El gate exige que cada @fact cuyo id esté aquí tenga EXACTAMENTE este valor (verdad de base).
+CANON = {k: v for k, v in load_facts(verified_only=True).items() if v.get("enforce", True)}
+
 JURIS_BY_COUNTRY = {"mx": "MX-FED", "us": "US-FED", "shared": "NONE"}
 CURRENCY_BY_COUNTRY = {"mx": "MXN", "us": "USD", "shared": None}
 REQUIRED = [
@@ -93,6 +99,16 @@ def parse_fact(attrs: str) -> dict:
     out = {}
     for m in re.finditer(r"(\w+)=(\"[^\"]*\"|\S+)", attrs):
         out[m.group(1)] = m.group(2).strip('"')
+    return out
+
+
+def facts_in(body: str) -> dict:
+    """{fact_id: value} de los @fact de un cuerpo (para paridad ES/EN)."""
+    out = {}
+    for m in FACT_RE.finditer(body):
+        f = parse_fact(m.group(1))
+        if "id" in f and "value" in f:
+            out[f["id"]] = f["value"]
     return out
 
 
@@ -204,6 +220,14 @@ class Doc:
                 self.err(f"FUGA: @fact en doc {doc_juris} cita fuente {s['jurisdiction']} ({f['src']})")
             if f.get("volatility") == "high" and s["tier"] != "primary":
                 self.warn(f"@fact volatility=high debería citar primaria: {f['src']} (tier {s['tier']})")
+            # 9b. comparación contra la TABLA CANÓNICA (verdad de base DETERMINISTA)
+            cf = CANON.get(f.get("id"))
+            if cf:
+                if doc_juris != "NONE" and cf["jurisdiction"] not in (doc_juris, "NONE"):
+                    self.err(f"FUGA: @fact {f['id']} canónico es {cf['jurisdiction']} en doc {doc_juris}")
+                if not values_match(f.get("value", ""), cf["value"]):
+                    self.err(f"FACT MISMATCH: @fact {f['id']} value '{f.get('value')}' "
+                             f"!= canónico '{cf['value']}' (facts.yaml)")
         # 10. vocabulario prohibido en secciones de edad temprana
         self._check_forbidden_vocab()
 
@@ -248,6 +272,20 @@ def main():
             did = d.fm.get("doc_id")
             if did not in es_ids:
                 d.err(f"doc .en sin par .es canónico (doc_id {did})")
+
+    # paridad de @fact ES/EN: una cifra no debe divergir entre idiomas (modo de fallo crítico bilingüe)
+    en_by_id = {d.fm["doc_id"]: d for d in docs
+                if d.fm and d.fm.get("language") == "en" and "doc_id" in d.fm}
+    for d in docs:
+        if d.fm and d.fm.get("language") == "es":
+            en = en_by_id.get(d.fm.get("doc_id"))
+            if not en:
+                continue
+            es_facts, en_facts = facts_in(d.body), facts_in(en.body)
+            for fid, ves in es_facts.items():
+                ven = en_facts.get(fid)
+                if ven is not None and not values_match(ves, ven):
+                    en.err(f"@fact {fid} difiere ES('{ves}') vs EN('{ven}')")
 
     for d in docs:
         if d.errors:
