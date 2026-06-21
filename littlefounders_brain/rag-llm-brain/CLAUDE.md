@@ -4,8 +4,9 @@
 > **Alcance:** SOLO el cerebro RAG (`littlefounders_brain/rag-llm-brain/`). El **Lesson Factory** vive aparte
 > en `littlefounders_brain/lesson_factory/` y tiene su propia documentación — **no mezclar**.
 >
-> **Pipeline vigente: v3** (fact-anchored · Qwen autor + GLM juez · breadth-first). Diseño autoritativo en
-> [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md); cómo ejecutarlo/reanudarlo en [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md).
+> **Pipeline vigente: v3** (fact-anchored · Qwen autor + GLM juez · breadth-first · cobertura enciclopedia).
+> Diseño: [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md) · ejecución/resume: [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md)
+> · estrategia de cobertura TOTAL: [`ENCYCLOPEDIA_STRATEGY.md`](ENCYCLOPEDIA_STRATEGY.md).
 
 ---
 
@@ -27,14 +28,14 @@ de profundizar ningún tema. Estrategia base: [`BRAIN_STRATEGY.md`](BRAIN_STRATE
 
 ```
 rag-llm-brain/
-├── ARCHITECTURE_V3.md · PLAN_V3_EXECUTION.md   diseño v3 + plan de ejecución/resume (autoritativos)
+├── ARCHITECTURE_V3.md · PLAN_V3_EXECUTION.md · ENCYCLOPEDIA_STRATEGY.md   diseño v3 + ejecución + cobertura total
 ├── BRAIN_STRATEGY.md          estrategia base y decisiones
 ├── skills/                    contexto indexado (notebooklm-py, lightrag, knowledge-nexus, obsidian-second-brain)
 ├── .venv/ .notebooklm/ .env   infra (gitignored): venv, cookies NotebookLM, creds Qwen + z.ai
 └── knowledge/                 EL CEREBRO
     ├── _meta/                 contrato: taxonomy · sources · volatility_policy · schema.json · build_policy · facts(canónica)
     ├── shared/ mx/ us/        corpus markdown (fuente de verdad)
-    ├── tools/                 gate_kb · facts_table · build_dataset · llm_qwen · preflight · update_facts · build_evidence · build_index · retriever · kb_common
+    ├── tools/                 gate_kb · facts_table · build_concept_map · dedup · coverage_report · build_dataset · llm_qwen · preflight · update_facts · build_evidence · build_index · retriever · kb_common
     ├── eval/                  golden_qa · leakage_tests · run_kb_eval
     ├── evidence/              (gitignored) caché de fulltext curado de NotebookLM
     ├── index/                 (gitignored) índice SQLite + llm_cache/ + build_state.json + build_log.jsonl
