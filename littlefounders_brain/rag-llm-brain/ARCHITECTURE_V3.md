@@ -28,6 +28,87 @@ SAFE/FActScore, Constitutional AI): *el cuello de botella no es el retrieval, es
 
 ---
 
+## Diagrama del pipeline completo (modelos por rol)
+
+**Qué modelo hace qué** (configurable en `_meta/build_policy.yaml → models`):
+
+| Etapa | Modelo | Proveedor | Búsqueda web | Dónde |
+|------|--------|-----------|--------------|-------|
+| Grounding (ingesta de fuentes primarias) | **NotebookLM** (navegador, no-chat) | Google | sí (propia) | `build_evidence.py` |
+| Siembra de `facts.yaml` (una vez) | **verificación adversarial** (agentes + WebSearch) | — | sí | workflow (fuera del runtime) |
+| Planner **y** Crítico de completitud | **qwen-flash** | Qwen | no | `q_planner`, `q_critic` |
+| **Autor** | **qwen-plus-latest** | Qwen | **sí** (condicional: solo si falta evidencia) | `q_author` |
+| Ensamble + **Gate** | — (**código determinista**) | — | no | `assemble_doc`, `gate_kb.py` |
+| **Juez / Verificador** | **glm-4.6** | **GLM (z.ai)** | **sí** (`web_search`) | `q_judge` |
+| Frescura (re-verificación atómica) | **glm-4.6** (= `MODELS['judge']`) | GLM (z.ai) | sí | `update_facts.py` |
+| Índice (embeddings) | bge-m3/fastembed o `hash`* (no-LLM) | local | no | `build_index.py` |
+
+> Autor **Qwen** + juez **GLM** = dos proveedores independientes (errores no correlacionados). Las cifras
+> no las decide ningún LLM: las ancla `facts.yaml` y las compara el gate por código.
+
+```mermaid
+flowchart TD
+    classDef qwen fill:#e8f0fe,stroke:#1a73e8,color:#0b3d91;
+    classDef glm fill:#fde8ef,stroke:#c2185b,color:#7a0c38;
+    classDef code fill:#e6f4ea,stroke:#137333,color:#0d4220;
+    classDef data fill:#fef7e0,stroke:#b06000,color:#5c3200;
+    classDef ext fill:#f3e8fd,stroke:#8430ce,color:#3d1466;
+
+    subgraph G["① Grounding y verdad de base · offline"]
+        NB["NotebookLM<br/>(navegador, no-chat)<br/>ingesta fuentes primarias"]:::ext
+        EV[("evidence/<br/>caché fulltext curado")]:::data
+        SEED["Siembra adversarial<br/>(agentes + WebSearch)<br/>vs fuentes primarias · una vez"]:::ext
+        FACTS[("facts.yaml<br/>30 cifras canónicas verificadas")]:::data
+        NB --> EV
+        SEED --> FACTS
+    end
+
+    subgraph O["② Orquestación BREADTH-FIRST · run_all"]
+        PASS["Pasadas cap 2 → 4 → 8<br/>amplitud antes que profundidad<br/>STOP: tamaño / presupuesto / agotado"]:::code
+    end
+
+    subgraph DOC["③ Pipeline por documento · revise-loop ≤3"]
+        PL["PLANNER + CRÍTICO<br/>Qwen-Flash"]:::qwen
+        AU["AUTHOR<br/>Qwen-Plus + búsqueda*<br/>*solo si falta evidencia"]:::qwen
+        AS["ENSAMBLE<br/>código determinista"]:::code
+        GT["GATE · código<br/>schema · firewall país/idioma · vocab edad<br/>citas · VALOR canónico · paridad ES/EN"]:::code
+        JU["JUEZ / VERIFICADOR<br/>GLM-4.6 z.ai + búsqueda web"]:::glm
+        DEC{"¿pasa<br/>gate + juez?"}:::code
+    end
+
+    RV[["status: review"]]:::data
+    DR[["status: draft<br/>cola humana / SME"]]:::data
+
+    subgraph FR["④ Frescura · update_facts.py · cron"]
+        UF["Verificación atómica<br/>GLM-4.6 + búsqueda<br/>1 consulta por hecho vencido"]:::glm
+    end
+
+    subgraph CO["⑤ Consumo / Retrieval"]
+        IDX["build_index<br/>embeddings (bge-m3 / hash*)"]:::code
+        RET["retriever<br/>pre-filtro DURO país+idioma"]:::code
+    end
+
+    PASS --> PL --> AU --> AS --> GT
+    FACTS -. inyecta id+valor .-> AU
+    EV -. evidencia curada .-> AU
+    FACTS -. compara valor .-> GT
+    GT -->|falla: feedback| AU
+    GT -->|pasa| JU
+    EV -. evidencia .-> JU
+    JU --> DEC
+    DEC -->|sí| RV
+    DEC -->|no: re-redacta| AU
+    DEC -->|agota 3 rondas| DR
+    RV --> IDX --> RET
+    UF -. propone nuevo valor .-> FACTS
+    FACTS -. dispara regeneración .-> PASS
+```
+
+\* El embedder por defecto es `hash` (placeholder sin semántica); para servir el RAG en producción usar
+`--embedder fastembed` / bge-m3 (ver §8).
+
+---
+
 ## 1. Ancla de verdad — `_meta/facts.yaml`
 
 La pieza nueva más importante. Una tabla canónica de ~30 "números de oro" MX/US, **verificada el
