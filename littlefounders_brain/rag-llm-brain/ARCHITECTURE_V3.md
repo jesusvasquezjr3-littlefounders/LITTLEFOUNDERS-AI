@@ -65,15 +65,17 @@ flowchart TD
         SEED --> FACTS
     end
 
-    subgraph O["② Orquestación BREADTH-FIRST · run_all"]
-        PASS["Pasadas cap 2 → 4 → 8<br/>amplitud antes que profundidad<br/>STOP: COBERTURA total / presupuesto $"]:::code
+    subgraph O["② Espinazo de conocimiento + Orquestación BREADTH-FIRST"]
+        CMAP[("concept_map.yaml<br/>~12k temas = 'qué es TODO'<br/>build_concept_map.py · DeepSeek")]:::deepseek
+        PASS["run_all · pasadas 2 → 5 → TODO el mapa<br/>STOP: COBERTURA del mapa / presupuesto $"]:::code
+        CMAP --> PASS
     end
 
     subgraph DOC["③ Pipeline por documento · revise-loop ≤3"]
         PL["PLANNER + CRÍTICO<br/>DeepSeek V4"]:::deepseek
         AU["AUTHOR<br/>Qwen-Plus + búsqueda*<br/>*solo si falta evidencia"]:::qwen
         AS["ENSAMBLE<br/>código determinista"]:::code
-        GT["GATE · código<br/>schema · firewall país/idioma · vocab edad<br/>citas · VALOR canónico · paridad ES/EN"]:::code
+        GT["GATE · código<br/>schema · firewall país/idioma · vocab edad<br/>citas · VALOR canónico · paridad ES/EN · dedup near-dup"]:::code
         JU["JUEZ / VERIFICADOR<br/>GLM-4.6 z.ai + búsqueda web"]:::glm
         DEC{"¿pasa<br/>gate + juez?"}:::code
     end
@@ -91,6 +93,7 @@ flowchart TD
     end
 
     PASS --> PL --> AU --> AS --> GT
+    CMAP -. temas (qué generar) .-> PL
     FACTS -. inyecta id+valor .-> AU
     EV -. evidencia curada .-> AU
     FACTS -. compara valor .-> GT
@@ -205,20 +208,43 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
 
 ## 4. Orquestación BREADTH-FIRST
 
-`run_all` ejecuta **varias pasadas** con cap creciente de docs/subdominio (`breadth.passes: [2, 4, 8]`):
+El espacio de "qué generar" lo define el **concept map** (§4.5). `run_all` ejecuta **varias pasadas** con
+cap creciente de docs/subdominio (`breadth.passes: [2, 5, 0]`):
 
-- **Pasada 1 (cap 2):** cubre las ~230 celdas `país×dominio×subdominio` con 2 docs core cada una →
+- **Pasada 1 (cap 2):** cubre las **251 celdas** `país×dominio×subdominio` con 2 docs core cada una →
   amplitud total primero.
-- **Pasadas 2-3 (cap 4, 8):** profundizan SOLO tras cubrir todo, y solo mientras quede tamaño/presupuesto.
+- **Pasada 2 (cap 5):** profundiza tras cubrir todo.
+- **Pasada 3 (cap 0 = sin tope):** genera **TODOS los temas del concept map** de cada celda → cobertura
+  ENCICLOPÉDICA. Todo SOLO mientras quede presupuesto.
 
 El cap es **total por celda** (existentes + nuevos), así que cada pasada crece de forma incremental y el
 resume nunca duplica. Las celdas se **intercalan** `mx→us→shared` (jurisdiccional primero).
 
 **STOP por COBERTURA (no por MB):** con `targets.stop_on: coverage`, la corrida NO frena al alcanzar un
-tamaño en MB — corre hasta **cubrir toda la taxonomía a profundidad** (todas las pasadas completas en
-todas las celdas, con el crítico seco). "Llenar todo el conocimiento posible" lo DEFINE la taxonomía. El
-MB pasa a un **tope de seguridad** opcional (`size_safety_cap_mb`, 0 = sin tope). El **presupuesto en $**
-(abajo) sí puede cortar en cualquier punto: **primero ancho, luego hondo**.
+tamaño en MB — corre hasta **cubrir todo el concept map** (todas las celdas, todos sus temas). "Capturar
+todo el conocimiento posible" lo DEFINE el concept map. El MB pasa a **tope de seguridad** opcional
+(`size_safety_cap_mb`). El **presupuesto en $** sí puede cortar en cualquier punto: **primero ancho, luego hondo**.
+
+---
+
+## 4.5. Concept map — el ESPINAZO de conocimiento (cobertura enciclopédica)
+
+La pieza que convierte "capturar absolutamente TODO" en algo **concreto y MEDIBLE**. `build_concept_map.py`
+deriva, por celda, el espacio **EXHAUSTIVO** de temas que una enciclopedia tendría (DeepSeek V4 con un
+prompt de enumeración exhaustiva + crítico de completitud loop-until-dry), y lo persiste en
+`_meta/concept_map.yaml` como artefacto **versionado y reviewable** — no efímero como el planner en runtime.
+
+- **Es la definición de "TODO":** ~40-60 temas por celda × 251 celdas ≈ **~12 000 temas únicos** ≈
+  **~80-120 MB de contenido único** (los 100 MB / "enciclopedia" son alcanzables y son contenido REAL, no
+  relleno — el mapa lo demuestra). Ejemplo: `mx/taxes/income_tax` = 57 temas (residencia fiscal, todos los
+  tipos de ingreso, RESICO, precios de transferencia, convenios de doble imposición, medios de defensa, cripto…).
+- **Hace la cobertura MEDIBLE:** `--status` reporta `docs generados / temas del mapa (%)`. El stop = 100% del mapa.
+- **El orquestador genera CONTRA el mapa** (`_cell_topics`): determinista, completo, resumible. Si una celda
+  no está en el mapa, cae al planner en vivo (compat).
+- **Robustez:** parser con **salvamento** (extrae cada tema completo aunque DeepSeek trunque el JSON por
+  razonamiento), concurrente, escritura atómica, resumible (salta celdas ya mapeadas).
+- **Anti-relleno:** un **gate de dedup near-dup** (`dedup.py`, shingle-Jaccard, sin deps) evita que dos
+  temas produzcan docs casi-idénticos → "tamaño = conocimiento único". (Dedup semántica con embeddings = upgrade futuro.)
 
 ---
 

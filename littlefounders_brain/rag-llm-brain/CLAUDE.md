@@ -45,23 +45,28 @@ rag-llm-brain/
 
 ```
 build_evidence.py (NotebookLM)   → ingiere fuentes primarias por (país,dominio) → caché evidence/
-facts.yaml (tabla canónica)      → 30 cifras de oro MX/US verificadas (verdad de base)
-build_dataset.py (DeepSeek+Qwen+GLM) → PLANNER(DeepSeek V4) → AUTHOR(Qwen+canon+evidencia+search?) → ENSAMBLE
-                                   → GATE(código: schema·firewall·vocab·citas·VALOR canónico·paridad ES/EN)
+facts.yaml (tabla canónica)      → ~48 cifras de oro MX/US verificadas (verdad de base)
+concept_map.yaml (espinazo)      → build_concept_map.py (DeepSeek) → ~12k temas = "qué es TODO" (enciclopedia)
+build_dataset.py (DeepSeek+Qwen+GLM) → PLANNER/mapa(DeepSeek V4) → AUTHOR(Qwen+canon+evidencia+search?) → ENSAMBLE
+                                   → GATE(código: schema·firewall·vocab·citas·VALOR canónico·paridad ES/EN·dedup)
                                    → JUDGE(GLM z.ai + búsqueda web, recibe evidencia) → revise-loop
-                                   → review · draft si no converge   [BREADTH-FIRST: pasadas cap 2→4→8]
+                                   → review · draft si no converge   [BREADTH-FIRST: pasadas 2→5→TODO el mapa]
 ```
-- **Roles (3 proveedores indep.):** planner/crítico = **DeepSeek V4**; autor = **Qwen-Plus**; juez =
+- **Roles (3 proveedores indep.):** planner/crítico/mapa = **DeepSeek V4**; autor = **Qwen-Plus**; juez =
   **GLM (z.ai) + búsqueda web**. Pools de cuota separados → más velocidad + errores no correlacionados.
+- **Cobertura enciclopédica = `concept_map.yaml`** (espinazo): define el espacio EXHAUSTIVO de temas (~12k);
+  la cobertura es MEDIBLE (docs/temas) y el orquestador genera CONTRA el mapa. Dedup near-dup evita relleno.
 - **Verdad de cifras = `facts.yaml`** (no consenso de LLMs): el autor copia id+valor; el gate los compara.
 - **Uso sabio:** caché de respuestas LLM, búsqueda solo si falta evidencia, el juez no re-checa cifras canónicas.
-- **STOP por COBERTURA** (`_meta/build_policy.yaml` `stop_on: coverage`): corre hasta cubrir TODA la taxonomía
-  a profundidad (no por MB) ∧ eval verde. Presupuesto en **$** con alerta de saldo bajo corta si se excede.
+- **STOP por COBERTURA** (`_meta/build_policy.yaml` `stop_on: coverage`): corre hasta cubrir TODO el concept
+  map (no por MB). Presupuesto en **$** por proveedor con alerta de saldo bajo corta si se excede.
 
 ## Comandos
 
 ```bash
 cd littlefounders_brain/rag-llm-brain
+./.venv/bin/python knowledge/tools/build_concept_map.py --all --workers 5    # espinazo: qué es "TODO" (1ª vez)
+./.venv/bin/python knowledge/tools/build_concept_map.py --status            # cobertura del mapa
 ./.venv/bin/python knowledge/tools/preflight.py                              # auditoría GO/NO-GO (antes de --run)
 nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 > knowledge/build_v3.log 2>&1 &
 ./.venv/bin/python knowledge/tools/build_dataset.py --status                 # progreso (tamaño/amplitud/drafts)

@@ -23,9 +23,10 @@ targets:
 breadth:
   enabled: true
   baseline_docs_per_subdomain: 2   # PASS 1: cubrir CADA celda con N docs core (qué es + mecánica/ángulo).
-  passes: [2, 4, 8]                # cap de docs/subdominio por pasada; sube SOLO tras cubrir todo el espectro.
-  # Interpretación: pasada 1 cubre todo a 2 docs; pasada 2 profundiza a 4 donde haya señal; etc.
-  # El stop de tamaño puede cortar en cualquier pasada: primero ancho, luego hondo.
+  passes: [2, 5, 0]                # cap de docs/subdominio por pasada; 0 = SIN tope = cubrir TODO el
+                                   # concept_map de la celda (enciclopedia). Primero ancho, luego completo.
+  # Interpretación: pasada 1 cubre todo a 2 docs; pasada 2 a 5; pasada 3 genera TODOS los temas del mapa
+  # (cobertura enciclopédica). El presupuesto $ corta donde toque; lo construido es de calidad plena.
 
 # ── Profundidad por subdominio (techo de la última pasada) ───────────────────
 depth:

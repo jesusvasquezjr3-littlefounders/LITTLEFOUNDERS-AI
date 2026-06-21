@@ -43,6 +43,7 @@ TOOLS = KB / "tools"
 sys.path.insert(0, str(TOOLS))
 from llm_qwen import Qwen, provider_for  # noqa: E402
 from facts_table import canonical_block, load_facts, values_match  # noqa: E402
+from dedup import is_near_dup  # noqa: E402
 
 TAXO = yaml.safe_load((META / "taxonomy.yaml").read_text())
 POLICY = yaml.safe_load((META / "build_policy.yaml").read_text())
@@ -52,6 +53,17 @@ DATE = POLICY["content_conventions"]["date_anchor"]
 MODELS = POLICY["models"]
 WISE = POLICY.get("wise_use", {})
 CANON_ALL = load_facts(verified_only=True)     # tabla canónica (verdad de base) para inyectar al autor
+CONCEPT_MAP_FILE = META / "concept_map.yaml"
+
+
+def _load_concept_map() -> dict:
+    try:
+        return (yaml.safe_load(CONCEPT_MAP_FILE.read_text(encoding="utf-8")) or {}).get("cells", {})
+    except Exception:
+        return {}
+
+
+CONCEPT_MAP = _load_concept_map()   # espinazo de conocimiento (qué es "TODO"); vacío ⇒ planner en vivo
 STATE_FILE = KB / POLICY["run"].get("state_file", "index/build_state.json")
 _STATE_LOCK = threading.Lock()
 _BUDGET_OUT = int(WISE.get("budget_output_tokens", 0) or 0)
@@ -436,6 +448,29 @@ def q_critic(qw, country, domain, subdomain, existing_slugs):
     return _planner_client().json(msg, model=MODELS["planner"], temperature=0.6).get("missing", [])
 
 
+def _cell_topics(qw, country, domain, subdomain):
+    """Temas de la celda: del concept_map (espinazo EXHAUSTIVO) si existe; si no, planner en vivo.
+    Devuelve (topics, from_map). Si from_map=True, el orquestador NO expande con el crítico (el mapa
+    ya es la fuente de verdad de 'qué es TODO')."""
+    cell = CONCEPT_MAP.get(f"{country}/{domain}/{subdomain}")
+    if cell and cell.get("topics"):
+        return cell["topics"], True
+    return q_planner(qw, country, domain, subdomain), False
+
+
+def _existing_es_bodies(subdir, slug):
+    """Cuerpos (.es) de OTROS docs de la celda — para el gate de dedup near-dup."""
+    out = []
+    if not subdir.exists():
+        return out
+    for p in subdir.glob("*.es.md"):
+        if p.name == f"{slug}.es.md":
+            continue
+        t = p.read_text(encoding="utf-8")
+        out.append(t.split("\n---", 1)[-1] if t.startswith("---") else t)
+    return out
+
+
 # ─────────────────────────── gate ───────────────────────────
 def run_gate(subtree):
     r = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py"), subtree],
@@ -507,6 +542,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
     bar = POLICY["quality_bar"]
     feedback, last_issue = "", ""
     evidence = load_evidence(country, domain) if POLICY["run"]["grounding_backend"] in ("hybrid", "notebooklm") else ""
+    existing_es = _existing_es_bodies(subdir, slug)   # para el gate de dedup near-dup
     u0 = dict(qw.usage)
     for attempt in range(bar["max_revise_rounds"] + 1):
         payload = q_author(qw, country, domain, subdomain, topic, feedback, evidence=evidence)
@@ -532,6 +568,12 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             continue
         es_doc = assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src)
         en_doc = assemble_doc(country, domain, subdomain, slug, "en", payload, src_ids, fact_src)
+        # Gate de dedup: no escribir near-duplicates (escala = conocimiento único, no relleno).
+        if existing_es and is_near_dup(es_doc, existing_es):
+            feedback = ("Tu contenido DUPLICA otro documento de este subdominio. Dale un ÁNGULO claramente "
+                        "DISTINTO (otro caso, tipo, procedimiento o nivel); no repitas lo ya cubierto.")
+            last_issue = "near_duplicate"
+            continue
         write_atomic(es_path, es_doc)
         write_atomic(en_path, en_doc)
 
@@ -586,7 +628,7 @@ def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
     have_count = len(existing)
     if max_docs and have_count >= max_docs:
         return {}     # esta celda ya alcanzó el cap de esta pasada → no replanear (ahorra tokens)
-    topics = q_planner(qw, country, domain, subdomain)
+    topics, from_map = _cell_topics(qw, country, domain, subdomain)
     results = {}
     dry = 0
     rounds = 0
@@ -608,6 +650,8 @@ def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
             results[t["slug"]] = build_topic(qw, reg, country, domain, subdomain, t)
             print(f"  [{country}/{domain}/{subdomain}] {t['slug']}: {results[t['slug']]}", flush=True)
         rounds += 1
+        if from_map:
+            break   # el concept_map ya es la fuente EXHAUSTIVA de temas: no se expande con el crítico
         cap = max_docs or POLICY["depth"]["min_docs_per_subdomain"]
         have = existing + list(results.keys())
         if len(have) < cap and dry < POLICY["completeness"]["dry_rounds_to_stop"]:
@@ -644,6 +688,11 @@ def status():
     covered = sum(1 for (c, d, s) in jobs
                   if (KB / c / d / s).exists() and any((KB / c / d / s).glob("*.es.md")))
     print(f"Amplitud (breadth): {covered}/{len(jobs)} celdas país×dominio×subdominio con ≥1 doc")
+    if CONCEPT_MAP:
+        map_total = sum(len(c.get("topics", [])) for c in CONCEPT_MAP.values())
+        pct = 100 * total / map_total if map_total else 0
+        print(f"Cobertura del MAPA (enciclopedia): {total} docs / {map_total} temas "
+              f"({pct:.0f}%) · {len(CONCEPT_MAP)}/{len(jobs)} celdas mapeadas")
     for c in ("shared", "mx", "us"):
         base = KB / c
         if not base.exists():
@@ -743,7 +792,7 @@ def run_all(qw, reg, workers, max_docs):
         budget_alert()
         c, d, s = job
         try:
-            build_subdomain(qw, reg, c, d, s, max_docs=cap)
+            build_subdomain(qw, reg, c, d, s, max_docs=(cap or None))   # cap 0 = sin tope (todo el mapa)
         except Exception as e:                       # un subdominio que falle NO tumba la corrida
             print(f"  !! error en {c}/{d}/{s}: {e}", flush=True)
 
@@ -754,8 +803,8 @@ def run_all(qw, reg, workers, max_docs):
         if budget_exceeded():
             print("PRESUPUESTO ALCANZADO (tokens/USD).", flush=True)
             break
-        print(f"\n=== PASADA {pi}/{len(passes)} · cap {cap} docs/subdominio (amplitud→profundidad) ===",
-              flush=True)
+        capdesc = "TODO el mapa" if not cap else f"cap {cap} docs/subdominio"
+        print(f"\n=== PASADA {pi}/{len(passes)} · {capdesc} (amplitud→profundidad) ===", flush=True)
         if workers <= 1:
             for j in jobs:
                 if size_stop() or budget_exceeded():
