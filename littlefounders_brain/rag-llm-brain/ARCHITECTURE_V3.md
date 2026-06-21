@@ -36,15 +36,16 @@ SAFE/FActScore, Constitutional AI): *el cuello de botella no es el retrieval, es
 |------|--------|-----------|--------------|-------|
 | Grounding (ingesta de fuentes primarias) | **NotebookLM** (navegador, no-chat) | Google | sí (propia) | `build_evidence.py` |
 | Siembra de `facts.yaml` (una vez) | **verificación adversarial** (agentes + WebSearch) | — | sí | workflow (fuera del runtime) |
-| Planner **y** Crítico de completitud | **qwen-flash** | Qwen | no | `q_planner`, `q_critic` |
+| Planner **y** Crítico de completitud (diseña el currículo → AMPLITUD) | **deepseek-v4-flash** | **DeepSeek** | no | `q_planner`, `q_critic` |
 | **Autor** | **qwen-plus-latest** | Qwen | **sí** (condicional: solo si falta evidencia) | `q_author` |
 | Ensamble + **Gate** | — (**código determinista**) | — | no | `assemble_doc`, `gate_kb.py` |
 | **Juez / Verificador** | **glm-4.6** | **GLM (z.ai)** | **sí** (`web_search`) | `q_judge` |
 | Frescura (re-verificación atómica) | **glm-4.6** (= `MODELS['judge']`) | GLM (z.ai) | sí | `update_facts.py` |
 | Índice (embeddings) | bge-m3/fastembed o `hash`* (no-LLM) | local | no | `build_index.py` |
 
-> Autor **Qwen** + juez **GLM** = dos proveedores independientes (errores no correlacionados). Las cifras
-> no las decide ningún LLM: las ancla `facts.yaml` y las compara el gate por código.
+> **Tres proveedores independientes** — planner **DeepSeek** · autor **Qwen** · juez **GLM** — = errores
+> no correlacionados **y** 3 pools de cuota separados (más velocidad). Las cifras no las decide ningún LLM:
+> las ancla `facts.yaml` y las compara el gate por código.
 
 ```mermaid
 flowchart TD
@@ -53,6 +54,7 @@ flowchart TD
     classDef code fill:#e6f4ea,stroke:#137333,color:#0d4220;
     classDef data fill:#fef7e0,stroke:#b06000,color:#5c3200;
     classDef ext fill:#f3e8fd,stroke:#8430ce,color:#3d1466;
+    classDef deepseek fill:#fff0e6,stroke:#d35400,color:#7a3a00;
 
     subgraph G["① Grounding y verdad de base · offline"]
         NB["NotebookLM<br/>(navegador, no-chat)<br/>ingesta fuentes primarias"]:::ext
@@ -64,11 +66,11 @@ flowchart TD
     end
 
     subgraph O["② Orquestación BREADTH-FIRST · run_all"]
-        PASS["Pasadas cap 2 → 4 → 8<br/>amplitud antes que profundidad<br/>STOP: tamaño / presupuesto / agotado"]:::code
+        PASS["Pasadas cap 2 → 4 → 8<br/>amplitud antes que profundidad<br/>STOP: COBERTURA total / presupuesto $"]:::code
     end
 
     subgraph DOC["③ Pipeline por documento · revise-loop ≤3"]
-        PL["PLANNER + CRÍTICO<br/>Qwen-Flash"]:::qwen
+        PL["PLANNER + CRÍTICO<br/>DeepSeek V4"]:::deepseek
         AU["AUTHOR<br/>Qwen-Plus + búsqueda*<br/>*solo si falta evidencia"]:::qwen
         AS["ENSAMBLE<br/>código determinista"]:::code
         GT["GATE · código<br/>schema · firewall país/idioma · vocab edad<br/>citas · VALOR canónico · paridad ES/EN"]:::code
@@ -111,7 +113,8 @@ flowchart TD
 
 ## 1. Ancla de verdad — `_meta/facts.yaml`
 
-La pieza nueva más importante. Una tabla canónica de ~30 "números de oro" MX/US, **verificada el
+La pieza nueva más importante. Una tabla canónica de ~48 "números de oro" MX/US (impuestos, salarios/UMA,
+banca central, inversión, bolsa, metales, cripto, crédito), **verificada el
 2026-06-21 contra fuentes PRIMARIAS** (DOF/SAT/LISR/LIVA, INEGI, CONASAMI, Banxico; IRS Rev.Proc/IRB,
 SSA, Federal Reserve) con **verificación adversarial** (un agente busca, otro independiente refuta).
 
@@ -147,11 +150,12 @@ cuando aplica (`3500000` == `3,500,000 MXN`).
 
 | Rol | Modelo | Proveedor | Búsqueda web | Por qué |
 |-----|--------|-----------|--------------|---------|
-| Planner / Crítico | `qwen-flash` | Qwen | no | estructural, barato |
+| Planner / Crítico | `deepseek-v4-flash` | **DeepSeek** | no | diseña el currículo (clave para la AMPLITUD); 3er pool de cuota |
 | **Autor** | `qwen-plus-latest` | Qwen | **sí** (`enable_search`) | redacta y funda en evidencia/web |
 | **Juez / Verificador** | `glm-4.6` | **z.ai (GLM)** | **sí** (tool `web_search`) | **proveedor INDEPENDIENTE** del autor → errores no correlacionados, y **sí** busca |
 
-**DeepSeek fue retirado del rol juez**: su API nativa no tiene búsqueda web (`search_ok=False`), así que
+**DeepSeek fue retirado del rol JUEZ** (pero se reincorpora como **PLANNER** —rol sin búsqueda, pool de
+cuota propio—): su API nativa no tiene búsqueda web (`search_ok=False`), así que
 verificaba cifras 2026 a ciegas. GLM (z.ai) da las dos cosas que importan a la vez: independencia de
 proveedor (lo que DeepSeek aportaba) **y** búsqueda (lo que le faltaba). Autor Qwen + juez GLM > todo-Qwen
 porque dos entrenamientos distintos no comparten los mismos puntos ciegos.
@@ -171,7 +175,7 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
                  └── feedback de gate/juez re-alimenta al autor ──┘            └→ agotado ⇒ draft (cola humana)
 ```
 
-1. **PLANNER** (`q_planner`, Qwen-Flash): propone documentos por subdominio con ángulos distintos. Para
+1. **PLANNER** (`q_planner`, DeepSeek V4): propone documentos por subdominio con ángulos distintos. Para
    `shared` fuerza neutralidad (sin IVA/SAT/IRS).
 2. **AUTOR** (`q_author`, Qwen-Plus): recibe **(a)** el bloque de **CIFRAS CANÓNICAS** de la jurisdicción
    (debe copiar id+valor exactos), **(b)** la **evidencia curada** (NotebookLM) si existe. Búsqueda web
@@ -208,8 +212,13 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
 - **Pasadas 2-3 (cap 4, 8):** profundizan SOLO tras cubrir todo, y solo mientras quede tamaño/presupuesto.
 
 El cap es **total por celda** (existentes + nuevos), así que cada pasada crece de forma incremental y el
-resume nunca duplica. Las celdas se **intercalan** `mx→us→shared` (jurisdiccional primero). El stop de
-tamaño (`total_size_mb`) o de presupuesto puede cortar en cualquier punto: **primero ancho, luego hondo**.
+resume nunca duplica. Las celdas se **intercalan** `mx→us→shared` (jurisdiccional primero).
+
+**STOP por COBERTURA (no por MB):** con `targets.stop_on: coverage`, la corrida NO frena al alcanzar un
+tamaño en MB — corre hasta **cubrir toda la taxonomía a profundidad** (todas las pasadas completas en
+todas las celdas, con el crítico seco). "Llenar todo el conocimiento posible" lo DEFINE la taxonomía. El
+MB pasa a un **tope de seguridad** opcional (`size_safety_cap_mb`, 0 = sin tope). El **presupuesto en $**
+(abajo) sí puede cortar en cualquier punto: **primero ancho, luego hondo**.
 
 ---
 
@@ -224,7 +233,7 @@ tamaño (`total_size_mb`) o de presupuesto puede cortar en cualquier punto: **pr
 | **Retry de drafts** | `--retry-drafts` regenera los docs en `draft` en el resume (en vez de saltarlos). |
 | **Tolerancia a fallos** | un subdominio que lance excepción NO tumba la corrida (`continue_on_subdomain_error`). |
 | **Backoff de red** | el cliente reintenta 429/5xx con backoff; degrada búsqueda GLM a sin-búsqueda si el tool falla. |
-| **Presupuesto** | `wise_use.budget_output_tokens` (>0) corta la corrida al alcanzar ese gasto de salida. |
+| **Presupuesto $** | `wise_use.budget_usd` corta la corrida al alcanzar ese gasto estimado (tokens×precio de los 3 proveedores); `alert_usd_remaining` imprime una ALERTA cuando el saldo estimado baja del umbral (recargar APIs). `budget_output_tokens` es el tope alterno por tokens del autor. |
 | **Preflight** | `tools/preflight.py` audita GO/NO-GO antes de arrancar (credenciales, pings, gate, facts). |
 
 ---

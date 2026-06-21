@@ -14,9 +14,10 @@
 El **cerebro de conocimiento**: un dataset RAG de alta densidad y rigor sobre emprendimiento, finanzas,
 administración, contaduría, impuestos y economía para **México y Estados Unidos** (diferenciados, sin
 fuga de jurisdicción), bilingüe ES/EN, edades 5→18+. Construido **autónomamente** por un pipeline que
-no consume tokens de Claude: **Qwen** redacta, **GLM (z.ai)** juzga **con búsqueda web**, una **tabla
-canónica** (`_meta/facts.yaml`) ancla las cifras volátiles, **NotebookLM** funda en fuentes primarias
-curadas, y un **gate determinista** hace cumplir los invariantes (incluyendo el valor de cada cifra).
+no consume tokens de Claude: **DeepSeek V4** planea el currículo, **Qwen** redacta, **GLM (z.ai)** juzga
+**con búsqueda web** (3 proveedores independientes), una **tabla canónica** (`_meta/facts.yaml`, ~48 cifras)
+ancla las cifras volátiles, **NotebookLM** funda en fuentes primarias curadas, y un **gate determinista**
+hace cumplir los invariantes (incluyendo el valor de cada cifra).
 Alimentará la generación de lecciones y, a futuro, un chatbot.
 
 Prioridad de diseño: **AMPLITUD antes que profundidad** — cubrir TODO el espectro de conocimiento antes
@@ -45,16 +46,17 @@ rag-llm-brain/
 ```
 build_evidence.py (NotebookLM)   → ingiere fuentes primarias por (país,dominio) → caché evidence/
 facts.yaml (tabla canónica)      → 30 cifras de oro MX/US verificadas (verdad de base)
-build_dataset.py (Qwen + GLM)    → PLANNER(Qwen) → AUTHOR(Qwen+canon+evidencia+search?) → ENSAMBLE
+build_dataset.py (DeepSeek+Qwen+GLM) → PLANNER(DeepSeek V4) → AUTHOR(Qwen+canon+evidencia+search?) → ENSAMBLE
                                    → GATE(código: schema·firewall·vocab·citas·VALOR canónico·paridad ES/EN)
                                    → JUDGE(GLM z.ai + búsqueda web, recibe evidencia) → revise-loop
                                    → review · draft si no converge   [BREADTH-FIRST: pasadas cap 2→4→8]
 ```
-- **Roles:** autor = **Qwen-Plus**; juez = **GLM (z.ai), proveedor INDEPENDIENTE + búsqueda web**
-  (DeepSeek retirado: no tenía búsqueda). El planner = Qwen-Flash.
+- **Roles (3 proveedores indep.):** planner/crítico = **DeepSeek V4**; autor = **Qwen-Plus**; juez =
+  **GLM (z.ai) + búsqueda web**. Pools de cuota separados → más velocidad + errores no correlacionados.
 - **Verdad de cifras = `facts.yaml`** (no consenso de LLMs): el autor copia id+valor; el gate los compara.
 - **Uso sabio:** caché de respuestas LLM, búsqueda solo si falta evidencia, el juez no re-checa cifras canónicas.
-- **STOP** (`_meta/build_policy.yaml`): tamaño ≥ meta ∧ cobertura de amplitud ∧ eval verde.
+- **STOP por COBERTURA** (`_meta/build_policy.yaml` `stop_on: coverage`): corre hasta cubrir TODA la taxonomía
+  a profundidad (no por MB) ∧ eval verde. Presupuesto en **$** con alerta de saldo bajo corta si se excede.
 
 ## Comandos
 

@@ -5,6 +5,13 @@
 > **Estado al 2026-06-21:** TODO LISTO para ejecutar. `preflight.py` da **GO**. **No ejecutado aún**
 > (la corrida completa la dispara un humano, por decisión explícita). Diseño en
 > [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md).
+>
+> **Ronda 2 (2026-06-21):** (1) **PLANNER/Crítico → DeepSeek V4** (`deepseek-v4-flash`) = 3er proveedor
+> independiente (DeepSeek planner / Qwen autor / GLM juez) → más velocidad y diversidad; (2) **STOP por
+> COBERTURA** (`stop_on: coverage`), ya no por MB — corre hasta cubrir toda la taxonomía; (3) **presupuesto
+> en $** (`budget_usd`) + **alerta de saldo bajo** (`alert_usd_remaining`); (4) **taxonomía ampliada**
+> (crypto, metales, bolsa, bonds, real_estate, loans, interest_rates) + **facts.yaml a ~48 cifras**
+> verificadas (lote 2: NIIT, coleccionables 28%, wash-sale, SALT 2026, bolsa/dividendos MX, cripto…).
 
 ---
 

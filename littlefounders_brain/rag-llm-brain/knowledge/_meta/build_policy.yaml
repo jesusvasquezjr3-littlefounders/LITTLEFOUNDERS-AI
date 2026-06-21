@@ -13,8 +13,10 @@ schema_version: kb-1.0
 
 # ── Metas globales (stop = se cumplen TODAS) ─────────────────────────────────
 targets:
-  total_size_mb: 10           # FASE 10 MB (validación). Misma calidad que 100 MB (mismos gates/juez/
-                              # facts.yaml/quality_bar/grounding); solo cambia el tamaño.
+  stop_on: coverage           # coverage = parar cuando se cubra TODA la taxonomía a profundidad (NO por MB).
+                              #            'size' = parar al alcanzar total_size_mb (modo anterior).
+  total_size_mb: 10           # referencia; en modo 'coverage' NO frena la corrida (solo informativo).
+  size_safety_cap_mb: 0       # tope DURO de seguridad en MB (0 = sin tope). Evita runaways en coverage.
   require_full_breadth: true  # NO declarar "hecho" mientras queden celdas (país,dominio,subdominio) sin baseline.
 
 # ── BREADTH-FIRST: amplitud antes que profundidad (el corazón de la estrategia v3) ──
@@ -54,12 +56,21 @@ quality_bar:
 
 # ── Modelos por rol (Qwen autor + GLM juez; ver llm_qwen.py provider_for) ─────
 models:
-  planner: qwen-flash         # estructural/barato, sin búsqueda
+  planner: deepseek-v4-flash  # PLANNER+CRÍTICO = DeepSeek V4 (3er PROVEEDOR indep.) — diseña el currículo
+                              # (clave para la AMPLITUD); pool de cuota separado de Qwen/GLM → más velocidad.
   author: qwen-plus-latest    # AUTOR = Qwen-Plus + enable_search (funda en evidencia + web)
   judge: glm-4.6              # JUEZ = GLM (z.ai), PROVEEDOR INDEPENDIENTE + búsqueda web
   verifier: glm-4.6           # mismo cliente que el juez (q_judge usa MODELS['judge'])
   grounding_search: true      # activa búsqueda en autor (qwen) y juez (glm web_search)
-  # Precios aprox (USD/1M tok): Qwen-Flash 0.05/0.40 · Qwen-Plus 0.40/1.20 · GLM-4.6 ~0.60/2.20.
+
+# Precios estimados por modelo (USD / 1M tokens) — para el presupuesto en $ (wise_use.budget_usd).
+pricing_usd_per_mtok:
+  deepseek-v4-flash: { in: 0.28, out: 0.42 }
+  deepseek-v4-pro:   { in: 0.55, out: 2.19 }
+  qwen-flash:        { in: 0.05, out: 0.40 }
+  qwen-plus-latest:  { in: 0.40, out: 1.20 }
+  glm-4.6:           { in: 0.60, out: 2.20 }
+  glm-5.2:           { in: 1.20, out: 4.10 }
 
 # ── USO SABIO de la API (no consultas tontas) ────────────────────────────────
 wise_use:
@@ -67,7 +78,9 @@ wise_use:
   author_search_when_evidence: false    # si hay evidencia curada, el autor NO busca (ahorra); busca si falta
   facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
   judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
-  budget_output_tokens: 0               # 0 = sin tope; >0 = corta la corrida al alcanzar ese gasto de salida
+  budget_output_tokens: 0               # 0 = sin tope; >0 = corta al alcanzar ese gasto de salida (autor)
+  budget_usd: 0                         # 0 = sin tope; >0 = corta la corrida al alcanzar ese gasto estimado (USD, todos los proveedores)
+  alert_usd_remaining: 3                # imprime ALERTA cuando (budget_usd - gasto estimado) < este valor (recarga las APIs)
 
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
 coverage:

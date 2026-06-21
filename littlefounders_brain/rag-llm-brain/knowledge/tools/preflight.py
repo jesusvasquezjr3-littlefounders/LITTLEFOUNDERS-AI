@@ -82,6 +82,12 @@ def main() -> int:
     # 4. conectividad real (autor Qwen + juez GLM + smoke búsqueda)
     if not args.no_net:
         try:
+            qp = Qwen(provider=provider_for(MODELS["planner"]))
+            qp.ping(MODELS["planner"])
+            hard(f"ping PLANNER {MODELS['planner']} ({qp.provider})", True)
+        except Exception as e:
+            hard(f"ping PLANNER {MODELS['planner']}", False, str(e)[:160])
+        try:
             qa = Qwen(provider=provider_for(MODELS["author"]))
             qa.ping(MODELS["author"])
             hard(f"ping AUTOR {MODELS['author']} ({qa.provider})", True)

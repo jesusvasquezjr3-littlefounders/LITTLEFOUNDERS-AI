@@ -219,6 +219,82 @@ facts:
     verified: true
     notes: "Decisión 7-may-2026 (−25 pb). PRÓXIMA decisión 25-jun-2026 → re-verificar entonces. Evitar citar en docs sin fecha explícita."
 
+  # ── Inversión / bolsa / deducciones / cripto MX (lote 2, verificado 2026-06-21) ──
+  mx.bolsa.isr_ganancia:
+    value: "10%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "ISR sobre ganancia por enajenación de acciones en bolsa (personas físicas, pago definitivo)"
+    effective_from: "2014-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 129"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Tasa definitiva 10% sobre la ganancia; no se acumula; se paga en la declaración anual. Sin cambios 2026."
+
+  mx.dividendos.retencion:
+    value: "10%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Retención adicional de ISR sobre dividendos a personas físicas residentes"
+    effective_from: "2014-01-01"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 140"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "10% adicional definitivo que retiene la persona moral. SCJN validó su constitucionalidad (ene-2026)."
+
+  mx.intereses.retencion:
+    value: "0.90%"
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: "Tasa de retención anual de ISR sobre intereses del sistema financiero (LIF 2026)"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: high
+    enforce: true
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LIF_2026.pdf"
+    source_publisher: "Ley de Ingresos de la Federación 2026, art. 24 (DOF 07-11-2025)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Sobre el CAPITAL que genera intereses (no sobre el interés). Sube de 0.50% (2025). Se fija cada año en la LIF → re-verificar 2027."
+
+  mx.deducciones_personales.tope:
+    value: "el menor de: 5 UMA anuales o 15% del ingreso total"
+    unit: rule
+    jurisdiction: MX-FED
+    label_es: "Tope global de deducciones personales de personas físicas"
+    effective_from: "2021-11-12"
+    effective_to: null
+    volatility: low
+    enforce: false   # regla descriptiva (el monto en pesos varía con la UMA)
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, art. 151 último párrafo"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "El MENOR entre 5×UMA anual o 15% del ingreso total (incl. exentos). NO aplica a aportaciones complementarias de retiro (fracc. V)."
+
+  mx.cripto.treatment:
+    value: "régimen general LISR (sin régimen especial): tributa como enajenación de bienes / ingreso al REALIZAR ganancia"
+    unit: rule
+    jurisdiction: MX-FED
+    label_es: "Tratamiento fiscal de criptomonedas/activos virtuales (ISR México)"
+    effective_from: "2014-01-01"
+    effective_to: null
+    volatility: medium
+    enforce: false   # regla descriptiva
+    source_url: "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+    source_publisher: "Ley del ISR, Título IV Cap. IV (enajenación de bienes), art. 119"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "No hay régimen especial cripto. Se grava al REALIZAR ganancia/ingreso (vender, permutar cripto-cripto, cobrar en cripto); la mera tenencia/compra no genera ISR. Permuta = dos enajenaciones (art. 119). 2026: entra el reporte CARF/OCDE (exchanges reportan al SAT), pero no crea régimen nuevo."
+
   # ══════════════════════════ ESTADOS UNIDOS (US-FED) ══════════════════════════
   us.federal.top_rate:
     value: "37%"
@@ -474,3 +550,200 @@ facts:
     last_verified: "2026-06-21"
     verified: true
     notes: "Mantenida en '3-1/2 a 3-3/4%' (4ª reunión seguida, 12-0). Próxima reunión FOMC → re-verificar. Evitar citar en docs sin fecha."
+
+  # ── Inversión / capital / cripto / crédito US (lote 2, verificado 2026-06-21) ──
+  us.niit.rate:
+    value: "3.8%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Net Investment Income Tax (NIIT)"
+    effective_from: "2013-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc559"
+    source_publisher: "IRS Topic 559 (IRC §1411)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Sobre el MENOR de (ingreso neto de inversión) o (MAGI sobre el umbral). Umbrales no indexados."
+
+  us.niit.threshold.mfj:
+    value: "250,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Umbral MAGI del NIIT — casados declarando juntos"
+    effective_from: "2013-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc559"
+    source_publisher: "IRS Topic 559"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Estatutario, no indexado por inflación."
+
+  us.niit.threshold.single_hoh:
+    value: "200,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Umbral MAGI del NIIT — soltero / jefe de hogar"
+    effective_from: "2013-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc559"
+    source_publisher: "IRS Topic 559"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Estatutario, no indexado."
+
+  us.niit.threshold.mfs:
+    value: "125,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Umbral MAGI del NIIT — casados declarando por separado"
+    effective_from: "2013-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc559"
+    source_publisher: "IRS Topic 559"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Estatutario, no indexado."
+
+  us.collectibles.ltcg_max:
+    value: "28%"
+    unit: percent
+    jurisdiction: US-FED
+    label_es: "Tasa máx. de ganancias de capital LP sobre coleccionables (incl. metales: oro/plata/platino)"
+    effective_from: "1998-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc409"
+    source_publisher: "IRS Topic 409 (IRC §1(h)(4))"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Tasa MÁXIMA (cap), no plana. El bullion de metales cuenta como coleccionable (IRC §408(m))."
+
+  us.capital_loss.limit:
+    value: "3,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Tope anual de deducción de pérdidas de capital contra ingreso ordinario"
+    effective_from: "1978-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc409"
+    source_publisher: "IRS Topic 409 (IRC §1211(b))"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "$1,500 si MFS. El exceso se arrastra a años futuros. No indexado."
+
+  us.capital_loss.limit_mfs:
+    value: "1,500 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Tope anual de deducción de pérdidas de capital — casados por separado"
+    effective_from: "1978-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc409"
+    source_publisher: "IRS Topic 409 (IRC §1211(b))"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "No indexado."
+
+  us.wash_sale.days:
+    value: "30"
+    unit: days
+    jurisdiction: US-FED
+    label_es: "Ventana de la regla wash-sale (días antes/después de la venta con pérdida)"
+    effective_from: "1921-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/publications/p550"
+    source_publisher: "IRS Pub. 550 (IRC §1091)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "30 días ANTES o DESPUÉS (ventana total de 61 días). Se anula la pérdida si recompras valores sustancialmente idénticos."
+
+  us.crypto.treatment:
+    value: "propiedad (capital gains): corto plazo a tasas ordinarias; largo plazo 0/15/20%"
+    unit: rule
+    jurisdiction: US-FED
+    label_es: "Tratamiento fiscal de cripto/activos digitales (US)"
+    effective_from: "2014-01-01"
+    effective_to: null
+    volatility: static
+    enforce: false   # regla descriptiva
+    source_url: "https://www.irs.gov/filing/digital-assets"
+    source_publisher: "IRS — Digital Assets (Notice 2014-21)"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Cripto = PROPIEDAD, no moneda. Gravable al disponer (vender/intercambiar/cobrar). La tenencia no grava. ≤1 año = corto plazo (tasas ordinarias); >1 año = 0/15/20%."
+
+  us.crypto.1099da_start:
+    value: "2025"
+    unit: tax_year
+    jurisdiction: US-FED
+    label_es: "Primer año fiscal del reporte de brokers en Form 1099-DA"
+    effective_from: "2025-01-01"
+    effective_to: null
+    volatility: low
+    enforce: false
+    source_url: "https://www.irs.gov/newsroom/final-regulations-and-related-irs-guidance-for-reporting-by-brokers-on-sales-and-exchanges-of-digital-assets"
+    source_publisher: "IRS — final regs broker reporting"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "Ingresos brutos desde TY2025; base de costo desde TY2026."
+
+  us.mortgage.interest_cap:
+    value: "750,000 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Tope de deuda de adquisición para deducir intereses hipotecarios (deuda post 15-dic-2017)"
+    effective_from: "2017-12-16"
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: "https://www.irs.gov/publications/p936"
+    source_publisher: "IRS Pub. 936"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "$375,000 si MFS. OBBBA hizo permanente el tope TCJA de $750k. Deuda anterior (pre-2018) conserva el límite de $1M."
+
+  us.student_loan.deduction_max:
+    value: "2,500 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Deducción máxima anual de intereses de préstamos estudiantiles"
+    effective_from: "2001-01-01"
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: "https://www.irs.gov/taxtopics/tc456"
+    source_publisher: "IRS Topic 456"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "El menor de $2,500 o el interés pagado. Sujeto a phase-out por MAGI. No disponible para MFS. Monto no indexado."
+
+  us.salt.cap:
+    value: "40,400 USD"
+    unit: USD
+    jurisdiction: US-FED
+    label_es: "Tope de deducción SALT (impuestos estatales y locales), 2026 — post-OBBBA"
+    effective_from: "2026-01-01"
+    effective_to: "2026-12-31"
+    volatility: medium
+    enforce: true
+    source_url: "https://www.irs.gov/forms-pubs/correction-to-state-and-local-income-tax-deduction-amount-in-the-2026-form-1040-es"
+    source_publisher: "IRS — corrección 2026 Form 1040-ES"
+    last_verified: "2026-06-21"
+    verified: true
+    notes: "$20,200 si MFS. OBBBA subió de $10k a $40k (2025) → $40,400 (2026), +1%/año hasta 2029; revierte a $10k en 2030. Phase-down si MAGI>$505k, piso $10,000."
+

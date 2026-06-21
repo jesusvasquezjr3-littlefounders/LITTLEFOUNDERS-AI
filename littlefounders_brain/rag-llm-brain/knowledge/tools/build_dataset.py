@@ -55,6 +55,15 @@ CANON_ALL = load_facts(verified_only=True)     # tabla canónica (verdad de base
 STATE_FILE = KB / POLICY["run"].get("state_file", "index/build_state.json")
 _STATE_LOCK = threading.Lock()
 _BUDGET_OUT = int(WISE.get("budget_output_tokens", 0) or 0)
+_BUDGET_USD = float(WISE.get("budget_usd", 0) or 0)
+_ALERT_USD = float(WISE.get("alert_usd_remaining", 0) or 0)
+PRICING = POLICY.get("pricing_usd_per_mtok", {})
+TARGETS = POLICY["targets"]
+STOP_ON = TARGETS.get("stop_on", "coverage")             # coverage | size
+SIZE_TARGET = float(TARGETS.get("total_size_mb", 10))
+SIZE_SAFETY = float(TARGETS.get("size_safety_cap_mb", 0) or 0)
+_AUTHOR_CLIENT = None     # se fija en main(); usado para presupuesto/alerta y tope de tokens del autor
+_alerted = False
 RETRY_DRAFTS = False     # --retry-drafts: en el resume, regenerar los docs en estado draft
 
 
@@ -72,8 +81,55 @@ def write_atomic(path: Path, text: str):
     tmp.replace(path)
 
 
-def budget_exceeded(qw: "Qwen") -> bool:
-    return _BUDGET_OUT > 0 and qw.usage.get("completion_tokens", 0) >= _BUDGET_OUT
+def _price(model: str) -> dict:
+    return PRICING.get(model, {"in": 0.0, "out": 0.0})
+
+
+def _role_clients():
+    # (cliente, modelo) por rol; los clientes se crean lazy (_judge_client/_planner_client/main)
+    return ((_AUTHOR_CLIENT, MODELS["author"]), (_JUDGE_CLIENT, MODELS["judge"]),
+            (_PLANNER_CLIENT, MODELS["planner"]))
+
+
+def estimated_cost_usd() -> float:
+    """Gasto estimado en USD sumando tokens×precio de los 3 clientes (autor/juez/planner)."""
+    total = 0.0
+    for client, model in _role_clients():
+        if client is None:
+            continue
+        pr = _price(model)
+        u = client.usage
+        total += u.get("prompt_tokens", 0) / 1e6 * pr.get("in", 0.0)
+        total += u.get("completion_tokens", 0) / 1e6 * pr.get("out", 0.0)
+    return total
+
+
+def budget_exceeded(qw=None) -> bool:
+    """Tope de tokens de salida del autor O tope de gasto en USD (cualquiera corta la corrida)."""
+    if _BUDGET_OUT > 0 and _AUTHOR_CLIENT and _AUTHOR_CLIENT.usage.get("completion_tokens", 0) >= _BUDGET_OUT:
+        return True
+    if _BUDGET_USD > 0 and estimated_cost_usd() >= _BUDGET_USD:
+        return True
+    return False
+
+
+def size_stop() -> bool:
+    """En modo 'size' frena al alcanzar total_size_mb; en 'coverage' solo el tope de seguridad (si lo hay)."""
+    if STOP_ON == "size":
+        return corpus_size_mb() >= SIZE_TARGET
+    return SIZE_SAFETY > 0 and corpus_size_mb() >= SIZE_SAFETY
+
+
+def budget_alert():
+    """Imprime una ALERTA (una vez) cuando el saldo estimado del presupuesto baja del umbral → recargar APIs."""
+    global _alerted
+    if _alerted or _BUDGET_USD <= 0 or _ALERT_USD <= 0:
+        return
+    remaining = _BUDGET_USD - estimated_cost_usd()
+    if remaining < _ALERT_USD:
+        _alerted = True
+        print(f"\n⚠️  ALERTA SALDO: presupuesto restante estimado ${remaining:.2f} < ${_ALERT_USD:.2f}. "
+              f"Recarga las APIs (Qwen/GLM/DeepSeek) si vas a continuar.\n", flush=True)
 
 
 def save_state(doc_id: str, status: str):
@@ -231,7 +287,7 @@ def q_planner(qw, country, domain, subdomain):
             'Devuelve {"topics":[{"slug":"kebab-case","title_es":"...","title_en":"...","angle":"...",'
             '"age_bands":["tier3","tier4","tier5"],"depth_tier":"intro|intermediate|advanced",'
             '"volatility":"static|low|medium|high","concept_id":"dotted.id"}]}'}]
-    return qw.json(msg, model=MODELS["planner"], temperature=0.5).get("topics", [])
+    return _planner_client().json(msg, model=MODELS["planner"], temperature=0.5).get("topics", [])
 
 
 _EVIDENCE_CACHE = {}
@@ -326,6 +382,7 @@ def q_judge(qw, country, es_text, evidence=""):
 
 
 _JUDGE_CLIENT = None
+_PLANNER_CLIENT = None
 
 
 def _judge_client():
@@ -336,6 +393,14 @@ def _judge_client():
     return _JUDGE_CLIENT
 
 
+def _planner_client():
+    """Cliente del planner/crítico — proveedor independiente (p.ej. DeepSeek V4) → 3er pool de cuota."""
+    global _PLANNER_CLIENT
+    if _PLANNER_CLIENT is None:
+        _PLANNER_CLIENT = Qwen(provider=provider_for(MODELS["planner"]))
+    return _PLANNER_CLIENT
+
+
 def q_critic(qw, country, domain, subdomain, existing_slugs):
     msg = [{"role": "system", "content": "Eres crítico de completitud. Devuelve SOLO JSON."},
            {"role": "user", "content":
@@ -344,7 +409,7 @@ def q_critic(qw, country, domain, subdomain, existing_slugs):
             'Lista SOLO los temas que FALTAN (no repitas los existentes). '
             'Devuelve {"missing":[{"slug":"...","title_es":"...","title_en":"...","angle":"...",'
             '"age_bands":[...],"depth_tier":"...","volatility":"...","concept_id":"..."}]}'}]
-    return qw.json(msg, model=MODELS["planner"], temperature=0.6).get("missing", [])
+    return _planner_client().json(msg, model=MODELS["planner"], temperature=0.6).get("missing", [])
 
 
 # ─────────────────────────── gate ───────────────────────────
@@ -488,7 +553,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
 def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
     """max_docs = TOPE TOTAL de docs en la celda (existentes + nuevos), no solo nuevos. Así la
     orquestación breadth-first puede subir el cap por pasada y cada celda crece de forma incremental."""
-    if corpus_size_mb() >= POLICY["targets"]["total_size_mb"] or budget_exceeded(qw):
+    if size_stop() or budget_exceeded():
         return {}
     subdir = KB / country / domain / subdomain
     # 'existing' excluye drafts si --retry-drafts (para que se regeneren)
@@ -514,7 +579,7 @@ def build_subdomain(qw, reg, country, domain, subdomain, max_docs=None):
                            if r.startswith(("built", "exists", "needs_review")))
             if max_docs and have_count + produced >= max_docs:
                 return results
-            if corpus_size_mb() >= POLICY["targets"]["total_size_mb"] or budget_exceeded(qw):
+            if size_stop() or budget_exceeded():
                 return results
             results[t["slug"]] = build_topic(qw, reg, country, domain, subdomain, t)
             print(f"  [{country}/{domain}/{subdomain}] {t['slug']}: {results[t['slug']]}", flush=True)
@@ -578,13 +643,14 @@ def main():
                     help="en el resume, regenerar los docs en estado draft (en vez de saltarlos)")
     args = ap.parse_args()
 
-    global RETRY_DRAFTS
+    global RETRY_DRAFTS, _AUTHOR_CLIENT
     RETRY_DRAFTS = args.retry_drafts
 
     if args.status:
         status(); return 0
 
     qw = Qwen()
+    _AUTHOR_CLIENT = qw       # para presupuesto/alerta en $ y tope de tokens del autor
     reg = SourceRegistry()
 
     if args.plan_only:
@@ -636,7 +702,6 @@ def run_all(qw, reg, workers, max_docs):
     cubre TODO el espectro a un baseline; las siguientes profundizan SOLO tras cubrir todo. El stop de
     tamaño/presupuesto puede cortar en cualquier punto → primero ancho, luego hondo."""
     jobs = all_jobs()
-    target = POLICY["targets"]["total_size_mb"]
     br = POLICY.get("breadth", {})
     if max_docs:                                   # --max-docs fuerza una sola pasada con ese cap
         passes = [max_docs]
@@ -644,12 +709,14 @@ def run_all(qw, reg, workers, max_docs):
         passes = br.get("passes") or [br.get("baseline_docs_per_subdomain", 2)]
     else:
         passes = [POLICY["depth"]["min_docs_per_subdomain"]]
-    print(f"Cobertura: {len(jobs)} subdominios · meta {target} MB · workers={workers} · "
+    stopdesc = "COBERTURA total de la taxonomía" if STOP_ON != "size" else f"tamaño {SIZE_TARGET} MB"
+    print(f"Cobertura: {len(jobs)} subdominios · STOP por {stopdesc} · workers={workers} · "
           f"BREADTH-FIRST pasadas(cap)={passes}", flush=True)
 
     def work(job, cap):
-        if corpus_size_mb() >= target or budget_exceeded(qw):
+        if size_stop() or budget_exceeded():
             return
+        budget_alert()
         c, d, s = job
         try:
             build_subdomain(qw, reg, c, d, s, max_docs=cap)
@@ -657,24 +724,29 @@ def run_all(qw, reg, workers, max_docs):
             print(f"  !! error en {c}/{d}/{s}: {e}", flush=True)
 
     for pi, cap in enumerate(passes, 1):
-        if corpus_size_mb() >= target:
-            print("META DE TAMAÑO ALCANZADA.", flush=True)
+        if size_stop():
+            print("TOPE DE TAMAÑO DE SEGURIDAD ALCANZADO.", flush=True)
             break
-        if budget_exceeded(qw):
-            print("PRESUPUESTO DE TOKENS ALCANZADO.", flush=True)
+        if budget_exceeded():
+            print("PRESUPUESTO ALCANZADO (tokens/USD).", flush=True)
             break
         print(f"\n=== PASADA {pi}/{len(passes)} · cap {cap} docs/subdominio (amplitud→profundidad) ===",
               flush=True)
         if workers <= 1:
             for j in jobs:
-                if corpus_size_mb() >= target or budget_exceeded(qw):
+                if size_stop() or budget_exceeded():
                     break
                 work(j, cap)
         else:
             with ThreadPoolExecutor(max_workers=workers) as ex:
                 list(ex.map(lambda j, _c=cap: work(j, _c), jobs))
     status()
-    print(f"usage total={qw.usage}", flush=True)
+    print(f"usage autor={qw.usage}", flush=True)
+    if _JUDGE_CLIENT:
+        print(f"usage juez={_JUDGE_CLIENT.usage}", flush=True)
+    if _PLANNER_CLIENT:
+        print(f"usage planner={_PLANNER_CLIENT.usage}", flush=True)
+    print(f"COSTO ESTIMADO ~${estimated_cost_usd():.2f} USD", flush=True)
 
 
 if __name__ == "__main__":
