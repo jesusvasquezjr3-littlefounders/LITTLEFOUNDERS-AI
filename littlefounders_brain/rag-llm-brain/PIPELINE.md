@@ -88,7 +88,7 @@ flowchart TD
   end
 ```
 
-1. **`facts.yaml`** — tabla canónica (~48 cifras verificadas con fuente primaria). El gate compara cada
+1. **`facts.yaml`** — tabla canónica (**~67 cifras** verificadas con fuente primaria). El gate compara cada
    `@fact` canónico contra ella; cualquier divergencia = **HARD-FAIL**. Esto es lo único "100% real".
 2. **`evidence/`** — fulltext curado de fuentes primarias (NotebookLM). El autor funda en ella; el juez
    contrasta por NLI. (gitignored: insumo con copyright, no producto.)

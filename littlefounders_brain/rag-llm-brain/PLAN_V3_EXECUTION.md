@@ -56,7 +56,7 @@ Cambios entregados (todos verificados, ver §6):
 
 1. **Cliente multi-proveedor + caché** — `tools/llm_qwen.py`: añade `provider="glm"` (z.ai, búsqueda vía
    tool `web_search`), `provider_for()`, y caché content-addressed de respuestas. Qwen/DeepSeek intactos.
-2. **Tabla canónica de hechos** — `_meta/facts.yaml` (NUEVO): 30 cifras de oro MX/US **verificadas con
+2. **Tabla canónica de hechos** — `_meta/facts.yaml` (NUEVO): ~67 cifras de oro MX/US (lotes 1-3) **verificadas con
    fuente primaria + verificación adversarial** (workflow `golden-facts-verify`). Loader
    `tools/facts_table.py`.
 3. **Gate valida valores** — `tools/gate_kb.py`: compara cada `@fact` canónico contra `facts.yaml`

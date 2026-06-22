@@ -29,6 +29,7 @@ import argparse
 import hashlib
 import json
 import re
+import socket
 import subprocess
 import sys
 import threading
@@ -285,11 +286,21 @@ def _url_alive(url: str, timeout: int = 8) -> bool:
                 break
         except urllib.error.HTTPError as e:
             # el servidor RESPONDIÓ: 401/403/405/406/429 = EXISTE pero bloquea bots/rate-limit → cuenta como
-            # vivo (no es una URL fabricada). 404/410 = NO existe → muerto. Otros: reintenta GET, luego muerto.
+            # vivo (no es URL fabricada). 404/410/5xx → reintenta GET; si ambos fallan, queda muerto.
             if e.code in (401, 403, 405, 406, 429):
                 alive = True
                 break
             continue
+        except (TimeoutError, socket.timeout):
+            # TRANSITORIO (lentitud puntual): NO degradar — degradar dispararía re-draft loops carísimos
+            # en docs cuya fuente sí existe. Se asume viva (el beneficio de la duda en timeouts).
+            alive = True
+            break
+        except urllib.error.URLError as e:
+            if isinstance(getattr(e, "reason", None), (TimeoutError, socket.timeout)):
+                alive = True   # timeout envuelto en URLError → transitorio, no penalizar
+                break
+            continue           # DNS no resuelve / conexión rechazada → host fabricado o caído → muerto
         except Exception:
             continue
     with _LIVENESS_LOCK:
@@ -730,10 +741,16 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
                  ("factual_accuracy", "country_correctness", "pedagogical_scaffolding",
                   "translation_fidelity", "engagement", "completeness", "worked_example",
                   "citation_quality") if k in bar and k in sc and sc[k] < bar[k]]
-        if wrong or hard or judged.get("verdict") == "revise" or below:
+        # Piso de PROFUNDIDAD determinista (no solo el juez subjetivo): un doc por debajo de
+        # min_words_per_doc se regenera (más cerca del estándar enciclopedia Investopedia/IRS).
+        words = len((payload.get("body_es") or "").split())
+        min_words = int(POLICY["depth"].get("min_words_per_doc", 0) or 0)
+        too_short = min_words > 0 and words < min_words
+        if wrong or hard or judged.get("verdict") == "revise" or below or too_short:
+            extra = f" DOC CORTO: {words}<{min_words} palabras (expande con más detalle/ejemplos)." if too_short else ""
             feedback = ("Revisa y REGENERA. Verifica cada cifra contra fuente PRIMARIA ACTUAL (2026). "
-                        f"HECHOS ERRÓNEOS: {wrong}. FALLAS DURAS: {hard}. DIMENSIONES BAJAS: {below}.")
-            last_issue = f"judge wrong={wrong[:2]} below={below}"
+                        f"HECHOS ERRÓNEOS: {wrong}. FALLAS DURAS: {hard}. DIMENSIONES BAJAS: {below}.{extra}")
+            last_issue = f"judge wrong={wrong[:2]} below={below} short={too_short}"
             continue
         u1 = qw.usage_snapshot()
         spent = {k: u1.get(k, 0) - u0.get(k, 0) for k in u0}

@@ -57,10 +57,15 @@ def main() -> int:
         hard("build_policy.yaml carga", False, str(e))
         return _report()
 
-    # 1. credenciales
-    hard(".env QWEN_API_KEY", bool(env.get("QWEN_API_KEY")))
-    hard(".env QWEN_BASE_URL", bool(env.get("QWEN_BASE_URL")))
-    hard(".env ZAI_API_KEY (juez GLM)", bool(env.get("ZAI_API_KEY")))
+    # 1. credenciales — la clave del PROVEEDOR de CADA rol (planner DeepSeek / autor Qwen / juez GLM).
+    #    (antes faltaba DEEPSEEK_API_KEY del planner → fallaba a mitad de corrida.)
+    KEY_BY_PROV = {"qwen": "QWEN_API_KEY", "glm": "ZAI_API_KEY", "deepseek": "DEEPSEEK_API_KEY"}
+    provs = {role: provider_for(MODELS[role]) for role in ("planner", "author", "judge")}
+    for role, prov in provs.items():
+        kn = KEY_BY_PROV.get(prov, "?")
+        hard(f".env {kn} ({role}={prov})", bool(env.get(kn)))
+    if "qwen" in provs.values():
+        hard(".env QWEN_BASE_URL", bool(env.get("QWEN_BASE_URL")))
 
     # 2. archivos de contrato
     for f in ("taxonomy.yaml", "build_policy.yaml", "volatility_policy.yaml", "sources.yaml", "facts.yaml"):
@@ -71,6 +76,16 @@ def main() -> int:
             hard(f"_meta/{f} carga", False, str(e))
     hard("_meta/schema.json existe", (META / "schema.json").exists())
 
+    # 2b. concept_map: DEBE cargar y tener celdas. Si carga vacío, build_dataset cae a planner en vivo y
+    #     coverage_complete() NUNCA para por cobertura (regresión silenciosa a stop-solo-por-budget).
+    try:
+        cm = yaml.safe_load((META / "concept_map.yaml").read_text(encoding="utf-8")) or {}
+        ncells = len(cm.get("cells", {}))
+        ntop = sum(len(c.get("topics", [])) for c in cm.get("cells", {}).values())
+        hard("_meta/concept_map.yaml con celdas (STOP por cobertura)", ncells > 0, f"{ncells} celdas / {ntop} temas")
+    except Exception as e:
+        hard("_meta/concept_map.yaml con celdas (STOP por cobertura)", False, str(e)[:160])
+
     # 3. facts.yaml: nada PENDING entre los enforced/verified
     facts = load_facts(verified_only=True)
     enforced = {k: v for k, v in facts.items() if v.get("enforce", True)}
@@ -78,6 +93,15 @@ def main() -> int:
     hard("facts.yaml verified+enforce sin PENDING", not pend, f"PENDING: {pend}" if pend else f"{len(enforced)} cifras canónicas")
     novalue = [k for k, v in enforced.items() if not str(v.get("value", "")).strip()]
     hard("facts.yaml enforce con valor", not novalue, f"sin valor: {novalue}" if novalue else "")
+
+    # 3b. presupuesto del AUTOR (Qwen pay-as-you-go) acotado — un --run sin tope factura a tarjeta.
+    wu = POLICY.get("wise_use", {})
+    bud = wu.get("budget_usd") or {}
+    aprov = provs["author"]
+    capped = (isinstance(bud, dict) and bud.get(aprov) not in (None, "null", "")) or bool(wu.get("budget_output_tokens"))
+    warn(f"autor ({aprov}) con tope de presupuesto", capped,
+         f"USD {bud.get(aprov) if isinstance(bud, dict) else bud}" if capped
+         else f"define wise_use.budget_usd['{aprov}'] o lanza --run con --i-accept-unbounded-author")
 
     # 4. conectividad real (autor Qwen + juez GLM + smoke búsqueda)
     if not args.no_net:

@@ -156,6 +156,21 @@ def test_retriever_excludes_stale_walltime():
     assert "fresh" in ids_fresh, "el chunk fresco debe permanecer"
 
 
+def test_semdedup_clustering():
+    """C1: la lógica de near-dup semántico (pares sobre umbral + union-find) agrupa correctamente,
+    sin depender de fastembed (vectores a mano)."""
+    import math
+    import semdedup as sd
+
+    def norm(v):
+        n = math.sqrt(sum(x * x for x in v)) or 1.0
+        return [x / n for x in v]
+    vecs = [norm([1.0, 0.0]), norm([0.99, 0.02]), norm([0.0, 1.0])]   # 0≈1 (dup), 2 ortogonal
+    pairs = sd._pairs_over_threshold(vecs, 0.9)
+    clusters = sd._clusters(len(vecs), pairs)
+    assert clusters == [[0, 1]], f"esperaba un cluster {{0,1}}, got {clusters}"
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

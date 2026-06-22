@@ -67,7 +67,7 @@ flowchart TD
         NB["NotebookLM<br/>(navegador, no-chat)<br/>ingesta fuentes primarias"]:::ext
         EV[("evidence/<br/>caché fulltext curado")]:::data
         SEED["Siembra adversarial<br/>(agentes + WebSearch)<br/>vs fuentes primarias · una vez"]:::ext
-        FACTS[("facts.yaml<br/>30 cifras canónicas verificadas")]:::data
+        FACTS[("facts.yaml<br/>~67 cifras canónicas verificadas")]:::data
         NB --> EV
         SEED --> FACTS
     end
@@ -123,7 +123,7 @@ flowchart TD
 
 ## 1. Ancla de verdad — `_meta/facts.yaml`
 
-La pieza nueva más importante. Una tabla canónica de ~48 "números de oro" MX/US (impuestos, salarios/UMA,
+La pieza nueva más importante. Una tabla canónica de ~67 "números de oro" MX/US (impuestos, salarios/UMA,
 banca central, inversión, bolsa, metales, cripto, crédito), **verificada el
 2026-06-21 contra fuentes PRIMARIAS** (DOF/SAT/LISR/LIVA, INEGI, CONASAMI, Banxico; IRS Rev.Proc/IRB,
 SSA, Federal Reserve) con **verificación adversarial** (un agente busca, otro independiente refuta).
