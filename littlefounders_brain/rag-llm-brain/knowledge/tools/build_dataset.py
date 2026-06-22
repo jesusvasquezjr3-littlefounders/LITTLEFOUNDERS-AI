@@ -53,6 +53,8 @@ DATE = POLICY["content_conventions"]["date_anchor"]
 MODELS = POLICY["models"]
 WISE = POLICY.get("wise_use", {})
 CANON_ALL = load_facts(verified_only=True)     # tabla canónica (verdad de base) para inyectar al autor
+# Subconjunto que el GATE valida determinísticamente (verified + enforce!=false) — = "anclaje 100% real".
+CANON_ENFORCED = {k for k, v in CANON_ALL.items() if v.get("enforce", True)}
 CONCEPT_MAP_FILE = META / "concept_map.yaml"
 
 
@@ -82,6 +84,7 @@ def _parse_budget_usd(raw):
 _BUDGET_USD = _parse_budget_usd(WISE.get("budget_usd"))
 _ALERT_USD = float(WISE.get("alert_usd_remaining", 0) or 0)
 PRICING = POLICY.get("pricing_usd_per_mtok", {})
+SEARCH_USD = POLICY.get("search_usd_per_call", {})   # surcharge de búsqueda web por llamada, por proveedor
 TARGETS = POLICY["targets"]
 STOP_ON = TARGETS.get("stop_on", "coverage")             # coverage | size
 SIZE_TARGET = float(TARGETS.get("total_size_mb", 10))
@@ -91,9 +94,25 @@ _alerted: set = set()     # proveedores ya alertados (para no repetir la alerta)
 RETRY_DRAFTS = False     # --retry-drafts: en el resume, regenerar los docs en estado draft
 
 
+# El frontmatter se serializa con json.dumps → `status: "review"` (CON comillas). Toda lectura/escritura
+# de status debe ser tolerante a comillas (`"review"` | review | 'review'); un substring crudo NO matchea.
+_STATUS_RE = re.compile(r'^status:\s*["\']?([A-Za-z_]+)["\']?\s*$', re.M)
+
+
+def doc_status(text: str) -> str:
+    """Valor de `status:` del frontmatter, tolerante a comillas. '' si no se encuentra."""
+    m = _STATUS_RE.search(text[:800])
+    return m.group(1) if m else ""
+
+
+def set_status(text: str, new: str) -> str:
+    """Reescribe `status:` a la forma canónica citada `status: "<new>"`. Idempotente."""
+    return _STATUS_RE.sub(f'status: "{new}"', text, count=1)
+
+
 def _is_draft(es_path: Path) -> bool:
     try:
-        return "status: draft" in es_path.read_text(encoding="utf-8")[:500]
+        return doc_status(es_path.read_text(encoding="utf-8")) == "draft"
     except Exception:
         return False
 
@@ -122,9 +141,10 @@ def estimated_cost_by_provider() -> dict:
         if client is None:
             continue
         pr = _price(model)
-        u = client.usage
+        u = client.usage_snapshot()      # lectura consistente (lock) — los workers escriben en paralelo
         c = (u.get("prompt_tokens", 0) / 1e6 * pr.get("in", 0.0)
-             + u.get("completion_tokens", 0) / 1e6 * pr.get("out", 0.0))
+             + u.get("completion_tokens", 0) / 1e6 * pr.get("out", 0.0)
+             + u.get("search_calls", 0) * float(SEARCH_USD.get(client.provider, 0.0)))
         out[client.provider] = out.get(client.provider, 0.0) + c
     return out
 
@@ -136,7 +156,7 @@ def estimated_cost_usd() -> float:
 def budget_exceeded(qw=None) -> bool:
     """True si el autor superó su tope de tokens, O si ALGÚN proveedor superó su tope en USD
     (la corrida muere cuando cualquiera de las 3 cuentas se agota)."""
-    if _BUDGET_OUT > 0 and _AUTHOR_CLIENT and _AUTHOR_CLIENT.usage.get("completion_tokens", 0) >= _BUDGET_OUT:
+    if _BUDGET_OUT > 0 and _AUTHOR_CLIENT and _AUTHOR_CLIENT.usage_snapshot().get("completion_tokens", 0) >= _BUDGET_OUT:
         return True
     if not _BUDGET_USD:
         return False
@@ -144,6 +164,23 @@ def budget_exceeded(qw=None) -> bool:
     if "_total" in _BUDGET_USD and sum(costs.values()) >= _BUDGET_USD["_total"]:
         return True
     return any(costs.get(prov, 0.0) >= cap for prov, cap in _BUDGET_USD.items() if prov != "_total")
+
+
+def _author_is_capped() -> bool:
+    """True si el proveedor del autor (mayor gasto, pay-as-you-go) tiene ALGÚN tope (USD o tokens)."""
+    prov = provider_for(MODELS["author"])
+    return (prov in _BUDGET_USD) or ("_total" in _BUDGET_USD) or (_BUDGET_OUT > 0)
+
+
+def _guard_author_budget(accept_unbounded: bool):
+    """Antes de --run: rehúsa arrancar si el autor no tiene tope (un runaway factura directo a tarjeta)."""
+    if _author_is_capped() or accept_unbounded:
+        return
+    prov = provider_for(MODELS["author"])
+    sys.exit(
+        f"ABORTO: el autor ({prov}) no tiene tope de USD ni de tokens y es pay-as-you-go "
+        f"(un runaway factura DIRECTO a la tarjeta). Define wise_use.budget_usd['{prov}'] o "
+        f"budget_output_tokens en build_policy.yaml, o repite con --i-accept-unbounded-author.")
 
 
 def size_stop() -> bool:
@@ -253,9 +290,31 @@ class SourceRegistry:
 
 
 # ─────────────────────── frontmatter + body ───────────────────────
-def assemble_doc(country, domain, subdomain, slug, lang, payload, src_ids, fact_src):
+def grounding_meta(payload, evidence_used=False) -> dict:
+    """Etiqueta HONESTA de grounding por-doc (NO 'todo es 100% real'). Distingue:
+      · anchored     = ≥1 cifra validada DETERMINÍSTICAMENTE contra facts.yaml (verdad de base),
+      · llm_reviewed = sin ancla canónica → revisado por el juez LLM + fuentes (pendiente firma SME),
+      · conceptual   = contenido conceptual estático sin cifras volátiles.
+    Permite a cualquier consumidor (lección/chatbot) saber QUÉ tan verificado está cada doc."""
+    facts = payload.get("facts", []) or []
+    cited = len(facts)
+    canon = sum(1 for f in facts if f.get("id") in CANON_ENFORCED)
+    vol = payload.get("volatility", "medium")
+    if canon > 0:
+        tier = "anchored"
+    elif vol == "static" and cited == 0:
+        tier = "conceptual"
+    else:
+        tier = "llm_reviewed"
+    return {"grounding_tier": tier, "canonical_facts": canon,
+            "cited_facts": cited, "evidence_grounded": bool(evidence_used)}
+
+
+def assemble_doc(country, domain, subdomain, slug, lang, payload, src_ids, fact_src,
+                 grounding=None, evidence_used=False):
     doc_id = f"{country}-{domain}-{subdomain}-{slug}"
     vol = payload["volatility"]
+    gm = grounding if grounding is not None else grounding_meta(payload, evidence_used)
     fm = {
         "doc_id": doc_id,
         "title_es": payload["title_es"], "title_en": payload["title_en"],
@@ -269,6 +328,7 @@ def assemble_doc(country, domain, subdomain, slug, lang, payload, src_ids, fact_
         "review_due": review_due(vol), "sources": sorted(set(src_ids)),
         "status": "review", "currency": CURRENCY[country], "schema_version": "kb-1.0",
     }
+    fm.update(gm)     # etiqueta de grounding (tier + conteos) — campos opcionales, el gate no los exige
     lines = ["---"]
     for k, v in fm.items():
         if isinstance(v, list):
@@ -506,22 +566,27 @@ _CONFIRM_RE = re.compile(
 
 
 def _real_wrong(wrong):
-    """Filtra falsos positivos del juez (Qwen-Flash a veces lista en wrong_facts hechos que en
-    realidad CONFIRMA). Cuenta solo los que difieren (dict actual!=correct) o que NO contienen una
-    frase de confirmación (string)."""
+    """Filtra falsos positivos del juez (a veces lista en wrong_facts cifras que en realidad CONFIRMA),
+    SIN tragarse errores reales. Regla endurecida (eval 2026-06-21): suprime SOLO con evidencia POSITIVA
+    de no-error; NUNCA por `actual_value` en blanco (eso convertía falsos-positivos en falsos-NEGATIVOS).
+      · dict: suprime si AMBOS valores existen y COINCIDEN (doc==correcto). Si el juez aporta un
+        correct_value (discrepa), se CONSERVA aunque haya frase de confirmación (señal real de error).
+      · str: suprime solo si es claramente una frase de confirmación (sin número que sugiera discrepancia)."""
     out = []
     for w in (wrong or []):
         if isinstance(w, dict):
             actual = str(w.get("actual_value", w.get("doc_value", ""))).strip().lstrip("$").replace(",", "")
             correct = str(w.get("expected_value", w.get("correct_value", ""))).strip().lstrip("$").replace(",", "")
-            if actual and correct and actual == correct:
-                continue  # coinciden → no es error
+            if actual and correct and values_match(actual, correct):
+                continue  # ambos presentes y coinciden → confirmación dura, no es error
             txt = " ".join(str(v) for v in w.values())
-            if _CONFIRM_RE.search(txt) and not actual:
+            # confirmación pura: frase de OK y NINGÚN valor correcto aportado (no hay discrepancia que reportar)
+            if _CONFIRM_RE.search(txt) and not correct:
                 continue
         elif isinstance(w, str):
-            if _CONFIRM_RE.search(w):
-                continue  # el juez dice que ESTÁ correcto → no es error
+            # string con frase de confirmación pero SIN dígitos → es comentario de "está bien", no un error
+            if _CONFIRM_RE.search(w) and not re.search(r"\d", w):
+                continue
         out.append(w)
     return out
 
@@ -543,7 +608,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
     feedback, last_issue = "", ""
     evidence = load_evidence(country, domain) if POLICY["run"]["grounding_backend"] in ("hybrid", "notebooklm") else ""
     existing_es = _existing_es_bodies(subdir, slug)   # para el gate de dedup near-dup
-    u0 = dict(qw.usage)
+    u0 = qw.usage_snapshot()
     for attempt in range(bar["max_revise_rounds"] + 1):
         payload = q_author(qw, country, domain, subdomain, topic, feedback, evidence=evidence)
         # Guarda contra respuestas JSON incompletas (p.ej. truncadas) → revise en vez de crashear el subdominio
@@ -566,8 +631,9 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             feedback = "No devolviste fuentes. Incluye fuentes REALES (>=1 primaria .gov) y regenera."
             last_issue = "no_sources"
             continue
-        es_doc = assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src)
-        en_doc = assemble_doc(country, domain, subdomain, slug, "en", payload, src_ids, fact_src)
+        gm = grounding_meta(payload, evidence_used=bool(evidence))
+        es_doc = assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src, grounding=gm)
+        en_doc = assemble_doc(country, domain, subdomain, slug, "en", payload, src_ids, fact_src, grounding=gm)
         # Gate de dedup: no escribir near-duplicates (escala = conocimiento único, no relleno).
         if existing_es and is_near_dup(es_doc, existing_es):
             feedback = ("Tu contenido DUPLICA otro documento de este subdominio. Dale un ÁNGULO claramente "
@@ -587,7 +653,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             judged = q_judge(qw, country, es_doc, evidence=evidence)
         except Exception as e:
             last_issue = f"judge_error:{e}"
-            break  # gate ya pasó; aceptar pese a fallo del juez (se marca abajo)
+            break  # gate pasó pero el juez falló → sale del loop y se DEGRADA a draft (revisión humana)
         sc = judged.get("scores", {})
         wrong = _real_wrong(judged.get("wrong_facts"))
         hard = judged.get("hard_fails") or []
@@ -599,16 +665,28 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
                         f"HECHOS ERRÓNEOS: {wrong}. FALLAS DURAS: {hard}. DIMENSIONES BAJAS: {below}.")
             last_issue = f"judge wrong={wrong[:2]} below={below}"
             continue
-        spent = {k: qw.usage[k] - u0[k] for k in u0}
+        u1 = qw.usage_snapshot()
+        spent = {k: u1.get(k, 0) - u0.get(k, 0) for k in u0}
         did = f"{country}-{domain}-{subdomain}-{slug}"
-        _log({"doc_id": did, "status": "review", "scores": sc, "spent": spent})
+        # Grounding mínimo: un doc de ALTA volatilidad SIN ninguna cifra anclada es sospechoso (una cifra
+        # que cambia cada trimestre DEBERÍA estar taggeada) → a revisión humana en vez de publicarse review.
+        if (gm["cited_facts"] == 0 and topic.get("volatility") == "high"
+                and POLICY["depth"].get("require_fact_when_high_volatility", True)):
+            for p in (es_path, en_path):
+                if p.exists():
+                    write_atomic(p, set_status(p.read_text(encoding="utf-8"), "draft"))
+            _log({"doc_id": did, "status": "draft", "issue": "high_volatility_no_fact", "scores": sc})
+            save_state(did, "draft")
+            return "needs_review(high_volatility_no_fact)"
+        _log({"doc_id": did, "status": "review", "scores": sc, "spent": spent,
+              "grounding": gm["grounding_tier"], "canonical_facts": gm["canonical_facts"]})
         save_state(did, "review")
-        return f"built_ok(scores={sc})"
+        return f"built_ok(scores={sc} grounding={gm['grounding_tier']})"
 
-    # rondas agotadas con problemas → conservar como draft + registrar
-    if es_path.exists():
-        for p in (es_path, en_path):
-            write_atomic(p, p.read_text(encoding="utf-8").replace("status: review", "status: draft", 1))
+    # rondas agotadas con problemas → DEGRADAR a draft + registrar (única válvula de revisión humana)
+    for p in (es_path, en_path):
+        if p.exists():
+            write_atomic(p, set_status(p.read_text(encoding="utf-8"), "draft"))
     did = f"{country}-{domain}-{subdomain}-{slug}"
     _log({"doc_id": did, "status": "draft", "issue": last_issue})
     save_state(did, "draft")
@@ -668,22 +746,54 @@ def corpus_size_mb():
     return total / 1e6
 
 
+def _build_log_summary() -> dict:
+    """Resumen del build_log.jsonl (última entrada por doc): distribución de grounding + causas de draft.
+    Hace visible el monitor de juez (judge_error) y qué tan anclado quedó el corpus."""
+    f = KB / "index" / "build_log.jsonl"
+    if not f.exists():
+        return {}
+    latest = {}
+    for line in f.read_text(encoding="utf-8").splitlines():
+        try:
+            e = json.loads(line)
+        except Exception:
+            continue
+        if e.get("doc_id"):
+            latest[e["doc_id"]] = e
+    grounding, issues = {}, {}
+    for e in latest.values():
+        if e.get("status") == "review":
+            g = e.get("grounding", "?")
+            grounding[g] = grounding.get(g, 0) + 1
+        elif e.get("status") == "draft":
+            iss = (str(e.get("issue", "?")) or "?").split(":")[0]
+            issues[iss] = issues.get(iss, 0) + 1
+    return {"grounding": grounding, "draft_issues": issues}
+
+
 def status():
     target = POLICY["targets"]["total_size_mb"]
     print(f"Tamaño corpus: {corpus_size_mb():.2f} MB / meta {target} MB")
-    review = draft = total = 0
+    review = draft = published = total = 0
     for c in ("shared", "mx", "us"):
         base = KB / c
         if not base.exists():
             continue
         for p in base.rglob("*.es.md"):
             total += 1
-            head = p.read_text(encoding="utf-8")[:500]
-            if "status: draft" in head:
+            st = doc_status(p.read_text(encoding="utf-8"))
+            if st == "draft":
                 draft += 1
-            elif "status: review" in head:
+            elif st == "review":
                 review += 1
-    print(f"Docs (.es): {total}  |  review: {review}  draft(revisión humana): {draft}")
+            elif st == "published":
+                published += 1
+    print(f"Docs (.es): {total}  |  review: {review}  draft(revisión humana): {draft}  published: {published}")
+    bl = _build_log_summary()
+    if bl.get("grounding"):
+        print(f"Grounding (review): {bl['grounding']}")
+    if bl.get("draft_issues"):
+        print(f"Drafts por causa (incl. judge_error): {bl['draft_issues']}")
     jobs = all_jobs()
     covered = sum(1 for (c, d, s) in jobs
                   if (KB / c / d / s).exists() and any((KB / c / d / s).glob("*.es.md")))
@@ -714,6 +824,8 @@ def main():
     ap.add_argument("--workers", type=int, default=4, help="subdominios en paralelo (concurrencia)")
     ap.add_argument("--retry-drafts", action="store_true",
                     help="en el resume, regenerar los docs en estado draft (en vez de saltarlos)")
+    ap.add_argument("--i-accept-unbounded-author", action="store_true",
+                    help="permitir --run con el autor (qwen) SIN tope de USD/tokens (riesgo de gasto en tarjeta)")
     args = ap.parse_args()
 
     global RETRY_DRAFTS, _AUTHOR_CLIENT
@@ -740,6 +852,7 @@ def main():
         return 0
 
     if args.run:
+        _guard_author_budget(args.i_accept_unbounded_author)
         run_all(qw, reg, args.workers, args.max_docs)
         return 0
 
@@ -770,21 +883,95 @@ def all_jobs():
     return jobs
 
 
+# ─────────────────────── cobertura vs concept_map (STOP real) ───────────────────────
+def _max_cell_topics() -> int:
+    return max((len(c.get("topics", [])) for c in CONCEPT_MAP.values()), default=0)
+
+
+def map_coverage() -> dict:
+    """Cobertura MEDIBLE contra el concept_map: temas con doc en disco / temas del mapa, y celdas con
+    baseline / completas. '' si no hay mapa (planner en vivo). Esta es la base del STOP por cobertura."""
+    if not CONCEPT_MAP:
+        return {}
+    total = covered = cells_baseline = cells_full = 0
+    for key, cell in CONCEPT_MAP.items():
+        c, d, s = key.split("/")
+        subdir = KB / c / d / s
+        topics = cell.get("topics", [])
+        total += len(topics)
+        have = {p.name[:-6] for p in subdir.glob("*.es.md")} if subdir.exists() else set()
+        cov = sum(1 for t in topics if t.get("slug") in have)
+        covered += cov
+        if have:
+            cells_baseline += 1
+        if topics and cov >= len(topics):
+            cells_full += 1
+    return {"covered": covered, "total": total,
+            "pct": (100.0 * covered / total) if total else 0.0,
+            "cells_total": len(CONCEPT_MAP), "cells_baseline": cells_baseline, "cells_full": cells_full}
+
+
+def coverage_complete() -> bool:
+    """True cuando STOP_ON=='coverage' y el concept_map está 100% cubierto (todo tema tiene doc). Si
+    require_full_breadth, además exige que toda celda tenga baseline (subsumido por cobertura total)."""
+    if STOP_ON != "coverage" or not CONCEPT_MAP:
+        return False
+    st = map_coverage()
+    if not st or st["total"] <= 0:
+        return False
+    full = st["covered"] >= st["total"]
+    if POLICY["targets"].get("require_full_breadth", False):
+        full = full and st["cells_baseline"] >= st["cells_total"]
+    return full
+
+
+def _effective_passes(raw_passes):
+    """Expande un cap 0 (=todo el mapa) en INCREMENTOS ACOTADOS para checkpointear cobertura/budget
+    entre pasadas (un resume-tras-recarga avanza contra el mapa, no re-camina un único pase gigante).
+    Sin concept_map, 0 → None (sin tope) = comportamiento de planner en vivo."""
+    if not CONCEPT_MAP:
+        return [(c or None) for c in raw_passes]
+    ceil = _max_cell_topics()
+    step = int(POLICY.get("breadth", {}).get("full_step", 8)) or 8
+    finite = [c for c in raw_passes if c and c > 0]
+    out = []
+    for cap in raw_passes:
+        if cap and cap > 0:
+            out.append(cap)
+            continue
+        nxt = (max(finite, default=0)) + step
+        while nxt < ceil:
+            out.append(nxt)
+            nxt += step
+        out.append(ceil)        # último incremento = cap >= celda más grande ⇒ cobertura total garantizada
+    seen, dedup = set(), []
+    for c in out:               # dedup preservando orden
+        if c not in seen:
+            seen.add(c)
+            dedup.append(c)
+    return dedup
+
+
 def run_all(qw, reg, workers, max_docs):
-    """Orquestación BREADTH-FIRST: varias pasadas con cap creciente de docs/subdominio. La pasada 1
-    cubre TODO el espectro a un baseline; las siguientes profundizan SOLO tras cubrir todo. El stop de
-    tamaño/presupuesto puede cortar en cualquier punto → primero ancho, luego hondo."""
+    """Orquestación BREADTH-FIRST con STOP por COBERTURA real. La pasada 1 cubre TODO el espectro a un
+    baseline; las siguientes profundizan. El cap 'todo el mapa' se expande en incrementos acotados para
+    checkpointear cobertura/budget. Para cuando el concept_map está 100% cubierto, o por budget/tamaño
+    (corte LIMPIO y reanudable: re-ejecutar recomputa cobertura desde disco y continúa)."""
     jobs = all_jobs()
     br = POLICY.get("breadth", {})
     if max_docs:                                   # --max-docs fuerza una sola pasada con ese cap
-        passes = [max_docs]
+        raw_passes = [max_docs]
     elif br.get("enabled"):
-        passes = br.get("passes") or [br.get("baseline_docs_per_subdomain", 2)]
+        raw_passes = br.get("passes") or [br.get("baseline_docs_per_subdomain", 2)]
     else:
-        passes = [POLICY["depth"]["min_docs_per_subdomain"]]
-    stopdesc = "COBERTURA total de la taxonomía" if STOP_ON != "size" else f"tamaño {SIZE_TARGET} MB"
+        raw_passes = [POLICY["depth"]["min_docs_per_subdomain"]]
+    passes = _effective_passes(raw_passes)
+    stopdesc = "COBERTURA total del concept_map" if STOP_ON != "size" else f"tamaño {SIZE_TARGET} MB"
+    cov0 = map_coverage()
+    covmsg = (f" · cobertura inicial {cov0['pct']:.0f}% ({cov0['covered']}/{cov0['total']} temas)"
+              if cov0 else "")
     print(f"Cobertura: {len(jobs)} subdominios · STOP por {stopdesc} · workers={workers} · "
-          f"BREADTH-FIRST pasadas(cap)={passes}", flush=True)
+          f"BREADTH-FIRST caps(docs/subdominio)={passes}{covmsg}", flush=True)
 
     def work(job, cap):
         if size_stop() or budget_exceeded():
@@ -797,14 +984,19 @@ def run_all(qw, reg, workers, max_docs):
             print(f"  !! error en {c}/{d}/{s}: {e}", flush=True)
 
     for pi, cap in enumerate(passes, 1):
+        if coverage_complete():
+            print("✅ COBERTURA COMPLETA del concept_map — STOP.", flush=True)
+            break
         if size_stop():
             print("TOPE DE TAMAÑO DE SEGURIDAD ALCANZADO.", flush=True)
             break
         if budget_exceeded():
-            print("PRESUPUESTO ALCANZADO (tokens/USD).", flush=True)
+            print("PRESUPUESTO ALCANZADO (USD/tokens) — corte LIMPIO y reanudable.", flush=True)
             break
+        cov = map_coverage()
         capdesc = "TODO el mapa" if not cap else f"cap {cap} docs/subdominio"
-        print(f"\n=== PASADA {pi}/{len(passes)} · {capdesc} (amplitud→profundidad) ===", flush=True)
+        covdesc = f" · cobertura {cov['pct']:.0f}%" if cov else ""
+        print(f"\n=== PASADA {pi}/{len(passes)} · {capdesc} (amplitud→profundidad){covdesc} ===", flush=True)
         if workers <= 1:
             for j in jobs:
                 if size_stop() or budget_exceeded():
@@ -814,11 +1006,15 @@ def run_all(qw, reg, workers, max_docs):
             with ThreadPoolExecutor(max_workers=workers) as ex:
                 list(ex.map(lambda j, _c=cap: work(j, _c), jobs))
     status()
-    print(f"usage autor={qw.usage}", flush=True)
+    covf = map_coverage()
+    if covf:
+        print(f"COBERTURA FINAL del mapa: {covf['pct']:.0f}% ({covf['covered']}/{covf['total']} temas · "
+              f"{covf['cells_full']}/{covf['cells_total']} celdas completas)", flush=True)
+    print(f"usage autor={qw.usage_snapshot()}", flush=True)
     if _JUDGE_CLIENT:
-        print(f"usage juez={_JUDGE_CLIENT.usage}", flush=True)
+        print(f"usage juez={_JUDGE_CLIENT.usage_snapshot()}", flush=True)
     if _PLANNER_CLIENT:
-        print(f"usage planner={_PLANNER_CLIENT.usage}", flush=True)
+        print(f"usage planner={_PLANNER_CLIENT.usage_snapshot()}", flush=True)
     by = {k: round(v, 3) for k, v in estimated_cost_by_provider().items()}
     print(f"COSTO ESTIMADO ~${estimated_cost_usd():.2f} USD · por proveedor: {by}", flush=True)
 

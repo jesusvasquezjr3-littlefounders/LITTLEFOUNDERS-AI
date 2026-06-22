@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -107,7 +108,14 @@ class Qwen:
             miss = "QWEN_API_KEY / QWEN_BASE_URL"
         if not self.key or not self.base:
             raise QwenError(f"Faltan {miss} en littlefounders_brain/rag-llm-brain/.env (provider={provider})")
-        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "cached": 0}
+        # usage es compartido entre workers (un cliente por rol) → toda mutación/lectura va bajo lock.
+        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "cached": 0, "search_calls": 0}
+        self._usage_lock = threading.Lock()
+
+    def usage_snapshot(self) -> dict:
+        """Copia consistente de usage (bajo lock) — segura para leer el costo mientras otros workers escriben."""
+        with self._usage_lock:
+            return dict(self.usage)
 
     # ── caché content-addressed ───────────────────────────────────────────────
     def _cache_key(self, payload: dict, enable_search: bool) -> str:
@@ -164,7 +172,8 @@ class Qwen:
         if ck:
             hit = self._cache_get(ck)
             if hit is not None:
-                self.usage["cached"] += 1
+                with self._usage_lock:
+                    self.usage["cached"] += 1
                 return hit
 
         last = None
@@ -173,9 +182,12 @@ class Qwen:
                 resp = self._post(payload, timeout)
                 msg = resp["choices"][0]["message"]["content"]
                 u = resp.get("usage", {})
-                self.usage["calls"] += 1
-                self.usage["prompt_tokens"] += u.get("prompt_tokens", 0)
-                self.usage["completion_tokens"] += u.get("completion_tokens", 0)
+                with self._usage_lock:
+                    self.usage["calls"] += 1
+                    self.usage["prompt_tokens"] += u.get("prompt_tokens", 0)
+                    self.usage["completion_tokens"] += u.get("completion_tokens", 0)
+                    if want_search:                       # surcharge de búsqueda web (se cobra por llamada)
+                        self.usage["search_calls"] += 1
                 if ck and msg:
                     self._cache_put(ck, msg)
                 return msg

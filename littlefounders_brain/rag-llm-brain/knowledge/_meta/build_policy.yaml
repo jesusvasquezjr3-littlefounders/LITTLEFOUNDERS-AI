@@ -25,6 +25,8 @@ breadth:
   baseline_docs_per_subdomain: 2   # PASS 1: cubrir CADA celda con N docs core (qué es + mecánica/ángulo).
   passes: [2, 5, 0]                # cap de docs/subdominio por pasada; 0 = SIN tope = cubrir TODO el
                                    # concept_map de la celda (enciclopedia). Primero ancho, luego completo.
+  full_step: 8                     # el cap 0 (todo el mapa) se EXPANDE en incrementos de este tamaño
+                                   # (p.ej. 13,21,29,37) para checkpointear cobertura/budget entre pasadas.
   # Interpretación: pasada 1 cubre todo a 2 docs; pasada 2 a 5; pasada 3 genera TODOS los temas del mapa
   # (cobertura enciclopédica). El presupuesto $ corta donde toque; lo construido es de calidad plena.
 
@@ -35,6 +37,9 @@ depth:
   min_cited_facts_per_doc: 4
   min_primary_sources_per_doc: 1
   require_all_applicable_tiers: true
+  require_fact_when_high_volatility: true   # doc de volatilidad ALTA sin ningún @fact anclado → draft
+                                            # (revisión humana): una cifra que cambia cada trimestre
+                                            # DEBE estar taggeada, no narrada sin ancla.
 
 # ── Crítico de completitud (loop-until-dry dentro de cada subdominio/pasada) ──
 completeness:
@@ -73,6 +78,13 @@ pricing_usd_per_mtok:
   glm-4.6:           { in: 0.60, out: 2.20 }
   glm-5.2:           { in: 1.20, out: 4.10 }
 
+# Sobrecargo estimado de BÚSQUEDA WEB por llamada (USD) — se SUMA al costo de tokens (el juez/autor
+# pagan por búsqueda además de tokens). Estimación conservadora; ajustar con la factura real.
+search_usd_per_call:
+  glm: 0.01       # z.ai web_search (search-prime)
+  qwen: 0.0       # Alibaba enable_search: incluido/despreciable
+  deepseek: 0.0   # sin búsqueda nativa
+
 # ── USO SABIO de la API (no consultas tontas) ────────────────────────────────
 wise_use:
   cache_llm: true                       # caché content-addressed de respuestas (resume gratis, no re-pagar)
@@ -80,12 +92,17 @@ wise_use:
   facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
   judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
   budget_output_tokens: 0               # 0 = sin tope; >0 = corta al alcanzar ese gasto de salida (autor)
-  budget_usd:                           # tope de gasto estimado POR PROVEEDOR (USD); null = sin tope.
-                                        # Calibrado a los saldos reales 2026-06-21 (con colchón ~10% por
-                                        # error de estimación de precios). AJUSTAR tras cada recarga.
+  # TOPE de gasto estimado POR PROVEEDOR (USD) = RAÍL DE SEGURIDAD, no la condición de STOP (esa es
+  # 'coverage'). La corrida se detiene LIMPIA y reanudable cuando CUALQUIER proveedor toca su tope.
+  # IMPORTANTE: el autor (qwen) es pay-as-you-go y FACTURA A TARJETA → DEBE tener tope (un runaway sin
+  # tope cobra directo). Para un --run de corpus COMPLETO, recarga las 3 APIs y SUBE estos topes a la
+  # proyección de costo total (ver DATASET_BUILD_RUNBOOK.md §costos). null = sin tope (lo rechaza --run
+  # salvo --i-accept-unbounded-author).
+  budget_usd:
     deepseek: 7.5                       # saldo real 8.13 (planner; barato → sobra de margen)
     glm: 9.0                            # saldo real 9.96 (juez+frescura; el proveedor CUELLO DE BOTELLA)
-    qwen: null                          # Alibaba = pago por uso (sin saldo): sin tope, solo se reporta el gasto
+    qwen: 60                            # Alibaba pay-as-you-go (sin saldo prepago): RAÍL anti-runaway sobre
+                                        # tarjeta. Súbelo conscientemente para un corpus completo.
   alert_usd_remaining: 3                # ALERTA por proveedor cuando (tope - gasto estimado) < este valor
 
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
