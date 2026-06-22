@@ -58,6 +58,9 @@ quality_bar:
   pedagogical_scaffolding: 4
   translation_fidelity: 4
   engagement: 4
+  completeness: 4            # cubre subtemas (qué/cómo/quién/cuándo/excepciones), no solo definición
+  worked_example: 4         # ejemplo TRABAJADO con actor nombrado + resultado numérico resuelto
+  citation_quality: 4       # cifras apoyadas en fuentes PRIMARIAS rastreables y fechadas
   max_revise_rounds: 3
 
 # ── Modelos por rol (Qwen autor + GLM juez; ver llm_qwen.py provider_for) ─────
@@ -91,6 +94,8 @@ wise_use:
   author_search_when_evidence: false    # si hay evidencia curada, el autor NO busca (ahorra); busca si falta
   facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
   judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
+  verify_source_liveness: true          # verifica que una URL citada RESUELVE antes de darle tier alto
+                                        # (anti-fabricación de citas); si no resuelve → tier:tertiary
   budget_output_tokens: 0               # 0 = sin tope; >0 = corta al alcanzar ese gasto de salida (autor)
   # TOPE de gasto estimado POR PROVEEDOR (USD) = RAÍL DE SEGURIDAD, no la condición de STOP (esa es
   # 'coverage'). La corrida se detiene LIMPIA y reanudable cuando CUALQUIER proveedor toca su tope.

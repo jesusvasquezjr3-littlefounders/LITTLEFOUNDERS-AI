@@ -32,6 +32,8 @@ import re
 import subprocess
 import sys
 import threading
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -254,6 +256,55 @@ def tier_of_url(url: str) -> str:
     return "tertiary"
 
 
+# ── Liveness de fuentes (anti-fabricación de citas) ──────────────────────────
+# El autor puede ALUCINAR una URL .gov (que se auto-clasificaría 'primary' por substring) y citarla
+# como grounding de una cifra volátil. Verificamos que la URL RESUELVE antes de concederle tier alto;
+# si no resuelve, se degrada a 'tertiary' (y el gate, que exige primary para volatilidad>=medium, fuerza
+# al autor a buscar una fuente real). Cache + fuera del lock de sources (no serializar la red).
+VERIFY_LIVENESS = bool(WISE.get("verify_source_liveness", True))
+_LIVENESS_CACHE: dict = {}
+_LIVENESS_LOCK = threading.Lock()
+
+
+def _url_alive(url: str, timeout: int = 8) -> bool:
+    key = (url or "").rstrip("/")
+    if not key:
+        return False
+    with _LIVENESS_LOCK:
+        if key in _LIVENESS_CACHE:
+            return _LIVENESS_CACHE[key]
+    alive = False
+    for method in ("HEAD", "GET"):
+        try:
+            req = urllib.request.Request(
+                key, method=method, headers={"User-Agent": "Mozilla/5.0 (littlefounders-kb-source-check)"})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                code = getattr(r, "status", None) or r.getcode()
+                alive = 200 <= int(code) < 400
+            if alive:
+                break
+        except urllib.error.HTTPError as e:
+            # el servidor RESPONDIÓ: 401/403/405/406/429 = EXISTE pero bloquea bots/rate-limit → cuenta como
+            # vivo (no es una URL fabricada). 404/410 = NO existe → muerto. Otros: reintenta GET, luego muerto.
+            if e.code in (401, 403, 405, 406, 429):
+                alive = True
+                break
+            continue
+        except Exception:
+            continue
+    with _LIVENESS_LOCK:
+        _LIVENESS_CACHE[key] = alive
+    return alive
+
+
+def resolved_tier(url: str) -> str:
+    """tier_of_url + degradación por liveness: una URL 'primary/reputable' que NO resuelve → 'tertiary'."""
+    tier = tier_of_url(url)
+    if VERIFY_LIVENESS and tier in ("primary", "reputable") and not _url_alive(url):
+        return "tertiary"
+    return tier
+
+
 class SourceRegistry:
     def __init__(self):
         doc = yaml.safe_load(SOURCES_FILE.read_text()) or {}
@@ -268,12 +319,13 @@ class SourceRegistry:
         key = (url or "").rstrip("/")
         if not key:
             return ""
+        # liveness FUERA del lock (no serializar la red entre workers); cache evita re-fetch
+        tier = resolved_tier(url)
         with self.lock:
             if key in self.by_url:
                 return self.by_url[key]
             h = hashlib.md5(key.encode()).hexdigest()[:8]
             sid = f"src_gen_{h}"
-            tier = tier_of_url(url)
             # Truncar el TEXTO antes de json.dumps (no después): truncar la salida JSON podía
             # cortar una secuencia \uXXXX a la mitad → YAML inválido → el gate crasheaba.
             t = (title or url)[:160]
@@ -419,7 +471,9 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
     ) if evidence else ""
     msg = [{"role": "system", "content":
             "Eres autor experto de contenido educativo bilingüe (ES canónico, EN fiel) de finanzas/impuestos, "
-            "edades 5-18+, fundamentado en FUENTES PRIMARIAS (.gov/leyes) y actual a 2026-06-20. Devuelve SOLO JSON."},
+            f"edades 5-18+, fundamentado en FUENTES PRIMARIAS (.gov/leyes) y actual a {DATE}. Apuntas a calidad "
+            "NIVEL ENCICLOPEDIA/INDUSTRIA (estándar Investopedia/IRS/SAT/CONDUSEF): definición clara, ejemplo "
+            "TRABAJADO con cifras resueltas, fechado explícito de cada dato, y auto-contención. Devuelve SOLO JSON."},
            {"role": "user", "content":
             canon_block + ev_block +
             f"País={country} ({JURIS[country]}) dominio={domain} subdominio={subdomain}.\n"
@@ -428,12 +482,20 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             "REGLAS DURAS:\n"
             f"- Cuerpo con secciones por tier, cada encabezado con comentario, p.ej. "
             "'## Para jóvenes (tier3-4) <!-- age_band: tier3,tier4 -->'. Cubre TODOS los age_bands dados.\n"
-            f"- Empieza con '## For future Claude' (2-3 frases: qué, jurisdicción, fecha 2026-06-20, diferenciador MX vs US).\n"
+            f"- Empieza con '## For future Claude' (2-3 frases: qué, jurisdicción, fecha {DATE}, diferenciador MX vs US).\n"
             f"- VOCABULARIO PROHIBIDO en secciones tier1/tier2: {forb['tier1']['forbidden']+forb['tier2']['forbidden']} "
             "(ni sus equivalentes en inglés). Explica concreto, no abstracto.\n"
-            "- Incluye AL MENOS un mini-ejemplo NUMÉRICO con cifras REDONDEADAS, presentado como "
-            "ILUSTRACIÓN ('por ejemplo, si ganas $5,000...'). NO le pongas @fact a cálculos derivados "
-            "ni a montos exactos de tablas (p.ej. retención exacta): esos son ilustrativos, no datos oficiales.\n"
+            "- ESTRUCTURA NIVEL ENCICLOPEDIA en la sección del tier MÁS ALTO presente (tier4/tier5): (a) una "
+            "definición de UNA línea; (b) '**Puntos clave**' con 3-5 viñetas; (c) cómo funciona / cómo se calcula "
+            "(fórmula si aplica); (d) un EJEMPLO TRABAJADO; (e) consideraciones/excepciones ('Ojo:', 'Excepción:'); "
+            "(f) si aplica, una comparación 'X vs Y'. En tiers bajos, versión simplificada pero con el ejemplo.\n"
+            "- EJEMPLO TRABAJADO OBLIGATORIO: con un ACTOR con nombre y un escenario ('Ana gana $10,000…'), TODOS "
+            "los insumos nombrados, la operación mostrada y el RESULTADO resuelto a una cifra concreta ('= $1,600'). "
+            "Preséntalo como ILUSTRACIÓN con cifras REDONDEADAS. NO le pongas @fact a cálculos derivados ni a montos "
+            "de tablas (retención exacta): son ilustrativos, no datos oficiales.\n"
+            f"- FECHADO: toda cifra sensible al tiempo lleva su periodo/'vigente a {DATE[:7]}' o 'ejercicio fiscal'. "
+            "AUTO-CONTENCIÓN (para RAG): di explícitamente el país y el periodo, y define los términos que uses "
+            "(un chunk recuperado debe entenderse solo, sin contexto externo).\n"
             f"- Marca con [[fact:<id.punteado>]] SOLO las cifras OFICIALES y verificables (tasas, límites, "
             "umbrales, versiones, fechas oficiales) y declára cada una en 'facts' con su fuente PRIMARIA. "
             f"Apunta a >= {POLICY['depth']['min_cited_facts_per_doc']} hechos oficiales si el tema los tiene.\n"
@@ -441,7 +503,9 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             "los compara: cualquier diferencia = RECHAZO). Evita citar cifras MUY volátiles (tasas de banco "
             "central) que no estén en esa lista; si lo haces, hazlo SIEMPRE con su fecha de vigencia.\n"
             "- NO mezcles jurisdicciones: nada de instrumentos del otro país como si aplicaran aquí.\n"
-            f"- Usa fuentes REALES y ACTUALES (busca en la web); incluye >= 1 fuente PRIMARIA (.gov/ley) para hechos volátiles.{fix}\n\n"
+            "- NEUTRALIDAD: explica, no vendas; nada de recomendar productos/marcas ni sesgo político.\n"
+            f"- Usa fuentes REALES y ACTUALES (busca en la web); cita SOLO fuentes PRIMARIAS o reputadas; "
+            f"incluye >= 1 fuente PRIMARIA (.gov/ley) para hechos volátiles.{fix}\n\n"
             'Devuelve {"title_es":"...","title_en":"...","concept_ids":["..."],"age_bands":[...],'
             '"depth_tier":"...","volatility":"...",'
             '"sources":[{"url":"https://...","title":"...","publisher":"...","jurisdiction":"MX-FED|US-FED|NONE"}],'
@@ -471,8 +535,13 @@ def q_judge(qw, country, es_text, evidence=""):
             "REALMENTE INCORRECTAS (el valor del documento DIFIERE del valor real verificado). Si una cifra "
             "es correcta o coincide con la fuente, NO la incluyas. Si no encuentras errores, devuelve []. "
             "Cada entrada: objeto {\"claim\":\"...\",\"doc_value\":\"...\",\"correct_value\":\"...\"}.\n"
+            "DIMENSIONES ADICIONALES (estándar industria/enciclopedia): completeness = ¿cubre los subtemas "
+            "esperados (qué es / cómo se calcula / quién / cuándo / excepciones), no solo una definición?; "
+            "worked_example = ¿hay un ejemplo TRABAJADO con actor nombrado, insumos y resultado numérico resuelto?; "
+            "citation_quality = ¿las cifras se apoyan en fuentes PRIMARIAS rastreables y fechadas?\n"
             'Devuelve {"scores":{"factual_accuracy":n,"pedagogical_scaffolding":n,"country_correctness":n,'
-            '"translation_fidelity":n,"engagement":n},"hard_fails":[...],"wrong_facts":[...],"verdict":"publish|revise"}'}]
+            '"translation_fidelity":n,"engagement":n,"completeness":n,"worked_example":n,"citation_quality":n},'
+            '"hard_fails":[...],"wrong_facts":[...],"verdict":"publish|revise"}'}]
     return _judge_client().json(msg, model=MODELS["judge"], enable_search=MODELS["grounding_search"],
                                 temperature=0.2, timeout=240)
 
@@ -659,7 +728,8 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
         hard = judged.get("hard_fails") or []
         below = [f"{k}={sc.get(k)}<{bar[k]}" for k in
                  ("factual_accuracy", "country_correctness", "pedagogical_scaffolding",
-                  "translation_fidelity", "engagement") if k in sc and sc[k] < bar[k]]
+                  "translation_fidelity", "engagement", "completeness", "worked_example",
+                  "citation_quality") if k in bar and k in sc and sc[k] < bar[k]]
         if wrong or hard or judged.get("verdict") == "revise" or below:
             feedback = ("Revisa y REGENERA. Verifica cada cifra contra fuente PRIMARIA ACTUAL (2026). "
                         f"HECHOS ERRÓNEOS: {wrong}. FALLAS DURAS: {hard}. DIMENSIONES BAJAS: {below}.")
