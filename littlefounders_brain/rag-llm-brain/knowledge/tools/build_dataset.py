@@ -576,7 +576,7 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
                    temperature=0.4, max_tokens=8000, timeout=240)
 
 
-def q_judge(qw, country, es_text, evidence="", use_search=False):
+def q_judge(qw, country, es_text, evidence="", use_search=False, model=None, client=None):
     """Juez = GLM (z.ai), proveedor INDEPENDIENTE del autor (Qwen). DOS MODOS (optimización de costo L1+L2):
       · LEAN (default): SIN búsqueda web ni evidencia → evalúa pedagogía/coherencia/jurisdicción. El
         fact-checking lo hacen ya el gate (canónicas), D1 (oficial no-anclada → draft) y el verificador
@@ -610,8 +610,10 @@ def q_judge(qw, country, es_text, evidence="", use_search=False):
             'Devuelve {"scores":{"factual_accuracy":n,"pedagogical_scaffolding":n,"country_correctness":n,'
             '"translation_fidelity":n,"engagement":n,"completeness":n,"worked_example":n,"citation_quality":n},'
             '"hard_fails":[...],"wrong_facts":[...],"verdict":"publish|revise"}'}]
-    return _judge_client().json(msg, model=MODELS["judge"], enable_search=factcheck,
-                                temperature=0.2, timeout=240)
+    # model/client opcionales: por defecto el juez de producción; el bake-off (judge_bakeoff.py) los inyecta
+    # para comparar candidatos (p.ej. GLM vs DeepSeek) sobre el mismo doc sin tocar la config.
+    return (client or _judge_client()).json(msg, model=(model or MODELS["judge"]), enable_search=factcheck,
+                                            temperature=0.2, timeout=240)
 
 
 _JUDGE_CLIENT = None
