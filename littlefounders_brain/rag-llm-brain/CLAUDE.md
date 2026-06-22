@@ -105,9 +105,29 @@ nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 > kn
 
 ## Skills (`skills/`)
 
-| Skill | Para qué |
-|-------|----------|
-| `notebooklm-py/` | Grounding con NotebookLM (API no oficial). Auth/creds: ver su `SKILL.md`. |
-| `lightrag/` | Motor RAG grafo+vector (en repisa; ver BRAIN_STRATEGY §0 por qué no se usa de motor). |
-| `knowledge-nexus/` | Mecánica de ingest→chunk (metadata-en-embedding). |
-| `obsidian-second-brain/` | Esquema markdown+frontmatter AI-first (base del esquema del corpus). |
+Toda skill tiene un `SKILL.md` que es la fuente de verdad para el agente. **Antes de trabajar en
+tareas relacionadas con una skill, leer su `SKILL.md`.**
+
+### Catálogo
+
+| Skill | Para qué | Cuándo invocar | `SKILL.md` |
+|-------|----------|----------------|------------|
+| `notebooklm-py/` | Grounding con NotebookLM (API no oficial). Descubre fuentes, extrae fulltext, pregunta con citas. | Al trabajar en `build_evidence.py`, ingesta de fuentes primarias, refresh de creds, o cualquier tarea de descubrimiento/grounding. | `skills/notebooklm-py/SKILL.md` |
+| `lightrag/` | Motor RAG grafo+vector dual-layer (KG + embeddings). 5 modos de query. **EN REPISA** (decisión D2). | Al evaluar motores RAG alternativos, discutir arquitectura de retrieval, o comparar enfoques grafo-primero vs vector-primero. | `skills/lightrag/SKILL.md` |
+| `knowledge-nexus/` | Pipeline ingest→grafo de conocimiento con Neo4j. Patrones de chunking y metadata-en-embedding. | Al trabajar en chunking, pipelines de ingest, metadata denormalizada en chunks, o evaluar patrones de graph-building. | `skills/knowledge-nexus/SKILL.md` |
+| `obsidian-second-brain/` | Operador de vault Obsidian: 45+ comandos, research toolkit, AI-first vault rules, esquema markdown+frontmatter. | Al definir/modificar el esquema del corpus markdown, frontmatter, navegabilidad, MOCs, o cualquier aspecto de la estructura de documentos. | `skills/obsidian-second-brain/SKILL.md` |
+
+### Reglas de uso
+
+1. **Toda tarea que involucre chunking, ingest, grounding, esquema de corpus o retrieval DEBE
+   consultar el `SKILL.md` de la skill relevante** antes de generar código o modificar el pipeline.
+2. **NotebookLM es el andamio de extracción:** leer `skills/notebooklm-py/SKILL.md` antes de tocar
+   `build_evidence.py` o cualquier flujo de grounding.
+3. **Obsidian-second-brain define el esquema del corpus:** leer `skills/obsidian-second-brain/SKILL.md`
+   antes de modificar frontmatter, estructura de carpetas, o patrones de navegabilidad.
+4. **Knowledge-Nexus inspira el firewall anti-fuga:** leer `skills/knowledge-nexus/SKILL.md` antes
+   de modificar metadata de chunks o el sistema de filtrado.
+5. **LightRAG está en repisa:** NO usar como motor de retrieval sin re-evaluar decisión D2 en
+   BRAIN_STRATEGY.md. Consultar su `SKILL.md` solo para evaluación comparativa.
+6. **Las skills complementan, NO reemplazan** el pipeline canónico definido en `PIPELINE.md` y
+   `BRAIN_STRATEGY.md`. Las skills dan contexto de diseño; el pipeline es la autoridad operativa.
