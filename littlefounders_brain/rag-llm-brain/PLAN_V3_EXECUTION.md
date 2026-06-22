@@ -1,5 +1,11 @@
 # PLAN_V3_EXECUTION.md — Plan de ejecución del pipeline v3 (ultradetallado · resume-able)
 
+> **⚠️ v3.1 — HARDENING (2026-06-21):** la guía de ejecución canónica y actualizada (de cero a servir,
+> con `--production`, `semdedup`, `--strict-recall`, resume tras budget) está en
+> [`PIPELINE.md`](PIPELINE.md) §9. Cambios respecto a este doc: STOP por cobertura ya implementado;
+> degradación a draft funcional; presupuesto del autor (Qwen) con tope obligatorio (`--run` lo exige);
+> embedder de prod fastembed; frescura wall-clock; `facts.yaml` ~67.
+
 > **Propósito doble:** (1) guía paso a paso para EJECUTAR el pipeline v3, y (2) registro histórico para
 > que cualquier humano o agente IA retome el trabajo sin perder contexto si algo se interrumpe.
 > **Estado al 2026-06-21:** TODO LISTO para ejecutar. `preflight.py` da **GO**. **No ejecutado aún**
@@ -10,12 +16,13 @@
 > independiente (DeepSeek planner / Qwen autor / GLM juez) → más velocidad y diversidad; (2) **STOP por
 > COBERTURA** (`stop_on: coverage`), ya no por MB — corre hasta cubrir toda la taxonomía; (3) **presupuesto
 > en $** (`budget_usd`) + **alerta de saldo bajo** (`alert_usd_remaining`); (4) **taxonomía ampliada**
-> (crypto, metales, bolsa, bonds, real_estate, loans, interest_rates) + **facts.yaml a ~48 cifras**
-> verificadas (lote 2: NIIT, coleccionables 28%, wash-sale, SALT 2026, bolsa/dividendos MX, cripto…).
+> (crypto, metales, bolsa, bonds, real_estate, loans, interest_rates) + **facts.yaml a ~67 cifras**
+> verificadas (lote 2: NIIT, coleccionables, wash-sale, SALT, bolsa/dividendos MX; lote 3: FICA, EITC,
+> gift/estate, UMA mensual/anual, aguinaldo, PTU, subsidio al empleo…).
 >
 > **Ronda 3 (2026-06-21) — calidad ENCICLOPEDIA / cobertura TOTAL:** (1) **concept map** (`build_concept_map.py`
-> → `_meta/concept_map.yaml`): espinazo EXHAUSTIVO de temas por celda (DeepSeek), ~40-60 temas/celda ×251 ≈
-> **~12k temas ≈ ~80-120 MB de contenido único** = define "qué es TODO" y lo hace MEDIBLE; (2) el orquestador
+> → `_meta/concept_map.yaml`): espinazo EXHAUSTIVO de temas por celda (DeepSeek), regenerado LEAN a
+> **~7,950 temas (257 celdas, ~31/celda)** = define "qué es TODO" y lo hace MEDIBLE; (2) el orquestador
 > genera CONTRA el mapa (`_cell_topics`); (3) **medición de cobertura** (`--status`: docs/temas %); (4)
 > **gate de dedup near-dup** (`dedup.py`) anti-relleno; (5) pasada final `cap 0` = cubre TODO el mapa.
 > Generar el mapa la 1ª vez: `build_concept_map.py --all`. Luego `--run` genera el contenido contra él.

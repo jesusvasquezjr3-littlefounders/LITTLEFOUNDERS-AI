@@ -1,9 +1,10 @@
 # Runbook — Construcción Autónoma del Dataset (pipeline HÍBRIDO)
 
-> ⚠️ **v3 vigente:** el pipeline evolucionó a **v3** (autor Qwen + **juez GLM con búsqueda** + tabla
-> canónica `_meta/facts.yaml` + breadth-first + resume). El runbook de ejecución **autoritativo** es
-> [`../PLAN_V3_EXECUTION.md`](../PLAN_V3_EXECUTION.md) y el diseño es [`../ARCHITECTURE_V3.md`](../ARCHITECTURE_V3.md).
-> Antes de `--run`, corre `tools/preflight.py` (GO/NO-GO). Lo de abajo describe el flujo base híbrido.
+> ⚠️ **v3.1 vigente:** el pipeline evolucionó a **v3.1 (hardened)** (autor Qwen + **juez GLM con búsqueda**
+> + tabla canónica `_meta/facts.yaml` + breadth-first + STOP por cobertura real + grounding etiquetado +
+> dedup semántico + frescura wall-clock). La referencia **CANÓNICA de principio a fin (con mermaid)** es
+> [`../PIPELINE.md`](../PIPELINE.md) (ejecución en §9). Antes de `--run`, corre `tools/test_pipeline.py` +
+> `tools/preflight.py` (GO/NO-GO). Lo de abajo describe el flujo base híbrido.
 >
 > Construye el corpus **solo**, sin tokens de Claude. Grounding **híbrido**: **NotebookLM** ingiere
 > fuentes primarias curadas → caché local; el **autor (Qwen)** redacta fundado en esa evidencia (+

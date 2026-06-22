@@ -1,5 +1,12 @@
 # ENCYCLOPEDIA_STRATEGY.md — Cobertura TOTAL (calidad enciclopedia, sin SME bloqueante)
 
+> **⚠️ v3.1 — HARDENING (2026-06-21):** referencia canónica del pipeline ahora en [`PIPELINE.md`](PIPELINE.md).
+> Decisión de diseño CLAVE confirmada por research de parity: para un RAG (no pretraining) NO se multiplica
+> el registro/audiencia estilo Cosmopedia (eso fragmenta el embedding e infla el índice) — se mantiene **un
+> doc canónico por (país, idioma, tema)** con secciones por edad, la diversidad útil es **cobertura de
+> temas + de preguntas** (competency_questions). Calidad nivel-industria = plantilla Investopedia/IRS
+> (definición, puntos clave, ejemplo TRABAJADO, fechado, fuentes primarias) + rúbrica ampliada del juez.
+
 > **Meta:** un cerebro de **cobertura TOTAL** del sector (finanzas/negocios/economía/admin/contaduría/
 > fiscal, MX+US, 5-18+), calidad **enciclopedia**, usable en industria — "almacenamiento de conocimiento
 > ante catástrofe". SME = auditoría **posterior**, no bloqueante. Basado en un benchmark de cómo lo hacen

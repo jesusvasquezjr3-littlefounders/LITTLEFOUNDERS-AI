@@ -1,5 +1,11 @@
 # BRAIN_STRATEGY.md — El Cerebro de Conocimiento de LittleFounders
 
+> ⚠️ **v3.1 — HARDENING (2026-06-21):** referencia CANÓNICA de principio a fin (con mermaid) =
+> [`PIPELINE.md`](PIPELINE.md). Tras evaluación crítica: STOP por cobertura real, review→draft funcional,
+> claim "100% real" reducido a su alcance (solo ~67 cifras de `facts.yaml`; el resto LLM-revisado con
+> `grounding_tier`), embedder de prod fastembed multilingüe, frescura wall-clock, dedup semántico +
+> decontaminación. Lo de abajo es estrategia base/histórica.
+
 > ⚠️ **ACTUALIZACIÓN v3 (2026-06-21):** el pipeline evolucionó a **v3** tras un benchmark vs. la industria
 > (Phi/Cosmopedia, BloombergGPT/FinPile, SAFE/FActScore, Constitutional AI). Cambios clave: **(1)** verdad
 > de base estructurada en `_meta/facts.yaml` (tabla canónica de cifras, el gate compara valores —

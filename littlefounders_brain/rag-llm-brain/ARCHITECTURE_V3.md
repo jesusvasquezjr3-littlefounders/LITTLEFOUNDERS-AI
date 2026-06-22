@@ -1,5 +1,12 @@
 # ARCHITECTURE_V3.md — Cerebro de conocimiento, pipeline v3 (fact-anchored · Qwen+GLM · breadth-first)
 
+> **⚠️ v3.1 — HARDENING (2026-06-21):** la referencia CANÓNICA de principio a fin (con mermaid) es ahora
+> [`PIPELINE.md`](PIPELINE.md). Tras una evaluación crítica adversarial: el **STOP por cobertura ahora es
+> REAL** (antes solo etiqueta); **review→draft FUNCIONA** (antes no-op); **"100% real" → alcance honesto**
+> (solo las ~67 cifras de `facts.yaml` son verificadas determinísticamente; el resto es LLM-revisado con
+> `grounding_tier`); `facts.yaml` 48→**~67**; embedder de prod **fastembed multilingüe**; **frescura
+> wall-clock**; **dedup semántico** + **decontaminación** añadidos. Este doc es el diseño histórico.
+
 > **Estado:** diseñado, implementado y auditado (GO) el **2026-06-21**. Listo para ejecución; **aún no
 > ejecutado** (la corrida completa la dispara un humano). Ver el plan de ejecución en
 > [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md). Esta es la decisión arquitectónica autoritativa que
@@ -66,7 +73,7 @@ flowchart TD
     end
 
     subgraph O["② Espinazo de conocimiento + Orquestación BREADTH-FIRST"]
-        CMAP[("concept_map.yaml<br/>~12k temas = 'qué es TODO'<br/>build_concept_map.py · DeepSeek")]:::deepseek
+        CMAP[("concept_map.yaml<br/>257 celdas · ~7,950 temas = 'qué es TODO'<br/>build_concept_map.py · DeepSeek")]:::deepseek
         PASS["run_all · pasadas 2 → 5 → TODO el mapa<br/>STOP: COBERTURA del mapa / presupuesto $"]:::code
         CMAP --> PASS
     end
@@ -211,7 +218,7 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
 El espacio de "qué generar" lo define el **concept map** (§4.5). `run_all` ejecuta **varias pasadas** con
 cap creciente de docs/subdominio (`breadth.passes: [2, 5, 0]`):
 
-- **Pasada 1 (cap 2):** cubre las **251 celdas** `país×dominio×subdominio` con 2 docs core cada una →
+- **Pasada 1 (cap 2):** cubre las **257 celdas** `país×dominio×subdominio` con 2 docs core cada una →
   amplitud total primero.
 - **Pasada 2 (cap 5):** profundiza tras cubrir todo.
 - **Pasada 3 (cap 0 = sin tope):** genera **TODOS los temas del concept map** de cada celda → cobertura
@@ -234,10 +241,10 @@ deriva, por celda, el espacio **EXHAUSTIVO** de temas que una enciclopedia tendr
 prompt de enumeración exhaustiva + crítico de completitud loop-until-dry), y lo persiste en
 `_meta/concept_map.yaml` como artefacto **versionado y reviewable** — no efímero como el planner en runtime.
 
-- **Es la definición de "TODO":** ~40-60 temas por celda × 251 celdas ≈ **~12 000 temas únicos** ≈
-  **~80-120 MB de contenido único** (los 100 MB / "enciclopedia" son alcanzables y son contenido REAL, no
-  relleno — el mapa lo demuestra). Ejemplo: `mx/taxes/income_tax` = 57 temas (residencia fiscal, todos los
-  tipos de ingreso, RESICO, precios de transferencia, convenios de doble imposición, medios de defensa, cripto…).
+- **Es la definición de "TODO":** ~31 temas GENUINOS por celda × 257 celdas ≈ **~7,950 temas únicos**
+  (cifra LEAN tras la evaluación crítica: el mapa salía inflado ~2-3× y se regeneró por SATURACIÓN, no por
+  llenar un cap). Es contenido REAL, no relleno — el mapa lo demuestra. Ejemplo: `mx/taxes/income_tax`
+  (residencia fiscal, tipos de ingreso, RESICO, deducciones, medios de defensa, cripto…).
 - **Hace la cobertura MEDIBLE:** `--status` reporta `docs generados / temas del mapa (%)`. El stop = 100% del mapa.
 - **El orquestador genera CONTRA el mapa** (`_cell_topics`): determinista, completo, resumible. Si una celda
   no está en el mapa, cae al planner en vivo (compat).
