@@ -45,14 +45,17 @@ def _fastembed_model() -> str:
     era inglés-only y degradaba el retrieval en español. Configurable en build_policy.embedding."""
     try:
         bp = yaml.safe_load((KB / "_meta" / "build_policy.yaml").read_text())
-        return (bp.get("embedding", {}) or {}).get("fastembed_model", "BAAI/bge-m3")
+        return (bp.get("embedding", {}) or {}).get("fastembed_model", "sentence-transformers/paraphrase-multilingual-mpnet-base-v2")
     except Exception:
-        return "BAAI/bge-m3"
+        return "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 
 
 DEFAULT_FASTEMBED_MODEL = _fastembed_model()
 
 _HEADING_RE = re.compile(r"^(#{2,3})\s+(.*)$", re.M)
+# Secciones de ANDAMIAJE del autor (meta-comentario "For future Claude" / "Para el futuro Claude")
+# NO son conocimiento: se excluyen del índice para que no contaminen el retrieval (hallazgo del smoke).
+_SCAFFOLD_RE = re.compile(r"\b(future\s+claude|futuro\s+claude|for\s+future)\b", re.I)
 _AGEBAND_RE = re.compile(r"<!--\s*age_band:\s*([a-z0-9, ]+?)\s*-->")
 _FACT_RE = re.compile(r"<!--\s*@fact\b.*?-->", re.S)
 _COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
@@ -150,6 +153,8 @@ def chunk_doc(doc: Doc) -> list[Chunk]:
 
     idx = 0
     for title, start, end in segments:
+        if _SCAFFOLD_RE.search(title):
+            continue                       # excluir secciones de andamiaje del autor (no son conocimiento)
         raw = body[start:end]
         text = _clean(raw)
         if len(text) < 12:

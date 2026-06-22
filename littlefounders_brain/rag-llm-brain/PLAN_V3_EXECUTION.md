@@ -1,5 +1,18 @@
 # PLAN_V3_EXECUTION.md — Plan de ejecución del pipeline v3 (ultradetallado · resume-able)
 
+> **⚠️ v4 — AUTORIDAD ACTUAL (2026-06-22):** el diseño canónico de principio a fin es
+> [`ARCHITECTURE_V4.md`](ARCHITECTURE_V4.md) y la **guía de ejecución de la corrida masiva** es
+> [`RUNBOOK_V4.md`](RUNBOOK_V4.md). Este documento (v3 / v3.1) queda como **registro histórico, válido
+> donde no esté superado por v4**. Novedades v4 que cambian lo de abajo: el autor escribe desde evidencia
+> recuperada **por-tema** (RAG-to-write, `tools/evidence_rag.py`, TF-IDF léxico + firewall de jurisdicción
+> sobre la entrada), NO de memoria ni de un blob por dominio; **verificación atómica** por afirmación vía NLI
+> (`tools/atomic_verify.py`, soportado/contradicho/no-verificable), gated en `build_topic` por
+> `quality_bar.atomic_verify` — el juez GLM ya NO es el único garante factual; **proyección de costo**
+> (`tools/cost_projection.py`) cableada en preflight (rechaza GO si los topes no alcanzan para la corrida
+> completa); la cobertura cuenta SOLO docs VERIFICADOS (no borradores) con índice semántico real (mpnet, no
+> hash); el planner pasa a **DeepSeek V4** (`deepseek-v4-flash`). Proyección de costo de la corrida completa
+> (v4): **~$964 USD** (GLM ~$703, Qwen ~$261) — el tope de GLM debe subir de $9 a ~$800.
+
 > **⚠️ v3.1 — HARDENING (2026-06-21):** la guía de ejecución canónica y actualizada (de cero a servir,
 > con `--production`, `semdedup`, `--strict-recall`, resume tras budget) está en
 > [`PIPELINE.md`](PIPELINE.md) §9. Cambios respecto a este doc: STOP por cobertura ya implementado;
@@ -65,8 +78,8 @@ Cambios entregados (todos verificados, ver §6):
    evidencia curada, y NO re-checa cifras canónicas (las valida el gate). DeepSeek retirado del rol juez.
 5. **Autor anclado** — el autor recibe el bloque de cifras canónicas (copia id+valor) y busca en web solo
    si falta evidencia (uso sabio).
-6. **Orquestación breadth-first** — `run_all` por pasadas (cap `[2,4,8]`): amplitud total antes que
-   profundidad.
+6. **Orquestación breadth-first** — `run_all` por pasadas (caps `[2,5,0]`, que se expanden a
+   `[2,5,13,21,29,37]`): amplitud total antes que profundidad.
 7. **Robustez** — escritura atómica, `index/build_state.json`, `--retry-drafts`, presupuesto de tokens,
    tolerancia a fallo por subdominio, backoff de red.
 8. **Auditoría + frescura** — `tools/preflight.py` (GO/NO-GO) y `tools/update_facts.py` (agente de
@@ -105,13 +118,14 @@ CTC **$2,200**, **1099-NEC subió a $2,000** (OBBBA), 1099-K revertido a $20,000
    nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 \
          > knowledge/build_v3.log 2>&1 &
    ```
-   Hace breadth-first: pasada 1 cubre todas las celdas a 2 docs, luego profundiza hasta 10 MB.
+   Hace breadth-first: caps `[2,5,0]` que se expanden a `[2,5,13,21,29,37]` (pasada 1 cubre todas las
+   celdas a 2 docs y luego profundiza). STOP por **cobertura VERIFICADA** del concept map (no por MB).
 4. **Supervisión (solo errores).** `tail -f knowledge/build_v3.log` y `--status`. Señales sanas:
    `built_ok` frecuente, pocos `draft`, `error en <celda>` raro. No intervenir si corre limpio.
 5. **Al terminar (meta de tamaño o cobertura).**
    ```bash
    ./.venv/bin/python knowledge/tools/gate_kb.py                 # corpus completo VERDE
-   ./.venv/bin/python knowledge/tools/build_index.py --embedder fastembed   # índice (NO usar 'hash' en prod)
+   ./.venv/bin/python knowledge/tools/build_index.py --production --embedder fastembed   # índice mpnet real (rechaza 'hash')
    ./.venv/bin/python knowledge/eval/run_kb_eval.py             # golden + fuga + frescura
    ```
 6. **Revisión humana de drafts (cola del SME).** `--status` muestra el conteo de `draft`. Cada draft es
@@ -162,11 +176,11 @@ re-lanzar (el resto se respeta).
 | Check | Resultado |
 |-------|-----------|
 | Compilan todos los tools (`py_compile`) | ✓ |
-| `preflight.py` completo (con red) | **GO ✅** (ping autor Qwen, ping juez GLM, búsqueda GLM "IVA 16%", gate verde, 27 cifras canónicas, evidencia 657) |
-| GLM vía z.ai responde + búsqueda web | ✓ (glm-4.6 y glm-4.7) |
-| Gate v3 sobre corpus actual | ✓ VERDE (38 docs, 0 HARD) |
+| `preflight.py` completo (con red) | **GO ✅** (ping autor Qwen, ping juez GLM, búsqueda GLM "IVA 16%", gate verde, 56 cifras canónicas enforce, evidencia 657, proyección de costo dentro de topes) |
+| GLM vía z.ai responde + búsqueda web | ✓ (glm-4.6) |
+| Gate v3 sobre corpus actual | ✓ VERDE (40 docs, 0 HARD) |
 | Comparación canónica dispara | ✓ (`mx.iva.frontera`=8% pasa; 15%≠16% falla) |
-| `facts.yaml` carga | ✓ 30 hechos, 27 enforced, 0 PENDING |
+| `facts.yaml` carga | ✓ 67 hechos (66 verificados, 56 enforce), 0 PENDING |
 | Cableado autor→juez (dry-run, sin escribir corpus) | ✓ autor usa ids canónicos; juez GLM devuelve scores/verdict parseados |
 | `update_facts.py --due / --affected` | ✓ |
 
@@ -175,10 +189,13 @@ re-lanzar (el resto se respeta).
 ## 7. Limitaciones conocidas / próximos pasos
 
 - **Embedder por defecto = `hash`** (placeholder sin semántica) en `build_index.py`. Para servir el RAG en
-  producción usar `--embedder fastembed` o migrar a `bge-m3`. No bloquea la *construcción* del corpus.
+  producción usar `--production --embedder fastembed`: el modelo real es
+  `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` (768d), con fallback a MiniLM-L12-v2 (384d).
+  (`BAAI/bge-m3` NO está soportado por fastembed 0.8.0.) No bloquea la *construcción* del corpus.
 - **Drafts sin UI:** la cola de revisión humana es por ahora `--status` + `build_log.jsonl`. Falta UI mínima.
 - **`update_facts.py` no está en cron:** correrlo manualmente o agendarlo (semanal) cuando se decida.
-- **Fase 100 MB:** subir `targets.total_size_mb` a 100 y re-correr (mismos gates/juez/facts).
+- **Cobertura TOTAL:** el STOP es por **cobertura VERIFICADA** del concept map (~7,950 temas / 257 celdas),
+  no por MB; correr hasta cubrir el mapa (mismos gates/juez/facts + verificación atómica). Ver `RUNBOOK_V4.md`.
 - **Cifras de banco central** (Banxico, fed funds) en `facts.yaml` son de alta volatilidad; evitar citarlas
   en docs salvo con fecha explícita (el autor está instruido así).
 
@@ -199,7 +216,7 @@ knowledge/tools/facts_table.py [--verified]
 knowledge/tools/update_facts.py --due | --verify [--all] | --affected <fact_id>
 # calidad / índice
 knowledge/tools/gate_kb.py [subárbol]
-knowledge/tools/build_index.py --embedder fastembed
+knowledge/tools/build_index.py --production --embedder fastembed   # mpnet real (rechaza 'hash')
 knowledge/eval/run_kb_eval.py
 ```
 (prefijar todos con `./.venv/bin/python`)

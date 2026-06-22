@@ -53,6 +53,30 @@ from facts_table import load_facts, values_match  # noqa: E402
 # Tabla CANÓNICA: solo hechos verificados Y enforce!=false (valores escalares comparables).
 # El gate exige que cada @fact cuyo id esté aquí tenga EXACTAMENTE este valor (verdad de base).
 CANON = {k: v for k, v in load_facts(verified_only=True).items() if v.get("enforce", True)}
+# Universo COMPLETO de ids declarados en facts.yaml (incluye enforce:false). Un @fact cuyo id NO
+# esté aquí es "off-table": el gate NO puede comparar su valor → es la fuga de #1 (escape de ids).
+ALL_FACT_IDS = set(load_facts().keys())
+
+# ── Anti-escape-de-ids (v4): detectar un @fact OFF-TABLE que DUPLICA una cantidad canónica con otro id.
+# El autor podía escribir `irs.2025.std_deduction.single=$14,600` (rancio) en vez del canónico
+# `us.std_deduction.single=16,100 USD` y pasar sin chequeo. Reducimos cada id a sus tokens de CONCEPTO
+# (sin prefijos de jurisdicción/agencia ni años) y, si coincide EXACTO con un canónico de la misma
+# jurisdicción, exigimos el id canónico (HARD-FAIL). Conservador: solo colisión exacta → 0 falsos+.
+_ID_DROP = {"us", "mx", "shared", "irs", "sat", "ssa", "fed", "dof", "l", "the", "rev", "proc", "pub"}
+_YEAR_RE = re.compile(r"^\d{4}$")
+
+
+def _concept_tokens(fid: str) -> frozenset:
+    toks = re.split(r"[._\-]+", str(fid).lower())
+    return frozenset(t for t in toks if t and t not in _ID_DROP and not _YEAR_RE.match(t))
+
+
+# (jurisdicción, tokens-de-concepto) -> [(id_canónico, valor)]  para detectar duplicación de cantidad
+CANON_BY_JC: dict = {}
+for _cid, _cf in CANON.items():
+    CANON_BY_JC.setdefault((_cf.get("jurisdiction"), _concept_tokens(_cid)), []).append((_cid, _cf["value"]))
+
+STRICT_FACTS = False   # --strict-facts: todo @fact volátil OFF-TABLE pasa de advisory a HARD-FAIL
 
 JURIS_BY_COUNTRY = {"mx": "MX-FED", "us": "US-FED", "shared": "NONE"}
 CURRENCY_BY_COUNTRY = {"mx": "MXN", "us": "USD", "shared": None}
@@ -118,6 +142,7 @@ class Doc:
         self.rel = path.relative_to(KB)
         self.errors: list[str] = []
         self.warns: list[str] = []
+        self.offtable = 0          # @facts cuyo id no está en facts.yaml (no comparables por el gate)
         text = path.read_text(encoding="utf-8")
         self.fm, self.body = parse_frontmatter(text)
 
@@ -221,13 +246,29 @@ class Doc:
             if f.get("volatility") == "high" and s["tier"] != "primary":
                 self.warn(f"@fact volatility=high debería citar primaria: {f['src']} (tier {s['tier']})")
             # 9b. comparación contra la TABLA CANÓNICA (verdad de base DETERMINISTA)
-            cf = CANON.get(f.get("id"))
+            fid = f.get("id")
+            cf = CANON.get(fid)
             if cf:
                 if doc_juris != "NONE" and cf["jurisdiction"] not in (doc_juris, "NONE"):
-                    self.err(f"FUGA: @fact {f['id']} canónico es {cf['jurisdiction']} en doc {doc_juris}")
+                    self.err(f"FUGA: @fact {fid} canónico es {cf['jurisdiction']} en doc {doc_juris}")
                 if not values_match(f.get("value", ""), cf["value"]):
-                    self.err(f"FACT MISMATCH: @fact {f['id']} value '{f.get('value')}' "
+                    self.err(f"FACT MISMATCH: @fact {fid} value '{f.get('value')}' "
                              f"!= canónico '{cf['value']}' (facts.yaml)")
+            # 9c. @fact OFF-TABLE (id no declarado en facts.yaml) — la fuga de #1. El gate NO valida su
+            # valor. Si DUPLICA exacto una cantidad canónica de la misma jurisdicción con otro id → HARD.
+            elif fid and fid not in ALL_FACT_IDS:
+                self.offtable += 1
+                shadows = CANON_BY_JC.get((doc_juris, _concept_tokens(fid))) if doc_juris != "NONE" else None
+                if shadows and len(shadows) == 1:
+                    cid, cval = shadows[0]
+                    self.err(f"@fact OFF-TABLE '{fid}'='{f.get('value')}' DUPLICA la cantidad canónica "
+                             f"'{cid}'='{cval}' con otro id → usa el id canónico (la tabla no pudo validarlo)")
+                elif STRICT_FACTS and f.get("volatility") in ("medium", "high"):
+                    self.err(f"@fact OFF-TABLE volátil '{fid}'='{f.get('value')}' sin entrada en facts.yaml "
+                             f"(--strict-facts): añádelo a la tabla canónica o usa un id canónico")
+                else:
+                    self.warn(f"@fact off-table '{fid}'='{f.get('value')}' no está en facts.yaml — "
+                              f"el gate NO valida su valor; SME debe verificarlo o anclarlo a la tabla")
         # 10. vocabulario prohibido en secciones de edad temprana
         self._check_forbidden_vocab()
 
@@ -250,7 +291,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("subtree", nargs="?", default="", help="subárbol a validar (ej. mx/taxes)")
     ap.add_argument("--warnings", action="store_true", help="advisories también rompen")
+    ap.add_argument("--strict-facts", action="store_true",
+                    help="todo @fact volátil OFF-TABLE (id no en facts.yaml) es HARD-FAIL, no advisory")
     args = ap.parse_args()
+    global STRICT_FACTS
+    STRICT_FACTS = args.strict_facts
 
     roots = [KB / args.subtree] if args.subtree else [KB / d for d in CORPUS_DIRS]
     files = sorted(p for r in roots if r.exists() for p in r.rglob("*.md")
@@ -297,8 +342,16 @@ def main():
             n_warn += 1
             print(f"  ~ {d.rel}: {w}")
 
+    n_offtable = sum(d.offtable for d in docs)
+    n_facts_total = n_offtable + sum(
+        1 for d in docs for m in FACT_RE.finditer(d.body)
+        if (parse_fact(m.group(1)).get("id") in ALL_FACT_IDS))
     print(f"\n{'='*60}")
     print(f"Docs: {len(docs)} | HARD-FAILs: {n_err} | advisories: {n_warn}")
+    if n_facts_total:
+        anchored = n_facts_total - n_offtable
+        print(f"@fact anclados a facts.yaml: {anchored}/{n_facts_total} "
+              f"({100*anchored//n_facts_total}%) | OFF-TABLE (sin validar): {n_offtable}")
     failed = n_err > 0 or (args.warnings and n_warn > 0)
     print("GATE: " + ("❌ FALLÓ" if failed else "✅ VERDE"))
     return 1 if failed else 0

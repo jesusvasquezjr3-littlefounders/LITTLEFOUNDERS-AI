@@ -45,14 +45,23 @@ def normalize_value(v) -> str:
     return re.sub(r"\s+", "", s)
 
 
+def _unit_sig(s: str) -> str:
+    """Firma de UNIDAD: el residuo no-numérico tras normalizar (p.ej. '16%'→'%', '16100'→'',
+    '0%/15%/20%'→'%/%/%'). Evita que la comparación numérica sea ciega a la unidad."""
+    return re.sub(r"[-+]?\d+(?:\.\d+)?", "", normalize_value(s))
+
+
 def values_match(doc_value, canonical_value) -> bool:
-    """¿El valor del doc coincide con el canónico? String normalizado o set de números iguales."""
+    """¿El valor del doc coincide con el canónico? String normalizado, o MISMOS números Y MISMA unidad.
+    La comparación numérica exige firma de unidad igual: '16%' (porcentaje) NUNCA iguala a '16'
+    (conteo) ni a '$16' — cierra el falso-positivo unit-blind (hallazgo HIGH de la auditoría)."""
     a, b = normalize_value(doc_value), normalize_value(canonical_value)
     if a == b:
         return True
     na, nb = _nums(a), _nums(b)
-    # mismos números (en cualquier formato): p.ej. "16%" vs "16.0%", "3500000" vs "3,500,000"
-    if na and nb and len(na) == len(nb) and all(abs(x - y) < 1e-9 for x, y in zip(na, nb)):
+    # mismos números (en cualquier formato) Y misma unidad: "16%" vs "16.0%", "3500000" vs "3,500,000"
+    if (na and nb and len(na) == len(nb) and all(abs(x - y) < 1e-9 for x, y in zip(na, nb))
+            and _unit_sig(doc_value) == _unit_sig(canonical_value)):
         return True
     return False
 

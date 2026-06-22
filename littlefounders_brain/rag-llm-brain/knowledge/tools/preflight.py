@@ -103,6 +103,25 @@ def main() -> int:
          f"USD {bud.get(aprov) if isinstance(bud, dict) else bud}" if capped
          else f"define wise_use.budget_usd['{aprov}'] o lanza --run con --i-accept-unbounded-author")
 
+    # 3c. PROYECCIÓN DE COSTO — riesgo #1 de la corrida masiva: que el budget muera a mitad (STOP-por-budget
+    #     disfrazado de STOP-por-cobertura). Compara los caps contra el costo de la corrida COMPLETA.
+    try:
+        from cost_projection import map_topics, project
+        proj = project(map_topics(), safety=1.3, atomic=True)
+        capsd = bud if isinstance(bud, dict) else {}
+        short = []
+        for prov, pv in proj["by_provider"].items():
+            cap = capsd.get(prov)
+            capf = float(cap) if cap not in (None, "null", "") else None
+            if capf is not None and capf < pv:
+                short.append(f"{prov} ${capf:.0f}<${pv:.0f}")
+        total = sum(proj["by_provider"].values())
+        warn("presupuesto cubre la corrida COMPLETA (GO-para-terminar)", not short,
+             (f"FALTA: {'; '.join(short)} · total ~${total:.0f} (sube los caps; ver cost_projection.py)"
+              if short else f"caps cubren ~${total:.0f} proyectado"))
+    except Exception as e:
+        warn("proyección de costo", False, str(e)[:140])
+
     # 4. conectividad real (autor Qwen + juez GLM + smoke búsqueda)
     if not args.no_net:
         try:

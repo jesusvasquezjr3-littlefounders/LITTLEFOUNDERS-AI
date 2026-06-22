@@ -62,6 +62,11 @@ quality_bar:
   worked_example: 4         # ejemplo TRABAJADO con actor nombrado + resultado numérico resuelto
   citation_quality: 4       # cifras apoyadas en fuentes PRIMARIAS rastreables y fechadas
   max_revise_rounds: 3
+  # ── v4: VERIFICACIÓN ATÓMICA (anti-lavado) — cada afirmación se verifica por NLI contra la evidencia.
+  atomic_verify: true            # activa la etapa atómica en build_topic (añade 1 llamada NLI/juez por doc)
+  min_factscore: 0.80            # fracción mínima de afirmaciones VERIFICABLES que deben estar 'supported'
+  max_unverifiable_rate: 0.50    # si >50% de las afirmaciones no se hallan en la evidencia ⇒ el autor se
+                                 # despegó de las fuentes (RAG-to-write flojo) ⇒ revise
 
 # ── Modelos por rol (Qwen autor + GLM juez; ver llm_qwen.py provider_for) ─────
 models:
@@ -112,10 +117,13 @@ wise_use:
 
 # ── Embeddings (índice RAG servible) ─────────────────────────────────────────
 embedding:
-  # Modelo MULTILINGÜE (el corpus es ES+EN): bge-small-en era inglés-only y degradaba el español.
-  # bge-m3 = multilingüe, sin prefijos, recomendado. Alternativa ligera:
-  # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'. NUNCA 'hash' en producción.
-  fastembed_model: "BAAI/bge-m3"
+  # Modelo MULTILINGÜE (el corpus es ES+EN). VERIFICADO contra fastembed 0.8.0 (TextEmbedding):
+  # 'BAAI/bge-m3' NO está soportado por fastembed dense → fallaba en la primera ejecución real.
+  # DEFAULT = mpnet-multilingual (768d, 1GB): SERVIBLE, robusto ES+EN, simétrico (sin prefijos
+  # query:/passage: como e5). Fallback ligero si falta disco: '...MiniLM-L12-v2' (384d, 220MB).
+  # UPGRADE de mayor techo: 'intfloat/multilingual-e5-large' (1024d, 2.2GB, requiere prefijos
+  # query/passage en embed_input/encode_one). NUNCA 'hash' en producción.
+  fastembed_model: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
 coverage:
@@ -136,3 +144,6 @@ run:
   grounding_backend: hybrid     # evidencia curada (NotebookLM) + qwen_search de respaldo
   notebooklm_optional: true     # si falta evidencia, el autor cae a búsqueda
   continue_on_subdomain_error: true    # un subdominio que falle NO tumba la corrida
+  # ── v4 RAG-to-write: el autor recibe evidencia recuperada POR-TEMA (top-k coseno), no el blob por-dominio.
+  rag_to_write: true            # recuperación por-tema (evidence_rag.py); false = blob por-dominio (v3)
+  evidence_top_k: 8             # nº de pasajes de evidencia recuperados e inyectados al autor

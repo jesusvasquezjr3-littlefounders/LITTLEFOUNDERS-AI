@@ -56,19 +56,51 @@ def suite_golden(r, con):
     return passed, failed
 
 
-def suite_leakage(r):
+import re as _re
+
+
+def _opposite_in_index(con, query, forbid_country) -> int:
+    """¿Cuántos chunks del país PROHIBIDO matchean léxicamente la query en el índice (SIN firewall)?
+    Si >0, existe contenido FUGABLE: el firewall tiene algo REAL que suprimir → un PASS es significativo.
+    Si ==0, el test es VACUO (no hay nada que filtrar) y no demuestra nada (lo marcamos inconcluso)."""
+    toks = _re.findall(r"[a-záéíóúñü0-9]+", query.lower())
+    if not toks:
+        return 0
+    match = " OR ".join(f'"{t}"' for t in toks)
+    try:
+        ids = [row[0] for row in con.execute(
+            "SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ?", (match,)).fetchall()]
+    except sqlite3.OperationalError:
+        return 0
+    if not ids:
+        return 0
+    q = "SELECT COUNT(*) FROM chunks WHERE country=? AND chunk_id IN (%s)" % ",".join("?" * len(ids))
+    return con.execute(q, [forbid_country, *ids]).fetchone()[0]
+
+
+def suite_leakage(r, con):
+    """HARD. NO es una tautología: además de exigir 0 chunks del país opuesto en el resultado FILTRADO,
+    comprueba (vía FTS sin firewall) que SÍ existía contenido opuesto fugable. Así, si el firewall
+    regresara (se quitara el pre-filtro), estos chunks aparecerían → el test FALLA. Sin contenido
+    opuesto que matchee, el caso es INCONCLUSO (no demuestra el firewall), no un falso verde."""
     items = json.loads((EVAL / "leakage_tests.json").read_text())["items"]
-    passed = failed = 0
-    print("\n── Suite B: Fuga de jurisdicción (HARD) ──")
+    passed = failed = inconclusive = 0
+    print("\n── Suite B: Fuga de jurisdicción (HARD · able-to-fail) ──")
     for it in items:
         hits = r.query(it["q"], country=it["country"], language=it["language"], top_k=10)
         leaks = [h for h in hits if h["country"] == it["forbid_country"]]
-        ok = not leaks
-        passed += ok; failed += (not ok)
-        if ok:
-            print(f"  ✓ {it['id']} (hits={len(hits)}, 0 de {it['forbid_country']})")
+        leakable = _opposite_in_index(con, it["q"], it["forbid_country"])
+        if leaks:
+            failed += 1
+            print(f"  ✗ {it['id']}: FUGA — {len(leaks)} chunk(s) de {it['forbid_country']}! {[h['doc_id'] for h in leaks]}")
+        elif leakable == 0:
+            inconclusive += 1
+            print(f"  ! {it['id']} INCONCLUSO: no hay contenido de {it['forbid_country']} que matchee (firewall no demostrable aquí)")
         else:
-            print(f"  ✗ {it['id']}: {len(leaks)} chunk(s) de {it['forbid_country']}! {[h['doc_id'] for h in leaks]}")
+            passed += 1
+            print(f"  ✓ {it['id']}: firewall suprimió {leakable} chunk(s) fugables de {it['forbid_country']} (0 en el resultado)")
+    if inconclusive:
+        print(f"  ({inconclusive} inconcluso(s): añade contenido del país opuesto en esos temas para que el test sea demostrativo)")
     return passed, failed
 
 
@@ -137,7 +169,7 @@ def main():
     con = sqlite3.connect(db)
 
     gp, gf = suite_golden(r, con)
-    lp, lf = suite_leakage(r)
+    lp, lf = suite_leakage(r, con)
     dp, df = suite_competency(r, con)
     fp, ff = suite_freshness(r, con)
 

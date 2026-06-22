@@ -1,5 +1,21 @@
 # BRAIN_STRATEGY.md — El Cerebro de Conocimiento de LittleFounders
 
+> ⚠️ **v4 — AUTORIDAD VIGENTE (2026-06-22):** el diseño de principio a fin es ahora
+> [`ARCHITECTURE_V4.md`](ARCHITECTURE_V4.md); la guía de la corrida masiva es
+> [`RUNBOOK_V4.md`](RUNBOOK_V4.md). Cambios clave de v4: **(1)** autoría **RAG-to-write** — el autor
+> redacta desde evidencia recuperada **por-tema** (`tools/evidence_rag.py`, TF-IDF léxico + firewall de
+> jurisdicción sobre el insumo), no desde memoria ni de un blob por dominio; **(2)** **verificación
+> atómica** (`tools/atomic_verify.py`) — cada afirmación de prosa se NLI-verifica contra la evidencia
+> (3 vías: soportada/contradicha/no-verificable), con `quality_bar.atomic_verify` (`min_factscore` 0.80,
+> `max_unverifiable_rate` 0.50); el juez GLM deja de ser el único garante factual; **(3)** gate con
+> **disciplina de ids** — un `@fact` fuera de tabla que duplica una cifra canónica = HARD-FAIL,
+> `--strict-facts` endurece toda cifra volátil fuera de tabla, y el gate reporta el ratio anclado;
+> **(4)** proyección de costo (`tools/cost_projection.py`) cableada en preflight (rechaza GO si los topes
+> no alcanzan a terminar la corrida completa); **(5)** la cobertura cuenta solo docs **VERIFICADOS**,
+> índice semántico real (mpnet, no hash), y el andamio "## For future Claude" desaparece (el autor
+> escribe "## Resumen"; el indexador excluye andamiaje). Lo de abajo (v3.1/v3) sigue siendo válido como
+> estrategia base **salvo donde v4 lo sustituye**.
+
 > ⚠️ **v3.1 — HARDENING (2026-06-21):** referencia CANÓNICA de principio a fin (con mermaid) =
 > [`PIPELINE.md`](PIPELINE.md). Tras evaluación crítica: STOP por cobertura real, review→draft funcional,
 > claim "100% real" reducido a su alcance (solo ~67 cifras de `facts.yaml`; el resto LLM-revisado con
@@ -21,10 +37,15 @@
 > **Hogar:** ya movido a `littlefounders_brain/` (raíz). El corpus vive en `littlefounders_brain/rag-llm-brain/knowledge/`.
 >
 > **Implementación (2026-06-19):** movimiento backend→raíz hecho y verificado (CI verde: taxonomía DAG,
-> esquema, tipos FE en sync). Fase 0 (contrato `_meta/` + `gate_kb.py`), piloto de impuestos (22 docs
+> esquema, tipos FE en sync). Fase 0 (contrato `_meta/` + `gate_kb.py`), piloto de impuestos (docs
 > bilingües citados, gate VERDE 0 fails), tooling (`build_index.py` SQLite+FTS5, `retriever.py` con
-> pre-filtro duro, `discover_notebooklm.py`), y eval (golden 8/8, **fuga 6/6**, frescura 2/2). CI:
+> pre-filtro duro, `discover_notebooklm.py`), y eval (golden, **fuga**, frescura). CI:
 > `.github/workflows/brain-ci.yml`. **Siguiente: evaluar la CALIDAD del contenido generado.**
+>
+> **Estado del corpus (2026-06-22):** **40 archivos = 20 temas** (22 published, 18 review); el piloto fue
+> del dominio `impuestos`. Tabla canónica `facts.yaml`: **67 cifras** (66 verificadas, 56 enforce).
+> `concept_map.yaml` (espinazo enciclopédico): **257 celdas, 7,950 temas**. `evidence/`: 657 archivos
+> (gitignored).
 > **Propósito:** Base de conocimiento (RAG) de alta densidad sobre emprendimiento, finanzas,
 > administración, contaduría, impuestos y economía para **México y Estados Unidos** (diferenciados),
 > que (a) alimenta la generación de lecciones del Lesson Factory y (b) servirá de "cerebro" para un
@@ -41,7 +62,7 @@
 | D3 | **Carpeta** | **`littlefounders_brain/`** (raíz) | Marca + alcance de producto explícito. |
 | D4 | **Alcance v1** | **Piloto-primero**: dominio `impuestos` × `{mx, us}` × 5 tiers, totalmente citado | "Medir antes de fabricar". Valida pipeline + gates de fuga antes de escalar a los 12 dominios. |
 | D5 | **Idioma** | **ES canónico, EN traducción verificada** | Mismo principio que V2_STRATEGY §3. El EN es hermano, no verdad independiente. |
-| D6 | **Embeddings** | **Multilingües locales** (`bge-m3` o `multilingual-e5-large`); fallback API `text-embedding-3-small` | $0, sin dependencia frágil, ES/EN en un mismo espacio. |
+| D6 | **Embeddings** | **Multilingües locales (fastembed)**: prod = `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` (768d); fallback `paraphrase-multilingual-MiniLM-L12-v2` (384d). ⚠️ `bge-m3` **NO** está soportado por fastembed 0.8.0 — no usarlo. | $0, sin dependencia frágil, ES/EN en un mismo espacio. |
 
 ---
 
@@ -146,10 +167,13 @@ status: published                        # draft | review | published | stale
 currency: MXN                            # MXN | USD | null
 schema_version: kb-1.0
 ---
-## For future Claude
-Este es un doc de impuestos sobre el IVA en MX, verificado 2026-06-19, jurisdicción federal.
+## Resumen
+Resumen denso del doc (el IVA en MX), verificado a la fecha del frontmatter, jurisdicción federal.
 [caveat de vigencia si aplica]
 ```
+
+> **v4:** el andamio `## For future Claude` quedó retirado. El autor escribe `## Resumen` y el indexador
+> excluye explícitamente el andamiaje del índice semántico.
 
 ### Los 5 tiers de edad (reusan `abstraction_ceiling.json`)
 
@@ -269,8 +293,9 @@ Tres suites en `knowledge/eval/`, todas hard-fail en CI:
 |------|-----|------------|
 | **0 — Contrato** | `_meta/` (taxonomy, sources, volatility_policy, schema.json) + gate de frontmatter | El contrato congelado, *antes de contenido* |
 | **1 — Descubrimiento** | Por `(país, dominio, tier)`: sembrar fuentes `.gov` autoritativas en NotebookLM + `add-research --deep`; `fulltext`/`ask --json` como evidencia | Notebooks sembrados + evidencia citada |
-| **2 — Autoría** | El agente **redacta explicaciones propias citadas** (no pega fuente), con `@fact` + provenance | Docs `.es.md` + `.en.md` |
-| **3 — Gate + Eval** | Validar frontmatter, citas, **suite de fuga** | Corpus verde |
+| **2 — Autoría (v4: RAG-to-write)** | El agente **redacta desde evidencia recuperada por-tema** (`tools/evidence_rag.py`, TF-IDF + firewall de jurisdicción sobre el insumo), no de memoria; explicaciones propias citadas (no pega fuente), con `@fact` + provenance | Docs `.es.md` + `.en.md` |
+| **2b — Verificación atómica (v4)** | `tools/atomic_verify.py` NLI-verifica cada afirmación contra la evidencia (soportada/contradicha/no-verificable); gate `quality_bar.atomic_verify` (`min_factscore` 0.80, `max_unverifiable_rate` 0.50) | FActScore por doc |
+| **3 — Gate + Eval** | Validar frontmatter, citas, valor canónico, **disciplina de ids** (`@fact` fuera de tabla que duplica una cifra canónica = HARD-FAIL), **suite de fuga** | Corpus verde |
 | **4 — Índice** | `build_index.py` → SQLite-vec + FTS5 (regenerable, gitignoreado) | RAG consultable |
 
 **Manejo de fragilidad de NotebookLM:** pipeline **checkpointed e idempotente** (cada `(país,dominio,tier)`
@@ -333,6 +358,12 @@ Checklist ordenado (cada punto verificado en el recon de impacto):
 4. `knowledge/eval/` 3 suites en CI; **suite de fuga verde antes de escalar**.
 5. Escalar dominio por dominio hasta >10 MB; grounding NotebookLM alimenta la verificación de `@fact`.
 6. (Separado) Ejecutar el movimiento de carpeta §10.
+
+> **v4 — corrida masiva (ver [`RUNBOOK_V4.md`](RUNBOOK_V4.md)):** el `preflight` ahora invoca
+> `tools/cost_projection.py` y **rehúsa GO** si los topes de proveedor no alcanzan a terminar la corrida
+> completa. Proyección estimada: **~$964 USD** (GLM ~$703, Qwen ~$261); el tope de GLM debe subir de $9 a
+> ~$800. Pasadas breadth-first **[2,5,0]** se expanden a **[2,5,13,21,29,37]**. La cobertura cuenta solo
+> docs **VERIFICADOS** (no drafts).
 
 ---
 

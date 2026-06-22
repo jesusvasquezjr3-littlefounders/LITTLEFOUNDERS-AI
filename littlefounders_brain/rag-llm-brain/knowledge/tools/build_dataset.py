@@ -476,9 +476,11 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
     use_search = bool(MODELS["grounding_search"]) and (
         WISE.get("author_search_when_evidence", False) or not evidence)
     ev_block = (
-        "EVIDENCIA CURADA (extraída por NotebookLM de FUENTES PRIMARIAS oficiales). Fundamenta tu "
-        "redacción y tus @fact PRIORITARIAMENTE en esta evidencia y cita esas URLs como fuentes. "
-        f"Si un punto no está aquí, búscalo en la web:\n\n{evidence}\n\n===\n\n"
+        "EVIDENCIA RECUPERADA (FUENTES PRIMARIAS, los pasajes MÁS RELEVANTES a este tema). REGLA v4: "
+        "CADA afirmación material de tu texto DEBE poder SEGUIRSE de esta evidencia — un verificador "
+        "atómico (NLI) la chequeará afirmación por afirmación; lo que no se funde aquí se RECHAZA. "
+        "Funda tu redacción y tus @fact en esta evidencia y cita esas URLs. Si un punto necesario NO "
+        f"está aquí, búscalo en la web y cítalo; NO escribas de memoria:\n\n{evidence}\n\n===\n\n"
     ) if evidence else ""
     msg = [{"role": "system", "content":
             "Eres autor experto de contenido educativo bilingüe (ES canónico, EN fiel) de finanzas/impuestos, "
@@ -493,7 +495,8 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             "REGLAS DURAS:\n"
             f"- Cuerpo con secciones por tier, cada encabezado con comentario, p.ej. "
             "'## Para jóvenes (tier3-4) <!-- age_band: tier3,tier4 -->'. Cubre TODOS los age_bands dados.\n"
-            f"- Empieza con '## For future Claude' (2-3 frases: qué, jurisdicción, fecha {DATE}, diferenciador MX vs US).\n"
+            f"- Empieza con '## Resumen' (2-3 frases AUTO-CONTENIDAS: qué es, jurisdicción, fecha {DATE}, "
+            "diferenciador MX vs US). Es contenido real e indexable, NO un meta-comentario ni te dirijas a un asistente.\n"
             f"- VOCABULARIO PROHIBIDO en secciones tier1/tier2: {forb['tier1']['forbidden']+forb['tier2']['forbidden']} "
             "(ni sus equivalentes en inglés). Explica concreto, no abstracto.\n"
             "- ESTRUCTURA NIVEL ENCICLOPEDIA en la sección del tier MÁS ALTO presente (tier4/tier5): (a) una "
@@ -521,7 +524,7 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
             '"depth_tier":"...","volatility":"...",'
             '"sources":[{"url":"https://...","title":"...","publisher":"...","jurisdiction":"MX-FED|US-FED|NONE"}],'
             '"facts":[{"id":"dotted.id","value":"16%","volatility":"medium","source_index":0}],'
-            '"body_es":"## For future Claude\\n...","body_en":"## For future Claude\\n..."}'}]
+            '"body_es":"## Resumen\\n...","body_en":"## Summary\\n..."}'}]
     return qw.json(msg, model=MODELS["author"], enable_search=use_search,
                    temperature=0.4, max_tokens=8000, timeout=240)
 
@@ -686,7 +689,16 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
 
     bar = POLICY["quality_bar"]
     feedback, last_issue = "", ""
-    evidence = load_evidence(country, domain) if POLICY["run"]["grounding_backend"] in ("hybrid", "notebooklm") else ""
+    # v4 RAG-to-write: evidencia recuperada POR-TEMA (no el blob por-dominio) → el autor escribe DESDE
+    # fuentes reales y el verificador atómico tiene contra-qué medir. Fallback al blob si rag_to_write=off.
+    _gb = POLICY["run"]["grounding_backend"] in ("hybrid", "notebooklm")
+    if _gb and POLICY["run"].get("rag_to_write", True):
+        from evidence_rag import retrieve_for_topic
+        _tt = f"{topic.get('title_es','')} {topic.get('title_en','')} {topic.get('angle','')}".strip()
+        evidence = retrieve_for_topic(country, domain, _tt or slug,
+                                      top_k=int(POLICY["run"].get("evidence_top_k", 8)))
+    else:
+        evidence = load_evidence(country, domain) if _gb else ""
     existing_es = _existing_es_bodies(subdir, slug)   # para el gate de dedup near-dup
     u0 = qw.usage_snapshot()
     for attempt in range(bar["max_revise_rounds"] + 1):
@@ -752,6 +764,22 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
                         f"HECHOS ERRÓNEOS: {wrong}. FALLAS DURAS: {hard}. DIMENSIONES BAJAS: {below}.{extra}")
             last_issue = f"judge wrong={wrong[:2]} below={below} short={too_short}"
             continue
+        # v4: VERIFICACIÓN ATÓMICA — la prosa debe estar FUNDAMENTADA en la evidencia (anti-lavado). Cada
+        # afirmación se verifica por NLI contra la evidencia recuperada; contradicha o factscore bajo ⇒ revise.
+        if bar.get("atomic_verify") and evidence:
+            from atomic_verify import score_text
+            fs = score_text(payload.get("body_es", ""), evidence, mode="llm", model=MODELS["judge"])
+            min_fs = float(bar.get("min_factscore", 0.0) or 0.0)
+            max_unv = float(bar.get("max_unverifiable_rate", 1.0) or 1.0)
+            unv_rate = (fs["unverifiable"] / fs["claims"]) if fs["claims"] else 0.0
+            bad_fs = fs["checkable"] > 0 and fs["factscore"] is not None and fs["factscore"] < min_fs
+            if fs["contradicted"] > 0 or bad_fs or unv_rate > max_unv:
+                feedback = ("FUNDAMENTA cada afirmación en la EVIDENCIA dada (no de memoria). CONTRADICHAS por "
+                            f"la evidencia: {fs['contradicted_claims']}. factscore={fs['factscore']} (min {min_fs}); "
+                            f"no-verificables={unv_rate:.0%} (max {max_unv:.0%}). Reescribe para que cada "
+                            "afirmación se siga de la evidencia, o elimínala.")
+                last_issue = f"atomic fs={fs['factscore']} contra={fs['contradicted']} unv={unv_rate:.0%}"
+                continue
         u1 = qw.usage_snapshot()
         spent = {k: u1.get(k, 0) - u0.get(k, 0) for k in u0}
         did = f"{country}-{domain}-{subdomain}-{slug}"
@@ -986,7 +1014,10 @@ def map_coverage() -> dict:
         subdir = KB / c / d / s
         topics = cell.get("topics", [])
         total += len(topics)
-        have = {p.name[:-6] for p in subdir.glob("*.es.md")} if subdir.exists() else set()
+        # Cobertura = temas con doc VERIFICADO (review/published). Un draft (falló verificación) NO
+        # cuenta como cubierto, si no el STOP-por-cobertura se satisfaría con docs no verificados.
+        have = ({p.name[:-6] for p in subdir.glob("*.es.md") if not _is_draft(p)}
+                if subdir.exists() else set())
         cov = sum(1 for t in topics if t.get("slug") in have)
         covered += cov
         if have:

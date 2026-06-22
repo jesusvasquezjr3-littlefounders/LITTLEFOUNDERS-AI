@@ -1,5 +1,21 @@
 # ARCHITECTURE_V3.md — Cerebro de conocimiento, pipeline v3 (fact-anchored · Qwen+GLM · breadth-first)
 
+> **⚠️ v4 — SUPERSEDED (2026-06-22):** la autoridad de diseño de principio a fin es ahora
+> [`ARCHITECTURE_V4.md`](ARCHITECTURE_V4.md) y la guía canónica para la **corrida masiva** es
+> [`RUNBOOK_V4.md`](RUNBOOK_V4.md). Este documento es el **diseño histórico v3/v3.1**: sigue siendo válido
+> donde v4 no lo contradice, pero **donde difiera mandan los docs v4**. Cambios clave de v4 a tener en
+> mente al leer abajo: (1) el autor redacta desde **evidencia recuperada POR TEMA** (`tools/evidence_rag.py`,
+> TF-IDF léxico + firewall de jurisdicción sobre el insumo), **no desde memoria ni desde un blob por dominio**;
+> (2) **verificación atómica** (`tools/atomic_verify.py`): cada afirmación de la prosa se verifica vía NLI
+> contra la evidencia (3 vías: soportada/contradicha/no-verificable), con barra de calidad
+> (`min_factscore 0.80`, `max_unverifiable_rate 0.50`) — el juez GLM **ya no es el único garante factual**;
+> (3) el gate aplica **disciplina de ids** (un `@fact` fuera de tabla que duplica una cantidad canónica =
+> HARD-FAIL; `--strict-facts` endurece los volátiles fuera de tabla) y reporta el *anchored ratio*;
+> (4) **proyección de costo** (`tools/cost_projection.py`) cableada al preflight (no da GO si los caps no
+> alcanzan para terminar la corrida completa); (5) la **cobertura cuenta solo docs VERIFICADOS** (no drafts)
+> e índice semántico real (mpnet, no hash); el andamio "## For future Claude" desapareció (el autor escribe
+> "## Resumen"). Planner = **DeepSeek V4**, autor = **Qwen-Plus**, juez **y** verificación atómica = **GLM/z.ai**.
+
 > **⚠️ v3.1 — HARDENING (2026-06-21):** la referencia CANÓNICA de principio a fin (con mermaid) es ahora
 > [`PIPELINE.md`](PIPELINE.md). Tras una evaluación crítica adversarial: el **STOP por cobertura ahora es
 > REAL** (antes solo etiqueta); **review→draft FUNCIONA** (antes no-op); **"100% real" → alcance honesto**
@@ -48,7 +64,7 @@ SAFE/FActScore, Constitutional AI): *el cuello de botella no es el retrieval, es
 | Ensamble + **Gate** | — (**código determinista**) | — | no | `assemble_doc`, `gate_kb.py` |
 | **Juez / Verificador** | **glm-4.6** | **GLM (z.ai)** | **sí** (`web_search`) | `q_judge` |
 | Frescura (re-verificación atómica) | **glm-4.6** (= `MODELS['judge']`) | GLM (z.ai) | sí | `update_facts.py` |
-| Índice (embeddings) | bge-m3/fastembed o `hash`* (no-LLM) | local | no | `build_index.py` |
+| Índice (embeddings) | mpnet multilingüe (768d)/fastembed o `hash`* (no-LLM) | local | no | `build_index.py` |
 
 > **Tres proveedores independientes** — planner **DeepSeek** · autor **Qwen** · juez **GLM** — = errores
 > no correlacionados **y** 3 pools de cuota separados (más velocidad). Las cifras no las decide ningún LLM:
@@ -67,7 +83,7 @@ flowchart TD
         NB["NotebookLM<br/>(navegador, no-chat)<br/>ingesta fuentes primarias"]:::ext
         EV[("evidence/<br/>caché fulltext curado")]:::data
         SEED["Siembra adversarial<br/>(agentes + WebSearch)<br/>vs fuentes primarias · una vez"]:::ext
-        FACTS[("facts.yaml<br/>~67 cifras canónicas verificadas")]:::data
+        FACTS[("facts.yaml<br/>67 cifras canónicas (66 verificadas · 56 enforce)")]:::data
         NB --> EV
         SEED --> FACTS
     end
@@ -95,7 +111,7 @@ flowchart TD
     end
 
     subgraph CO["⑤ Consumo / Retrieval"]
-        IDX["build_index<br/>embeddings (bge-m3 / hash*)"]:::code
+        IDX["build_index<br/>embeddings (mpnet multilingüe / hash*)"]:::code
         RET["retriever<br/>pre-filtro DURO país+idioma"]:::code
     end
 
@@ -117,13 +133,14 @@ flowchart TD
 ```
 
 \* El embedder por defecto es `hash` (placeholder sin semántica); para servir el RAG en producción usar
-`--embedder fastembed` / bge-m3 (ver §8).
+`--embedder fastembed` (mpnet multilingüe 768d, ver §8).
 
 ---
 
 ## 1. Ancla de verdad — `_meta/facts.yaml`
 
-La pieza nueva más importante. Una tabla canónica de ~67 "números de oro" MX/US (impuestos, salarios/UMA,
+La pieza nueva más importante. Una tabla canónica de **67 hechos** (66 verificados, 56 con `enforce`)
+—"números de oro" MX/US (impuestos, salarios/UMA,
 banca central, inversión, bolsa, metales, cripto, crédito), **verificada el
 2026-06-21 contra fuentes PRIMARIAS** (DOF/SAT/LISR/LIVA, INEGI, CONASAMI, Banxico; IRS Rev.Proc/IRB,
 SSA, Federal Reserve) con **verificación adversarial** (un agente busca, otro independiente refuta).
@@ -192,6 +209,9 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
    **condicional** (`wise_use.author_search_when_evidence`): si hay evidencia, no busca (ahorra); si
    falta, busca. Redacta ES (canónico) + EN (fiel), secciones por tier de edad, mini-ejemplo numérico,
    marca `[[fact:id]]` y declara `facts` con fuente.
+   > **v4:** el autor redacta desde **evidencia recuperada POR TEMA** (`tools/evidence_rag.py`, TF-IDF léxico
+   > + firewall de jurisdicción sobre el insumo), no desde memoria ni desde un blob por dominio. Escribe
+   > "## Resumen" (el andamio "## For future Claude" se eliminó; el indexer excluye el andamio).
 3. **ENSAMBLE** (`assemble_doc`, código): frontmatter de esquema + registra fuentes + sustituye sentinels
    `[[fact:]]` por `<!-- @fact id=… value="…" … -->` (valor **citado** para que rangos/multi-token
    round-trippeen el parser).
@@ -208,6 +228,12 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
    que **las cifras canónicas ya las valida el gate** (no las re-checa → uso sabio). Puntúa 5 dimensiones
    y devuelve `wrong_facts` solo de cifras NO canónicas realmente incorrectas. `_real_wrong` filtra
    falsos positivos. Bajo la barra / hechos erróneos ⇒ revise.
+   > **v4:** el juez GLM **ya no es el único garante factual**. Se añade **verificación atómica**
+   > (`tools/atomic_verify.py`, GLM/z.ai): cada afirmación de la prosa se verifica vía NLI contra la
+   > evidencia (3 vías: soportada/contradicha/no-verificable), con barra de calidad
+   > (`quality_bar.atomic_verify`: `min_factscore 0.80`, `max_unverifiable_rate 0.50`). Además el gate
+   > aplica **disciplina de ids** (un `@fact` fuera de tabla que duplique una cantidad canónica = HARD-FAIL;
+   > `--strict-facts` endurece los volátiles fuera de tabla) y reporta el *anchored ratio*.
 6. **Resolución:** pasa gate+juez ⇒ `status: review`. Agota 3 rondas ⇒ `status: draft` (conservado para
    revisión humana; los drafts son la cola del SME). **Nada se auto-publica.**
 
@@ -216,7 +242,7 @@ PLANNER(Qwen) → AUTOR(Qwen+canon+evidencia+search?) → ENSAMBLE → GATE(cód
 ## 4. Orquestación BREADTH-FIRST
 
 El espacio de "qué generar" lo define el **concept map** (§4.5). `run_all` ejecuta **varias pasadas** con
-cap creciente de docs/subdominio (`breadth.passes: [2, 5, 0]`):
+cap creciente de docs/subdominio (`breadth.passes: [2, 5, 0]`, que se expande a `[2, 5, 13, 21, 29, 37]`):
 
 - **Pasada 1 (cap 2):** cubre las **257 celdas** `país×dominio×subdominio` con 2 docs core cada una →
   amplitud total primero.
@@ -231,6 +257,7 @@ resume nunca duplica. Las celdas se **intercalan** `mx→us→shared` (jurisdicc
 tamaño en MB — corre hasta **cubrir todo el concept map** (todas las celdas, todos sus temas). "Capturar
 todo el conocimiento posible" lo DEFINE el concept map. El MB pasa a **tope de seguridad** opcional
 (`size_safety_cap_mb`). El **presupuesto en $** sí puede cortar en cualquier punto: **primero ancho, luego hondo**.
+> **v4:** la cobertura cuenta **solo docs VERIFICADOS** (no drafts), sobre un índice semántico real (mpnet).
 
 ---
 
@@ -267,7 +294,7 @@ prompt de enumeración exhaustiva + crítico de completitud loop-until-dry), y l
 | **Tolerancia a fallos** | un subdominio que lance excepción NO tumba la corrida (`continue_on_subdomain_error`). |
 | **Backoff de red** | el cliente reintenta 429/5xx con backoff; degrada búsqueda GLM a sin-búsqueda si el tool falla. |
 | **Presupuesto $** | `wise_use.budget_usd` corta la corrida al alcanzar ese gasto estimado (tokens×precio de los 3 proveedores); `alert_usd_remaining` imprime una ALERTA cuando el saldo estimado baja del umbral (recargar APIs). `budget_output_tokens` es el tope alterno por tokens del autor. |
-| **Preflight** | `tools/preflight.py` audita GO/NO-GO antes de arrancar (credenciales, pings, gate, facts). |
+| **Preflight** | `tools/preflight.py` audita GO/NO-GO antes de arrancar (credenciales, pings, gate, facts). *v4:* cablea `tools/cost_projection.py` y rechaza GO si los caps de presupuesto no alcanzan para terminar la corrida completa (proyección ~$964 USD: GLM ~$703, Qwen ~$261; el cap de GLM debe subir de $9 a ~$800). |
 
 ---
 
@@ -297,7 +324,7 @@ levantará en la primera corrida de 2027 sin tocar el resto del cerebro.
 
 ```
 _meta/
-  facts.yaml          ← NUEVO: tabla canónica (verdad de base) · 30 hechos verificados
+  facts.yaml          ← NUEVO: tabla canónica (verdad de base) · 67 hechos (66 verificados, 56 enforce)
   build_policy.yaml   ← v3: models(qwen+glm), breadth(passes), wise_use, run(resume)
   taxonomy.yaml · sources.yaml · volatility_policy.yaml · schema.json
 tools/
@@ -305,9 +332,12 @@ tools/
   facts_table.py      ← NUEVO: loader/normalizador de facts.yaml
   build_dataset.py    ← pipeline: canon→autor, juez GLM+evidencia, breadth-first, resume, atómico
   gate_kb.py          ← + comparación de valor canónico + paridad @fact ES/EN
-  preflight.py        ← NUEVO: auditoría GO/NO-GO
+  preflight.py        ← NUEVO: auditoría GO/NO-GO (+ v4: cablea cost_projection)
   update_facts.py     ← NUEVO: agente de actualización atómica (cron-ready)
   build_evidence.py · build_index.py · retriever.py · kb_common.py
+  evidence_rag.py     ← v4: recuperación de evidencia POR TEMA (TF-IDF léxico + firewall jurisdicción)
+  atomic_verify.py    ← v4: verificación atómica NLI (FActScore) de la prosa vs evidencia
+  cost_projection.py  ← v4: proyección de costo (preflight rechaza GO si los caps no terminan la corrida)
 ```
 
 ---
@@ -316,16 +346,17 @@ tools/
 
 - **Retrieval** (markdown→SQLite FTS5/BM25 + embeddings, pre-filtro DURO país/idioma): el benchmark
   concluyó que a 10 MB el retrieval **no es el cuello de botella** (el firewall es pre-filtro de metadata,
-  independiente del embedding; el conjunto ya filtrado es pequeño). Migrar a `bge-m3`+`sqlite-vec`+reranker
+  independiente del embedding; el conjunto ya filtrado es pequeño). Migrar a `sqlite-vec`+reranker
   es mejora de fase **100 MB**, no bloqueante ahora. *Pendiente conocido:* el embedder por defecto
-  (`build_index.py`) es `hash` (placeholder sin semántica); usar `--embedder fastembed` o migrar a `bge-m3`
-  antes de servir el RAG en producción.
+  (`build_index.py`) es `hash` (placeholder sin semántica); usar `--embedder fastembed` (mpnet multilingüe
+  768d; fallback MiniLM-L12-v2 384d) antes de servir el RAG en producción. *(v4: el índice de producción
+  ya usa mpnet real, no hash. Nota: `bge-m3` NO está soportado por fastembed 0.8.0.)*
 - **NotebookLM** sigue como grounding curado opcional (657 archivos en `evidence/`); a futuro conviene
   bajarlo de dependencia de runtime a herramienta de *descubrimiento* de fuentes.
 
 ## 9. Futuro (fase 100 MB y consumo)
 
 1. Subir `targets.total_size_mb` a 100 y re-correr (mismos gates/juez/facts).
-2. Embedder real (`bge-m3`) + `sqlite-vec` + reranker para el retrieval de producción.
+2. Embedder real (mpnet multilingüe 768d; en v4 ya es el índice de prod) + `sqlite-vec` + reranker para el retrieval de producción.
 3. `update_facts.py` en cron + cola de drafts con UI mínima para el SME.
 4. Métricas estilo FActScore (fracción de `@fact` confirmados) en el reporte de calidad.
