@@ -454,6 +454,8 @@ def main():
                     help="todo @fact volátil OFF-TABLE (id no en facts.yaml) es HARD-FAIL, no advisory")
     ap.add_argument("--strict-numerals", action="store_true",
                     help="numerales oficiales no-anclados en ejemplos (D1) son HARD-FAIL, no advisory")
+    ap.add_argument("--exclude-drafts", "--servible-only", action="store_true", dest="exclude_drafts",
+                    help="valida SOLO docs servibles (review/published); omite drafts (cuarentena). Para el GO/NO-GO.")
     args = ap.parse_args()
     global STRICT_FACTS, STRICT_NUMERALS
     STRICT_FACTS = args.strict_facts
@@ -467,6 +469,15 @@ def main():
         return 0
 
     docs = [Doc(p) for p in files]
+    # --servible-only / --exclude-drafts: validar SOLO lo que se SERVIRÍA (review/published). Un draft está en
+    # cuarentena por definición (sus problemas son la RAZÓN de que sea draft) → no debe bloquear el GO/NO-GO de
+    # "¿el corpus servible está limpio?". El gate completo (sin flag) sigue validando todo (CI). Ver preflight.
+    if args.exclude_drafts:
+        kept = [d for d in docs if not (d.fm and str(d.fm.get("status", "")).strip('"\'') == "draft")]
+        skipped = len(docs) - len(kept)
+        if skipped:
+            print(f"(--exclude-drafts: {skipped} archivo(s) draft omitidos del gate; son cuarentena, no servible)")
+        docs = kept
     n_err = n_warn = 0
     # pareja es/en: cada doc_id debe tener exactamente un .es
     es_ids: dict[str, int] = {}

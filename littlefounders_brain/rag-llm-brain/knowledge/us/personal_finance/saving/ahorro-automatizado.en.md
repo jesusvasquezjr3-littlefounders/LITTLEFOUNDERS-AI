@@ -16,7 +16,7 @@ last_verified_date: "2026-06-20"
 verified_by: "qwen-pipeline"
 review_due: "2028-06-20"
 sources: [src_gen_0015ce4e]
-status: "review"
+status: "draft"
 currency: "USD"
 schema_version: "kb-1.0"
 ---

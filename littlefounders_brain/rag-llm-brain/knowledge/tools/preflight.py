@@ -152,11 +152,17 @@ def main() -> int:
     else:
         warn("pings de red", True, "omitidos (--no-net)")
 
-    # 5. gate verde
-    r = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py")],
+    # 5. gate verde sobre el corpus SERVIBLE (review/published). Los drafts están en cuarentena por
+    #    definición → no bloquean el GO (se regeneran con --retry-drafts). El gate completo (CI) valida todo.
+    r = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py"), "--exclude-drafts"],
                        capture_output=True, text=True, cwd=str(KB.parent))
     tail = (r.stdout.strip().splitlines() or ["(sin salida)"])[-1]
-    hard("gate VERDE en corpus actual", r.returncode == 0, tail)
+    hard("gate VERDE en corpus SERVIBLE (review/published; drafts excluidos)", r.returncode == 0, tail)
+    # 5b. avisar (no bloquear) si hay drafts pendientes de regenerar
+    rd = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py")],
+                        capture_output=True, text=True, cwd=str(KB.parent))
+    warn("gate completo (incl. drafts en cuarentena)", rd.returncode == 0,
+         (rd.stdout.strip().splitlines() or ["(sin salida)"])[-1])
 
     # 6. avisos
     ev = KB / "evidence"
