@@ -747,3 +747,272 @@ facts:
     verified: true
     notes: "$20,200 si MFS. OBBBA subió de $10k a $40k (2025) → $40,400 (2026), +1%/año hasta 2029; revierte a $10k en 2030. Phase-down si MAGI>$505k, piso $10,000."
 
+
+  # ══════════════════ LOTE 3 (2026-06-21) — verificado vs fuente primaria ══════════════════
+  # US: IRS Topic 751 / Rev. Proc. 2025-32 / IR-2025-111 / DOL.  MX: INEGI UMA / LFT (Diputados) / DOF.
+  us.fica.ss_rate:
+    value: 6.2%
+    unit: percent
+    jurisdiction: US-FED
+    label_es: Tasa de Seguro Social (OASDI) del empleado (FICA)
+    effective_from: '1990-01-01'
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: https://www.irs.gov/taxtopics/tc751
+    source_publisher: IRS Topic 751
+    last_verified: '2026-06-21'
+    verified: true
+    notes: 6.2% empleado + 6.2% empleador = 12.4%. Solo hasta el wage base (us.ss.wage_base).
+  us.fica.medicare_rate:
+    value: 1.45%
+    unit: percent
+    jurisdiction: US-FED
+    label_es: Tasa de Medicare del empleado (FICA)
+    effective_from: '1986-01-01'
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: https://www.irs.gov/taxtopics/tc751
+    source_publisher: IRS Topic 751
+    last_verified: '2026-06-21'
+    verified: true
+    notes: 1.45% empleado + 1.45% empleador = 2.9%. SIN tope de ingresos.
+  us.eitc.max_3kids:
+    value: 8,231 USD
+    unit: USD
+    jurisdiction: US-FED
+    label_es: EITC máximo — 3+ hijos calificados (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: true
+    source_url: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+    source_publisher: IRS Rev. Proc. 2025-32 §3.06
+    last_verified: '2026-06-21'
+    verified: true
+    notes: 'Tabla: 0 hijos 664 / 1 hijo 4,427 / 2 hijos 7,316 / 3+ 8,231. Re-verificar 2027.'
+  us.eitc.investment_income_limit:
+    value: 12,200 USD
+    unit: USD
+    jurisdiction: US-FED
+    label_es: Límite de ingreso por inversión que descalifica del EITC (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: true
+    source_url: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+    source_publisher: IRS Rev. Proc. 2025-32 §3.06
+    last_verified: '2026-06-21'
+    verified: true
+    notes: 'Acantilado (no phase-out): 1 USD de más = 0 EITC. Sube de 11,950 (2025).'
+  us.gift.annual_exclusion:
+    value: 19,000 USD
+    unit: USD_per_recipient_per_year
+    jurisdiction: US-FED
+    label_es: Exclusión anual del gift tax por donatario (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: medium
+    enforce: true
+    source_url: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+    source_publisher: IRS Rev. Proc. 2025-32 §3.42 (IRC 2503(b))
+    last_verified: '2026-06-21'
+    verified: true
+    notes: 'Igual que 2025. A cónyuge no-ciudadano: 194,000. Re-verificar 2027.'
+  us.estate.exclusion:
+    value: 15,000,000 USD
+    unit: USD
+    jurisdiction: US-FED
+    label_es: Basic exclusion amount del estate tax — decesos 2026 (post-OBBBA)
+    effective_from: '2026-01-01'
+    effective_to: null
+    volatility: medium
+    enforce: true
+    source_url: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+    source_publisher: IRS Rev. Proc. 2025-32 §3.14 / OBBBA
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Sube de 13,990,000 (2025). Permanente e indexado desde 2027. Matrimonio ~30M con portabilidad.
+  us.mileage.business:
+    value: 72.5 cents
+    unit: USD_cents_per_mile
+    jurisdiction: US-FED
+    label_es: Tasa estándar de millaje deducible — negocio (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: true
+    source_url: https://www.irs.gov/pub/irs-drop/n-26-10.pdf
+    source_publisher: IRS Notice 2026-10
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Sube 2.5c desde 70c (2025). Médico/mudanza militar 20.5c; caridad 14c (fija por ley). Re-verificar 2027.
+  us.minimum_wage.federal:
+    value: 7.25 USD
+    unit: USD_per_hour
+    jurisdiction: US-FED
+    label_es: Salario mínimo federal por hora (FLSA)
+    effective_from: '2009-07-24'
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: https://www.dol.gov/agencies/whd/minimum-wage
+    source_publisher: U.S. DOL (FLSA 6)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Sin cambio desde 24-jul-2009. 30 estados + DC tienen mínimos mayores; aplica el más alto. Tipped federal = 2.13.
+  us.savers_credit.income_limit_mfj:
+    value: 80,500 USD
+    unit: USD
+    jurisdiction: US-FED
+    label_es: Límite de AGI del Saver's Credit — MFJ (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: true
+    source_url: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
+    source_publisher: IRS IR-2025-111 (IRC 25B)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: MFJ 80,500; HoH 60,375; soltero/MFS 40,250. Crédito 50/20/10% de hasta 2,000. Re-verificar 2027.
+  us.roth_ira.phaseout_single:
+    value: 153,000 a 168,000 USD
+    unit: USD_range
+    jurisdiction: US-FED
+    label_es: Phase-out de aportes a Roth IRA por MAGI — soltero/HoH (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: false
+    source_url: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
+    source_publisher: IRS IR-2025-111
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Sube de 150k-165k (2025). MFS = 0-10,000 (no indexado). Re-verificar 2027.
+  us.roth_ira.phaseout_mfj:
+    value: 242,000 a 252,000 USD
+    unit: USD_range
+    jurisdiction: US-FED
+    label_es: Phase-out de aportes a Roth IRA por MAGI — MFJ (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: false
+    source_url: https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
+    source_publisher: IRS IR-2025-111
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Sube de 236k-246k (2025). Re-verificar 2027.
+  mx.uma.mensual:
+    value: 3,566.22 MXN
+    unit: MXN_per_month
+    jurisdiction: MX-FED
+    label_es: UMA mensual (2026)
+    effective_from: '2026-02-01'
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/uma/uma2026.pdf
+    source_publisher: INEGI Comunicado 1/26 (DOF 09-01-2026)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Diaria 117.31 (mx.uma.diaria); anual 42,794.64. +3.69%. Re-verificar feb-2027.
+  mx.uma.anual:
+    value: 42,794.64 MXN
+    unit: MXN_per_year
+    jurisdiction: MX-FED
+    label_es: UMA anual (2026)
+    effective_from: '2026-02-01'
+    effective_to: null
+    volatility: high
+    enforce: true
+    source_url: https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/uma/uma2026.pdf
+    source_publisher: INEGI Comunicado 1/26 (DOF 09-01-2026)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Base del tope de deducciones personales (5 UMA anual = 213,973.20). Re-verificar feb-2027.
+  mx.aguinaldo.minimo:
+    value: '15'
+    unit: days_of_salary
+    jurisdiction: MX-FED
+    label_es: Aguinaldo mínimo de ley (días de salario)
+    effective_from: '1970-05-01'
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: https://www.diputados.gob.mx/LeyesBiblio/pdf/LFT.pdf
+    source_publisher: Ley Federal del Trabajo art. 87
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Mínimo legal pagadero antes del 20-dic; el patrón puede dar más. Proporcional si menos de 1 año.
+  mx.prima_vacacional.minima:
+    value: 25%
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: Prima vacacional mínima de ley (sobre salario de vacaciones)
+    effective_from: '1970-05-01'
+    effective_to: null
+    volatility: static
+    enforce: true
+    source_url: https://www.diputados.gob.mx/LeyesBiblio/pdf/LFT.pdf
+    source_publisher: Ley Federal del Trabajo art. 80
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Mínimo legal sobre los salarios del periodo de vacaciones; el patrón puede dar más.
+  mx.ptu.porcentaje:
+    value: 10%
+    unit: percent
+    jurisdiction: MX-FED
+    label_es: Porcentaje de reparto de utilidades (PTU) sobre la renta gravable
+    effective_from: '2009-02-03'
+    effective_to: null
+    volatility: low
+    enforce: true
+    source_url: https://www.dof.gob.mx/nota_detalle.php?codigo=5600764
+    source_publisher: Resolución Sexta Comisión Nacional PTU (DOF 18-09-2020)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: La Sexta Comisión lo mantuvo en 10%. Sin cambio desde 1985. La base la define la LISR.
+  mx.ptu.tope:
+    value: 'el mayor de: 3 meses de salario o el promedio de la PTU de los últimos 3 años'
+    unit: rule
+    jurisdiction: MX-FED
+    label_es: Tope máximo de PTU por trabajador (reforma outsourcing 2021)
+    effective_from: '2021-04-23'
+    effective_to: null
+    volatility: low
+    enforce: false
+    source_url: https://www.diputados.gob.mx/LeyesBiblio/pdf/LFT.pdf
+    source_publisher: Ley Federal del Trabajo art. 127-VIII
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Se aplica el monto más favorable al trabajador. Tope introducido con la reforma anti-outsourcing.
+  mx.subsidio_empleo.tope_ingreso:
+    value: 11,492.66 MXN
+    unit: MXN_per_month
+    jurisdiction: MX-FED
+    label_es: Ingreso mensual máximo para tener derecho al subsidio para el empleo (2026)
+    effective_from: '2026-01-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: true
+    source_url: https://sidof.segob.gob.mx/notas/docFuente/5777649
+    source_publisher: Decreto subsidio para el empleo (DOF 31-12-2025)
+    last_verified: '2026-06-21'
+    verified: true
+    notes: Aplica a ingresos base de ISR que no excedan 11,492.66. Subsidio = 15.02% de la UMA mensual (15.59% en enero). Re-verificar 2027.
+  mx.subsidio_empleo.monto_max:
+    value: 535.93 MXN
+    unit: MXN_per_month
+    jurisdiction: MX-FED
+    label_es: Monto máximo mensual del subsidio para el empleo (feb-dic 2026) — DERIVADO, pendiente SME
+    effective_from: '2026-02-01'
+    effective_to: '2026-12-31'
+    volatility: high
+    enforce: false
+    source_url: https://sidof.segob.gob.mx/notas/docFuente/5777649
+    source_publisher: Decreto subsidio para el empleo (DOF 31-12-2025)
+    last_verified: '2026-06-21'
+    verified: false
+    notes: 'DERIVADO: 15.02% de la UMA mensual; fuentes reportan 535.65-536.22 segun redondeo. NO enforce hasta confirmar metodo de redondeo con SME.'
