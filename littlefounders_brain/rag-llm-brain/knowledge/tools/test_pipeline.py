@@ -466,6 +466,22 @@ def test_judge_lean_mode_skips_search_and_evidence():
         bd._JUDGE_CLIENT = saved
 
 
+def test_minimax_provider_wired():
+    """Migración GLM→MiniMax: el cliente reconoce el provider 'minimax' por nombre de modelo y falla LIMPIO
+    (QwenError citando MINIMAX_API_KEY) si falta la key — no con un error opaco. No requiere key real."""
+    from llm_qwen import provider_for, Qwen, QwenError
+    assert provider_for("MiniMax-M3") == "minimax"
+    assert provider_for("MiniMax-M2.5") == "minimax"
+    assert provider_for("minimax-text-01") == "minimax"
+    assert provider_for("qwen-plus-latest") == "qwen" and provider_for("glm-4.6") == "glm"  # no regresión
+    raised = ""
+    try:
+        Qwen(env={}, provider="minimax")     # env vacío → sin MINIMAX_API_KEY
+    except QwenError as e:
+        raised = str(e)
+    assert "MINIMAX_API_KEY" in raised, f"debe pedir MINIMAX_API_KEY explícitamente: {raised!r}"
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

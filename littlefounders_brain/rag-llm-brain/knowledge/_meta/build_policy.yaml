@@ -94,10 +94,15 @@ models:
   planner: deepseek-v4-flash  # PLANNER+CRÍTICO = DeepSeek V4 (3er PROVEEDOR indep.) — diseña el currículo
                               # (clave para la AMPLITUD); pool de cuota separado de Qwen/GLM → más velocidad.
   author: qwen-plus-latest    # AUTOR = Qwen-Plus + enable_search (funda en evidencia + web)
-  judge: glm-4.6              # JUEZ = GLM (z.ai), PROVEEDOR INDEPENDIENTE + búsqueda web
+  judge: glm-4.6              # JUEZ = GLM (z.ai), PROVEEDOR INDEPENDIENTE + búsqueda web (modo FACTCHECK)
   verifier: glm-4.6           # VERIFICADOR atómico (NLI). HONRADO por build_dataset (_verifier_client) con
-                              # cliente PROPIO y presupuesto contabilizado. Por defecto == juez; ponlo en otra
-                              # familia (p.ej. deepseek-v4-flash) para independencia real autor≠juez≠verificador.
+                              # cliente PROPIO y presupuesto contabilizado.
+  # ── MIGRACIÓN GLM→MiniMax (ESCENIFICADA, pendiente de MINIMAX_API_KEY + bake-off). Cuando haya key:
+  #    1) confirmar model-ids exactos en la consola MiniMax; 2) correr judge_bakeoff.py glm vs MiniMax sobre
+  #    3-4 docs; 3) si validan, FLIPEAR estas 2 líneas (deja GLM como fallback comentado):
+  #      judge: MiniMax-M2.5    # tarea SUAVE (pedagogía/coherencia): el MiniMax más barato y rápido, 205k ctx
+  #      verifier: MiniMax-M3   # rol de RIGOR (NLI anti-lavado): mayor capacidad MiniMax (II=44≥glm-4.6), 1M ctx
+  #    DeepSeek (planner) y Qwen (autor) NO cambian. NO flipear sin key+bake-off (AP1).
   grounding_search: true      # activa búsqueda en autor (qwen) y juez (glm web_search)
 
 # Precios estimados por modelo (USD / 1M tokens) — para el presupuesto en $ (wise_use.budget_usd).
@@ -108,6 +113,11 @@ pricing_usd_per_mtok:
   qwen-plus-latest:  { in: 0.40, out: 1.20 }
   glm-4.6:           { in: 0.60, out: 2.20 }
   glm-5.2:           { in: 1.20, out: 4.10 }
+  # Migración GLM→MiniMax (precios jun-2026; CONFIRMAR en consola MiniMax). M3 ~mitad de glm-4.6 y II=44≥4.6;
+  # M2.5 el más barato. Independientes de Qwen (autor). cost_projection los toma automáticamente al asignarlos.
+  MiniMax-M3:        { in: 0.30, out: 1.20 }
+  MiniMax-M2.5:      { in: 0.15, out: 0.90 }
+  MiniMax-M2:        { in: 0.255, out: 1.00 }
 
 # Sobrecargo estimado de BÚSQUEDA WEB por llamada (USD) — se SUMA al costo de tokens (el juez/autor
 # pagan por búsqueda además de tokens). Estimación conservadora; ajustar con la factura real.

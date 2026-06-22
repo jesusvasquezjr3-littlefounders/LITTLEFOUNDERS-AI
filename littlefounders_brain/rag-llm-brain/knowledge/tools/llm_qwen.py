@@ -43,6 +43,7 @@ DEFAULT_BASE = {
     "qwen": "",  # obligatorio en .env (varía por región)
     "deepseek": "https://api.deepseek.com",
     "glm": "https://api.z.ai/api/paas/v4",
+    "minimax": "https://api.minimax.io/v1",   # OpenAI-compatible (migración GLM→MiniMax, pendiente key)
 }
 
 # Formato de la herramienta de búsqueda web de z.ai (Zhipu). Los valores son strings ("True")
@@ -77,6 +78,8 @@ def provider_for(model: str) -> str:
         return "glm"
     if m.startswith("deepseek"):
         return "deepseek"
+    if m.startswith("minimax"):
+        return "minimax"
     return "qwen"
 
 
@@ -101,6 +104,14 @@ class Qwen:
             self.base = (env.get("ZAI_BASE_URL") or DEFAULT_BASE["glm"]).rstrip("/")
             self.search_ok = True      # z.ai: búsqueda vía tool web_search
             miss = "ZAI_API_KEY"
+        elif provider == "minimax":
+            # Migración GLM→MiniMax (OpenAI-compatible). search_ok=False: la web_search de MiniMax no está
+            # confirmada; post-Tier-1 el juez LEAN y el verificador NO la necesitan. Si M3 expone un tool de
+            # búsqueda, habilitar aquí (y, en build_dataset, el modo FACTCHECK del juez la reusaría).
+            self.key = env.get("MINIMAX_API_KEY")
+            self.base = (env.get("MINIMAX_BASE_URL") or DEFAULT_BASE["minimax"]).rstrip("/")
+            self.search_ok = False
+            miss = "MINIMAX_API_KEY"
         else:
             self.key = env.get("QWEN_API_KEY")
             self.base = (env.get("QWEN_BASE_URL") or DEFAULT_BASE["qwen"]).rstrip("/")

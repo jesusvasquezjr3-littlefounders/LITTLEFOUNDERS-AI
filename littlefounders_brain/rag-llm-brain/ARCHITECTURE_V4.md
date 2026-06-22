@@ -368,3 +368,33 @@ atómico DEBE ser no-Qwen. El swap correcto es GLM→DeepSeek, NUNCA →Qwen. Fa
 
 **DEFERIDO — L3 (reordenar gate→atómico→juez):** ~1% de ahorro en control-flow del loop NO testeable sin
 corrida pagada; con el juez ya LEAN su beneficio es ~0. Validar en el smoke, no aplicar a ciegas.
+
+### 7.6 Migración GLM→MiniMax (ESCENIFICADA, pendiente de key) (2026-06-22)
+
+Investigación de factibilidad (web, jun-2026): reemplazar **GLM (juez + verificador)** por **MiniMax** es
+**factible y de bajo riesgo**. DeepSeek (planner) y Qwen (autor) NO cambian. Hecho AHORA (sin la API key):
+
+| Hecho ($0, sin key) | Archivo |
+|---------------------|---------|
+| Provider `minimax` cableado (OpenAI-compatible `api.minimax.io/v1`; `search_ok=False`); `provider_for("MiniMax-*")→minimax`; falla LIMPIO si falta `MINIMAX_API_KEY` | `llm_qwen.py` |
+| Precios MiniMax-M3/M2.5/M2 en `pricing_usd_per_mtok` (cost_projection los toma al asignarlos) | `build_policy.yaml` |
+| Asignación de migración DOCUMENTADA (bloque MIGRACIÓN en `models`): **juez→MiniMax-M2.5**, **verificador→MiniMax-M3** | `build_policy.yaml` |
+| `preflight` conoce `MINIMAX_API_KEY` y ahora valida también el rol **verifier** (antes lo omitía) | `preflight.py` |
+| `.env.example` con slots MiniMax (y DeepSeek/ZAI que faltaban) | `.env.example` |
+| Test de wiring (provider_for + fallo limpio sin key) | `test_pipeline.py` |
+
+**Criterio de asignación:** **verificador → MiniMax-M3** (rol de RIGOR anti-lavado: mayor capacidad MiniMax,
+Intelligence Index 44 ≥ glm-4.6, contexto 1M para toda la evidencia). **juez → MiniMax-M2.5** (tarea SUAVE:
+el más barato/rápido, 205k de contexto, JSON+tools). Costo: M3 ~mitad de GLM; M2.5 ~3-4× más barato.
+
+**Por qué el swap NO pierde el fact-check del juez (matiz honesto):** el Tier-1 hizo el juez LEAN → ya no
+depende de web_search salvo en modo FACTCHECK (cifra off-table volátil). Si MiniMax NO expone web_search,
+esos pocos docs caen a **draft vía D1** en vez de web-verificarse (acotado; ninguna cifra equivocada se
+sirve). **A VERIFICAR en la API:** si MiniMax-M3 expone un tool de búsqueda → habilitarlo y el juez conserva
+FACTCHECK sin pérdida.
+
+**Lo que FALTA (requiere key + es AP1):** 1) `MINIMAX_API_KEY` + confirmar model-ids exactos; 2) bake-off
+`judge_bakeoff.py glm-4.6,MiniMax-M2.5,MiniMax-M3` sobre 3-4 docs; 3) si validan (discriminan ≥ GLM y
+concuerdan en verdict), FLIPEAR las 2 líneas `judge`/`verifier` en `build_policy.yaml`. **NO se flipeó el
+default** (sin key no corre, y adoptar sin validar = AP1). Limitación: cambiar el MODELO del verificador NO
+arregla su no-op estructural sobre prosa (eso es RAG-to-write, no el modelo).

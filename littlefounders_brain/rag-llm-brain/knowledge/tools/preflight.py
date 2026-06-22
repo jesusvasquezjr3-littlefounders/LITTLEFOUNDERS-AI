@@ -59,8 +59,11 @@ def main() -> int:
 
     # 1. credenciales — la clave del PROVEEDOR de CADA rol (planner DeepSeek / autor Qwen / juez GLM).
     #    (antes faltaba DEEPSEEK_API_KEY del planner → fallaba a mitad de corrida.)
-    KEY_BY_PROV = {"qwen": "QWEN_API_KEY", "glm": "ZAI_API_KEY", "deepseek": "DEEPSEEK_API_KEY"}
-    provs = {role: provider_for(MODELS[role]) for role in ("planner", "author", "judge")}
+    KEY_BY_PROV = {"qwen": "QWEN_API_KEY", "glm": "ZAI_API_KEY", "deepseek": "DEEPSEEK_API_KEY",
+                   "minimax": "MINIMAX_API_KEY"}
+    # incluye 'verifier' (antes se omitía → su key no se validaba; importa para la migración GLM→MiniMax)
+    provs = {role: provider_for(MODELS[role]) for role in ("planner", "author", "judge", "verifier")
+             if MODELS.get(role)}
     for role, prov in provs.items():
         kn = KEY_BY_PROV.get(prov, "?")
         hard(f".env {kn} ({role}={prov})", bool(env.get(kn)))
