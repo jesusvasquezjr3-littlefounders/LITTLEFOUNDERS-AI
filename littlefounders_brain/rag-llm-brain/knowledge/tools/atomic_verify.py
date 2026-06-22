@@ -36,6 +36,7 @@ CANON = {k: v for k, v in load_facts(verified_only=True).items() if v.get("enfor
 
 # ── descomposición ────────────────────────────────────────────────────────────
 _FACT_RE = re.compile(r"<!--\s*@fact\s+(.*?)-->", re.S)
+_FACT_INLINE_RE = re.compile(r'<!--\s*@fact\s+.*?value="([^"]*)".*?-->', re.S)
 _COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
 _HEADING_RE = re.compile(r"^#{1,6}\s+.*$", re.M)
 _SCAFFOLD_RE = re.compile(r"\b(future\s+claude|futuro\s+claude)\b", re.I)
@@ -59,6 +60,11 @@ def extract_claims(body: str) -> tuple[list[str], list[dict]]:
         if f.get("id") and "value" in f:
             facts.append({"id": f["id"], "value": f["value"],
                           "canonical": f["id"] in CANON})
+    # Sustituir @fact comments con sus VALORES antes de limpiar comentarios: si no, el verificador
+    # atómico chequea prosa SIN cifras específicas (los valores viven dentro del comentario que se
+    # remueve) → claims genéricos que la evidencia rara vez "entails" → factscore siempre n/a.
+    # Con los valores inline, claims como "la deducción estándar es 16,100 USD" SÍ son verificables.
+    body = _FACT_INLINE_RE.sub(lambda m: m.group(1), body)
     # prosa: sin comentarios, sin encabezados, sin secciones de andamiaje
     prose = _HEADING_RE.sub(" ", _COMMENT_RE.sub(" ", body))
     claims = []
@@ -189,7 +195,14 @@ def factscore(path: Path, emb: Embedder, mode: str, model: str, thresh: float) -
     if fm is None:
         return {"doc": str(path), "error": "no frontmatter"}
     country, domain = fm.get("country", ""), fm.get("domain", "")
-    evidence = load_evidence(country, domain)
+    # Usar retrieve_for_topic (igual que build_topic) para evidencia enfocada POR-TEMA, no load_evidence
+    # (que vuelca TODA la evidencia del dominio en orden alfabético → irrelevante para NLI por-doc).
+    topic_text = f"{fm.get('title_es', '')} {fm.get('title_en', '')}"
+    try:
+        from evidence_rag import retrieve_for_topic
+        evidence = retrieve_for_topic(country, domain, topic_text, top_k=8)
+    except Exception:
+        evidence = load_evidence(country, domain)
     ev_chunks = chunk_evidence(evidence)
     claims, facts = extract_claims(body)
     offtable = [f for f in facts if not f["canonical"]]

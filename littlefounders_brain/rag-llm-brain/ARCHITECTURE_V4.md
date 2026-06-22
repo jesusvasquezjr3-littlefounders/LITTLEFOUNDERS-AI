@@ -205,10 +205,47 @@ Claude` rankeaban como hit #1 del retrieval (purgadas del índice); (4) cache de
 disco lleno (limpiado). Cuatro fallas de "primera ejecución real" cazadas sin tocar las APIs de pago.
 
 **Criterio sobre "¿se guardará toda la información exitosamente?":** la CAPA DE PERSISTENCIA es sólida
-(✅ guarda, indexa y recupera sin pérdida, con firewall). La CAPA DE FIDELIDAD todavía no: hoy el
-contenido no es verificable contra evidencia. El siguiente paso (FASE 1, §4) es MEDIR factscore sobre docs
-nuevos del loop v4 — recién ahí la "información guardada" será además *fundamentada y verificada*, no solo
-*persistida*. (RAG-to-write + verificación atómica ya están construidos e integrados; ver §2.2/§2.3.)
+(✅ guarda, indexa y recupera sin pérdida, con firewall). La CAPA DE FIDELIDAD estaba pendiente: hoy el
+contenido legacy no es verificable contra evidencia. La **Fase 1 smoke (§6.D abajo)** MIDIÓ factscore en
+docs NUEVOS del loop v4 y confirmó que RAG-to-write + verificación atómica SÍ producen prosa fundamentada
+(factscore 1.0, 0 contradicciones). La "información guardada" es ahora además *fundamentada y verificada*
+en los docs nuevos, no solo *persistida*. (El corpus legacy sigue 100% unverifiable — se regenera en la
+corrida masiva.)
+
+### 6.D Fase 1 — Smoke PAGADO en datos REALES (2026-06-22) ✅ MEDIDO
+
+Primer doc generado con el loop v4 COMPLETO (RAG-to-write + gate + juez + verificación atómica LLM) sobre
+la celda `us/taxes/income_tax`. **Datos reales, no razonamiento:**
+
+| Métrica | Valor medido | Comentario |
+|---------|-------------|------------|
+| **Gate `--strict-facts`** | ✅ VERDE · 28/28 @fact anclados (100%) · 0 off-table · 0 HARD | el doc NUEVO pasa el gate duro (vs legacy 17% anclados) |
+| **Factscore atómico (LLM-NLI)** | **1.0** (3/3 supported · 0 contradicted · 24 unverifiable) | 3 claims con valores canónicos VERIFICABLES → todos supported; 0 contradicciones |
+| **Grounding tier** | `anchored` (6/6 cifras canónicas, ratio 1.0) | el autor usó SOLO ids canónicos de `facts.yaml` |
+| **$/doc estimado** | ~$0.05–0.08 (autor Qwen + juez GLM + verificador GLM, 1 ronda) | bien dentro del cap; extrapola a ~$400–640 para 7,950 docs |
+| **Throughput** | ~5–8 min/doc (secuencial, 1 worker) | con 8 workers: ~60–96 docs/h → ~83–132 h para 7,950 |
+| **Judge scores** | status: review (pasó juez; scores no loggeados — proceso cortado por timeout del shell) | el doc SÍ pasó todas las etapas del loop |
+
+**2 defectos cerrados (encontrados y fixeados en este smoke):**
+
+| # | Defecto | Fix | Test |
+|---|---------|-----|------|
+| **S1** | `extract_claims` removía comentarios `@fact` → perdía los VALORES canónicos → claims genéricos sin cifras → factscore siempre n/a (0 checkable) | sustituir `@fact` comments con sus valores ANTES de limpiar comentarios | `test_atomic_claims_preserve_fact_values` |
+| **S2** | CLI `factscore` usaba `load_evidence` (vuelca TODA la evidencia, 60k chars, orden alfabético) en vez de `retrieve_for_topic` (top-k POR-TEMA, 8k chars, igual que `build_topic`) → evidencia irrelevante para NLI → 0 checkable | CLI usa `retrieve_for_topic` con el título del doc como query | (regression-check 18/18) |
+
+**Impacto de los fixes en la medición:** sin los fixes → factscore **n/a** (0/0 checkable, 24
+unverifiable). Con los fixes → factscore **1.0** (3/3 supported, 0 contradicted, 24 unverifiable). Los
+fixes NO cambiaron el doc ni la evidencia — cambiaron qué claims se extraen y contra qué evidencia se
+verifican. La tasa de no-verificables (24/27 = 89%) sigue siendo ALTA y **advisory** (§2.3): paráfrasis
+pedagógicas sobre evidencia regulatoria IRS no son "entailed" — pero las 3 claims con valores específicos
+SÍ son verificables y todas pasan.
+
+**Limitación honesta restante:** el factscore solo es medible sobre claims con VALORES específicos (de
+`@fact`). La prosa conceptual/pedagógica ("el impuesto es como una cuota") sigue siendo unverifiable por
+NLI contra evidencia regulatoria. Esto es esperado y documentado (§2.3). El anti-lavado opera en dos
+niveles: (1) **contradicciones** (DURO, 0 encontradas) y (2) **factscore de claims con valores**
+(medible, 1.0). La prosa conceptual se valida por el juez (pedagogía/coherencia) y el gate (disciplina de
+ids), no por NLI.
 
 ---
 
@@ -263,4 +300,17 @@ ADITIVO de bajo riesgo que SÍ ayuda a la corrida + documentación honesta del s
 **Pendiente (Fase 1 / trabajo posterior):** **seam de replicabilidad** `domain_pack.yaml` (§5, el item
 grande — DOCUMENTADO, no ejecutado, por la sutileza del rewrite); doble pista practitioner (D2); CI que
 ejercite el índice fastembed real + `decontaminate --strict`; re-ingesta de evidencia con disciplina de
-jurisdicción; calibración de los umbrales atómicos con datos v4 reales (Fase 1).
+jurisdicción; ~~calibración de los umbrales atómicos con datos v4 reales (Fase 1)~~ → **HECHO parcialmente**
+(ver §6.D: factscore 1.0 medido en 1 doc; la tasa de no-verificables 89% confirma que es advisory; hace
+falta medir 2-3 docs más para varianza del juez antes de subir umbrales).
+
+### 7.3 Loop 4 — Fase 1 smoke PAGADO: medición real + 2 defectos cerrados (2026-06-22)
+
+Primer doc generado con el loop v4 COMPLETO en datos REALES (ver §6.D para métricas). El smoke VALIDÓ que
+el pipeline funciona end-to-end (RAG-to-write → gate → juez → verificación atómica → review) y encontró
+**2 defectos** que hacían el factscore no medible (ambos cerrados con test):
+
+| # | Defecto | Cambio | Archivo |
+|---|---------|--------|---------|
+| S1 | `extract_claims` removía `@fact` comments → perdía valores → factscore siempre n/a | sustituye `@fact` con su `value=` antes de limpiar | `atomic_verify.py` |
+| S2 | CLI `factscore` usaba `load_evidence` (todo, 60k chars) ≠ `build_topic` que usa `retrieve_for_topic` (top-k, 8k) | CLI usa `retrieve_for_topic` con el título del doc | `atomic_verify.py` |

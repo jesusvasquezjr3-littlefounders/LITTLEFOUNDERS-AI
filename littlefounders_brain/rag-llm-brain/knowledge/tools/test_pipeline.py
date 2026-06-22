@@ -211,6 +211,27 @@ def test_atomic_illustrative_excluded_from_unverifiable():
     assert abs(fs["factscore"] - 0.5) < 1e-9, fs
 
 
+def test_atomic_claims_preserve_fact_values():
+    """v4.1: extract_claims debe sustituir los comentarios @fact con sus VALORES antes de limpiar
+    comentarios. Sin esto, los valores canónicos (16,100 USD, 37%, etc.) viven dentro del comentario
+    que se remueve → el verificador atómico chequea prosa SIN cifras → factscore siempre n/a.
+    Con la sustitución, claims como 'la deducción estándar es 16,100 USD' SÍ son verificables."""
+    import atomic_verify as av
+    body = (
+        "## Resumen\n"
+        "El impuesto federal aplica sobre ingresos gravables. "
+        "La deducción estándar para solteros es "
+        '<!-- @fact id=us.std_deduction.single value="16,100 USD" verified=2026-06-21 src=s volatility=low --> '
+        "en 2026, y la tasa máxima marginal es "
+        '<!-- @fact id=us.federal.top_rate value="37%" verified=2026-06-21 src=s volatility=low -->.'
+    )
+    claims, facts = av.extract_claims(body)
+    joined = " ".join(claims)
+    assert "16,100 USD" in joined, f"el valor @fact debe preservarse en los claims: {joined}"
+    assert "37%" in joined, f"el valor @fact debe preservarse en los claims: {joined}"
+    assert len(facts) == 2, f"debe extraer 2 facts: {facts}"
+
+
 def test_cost_guard_blocks_underbudget_massive_run():
     """v4 GO-para-TERMINAR: la corrida MASIVA se rehúsa si los caps no cubren la proyección completa
     (cierra el 'STOP por budget disfrazado de cobertura'); --i-accept-underbudget la permite."""

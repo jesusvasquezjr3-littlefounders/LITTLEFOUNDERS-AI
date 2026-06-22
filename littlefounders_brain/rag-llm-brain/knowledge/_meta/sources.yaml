@@ -699,3 +699,51 @@ sources:
     tier: primary
     jurisdiction: MX-FED
     accessed: 2026-06-21
+
+  src_gen_dc0816a0:
+    title: "Publication 15 (2026), (Circular E), Employer's Tax Guide"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p15#en_US_2026_publink1000272298"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_b213b047:
+    title: "Publication 17 (2026), Your Federal Income Tax"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_62f606d8:
+    title: "Inflation Reduction Act of 2022 (Public Law 117-169), Sec. 13401 et seq."
+    publisher: "U.S. Government Publishing Office"
+    url: "https://www.congress.gov/bill/117th-congress/house-bill/5376/text"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_8ec00e79:
+    title: "Publication 17 (2025), Your Federal Income Tax"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink100017859"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_c641ade9:
+    title: "IRS Announces 2026 Tax Rates, Standard Deduction Amounts, and Other Tax Changes"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/newsroom/irs-announces-2026-tax-rates-standard-deduction-amounts-and-other-tax-changes"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_4f88219b:
+    title: "Publication 15 (2026), Employer's Tax Guide"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p15#en_US_2026_publink1000005789"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
