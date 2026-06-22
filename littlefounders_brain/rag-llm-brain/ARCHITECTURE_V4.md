@@ -244,8 +244,23 @@ HIGH introducidas por el loop-1** (la prueba de que poner en duda el propio trab
 | G4 | **Verdicts NLI truncados:** tope fijo 4000 tok truncaba docs largos → claims sin verdicto caían a 'unverifiable' y sesgaban el factscore | `max_tokens` dimensionado al nº de claims | `atomic_verify.py` |
 | G5 | **Provenance:** el índice no registraba la versión de fastembed (pooling varía entre versiones) | se sella `fastembed_version` en `meta` | `build_index.py` |
 
-**Pendiente (loop 3 / Fase 1):** **seam de replicabilidad** `domain_pack.yaml` (§5, el item grande); doble
-pista practitioner (D2); CI que ejercite el índice fastembed real + `decontaminate --strict`; preflight que
-valide el índice servible (embedder/dim/normalización); `grounding_tier` consciente de PROFUNDIDAD (no
-"anchored" por 1 sola cifra); re-ingesta de evidencia con disciplina de jurisdicción; calibración de los
-umbrales atómicos con datos v4 reales (Fase 1).
+### 7.2 Loop 3 — honestidad de integridad + validación de servicio (2026-06-22)
+
+Decisión de criterio (cientifico senior): **NO** ejecutar el refactor del `domain_pack` (~10 archivos del
+MOTOR) justo antes de la corrida pagada de finanzas. La auditoría lo llamó "mecánico", pero hay sutilezas
+reales (p.ej. `build_dataset` escribe `currency:"null"` string→YAML-null mientras `gate_kb` compara contra
+`None`; representaciones por-módulo) que hacen que un rewrite parcial bajo presión rompa un motor ya sólido,
+para un beneficio FUTURO (otros dominios) que NO ayuda a la corrida inminente. Loop 3 = endurecimiento
+ADITIVO de bajo riesgo que SÍ ayuda a la corrida + documentación honesta del seam (§5).
+
+| # | Mejora | Cambio | Archivo |
+|---|--------|--------|---------|
+| L1 | **`grounding_tier` consciente de PROFUNDIDAD:** "anchored" se regalaba por 1 sola cifra canónica aunque el 99% no estuviera verificado | "anchored" = mayoría de cifras canónicas; `partially_anchored` si tiene ancla pero minoría; se sella `anchored_ratio` | `build_dataset.py` |
+| L2 | **Validación de índice SERVIBLE en el eval:** un GO podía servir un índice `hash`/no-normalizado/modelo-equivocado | `run_kb_eval.py` valida `embed_backend/embed_normalized/embed_model` (loud; `--require-production` = HARD) | `run_kb_eval.py` |
+| L3 | **Firewall NO demostrado pasaba verde:** si todos los casos de fuga salen inconclusos, el único eval HARD no prueba nada | warning loud; bloqueante con `--require-production` | `run_kb_eval.py` |
+| L4 | **Reproducibilidad de embeddings:** `fastembed` sin pin + el pooling del modelo cambió entre versiones → índice no reproducible | `fastembed==0.8.0` pineado; comentario de modelo corregido (era el inexistente bge-m3) | `requirements.txt` |
+
+**Pendiente (Fase 1 / trabajo posterior):** **seam de replicabilidad** `domain_pack.yaml` (§5, el item
+grande — DOCUMENTADO, no ejecutado, por la sutileza del rewrite); doble pista practitioner (D2); CI que
+ejercite el índice fastembed real + `decontaminate --strict`; re-ingesta de evidencia con disciplina de
+jurisdicción; calibración de los umbrales atómicos con datos v4 reales (Fase 1).

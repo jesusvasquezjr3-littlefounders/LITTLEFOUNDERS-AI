@@ -117,9 +117,10 @@ flowchart TD
    VERIFICADOS, no drafts).
 
 **Etiqueta de grounding por-doc** (frontmatter, honesta): `grounding_tier` ∈
-`anchored` (≥1 cifra canónica) | `llm_reviewed` (sin ancla; juez + fuentes) | `conceptual` (estático sin
-cifras) + `canonical_facts` / `cited_facts` / `evidence_grounded`. Un consumidor (lección/chatbot) sabe
-qué tan verificado está cada doc.
+`anchored` (MAYORÍA de cifras canónicas) | `partially_anchored` (tiene ancla pero la MINORÍA de sus cifras
+está verificada) | `llm_reviewed` (sin ancla; juez + fuentes) | `conceptual` (estático sin cifras) +
+`canonical_facts` / `cited_facts` / `anchored_ratio` / `evidence_grounded`. Un consumidor (lección/chatbot)
+sabe qué tan verificado está cada doc (y no sobre-confía un doc casi-no-anclado por tener UNA cifra canónica).
 
 ---
 

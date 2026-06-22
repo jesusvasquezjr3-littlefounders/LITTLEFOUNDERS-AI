@@ -101,7 +101,7 @@ def suite_leakage(r, con):
             print(f"  ✓ {it['id']}: firewall suprimió {leakable} chunk(s) fugables de {it['forbid_country']} (0 en el resultado)")
     if inconclusive:
         print(f"  ({inconclusive} inconcluso(s): añade contenido del país opuesto en esos temas para que el test sea demostrativo)")
-    return passed, failed
+    return passed, failed, inconclusive
 
 
 def suite_competency(r, con):
@@ -137,6 +137,29 @@ def suite_competency(r, con):
     return hit, tested - hit
 
 
+def validate_index(con) -> list[str]:
+    """Valida que el índice servido sea de PRODUCCIÓN (loop 3): embedder fastembed (no 'hash' placeholder),
+    vectores L2-normalizados (flag embed_normalized) y modelo == build_policy. Atrapa el riesgo de SERVIR un
+    índice no-servible/sesgado (CI sólo construye el índice hash; un GO podría servir con vectores crudos)."""
+    meta = {row[0]: row[1] for row in con.execute("SELECT k, v FROM meta").fetchall()}
+    probs = []
+    backend = meta.get("embed_backend", "?")
+    if backend != "fastembed":
+        probs.append(f"embed_backend='{backend}' NO servible (usa build_index.py --production --embedder fastembed)")
+    if meta.get("embed_normalized") != "true":
+        probs.append("embed_normalized!=true → cosine (producto punto) sesgado; reconstruye el índice")
+    try:
+        import yaml
+        bp = yaml.safe_load((KB / "_meta" / "build_policy.yaml").read_text(encoding="utf-8"))
+        want = (bp.get("embedding", {}) or {}).get("fastembed_model")
+        got = meta.get("embed_model")
+        if backend == "fastembed" and want and got and want != got:
+            probs.append(f"embed_model '{got}' != build_policy '{want}' (provenance/consistencia)")
+    except Exception:
+        pass
+    return probs
+
+
 def suite_freshness(r, con):
     print("\n── Suite C: Frescura ──")
     passed = failed = 0
@@ -160,6 +183,8 @@ def main():
     ap.add_argument("--db", default=str(KB / "index" / "kb.db"))
     ap.add_argument("--strict-recall", action="store_true",
                     help="hace BLOQUEANTE el recall de competency (Suite D) — usar tras --run con contenido")
+    ap.add_argument("--require-production", action="store_true",
+                    help="HARD-FAIL si el índice no es de producción (fastembed + normalizado + modelo de policy)")
     args = ap.parse_args()
     db = Path(args.db)
     if not db.exists():
@@ -168,19 +193,36 @@ def main():
     r = Retriever(db)
     con = sqlite3.connect(db)
 
+    idx_probs = validate_index(con)
+    if idx_probs:
+        print("⚠️  ÍNDICE no-producción:")
+        for p in idx_probs:
+            print(f"   - {p}")
+        if args.require_production:
+            print("\nEVAL: ❌ índice no servible para PRODUCCIÓN (--require-production).")
+            return 1
+
     gp, gf = suite_golden(r, con)
-    lp, lf = suite_leakage(r, con)
+    lp, lf, linc = suite_leakage(r, con)
     dp, df = suite_competency(r, con)
     fp, ff = suite_freshness(r, con)
+    # Firewall NUNCA demostrado (todo inconcluso, 0 pass demostrativos): el único eval HARD pasaría verde sobre
+    # un firewall potencialmente roto (riesgo en un dominio nuevo). Loud siempre; bloqueante en producción.
+    firewall_undemonstrated = lp == 0 and lf == 0 and linc > 0
 
     print("\n" + "=" * 60)
     print(f"A Golden:     {gp} pass / {gf} fail")
     print(f"B Leakage:    {lp} pass / {lf} fail   (HARD)")
     print(f"D Competency: {dp} pass / {df} fail   ({'HARD' if args.strict_recall else 'advisory'})")
     print(f"C Freshness:  {fp} pass / {ff} fail")
+    if firewall_undemonstrated:
+        print("\n⚠️  FIREWALL NO DEMOSTRADO: todos los casos de fuga salieron inconclusos (no hay contenido del "
+              "país opuesto que matchee). El test no puede probar el firewall — añade contenido opuesto en esos "
+              "temas. " + ("[BLOQUEANTE con --require-production]" if args.require_production else ""))
     # Leakage siempre bloqueante; golden/freshness cuentan; competency bloquea solo con --strict-recall.
     hard = lf > 0
-    total_fail = gf + lf + ff + (df if args.strict_recall else 0)
+    total_fail = (gf + lf + ff + (df if args.strict_recall else 0)
+                  + (1 if (args.require_production and firewall_undemonstrated) else 0))
     print("\nEVAL: " + ("❌ FALLÓ" if total_fail else "✅ VERDE") +
           ("  [FUGA DETECTADA — bloqueante]" if hard else ""))
     return 1 if total_fail else 0

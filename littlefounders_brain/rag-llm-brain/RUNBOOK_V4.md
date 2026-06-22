@@ -119,7 +119,8 @@ Luego: **revisión SME por triaje de `grounding_tier`** (auto-confiar `anchored`
 - `coverage_report.py` → cobertura del concept_map = objetivo, **medida sobre docs verificados**.
 - `gate_kb.py --strict-facts` → 0 HARD; ratio anclado ≥ objetivo (90% de cifras volátiles canónicas).
 - `atomic_verify` (muestra) → factscore ≥ 0.80; 0 contradicted en la muestra.
-- `run_kb_eval.py --strict-recall` → Suite B (fuga) verde y DEMOSTRATIVA; golden/frescura verde; decontam limpio.
+- `run_kb_eval.py --strict-recall --require-production` → índice servible (fastembed + normalizado + modelo
+  de policy); Suite B (fuga) verde y DEMOSTRATIVA (no todo-inconcluso); golden/frescura verde; decontam limpio.
 - `cost_projection.py` → la corrida cabe en los caps recargados.
 
 ---

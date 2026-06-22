@@ -399,14 +399,20 @@ def grounding_meta(payload, evidence_used=False) -> dict:
     cited = len(facts)
     canon = sum(1 for f in facts if f.get("id") in CANON_ENFORCED)
     vol = payload.get("volatility", "medium")
-    if canon > 0:
+    # Honestidad de PROFUNDIDAD (loop 3): "anchored" no debe regalarse por UNA cifra canónica si la MAYORÍA
+    # de las cifras del doc NO están verificadas por el gate. anchored = mayoría canónica; partially_anchored
+    # = tiene ancla pero la minoría está verificada; así el consumidor no sobre-confía un doc casi-no-anclado.
+    if canon > 0 and canon * 2 >= cited:
         tier = "anchored"
+    elif canon > 0:
+        tier = "partially_anchored"
     elif vol == "static" and cited == 0:
         tier = "conceptual"
     else:
         tier = "llm_reviewed"
-    return {"grounding_tier": tier, "canonical_facts": canon,
-            "cited_facts": cited, "evidence_grounded": bool(evidence_used)}
+    return {"grounding_tier": tier, "canonical_facts": canon, "cited_facts": cited,
+            "anchored_ratio": round(canon / cited, 2) if cited else 0.0,
+            "evidence_grounded": bool(evidence_used)}
 
 
 def assemble_doc(country, domain, subdomain, slug, lang, payload, src_ids, fact_src,

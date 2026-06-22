@@ -101,6 +101,12 @@ def test_grounding_label():
         fid = sorted(bd.CANON_ENFORCED)[0]
         p_anc = dict(_PAYLOAD, volatility="medium", facts=[{"id": fid, "value": "x"}])
         assert bd.grounding_meta(p_anc)["grounding_tier"] == "anchored"
+        # loop 3: 1 canónica + 2 NO canónicas → minoría verificada → partially_anchored (no "anchored")
+        p_part = dict(_PAYLOAD, volatility="medium",
+                      facts=[{"id": fid, "value": "x"}, {"id": "zz.a", "value": "1"}, {"id": "zz.b", "value": "2"}])
+        gp = bd.grounding_meta(p_part)
+        assert gp["grounding_tier"] == "partially_anchored", gp
+        assert gp["anchored_ratio"] == round(1 / 3, 2), gp
     doc = bd.assemble_doc("shared", "taxes", "what_is_a_tax", "p", "es", p_concept, ["s"], {})
     assert "grounding_tier:" in doc and "canonical_facts:" in doc
 
