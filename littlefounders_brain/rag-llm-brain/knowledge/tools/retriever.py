@@ -26,6 +26,12 @@ from pathlib import Path
 
 from kb_common import KB, Embedder, cosine, from_blob
 
+
+def _l2(v: list[float]) -> list[float]:
+    import math
+    n = math.sqrt(sum(x * x for x in v)) or 1.0
+    return [x / n for x in v]
+
 DEFAULT_DB = KB / "index" / "kb.db"
 # Staleness = TIEMPO REAL (wall-clock): un doc está stale si su review_due ya pasó en el calendario real,
 # no contra el date_anchor congelado del build (si no, nada vencía nunca).
@@ -40,6 +46,11 @@ class Retriever:
         self.con.row_factory = sqlite3.Row
         backend = self.con.execute("SELECT v FROM meta WHERE k='embed_backend'").fetchone()[0]
         self.emb = Embedder(backend=backend)
+        # ¿Los vectores ALMACENADOS son unitarios? cosine() es un producto punto que lo asume. Un índice
+        # construido ANTES del fix de normalización (sin este flag) tiene vectores crudos → los normalizamos
+        # AL VUELO para no sesgar el ranking (query normalizada vs stored cruda). Back-compat sin re-build.
+        row = self.con.execute("SELECT v FROM meta WHERE k='embed_normalized'").fetchone()
+        self._stored_normalized = bool(row and str(row[0]).lower() == "true")
 
     def _candidates(self, country, language, domain, subdomain, concept_ids, exclude_stale):
         sql = ("SELECT * FROM chunks WHERE language = ? "
@@ -88,9 +99,13 @@ class Retriever:
         if not cands:
             return []
         cand_ids = {c["chunk_id"] for c in cands}
-        # vector ranking
+        # vector ranking (query siempre unitaria vía Embedder; stored normalizada al vuelo si el índice es viejo)
         qv = self.emb.encode_one(query)
-        scored = sorted(cands, key=lambda c: cosine(qv, from_blob(c["embedding"])), reverse=True)
+
+        def _stored(blob):
+            v = from_blob(blob)
+            return v if self._stored_normalized else _l2(v)
+        scored = sorted(cands, key=lambda c: cosine(qv, _stored(c["embedding"])), reverse=True)
         vrank = {c["chunk_id"]: i for i, c in enumerate(scored)}
         # lexical ranking
         lrank = self._fts_ranks(query, cand_ids)

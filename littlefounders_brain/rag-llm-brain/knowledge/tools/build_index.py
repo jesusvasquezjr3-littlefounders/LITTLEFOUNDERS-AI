@@ -25,6 +25,16 @@ from kb_common import ANCHOR_DATE, KB, Embedder, chunk_doc, embed_input, iter_co
 
 DEFAULT_OUT = KB / "index" / "kb.db"
 
+
+def _fastembed_version() -> str:
+    """Versión de fastembed instalada (provenance: el pooling/normalización puede variar entre versiones)."""
+    try:
+        from importlib.metadata import version
+        return version("fastembed")
+    except Exception:
+        return "unknown"
+
+
 SCHEMA = """
 CREATE TABLE chunks (
   chunk_id TEXT PRIMARY KEY,
@@ -85,6 +95,10 @@ def main():
         ("embed_backend", args.embedder),
         ("embed_model", emb.model_name if args.embedder == "fastembed" else "hash-placeholder"),
         ("embed_dim", str(emb.dim)),
+        # provenance + correctness flags: embed_normalized=true ⇒ los vectores almacenados son unitarios
+        # (cosine == producto punto). El retriever lee este flag y normaliza al vuelo un índice viejo sin él.
+        ("embed_normalized", "true"),
+        ("fastembed_version", _fastembed_version() if args.embedder == "fastembed" else ""),
         ("built_at", ANCHOR_DATE), ("n_docs", str(len(docs))), ("n_chunks", str(len(chunks))),
     ])
     con.commit()

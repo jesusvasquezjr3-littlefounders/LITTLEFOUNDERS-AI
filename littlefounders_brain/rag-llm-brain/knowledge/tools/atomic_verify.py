@@ -130,7 +130,10 @@ def verify_llm(claims: list[str], evidence: str, model: str, client=None):
            {"role": "user", "content":
             f"EVIDENCIA:\n{evidence[:12000]}\n\n===\nAFIRMACIONES:\n{numbered}\n\n"
             'Devuelve {"verdicts":[{"n":1,"label":"supported|contradicted|unverifiable|illustrative","why":"..."}]}'}]
-    res = cli.json(msg, model=model, temperature=0.0, max_tokens=4000)
+    # Dimensionar el presupuesto de salida al nº de claims: un tope fijo (4000) TRUNCABA los verdicts de
+    # docs largos → los claims sin verdicto caían a 'unverifiable' y sesgaban el factscore/tasa. ~130 tok/verdict.
+    res = cli.json(msg, model=model, temperature=0.0,
+                   max_tokens=min(8000, max(2000, len(claims) * 130 + 500)))
     by_n = {v.get("n"): v for v in res.get("verdicts", [])}
     out = []
     for i, c in enumerate(claims, 1):

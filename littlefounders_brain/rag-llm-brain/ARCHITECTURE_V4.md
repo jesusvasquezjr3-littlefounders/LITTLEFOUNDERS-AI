@@ -147,14 +147,26 @@ FASE 2 — BREADTH-PASS-1 (recargar a la proyección validada):
 
 ## 5. Replicabilidad (D3 — diseñar las costuras, generalizar después)
 
-El "paquete de dominio" YA es casi todo config en `_meta/` + prompts. Para clonar a otra área del
-conocimiento, lo que cambia es:
-- `_meta/taxonomy.yaml` (dominios/subdominios/age_bands), `_meta/facts.yaml` (cifras canónicas del dominio),
-  `_meta/sources.yaml` (fuentes), `_meta/concept_map.yaml` (espinazo), y los prompts de planner/autor.
-Lo que NO cambia (el motor): gate, atomic_verify, build_dataset, build_index/retriever, dedup/decontam, eval.
+El CONTRATO de datos ya es config (`_meta/taxonomy.yaml`, `facts.yaml`, `sources.yaml`, `concept_map.yaml`).
+Lo que NO cambia (el motor de verificación): gate determinista, atomic_verify, build_index/retriever,
+dedup/decontam, eval.
 
-⏳ La generalización formal (un `--domain <pkg>` que apunte a otra carpeta `_meta/`) es un refactor
-posterior, una vez que finanzas valide el motor. Por eso D3 = "primero finanzas, luego extraer".
+> **Claim HONESTO (corregido tras auditoría loop-2):** clonar a otro dominio **HOY NO es un swap de
+> `_meta/`** — requiere editar CÓDIGO en ~8 archivos. Está hardcodeado en `tools/` (no en `_meta/`):
+> el set de países (`shared/mx/us`, re-literal en 8+ sitios), los dicts jurisdicción/currency (`gate_kb.py`,
+> `build_dataset.py` — HARD-FAIL si no matchean), los regex de firewall `_MX_MARK/_US_MARK`
+> (`evidence_rag.py`), los allowlists de fuentes `PRIMARY_HINTS`/`tier_of_url` (`build_dataset.py`),
+> `_ID_DROP` (`gate_kb.py`), el idioma canónico `.es.md`/`es` (glob de resume/cobertura/STOP), y los prompts
+> de planner/autor/juez (fijados a "finanzas/impuestos MX y US"). En otro dominio esos literales se vuelven
+> **no-ops silenciosos** (el firewall deja de filtrar, los tiers de fuente colapsan).
+
+⏳ **Seam de replicabilidad (D3, plan):** un único `_meta/domain_pack.yaml` + un loader `tools/domain_pack.py`
+que exporte `CORPUS_DIRS/PRIORITY_ORDER/JURIS/CURRENCY/primary_hints/marcadores/idioma/personas`, importado
+por `kb_common`, `gate_kb`, `build_dataset`, `evidence_rag`, `coverage_report`, `update_facts`, `run_kb_eval`,
+`atomic_verify` (reemplazando los literales). Es **mecánico y testeable a $0** (los literales ya existen como
+constantes nombradas) → se puede construir ANTES de la corrida pagada, con un test de acuerdo cross-módulo
+del set países/idioma y un preflight que verifique que el regex de firewall matchea ≥1 pasaje de evidencia.
+Por eso D3 = "primero finanzas (validar el motor), luego extraer el framework".
 
 ---
 
@@ -219,6 +231,21 @@ amenazaban una corrida masiva "sin fallas y útil". Todo probado a **$0** (15/15
 | R10 | **`min_words_per_doc:700` infeasible** (corpus real 444-618) → revise-loops "doc corto" | bajado a 500 (validado vs corpus real) | `build_policy.yaml` |
 | R11 | **`models.verifier` era key MUERTA**; verificador == juez (no independiente) | el código HONRA `MODELS['verifier']` (ponlo en otra familia para independencia real) | `build_dataset.py`, `build_policy.yaml` |
 
-**Pendiente (loops siguientes / Fase 1):** doble pista practitioner (D2); `--domain` swap (paquete de dominio
-en `_meta/`, hoy hay acoplamiento jurisdiccional en `tools/`); CI que ejercite el índice fastembed real;
-re-ingesta de evidencia con disciplina de jurisdicción; calibración de umbrales atómicos con datos v4 reales.
+### 7.1 Loop 2 — regresiones del loop-1 cerradas + endurecimiento (2026-06-22)
+
+Re-auditoría adversarial (regression-check del commit v4.1 + dimensiones diferidas). Encontró **2 regresiones
+HIGH introducidas por el loop-1** (la prueba de que poner en duda el propio trabajo SÍ paga) + mejoras:
+
+| # | Riesgo | Cambio | Archivo |
+|---|--------|--------|---------|
+| G1 | **Regresión R4:** el guard de costo era CIEGO a `budget_usd` ESCALAR (`{_total}`): un tope agregado de $1 vs ~$964 NO bloqueaba el `--run` | el guard compara `_total` contra el costo TOTAL proyectado (además de los caps por-proveedor) | `build_dataset.py` |
+| G2 | **Regresión R7:** la normalización de embeddings invalidó el `kb_prod.db` ya construido (vectores crudos vs query normalizada) sin guard | el índice se sella con `embed_normalized`; el retriever normaliza AL VUELO un índice viejo sin el flag (back-compat, sin re-build forzado) | `build_index.py`, `retriever.py` |
+| G3 | **Paridad ES/EN vacua:** el gate comparaba VALORES de ids compartidos pero pasaba si EN omitía un `@fact` (un número rancio podía vivir sólo en EN) | HARD-FAIL si el SET de ids `@fact` difiere entre ES y EN | `gate_kb.py` |
+| G4 | **Verdicts NLI truncados:** tope fijo 4000 tok truncaba docs largos → claims sin verdicto caían a 'unverifiable' y sesgaban el factscore | `max_tokens` dimensionado al nº de claims | `atomic_verify.py` |
+| G5 | **Provenance:** el índice no registraba la versión de fastembed (pooling varía entre versiones) | se sella `fastembed_version` en `meta` | `build_index.py` |
+
+**Pendiente (loop 3 / Fase 1):** **seam de replicabilidad** `domain_pack.yaml` (§5, el item grande); doble
+pista practitioner (D2); CI que ejercite el índice fastembed real + `decontaminate --strict`; preflight que
+valide el índice servible (embedder/dim/normalización); `grounding_tier` consciente de PROFUNDIDAD (no
+"anchored" por 1 sola cifra); re-ingesta de evidencia con disciplina de jurisdicción; calibración de los
+umbrales atómicos con datos v4 reales (Fase 1).

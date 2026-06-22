@@ -201,15 +201,20 @@ def _guard_cost_projection(accept_under: bool):
         proj = project(map_topics(), safety=1.3, atomic=True)
     except Exception:
         return     # no bloquear por un fallo de la proyección misma; es un raíl de seguridad, no un dogma
+    by_prov = proj.get("by_provider", {})
+    total = sum(by_prov.values())
     short = []
-    for prov, pv in proj.get("by_provider", {}).items():
-        if prov == "_total":
-            continue
-        cap = _BUDGET_USD.get(prov)
-        if cap is not None and cap < pv:
-            short.append(f"{prov} cap ${cap:.0f} < proyectado ${pv:.0f}")
+    if "_total" in _BUDGET_USD:
+        # presupuesto AGREGADO (budget_usd escalar): comparar el tope único contra el costo TOTAL proyectado.
+        # (Antes el guard sólo miraba caps por-proveedor → un budget_usd: 1 pasaba sin bloquear.)
+        if _BUDGET_USD["_total"] < total:
+            short.append(f"_total cap ${_BUDGET_USD['_total']:.0f} < proyectado ${total:.0f}")
+    else:
+        for prov, pv in by_prov.items():
+            cap = _BUDGET_USD.get(prov)
+            if cap is not None and cap < pv:
+                short.append(f"{prov} cap ${cap:.0f} < proyectado ${pv:.0f}")
     if short:
-        total = sum(proj.get("by_provider", {}).values())
         sys.exit(
             f"ABORTO: presupuesto insuficiente para TERMINAR la corrida completa (~${total:.0f}): "
             f"{'; '.join(short)}. Sube wise_use.budget_usd a la proyección (cost_projection.py → "

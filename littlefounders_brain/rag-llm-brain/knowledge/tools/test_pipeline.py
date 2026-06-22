@@ -223,6 +223,59 @@ def test_cost_guard_blocks_underbudget_massive_run():
         bd._BUDGET_USD = saved
 
 
+def test_cost_guard_blocks_scalar_total_budget():
+    """R4 regresión (loop 2): un budget_usd ESCALAR (→{_total}) también debe bloquear la corrida masiva bajo
+    presupuesto. Antes el guard sólo miraba caps por-proveedor → un tope agregado de $1 colaba (mientras
+    budget_exceeded SÍ lo enforzaba) — un --run habría muerto a mitad."""
+    import build_dataset as bd
+    saved = bd._BUDGET_USD
+    try:
+        bd._BUDGET_USD = {"_total": 1.0}     # tope AGREGADO minúsculo vs ~$964 proyectado
+        raised = False
+        try:
+            bd._guard_cost_projection(False)
+        except SystemExit:
+            raised = True
+        assert raised, "un budget_usd agregado (_total) insuficiente debe abortar la corrida masiva"
+    finally:
+        bd._BUDGET_USD = saved
+
+
+def test_retriever_normalizes_legacy_index():
+    """R7 regresión (loop 2): un índice SIN el flag embed_normalized (construido antes del fix) debe
+    normalizarse al vuelo en el retriever para que cosine (producto punto) sea correcto. Se prueba la ruta
+    de back-compat con vectores crudos no-unitarios."""
+    import sqlite3
+    import tempfile
+    from pathlib import Path
+    tools = Path(__file__).resolve().parent
+    sys.path.insert(0, str(tools))
+    import build_index as bi
+    from kb_common import to_blob
+    from retriever import Retriever
+    d = Path(tempfile.mkdtemp())
+    db = d / "legacy.db"
+    con = sqlite3.connect(db)
+    con.executescript(bi.SCHEMA)
+    # dos chunks: 'big' con vector de MAYOR norma pero MISMA dirección que 'small' → sin normalizar, big
+    # gana por norma (sesgo); normalizado, ambos empatan en dirección y decide el léxico/orden estable.
+    base = [1.0, 1.0] + [0.0] * 382
+    big = [5.0, 5.0] + [0.0] * 382
+    rows = []
+    for cid, vec, txt in (("small", base, "ahorro emergencia meta"), ("big", big, "ahorro emergencia meta")):
+        rows.append((cid, "doc-" + cid, "mx", "MX-FED", "es", "personal_finance", "saving",
+                     "[]", "tier3", "intro", "low", "2026-06-21", None, "[]", "h", txt, to_blob(vec)))
+    con.executemany("INSERT INTO chunks VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
+    con.executemany("INSERT INTO chunks_fts (text, chunk_id) VALUES (?,?)", [(r[15], r[0]) for r in rows])
+    # meta SIN embed_normalized (índice legacy) → el retriever debe normalizar al vuelo
+    con.executemany("INSERT INTO meta VALUES (?,?)", [("embed_backend", "hash"), ("embed_dim", "384")])
+    con.commit(); con.close()
+    r = Retriever(db)
+    assert r._stored_normalized is False, "índice sin flag debe tratarse como NO normalizado"
+    hits = r.query("ahorro emergencia", country="mx", language="es", top_k=2)
+    assert len(hits) == 2, "ambos chunks deben recuperarse tras el pre-filtro"
+
+
 def test_embedder_fastembed_path_normalizes():
     """v4: cosine() es un producto punto que asume vectores unitarios → el branch fastembed debe
     L2-normalizar (se prueba la utilidad _l2 sin descargar el modelo de 1GB)."""

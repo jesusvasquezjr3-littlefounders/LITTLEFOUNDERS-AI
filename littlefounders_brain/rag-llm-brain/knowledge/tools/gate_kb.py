@@ -345,6 +345,15 @@ def main():
             if not en:
                 continue
             es_facts, en_facts = facts_in(d.body), facts_in(en.body)
+            # PARIDAD de PRESENCIA: un @fact tagueado en un idioma DEBE estarlo en el otro. Sin esto, un
+            # número volátil/rancio podía vivir SÓLO en la prosa EN (canónica para US) sin que el gate lo
+            # comparara contra facts.yaml (chequeo vacuo). La paridad de VALOR ya estaba; faltaba la de SET.
+            missing_en = sorted(set(es_facts) - set(en_facts))
+            missing_es = sorted(set(en_facts) - set(es_facts))
+            if missing_en:
+                en.err(f"paridad @fact: ids presentes en ES ausentes en EN: {missing_en}")
+            if missing_es:
+                en.err(f"paridad @fact: ids presentes en EN ausentes en ES: {missing_es}")
             for fid, ves in es_facts.items():
                 ven = en_facts.get(fid)
                 if ven is not None and not values_match(ves, ven):
