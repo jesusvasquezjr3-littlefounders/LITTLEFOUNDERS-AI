@@ -21,7 +21,7 @@ import json
 import sqlite3
 from pathlib import Path
 
-from kb_common import KB, Embedder, chunk_doc, embed_input, iter_corpus, to_blob
+from kb_common import ANCHOR_DATE, KB, Embedder, chunk_doc, embed_input, iter_corpus, to_blob
 
 DEFAULT_OUT = KB / "index" / "kb.db"
 
@@ -45,7 +45,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--embedder", default="hash", choices=["hash", "fastembed"])
     ap.add_argument("--out", default=str(DEFAULT_OUT))
+    ap.add_argument("--production", action="store_true",
+                    help="índice de PRODUCCIÓN: RECHAZA el embedder 'hash' (placeholder no servible)")
     args = ap.parse_args()
+
+    if args.production and args.embedder == "hash":
+        print("❌ Índice de PRODUCCIÓN con embedder 'hash' (placeholder léxico, NO servible para RAG "
+              "semántico). Usa --embedder fastembed (modelo multilingüe). Aborto.")
+        return 2
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -75,8 +82,10 @@ def main():
     con.executemany("INSERT INTO chunks_fts (text, chunk_id) VALUES (?, ?)",
                     [(c.text, c.chunk_id) for c in chunks])
     con.executemany("INSERT INTO meta VALUES (?, ?)", [
-        ("embed_backend", args.embedder), ("embed_dim", str(emb.dim)),
-        ("built_at", "2026-06-19"), ("n_docs", str(len(docs))), ("n_chunks", str(len(chunks))),
+        ("embed_backend", args.embedder),
+        ("embed_model", emb.model_name if args.embedder == "fastembed" else "hash-placeholder"),
+        ("embed_dim", str(emb.dim)),
+        ("built_at", ANCHOR_DATE), ("n_docs", str(len(docs))), ("n_chunks", str(len(chunks))),
     ])
     con.commit()
     con.close()
@@ -84,9 +93,12 @@ def main():
     by_country: dict[str, int] = {}
     for c in chunks:
         by_country[c.country] = by_country.get(c.country, 0) + 1
+    model = emb.model_name if args.embedder == "fastembed" else "hash-placeholder"
     print(f"✅ Índice escrito en {out}")
-    print(f"   docs={len(docs)}  chunks={len(chunks)}  embedder={args.embedder} dim={emb.dim}")
+    print(f"   docs={len(docs)}  chunks={len(chunks)}  embedder={args.embedder} ({model}) dim={emb.dim}")
     print(f"   por país: {by_country}")
+    if args.embedder == "hash":
+        print("   ⚠️  embedder=hash: placeholder léxico, NO servible para RAG en prod. Usa --production --embedder fastembed.")
     return 0
 
 

@@ -39,6 +39,19 @@ def _anchor_date() -> str:
 
 ANCHOR_DATE = _anchor_date()    # fecha "as of" única (= build_policy date_anchor)
 
+
+def _fastembed_model() -> str:
+    """Modelo de embeddings para producción. DEFAULT MULTILINGÜE (el corpus es ES+EN): bge-small-en
+    era inglés-only y degradaba el retrieval en español. Configurable en build_policy.embedding."""
+    try:
+        bp = yaml.safe_load((KB / "_meta" / "build_policy.yaml").read_text())
+        return (bp.get("embedding", {}) or {}).get("fastembed_model", "BAAI/bge-m3")
+    except Exception:
+        return "BAAI/bge-m3"
+
+
+DEFAULT_FASTEMBED_MODEL = _fastembed_model()
+
 _HEADING_RE = re.compile(r"^(#{2,3})\s+(.*)$", re.M)
 _AGEBAND_RE = re.compile(r"<!--\s*age_band:\s*([a-z0-9, ]+?)\s*-->")
 _FACT_RE = re.compile(r"<!--\s*@fact\b.*?-->", re.S)
@@ -172,14 +185,16 @@ def embed_input(chunk: Chunk) -> str:
 
 
 class Embedder:
-    def __init__(self, backend: str = "hash", dim: int = EMBED_DIM):
+    def __init__(self, backend: str = "hash", dim: int = EMBED_DIM, model_name: str | None = None):
         self.backend = backend
         self.dim = dim
         self._fe = None
+        self.model_name = model_name or DEFAULT_FASTEMBED_MODEL
         if backend == "fastembed":
             from fastembed import TextEmbedding  # type: ignore
-            self._fe = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
-            self.dim = 384
+            self._fe = TextEmbedding(model_name=self.model_name)   # MULTILINGÜE (ES+EN) por defecto
+            probe = next(iter(self._fe.embed(["dimension probe"])))  # dim real del modelo elegido
+            self.dim = len(list(probe))
 
     @staticmethod
     def _features(text: str):

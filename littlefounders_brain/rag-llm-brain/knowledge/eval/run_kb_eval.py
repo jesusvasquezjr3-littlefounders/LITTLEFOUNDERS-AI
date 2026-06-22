@@ -72,6 +72,39 @@ def suite_leakage(r):
     return passed, failed
 
 
+def suite_competency(r, con):
+    """Suite D — RECALL funcional: el corpus de cada celda DEBE poder responder sus competency questions.
+    Salta celdas sin contenido aún (informa el 'en espera de --run'); para celdas CON contenido, mide si
+    un chunk de la propia celda es recuperado. Convierte competency_questions.json (antes código muerto)
+    en un gate de cobertura real (bloqueante solo con --strict-recall)."""
+    f = EVAL / "competency_questions.json"
+    if not f.exists():
+        return 0, 0
+    cells = json.loads(f.read_text())["cells"]
+    have = {(row[0], row[1], row[2]) for row in
+            con.execute("SELECT DISTINCT country, domain, subdomain FROM chunks").fetchall()}
+    print("\n── Suite D: Competency recall (cobertura funcional) ──")
+    tested = hit = skipped = 0
+    for cell, questions in sorted(cells.items()):
+        country, domain, subdomain = cell.split("/")
+        language = "en" if country == "us" else "es"     # mx/shared canónico = es; us = en
+        if (country, domain, subdomain) not in have:
+            skipped += len(questions)
+            continue
+        for q in questions:
+            tested += 1
+            hits = r.query(q, country=country, language=language, domain=domain, top_k=8)
+            ok = any(h["subdomain"] == subdomain for h in hits)
+            hit += bool(ok)
+            if not ok:
+                print(f"  ✗ {cell}: sin recall para «{q[:58]}»")
+    if tested:
+        print(f"  recall {hit}/{tested} ({100*hit//max(tested,1)}%) · {skipped} preguntas sin contenido aún (skip)")
+    else:
+        print(f"  (sin celdas con contenido todavía; {skipped} preguntas en espera del --run)")
+    return hit, tested - hit
+
+
 def suite_freshness(r, con):
     print("\n── Suite C: Frescura ──")
     passed = failed = 0
@@ -93,6 +126,8 @@ def suite_freshness(r, con):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=str(KB / "index" / "kb.db"))
+    ap.add_argument("--strict-recall", action="store_true",
+                    help="hace BLOQUEANTE el recall de competency (Suite D) — usar tras --run con contenido")
     args = ap.parse_args()
     db = Path(args.db)
     if not db.exists():
@@ -103,15 +138,17 @@ def main():
 
     gp, gf = suite_golden(r, con)
     lp, lf = suite_leakage(r)
+    dp, df = suite_competency(r, con)
     fp, ff = suite_freshness(r, con)
 
     print("\n" + "=" * 60)
-    print(f"A Golden:   {gp} pass / {gf} fail")
-    print(f"B Leakage:  {lp} pass / {lf} fail   (HARD)")
-    print(f"C Freshness:{fp} pass / {ff} fail")
-    # Leakage es siempre bloqueante; golden/freshness también cuentan como fallo.
+    print(f"A Golden:     {gp} pass / {gf} fail")
+    print(f"B Leakage:    {lp} pass / {lf} fail   (HARD)")
+    print(f"D Competency: {dp} pass / {df} fail   ({'HARD' if args.strict_recall else 'advisory'})")
+    print(f"C Freshness:  {fp} pass / {ff} fail")
+    # Leakage siempre bloqueante; golden/freshness cuentan; competency bloquea solo con --strict-recall.
     hard = lf > 0
-    total_fail = gf + lf + ff
+    total_fail = gf + lf + ff + (df if args.strict_recall else 0)
     print("\nEVAL: " + ("❌ FALLÓ" if total_fail else "✅ VERDE") +
           ("  [FUGA DETECTADA — bloqueante]" if hard else ""))
     return 1 if total_fail else 0

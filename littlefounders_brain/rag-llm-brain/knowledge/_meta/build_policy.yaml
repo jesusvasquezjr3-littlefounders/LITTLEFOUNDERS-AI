@@ -110,6 +110,13 @@ wise_use:
                                         # tarjeta. Súbelo conscientemente para un corpus completo.
   alert_usd_remaining: 3                # ALERTA por proveedor cuando (tope - gasto estimado) < este valor
 
+# ── Embeddings (índice RAG servible) ─────────────────────────────────────────
+embedding:
+  # Modelo MULTILINGÜE (el corpus es ES+EN): bge-small-en era inglés-only y degradaba el español.
+  # bge-m3 = multilingüe, sin prefijos, recomendado. Alternativa ligera:
+  # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'. NUNCA 'hash' en producción.
+  fastembed_model: "BAAI/bge-m3"
+
 # ── Cobertura (los dominios/subdominios salen de taxonomy.yaml) ──────────────
 coverage:
   countries: [mx, us, shared]   # orden de prioridad para intercalar (jurisdiccional primero)

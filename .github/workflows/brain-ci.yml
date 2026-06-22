@@ -27,11 +27,17 @@ jobs:
       - name: Instalar dependencias
         run: pip install pyyaml
 
+      - name: TESTS — invariantes del orquestador (status/draft, coverage-stop, budget, juez, grounding)
+        run: python3 tools/test_pipeline.py
+
       - name: GATE — frontmatter, citas, anti-fuga, vocabulario por edad
         run: python3 tools/gate_kb.py
 
-      - name: Construir índice (embedder determinista, sin dependencias)
+      - name: DECONTAMINACIÓN — ninguna pregunta de eval aparece verbatim en el corpus
+        run: python3 tools/decontaminate.py --strict
+
+      - name: Construir índice (embedder determinista para CI; prod usa --production --embedder fastembed)
         run: python3 tools/build_index.py
 
-      - name: EVAL — golden Q&A + FUGA de jurisdicción + frescura (bloqueante)
+      - name: EVAL — golden Q&A + FUGA de jurisdicción + competency recall + frescura (fuga bloqueante)
         run: python3 eval/run_kb_eval.py

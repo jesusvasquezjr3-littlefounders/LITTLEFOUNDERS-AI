@@ -37,7 +37,10 @@ from llm_qwen import Qwen, provider_for  # noqa: E402
 
 POLICY = yaml.safe_load((META / "build_policy.yaml").read_text(encoding="utf-8"))
 VPOL = yaml.safe_load((META / "volatility_policy.yaml").read_text(encoding="utf-8"))["cadences"]
-TODAY = dt.date.fromisoformat(POLICY["content_conventions"]["date_anchor"])
+# Frescura = TIEMPO REAL (wall-clock), NO el date_anchor congelado del build: un fact que venció en el
+# calendario debe detectarse aunque el anchor de contenido no se haya movido (bug del reloj congelado).
+TODAY = dt.date.today()
+ANCHOR = POLICY["content_conventions"]["date_anchor"]   # solo informativo (fecha 'as of' del contenido)
 JUDGE_MODEL = POLICY["models"]["judge"]      # cliente con búsqueda (GLM)
 _MONTHS = {"static": None, "low": 24, "medium": 12, "high": 3}
 

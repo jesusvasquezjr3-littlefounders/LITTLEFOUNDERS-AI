@@ -4,6 +4,9 @@
 pydantic>=2
 pyyaml
 notebooklm-py[browser]==0.7.2
-# Opcional — embeddings semánticos para el índice de producción (build_index.py --embedder fastembed).
-# Sin esto, el índice usa el embedder hash determinista (suficiente para gate/eval, no para retrieval real).
-fastembed
+# Embeddings semánticos MULTILINGÜES. REQUERIDOS para el índice de PRODUCCIÓN (build_index.py
+# --production --embedder fastembed; modelo BAAI/bge-m3, ver build_policy.embedding) y para el dedup
+# semántico (semdedup.py). Sin esto, build_index cae al embedder 'hash' (placeholder léxico: sirve para
+# gate/eval pero NO para retrieval real). El gate, el cliente LLM y los tests NO los necesitan.
+fastembed>=0.3.0
+numpy>=1.24        # matriz de similitud de semdedup.py (cae a O(n^2) puro si falta)

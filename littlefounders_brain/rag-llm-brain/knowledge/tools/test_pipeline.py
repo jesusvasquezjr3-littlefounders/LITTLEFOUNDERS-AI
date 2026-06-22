@@ -115,6 +115,47 @@ def test_real_wrong_does_not_swallow_errors():
     assert bd._real_wrong(["el dato es correcto"]) == [], "string de pura confirmación sin dígitos se suprime"
 
 
+def test_retriever_excludes_stale_walltime():
+    """D: staleness por WALL-CLOCK. Un chunk con review_due en el pasado debe (a) aparecer sin filtro y
+    (b) ser EXCLUIDO con exclude_stale. Lockea el fix del 'reloj congelado'."""
+    import datetime as dt
+    import sqlite3
+    import tempfile
+    from pathlib import Path
+    tools = Path(__file__).resolve().parent
+    sys.path.insert(0, str(tools))
+    import build_index as bi
+    from kb_common import Embedder, to_blob
+    from retriever import Retriever
+
+    d = Path(tempfile.mkdtemp())
+    db = d / "k.db"
+    con = sqlite3.connect(db)
+    con.executescript(bi.SCHEMA)
+    emb = Embedder("hash")
+    today = dt.date.today()
+    past = dt.date(today.year - 1, today.month, min(today.day, 28)).isoformat()
+    future = dt.date(today.year + 1, today.month, min(today.day, 28)).isoformat()
+    rows = []
+    for cid, rd in (("fresh", future), ("stale", past)):
+        v = emb.encode_one("ahorro dinero meta emergencia")
+        rows.append((cid, "doc-" + cid, "mx", "MX-FED", "es", "personal_finance", "saving",
+                     "[]", "tier3", "intro", "high", str(today), rd, "[]", "ahorro",
+                     "ahorro dinero meta emergencia importante", to_blob(v)))
+    con.executemany("INSERT INTO chunks VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
+    con.executemany("INSERT INTO chunks_fts (text, chunk_id) VALUES (?,?)", [(r[15], r[0]) for r in rows])
+    con.executemany("INSERT INTO meta VALUES (?,?)", [("embed_backend", "hash"), ("embed_dim", "384")])
+    con.commit()
+    con.close()
+    r = Retriever(db)
+    ids_all = {h["chunk_id"] for h in r.query("ahorro dinero", country="mx", language="es", top_k=10)}
+    ids_fresh = {h["chunk_id"] for h in r.query("ahorro dinero", country="mx", language="es",
+                                                exclude_stale=True, top_k=10)}
+    assert "stale" in ids_all, "el chunk vencido debe aparecer SIN exclude_stale"
+    assert "stale" not in ids_fresh, "exclude_stale debe quitar el chunk vencido (wall-clock)"
+    assert "fresh" in ids_fresh, "el chunk fresco debe permanecer"
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

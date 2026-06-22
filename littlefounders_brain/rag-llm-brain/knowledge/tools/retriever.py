@@ -24,10 +24,12 @@ import re
 import sqlite3
 from pathlib import Path
 
-from kb_common import KB, ANCHOR_DATE, Embedder, cosine, from_blob
+from kb_common import KB, Embedder, cosine, from_blob
 
 DEFAULT_DB = KB / "index" / "kb.db"
-TODAY = dt.date.fromisoformat(ANCHOR_DATE)
+# Staleness = TIEMPO REAL (wall-clock): un doc está stale si su review_due ya pasó en el calendario real,
+# no contra el date_anchor congelado del build (si no, nada vencía nunca).
+TODAY = dt.date.today()
 RRF_K = 60
 _WORD_RE = re.compile(r"[a-záéíóúñü0-9]+", re.I)
 
