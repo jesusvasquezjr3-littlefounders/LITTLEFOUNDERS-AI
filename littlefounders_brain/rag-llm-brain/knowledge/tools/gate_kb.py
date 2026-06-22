@@ -190,7 +190,8 @@ class Doc:
         self.errors: list[str] = []
         self.warns: list[str] = []
         self.offtable = 0          # @facts cuyo id no está en facts.yaml (no comparables por el gate)
-        self.nunanchored = 0       # numerales oficiales no-anclados en ejemplos (D1)
+        self.nunanchored = 0       # numerales oficiales no-anclados en ejemplos (D1, advisory: todos)
+        self.nunanchored_hard = 0  # subconjunto de ALTA confianza (línea con cue de tasa/tramo) = enforce
         text = path.read_text(encoding="utf-8")
         self.fm, self.body = parse_frontmatter(text)
 
@@ -383,13 +384,66 @@ class Doc:
                         continue
                     seen.add(key)
                     self.nunanchored += 1
+                    # ALTA confianza = cifra OFICIAL: una tasa, o un umbral cuya línea tiene cue de
+                    # tasa/tramo/impuesto (un bracket "Primeros $12,400: tasa 10%"). Un monto ilustrativo
+                    # suelto ("$1,500 de renta", sin cue) NO es oficial → queda advisory aunque sea --strict.
+                    high_conf = is_rate or bool(_RATE_CUE_RE.search(line))
                     msg = (f"numeral oficial NO-anclado en ejemplo: '{numeral}' "
-                           f"(no es @fact → el gate NO valida su valor/año). "
+                           f"(no es @fact → el gate NO valida su valor/año). Ánclalo con [[fact:id]] canónico "
+                           f"(SME lo añade a facts.yaml si falta) o escríbelo ilustrativo REDONDEADO. "
                            f"Línea: {line.strip()[:80]}")
-                    if STRICT_NUMERALS:
+                    if STRICT_NUMERALS and high_conf:
+                        self.nunanchored_hard += 1
                         self.err(msg)
                     else:
                         self.warn(msg)
+
+
+def scan_unanchored_numerals(body: str, high_conf_only: bool = True) -> list[str]:
+    """D1 programático (para build_topic): numerales OFICIALES (tasa/tramo) NO-anclados a un @fact dentro de
+    secciones de ejemplo/cálculo del CUERPO ENSAMBLADO. high_conf_only → solo los de la línea con cue de
+    tasa/tramo (un bracket o tasa marginal), NO montos ilustrativos sueltos. Devuelve la lista de numerales.
+    Misma lógica que Doc._check_unanchored_numerals; aquí se devuelve para enrutar el doc a draft."""
+    marks = list(_EXAMPLE_HEAD_RE.finditer(body))
+    if not marks:
+        return []
+    anchored = set()
+    for m in FACT_RE.finditer(body):
+        f = parse_fact(m.group(1))
+        if "value" in f and f.get("id") in ALL_FACT_IDS:
+            anchored.add(f["value"].strip())
+    out: list[str] = []
+    seen: set = set()
+    for i, mk in enumerate(marks):
+        start = mk.end()
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(body)
+        for line in body[start:end].split("\n"):
+            actor_line = bool(_ACTOR_INCOME_RE.search(line))
+            for nm in _NUMERAL_RE.finditer(line):
+                numeral = nm.group(1).strip()
+                if any(_num_matches_anchor(numeral, v) for v in anchored):
+                    continue
+                before = re.sub(r"[*_]", "", line[max(0, nm.start() - 6):nm.start()])
+                after = re.sub(r"[*_]", "", line[nm.end():nm.end() + 4])
+                if _DERIVED_BEFORE_RE.search(before):
+                    continue
+                is_rate = "%" in numeral
+                if is_rate:
+                    if not _RATE_CUE_RE.search(line):
+                        continue
+                else:
+                    if actor_line:
+                        continue
+                    if _OPERAND_BEFORE_RE.search(before) or _OPERAND_AFTER_RE.search(after):
+                        continue
+                if high_conf_only and not (is_rate or _RATE_CUE_RE.search(line)):
+                    continue
+                key = (numeral, is_rate)
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append(numeral)
+    return out
 
 
 def main():

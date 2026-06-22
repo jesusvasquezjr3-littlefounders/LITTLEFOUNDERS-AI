@@ -170,3 +170,8 @@ run:
   # ── v4 RAG-to-write: el autor recibe evidencia recuperada POR-TEMA (top-k coseno), no el blob por-dominio.
   rag_to_write: true            # recuperación por-tema (evidence_rag.py); false = blob por-dominio (v3)
   evidence_top_k: 8             # nº de pasajes de evidencia recuperados e inyectados al autor
+  # ── D1 ENFORCEMENT (anti-H2): un doc con una cifra OFICIAL (tasa/tramo) NO-anclada a facts.yaml en un
+  # ejemplo trabajado va a DRAFT (no a review) → SME la ancla en facts.yaml y --retry-drafts la regenera.
+  # OJO: SUBE el draft rate de docs fiscales hasta que facts.yaml tenga los brackets/tramos del año (SME).
+  # Es INTENCIONAL: mejor draft honesto que servir un bracket del año equivocado como "review".
+  draft_on_unanchored_numerals: true

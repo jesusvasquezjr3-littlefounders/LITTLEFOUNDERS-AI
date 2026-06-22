@@ -928,6 +928,22 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
                   "spent_by_role": spent_by_role})
             save_state(did, "draft")
             return "needs_review(high_volatility_no_fact)"
+        # D1 ENFORCEMENT (anti-H2): una cifra OFICIAL (tasa/tramo) NO-anclada a facts.yaml dentro de un
+        # ejemplo trabajado (p.ej. un bracket del año equivocado) NO debe llegar a `review` — ni el gate
+        # (solo @fact) ni la NLI (la marca illustrative/unverifiable) la alcanzan. El autor no puede
+        # "arreglar" un bracket que no está en la tabla → va a DRAFT directo (sin quemar rondas): el SME lo
+        # ancla en facts.yaml y `--retry-drafts` lo regenera anclado. Solo cifras de ALTA confianza.
+        if POLICY["run"].get("draft_on_unanchored_numerals", True):
+            from gate_kb import scan_unanchored_numerals
+            bad_nums = scan_unanchored_numerals(es_doc, high_conf_only=True)
+            if bad_nums:
+                for p in (es_path, en_path):
+                    if p.exists():
+                        write_atomic(p, set_status(p.read_text(encoding="utf-8"), "draft"))
+                _log({"doc_id": did, "status": "draft", "issue": "unanchored_example_numerals",
+                      "numerals": bad_nums[:8], "scores": sc, "spent_by_role": spent_by_role})
+                save_state(did, "draft")
+                return f"needs_review(unanchored_numerals={bad_nums[:4]})"
         _log({"doc_id": did, "status": "review", "scores": sc, "spent": spent,
               "spent_by_role": spent_by_role,
               "grounding": gm["grounding_tier"], "canonical_facts": gm["canonical_facts"]})

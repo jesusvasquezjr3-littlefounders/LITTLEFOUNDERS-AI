@@ -314,3 +314,26 @@ el pipeline funciona end-to-end (RAG-to-write → gate → juez → verificació
 |---|---------|--------|---------|
 | S1 | `extract_claims` removía `@fact` comments → perdía valores → factscore siempre n/a | sustituye `@fact` con su `value=` antes de limpiar | `atomic_verify.py` |
 | S2 | CLI `factscore` usaba `load_evidence` (todo, 60k chars) ≠ `build_topic` que usa `retrieve_for_topic` (top-k, 8k) | CLI usa `retrieve_for_topic` con el título del doc | `atomic_verify.py` |
+
+### 7.4 D1 ENFORCEMENT — de "diagnosticado" a "prevenido" (2026-06-22)
+
+La iteración previa CONSTRUYÓ el check D1 (numerales oficiales no-anclados en ejemplos, riesgo H2) y
+CONFIRMÓ el bug real (un bracket 2024 `$11,600` en un doc 2026, corregido a `$12,400`). PERO D1 era
+**advisory y NO estaba en la ruta de enforcement**: `run_gate` no pasaba `--strict-numerals` y `build_topic`
+no ruteaba por numerales → el doc corregido se fue a `status: review` **con `$12,400` todavía como prosa
+suelta NO-anclada** (mismo patrón H2, solo con el valor correcto de hoy). H2 estaba *diagnosticado*, no
+*prevenido*. Esta iteración cierra el lazo:
+
+| # | Cambio | Archivo |
+|---|--------|---------|
+| E1 | `build_topic` rutea a DRAFT (directo, sin quemar rondas) un doc con una cifra OFICIAL (tasa/tramo) **de alta confianza** no-anclada en un ejemplo. El autor no puede fabricar un bracket ausente de `facts.yaml` → el SME lo ancla y `--retry-drafts` lo regenera. Flag `run.draft_on_unanchored_numerals` (default true). | `build_dataset.py`, `build_policy.yaml` |
+| E2 | `scan_unanchored_numerals(body, high_conf_only)` reutilizable; el trigger de DRAFT/`--strict-numerals` solo cuenta numerales de ALTA confianza (línea con cue de tasa/tramo), NO montos ilustrativos sueltos → falso-positivo ~0 (no draftea docs no-fiscales). | `gate_kb.py` |
+| E3 | Se hace en `build_topic` sobre el doc NUEVO (no en el gate por-subárbol) para evitar contaminación cruzada de docs hermanos en la celda. | `build_dataset.py` |
+
+Verificado: `scan_unanchored_numerals` sobre el doc real detecta `['12%','$12,400','10%']` → ese doc, al
+regenerarse, irá a draft hasta anclar los brackets. Tests 24/24.
+
+> **DEPENDENCIA (no es code, es SME/datos):** el enforcement SUBE el draft rate de docs fiscales hasta que
+> `facts.yaml` tenga los brackets US (Rev. Proc.) y los tramos ISR MX (Anexo 8 RMF) del año. Es INTENCIONAL:
+> mejor un draft honesto que servir un tramo del año equivocado como "review". El verdadero desbloqueo de la
+> cobertura fiscal es **completar `facts.yaml` (SME)** — el cuello de botella ya no es código.

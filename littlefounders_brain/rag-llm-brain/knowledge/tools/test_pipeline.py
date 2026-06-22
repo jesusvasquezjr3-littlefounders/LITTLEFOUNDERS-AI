@@ -322,7 +322,7 @@ def test_d1_unanchored_numeral_in_worked_example():
     class _FakeDoc:
         def __init__(self, body):
             self.body = body
-            self.errors, self.warns, self.nunanchored = [], [], 0
+            self.errors, self.warns, self.nunanchored, self.nunanchored_hard = [], [], 0, 0
         def err(self, m): self.errors.append(m); self.nunanchored += 1
         def warn(self, m): self.warns.append(m); self.nunanchored += 1
 
@@ -356,7 +356,7 @@ def test_d1_strict_numerals_is_hard():
     class _FakeDoc:
         def __init__(self, body):
             self.body = body
-            self.errors, self.warns, self.nunanchored = [], [], 0
+            self.errors, self.warns, self.nunanchored, self.nunanchored_hard = [], [], 0, 0
         def err(self, m): self.errors.append(m); self.nunanchored += 1
         def warn(self, m): self.warns.append(m); self.nunanchored += 1
 
@@ -424,6 +424,20 @@ def test_replace_facts_leaves_unresolved_visible():
                             {"us.hsa.limit_self": "src_x"})
     assert "@fact id=us.hsa.limit_self" in out3 and "4,400 USD" in out3, out3
     assert "[[fact:" not in out3, f"no debe quedar placeholder resuelto: {out3}"
+
+
+def test_d1_scan_high_confidence_only():
+    """D1 enforcement: scan_unanchored_numerals marca cifras OFICIALES (tasa/tramo) no-ancladas en ejemplos,
+    pero NO montos ilustrativos sueltos (sin cue de tasa) → bajo falso-positivo para el ruteo a draft, así no
+    se draftean docs no-fiscales con cifras de ejemplo legítimas."""
+    from gate_kb import scan_unanchored_numerals
+    # bracket NO-anclado en línea con cue de tasa → SÍ se marca (el caso H2 real)
+    body_bad = "## Ejemplo trabajado\n- Primeros $12,400: tasa del 10% → $1,240\n"
+    flagged = scan_unanchored_numerals(body_bad, high_conf_only=True)
+    assert any("12,400" in n for n in flagged), flagged
+    # monto ilustrativo sin cue de tasa → NO se marca (evita draftear un doc de presupuesto por una cifra de ejemplo)
+    body_ok = "## Ejemplo ilustrativo\n- Ana ahorra $1,500 cada mes para su meta\n"
+    assert scan_unanchored_numerals(body_ok, high_conf_only=True) == [], scan_unanchored_numerals(body_ok)
 
 
 def _run_all():
