@@ -171,6 +171,68 @@ def test_semdedup_clustering():
     assert clusters == [[0, 1]], f"esperaba un cluster {{0,1}}, got {clusters}"
 
 
+def test_cache_validator_rejects_truncated_json():
+    """v4 anti-poison: una respuesta JSON truncada-pero-no-vacía NO debe pasar el validador de caché, así
+    no se cachea ni se re-sirve en cada resume (antes envenenaba el doc para siempre)."""
+    from llm_qwen import _is_parseable_json
+    assert _is_parseable_json('{"a": 1, "b": [1,2,3]}') is True
+    assert _is_parseable_json('```json\n{"ok": true}\n```') is True
+    assert _is_parseable_json('{"a": 1, "b": [1,2,') is False, "JSON truncado debe rechazarse"
+    assert _is_parseable_json("") is False
+
+
+def test_atomic_illustrative_excluded_from_unverifiable():
+    """v4: los ejemplos ILUSTRATIVOS (que el contrato de autoría EXIGE) NO deben inflar la tasa de
+    no-verificables ni su denominador. factscore = supported/(supported+contradicted)."""
+    import atomic_verify as av
+    verds = [
+        {"claim": "a" * 50, "supported": True, "label": "supported"},
+        {"claim": "b" * 50, "supported": None, "label": "illustrative"},
+        {"claim": "c" * 50, "supported": None, "label": "unverifiable"},
+        {"claim": "d" * 50, "supported": False, "label": "contradicted"},
+    ]
+    orig_v, orig_e = av.verify_llm, av.extract_claims
+    av.verify_llm = lambda claims, evidence, model, client=None: verds
+    av.extract_claims = lambda body: ([v["claim"] for v in verds], [])
+    try:
+        fs = av.score_text("dummy", "evidence", mode="llm", model="x")
+    finally:
+        av.verify_llm, av.extract_claims = orig_v, orig_e
+    assert fs["illustrative"] == 1, fs
+    assert fs["unverifiable"] == 1, f"la ilustrativa NO cuenta como no-verificable: {fs}"
+    assert fs["pertinent"] == 3, f"denominador = claims - ilustrativas: {fs}"
+    assert fs["checkable"] == 2 and fs["supported"] == 1 and fs["contradicted"] == 1, fs
+    assert abs(fs["factscore"] - 0.5) < 1e-9, fs
+
+
+def test_cost_guard_blocks_underbudget_massive_run():
+    """v4 GO-para-TERMINAR: la corrida MASIVA se rehúsa si los caps no cubren la proyección completa
+    (cierra el 'STOP por budget disfrazado de cobertura'); --i-accept-underbudget la permite."""
+    import build_dataset as bd
+    bd._guard_cost_projection(True)         # override SIEMPRE pasa (no lanza)
+    saved = bd._BUDGET_USD
+    try:
+        bd._BUDGET_USD = {"glm": 1.0, "qwen": 1.0}   # caps minúsculos → insuficientes vs ~$964 proyectado
+        raised = False
+        try:
+            bd._guard_cost_projection(False)
+        except SystemExit:
+            raised = True
+        assert raised, "caps insuficientes deben abortar la corrida masiva (sin override)"
+    finally:
+        bd._BUDGET_USD = saved
+
+
+def test_embedder_fastembed_path_normalizes():
+    """v4: cosine() es un producto punto que asume vectores unitarios → el branch fastembed debe
+    L2-normalizar (se prueba la utilidad _l2 sin descargar el modelo de 1GB)."""
+    import math as _m
+    from kb_common import Embedder
+    v = Embedder._l2([3.0, 4.0])
+    assert abs(_m.sqrt(sum(x * x for x in v)) - 1.0) < 1e-9, "debe quedar norma 1"
+    assert abs(v[0] - 0.6) < 1e-9 and abs(v[1] - 0.8) < 1e-9
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

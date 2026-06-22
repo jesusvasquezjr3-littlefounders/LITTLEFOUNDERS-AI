@@ -132,9 +132,11 @@ def _price(model: str) -> dict:
 
 
 def _role_clients():
-    # (cliente, modelo) por rol; los clientes se crean lazy (_judge_client/_planner_client/main)
+    # (cliente, modelo) por rol; los clientes se crean lazy (_judge_client/_planner_client/_verifier_client/main).
+    # El VERIFICADOR cuenta como rol propio: su gasto (GLM, cuello de botella) debe ser visible al budget.
     return ((_AUTHOR_CLIENT, MODELS["author"]), (_JUDGE_CLIENT, MODELS["judge"]),
-            (_PLANNER_CLIENT, MODELS["planner"]))
+            (_PLANNER_CLIENT, MODELS["planner"]),
+            (_VERIFIER_CLIENT, MODELS.get("verifier", MODELS["judge"])))
 
 
 def estimated_cost_by_provider() -> dict:
@@ -184,6 +186,35 @@ def _guard_author_budget(accept_unbounded: bool):
         f"ABORTO: el autor ({prov}) no tiene tope de USD ni de tokens y es pay-as-you-go "
         f"(un runaway factura DIRECTO a la tarjeta). Define wise_use.budget_usd['{prov}'] o "
         f"budget_output_tokens en build_policy.yaml, o repite con --i-accept-unbounded-author.")
+
+
+def _guard_cost_projection(accept_under: bool):
+    """Antes de una corrida MASIVA (--run sin --max-docs): rehúsa arrancar si los caps de presupuesto NO
+    cubren la corrida COMPLETA proyectada. Cierra el riesgo #1 (un --run que muere a mitad por budget
+    disfrazado de 'STOP por cobertura'): GO-para-arrancar → GO-para-TERMINAR. El smoke de Fase 1
+    (--only / --max-docs) NO pasa por aquí. La doc decía que el preflight 'rehúsa el GO' — antes era sólo
+    advisory; este guard lo hace REAL en el punto que importa (el lanzamiento de la corrida masiva)."""
+    if accept_under or not _BUDGET_USD:
+        return
+    try:
+        from cost_projection import map_topics, project
+        proj = project(map_topics(), safety=1.3, atomic=True)
+    except Exception:
+        return     # no bloquear por un fallo de la proyección misma; es un raíl de seguridad, no un dogma
+    short = []
+    for prov, pv in proj.get("by_provider", {}).items():
+        if prov == "_total":
+            continue
+        cap = _BUDGET_USD.get(prov)
+        if cap is not None and cap < pv:
+            short.append(f"{prov} cap ${cap:.0f} < proyectado ${pv:.0f}")
+    if short:
+        total = sum(proj.get("by_provider", {}).values())
+        sys.exit(
+            f"ABORTO: presupuesto insuficiente para TERMINAR la corrida completa (~${total:.0f}): "
+            f"{'; '.join(short)}. Sube wise_use.budget_usd a la proyección (cost_projection.py → "
+            "'cap recomendado') y recarga las APIs, o repite con --i-accept-underbudget "
+            "(corte LIMPIO y reanudable al agotar el cap).")
 
 
 def size_stop() -> bool:
@@ -562,6 +593,7 @@ def q_judge(qw, country, es_text, evidence=""):
 
 _JUDGE_CLIENT = None
 _PLANNER_CLIENT = None
+_VERIFIER_CLIENT = None
 
 
 def _judge_client():
@@ -570,6 +602,16 @@ def _judge_client():
     if _JUDGE_CLIENT is None:
         _JUDGE_CLIENT = Qwen(provider=provider_for(MODELS["judge"]))
     return _JUDGE_CLIENT
+
+
+def _verifier_client():
+    """Cliente del VERIFICADOR atómico (NLI). Cliente PROPIO (no efímero) para que su gasto se contabilice
+    en el presupuesto (antes atomic_verify creaba un Qwen() suelto → el gasto del cuello de botella GLM era
+    INVISIBLE al budget_exceeded). Usa MODELS['verifier'] (key honrada; por defecto == juez)."""
+    global _VERIFIER_CLIENT
+    if _VERIFIER_CLIENT is None:
+        _VERIFIER_CLIENT = Qwen(provider=provider_for(MODELS.get("verifier", MODELS["judge"])))
+    return _VERIFIER_CLIENT
 
 
 def _planner_client():
@@ -616,9 +658,20 @@ def _existing_es_bodies(subdir, slug):
 
 # ─────────────────────────── gate ───────────────────────────
 def run_gate(subtree):
-    r = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py"), subtree],
-                       capture_output=True, text=True, cwd=str(KB.parent))
-    errs = [ln.strip() for ln in r.stdout.splitlines() if "HARD:" in ln]
+    """Corre el gate determinista sobre un subárbol. Distingue CRASH (returncode!=0 SIN líneas HARD —
+    p.ej. un torn-read concurrente de sources.yaml que rompe el YAML) de FALLO de contenido: ante un crash
+    REINTENTA una vez; si persiste, devuelve un issue 'gate_crash:' en vez de un error VACÍO (que haría al
+    autor 'corregir' nada y quemar una ronda pagada)."""
+    def _run():
+        r = subprocess.run([sys.executable, str(TOOLS / "gate_kb.py"), subtree],
+                           capture_output=True, text=True, cwd=str(KB.parent))
+        return r, [ln.strip() for ln in r.stdout.splitlines() if "HARD:" in ln]
+    r, errs = _run()
+    if r.returncode != 0 and not errs:
+        r, errs = _run()                      # posible torn-read de sources.yaml → un reintento
+        if r.returncode != 0 and not errs:
+            tail = ((r.stderr or r.stdout).strip().splitlines() or ["sin salida"])[-1][:160]
+            return False, [f"gate_crash: {tail}"]
     return r.returncode == 0, errs
 
 
@@ -702,7 +755,15 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
     existing_es = _existing_es_bodies(subdir, slug)   # para el gate de dedup near-dup
     u0 = qw.usage_snapshot()
     for attempt in range(bar["max_revise_rounds"] + 1):
-        payload = q_author(qw, country, domain, subdomain, topic, feedback, evidence=evidence)
+        # El autor va GUARDADO (como el juez): una respuesta malformada/transitoria (JSON inválido, error de
+        # red tras reintentos) cuesta SOLO este doc — antes propagaba y mataba la CELDA entera (hasta 37 temas).
+        try:
+            payload = q_author(qw, country, domain, subdomain, topic, feedback, evidence=evidence)
+        except Exception as e:
+            feedback = ("Tu respuesta anterior no fue JSON válido o falló. Devuelve EXCLUSIVAMENTE un objeto "
+                        "JSON COMPLETO y bien formado (sin texto fuera del JSON); sé más conciso si hace falta.")
+            last_issue = f"author_error:{type(e).__name__}:{str(e)[:80]}"
+            continue
         # Guarda contra respuestas JSON incompletas (p.ej. truncadas) → revise en vez de crashear el subdominio
         missing = [k for k in ("title_es", "title_en", "body_es", "body_en", "age_bands", "depth_tier", "volatility")
                    if not payload.get(k)]
@@ -749,10 +810,12 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
         sc = judged.get("scores", {})
         wrong = _real_wrong(judged.get("wrong_facts"))
         hard = judged.get("hard_fails") or []
-        below = [f"{k}={sc.get(k)}<{bar[k]}" for k in
+        # Una dimensión REQUERIDA ausente en la respuesta del juez = FALLO, no skip: un juez que omite
+        # worked_example/completeness/citation_quality no debe colar un doc deficiente (la barra se 'gana').
+        below = [f"{k}={sc.get(k, 'falta')}<{bar[k]}" for k in
                  ("factual_accuracy", "country_correctness", "pedagogical_scaffolding",
                   "translation_fidelity", "engagement", "completeness", "worked_example",
-                  "citation_quality") if k in bar and k in sc and sc[k] < bar[k]]
+                  "citation_quality") if k in bar and (k not in sc or sc[k] < bar[k])]
         # Piso de PROFUNDIDAD determinista (no solo el juez subjetivo): un doc por debajo de
         # min_words_per_doc se regenera (más cerca del estándar enciclopedia Investopedia/IRS).
         words = len((payload.get("body_es") or "").split())
@@ -765,19 +828,39 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             last_issue = f"judge wrong={wrong[:2]} below={below} short={too_short}"
             continue
         # v4: VERIFICACIÓN ATÓMICA — la prosa debe estar FUNDAMENTADA en la evidencia (anti-lavado). Cada
-        # afirmación se verifica por NLI contra la evidencia recuperada; contradicha o factscore bajo ⇒ revise.
+        # afirmación se verifica por NLI contra la evidencia recuperada. Se evalúa el CUERPO ENSAMBLADO (con
+        # los @fact ya sustituidos, sin placeholders [[fact:]]) = la prosa que de verdad se sirve, vía un
+        # cliente VERIFICADOR propio (su gasto cuenta al presupuesto; ver _verifier_client/_role_clients).
+        # CALIBRACIÓN (Fase 1): el ÚNICO disparo DURO por defecto es `contradicted>0` (señal fiable: la
+        # evidencia dice OTRA cosa). factscore y la tasa de no-verificables son RUIDOSAS sobre evidencia top-k
+        # léxica (una paráfrasis pedagógica fiel sale 'unverifiable' aunque sea correcta), así que sólo bloquean
+        # con señal suficiente (checkable>=min) y con sus flags activos — si no, el gate degradaría TODO el
+        # corpus a draft antes de calibrar con datos reales (ver RUNBOOK_V4 Fase 1).
         if bar.get("atomic_verify") and evidence:
-            from atomic_verify import score_text
-            fs = score_text(payload.get("body_es", ""), evidence, mode="llm", model=MODELS["judge"])
+            try:
+                from atomic_verify import score_text
+                shipped_es = replace_facts(payload.get("body_es", ""), payload.get("facts", []), fact_src)
+                fs = score_text(shipped_es, evidence, mode="llm",
+                                model=MODELS.get("verifier", MODELS["judge"]), client=_verifier_client())
+            except Exception as e:
+                last_issue = f"atomic_error:{type(e).__name__}:{str(e)[:80]}"
+                break   # infra del verificador falló (gate+juez ya pasaron) → DEGRADA a draft (revisión humana)
             min_fs = float(bar.get("min_factscore", 0.0) or 0.0)
             max_unv = float(bar.get("max_unverifiable_rate", 1.0) or 1.0)
-            unv_rate = (fs["unverifiable"] / fs["claims"]) if fs["claims"] else 0.0
-            bad_fs = fs["checkable"] > 0 and fs["factscore"] is not None and fs["factscore"] < min_fs
-            if fs["contradicted"] > 0 or bad_fs or unv_rate > max_unv:
+            min_checkable = int(bar.get("min_checkable_for_factscore", 4) or 0)
+            unv_block = bool(bar.get("atomic_unverifiable_blocking", False))
+            fs_block = bool(bar.get("atomic_factscore_blocking", True))
+            pertinent = fs.get("pertinent", fs["claims"]) or 0
+            unv_rate = (fs["unverifiable"] / pertinent) if pertinent else 0.0
+            # factscore sólo es fiable con denominador suficiente (checkable>=min); si no, NO bloquea.
+            bad_fs = (fs_block and fs["checkable"] >= min_checkable
+                      and fs["factscore"] is not None and fs["factscore"] < min_fs)
+            bad_unv = unv_block and pertinent > 0 and unv_rate > max_unv
+            if fs["contradicted"] > 0 or bad_fs or bad_unv:
                 feedback = ("FUNDAMENTA cada afirmación en la EVIDENCIA dada (no de memoria). CONTRADICHAS por "
-                            f"la evidencia: {fs['contradicted_claims']}. factscore={fs['factscore']} (min {min_fs}); "
-                            f"no-verificables={unv_rate:.0%} (max {max_unv:.0%}). Reescribe para que cada "
-                            "afirmación se siga de la evidencia, o elimínala.")
+                            f"la evidencia: {fs['contradicted_claims']}. factscore={fs['factscore']} (min {min_fs}, "
+                            f"checkable={fs['checkable']}); no-verificables={unv_rate:.0%}. Reescribe para que "
+                            "cada afirmación se siga de la evidencia, o elimínala.")
                 last_issue = f"atomic fs={fs['factscore']} contra={fs['contradicted']} unv={unv_rate:.0%}"
                 continue
         u1 = qw.usage_snapshot()
@@ -941,6 +1024,9 @@ def main():
                     help="en el resume, regenerar los docs en estado draft (en vez de saltarlos)")
     ap.add_argument("--i-accept-unbounded-author", action="store_true",
                     help="permitir --run con el autor (qwen) SIN tope de USD/tokens (riesgo de gasto en tarjeta)")
+    ap.add_argument("--i-accept-underbudget", action="store_true",
+                    help="permitir la corrida MASIVA aunque los caps NO cubran la corrida completa proyectada "
+                         "(corte LIMPIO y reanudable al agotar el cap; por defecto se rehúsa)")
     args = ap.parse_args()
 
     global RETRY_DRAFTS, _AUTHOR_CLIENT
@@ -968,6 +1054,8 @@ def main():
 
     if args.run:
         _guard_author_budget(args.i_accept_unbounded_author)
+        if not args.max_docs:                       # corrida MASIVA (no un slice acotado) → GO-para-TERMINAR
+            _guard_cost_projection(args.i_accept_underbudget)
         run_all(qw, reg, args.workers, args.max_docs)
         return 0
 
@@ -1131,6 +1219,8 @@ def run_all(qw, reg, workers, max_docs):
     print(f"usage autor={qw.usage_snapshot()}", flush=True)
     if _JUDGE_CLIENT:
         print(f"usage juez={_JUDGE_CLIENT.usage_snapshot()}", flush=True)
+    if _VERIFIER_CLIENT:
+        print(f"usage verificador={_VERIFIER_CLIENT.usage_snapshot()}", flush=True)
     if _PLANNER_CLIENT:
         print(f"usage planner={_PLANNER_CLIENT.usage_snapshot()}", flush=True)
     by = {k: round(v, 3) for k, v in estimated_cost_by_provider().items()}

@@ -84,8 +84,10 @@ cada claim por NLI (`atomic_verify.py`) y juzga con búsqueda web.
 
 > **Costo de un corpus COMPLETO (proyección v4):** **~$964 USD** (GLM ~$703 + Qwen ~$261); GLM es el
 > cuello de botella, así que su tope debe subir de **$9 a ~$800** antes de un `--run` total.
-> `tools/cost_projection.py` está cableado en el **preflight**: rehúsa el GO si los topes no alcanzan para
-> terminar la corrida completa. Con los saldos prepago una sola corrida cubre bajas-centenas de docs; el
+> `tools/cost_projection.py` está cableado en el **guard de `--run` masivo** (v4.1): **rehúsa arrancar** si
+> los topes no alcanzan para terminar la corrida completa (`--i-accept-underbudget` para forzar; en el
+> preflight la proyección es advisory). El gasto del verificador atómico (GLM) ahora **cuenta** en el
+> presupuesto. Con los saldos prepago una sola corrida cubre bajas-centenas de docs; el
 > corpus completo se alcanza en **varios ciclos recarga-y-resume** (el resume es gratis: caché de
 > respuestas LLM en `index/llm_cache/`). Sube los `budget_usd` a la proyección antes de un `--run` total.
 
@@ -149,10 +151,12 @@ flowchart TD
 - **RAG-to-write** (`evidence_rag.py`): el autor NO escribe de memoria ni de un blob por-dominio; recibe la
   **evidencia recuperada POR-TEMA** (TF-IDF léxico con **firewall de jurisdicción sobre el insumo**) y
   redacta a partir de ella.
-- **Verificación atómica** (`atomic_verify.py`, NLI con GLM): cada afirmación de la prosa se etiqueta
-  **apoyada / contradicha / no-verificable** contra la evidencia. Gateado en `build_topic` vía
-  `quality_bar.atomic_verify` (**min_factscore 0.80**, **max_unverifiable_rate 0.50**). El juez GLM ya
-  **no es el único garante factual**.
+- **Verificación atómica** (`atomic_verify.py`, NLI con el **verificador** = cliente propio contabilizado):
+  cada afirmación se etiqueta **apoyada / contradicha / no-verificable** (+ `illustrative`) contra la
+  evidencia, sobre el **cuerpo ENSAMBLADO** (la prosa servida). Gateado en `build_topic`. **Calibración v4.1:**
+  el disparo DURO por defecto es `contradicted>0`; `factscore` bloquea sólo con `checkable ≥ min_checkable`,
+  y la tasa de no-verificables (que EXCLUYE los `illustrative`) es **advisory** hasta calibrar en Fase 1 — así
+  no se degrada TODO a draft antes de medir. El juez GLM ya **no es el único garante factual**.
 - **GATE determinista** (`gate_kb.py`, sin LLM): frontmatter+enums, `doc_id==path`, coherencia
   país/jurisdicción/currency, dominio/subdominio en vocabulario cerrado, fuentes existen, **volatilidad
   ≥medium exige fuente `primary` VIVA**, fechas no futuras, `@fact` bien formados, **anti-fuga** (la

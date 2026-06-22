@@ -106,16 +106,20 @@ def verify_embed(claims: list[str], ev_chunks: list[str], emb: Embedder, thresh:
 
 
 # ── verificación llm (NLI real) ────────────────────────────────────────────────
-def verify_llm(claims: list[str], evidence: str, model: str):
+def verify_llm(claims: list[str], evidence: str, model: str, client=None):
     """NLI por lotes en 3 VÍAS — distingue 'no está en esta evidencia' de 'es FALSO':
       · supported    = la evidencia la implica directamente.
       · contradicted = la evidencia dice OTRA cosa (FALLA REAL de fidelidad).
       · unverifiable = ni la implica ni la contradice (claim plausible fuera del alcance de esta
                        evidencia → señal de que falta RAG-to-write / verificación web, NO un error).
     Los EJEMPLOS ILUSTRATIVOS ('Ana gana $5,000…') se etiquetan 'illustrative' y NO cuentan.
-    factscore = supported / (supported + contradicted): fidelidad entre los claims VERIFICABLES."""
-    from llm_qwen import Qwen, provider_for  # lazy
-    cli = Qwen(provider=provider_for(model))
+    factscore = supported / (supported + contradicted): fidelidad entre los claims VERIFICABLES.
+    `client` (opcional): cliente Qwen YA construido (p.ej. el del verificador del build) para que su gasto
+    se contabilice en el presupuesto; si es None se crea uno efímero (modo CLI, sin tracking de budget)."""
+    if client is None:
+        from llm_qwen import Qwen, provider_for  # lazy
+        client = Qwen(provider=provider_for(model))
+    cli = client
     numbered = "\n".join(f"{i+1}. {c}" for i, c in enumerate(claims))
     msg = [{"role": "system", "content":
             "Eres un verificador de hechos NLI riguroso pero JUSTO. Etiqueta cada afirmación SOLO contra la "
@@ -140,26 +144,36 @@ def verify_llm(claims: list[str], evidence: str, model: str):
 
 # ── score inline (para integrar al loop de build_dataset, sin IO) ───────────────
 def score_text(body: str, evidence: str, mode: str = "llm", model: str = "glm-4.6",
-               thresh: float = 0.5, emb=None) -> dict:
+               thresh: float = 0.5, emb=None, client=None) -> dict:
     """FACTSCORE de un cuerpo ya en memoria contra evidencia ya recuperada. Lo llama build_topic (v4)
     como etapa de gate: contradicted>0 o factscore<umbral ⇒ revise. unverifiable alto = el autor se
-    despegó de la evidencia (RAG-to-write flojo)."""
+    despegó de la evidencia (RAG-to-write flojo).
+
+    Distingue 'illustrative' (ejemplos trabajados, que el contrato de autoría EXIGE) de 'unverifiable':
+    los illustrative NO cuentan en `unverifiable` NI en el denominador de la tasa de no-verificables —
+    de otro modo un doc que cumple el mandato de tener ejemplos se penalizaría por tenerlos.
+    `pertinent` = claims que NO son ilustrativos (base honesta para unv_rate). `client` opcional: cliente
+    Qwen ya construido (verificador del build) para contabilizar su gasto en el presupuesto."""
     claims, facts = extract_claims(body)
     if not claims:
-        return {"claims": 0, "checkable": 0, "supported": 0, "contradicted": 0,
-                "unverifiable": 0, "factscore": None, "contradicted_claims": []}
+        return {"claims": 0, "pertinent": 0, "checkable": 0, "supported": 0, "contradicted": 0,
+                "unverifiable": 0, "illustrative": 0, "factscore": None, "contradicted_claims": []}
     if mode == "llm":
-        verdicts = verify_llm(claims, evidence, model) if evidence else \
-                   [{"claim": c, "supported": None} for c in claims]
+        verdicts = verify_llm(claims, evidence, model, client=client) if evidence else \
+                   [{"claim": c, "supported": None, "label": "unverifiable"} for c in claims]
     else:
         verdicts = verify_embed(claims, chunk_evidence(evidence), emb or Embedder(backend="fastembed"), thresh)
-    checked = [v for v in verdicts if v["supported"] is not None]
+    checked = [v for v in verdicts if v["supported"] is not None]                  # supported + contradicted
     supported = sum(1 for v in checked if v["supported"])
+    illustrative = sum(1 for v in verdicts if v.get("label") == "illustrative")
+    # 'unverifiable' = sin verdicto Y no ilustrativo (los ilustrativos no son hechos a verificar).
+    unverifiable = sum(1 for v in verdicts if v["supported"] is None and v.get("label") != "illustrative")
     score = (supported / len(checked)) if checked else None
     return {
-        "claims": len(claims), "checkable": len(checked), "supported": supported,
+        "claims": len(claims), "pertinent": len(claims) - illustrative,
+        "checkable": len(checked), "supported": supported,
         "contradicted": len(checked) - supported,
-        "unverifiable": sum(1 for v in verdicts if v["supported"] is None),
+        "unverifiable": unverifiable, "illustrative": illustrative,
         "factscore": score,
         "contradicted_claims": [v["claim"][:140] for v in checked if not v["supported"]][:5],
     }

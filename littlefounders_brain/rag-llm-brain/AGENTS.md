@@ -78,8 +78,10 @@ build_dataset.py (DeepSeek+Qwen+GLM) → PLANNER/mapa(DeepSeek V4)
   drafts); el orquestador genera CONTRA el mapa. Dedup 2 niveles (léxico inline + `semdedup.py`).
 - **Verdad de cifras = `facts.yaml`** + **disciplina de ids**: un `@fact` off-table que duplica una cifra
   canónica = HARD-FAIL; `--strict-facts` = todo volátil off-table es HARD; el gate reporta el ratio anclado.
-- **STOP por COBERTURA** (`stop_on: coverage`) + **proyección de costo** (`cost_projection.py`, cableada al
-  preflight): rehúsa GO si los caps no cubren la corrida completa (~$964; no morir al 3%).
+- **STOP por COBERTURA** (`stop_on: coverage`) + **proyección de costo** (`cost_projection.py`): el guard de
+  `--run` masivo **rehúsa arrancar** si los caps no cubren la corrida completa (~$964; no morir al 3%;
+  `--i-accept-underbudget` para forzar). El gasto del **verificador atómico** (cliente propio) ahora cuenta
+  en el presupuesto. **Hardening v4.1** (robustez de la corrida pagada): ver `ARCHITECTURE_V4.md §7`.
 
 ## Comandos
 

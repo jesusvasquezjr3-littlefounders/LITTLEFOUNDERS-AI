@@ -1,5 +1,11 @@
-# build_policy.yaml — política del pipeline AUTÓNOMO v3 (fact-anchored, Qwen+GLM, breadth-first).
-# Ver ARCHITECTURE_V3.md y PLAN_V3_EXECUTION.md. El "stop" global es una CONJUNCIÓN.
+# build_policy.yaml — política del pipeline AUTÓNOMO v4 (RAG-to-write + verificación atómica;
+# fact-anchored, DeepSeek planner + Qwen autor + GLM juez/verificador, breadth-first).
+# Diseño CANÓNICO: ARCHITECTURE_V4.md · corrida masiva: RUNBOOK_V4.md. El "stop" global es una CONJUNCIÓN.
+#
+# CAMBIOS v4 vs v3 (claves nuevas): run.rag_to_write + run.evidence_top_k (autor escribe DESDE evidencia
+#   recuperada POR-TEMA); quality_bar.atomic_verify + min_factscore + max_unverifiable_rate +
+#   min_checkable_for_factscore + atomic_*_blocking (verificación NLI afirmación-por-afirmación, anti-lavado);
+#   models.verifier (verificador atómico, cliente con presupuesto contabilizado).
 #
 # CAMBIOS v3 vs v2:
 #  · VERDAD DE BASE: _meta/facts.yaml (tabla canónica). El gate compara cifras contra ella.
@@ -33,7 +39,8 @@ breadth:
 # ── Profundidad por subdominio (techo de la última pasada) ───────────────────
 depth:
   min_docs_per_subdomain: 8   # objetivo de profundidad máxima (última pasada)
-  min_words_per_doc: 700
+  min_words_per_doc: 500      # piso de profundidad (validado vs corpus real 444-618 palabras ES; 700 era
+                              # infeasible y disparaba revise-loops "doc corto" sobre docs ya buenos)
   min_cited_facts_per_doc: 4
   min_primary_sources_per_doc: 1
   require_all_applicable_tiers: true
@@ -63,10 +70,17 @@ quality_bar:
   citation_quality: 4       # cifras apoyadas en fuentes PRIMARIAS rastreables y fechadas
   max_revise_rounds: 3
   # ── v4: VERIFICACIÓN ATÓMICA (anti-lavado) — cada afirmación se verifica por NLI contra la evidencia.
-  atomic_verify: true            # activa la etapa atómica en build_topic (añade 1 llamada NLI/juez por doc)
+  atomic_verify: true            # activa la etapa atómica en build_topic (añade 1 llamada NLI/verificador por doc)
   min_factscore: 0.80            # fracción mínima de afirmaciones VERIFICABLES que deben estar 'supported'
-  max_unverifiable_rate: 0.50    # si >50% de las afirmaciones no se hallan en la evidencia ⇒ el autor se
-                                 # despegó de las fuentes (RAG-to-write flojo) ⇒ revise
+  max_unverifiable_rate: 0.50    # tasa de afirmaciones (NO ilustrativas) no halladas en la evidencia
+  # ── CALIBRACIÓN (Fase 1, RUNBOOK_V4): el ÚNICO disparo DURO por defecto es contradicted>0 (señal FIABLE:
+  # la evidencia dice OTRA cosa). factscore y la tasa de no-verificables son RUIDOSAS sobre evidencia top-k
+  # léxica (una paráfrasis pedagógica fiel sale 'unverifiable' aunque sea correcta) → bloquean SÓLO con estos
+  # flags. Así el gate NO degrada TODO el corpus a draft antes de medir factscore en datos v4 reales; tras la
+  # Fase 1 se suben los umbrales/flags con evidencia. Los ejemplos ILUSTRATIVOS no cuentan (atomic_verify.py).
+  min_checkable_for_factscore: 4   # no exigir min_factscore si hay <N afirmaciones verificables (denominador inestable)
+  atomic_factscore_blocking: true  # factscore<min bloquea SÓLO si checkable>=min_checkable_for_factscore
+  atomic_unverifiable_blocking: false  # tasa de no-verificables = ADVISORY hasta calibrar con datos v4 reales
 
 # ── Modelos por rol (Qwen autor + GLM juez; ver llm_qwen.py provider_for) ─────
 models:
@@ -74,7 +88,9 @@ models:
                               # (clave para la AMPLITUD); pool de cuota separado de Qwen/GLM → más velocidad.
   author: qwen-plus-latest    # AUTOR = Qwen-Plus + enable_search (funda en evidencia + web)
   judge: glm-4.6              # JUEZ = GLM (z.ai), PROVEEDOR INDEPENDIENTE + búsqueda web
-  verifier: glm-4.6           # mismo cliente que el juez (q_judge usa MODELS['judge'])
+  verifier: glm-4.6           # VERIFICADOR atómico (NLI). HONRADO por build_dataset (_verifier_client) con
+                              # cliente PROPIO y presupuesto contabilizado. Por defecto == juez; ponlo en otra
+                              # familia (p.ej. deepseek-v4-flash) para independencia real autor≠juez≠verificador.
   grounding_search: true      # activa búsqueda en autor (qwen) y juez (glm web_search)
 
 # Precios estimados por modelo (USD / 1M tokens) — para el presupuesto en $ (wise_use.budget_usd).

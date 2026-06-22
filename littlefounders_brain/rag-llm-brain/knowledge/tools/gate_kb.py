@@ -45,7 +45,25 @@ def _anchor():
 TODAY = _anchor()                                      # ancla "as of" (= build_policy date_anchor)
 
 TAXO = yaml.safe_load((META / "taxonomy.yaml").read_text(encoding="utf-8"))
-SOURCES = yaml.safe_load((META / "sources.yaml").read_text(encoding="utf-8"))["sources"]
+
+
+def _load_sources() -> dict:
+    """Carga sources.yaml tolerando un TORN-READ concurrente: durante el build, 8 workers hacen append a
+    este archivo mientras cada gate corre como subproceso y lo re-parsea. Si lo lee a mitad de un append el
+    YAML queda inválido; reintentamos brevemente en vez de reventar (el orquestador interpretaría el crash
+    como 'fallo de contenido' y quemaría una ronda pagada del autor). Ver build_dataset.run_gate."""
+    import time as _t
+    last = None
+    for _ in range(5):
+        try:
+            return (yaml.safe_load((META / "sources.yaml").read_text(encoding="utf-8")) or {}).get("sources", {}) or {}
+        except Exception as e:                 # YAML truncado a media escritura → reintentar
+            last = e
+            _t.sleep(0.15)
+    raise last
+
+
+SOURCES = _load_sources()
 VPOL = yaml.safe_load((META / "volatility_policy.yaml").read_text(encoding="utf-8"))["cadences"]
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))

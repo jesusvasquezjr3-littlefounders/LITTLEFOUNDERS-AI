@@ -1,8 +1,13 @@
 # ARCHITECTURE_V4.md — El "Arca de Conocimiento" (RAG-to-write · verificación atómica · doble pista)
 
-> **Estado:** EN CONSTRUCCIÓN (2026-06-22). Sucede a [`PIPELINE.md`](PIPELINE.md)/[`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md)
-> donde difiera. Este documento define el diseño objetivo; las piezas marcadas ✅ ya están implementadas y
-> probadas a **$0 de API**, las ⏳ están especificadas y pendientes de construir antes del primer `--run` pagado.
+> **Estado:** IMPLEMENTADO Y ENDURECIDO (núcleo v4 + hardening v4.1, 2026-06-22). Sucede a
+> [`PIPELINE.md`](PIPELINE.md)/[`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md) donde difiera. Las piezas marcadas
+> ✅ están implementadas y probadas a **$0 de API** (smoke determinista, 15/15 invariantes). El **núcleo
+> anti-lavado** (RAG-to-write §2.3, verificación atómica integrada §2.2, gobernanza de costo §2.5) **YA
+> está construido y cableado** en `build_dataset.py`/`preflight.py` — antes este doc lo marcaba ⏳ por error.
+> Lo que sigue ⏳ es la **doble pista practitioner (D2, §2.4)** y los items de ESCALA (re-ingesta de
+> evidencia por jurisdicción, CI del índice fastembed). El hardening v4.1 (robustez de la corrida pagada)
+> está en **§7**. La validación factscore en datos REALES sigue pendiente de la **Fase 1** (`RUNBOOK_V4.md`).
 
 ---
 
@@ -62,23 +67,29 @@ v4:    PLANNER(doble pista) → AUTOR(RAG-to-write: evidencia recuperada POR-TEM
 | ✅ **Embedder real validado** | `bge-m3` NO existe en fastembed 0.8.0 → cambiado a `paraphrase-multilingual-mpnet-base-v2` (768d) verificado; fallback MiniLM (384d). Índice de producción semántico construido (ya no `hash`). | `_meta/build_policy.yaml`, `tools/kb_common.py` |
 | ✅ **Purga de andamiaje en el índice** | las secciones `## For future Claude` (en los 40 docs) rankeaban como hit #1 del retrieval → excluidas del chunking. | `tools/kb_common.py` |
 
-### 2.2 Verificación atómica (D1, núcleo anti-lavado) — ✅ herramienta construida · ⏳ integración al loop
-`tools/atomic_verify.py` (NUEVO): descompone un doc en afirmaciones atómicas y verifica cada una contra
+### 2.2 Verificación atómica (D1, núcleo anti-lavado) — ✅ construida · ✅ INTEGRADA al loop
+`tools/atomic_verify.py`: descompone un doc en afirmaciones atómicas y verifica cada una contra
 la EVIDENCIA real. Dos modos:
 - **embed ($0):** similitud coseno (mpnet) afirmación↔evidencia. PROXY barato para escanear el corpus.
-- **llm (autoritativo):** NLI/entailment con un **proveedor independiente** (GLM) — por afirmación,
-  `supported|partial|unsupported` sin conocimiento externo. FACTSCORE = soportadas / verificables.
+- **llm (autoritativo):** NLI/entailment en 3 vías (`supported|contradicted|unverifiable`, + `illustrative`
+  para ejemplos trabajados) con el **verificador** (`models.verifier`). FACTSCORE = soportadas / verificables.
 
-⏳ **Integración:** nueva etapa en `build_topic` DESPUÉS del gate: si `factscore < umbral`
-(`quality_bar.min_factscore`, p.ej. 0.80) → revise con las afirmaciones no soportadas como feedback;
-si no converge → draft. El juez GLM deja de ser el garante factual (pasa a pedagogía/coherencia/jurisdicción).
+✅ **Integración (HECHA):** etapa en `build_topic` (`build_dataset.py`, tras el juez): se evalúa el **cuerpo
+ENSAMBLADO** (con los `@fact` sustituidos, = la prosa servida) vía `score_text(..., client=_verifier_client())`
+→ su gasto se **contabiliza en el presupuesto**. **Calibración v4.1:** el ÚNICO disparo DURO por defecto es
+`contradicted>0` (señal fiable); `factscore` bloquea sólo con `checkable ≥ min_checkable_for_factscore`, y la
+tasa de no-verificables (que EXCLUYE los `illustrative`) es **advisory** (`atomic_unverifiable_blocking:false`)
+hasta calibrar con datos v4 reales — así el gate NO degrada TODO el corpus a draft antes de medir. El juez GLM
+deja de ser el único garante factual (pasa a pedagogía/coherencia/jurisdicción).
 
-### 2.3 RAG-para-escribir (D1) — ⏳ por construir
-El autor recibe **evidencia recuperada POR-TEMA** (top-k pasajes del corpus de evidencia + web dirigida),
-no el blob por-dominio, y se le instruye: *"escribe SOLO afirmaciones respaldadas por esta evidencia;
-marca cada cifra/afirmación material con su fuente"*. La evidencia recuperada es el grounding; la web
-llena huecos. Esto hace que el verificador atómico tenga contra-qué-verificar (hoy muchos docs no tienen
-evidencia recuperable por-tema → factscore n/a).
+### 2.3 RAG-para-escribir (D1) — ✅ construido (`evidence_rag.py`, cableado en `build_topic`)
+El autor recibe **evidencia recuperada POR-TEMA** (top-k pasajes vía `retrieve_for_topic`, ranking léxico
+TF-IDF con **firewall de jurisdicción sobre el insumo**), no el blob por-dominio, y se le instruye: *"escribe
+SOLO afirmaciones respaldadas por esta evidencia; un verificador atómico la chequeará afirmación-por-afirmación"*.
+La evidencia recuperada es el grounding; la web llena huecos. Esto da al verificador atómico contra-qué-medir.
+**Límite honesto:** sobre evidencia top-k LÉXICA, una paráfrasis pedagógica fiel sale `unverifiable` aunque sea
+correcta (no está *entailed* en esos k pasajes) → por eso la tasa de no-verificables es advisory (§2.2) hasta
+que la Fase 1 mida `factscore` en datos reales.
 
 ### 2.4 Doble pista de profundidad (D2) — ⏳ por construir
 - `taxonomy.yaml`: añadir tiers practitioner (`tier6_practitioner`, `tier7_professional`) con su techo de
@@ -87,13 +98,18 @@ evidencia recuperable por-tema → factscore n/a).
   (p.ej. `us/investing/derivatives`: griegas, valuación Black-Scholes, márgenes, settlement, regulación).
 - contrato de autoría: una sección practitioner por doc cuando el tema lo amerite, con su propia rúbrica.
 
-### 2.5 Gobernanza de costo — ⏳ por construir
-`preflight.py`: proyectar **costo/doc observado × temas restantes** vs los caps por proveedor; **rehusar
-`--run`** si algún cap no cubre la cobertura proyectada. Convierte "GO-para-arrancar" en "GO-para-terminar".
+### 2.5 Gobernanza de costo — ✅ construida (`cost_projection.py` + guard en `--run`)
+`cost_projection.py` proyecta **costo/doc observado × temas restantes** vs los caps por proveedor.
+**v4.1:** el guard real vive donde importa: `build_dataset.py --run` (corrida MASIVA, sin `--max-docs`)
+**REHÚSA arrancar** si algún cap no cubre la proyección completa (`--i-accept-underbudget` lo permite con
+corte limpio reanudable). El smoke de Fase 1 (`--only`/`--max-docs`) NO pasa por el guard. Convierte
+"GO-para-arrancar" en "GO-para-TERMINAR". (En `preflight.py` la proyección es advisory; el bloqueo duro es
+el guard de `--run`.) El verificador atómico ahora **cuenta** en el presupuesto (antes su gasto GLM era invisible).
 
-### 2.6 Anti-redundancia a escala — ⏳ correr antes de servir
-`semdedup.py` (cross-cell, ahora que `fastembed` está instalado) + `decontaminate.py` BLOQUEANTE en CI +
-arreglar la **tautología del test de fuga** (Suite B re-lee la columna ya filtrada → no puede fallar).
+### 2.6 Anti-redundancia a escala — parcial
+`semdedup.py` (cross-cell) ⏳ correr antes de servir · `decontaminate.py` (advisory en CI, BLOQUEANTE
+pre-serve) · **tautología del test de fuga ✅ ARREGLADA** (`run_kb_eval.py:suite_leakage` es able-to-fail:
+exige que exista contenido opuesto fugable, marca INCONCLUSO si no hay nada que suprimir).
 
 ---
 
@@ -178,6 +194,31 @@ disco lleno (limpiado). Cuatro fallas de "primera ejecución real" cazadas sin t
 
 **Criterio sobre "¿se guardará toda la información exitosamente?":** la CAPA DE PERSISTENCIA es sólida
 (✅ guarda, indexa y recupera sin pérdida, con firewall). La CAPA DE FIDELIDAD todavía no: hoy el
-contenido no es verificable contra evidencia. El siguiente paso (FASE 1, §4) es construir RAG-to-write +
-integrar el verificador al loop y MEDIR factscore sobre docs nuevos — recién ahí la "información guardada"
-será además *fundamentada y verificada*, no solo *persistida*.
+contenido no es verificable contra evidencia. El siguiente paso (FASE 1, §4) es MEDIR factscore sobre docs
+nuevos del loop v4 — recién ahí la "información guardada" será además *fundamentada y verificada*, no solo
+*persistida*. (RAG-to-write + verificación atómica ya están construidos e integrados; ver §2.2/§2.3.)
+
+---
+
+## 7. Hardening v4.1 — robustez de la corrida PAGADA (2026-06-22)
+
+Auditoría adversarial multi-agente (6 dimensiones, 47 hallazgos confirmados) → se cerraron las fallas que
+amenazaban una corrida masiva "sin fallas y útil". Todo probado a **$0** (15/15 invariantes deterministas).
+
+| # | Riesgo cerrado | Cambio | Archivo |
+|---|----------------|--------|---------|
+| R1 | **Poison-cache:** una respuesta JSON truncada-pero-no-vacía se cacheaba ANTES de validar → se re-servía en cada resume y reventaba el doc PARA SIEMPRE | `json()` valida con `cache_validator`: no cachea ni re-sirve JSON inválido (desaloja el acierto poison) | `llm_qwen.py` |
+| R2 | **Una excepción del autor mataba la CELDA entera** (hasta 37 temas) | `q_author` y `score_text` van GUARDADOS en `build_topic` (como el juez): una respuesta mala cuesta SÓLO un doc → draft | `build_dataset.py` |
+| R3 | **Gasto GLM del verificador INVISIBLE al presupuesto** (cuello de botella) | verificador con cliente PROPIO (`_verifier_client`) contabilizado en `estimated_cost_by_provider` | `build_dataset.py`, `atomic_verify.py` |
+| R4 | **Corrida masiva lanzable BAJO presupuesto** (muere a mitad) | `--run` (sin `--max-docs`) rehúsa si los caps no cubren la proyección completa (`_guard_cost_projection`) | `build_dataset.py` |
+| R5 | **Ejemplos ilustrativos (obligatorios) inflaban la tasa de no-verificables** → falsos drafts | `score_text` separa `illustrative`; `unv_rate = unverifiable/(claims−illustrative)`; tasa advisory hasta calibrar | `atomic_verify.py`, `build_dataset.py` |
+| R6 | **`factscore` no-op** (checkable colapsaba a 0) + bar única siempre falla | `factscore` bloquea sólo con `checkable ≥ min_checkable`; contradicción = único duro por defecto | `build_dataset.py`, `build_policy.yaml` |
+| R7 | **cosine() era producto-punto** sobre embeddings mpnet NO normalizados → retrieval vectorial sesgado | `Embedder.encode` L2-normaliza el branch fastembed | `kb_common.py` |
+| R8 | **Crash del gate (torn-read de `sources.yaml`) se confundía con fallo de contenido** → ronda pagada perdida | `run_gate` distingue `gate_crash` y reintenta; el gate lee `sources.yaml` tolerante a torn-read | `build_dataset.py`, `gate_kb.py` |
+| R9 | **Dimensión del juez OMITIDA pasaba como OK** (gate por-omisión) | una dim requerida ausente = FALLO (revise), no skip | `build_dataset.py` |
+| R10 | **`min_words_per_doc:700` infeasible** (corpus real 444-618) → revise-loops "doc corto" | bajado a 500 (validado vs corpus real) | `build_policy.yaml` |
+| R11 | **`models.verifier` era key MUERTA**; verificador == juez (no independiente) | el código HONRA `MODELS['verifier']` (ponlo en otra familia para independencia real) | `build_dataset.py`, `build_policy.yaml` |
+
+**Pendiente (loops siguientes / Fase 1):** doble pista practitioner (D2); `--domain` swap (paquete de dominio
+en `_meta/`, hoy hay acoplamiento jurisdiccional en `tools/`); CI que ejercite el índice fastembed real;
+re-ingesta de evidencia con disciplina de jurisdicción; calibración de umbrales atómicos con datos v4 reales.

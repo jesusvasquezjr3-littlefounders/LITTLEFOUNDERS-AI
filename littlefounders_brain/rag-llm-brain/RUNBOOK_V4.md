@@ -22,6 +22,11 @@
 | Modelos | planner **DeepSeek V4** · autor **Qwen-Plus** · juez+atómico **GLM/z.ai** |
 | **Costo proyectado corrida completa (v4)** | **~$964 USD** (GLM ~$703 · Qwen ~$261) — ver `cost_projection.py` |
 
+> ⚠️ **ALCANCE de la corrida actual:** el `concept_map` cubre tiers **5-18** (7,950 temas). La **doble pista
+> practitioner (D2)** (mercados, valuación, derivados, nivel CFA/Series-7) NO está en el mapa — financiar la
+> corrida ahora genera el mapa 5-18, no la cobertura "cero-a-practitioner". Para esa promesa: regenerar el
+> `concept_map` con tiers profesionales (barato, DeepSeek) ANTES de su corrida. Ver `ARCHITECTURE_V4.md §2.4`.
+
 ---
 
 ## 1. El pipeline v4 (qué hace distinto a v3)
@@ -81,6 +86,10 @@ prompts/umbral ANTES de gastar.
 
 1. **Subir los caps** en `_meta/build_policy.yaml → wise_use.budget_usd` a la proyección validada
    (orientativo: `glm: 800`, `qwen: 300`, `deepseek: 15`) y **recargar** esas APIs.
+   > **v4.1 — guard duro:** `--run` (corrida MASIVA, sin `--max-docs`) **rehúsa arrancar** si los caps NO
+   > cubren la proyección completa (GO-para-TERMINAR, no sólo GO-para-arrancar). Si quieres avanzar con caps
+   > bajos (corte limpio y reanudable al agotar), añade `--i-accept-underbudget`. El gasto del verificador
+   > atómico (GLM) ahora cuenta en el presupuesto.
 2. **Lanzar** (background, reanudable):
    ```bash
    nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 \
@@ -126,6 +135,15 @@ Luego: **revisión SME por triaje de `grounding_tier`** (auto-confiar `anchored`
 | Backoff de red 429/5xx + degradación de búsqueda | tolera baches de API |
 | Topes de presupuesto por proveedor + alerta de saldo | corte LIMPIO y reanudable, no runaway a tarjeta |
 | RAG-to-write léxico (sin model-load en hot-path) | sin OOM por embeddings en la generación |
+| **v4.1** autor/verificador GUARDADOS en `build_topic` | una respuesta mala cuesta 1 doc (→draft), no la celda de hasta 37 temas |
+| **v4.1** `cache_validator` anti-poison en `json()` | una respuesta JSON truncada NO se cachea ni re-sirve (no envenena el doc en cada resume) |
+| **v4.1** guard de costo en `--run` masivo | rehúsa arrancar bajo presupuesto (no morir a mitad); gasto del verificador contabilizado |
+| **v4.1** `run_gate` distingue crash vs fallo; gate lee `sources.yaml` tolerante a torn-read | un crash concurrente no quema una ronda pagada del autor |
+
+> **Calibración atómica (v4.1):** el disparo DURO por defecto es `contradicted>0` (señal fiable: la evidencia
+> dice OTRA cosa). `factscore` bloquea sólo con señal suficiente (`checkable ≥ min_checkable_for_factscore`) y
+> la tasa de no-verificables (que EXCLUYE ejemplos `illustrative`) es **advisory** hasta que la **Fase 1** mida
+> factscore en datos v4 reales; recién entonces se suben umbrales/flags (`build_policy.yaml → quality_bar`).
 
 ---
 

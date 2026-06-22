@@ -132,6 +132,13 @@ class Qwen:
                 return None
         return None
 
+    def _cache_del(self, key: str):
+        """Desaloja una entrada de caché (p.ej. respuesta JSON poison: truncada-pero-no-vacía)."""
+        try:
+            (CACHE_DIR / f"{key}.json").unlink(missing_ok=True)
+        except Exception:
+            pass
+
     def _cache_put(self, key: str, content: str):
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         tmp = CACHE_DIR / f"{key}.json.tmp"
@@ -150,7 +157,11 @@ class Qwen:
 
     def chat(self, messages, *, model="qwen-plus-latest", json_mode=False,
              enable_search=False, temperature=0.3, max_tokens=None,
-             timeout=120, max_retries=4) -> str:
+             timeout=120, max_retries=4, cache_validator=None) -> str:
+        # cache_validator(content)->bool: si se da, una respuesta que NO pasa la validación NO se cachea, y
+        # un acierto de caché que NO valida se DESALOJA y se vuelve a llamar en vivo. Esto evita el "poison
+        # cache": una respuesta JSON truncada-pero-no-vacía que, una vez cacheada, se re-servía en cada resume
+        # y reventaba el doc para siempre (json() la usa para no cachear ni re-servir JSON inválido).
         payload: dict = {"model": model, "messages": messages, "temperature": temperature}
         want_search = bool(enable_search and self.search_ok)
 
@@ -172,15 +183,24 @@ class Qwen:
         if ck:
             hit = self._cache_get(ck)
             if hit is not None:
-                with self._usage_lock:
-                    self.usage["cached"] += 1
-                return hit
+                if cache_validator is None or cache_validator(hit):
+                    with self._usage_lock:
+                        self.usage["cached"] += 1
+                    return hit
+                self._cache_del(ck)   # acierto inválido (p.ej. JSON poison) → desalojar y re-llamar en vivo
 
         last = None
         for attempt in range(max_retries):
             try:
                 resp = self._post(payload, timeout)
-                msg = resp["choices"][0]["message"]["content"]
+                # Respuesta "error-shaped 200" (sin choices) o sin content → tratar como transitorio y
+                # reintentar (NO dejar que un KeyError/IndexError tumbe build_topic y, con él, la celda entera).
+                choices = resp.get("choices") or []
+                msg = ((choices[0].get("message") or {}).get("content") if choices else None) or ""
+                if not msg:
+                    last = QwenError(f"respuesta sin content ({self.provider}): {str(resp)[:200]}")
+                    time.sleep(min(2 ** attempt * 3, 30))
+                    continue
                 u = resp.get("usage", {})
                 with self._usage_lock:
                     self.usage["calls"] += 1
@@ -188,8 +208,8 @@ class Qwen:
                     self.usage["completion_tokens"] += u.get("completion_tokens", 0)
                     if want_search:                       # surcharge de búsqueda web (se cobra por llamada)
                         self.usage["search_calls"] += 1
-                if ck and msg:
-                    self._cache_put(ck, msg)
+                if ck and msg and (cache_validator is None or cache_validator(msg)):
+                    self._cache_put(ck, msg)   # NO cachear una respuesta que el validador rechaza (anti-poison)
                 return msg
             except urllib.error.HTTPError as e:
                 last = e
@@ -211,8 +231,11 @@ class Qwen:
         raise QwenError(f"Agotados {max_retries} reintentos ({self.provider}): {last}")
 
     def json(self, messages, **kw) -> dict:
-        """Como chat() pero garantiza JSON mode y parsea el resultado a dict (con limpieza)."""
+        """Como chat() pero garantiza JSON mode y parsea el resultado a dict (con limpieza). Pasa un
+        cache_validator que evita cachear/re-servir JSON inválido (anti-poison: una respuesta truncada
+        no envenena el doc en cada resume)."""
         kw["json_mode"] = True
+        kw.setdefault("cache_validator", _is_parseable_json)
         raw = self.chat(messages, **kw)
         return _parse_json(raw)
 
@@ -225,6 +248,15 @@ class Qwen:
                              model=model, max_tokens=5, timeout=timeout, max_retries=1)
         finally:
             self.cache = old
+
+
+def _is_parseable_json(raw: str) -> bool:
+    """True si `raw` parsea a JSON con _parse_json. Usado como cache_validator de json() (anti-poison)."""
+    try:
+        _parse_json(raw)
+        return True
+    except Exception:
+        return False
 
 
 def _parse_json(raw: str) -> dict:

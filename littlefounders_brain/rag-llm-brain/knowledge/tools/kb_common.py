@@ -220,9 +220,18 @@ class Embedder:
         n = math.sqrt(sum(x * x for x in v)) or 1.0
         return [x / n for x in v]
 
+    @staticmethod
+    def _l2(v: list[float]) -> list[float]:
+        n = math.sqrt(sum(x * x for x in v)) or 1.0
+        return [x / n for x in v]
+
     def encode(self, texts: list[str]) -> list[list[float]]:
         if self.backend == "fastembed":
-            return [list(map(float, e)) for e in self._fe.embed(texts)]  # type: ignore
+            # L2-normalizar SIEMPRE: cosine() es un producto punto que ASUME vectores unitarios, pero
+            # fastembed NO garantiza normalización para todo modelo (mpnet incluido). Sin esto, los chunks
+            # más largos/densos (mayor norma) se sobre-rankean en TODO el índice → retrieval vectorial
+            # corrupto. El branch 'hash' ya normaliza en _hash_vec.
+            return [self._l2([float(x) for x in e]) for e in self._fe.embed(texts)]  # type: ignore
         return [self._hash_vec(t) for t in texts]
 
     def encode_one(self, text: str) -> list[float]:
