@@ -57,13 +57,13 @@ Carlos, filing as single, reports $52,000 in gross income for 2026. He claims no
 
 → Taxable income = $52,000 − $16,100 = $35,900
 
-Applying the 2026 federal income tax brackets (published in IRS Publication 15 and 17):
-- First $11,600: 10% rate → $1,160
-- Next $35,900 − $11,600 = $24,300, taxed at 12% → $24,300 × 12% = $2,916
+Applying the 2026 federal income tax brackets (published in IRS Publication 15 and 17; thresholds per IRS Rev. Proc. 2025-32):
+- First $12,400: 10% rate → $1,240
+- Next $35,900 − $12,400 = $23,500, taxed at 12% → $23,500 × 12% = $2,820
 
-→ Total tax liability = $1,160 + $2,916 = **$4,076**
+→ Total tax liability = $1,240 + $2,820 = **$4,060**
 
-This is the amount Carlos *owes* on his 2026 income. If his employer withheld $4,300 over the year, he will receive a $224 refund when he files Form 1040.
+This is the amount Carlos *owes* on his 2026 income. If his employer withheld $4,300 over the year, he will receive a $240 refund when he files Form 1040.
 
 **Note:**
 - The federal income tax is distinct from payroll tax (FICA): the latter is a fixed, proportional levy for Social Security and Medicare—not for general government operations. Specifically, <!-- @fact id=us.fica.ss_rate value="6.2%" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> applies to the first <!-- @fact id=us.ss.wage_base value="184,500 USD" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> of wages (Social Security), and <!-- @fact id=us.fica.medicare_rate value="1.45%" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> applies to *all* wages (Medicare).

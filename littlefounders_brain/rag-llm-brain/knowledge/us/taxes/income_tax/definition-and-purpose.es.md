@@ -57,13 +57,13 @@ Carlos, soltero, reporta ingresos brutos de $52,000 en 2026. No tiene deduccione
 
 → Base imponible = $52,000 − $16,100 = $35,900
 
-Aplicando los tramos fiscales federales 2026 (publicados en IRS Pub. 15 y 17):
-- Primeros $11,600: tasa del 10% → $1,160
-- Siguientes $35,900 − $11,600 = $24,300, dentro del tramo del 12% → $24,300 × 12% = $2,916
+Aplicando los tramos fiscales federales 2026 (publicados en IRS Pub. 15 y 17; umbrales según IRS Rev. Proc. 2025-32):
+- Primeros $12,400: tasa del 10% → $1,240
+- Siguientes $35,900 − $12,400 = $23,500, dentro del tramo del 12% → $23,500 × 12% = $2,820
 
-→ Impuesto total calculado = $1,160 + $2,916 = **$4,076**
+→ Impuesto total calculado = $1,240 + $2,820 = **$4,060**
 
-Este monto es lo que Carlos *debería pagar* por su renta en 2026. Si su empleador retuvo $4,300 durante el año, recibirá un reembolso de $224 al presentar su Form 1040.
+Este monto es lo que Carlos *debería pagar* por su renta en 2026. Si su empleador retuvo $4,300 durante el año, recibirá un reembolso de $240 al presentar su Form 1040.
 
 **Ojo:**
 - El impuesto sobre la renta federal es distinto del impuesto sobre nómina (FICA): este último es una retención fija para Seguro Social y Medicare, no para el gobierno general. Por ejemplo, sobre los primeros <!-- @fact id=us.ss.wage_base value="184,500 USD" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> de salario, se retiene <!-- @fact id=us.fica.ss_rate value="6.2%" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> para Seguro Social y <!-- @fact id=us.fica.medicare_rate value="1.45%" verified=2026-06-21 src=src_gen_4f88219b volatility=low --> sobre *todo el salario* para Medicare.

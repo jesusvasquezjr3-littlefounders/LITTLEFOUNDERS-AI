@@ -313,6 +313,82 @@ def test_embedder_fastembed_path_normalizes():
     assert abs(v[0] - 0.6) < 1e-9 and abs(v[1] - 0.8) < 1e-9
 
 
+def test_d1_unanchored_numeral_in_worked_example():
+    """D1: un numeral oficial (umbral $ con miles, tasa %) en un ejemplo trabajado que NO es @fact
+    debe reportarse (advisory). El riesgo H2: un tramo del año equivocado ($11,600 = 2024 en un doc
+    2026) que ni el gate (solo @fact) ni el verificador NLI (illustrative) detectan."""
+    import gate_kb
+
+    class _FakeDoc:
+        def __init__(self, body):
+            self.body = body
+            self.errors, self.warns, self.nunanchored = [], [], 0
+        def err(self, m): self.errors.append(m); self.nunanchored += 1
+        def warn(self, m): self.warns.append(m); self.nunanchored += 1
+
+    body = (
+        "**Worked example**\n"
+        "Carlos reports $52,000 in gross income. Standard deduction: "
+        '<!-- @fact id=us.std_deduction.single value="16,100 USD" verified=2026-06-21 src=s volatility=low -->.\n'
+        "Taxable income = $52,000 - $16,100 = $35,900\n"
+        "- First $11,600: 10% rate -> $1,160\n"   # $11,600 + 10% = NO anclados (riesgo H2)
+        "Total = $1,160 + $2,916 = **$4,076**\n"  # resultados derivados (=, ->) → NO reportar
+    )
+    saved = gate_kb.STRICT_NUMERALS
+    gate_kb.STRICT_NUMERALS = False
+    try:
+        d = _FakeDoc(body)
+        gate_kb.Doc._check_unanchored_numerals(d)
+    finally:
+        gate_kb.STRICT_NUMERALS = saved
+    flagged = " ".join(d.warns)
+    assert "$11,600" in flagged, f"debe reportar el tramo no-anclado $11,600: {d.warns}"
+    assert "10%" in flagged, f"debe reportar la tasa no-anclada 10%: {d.warns}"
+    assert "$4,076" not in flagged, f"el resultado derivado NO se reporta: {d.warns}"
+    assert "$52,000" not in flagged, f"el ingreso hipotetico del actor NO se reporta: {d.warns}"
+    assert "$16,100" not in flagged, f"el valor @fact anclado NO se reporta: {d.warns}"
+
+
+def test_d1_strict_numerals_is_hard():
+    """D1: con --strict-numerals, los numerales no-anclados son HARD-FAIL (no advisory)."""
+    import gate_kb
+
+    class _FakeDoc:
+        def __init__(self, body):
+            self.body = body
+            self.errors, self.warns, self.nunanchored = [], [], 0
+        def err(self, m): self.errors.append(m); self.nunanchored += 1
+        def warn(self, m): self.warns.append(m); self.nunanchored += 1
+
+    body = "**Ejemplo trabajado**\n- Primeros $11,600: tasa del 10% -> $1,160\n"
+    saved = gate_kb.STRICT_NUMERALS
+    gate_kb.STRICT_NUMERALS = True
+    try:
+        d = _FakeDoc(body)
+        gate_kb.Doc._check_unanchored_numerals(d)
+    finally:
+        gate_kb.STRICT_NUMERALS = saved
+    assert any("$11,600" in e for e in d.errors), f"strict debe ser HARD: {d.errors}"
+    assert not d.warns, "strict no debe producir advisories"
+
+
+def test_d2_usage_delta_per_role():
+    """D2: el gasto GLM (juez+verificador, ~88% del costo) debe atribuirse por-doc. Antes solo se
+    logueaba el autor (Qwen) en build_log.jsonl → cost_projection calibraba el cuello de botella a ciegas."""
+    import build_dataset as bd
+    # delta normal (cliente existia antes): u1 - u0
+    u0 = {"calls": 5, "prompt_tokens": 1000, "completion_tokens": 500}
+    u1 = {"calls": 8, "prompt_tokens": 2000, "completion_tokens": 900}
+    d = bd._usage_delta(u0, u1)
+    assert d["calls"] == 3 and d["prompt_tokens"] == 1000 and d["completion_tokens"] == 400, d
+    # cliente creado durante este doc (u0=None): u1 ya es el gasto de este doc
+    d0 = bd._usage_delta(None, {"calls": 2, "prompt_tokens": 300, "completion_tokens": 100})
+    assert d0 and d0["prompt_tokens"] == 300, d0
+    # sin gasto medible
+    assert bd._usage_delta(None, None) is None
+    assert bd._usage_delta(u0, u0) is None or all(v == 0 for v in bd._usage_delta(u0, u0).values())
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

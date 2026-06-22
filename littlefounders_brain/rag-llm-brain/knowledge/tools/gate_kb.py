@@ -95,6 +95,7 @@ for _cid, _cf in CANON.items():
     CANON_BY_JC.setdefault((_cf.get("jurisdiction"), _concept_tokens(_cid)), []).append((_cid, _cf["value"]))
 
 STRICT_FACTS = False   # --strict-facts: todo @fact volátil OFF-TABLE pasa de advisory a HARD-FAIL
+STRICT_NUMERALS = False  # --strict-numerals: numerales oficiales no-anclados en ejemplos → HARD-FAIL (D1)
 
 JURIS_BY_COUNTRY = {"mx": "MX-FED", "us": "US-FED", "shared": "NONE"}
 CURRENCY_BY_COUNTRY = {"mx": "MXN", "us": "USD", "shared": None}
@@ -106,6 +107,34 @@ REQUIRED = [
 ]
 FACT_RE = re.compile(r"<!--\s*@fact\s+(.*?)-->", re.S)
 SECTION_RE = re.compile(r"<!--\s*age_band:\s*([a-z0-9, ]+?)\s*-->")
+
+# ── D1: numerales oficiales NO-anclados en secciones de ejemplo/cálculo (riesgo H2: tramo/umbral del
+# año equivocado que ni el gate (solo @fact) ni el verificador NLI (illustrative/unverifiable) tocan).
+_EXAMPLE_HEAD_RE = re.compile(
+    r"^(?:#{1,6}\s+|\*\*\s*)?(worked\s+example|ejemplo\s+trabajado|ejemplo\s+ilustrativo|"
+    r"illustrative\s+example|how\s+it(?:'s| is)?\s+(?:calculated|work|computed)|"
+    r"c[óo]mo\s+(?:se\s+)?calc|c[óo]mo\s+funciona|example\s+calcul|c[áa]lculo\s+del)",
+    re.I | re.M,
+)
+# Numeral "oficial": umbral $ con separador de miles, o tasa %. (Enteros pequeños/round no lo son.)
+_NUMERAL_RE = re.compile(r"(\$\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?|\b\d{1,2}(?:\.\d{1,2})?\s*%)")
+_RATE_CUE_RE = re.compile(r"\b(rate|tasa|marginal|bracket|tramo|grava|taxed\s+at|impuesto)\b", re.I)
+_ACTOR_INCOME_RE = re.compile(
+    r"\b(earns|gana|reporta|reports|recibe|receives|ingresos?|income|salary|salario|sueldo|"
+    r"wages|withheld|retuvo|retenido|retention)\b", re.I)
+_DERIVED_BEFORE_RE = re.compile(r"[=→]\s*\$?\s?$")           # numeral precedido por = o → (resultado)
+_OPERAND_BEFORE_RE = re.compile(r"[−\-\×\+]\s*\$?$")          # numeral precedido por operador (operando)
+_OPERAND_AFTER_RE = re.compile(r"^\s*[−\-\×\+]")              # numeral seguido de operador (operando)
+
+
+def _num_matches_anchor(numeral: str, anchor_val: str) -> bool:
+    """¿El numeral de la prosa coincide con un valor @fact anclado (ya validado por el gate)? Compara
+    dígitos + unidad (% vs $/USD/MXN) para no re-reportar lo que el gate ya garantiza."""
+    n = re.sub(r"[^\d.]", "", numeral)
+    a = re.sub(r"[^\d.]", "", anchor_val)
+    if not n or n != a:
+        return False
+    return ("%" in numeral) == ("%" in anchor_val)
 
 
 def forbidden_for(tiers: list[str]) -> set[str]:
@@ -161,6 +190,7 @@ class Doc:
         self.errors: list[str] = []
         self.warns: list[str] = []
         self.offtable = 0          # @facts cuyo id no está en facts.yaml (no comparables por el gate)
+        self.nunanchored = 0       # numerales oficiales no-anclados en ejemplos (D1)
         text = path.read_text(encoding="utf-8")
         self.fm, self.body = parse_frontmatter(text)
 
@@ -289,6 +319,8 @@ class Doc:
                               f"el gate NO valida su valor; SME debe verificarlo o anclarlo a la tabla")
         # 10. vocabulario prohibido en secciones de edad temprana
         self._check_forbidden_vocab()
+        # 11. D1: numerales oficiales no-anclados en ejemplos trabajados (riesgo H2: año equivocado)
+        self._check_unanchored_numerals()
 
     def _check_forbidden_vocab(self):
         # secciones marcadas con <!-- age_band: tierX,tierY -->
@@ -304,6 +336,55 @@ class Doc:
                 if re.search(rf"\b{re.escape(word.lower())}\b", section):
                     self.err(f"vocabulario PROHIBIDO '{word}' en sección {tiers} (techo Piaget)")
 
+    def _check_unanchored_numerals(self):
+        # D1: numerales oficiales (tasas %, umbrales $, tramos) en secciones de ejemplo/cálculo que NO
+        # son @fact (el gate ya los validó contra facts.yaml) ni resultados derivados (=, →). Cierra H2:
+        # un tramo del año equivocado en un ejemplo trabajado se cuela porque ni el gate (solo @fact) ni
+        # el verificador NLI (lo marca illustrative/unverifiable y no cuenta en el factscore) lo alcanzan.
+        marks = list(_EXAMPLE_HEAD_RE.finditer(self.body))
+        if not marks:
+            return
+        anchored = set()
+        for m in FACT_RE.finditer(self.body):
+            f = parse_fact(m.group(1))
+            if "value" in f and f.get("id") in ALL_FACT_IDS:
+                anchored.add(f["value"].strip())
+        seen = set()
+        for i, mk in enumerate(marks):
+            start = mk.end()
+            end = marks[i + 1].start() if i + 1 < len(marks) else len(self.body)
+            for line in self.body[start:end].split("\n"):
+                actor_line = bool(_ACTOR_INCOME_RE.search(line))
+                for nm in _NUMERAL_RE.finditer(line):
+                    numeral = nm.group(1).strip()
+                    if any(_num_matches_anchor(numeral, v) for v in anchored):
+                        continue
+                    before = re.sub(r"[*_]", "", line[max(0, nm.start() - 6):nm.start()])
+                    after = re.sub(r"[*_]", "", line[nm.end():nm.end() + 4])
+                    if _DERIVED_BEFORE_RE.search(before):       # resultado de un cálculo (=, →)
+                        continue
+                    is_rate = "%" in numeral
+                    if is_rate:
+                        if not _RATE_CUE_RE.search(line):       # tasa sin contexto de tasa = ruido
+                            continue
+                    else:
+                        if actor_line:                          # ingreso hipotético del actor
+                            continue
+                        if _OPERAND_BEFORE_RE.search(before) or _OPERAND_AFTER_RE.search(after):
+                            continue                            # operando aritmético (no cifra oficial)
+                    key = (numeral, is_rate)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    self.nunanchored += 1
+                    msg = (f"numeral oficial NO-anclado en ejemplo: '{numeral}' "
+                           f"(no es @fact → el gate NO valida su valor/año). "
+                           f"Línea: {line.strip()[:80]}")
+                    if STRICT_NUMERALS:
+                        self.err(msg)
+                    else:
+                        self.warn(msg)
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -311,9 +392,12 @@ def main():
     ap.add_argument("--warnings", action="store_true", help="advisories también rompen")
     ap.add_argument("--strict-facts", action="store_true",
                     help="todo @fact volátil OFF-TABLE (id no en facts.yaml) es HARD-FAIL, no advisory")
+    ap.add_argument("--strict-numerals", action="store_true",
+                    help="numerales oficiales no-anclados en ejemplos (D1) son HARD-FAIL, no advisory")
     args = ap.parse_args()
-    global STRICT_FACTS
+    global STRICT_FACTS, STRICT_NUMERALS
     STRICT_FACTS = args.strict_facts
+    STRICT_NUMERALS = args.strict_numerals
 
     roots = [KB / args.subtree] if args.subtree else [KB / d for d in CORPUS_DIRS]
     files = sorted(p for r in roots if r.exists() for p in r.rglob("*.md")
@@ -370,6 +454,7 @@ def main():
             print(f"  ~ {d.rel}: {w}")
 
     n_offtable = sum(d.offtable for d in docs)
+    n_unanchored = sum(d.nunanchored for d in docs)
     n_facts_total = n_offtable + sum(
         1 for d in docs for m in FACT_RE.finditer(d.body)
         if (parse_fact(m.group(1)).get("id") in ALL_FACT_IDS))
@@ -379,6 +464,9 @@ def main():
         anchored = n_facts_total - n_offtable
         print(f"@fact anclados a facts.yaml: {anchored}/{n_facts_total} "
               f"({100*anchored//n_facts_total}%) | OFF-TABLE (sin validar): {n_offtable}")
+    if n_unanchored:
+        print(f"Numerales oficiales NO-anclados en ejemplos (D1): {n_unanchored} "
+              f"(advisory; --strict-numerals los hace HARD)")
     failed = n_err > 0 or (args.warnings and n_warn > 0)
     print("GATE: " + ("❌ FALLÓ" if failed else "✅ VERDE"))
     return 1 if failed else 0

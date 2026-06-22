@@ -633,6 +633,39 @@ def _planner_client():
     return _PLANNER_CLIENT
 
 
+def _snap(client):
+    """Snapshot de uso de un cliente posiblemente-None (aún no creado por pereza)."""
+    return client.usage_snapshot() if client is not None else None
+
+
+def _usage_delta(u0, u1):
+    """Delta de uso entre dos snapshots. Si u0 es None (cliente se creó durante este doc), u1 ya es
+    solo el gasto de este doc (el cliente arrancó en 0). Devuelve None si no hubo gasto medible."""
+    if u1 is None:
+        return None
+    if u0 is None:
+        return dict(u1) if any(v for k, v in u1.items() if k != "calls") else None
+    d = {k: u1.get(k, 0) - u0.get(k, 0) for k in u0}
+    return d or None
+
+
+def _spent_by_role(author_client):
+    """Snapshots PRE-loop de los 3 roles (autor/juez/verificador) para atribuir gasto por-doc (D2).
+    El verificador puede no dispararse (sin evidencia) → su delta queda None. El juez (GLM, cuello de
+    botella ~88% del costo) ANTES no se logueaba por-doc → cost_projection calibraba a ciegas."""
+    return {"author": author_client.usage_snapshot(),
+            "judge": _snap(_JUDGE_CLIENT), "verifier": _snap(_VERIFIER_CLIENT)}
+
+
+def _role_deltas(u0, u1_author):
+    """Deltas POST-loop por rol. u0 = dict de snapshots pre-loop; u1_author = snapshot post del autor."""
+    return {
+        "author": _usage_delta(u0["author"], u1_author),
+        "judge": _usage_delta(u0["judge"], _snap(_JUDGE_CLIENT)),
+        "verifier": _usage_delta(u0["verifier"], _snap(_VERIFIER_CLIENT)),
+    }
+
+
 def q_critic(qw, country, domain, subdomain, existing_slugs):
     msg = [{"role": "system", "content": "Eres crítico de completitud. Devuelve SOLO JSON."},
            {"role": "user", "content":
@@ -765,6 +798,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
         evidence = load_evidence(country, domain) if _gb else ""
     existing_es = _existing_es_bodies(subdir, slug)   # para el gate de dedup near-dup
     u0 = qw.usage_snapshot()
+    u0_roles = _spent_by_role(qw)   # D2: snapshots pre-loop de los 3 roles (autor/juez/verificador)
     for attempt in range(bar["max_revise_rounds"] + 1):
         # El autor va GUARDADO (como el juez): una respuesta malformada/transitoria (JSON inválido, error de
         # red tras reintentos) cuesta SOLO este doc — antes propagaba y mataba la CELDA entera (hasta 37 temas).
@@ -876,6 +910,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
                 continue
         u1 = qw.usage_snapshot()
         spent = {k: u1.get(k, 0) - u0.get(k, 0) for k in u0}
+        spent_by_role = _role_deltas(u0_roles, u1)   # D2: gasto por-doc desglosado por rol (autor/juez/verificador)
         did = f"{country}-{domain}-{subdomain}-{slug}"
         # Grounding mínimo: un doc de ALTA volatilidad SIN ninguna cifra anclada es sospechoso (una cifra
         # que cambia cada trimestre DEBERÍA estar taggeada) → a revisión humana en vez de publicarse review.
@@ -884,10 +919,12 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             for p in (es_path, en_path):
                 if p.exists():
                     write_atomic(p, set_status(p.read_text(encoding="utf-8"), "draft"))
-            _log({"doc_id": did, "status": "draft", "issue": "high_volatility_no_fact", "scores": sc})
+            _log({"doc_id": did, "status": "draft", "issue": "high_volatility_no_fact", "scores": sc,
+                  "spent_by_role": spent_by_role})
             save_state(did, "draft")
             return "needs_review(high_volatility_no_fact)"
         _log({"doc_id": did, "status": "review", "scores": sc, "spent": spent,
+              "spent_by_role": spent_by_role,
               "grounding": gm["grounding_tier"], "canonical_facts": gm["canonical_facts"]})
         save_state(did, "review")
         return f"built_ok(scores={sc} grounding={gm['grounding_tier']})"
@@ -897,7 +934,8 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
         if p.exists():
             write_atomic(p, set_status(p.read_text(encoding="utf-8"), "draft"))
     did = f"{country}-{domain}-{subdomain}-{slug}"
-    _log({"doc_id": did, "status": "draft", "issue": last_issue})
+    _log({"doc_id": did, "status": "draft", "issue": last_issue,
+          "spent_by_role": _role_deltas(u0_roles, qw.usage_snapshot())})
     save_state(did, "draft")
     return f"needs_review({last_issue[:140]})"
 
@@ -970,6 +1008,10 @@ def _build_log_summary() -> dict:
         if e.get("doc_id"):
             latest[e["doc_id"]] = e
     grounding, issues = {}, {}
+    cost_by_role = {"author": {"calls": 0, "prompt": 0, "completion": 0},
+                    "judge": {"calls": 0, "prompt": 0, "completion": 0},
+                    "verifier": {"calls": 0, "prompt": 0, "completion": 0}}
+    n_with_role_cost = 0
     for e in latest.values():
         if e.get("status") == "review":
             g = e.get("grounding", "?")
@@ -977,7 +1019,20 @@ def _build_log_summary() -> dict:
         elif e.get("status") == "draft":
             iss = (str(e.get("issue", "?")) or "?").split(":")[0]
             issues[iss] = issues.get(iss, 0) + 1
-    return {"grounding": grounding, "draft_issues": issues}
+        sbr = e.get("spent_by_role") or {}
+        if sbr:
+            n_with_role_cost += 1
+            for role in cost_by_role:
+                r = sbr.get(role) or {}
+                if r:
+                    cost_by_role[role]["calls"] += r.get("calls", 0)
+                    cost_by_role[role]["prompt"] += r.get("prompt_tokens", 0)
+                    cost_by_role[role]["completion"] += r.get("completion_tokens", 0)
+    out = {"grounding": grounding, "draft_issues": issues}
+    if n_with_role_cost:
+        out["role_cost_docs"] = n_with_role_cost
+        out["role_cost"] = cost_by_role
+    return out
 
 
 def status():
@@ -1003,6 +1058,12 @@ def status():
         print(f"Grounding (review): {bl['grounding']}")
     if bl.get("draft_issues"):
         print(f"Drafts por causa (incl. judge_error): {bl['draft_issues']}")
+    if bl.get("role_cost_docs"):
+        rc = bl["role_cost"]
+        print(f"Gasto por rol (D2, {bl['role_cost_docs']} docs): "
+              f"autor(qwen)={rc['author']['calls']}c/{rc['author']['prompt']+rc['author']['completion']}tok  "
+              f"juez(glm)={rc['judge']['calls']}c/{rc['judge']['prompt']+rc['judge']['completion']}tok  "
+              f"verif(glm)={rc['verifier']['calls']}c/{rc['verifier']['prompt']+rc['verifier']['completion']}tok")
     jobs = all_jobs()
     covered = sum(1 for (c, d, s) in jobs
                   if (KB / c / d / s).exists() and any((KB / c / d / s).glob("*.es.md")))

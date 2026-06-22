@@ -78,8 +78,13 @@ quality_bar:
   # léxica (una paráfrasis pedagógica fiel sale 'unverifiable' aunque sea correcta) → bloquean SÓLO con estos
   # flags. Así el gate NO degrada TODO el corpus a draft antes de medir factscore en datos v4 reales; tras la
   # Fase 1 se suben los umbrales/flags con evidencia. Los ejemplos ILUSTRATIVOS no cuentan (atomic_verify.py).
-  # ── FASE 1 SMOKE (2026-06-22): factscore MEDIDO = 1.0 (3/3 supported, 0 contradicted) en 1 doc. Tasa de
-  # no-verificables = 89% (advisory, esperada por §2.3). NO subir umbrales hasta medir varianza (2-3 docs más).
+  # ── FASE 1 SMOKE (2026-06-22, iteración 2): 6 docs medidos. Factscore = 1.0 (definition, 3/3) Y
+  # n/a (gross-income, 0/0 — todo unverifiable) → NO es señal fiable (H1 confirmado). $/doc real =
+  # $0.067 (GLM 79%, juez = cuello de botella). Throughput 4.5 min/doc. Varianza del juez (cache-bypass):
+  # worked_example 3 vs 5 (ruidoso). H2 confirmado: doc con factscore 1.0 tenía 6 cifras del año
+  # equivocado (bracket 2024 $11,600 en doc 2026) — detectado por auditoría manual + D1, NO por
+  # factscore/NLI. D1 (numerales no-anclados) + D2 (costo GLM por-doc) cierran los blind spots.
+  # NO subir umbrales atómicos hasta mejorar la cobertura de evidencia (RAG-to-write).
   min_checkable_for_factscore: 4   # no exigir min_factscore si hay <N afirmaciones verificables (denominador inestable)
   atomic_factscore_blocking: true  # factscore<min bloquea SÓLO si checkable>=min_checkable_for_factscore
   atomic_unverifiable_blocking: false  # tasa de no-verificables = ADVISORY hasta calibrar con datos v4 reales

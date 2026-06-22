@@ -747,3 +747,235 @@ sources:
     tier: primary
     jurisdiction: US-FED
     accessed: 2026-06-21
+
+  src_gen_e4187505:
+    title: "Publication 17 (2025), Your Federal Income Tax — Chapter 1: Filing Requirements, Standard Deduction, and Tax Credits"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173268"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_5df7070a:
+    title: "Instructions for Form 1040 (2025) — Line 11: Adjusted Gross Income"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/instructions/i1040gi#en_US_2025_publink1000173270"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_3183b21c:
+    title: "26 U.S. Code § 62 — Adjusted gross income defined"
+    publisher: "Legal Information Institute, Cornell University (U.S. Code)"
+    url: "https://www.law.cornell.edu/uscode/text/26/62"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_89945e0d:
+    title: "Ley del Impuesto sobre la Renta — Diario Oficial de la Federación, 11 de diciembre de 2013 (texto vigente con reformas hasta 01-04-2024)"
+    publisher: "Secretaría de Gobernación / DOF"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5729180&fecha=11/12/2013"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_17051d37:
+    title: "¿Qué es el Impuesto Sobre la Renta? — Servicio de Administración Tributaria (SAT)"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicacion/web-apps/temas/isr/que-es-el-isr"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_b65b517f:
+    title: "Tasas de interés objetivo — Banco de México"
+    publisher: "Banco de México"
+    url: "https://www.banxico.org.mx/contenido/estadisticas/interes/tipo-de-cambio-y-tasas-de-interes.html"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_bc0f6039:
+    title: "Publication 17 (2025): Your Federal Income Tax — Chapter 1: Filing Requirements and Standard Deduction"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173869"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_35573312:
+    title: "2025 Instructions for Form 1040 — Line 11b: Taxable Income"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/forms-pubs/about-form-1040-instructions"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_ed46ca6b:
+    title: "Ley del Impuesto sobre la Renta — Última reforma publicada DOF 01-04-2024"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5742198&fecha=11/12/2013"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_370c5f6a:
+    title: "Valor de la Unidad de Medida y Actualización (UMA) 2026"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicativos/consultas/valor-uma"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_09ee5c7e:
+    title: "Tasa de interés objetivo de Banxico — Vigente a 2026-06-21"
+    publisher: "Banco de México"
+    url: "https://www.banxico.org.mx/temas/interes/tasa-de-interes-objetivo.html"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_86eef8ad:
+    title: "Publication 17 (2025): Your Federal Income Tax — Chapter 1: Filing Requirements and Standard Deduction"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000172389"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_a62e2784:
+    title: "26 U.S. Code § 63 — Taxable income defined"
+    publisher: "Legal Information Institute, Cornell University"
+    url: "https://www.law.cornell.edu/uscode/text/26/63"
+    tier: tertiary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_8ce22cbb:
+    title: "Publication 17 (2025): Your Federal Income Tax — Chapter 1: Filing Requirements, Standard Deduction, and Tax Credits"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173289"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_c4e1b274:
+    title: "Tarifa anual para personas físicas 2025 (vigente para ejercicio fiscal 2025, aplicable a declaraciones presentadas en 2026)"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicativos/ListaCFDI/ListaCFDI.html"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_687165fd:
+    title: "Publication 17 (2025): Your Federal Income Tax — Chapter 1: Filing Requirements and Standard Deduction"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173298"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_04c03c8a:
+    title: "Omnibus Budget and Business Act (OBBBA) of 2024, Sec. 203(a)(2), Inflation Adjustments for Tax Year 2026"
+    publisher: "U.S. Congress"
+    url: "https://www.congress.gov/bill/118th-congress/house-bill/7024/text"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_845c8375:
+    title: "Publication 17 (2025): Your Federal Income Tax — Tax Brackets and Rates"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173398"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_cedcc46a:
+    title: "Decreto por el que se reforman, adicionan y derogan diversas disposiciones de la Ley del Impuesto sobre la Renta, publicado en el Diario Oficial de la Federació"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5732180&fecha=30/12/2024"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_16895205:
+    title: "¿Qué es el Impuesto Sobre la Renta? | Servicio de Administración Tributaria (SAT)"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/consultas/23162/que-es-el-isr"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_c639dae6:
+    title: "Publication 17 (2025), Your Federal Income Tax — Tax Brackets and Rates"
+    publisher: "Internal Revenue Service (IRS)"
+    url: "https://www.irs.gov/publications/p17#en_US_2025_publink1000173180"
+    tier: primary
+    jurisdiction: US-FED
+    accessed: 2026-06-21
+
+  src_gen_d03cd254:
+    title: "Decreto por el que se reforman y adicionan diversas disposiciones de la Ley del Impuesto sobre la Renta, publicado en el Diario Oficial de la Federación"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5637928&fecha=09/12/2019"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_1059e45d:
+    title: "Ley del Impuesto sobre la Renta (LISR), Artículo 1, fracción I y Artículo 2"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicativos/consultas/legislacion/leyes/111111-ley-del-impuesto-sobre-la-renta"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_8ae2b0ae:
+    title: "Decreto por el que se reforman y adicionan diversas disposiciones del Código Fiscal de la Federación y de la Ley del Impuesto sobre la Renta"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5622222&fecha=12/11/2021"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_ee9be74c:
+    title: "DECRETO por el que se reforman, adicionan y derogan diversas disposiciones de la Ley del Impuesto sobre la Renta, publicado en el Diario Oficial de la Federació"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5762091&fecha=01/04/2024"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_2ea2ba58:
+    title: "Ingresos acumulables y no acumulables para personas físicas"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/consultas/118975/ingresos-acumulables-y-no-acumulables-para-personas-fisicas"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_9c61c3a1:
+    title: "Ley del Impuesto sobre la Renta (LISR), publicada DOF 11-12-2013, última reforma vigente DOF 01-04-2024"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5742186&fecha=11/12/2013"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_dd1f8a95:
+    title: "Ley del Impuesto sobre la Renta — Texto Vigente (Servicio de Administración Tributaria)"
+    publisher: "Servicio de Administración Tributaria (SAT)"
+    url: "https://www.sat.gob.mx/aplicativos/consultas/leyes-y-reglamentos#LISR"
+    tier: primary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21
+
+  src_gen_3ccce9e2:
+    title: "Decreto por el que se reforman, adicionan y derogan diversas disposiciones de la Ley del Impuesto sobre la Renta (DOF 09-12-2019)"
+    publisher: "Diario Oficial de la Federación (DOF)"
+    url: "https://www.dof.gob.mx/nota_detalle.php?codigo=5791792&fecha=09/12/2019"
+    tier: tertiary
+    jurisdiction: MX-FED
+    accessed: 2026-06-21

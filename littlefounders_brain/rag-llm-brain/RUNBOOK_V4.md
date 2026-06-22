@@ -83,23 +83,22 @@ Validida el loop v4 COMPLETO en datos reales con el saldo existente (~$5-15). **
 juez** (¿discrimina o satura a 5/5?); (d) **near-dup**. Si los tres salen bien → recargar; si no → ajustar
 prompts/umbral ANTES de gastar.
 
-### Resultados reales del smoke (2026-06-22)
+### Resultados reales del smoke (2026-06-22 · iteración 2: 6 docs, distribución medida)
 
 | Métrica | Valor medido | Comentario |
 |---------|-------------|------------|
 | Gate `--strict-facts` | ✅ VERDE · 28/28 anclados (100%) · 0 off-table | doc NUEVO vs legacy 17% |
-| Factscore atómico (LLM-NLI) | **1.0** (3/3 supported · 0 contradicted · 24 unverifiable) | tras fixes S1/S2; antes era n/a |
-| Grounding tier | `anchored` (6/6 canónicas, ratio 1.0) | autor usó SOLO ids de facts.yaml |
-| $/doc estimado | ~$0.05–0.08 | autor Qwen + juez GLM + verificador GLM, 1 ronda |
-| Throughput | ~5–8 min/doc (1 worker) | con 8 workers: ~60–96 docs/h |
-| Varianza del juez | **NO medida** (1 doc; proceso cortado por timeout del shell antes del 2º) | pendiente: correr 2-3 docs más |
-| Near-dup | **NO medida** (1 doc nuevo en la celda) | pendiente: correr 2+ docs en la misma celda |
+| Factscore atómico (LLM-NLI) | **1.0** (definition: 3/3) Y **n/a** (gross-income: 0/0, 8 unverifiable) | **H1 confirmado:** factscore es "teatro" — o 1.0 (pocos claims coinciden) o n/a (todo unverifiable). NO es señal fiable |
+| Tasa de no-verificables | 89–100% (advisory) | el NLI no cubre la prosa pedagógica (RAG-to-write léxico ≠ entailment) |
+| Varianza del juez (cache-bypass) | worked_example **3 vs 5**; verdict **revise vs publish** | **SM2:** el juez es RUIDOSO en pedagogía; satura 5/5 en factual. Mismo doc → pass o fail |
+| $/doc real (D2, por rol) | **$0.067** (autor $0.014 + juez $0.049 + verif $0.004) | GLM = **79%** del costo (juez = cuello de botella). 7,950 docs ≈ **$533** |
+| Throughput | **4.5 min/doc** (1 worker) | con 8 workers: ~107 docs/h → 7,950 docs ≈ 5 días |
+| Near-dup | **0** (6 docs nuevos, todos únicos) | `is_near_dup` funciona; 0 falsos positivos |
+| D1 numerales no-anclados | **50** en doc MX (umbrales/tasas ISR) + 14 en docs US | riesgo H2 detectado determinísticamente (advisory; `--strict-numerals` → HARD) |
+| Auditoría de contenido (H2) | **CONFIRMADO y corregido:** doc US usaba tramo 2024 ($11,600) en doc 2026 → aritmética con 6 cifras erróneas. Fix: tramo 2026 ($12,400, Rev. Proc. 2025-32). MX doc (que-es-isr): tarifa 2025 en corpus 2026 + cálculo ISR erróneo → juez lo degradó a draft ✓ |
 
-**Veredicto:** el loop v4 FUNCIONA end-to-end. El anti-lavado opera en 2 niveles: (1) **contradicciones**
-= 0 (DURO, funciona); (2) **factscore de claims con valores** = 1.0 (medible, perfecto). La tasa de
-no-verificables (89%) es **advisory** y esperada (§2.3: paráfrasis pedagógica ≠ entailment de evidencia
-regulatoria). **GO para Fase 2** con los caps actuales recalibrados a la proyección. Falta medir varianza
-del juez (2-3 docs más) antes de fijar umbrales atómicos definitivos.
+**Veredicto iteración 2:** el loop v4 FUNCIONA end-to-end PERO las métricas de proceso (factscore, juez 5/5) NO prueban corrección del contenido. **H2 confirmado:** un doc con factscore 1.0/juez 5/5 contenía 6 cifras del año equivocado (2024 bracket en doc 2026) — detectado SOLO por auditoría manual + D1, no por factscore/NLI. El gate (SALT cap $10k→$40k) y el juez (cálculo ISR) SÍ atraparon errores en otros docs → degradados a draft. **D1/D2 cerran los blind spots:** D1 detecta numerales oficiales no-anclados (50 en un doc); D2 loguea gasto GLM por-doc (antes invisible). **NO certificar "listo para corrida completa" hasta:** (a) anclar tramos ISR/brackets a facts.yaml (SME), (b) calibrar la barra del juez con su varianza medida, (c) subir `atomic_unverifiable_blocking` solo si la evidencia mejora.
+
 
 ---
 
