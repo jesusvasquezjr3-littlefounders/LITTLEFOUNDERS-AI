@@ -389,13 +389,18 @@ class SourceRegistry:
 
 
 # ─────────────────────── frontmatter + body ───────────────────────
-def grounding_meta(payload, evidence_used=False) -> dict:
+def grounding_meta(payload, evidence_used=False, fact_src=None) -> dict:
     """Etiqueta HONESTA de grounding por-doc (NO 'todo es 100% real'). Distingue:
-      · anchored     = ≥1 cifra validada DETERMINÍSTICAMENTE contra facts.yaml (verdad de base),
-      · llm_reviewed = sin ancla canónica → revisado por el juez LLM + fuentes (pendiente firma SME),
-      · conceptual   = contenido conceptual estático sin cifras volátiles.
-    Permite a cualquier consumidor (lección/chatbot) saber QUÉ tan verificado está cada doc."""
+       · anchored     = ≥1 cifra validada DETERMINÍSTICAMENTE contra facts.yaml (verdad de base),
+       · llm_reviewed = sin ancla canónica → revisado por el juez LLM + fuentes (pendiente firma SME),
+       · conceptual   = contenido conceptual estático sin cifras volátiles.
+    Permite a cualquier consumidor (lección/chatbot) saber QUÉ tan verificado está cada doc.
+    fact_src: si se pasa, sólo cuentan los facts con source mapeado — los que NO tienen source son
+    dropeados por replace_facts (placeholder vacío) → contarlos inflaría el tier a 'anchored' cuando
+    el body en realidad NO tiene el @fact (frontmatter dishonesto)."""
     facts = payload.get("facts", []) or []
+    if fact_src is not None:
+        facts = [f for f in facts if fact_src.get(f.get("id"))]
     cited = len(facts)
     canon = sum(1 for f in facts if f.get("id") in CANON_ENFORCED)
     vol = payload.get("volatility", "medium")
@@ -456,10 +461,10 @@ def replace_facts(body, facts, fact_src):
         fid = m.group(1)
         f = fmap.get(fid)
         if not f:
-            return ""
+            return m.group(0)   # NO dropear silenciosamente: dejar [[fact:id]] visible → el gate lo flagea
         sid = fact_src.get(fid, "")
         if not sid:
-            return ""
+            return m.group(0)   # sin source mapeado → dejar visible (replace_facts no puede emitir @fact sin src)
         # sanear el valor: una sola línea, sin '-->' (cerraría el comentario) ni comillas internas.
         # Se CITA con comillas para que valores multi-token (rangos, "3,500,000 MXN") round-trippeen
         # por el parser del gate sin truncarse en el primer espacio.
@@ -829,7 +834,7 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             feedback = "No devolviste fuentes. Incluye fuentes REALES (>=1 primaria .gov) y regenera."
             last_issue = "no_sources"
             continue
-        gm = grounding_meta(payload, evidence_used=bool(evidence))
+        gm = grounding_meta(payload, evidence_used=bool(evidence), fact_src=fact_src)
         es_doc = assemble_doc(country, domain, subdomain, slug, "es", payload, src_ids, fact_src, grounding=gm)
         en_doc = assemble_doc(country, domain, subdomain, slug, "en", payload, src_ids, fact_src, grounding=gm)
         # Gate de dedup: no escribir near-duplicates (escala = conocimiento único, no relleno).

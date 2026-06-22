@@ -321,6 +321,12 @@ class Doc:
         self._check_forbidden_vocab()
         # 11. D1: numerales oficiales no-anclados en ejemplos trabajados (riesgo H2: año equivocado)
         self._check_unanchored_numerals()
+        # 12. placeholders [[fact:...]] NO resueltos por replace_facts (el autor usó un id sin source
+        # mapeado → el @fact NO se emitió → la cifra queda SIN ancla determinista). HARD-FAIL: un doc
+        # servido con [[fact:us.hsa.limit_self]] visible roto el contrato de anclaje.
+        for m in re.finditer(r"\[\[fact:([a-zA-Z0-9_.]+)\]\]", self.body):
+            self.err(f"placeholder [[fact:{m.group(1)}]] NO resuelto (sin source mapeado en el ensamblaje) "
+                     f"→ la cifra NO quedó anclada a facts.yaml; el autor debe citar la fuente correcta")
 
     def _check_forbidden_vocab(self):
         # secciones marcadas con <!-- age_band: tierX,tierY -->

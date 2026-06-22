@@ -389,6 +389,43 @@ def test_d2_usage_delta_per_role():
     assert bd._usage_delta(u0, u0) is None or all(v == 0 for v in bd._usage_delta(u0, u0).values())
 
 
+def test_grounding_meta_honest_with_fact_src():
+    """Loop 2: grounding_meta con fact_src sólo cuenta facts que sobreviven replace_facts (tienen
+    source). Sin esto, el frontmatter dice 'anchored, 4 facts' pero el body tiene 1 @fact (3 dropeados
+    por replace_facts al no tener source) → grounding_tier DISHONESTO."""
+    import build_dataset as bd
+    if not bd.CANON_ENFORCED:
+        return
+    fid = sorted(bd.CANON_ENFORCED)[0]
+    payload = dict(_PAYLOAD, volatility="medium",
+                   facts=[{"id": fid, "value": "x"}, {"id": "zz.no_src", "value": "1"}])
+    # sin fact_src: cuenta ambos (comportamiento legacy)
+    g_legacy = bd.grounding_meta(payload)
+    assert g_legacy["cited_facts"] == 2, g_legacy
+    # con fact_src: sólo el que tiene source mapeado
+    g_honest = bd.grounding_meta(payload, fact_src={fid: "src_a"})
+    assert g_honest["cited_facts"] == 1, f"fact_src debe excluir facts sin source: {g_honest}"
+    assert g_honest["canonical_facts"] == 1, g_honest
+
+
+def test_replace_facts_leaves_unresolved_visible():
+    """Loop 2: replace_facts NO debe dropear silenciosamente [[fact:id]] sin source → dejarlo visible
+    para que el gate lo flagea como HARD-FAIL. Antes retornaba '' → placeholder vacío silencioso."""
+    import build_dataset as bd
+    body = "HSA limit: [[fact:us.hsa.limit_self]] en 2026."
+    # fact NO en la lista de facts → queda visible (no vacío)
+    out = bd.replace_facts(body, [], {})
+    assert "[[fact:us.hsa.limit_self]]" in out, f"unresolved debe quedar visible, got: {out}"
+    # fact EN la lista pero sin source → queda visible
+    out2 = bd.replace_facts(body, [{"id": "us.hsa.limit_self", "value": "4,400 USD"}], {})
+    assert "[[fact:us.hsa.limit_self]]" in out2, f"sin source debe quedar visible, got: {out2}"
+    # fact con source → se reemplaza por @fact
+    out3 = bd.replace_facts(body, [{"id": "us.hsa.limit_self", "value": "4,400 USD"}],
+                            {"us.hsa.limit_self": "src_x"})
+    assert "@fact id=us.hsa.limit_self" in out3 and "4,400 USD" in out3, out3
+    assert "[[fact:" not in out3, f"no debe quedar placeholder resuelto: {out3}"
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0
