@@ -576,19 +576,26 @@ def q_author(qw, country, domain, subdomain, topic, gate_errors="", evidence="")
                    temperature=0.4, max_tokens=8000, timeout=240)
 
 
-def q_judge(qw, country, es_text, evidence=""):
-    """Juez = GLM (z.ai) con BÚSQUEDA WEB (proveedor independiente del autor). Recibe la evidencia
-    curada para verificar por NLI. Las cifras CANÓNICAS ya las valida el gate → el juez NO las re-checa
-    (uso sabio: no se gastan tokens preguntando lo que facts.yaml ya garantiza)."""
+def q_judge(qw, country, es_text, evidence="", use_search=False):
+    """Juez = GLM (z.ai), proveedor INDEPENDIENTE del autor (Qwen). DOS MODOS (optimización de costo L1+L2):
+      · LEAN (default): SIN búsqueda web ni evidencia → evalúa pedagogía/coherencia/jurisdicción. El
+        fact-checking lo hacen ya el gate (canónicas), D1 (oficial no-anclada → draft) y el verificador
+        atómico (NLI). El search (~$0.01/llamada = ~40% del costo del juez) se ahorra cuando es redundante.
+      · FACTCHECK (use_search=True): búsqueda web + evidencia inyectada. Solo cuando el doc tiene un @fact
+        OFF-TABLE volátil que el stack determinista NO garantiza (ahí sí vale verificar en la web)."""
+    factcheck = bool(use_search and MODELS["grounding_search"])
     ev = (f"EVIDENCIA CURADA (fuentes primarias) para contrastar:\n{evidence[:4000]}\n\n===\n\n"
-          if evidence else "")
+          if (factcheck and evidence) else "")
     canon_note = (
         "NOTA: las cifras CANÓNICAS (tasas/umbrales/límites oficiales en la tabla del sistema) ya las valida "
         "un gate determinista contra una tabla oficial verificada; NO las marques como erróneas. Concéntrate "
         "en (a) cifras NO canónicas, (b) coherencia y pedagogía, (c) CERO fuga de jurisdicción.\n")
+    sys_check = ("Verifica hechos vs fuentes primarias (BUSCA EN LA WEB cuando dudes). " if factcheck
+                 else "El fact-check de cifras ya lo hace un gate determinista; concéntrate en pedagogía, "
+                      "coherencia y CERO fuga de jurisdicción. ")
     msg = [{"role": "system", "content":
-            "Eres revisor crítico (no sello de goma) de contenido educativo financiero. Verifica hechos vs fuentes "
-            "primarias (BUSCA EN LA WEB cuando dudes). Devuelve SOLO JSON, sin texto extra."},
+            "Eres revisor crítico (no sello de goma) de contenido educativo financiero. " + sys_check
+            + "Devuelve SOLO JSON, sin texto extra."},
            {"role": "user", "content":
             ev + f"País={country}. {canon_note}\nEvalúa este documento (1-5 por dimensión) y verifica sus "
             f"cifras/reglas NO canónicas:\n\n{es_text[:6000]}\n\n"
@@ -603,7 +610,7 @@ def q_judge(qw, country, es_text, evidence=""):
             'Devuelve {"scores":{"factual_accuracy":n,"pedagogical_scaffolding":n,"country_correctness":n,'
             '"translation_fidelity":n,"engagement":n,"completeness":n,"worked_example":n,"citation_quality":n},'
             '"hard_fails":[...],"wrong_facts":[...],"verdict":"publish|revise"}'}]
-    return _judge_client().json(msg, model=MODELS["judge"], enable_search=MODELS["grounding_search"],
+    return _judge_client().json(msg, model=MODELS["judge"], enable_search=factcheck,
                                 temperature=0.2, timeout=240)
 
 
@@ -852,8 +859,16 @@ def build_topic(qw, reg, country, domain, subdomain, topic):
             last_issue = "gate:" + (errs[0] if errs else "")[:80]
             continue
 
+        # L1+L2: el juez solo entra en modo FACTCHECK (search web + evidencia, ~$0.01+tokens) si el doc tiene
+        # un @fact OFF-TABLE volátil que el stack determinista (gate canónicas + D1 + atómico) NO garantiza.
+        # Si todas las cifras son canónicas/estáticas → modo LEAN (pedagogía/coherencia/jurisdicción) y se
+        # ahorra la búsqueda. Flag wise_use.judge_search_only_offtable_facts (default true) para revertir.
+        needs_factcheck = any(f.get("id") not in CANON_ENFORCED and f.get("volatility") in ("medium", "high")
+                              for f in payload.get("facts", []))
+        if not WISE.get("judge_search_only_offtable_facts", True):
+            needs_factcheck = bool(MODELS["grounding_search"])     # legacy: siempre buscar
         try:
-            judged = q_judge(qw, country, es_doc, evidence=evidence)
+            judged = q_judge(qw, country, es_doc, evidence=evidence, use_search=needs_factcheck)
         except Exception as e:
             last_issue = f"judge_error:{e}"
             break  # gate pasó pero el juez falló → sale del loop y se DEGRADA a draft (revisión humana)

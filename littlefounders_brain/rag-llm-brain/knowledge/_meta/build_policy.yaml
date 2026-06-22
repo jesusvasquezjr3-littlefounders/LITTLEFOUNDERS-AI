@@ -122,6 +122,10 @@ wise_use:
   author_search_when_evidence: false    # si hay evidencia curada, el autor NO busca (ahorra); busca si falta
   facts_table_first: true               # cifras en facts.yaml: las valida el GATE (código), NO el juez
   judge_only_uncanonical_facts: true    # el juez/verificador solo investiga cifras que NO están en facts.yaml
+  judge_search_only_offtable_facts: true # L1+L2: el juez usa búsqueda web + evidencia SOLO si el doc tiene un
+                                        # @fact OFF-TABLE volátil (no garantizado por gate/D1/atómico). Si todas
+                                        # las cifras son canónicas/estáticas → modo LEAN (sin search) → ahorra
+                                        # ~$0.01/llamada (~40% del costo del juez). false = siempre buscar (legacy).
   verify_source_liveness: true          # verifica que una URL citada RESUELVE antes de darle tier alto
                                         # (anti-fabricación de citas); si no resuelve → tier:tertiary
   budget_output_tokens: 0               # 0 = sin tope; >0 = corta al alcanzar ese gasto de salida (autor)

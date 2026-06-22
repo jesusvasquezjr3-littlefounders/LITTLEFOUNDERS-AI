@@ -337,3 +337,34 @@ regenerarse, irá a draft hasta anclar los brackets. Tests 24/24.
 > `facts.yaml` tenga los brackets US (Rev. Proc.) y los tramos ISR MX (Anexo 8 RMF) del año. Es INTENCIONAL:
 > mejor un draft honesto que servir un tramo del año equivocado como "review". El verdadero desbloqueo de la
 > cobertura fiscal es **completar `facts.yaml` (SME)** — el cuello de botella ya no es código.
+
+### 7.5 Optimización de costo (2026-06-22)
+
+Costo medido: **$0.067/doc** = juez **$0.049 (73%)** + autor $0.014 + verificador $0.004. El blanco NO es
+"GLM" sino el **JUEZ** (que corre en GLM con `enable_search` en CADA llamada; el search es ~40% del costo
+por llamada del juez). El verificador (también GLM) cuesta casi nada.
+
+**TIER 1 — APLICADO (calidad-neutral, ~30%):** el juez tiene dos modos (L1+L2, `q_judge(use_search=...)`):
+- **LEAN (default):** sin búsqueda web ni evidencia → evalúa pedagogía/coherencia/jurisdicción. El
+  fact-checking ya lo hacen gate (canónicas) + D1 (oficial no-anclada → draft) + atómico (NLI).
+- **FACTCHECK:** búsqueda + evidencia, SOLO cuando el doc tiene un `@fact` OFF-TABLE volátil no garantizado
+  por el stack determinista (`build_topic` lo decide; flag `wise_use.judge_search_only_offtable_facts`).
+- Ahorro estimado ~$0.018/doc (~27%): $0.067 → **~$0.047/doc**; corrida completa ~$533 → **~$370**. Tests 25/25.
+
+**TIER 2 — VALIDAR antes de adoptar (no aplicado; riesgo de calidad, ver AP1):**
+- **Juez GLM → DeepSeek-v4-flash:** al quitar el search (L1) desaparece la razón de usar GLM (era el único
+  con búsqueda). DeepSeek es independiente del autor Qwen, ~5× más barato de salida, y tiene el saldo más
+  ocioso → **GLM dejaría de ser el cuello de botella** (pasa a ser solo el verificador, $0.004/doc). Ahorro
+  ~otro 25-35%. RIESGO: el juez GLM ya satura/es ruidoso; uno más barato podría discriminar PEOR → exige un
+  **head-to-head** (mismo doc, ambos jueces, comparar discriminación) en un smoke antes de adoptar.
+- **Compresión de prompts (NO "formato XML"):** el juez recibe ~14k tokens de input; comprimir baja costo
+  directo. El FORMATO (XML/MD/JSON) importa poco aquí porque los modelos son Qwen/GLM/DeepSeek (no Claude,
+  que es quien tiene afinidad XML); la salida ya es JSON. Reescribir prompts cambia comportamiento tuneado →
+  validar con smoke. Tier 2.
+
+**RECHAZADO — Juez/verificador → Qwen:** rompería la INDEPENDENCIA de proveedor (el autor ya es Qwen →
+errores correlacionados → el modelo se auto-aprueba; invalida el FActScore del verificador). El verificador
+atómico DEBE ser no-Qwen. El swap correcto es GLM→DeepSeek, NUNCA →Qwen. Falsa economía.
+
+**DEFERIDO — L3 (reordenar gate→atómico→juez):** ~1% de ahorro en control-flow del loop NO testeable sin
+corrida pagada; con el juez ya LEAN su beneficio es ~0. Validar en el smoke, no aplicar a ciegas.

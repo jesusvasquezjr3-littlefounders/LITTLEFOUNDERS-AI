@@ -440,6 +440,32 @@ def test_d1_scan_high_confidence_only():
     assert scan_unanchored_numerals(body_ok, high_conf_only=True) == [], scan_unanchored_numerals(body_ok)
 
 
+def test_judge_lean_mode_skips_search_and_evidence():
+    """L1+L2 (optimización de costo): el juez en modo LEAN (use_search=False) NO activa búsqueda web NI
+    inyecta evidencia (ahorra ~$0.01+tokens/llamada); en modo FACTCHECK sí. Captura los args, sin red."""
+    import build_dataset as bd
+
+    class _FakeClient:
+        provider = "glm"
+        def json(self, msg, **kw):
+            self.enable_search = kw.get("enable_search")
+            self.has_evidence = "EVIDENCIA CURADA" in msg[1]["content"]
+            return {"scores": {}, "verdict": "publish"}
+
+    saved = bd._JUDGE_CLIENT
+    fake = _FakeClient()
+    bd._JUDGE_CLIENT = fake
+    try:
+        bd.q_judge(None, "us", "texto del doc", evidence="EVIDENCIA REAL DE PRUEBA", use_search=False)
+        assert fake.enable_search is False, "LEAN no debe activar búsqueda web"
+        assert fake.has_evidence is False, "LEAN no debe inyectar evidencia"
+        bd.q_judge(None, "us", "texto del doc", evidence="EVIDENCIA REAL DE PRUEBA", use_search=True)
+        assert fake.enable_search is True, "FACTCHECK debe activar búsqueda (grounding_search=true)"
+        assert fake.has_evidence is True, "FACTCHECK debe inyectar evidencia"
+    finally:
+        bd._JUDGE_CLIENT = saved
+
+
 def _run_all():
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0
