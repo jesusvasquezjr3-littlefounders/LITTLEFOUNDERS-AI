@@ -226,16 +226,20 @@ def main():
 
     source_dir = Path(args.source).resolve() if args.source else None
     if source_dir and not source_dir.exists():
-        print(f"❌ --source no existe: {source_dir}"); sys.exit(1)
+        print(f"❌ --source no existe: {source_dir}")
+        sys.exit(1)
     if source_dir is None and not MANIFEST_FILE.exists():
-        print(f"❌ manifest no encontrado: {MANIFEST_FILE}"); sys.exit(1)
+        print(f"❌ manifest no encontrado: {MANIFEST_FILE}")
+        sys.exit(1)
 
     db = SessionLocal()
     try:
         if args.count:
-            count_lessons(db); return
+            count_lessons(db)
+            return
         if args.backup_only:
-            backup_lessons(db, Path(args.backup_only)); return
+            backup_lessons(db, Path(args.backup_only))
+            return
 
         manifest = None if source_dir else load_manifest()
         lessons = list(iter_source_lessons(manifest, source_dir, args.adventure))
@@ -249,7 +253,8 @@ def main():
                 by_adv.get(d.get("adventure_level", int(str(d["lesson_code"]).split("-")[0])), 0) + 1
 
         if args.verify:
-            verify_import(db, expected, by_adv); return
+            verify_import(db, expected, by_adv)
+            return
 
         # ── Guardas de escritura ──
         writing = args.commit
