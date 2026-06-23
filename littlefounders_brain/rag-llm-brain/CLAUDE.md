@@ -9,7 +9,10 @@
 > **📖 Diseño CANÓNICO de principio a fin: [`ARCHITECTURE_V4.md`](ARCHITECTURE_V4.md)** · **guía de la
 > corrida MASIVA: [`RUNBOOK_V4.md`](RUNBOOK_V4.md)**.
 > **🧭 ¿DÓNDE ESTAMOS / QUÉ SIGUE (checklist vivo de AQUÍ al corpus north-star): [`walkthrough.md`](walkthrough.md)** —
-> EMPIEZA AHÍ para retomar el trabajo (snapshot de estado + fases A→I + bitácora). Pipeline v3.1 detallado (con mermaid):
+> EMPIEZA AHÍ para retomar el trabajo (snapshot de estado + fases A→I + bitácora).
+> **🧑‍🏫 MANUAL HUMANO — cada proceso del pipeline paso a paso, con Mermaid y analogías:
+> [`PIPELINE_EXPLICADO.md`](PIPELINE_EXPLICADO.md)** (para ENTENDER la máquina sin leer el código).
+> Pipeline v3.1 detallado (con mermaid):
 > [`PIPELINE.md`](PIPELINE.md). Diseño histórico: [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md) ·
 > ejecución v3: [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md) · cobertura TOTAL: [`ENCYCLOPEDIA_STRATEGY.md`](ENCYCLOPEDIA_STRATEGY.md).
 
@@ -43,6 +46,7 @@ de profundizar ningún tema. Estrategia base: [`BRAIN_STRATEGY.md`](BRAIN_STRATE
 ```
 rag-llm-brain/
 ├── ARCHITECTURE_V4.md · RUNBOOK_V4.md            diseño v4 (CANÓNICO) + guía de la corrida masiva
+├── PIPELINE_EXPLICADO.md                         MANUAL HUMANO: cada proceso paso a paso (Mermaid + analogías)
 ├── ARCHITECTURE_V3.md · PLAN_V3_EXECUTION.md · ENCYCLOPEDIA_STRATEGY.md · PIPELINE.md   diseño/ejecución v3 (histórico)
 ├── BRAIN_STRATEGY.md          estrategia base y decisiones
 ├── skills/                    contexto indexado (notebooklm-py, lightrag, knowledge-nexus, obsidian-second-brain)
@@ -123,6 +127,9 @@ nohup ./.venv/bin/python knowledge/tools/build_dataset.py --run --workers 8 > kn
   `index/` están **gitignored**. La evidencia es texto con copyright (insumo, NO producto); el corpus se
   **redacta original y se cita**.
 - **i18n:** ES canónico, EN traducción verificada (el gate exige paridad de `@fact` ES/EN).
+- **Doc viva del pipeline:** si cambias cualquier proceso (`knowledge/tools/*.py` o `knowledge/_meta/*.yaml`),
+  actualiza [`PIPELINE_EXPLICADO.md`](PIPELINE_EXPLICADO.md) (el esquema Mermaid + el paso afectado) en el
+  MISMO commit. Ver §21 de ese doc.
 
 ## Skills (`skills/`)
 

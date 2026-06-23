@@ -134,6 +134,8 @@ git log --oneline -12                                                     # hist
 - **Límite honesto:** el verificador atómico es no-op sobre prosa (89% unverifiable = arquitectura, RAG-to-write, NO el modelo). Cambiar GLM→MiniMax NO lo arregla; solo da paridad de capacidad + menor costo.
 
 ## 5. Pistas de arquitectura para retomar (qué hace qué)
+- **Manual HUMANO del pipeline (cada proceso paso a paso, con Mermaid + analogías):** `PIPELINE_EXPLICADO.md`
+  — el mejor mapa para ENTENDER la máquina sin leer el código (registrado en `CLAUDE.md`/`AGENTS.md`).
 - Orquestador: `tools/build_dataset.py` (build_topic = autor→gate→juez→verificador atómico; D1 enforcement; cost guard `--run`).
 - Gate determinista: `tools/gate_kb.py` (valor canónico, id-discipline, paridad ES/EN, D1 numerales, `--exclude-drafts`).
 - Verificación atómica: `tools/atomic_verify.py` (NLI; `score_text`). RAG-to-write: `tools/evidence_rag.py`.
