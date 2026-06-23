@@ -7,7 +7,9 @@
 > **Pipeline vigente: v4** (RAG-to-write · verificación atómica FActScore · fact-anchored con disciplina
 > de ids · proyección de costo · breadth-first · STOP por cobertura VERIFICADA · embedder real mpnet).
 > **📖 Diseño CANÓNICO de principio a fin: [`ARCHITECTURE_V4.md`](ARCHITECTURE_V4.md)** · **guía de la
-> corrida MASIVA: [`RUNBOOK_V4.md`](RUNBOOK_V4.md)**. Pipeline v3.1 detallado (con mermaid):
+> corrida MASIVA: [`RUNBOOK_V4.md`](RUNBOOK_V4.md)**.
+> **🧭 ¿DÓNDE ESTAMOS / QUÉ SIGUE (checklist vivo de AQUÍ al corpus north-star): [`walkthrough.md`](walkthrough.md)** —
+> EMPIEZA AHÍ para retomar el trabajo (snapshot de estado + fases A→I + bitácora). Pipeline v3.1 detallado (con mermaid):
 > [`PIPELINE.md`](PIPELINE.md). Diseño histórico: [`ARCHITECTURE_V3.md`](ARCHITECTURE_V3.md) ·
 > ejecución v3: [`PLAN_V3_EXECUTION.md`](PLAN_V3_EXECUTION.md) · cobertura TOTAL: [`ENCYCLOPEDIA_STRATEGY.md`](ENCYCLOPEDIA_STRATEGY.md).
 
