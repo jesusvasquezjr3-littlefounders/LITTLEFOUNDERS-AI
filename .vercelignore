@@ -16,10 +16,6 @@ backend/scripts/
 /backend/
 /api/
 
-# Cerebro de conocimiento (RAG) + Lesson Factory: subsistema AISLADO, NO se despliega
-# en la plataforma (se integrará después). Excluido de Vercel/Railway/CD de producción.
-/littlefounders_brain/
-
 # Archivos de testing y configuración local
 frontend/vitest.config.ts
 frontend/.env.example
