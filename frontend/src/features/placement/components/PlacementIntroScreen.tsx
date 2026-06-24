@@ -28,7 +28,7 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
   }, [i18n.language]);
 
   return (
-    <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
+    <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-300">
       {/* Character */}
       <div className="relative flex items-center justify-center mb-4">
         <div className="absolute inset-0 rounded-full blur-3xl pointer-events-none bg-indigo-400/15 dark:bg-indigo-500/15" />
@@ -38,14 +38,14 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
       </div>
 
       {/* Card */}
-      <div className="relative rounded-3xl w-full max-w-sm bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-black/40 p-7">
+      <div className="corp-card w-full max-w-sm p-7">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 leading-snug">
           {t('intro.title', { name })}
         </h2>
         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-2">
           {t('intro.body')}
         </p>
-        <p className="text-slate-500 dark:text-slate-500 text-xs mb-7">
+        <p className="text-slate-500 dark:text-slate-400 text-xs mb-7">
           {t('intro.later_hint')}
         </p>
 
@@ -56,14 +56,14 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
           className="corp-btn-primary group w-full h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 mb-3"
         >
           {t('intro.accept_button')}
-          <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
         </button>
 
         {/* Skip link */}
         <button
           type="button"
           onClick={onSkip}
-          className="w-full text-center text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors py-1 font-medium"
+          className="w-full text-center text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors duration-150 py-1 font-medium"
         >
           {t('intro.skip_link')}
         </button>

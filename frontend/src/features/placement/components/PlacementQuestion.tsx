@@ -90,16 +90,14 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-400">
+    <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-300">
       {/* Question number badge */}
-      <div className="self-start mb-3 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-400/20">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-indigo-600 dark:text-indigo-300">
-          #{itemNumber}
-        </span>
+      <div className="self-start mb-3 corp-badge corp-badge--brand uppercase tracking-[0.22em]">
+        #{itemNumber}
       </div>
 
       {/* Question card */}
-      <div className="relative rounded-2xl w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm p-6 mb-4">
+      <div className="corp-card w-full p-6 mb-4">
         <p className="text-base font-bold text-slate-900 dark:text-white leading-snug text-center">
           {question}
         </p>
@@ -115,10 +113,11 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
               disabled={selected !== null}
               onClick={() => handleSelect(idx)}
               className={cn(
-                'w-full rounded-xl px-5 py-3.5 text-left font-semibold text-sm transition-all duration-200 border-2',
+                'w-full rounded-xl px-5 py-3.5 text-left font-semibold text-sm border-2',
+                'transition-[border-color,background-color,color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50',
                 selected === null
-                  ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white'
+                  ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white active:scale-[0.97]'
                   : selected === idx
                   ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500 text-slate-900 dark:text-white'
                   : 'bg-white dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-400 dark:text-white/30 cursor-default',
@@ -154,10 +153,11 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
                 disabled={selected !== null}
                 onClick={() => handleSelect(val)}
                 className={cn(
-                  'rounded-xl py-5 font-bold text-lg transition-all duration-200 border-2',
+                  'rounded-xl py-5 font-bold text-lg border-2',
+                  'transition-[border-color,background-color,color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50',
                   selected === null
-                    ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white'
+                    ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-400/40 hover:bg-indigo-50/40 dark:hover:bg-indigo-500/5 cursor-pointer text-slate-800 dark:text-white active:scale-[0.97]'
                     : isSelected
                     ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500 text-slate-900 dark:text-white'
                     : 'bg-white dark:bg-white/5 border-slate-200/60 dark:border-white/10 text-slate-400 dark:text-white/30 cursor-default',

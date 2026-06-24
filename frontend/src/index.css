@@ -1819,6 +1819,11 @@ html[data-reduce-motion="true"] *::after {
 
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .animate-out {
+    animation-duration: 0.001ms !important;
+  }
+
   .glass-card,
   .glass-card-interactive,
   .glass-badge,

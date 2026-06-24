@@ -65,7 +65,7 @@ function ProgressBar({ step }: { step: Step }) {
       <div className="relative w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
         {/* Fill */}
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-all duration-700 ease-out"
+          className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-[width] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -78,15 +78,19 @@ function ProgressBar({ step }: { step: Step }) {
           return (
             <div
               key={i}
-              className={cn(
-                "rounded-full transition-all duration-500",
-                active
-                  ? "w-6 h-2 bg-indigo-500 dark:bg-indigo-400 shadow-sm shadow-indigo-500/40"
-                  : done
-                  ? "w-2 h-2 bg-indigo-400 dark:bg-indigo-500"
-                  : "w-2 h-2 bg-slate-200 dark:bg-white/15"
-              )}
-            />
+              className="w-6 h-2 flex items-center justify-center"
+            >
+              <div
+                className={cn(
+                  "w-2 h-2 rounded-full transition-[transform,background-color] duration-300 origin-left",
+                  active
+                    ? "bg-indigo-500 dark:bg-indigo-400 scale-x-[3]"
+                    : done
+                    ? "bg-indigo-400 dark:bg-indigo-500 scale-x-100"
+                    : "bg-slate-200 dark:bg-white/15 scale-x-100"
+                )}
+              />
+            </div>
           );
         })}
       </div>
@@ -461,7 +465,7 @@ export default function Onboarding() {
 
         {/* ── STEP 0: Welcome ─────────────────────────────────────────── */}
         {step === 0 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-700">
+          <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-300">
             {/* Single character in spotlight, matching other steps */}
             <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinoCharacter
@@ -492,17 +496,17 @@ export default function Onboarding() {
             <button 
               type="button" 
               onClick={handleStartFromWelcome} 
-              className="corp-btn-primary w-full h-14 rounded-2xl text-lg font-semibold inline-flex items-center justify-center gap-2 group"
+              className="corp-btn-primary w-full h-12 rounded-2xl text-lg font-semibold inline-flex items-center justify-center gap-2 group"
             >
               {t("welcome.start_button")}
-              <Sparkles className="w-5 h-5 group-hover:rotate-12 group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
             </button>
           </div>
         )}
 
         {/* ── STEP 1: Name ────────────────────────────────────────────── */}
         {step === 1 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
+          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
             <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinoCharacter
                   mood={nameInput.trim().length > 0 ? "excited" : "happy"}
@@ -539,11 +543,8 @@ export default function Onboarding() {
                   placeholder={t("name.placeholder")}
                   maxLength={50}
                   className={cn(
-                    "w-full h-14 rounded-xl px-4 text-center text-lg font-bold outline-none transition-all duration-200 border-2",
-                    "bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white placeholder-slate-400",
-                    error
-                      ? "border-red-400"
-                      : "border-slate-200 dark:border-white/10 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-white/10"
+                    "corp-input h-14 px-4 text-center text-lg font-bold",
+                    error && "corp-input--error"
                   )}
                 />
                 {error && (
@@ -551,13 +552,13 @@ export default function Onboarding() {
                 )}
               </div>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleNameContinue} 
                 className="corp-btn-primary w-full h-12 mt-5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group"
               >
                 {t("name.continue")}
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
               </button>
             </div>
           </div>
@@ -565,7 +566,7 @@ export default function Onboarding() {
 
         {/* ── STEP 2: Age ─────────────────────────────────────────────── */}
         {step === 2 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
+          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
             <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
                 <DinaCharacter
                   expression={(() => {
@@ -622,13 +623,9 @@ export default function Onboarding() {
                   onKeyDown={(e) => e.key === "Enter" && handleAgeContinue()}
                   placeholder={t("age.placeholder")}
                   className={cn(
-                    "w-full h-14 rounded-xl px-4 text-center text-lg font-bold outline-none transition-all duration-200 border-2",
-                    "bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white placeholder-slate-400",
-                    error
-                      ? "border-red-400"
-                      : "border-slate-200 dark:border-white/10 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-white/10",
-                    // Hide native number spinners
-                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    "corp-input h-14 px-4 text-center text-lg font-bold",
+                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    error && "corp-input--error"
                   )}
                 />
                 {error && (
@@ -642,7 +639,7 @@ export default function Onboarding() {
                 className="corp-btn-primary w-full h-12 mt-5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group"
               >
                 {t("age.continue")}
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
               </button>
             </div>
           </div>
@@ -650,7 +647,7 @@ export default function Onboarding() {
 
         {/* ── STEP 3: Interests ───────────────────────────────────────── */}
         {step === 3 && (
-          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
+          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
             <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
                 <DrRhoCharacter
                   mood="explaining"
@@ -679,11 +676,13 @@ export default function Onboarding() {
                     type="button"
                     onClick={() => toggleInterest(interest)}
                     className={cn(
-                      "relative rounded-xl p-3 sm:p-4 text-center transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
-                      selected
-                        ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-sm"
-                        : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
+                      "relative rounded-xl p-3 sm:p-4 text-center cursor-pointer border-2 bg-white dark:bg-white/5",
+                       "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
+                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
+                       "active:scale-[0.97]",
+                       selected
+                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
+                         : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
                     )}
                   >
                     {selected && (
@@ -712,14 +711,14 @@ export default function Onboarding() {
               className="corp-btn-primary max-w-xs w-full h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t("common:buttons.continue")}
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
             </button>
           </div>
         )}
 
         {/* ── STEP 4: Experience ──────────────────────────────────────── */}
         {step === 4 && (
-          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-500">
+          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
             <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
                 <ZaraVexCharacter
                   mood={expSelected ? "flirty" : expHovered ? "excited" : "happy"}
@@ -750,11 +749,13 @@ export default function Onboarding() {
                     onMouseEnter={() => setExpHovered(level)}
                     onMouseLeave={() => setExpHovered(null)}
                     className={cn(
-                      "relative rounded-xl p-3 sm:p-4 text-left flex flex-row items-center gap-3 sm:gap-4 transition-all duration-200 cursor-pointer border-2 bg-white dark:bg-white/5",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
-                      selected
-                        ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-sm"
-                        : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
+                      "relative rounded-xl p-3 sm:p-4 text-left flex flex-row items-center gap-3 sm:gap-4 cursor-pointer border-2 bg-white dark:bg-white/5",
+                       "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
+                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
+                       "active:scale-[0.97]",
+                       selected
+                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
+                         : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
                     )}
                   >
                     {selected && (

@@ -228,7 +228,7 @@ export function PlacementEngine({ name, age }: Props) {
         <button
           type="button"
           onClick={handleExit}
-          className="absolute top-4 right-4 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-slate-200/70 dark:bg-white/10 hover:bg-slate-300/70 dark:hover:bg-white/20 transition-colors"
+          className="absolute top-4 right-4 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-slate-200/70 dark:bg-white/10 hover:bg-slate-300/70 dark:hover:bg-white/20 transition-colors duration-150 active:scale-95"
           aria-label={t('quiz.exit_aria')}
         >
           <X className="w-4 h-4 text-slate-500 dark:text-white/60" />

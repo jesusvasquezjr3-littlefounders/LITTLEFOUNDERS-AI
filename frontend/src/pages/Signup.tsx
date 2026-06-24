@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { SiDiscord } from "react-icons/si";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Send, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +24,7 @@ const GoogleIcon = () => (
 /* ─── Corp background shell (shared between screens) ─────────────────────── */
 function AuthShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+    <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
       <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
       <div className="absolute top-4 right-4 z-20">
@@ -220,7 +218,7 @@ const Signup = () => {
   if (emailSent) {
     return (
       <AuthShell>
-        <div className="corp-card p-8 space-y-6 text-center">
+        <div className="corp-card p-8 space-y-6 text-center animate-in fade-in zoom-in-95 duration-300">
           {/* Icon */}
           <div className="flex justify-center">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg mx-auto">
@@ -247,7 +245,7 @@ const Signup = () => {
           </p>
 
           {/* Spam note */}
-          <p className="text-xs text-slate-400 dark:text-slate-500 italic">
+            <p className="text-xs text-slate-500 dark:text-slate-400 italic">
             {t('auth:verify_email.spam_note')}
           </p>
 
@@ -263,7 +261,7 @@ const Signup = () => {
             <button
               onClick={handleResend}
               disabled={isResending || resendDone}
-              className="w-full text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors disabled:opacity-50 py-2"
+              className="w-full text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 disabled:opacity-50 py-2"
             >
               {resendDone ? t('auth:verify_email.resend_sent') : isResending ? '...' : t('auth:verify_email.resend')}
             </button>
@@ -280,15 +278,15 @@ const Signup = () => {
       <div className="text-center mb-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors group"
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
         >
-          <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
+          <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">←</span>
           {t('auth:register.back_to_home')}
         </Link>
       </div>
 
       {/* Card */}
-      <div className="corp-card p-7 space-y-6">
+      <div className="corp-card p-7 space-y-6 animate-in fade-in zoom-in-95 duration-300">
 
         {/* Header */}
         <div className="text-center space-y-1.5">
@@ -305,7 +303,7 @@ const Signup = () => {
           <button
             type="button"
             onClick={handleGoogleRegister}
-            className="flex items-center justify-center gap-2 h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors text-xs font-semibold text-slate-700 dark:text-slate-300"
+            className="corp-btn-secondary h-10 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2"
           >
             <GoogleIcon />
             {t('auth:social.google')}
@@ -313,7 +311,7 @@ const Signup = () => {
           <button
             type="button"
             onClick={handleDiscordRegister}
-            className="flex items-center justify-center gap-2 h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors text-xs font-semibold text-slate-700 dark:text-slate-300"
+            className="corp-btn-secondary h-10 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2"
           >
             <SiDiscord className="w-4 h-4 text-[#5865F2] shrink-0" />
             {t('auth:social.discord')}
@@ -337,18 +335,18 @@ const Signup = () => {
 
           {/* Email */}
           <div className="space-y-1.5">
-            <label htmlFor="signup-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+            <label htmlFor="signup-email" className="corp-label">
               {t('auth:fields.email.label')}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              <Input
+              <input
                 id="signup-email"
                 type="email"
                 placeholder={t('auth:fields.email.placeholder')}
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className="pl-10 h-10 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 text-sm transition-all"
+                className="corp-input h-10 pl-10"
                 required
               />
             </div>
@@ -356,24 +354,25 @@ const Signup = () => {
 
           {/* Password */}
           <div className="space-y-1.5">
-            <label htmlFor="signup-password" className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+            <label htmlFor="signup-password" className="corp-label">
               {t('auth:fields.password.label')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              <Input
+              <input
                 id="signup-password"
                 type={showPassword ? "text" : "password"}
                 placeholder={t('auth:fields.password.placeholder')}
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
-                className="pl-10 pr-10 h-10 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 text-sm transition-all"
+                className="corp-input h-10 pl-10 pr-10"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-150"
+                aria-label={showPassword ? t('auth:fields.password.hide') : t('auth:fields.password.show')}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -383,18 +382,18 @@ const Signup = () => {
 
           {/* Confirm Password */}
           <div className="space-y-1.5">
-            <label htmlFor="signup-confirm" className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+            <label htmlFor="signup-confirm" className="corp-label">
               {t('auth:fields.confirm_password.label')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              <Input
+              <input
                 id="signup-confirm"
                 type={showPassword ? "text" : "password"}
                 placeholder={t('auth:fields.confirm_password.placeholder')}
                 value={formData.confirmPassword}
                 onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                className="pl-10 h-10 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 text-sm transition-all"
+                className="corp-input h-10 pl-10"
                 required
               />
             </div>
@@ -424,7 +423,7 @@ const Signup = () => {
             {t('auth:register.have_account')}{" "}
             <Link
               to="/login"
-              className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+              className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors duration-150"
             >
               {t('auth:register.login_link')}
             </Link>
@@ -433,7 +432,7 @@ const Signup = () => {
       </div>
 
       {/* Footer */}
-      <p className="mt-6 text-center text-sm text-slate-400 dark:text-slate-500">
+      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
         {t('auth:register.footer')}
       </p>
     </AuthShell>

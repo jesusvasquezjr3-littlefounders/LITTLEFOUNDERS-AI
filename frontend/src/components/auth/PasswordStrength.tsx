@@ -1,67 +1,63 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PasswordStrengthProps {
   password?: string;
 }
 
-const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password = '' }) => {
-  const getStrength = (password: string) => {
-    let score = 0;
-    if (!password) return score;
+const PASSWORD_STRENGTH_LEVELS = [
+  'very_weak',
+  'weak',
+  'acceptable',
+  'good',
+  'strong',
+  'very_strong',
+] as const;
 
-    // Award points for different criteria
-    if (password.length >= 8) score++;
-    if (password.length >= 12) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^a-zA-Z0-9]/.test(password)) score++;
-    
-    return Math.min(score, 5); // Cap score at 5 for simplicity
-  };
+const STRENGTH_COLORS = [
+  'bg-red-500',
+  'bg-red-500',
+  'bg-indigo-500',
+  'bg-blue-500',
+  'bg-green-500',
+  'bg-green-700',
+];
+
+function getStrength(password: string): number {
+  let score = 0;
+  if (!password) return score;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^a-zA-Z0-9]/.test(password)) score++;
+  return Math.min(score, 5);
+}
+
+const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
+  const { t } = useTranslation('auth');
+
+  if (!password) return null;
 
   const strength = getStrength(password);
-
-  const strengthLabels = [
-    'Muy Débil',
-    'Débil',
-    'Aceptable',
-    'Buena',
-    'Fuerte',
-    'Muy Fuerte'
-  ];
-
-  const strengthColors = [
-    'bg-red-500',    // Muy Débil
-    'bg-red-500',    // Débil
-    'bg-indigo-500', // Aceptable
-    'bg-blue-500',   // Buena
-    'bg-green-500',  // Fuerte
-    'bg-green-700'   // Muy Fuerte
-  ];
-
-  if (!password) {
-    return null; // Don't render anything if there's no password
-  }
-
-  const barWidth = `${(strength / 5) * 100}%`;
-  const barColor = strengthColors[strength];
+  const levelKey = PASSWORD_STRENGTH_LEVELS[strength];
+  const barColor = STRENGTH_COLORS[strength];
 
   return (
     <div className="mt-2">
       <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-semibold text-gray-600">
-          Seguridad de la contraseña:
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+          {t('password_strength.label')}
         </span>
-        <span className="text-xs font-bold text-gray-800">
-          {strengthLabels[strength]}
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+          {t(`password_strength.levels.${levelKey}`)}
         </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
+      <div className="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2">
         <div
-          className={`h-2 rounded-full transition-all duration-300 ${barColor}`}
-          style={{ width: barWidth }}
-        ></div>
+          className={`h-2 rounded-full transition-[width,background-color] duration-300 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] ${barColor}`}
+          style={{ width: `${(strength / 5) * 100}%` }}
+        />
       </div>
     </div>
   );
