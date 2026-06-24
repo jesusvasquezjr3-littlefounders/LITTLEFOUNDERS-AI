@@ -125,8 +125,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
           <div className="mt-12 pt-6 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-xs text-slate-400 dark:text-slate-500">{t("footer.copyright")}</p>
             <div className="flex items-center gap-6 text-xs text-slate-400 dark:text-slate-500">
-              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.terms")}</Link>
-              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.privacy")}</Link>
+              <Link to="/legal/terms" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.terms")}</Link>
+              <Link to="/legal/privacy" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.privacy")}</Link>
             </div>
           </div>
         </div>

@@ -19,6 +19,8 @@ import FamiliesPage from "./pages/landing/FamiliesPage";
 import FaqPage from "./pages/landing/FaqPage";
 import HowItWorksPage from "./pages/landing/HowItWorksPage";
 import PricingPage from "./pages/landing/PricingPage";
+import TermsPage from "./pages/legal/TermsPage";
+import PrivacyPage from "./pages/legal/PrivacyPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Bye from "./pages/Bye";
@@ -112,6 +114,9 @@ const App = () => (
                 <Route path="/how-it-works" element={<HowItWorksPage />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
+                {/* Legal */}
+                <Route path="/legal/terms" element={<TermsPage />} />
+                <Route path="/legal/privacy" element={<PrivacyPage />} />
                 {/* Auth / public routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />

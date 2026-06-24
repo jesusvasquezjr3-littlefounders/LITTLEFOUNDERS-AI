@@ -1,0 +1,20 @@
+{
+  "terms": {
+    "eyebrow": "Legal",
+    "title": "Términos y Condiciones",
+    "subtitle": "Lee con atención las condiciones de uso de la plataforma LittleFounders antes de registrarte.",
+    "effective_date": "Última actualización: próximamente",
+    "coming_soon": "Documento en preparación",
+    "coming_soon_desc": "Nuestros Términos y Condiciones están siendo redactados con asesoría legal. Estarán disponibles antes del lanzamiento oficial.",
+    "contact_note": "¿Tienes preguntas? Escríbenos a"
+  },
+  "privacy": {
+    "eyebrow": "Legal",
+    "title": "Aviso de Privacidad",
+    "subtitle": "Conoce cómo recopilamos, usamos y protegemos tu información personal de acuerdo con la LFPDPPP.",
+    "effective_date": "Última actualización: próximamente",
+    "coming_soon": "Documento en preparación",
+    "coming_soon_desc": "Nuestro Aviso de Privacidad está siendo redactado conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP). Estará disponible antes del lanzamiento oficial.",
+    "contact_note": "¿Tienes preguntas sobre privacidad? Escríbenos a"
+  }
+}

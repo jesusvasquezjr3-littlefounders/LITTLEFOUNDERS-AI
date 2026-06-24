@@ -1,0 +1,20 @@
+{
+  "terms": {
+    "eyebrow": "Legal",
+    "title": "Terms and Conditions",
+    "subtitle": "Please read the terms of use for the LittleFounders platform carefully before signing up.",
+    "effective_date": "Last updated: coming soon",
+    "coming_soon": "Document in preparation",
+    "coming_soon_desc": "Our Terms and Conditions are being drafted with legal counsel. They will be available before the official launch.",
+    "contact_note": "Have questions? Write to us at"
+  },
+  "privacy": {
+    "eyebrow": "Legal",
+    "title": "Privacy Notice",
+    "subtitle": "Learn how we collect, use and protect your personal information.",
+    "effective_date": "Last updated: coming soon",
+    "coming_soon": "Document in preparation",
+    "coming_soon_desc": "Our Privacy Notice is being drafted in accordance with applicable privacy laws. It will be available before the official launch.",
+    "contact_note": "Privacy questions? Write to us at"
+  }
+}

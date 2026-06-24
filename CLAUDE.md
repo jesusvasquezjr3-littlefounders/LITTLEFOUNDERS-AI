@@ -66,11 +66,13 @@ Antes de hacer commit, verificar (checklist unificado):
 
 ---
 
-## 4. Skills de Diseño para Agentes AI
+## 4. Skills para Agentes AI
 
-El proyecto incluye **skills** especializadas en `.claude/skills/` que los agentes AI DEBEN invocar al trabajar en tareas Frontend/UI. Estas skills elevan la calidad visual y de interacción del producto.
+El proyecto incluye **skills** especializadas en `.claude/skills/` que los agentes AI DEBEN invocar según el tipo de tarea.
 
 ### 4.1 Catálogo de Skills
+
+#### Diseño y UI
 
 | Skill | Cuándo invocarla | Ubicación |
 |-------|-----------------|-----------|
@@ -80,13 +82,31 @@ El proyecto incluye **skills** especializadas en `.claude/skills/` que los agent
 | **review-animations** | **Solo** al revisar código de animación/motion (CSS o JS). Revisa contra un estándar alto de craft. Por defecto marca problemas; la aprobación se gana. No para review general. | `.claude/skills/review-animations/` |
 | **customize-opencode** | **Solo** para configuración de opencode (opencode.json, plugins, MCP servers, permisos). No para código de la aplicación. | Built-in (no en `.claude/skills/`) |
 
-### 4.2 Reglas de Uso
+#### Legal
+
+| Skill | Cuándo invocarla | Ubicación |
+|-------|-----------------|-----------|
+| **claude-for-legal** | Al trabajar cualquier tema legal en la plataforma: revisión de contratos, NDAs, términos SaaS, privacidad (DPA, DSAR, PIA), empleo, propiedad intelectual, litigio, regulación, gobernanza de IA, cumplimiento corporativo, diligence M&A, y más. Suite completa de [anthropics/claude-for-legal](https://github.com/anthropics/claude-for-legal). **Todos los outputs son borradores para revisión de abogado, no asesoría legal.** | `.claude/skills/claude-for-legal/` |
+| **claude-for-legal-mexico** | Extensión de `claude-for-legal` con plugins específicos para jurisdicción mexicana. Incluye 10 plugins México (AGPLv3+) para derecho corporativo, laboral, fiscal, privacidad (LFPDPPP), litigación, propiedad intelectual (IMPI/INDAUTOR), gobernanza de IA, regulatorio (DOF/SNIF) y seguros (CNSF). Úsalo para cualquier tema legal con elementos de jurisdicción mexicana. De [wariomx/claude-for-legal-mexico](https://github.com/wariomx/claude-for-legal-mexico). **Todos los outputs son borradores para revisión de abogado, no asesoría legal.** | `.claude/skills/claude-for-legal-mexico/` |
+
+### 4.2 Reglas de Uso — Diseño y UI
 
 1. **Toda tarea Frontend/UI DEBE considerar las skills** `agave`, `emil-design-eng` o `impeccable` según el caso antes de generar código.
 2. **Animaciones/motion:** usar `emil-design-eng` para escribir y `review-animations` para revisar.
 3. **Diseño nuevo o rediseños:** usar `impeccable craft` o `impeccable shape` para planear antes de codificar.
 4. **Las skills NO aplican** a tareas de Backend o lógica no-UI.
 5. **Las skills complementan, NO reemplazan** el estándar visual `corp-*` de `DESIGN_SYSTEM.md`. Las skills refinan la ejecución; el design system define los tokens y clases.
+
+### 4.3 Reglas de Uso — Legal
+
+1. **Invocar `claude-for-legal`** ante cualquier tarea que involucre análisis legal, revisión de documentos legales, redacción de cláusulas, evaluación de riesgo regulatorio, o cumplimiento normativo.
+2. **Invocar `claude-for-legal-mexico`** cuando el asunto involucre jurisdicción mexicana (derecho corporativo, laboral/LFT, fiscal/SAT, privacidad/LFPDPPP, litigación, PI/IMPI-INDAUTOR, regulatorio/DOF-SNIF, seguros/CNSF).
+3. **Plugins disponibles (upstream):** `commercial-legal`, `corporate-legal`, `employment-legal`, `privacy-legal`, `product-legal`, `regulatory-legal`, `ai-governance-legal`, `ip-legal`, `litigation-legal`, `legal-clinic`, `law-student`, `legal-builder-hub`.
+4. **Plugins México:** `corporativo-legal-mexico`, `laboral-legal-mexico`, `fiscal-legal-mexico`, `privacidad-legal-mexico`, `litigacion-legal-mexico`, `propiedad-intelectual-legal-mexico`, `regulatorio-legal-mexico`, `ia-governanza-legal-mexico`, `seguros-legal-mexico`, `conectores-legal-mexico`.
+5. **Primer uso:** ejecutar `/<plugin>:cold-start-interview` para configurar el perfil de práctica del plugin.
+6. **Todos los outputs son borradores** para revisión de abogado — no constituyen asesoría legal ni sustituyen el criterio profesional de un abogado licenciado.
+7. **Citas no verificadas** se marcan con `[verify]` — conectar una herramienta de investigación (CourtListener, etc.) para citas verificadas.
+8. **Skills instaladas en** `.claude/skills/` y `.github/skills/`: `claude-for-legal/` y `claude-for-legal-mexico/`.
 
 ---
 
