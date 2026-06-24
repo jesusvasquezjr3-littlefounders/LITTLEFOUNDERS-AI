@@ -25,9 +25,9 @@ export default function FaqPage() {
 
   return (
     <LandingLayout hideCTA>
-      <header className="relative overflow-hidden bg-white dark:bg-[#070b14]">
+      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo-400/8 dark:bg-indigo-500/8 blur-[140px] pointer-events-none" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo-400/10 dark:bg-indigo-500/8 blur-[140px] pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-16 text-center">
           <Reveal as="span" className="corp-eyebrow">{t("nav.faq")}</Reveal>
           <Reveal delay={60}>
@@ -42,7 +42,7 @@ export default function FaqPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
             <Reveal variant="left" className="w-full lg:w-7/12 lg:sticky lg:top-28">
-              <div className="relative rounded-3xl border border-slate-200 dark:border-white/10 p-2 shadow-2xl bg-white dark:bg-white/5">
+              <div className="corp-panel rounded-3xl p-2 shadow-2xl">
                 <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900">
                   <ShowreelPlayer playerRef={playerRef} />
                 </div>
@@ -57,7 +57,7 @@ export default function FaqPage() {
                     <AccordionItem
                       key={item.id}
                       value={item.id}
-                      className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] overflow-hidden"
+                      className="corp-card overflow-hidden !border-transparent"
                     >
                       <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
                         <div className="flex items-center gap-3 w-full pr-2">
@@ -86,8 +86,8 @@ export default function FaqPage() {
       <section className="relative py-20 sm:py-28 bg-slate-50 dark:bg-[#0a0e1a]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <div className="w-14 h-14 rounded-2xl bg-indigo-600 shadow-[0_8px_24px_-6px_rgba(79,70,229,0.45)] flex items-center justify-center mx-auto">
-              <Mail className="w-7 h-7 text-white" />
+            <div className="corp-icon-chip w-14 h-14 mx-auto">
+              <Mail className="w-7 h-7" />
             </div>
             <h2 className="mt-6 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{t("faq.contact_title")}</h2>
             <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
@@ -103,7 +103,7 @@ export default function FaqPage() {
               </a>
               <Link
                 to="/onboarding"
-                className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-150"
+                className="corp-btn-secondary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5"
               >
                 {t("corp.hero.cta_primary")}
                 <ArrowRight className="w-5 h-5" />

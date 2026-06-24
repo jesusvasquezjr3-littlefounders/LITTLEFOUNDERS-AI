@@ -6,7 +6,9 @@
     "how": "Cómo Funciona",
     "login": "Iniciar Sesión",
     "register": "Ya tengo cuenta",
-    "resume": "Continuar"
+    "resume": "Continuar",
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú"
   },
   "hero": {
     "badge": "No requiere tarjeta • Acceso inmediato",
@@ -132,7 +134,8 @@
     "terms": "Términos",
     "privacy": "Privacidad",
     "contact": "Contacto",
-    "copyright": "© 2026 littlefounders.ai"
+    "copyright": "© 2026 littlefounders.ai",
+    "product": "Producto"
   },
   "language": {
     "title": "Selecciona tu Idioma"

@@ -30,7 +30,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               {/* Brand glows — jade + amber, not indigo */}
               <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-amber-500/12 blur-[80px] pointer-events-none" />
-              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
+              <span className="corp-eyebrow text-white/70">
                 <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
@@ -82,15 +82,15 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
 
             {/* Product links */}
             <div className="md:col-span-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
-                {t("nav.how")}
+              <h3 className="corp-eyebrow mb-4">
+                {t("footer.product")}
               </h3>
               <ul className="space-y-3">
                 {productLinks.map((l) => (
                   <li key={l.to}>
                     <Link
-                      to={l.to}
-                      className="text-sm text-slate-600 dark:text-slate-300 hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors duration-150"
+                       to={l.to}
+                       className="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
                     >
                       {l.label}
                     </Link>
@@ -101,12 +101,12 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
 
             {/* Contact / legal */}
             <div className="md:col-span-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
+              <h3 className="corp-eyebrow mb-4">
                 {t("footer.contact")}
               </h3>
               <a
                 href="mailto:informame@littlefounders.ai"
-                className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-[#0d7a5f] dark:hover:text-[#34d399] transition-colors duration-150"
+                className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
               >
                 <Mail className="w-4 h-4" /> informame@littlefounders.ai
               </a>
@@ -125,8 +125,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
           <div className="mt-12 pt-6 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-xs text-slate-400 dark:text-slate-500">{t("footer.copyright")}</p>
             <div className="flex items-center gap-6 text-xs text-slate-400 dark:text-slate-500">
-              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors duration-150">{t("footer.terms")}</Link>
-              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors duration-150">{t("footer.privacy")}</Link>
+              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.terms")}</Link>
+              <Link to="#" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.privacy")}</Link>
             </div>
           </div>
         </div>

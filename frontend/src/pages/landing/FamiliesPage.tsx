@@ -65,15 +65,15 @@ export default function FamiliesPage() {
   return (
     <LandingLayout>
 
-      <header className="relative overflow-hidden bg-white dark:bg-[#070b14]">
+      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/8 dark:bg-indigo-500/8 blur-[120px] pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/10 dark:bg-indigo-500/8 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             <div>
-              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <Reveal as="span" className="corp-eyebrow">
                 <Clock className="w-3.5 h-3.5" /> {t("families.hero.coming_soon_label")}
               </Reveal>
 
@@ -94,8 +94,8 @@ export default function FamiliesPage() {
               <Reveal delay={180}>
                 <div className="mt-8 space-y-3">
                   {steps.map((step) => (
-                    <div key={step.n} className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] flex items-center gap-4 px-5 py-3.5">
-                      <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md">
+                    <div key={step.n} className="corp-panel flex items-center gap-4 px-5 py-3.5">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0">
                         {step.n}
                       </div>
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{step.text}</span>
@@ -150,8 +150,8 @@ export default function FamiliesPage() {
                 { key: "benefit_4", icon: LayoutDashboard },
               ].map(({ key, icon: Icon }, i) => (
                 <Reveal key={key} delay={i * 60}>
-                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] p-6 h-full">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
+                  <div className="corp-card p-6 h-full">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600 shadow-[0_6px_16px_-4px_rgba(79,70,229,0.4)] flex items-center justify-center">
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">
@@ -196,8 +196,8 @@ export default function FamiliesPage() {
           <div className="mt-14 grid md:grid-cols-3 gap-6">
             {marketplaceItems.map((item, i) => (
               <Reveal key={i} delay={i * 60}>
-                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] h-full p-8">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg">
+                <div className="corp-card h-full p-8">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 shadow-[0_8px_20px_-6px_rgba(79,70,229,0.45)] flex items-center justify-center">
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="mt-6 text-lg font-bold text-slate-900 dark:text-white">{item.title}</h3>
@@ -261,8 +261,8 @@ export default function FamiliesPage() {
           <div className="mt-14 grid md:grid-cols-2 gap-6">
             {benefits.map((benefit, i) => (
               <Reveal key={i} variant={i % 2 === 0 ? "left" : "right"} delay={i * 60}>
-                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] h-full p-8 flex gap-5">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shrink-0">
+                <div className="corp-card h-full p-8 flex gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 shadow-[0_8px_20px_-6px_rgba(79,70,229,0.45)] flex items-center justify-center shrink-0">
                     <benefit.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -275,7 +275,7 @@ export default function FamiliesPage() {
           </div>
 
           <Reveal delay={180} className="mt-10">
-            <figure className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1426] max-w-xl mx-auto p-8 text-center">
+            <figure className="corp-card max-w-xl mx-auto p-8 text-center">
               <blockquote className="text-slate-700 dark:text-slate-300 leading-relaxed italic">
                 "{t("families.benefits.testimonial_text")}"
               </blockquote>
@@ -290,7 +290,7 @@ export default function FamiliesPage() {
       <section className="relative py-20 sm:py-28 bg-white dark:bg-[#070b14]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-400 mb-4">
+            <span className="corp-eyebrow mb-4">
               <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">

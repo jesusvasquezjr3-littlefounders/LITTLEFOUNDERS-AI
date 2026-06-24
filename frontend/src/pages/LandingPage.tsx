@@ -19,7 +19,6 @@ import {
   LineChart,
   MonitorSmartphone,
   GraduationCap,
-  CheckCircle2,
   PlayCircle,
 } from "lucide-react";
 
@@ -99,14 +98,14 @@ const LandingPage = () => {
 
   return (
     <LandingLayout>
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0f0a05] dark:via-[#070b14] dark:to-[#070b14]">
+      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
         <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
         <div className="absolute -top-24 -right-24 w-[36rem] h-[36rem] rounded-full bg-indigo-400/15 dark:bg-indigo-600/10 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 lg:pt-40 pb-20">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
-              <Reveal as="span" className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <Reveal as="span" className="corp-eyebrow">
                 <Sparkles className="w-3.5 h-3.5" /> {t("corp.hero.badge")}
               </Reveal>
 
@@ -135,7 +134,7 @@ const LandingPage = () => {
                   </Link>
                   <Link
                     to="/how-it-works"
-                    className="text-base font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-150 inline-flex items-center gap-2 px-7 py-3.5"
+                    className="text-base font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150 inline-flex items-center gap-2 px-7 py-3.5"
                   >
                     <PlayCircle className="w-5 h-5" />
                     {t("corp.hero.cta_secondary")}
@@ -169,10 +168,10 @@ const LandingPage = () => {
         </div>
       </header>
 
-      <section className="relative bg-slate-900 dark:bg-[#0a0e1a] py-14">
+      <section className="relative bg-slate-900 dark:bg-[#0a0e1a] py-16">
         <h2 className="sr-only">{t("corp.stats.heading")}</h2>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {[
               { value: t("corp.stats.lessons_value"), label: t("corp.stats.lessons_label") },
               { value: t("corp.stats.games_value"), label: t("corp.stats.games_label") },
@@ -180,8 +179,8 @@ const LandingPage = () => {
               { value: t("corp.stats.safe_value"), label: t("corp.stats.safe_label") },
             ].map((s, i) => (
               <Reveal key={i} delay={i * 60} className="text-center">
-                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400">{s.value}</p>
-                <p className="mt-2 text-sm text-slate-300 dark:text-slate-400">{s.label}</p>
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">{s.value}</p>
+                <p className="mt-2 text-sm font-medium text-slate-400">{s.label}</p>
               </Reveal>
             ))}
           </div>
@@ -341,7 +340,7 @@ const LandingPage = () => {
               </Link>
               <Link
                 to="/faq"
-                className="inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5 border border-slate-300 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-150"
+                className="corp-btn-secondary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5"
               >
                 {t("corp.faq_teaser.cta")}
               </Link>

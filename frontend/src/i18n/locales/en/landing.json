@@ -11,7 +11,9 @@
     "how": "How It Works",
     "login": "Log In",
     "register": "Already have an account?",
-    "resume": "Continue"
+    "resume": "Continue",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
   },
   "hero": {
     "badge": "No credit card required • Instant access",
@@ -137,7 +139,8 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "contact": "Contact",
-    "copyright": "© 2026 littlefounders.ai"
+    "copyright": "© 2026 littlefounders.ai",
+    "product": "Product"
   },
   "language": {
     "title": "Select Language"

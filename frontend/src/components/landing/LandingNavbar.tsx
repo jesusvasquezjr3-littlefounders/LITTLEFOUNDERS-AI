@@ -45,7 +45,7 @@ export const LandingNavbar = () => {
 
     return (
         <nav
-            className={`corp fixed top-0 w-full z-50 py-3 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ${
+            className={`corp fixed top-0 w-full z-50 py-3 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ease-out ${
                 showSolid
                     ? 'bg-white/85 dark:bg-[#0a0e1a]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 shadow-[0_4px_30px_-12px_rgba(15,23,42,0.15)]'
                     : 'bg-transparent border-b border-transparent'
@@ -70,7 +70,7 @@ export const LandingNavbar = () => {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`text-sm font-medium transition-colors duration-150 ${
+                                className={`text-sm font-medium transition-[color,transform] duration-150 active:scale-[0.97] ${
                                     isCurrent(link.path)
                                         ? 'text-indigo-600 dark:text-indigo-300'
                                         : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300'
@@ -97,9 +97,10 @@ export const LandingNavbar = () => {
                         <ThemeToggle />
                         <LanguageSelector variant="simple" />
                         <button
-                            className="text-slate-700 dark:text-slate-200 p-1"
+                            className="text-slate-700 dark:text-slate-200 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 active:scale-[0.97] transition-[background-color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            aria-label="Menu"
+                            aria-label={mobileMenuOpen ? t('nav.close_menu') : t('nav.open_menu')}
+                            aria-expanded={mobileMenuOpen}
                         >
                             {mobileMenuOpen ? <X /> : <Menu />}
                         </button>
@@ -110,10 +111,11 @@ export const LandingNavbar = () => {
             {isMenuVisible && (
                 <div
                     ref={menuRef}
-                    className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl transition-[opacity,transform] duration-200 ease-out"
+                    className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl transition-[opacity,transform] duration-200"
                     style={{
                         opacity: mobileMenuOpen ? 1 : 0,
                         transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-8px)',
+                        transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
                     }}
                 >
                     {navLinks.map((link) => (

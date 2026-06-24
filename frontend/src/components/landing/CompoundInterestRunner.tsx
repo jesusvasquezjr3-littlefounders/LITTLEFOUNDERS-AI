@@ -267,7 +267,7 @@ export function CompoundInterestRunner() {
             {/* Idle Area Overlay */}
             {gameState === 'idle' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-white/5 dark:bg-black/5 backdrop-blur-[2px]">
-                    <div className="liquid-glass p-8 rounded-3xl text-center max-w-sm mx-4 transform transition-all duration-500 hover:scale-105">
+                    <div className="liquid-glass p-8 rounded-3xl text-center max-w-sm mx-4 transform transition-transform duration-500 hover:scale-105">
                         <div className="w-16 h-16 bg-[#1a9e7a] rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-[#1a9e7a]/30 mb-6">
                             <TrendingUp className="w-8 h-8 text-white" />
                         </div>
@@ -279,7 +279,7 @@ export function CompoundInterestRunner() {
                         </p>
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-[#1a9e7a] hover:bg-[#158063] text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#1a9e7a]/25 transition-all transform hover:-translate-y-1"
+                            className="w-full py-4 px-6 bg-[#1a9e7a] hover:bg-[#158063] text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#1a9e7a]/25 transition-[transform,box-shadow] duration-200 transform hover:-translate-y-1"
                         >
                             {t('minigame.start')}
                         </button>
@@ -315,7 +315,7 @@ export function CompoundInterestRunner() {
                         
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#f6a821]/25 transition-all transform hover:scale-105"
+                            className="w-full py-4 px-6 bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#f6a821]/25 transition-[transform,box-shadow] duration-200 transform hover:scale-105"
                         >
                             {t('minigame.play_again')}
                         </button>

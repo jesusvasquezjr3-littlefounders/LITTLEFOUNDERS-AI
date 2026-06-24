@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { CheckCircle2 } from 'lucide-react';
 
 interface CharacterSectionProps {
   character: React.ReactNode;
@@ -23,8 +24,8 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
   const isCharacterLeft = characterPosition === 'left';
 
   return (
-    <div className={cn('py-12 lg:py-20', className)}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+    <div className={cn('py-16 lg:py-24', className)}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {isCharacterLeft && (
           <div className="flex justify-center lg:justify-start order-2 lg:order-1">
             <div className="w-full max-w-sm">
@@ -34,32 +35,28 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
         )}
 
         <div className={cn(
-          'space-y-4',
+          'space-y-5',
           isCharacterLeft ? 'lg:order-2' : 'lg:order-1'
         )}>
           <div className="space-y-3">
             {subtitle && (
-              <p className="text-sm font-bold text-indigo-600 dark:text-indigo-300 uppercase tracking-wider">
-                {subtitle}
-              </p>
+              <span className="corp-eyebrow">{subtitle}</span>
             )}
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
               {title}
             </h2>
           </div>
 
-          <p className="text-gray-700 dark:text-gray-300 text-base lg:text-lg leading-relaxed font-medium">
+          <p className="text-slate-600 dark:text-slate-400 text-base lg:text-lg leading-relaxed">
             {description}
           </p>
 
           {features.length > 0 && (
-            <ul className="space-y-2 pt-4">
+            <ul className="space-y-3 pt-2">
               {features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex-shrink-0 mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-300" />
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">
+                <li key={idx} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">
                     {feature}
                   </span>
                 </li>

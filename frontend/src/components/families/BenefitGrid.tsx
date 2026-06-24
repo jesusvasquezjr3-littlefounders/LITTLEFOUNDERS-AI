@@ -25,34 +25,23 @@ export const BenefitGrid: React.FC<BenefitGridProps> = ({
   };
 
   return (
-    <div className={cn('grid gap-6 lg:gap-8', gridClass[columns], className)}>
+    <div className={cn('grid gap-6', gridClass[columns], className)}>
       {items.map((item, idx) => (
         <div
           key={idx}
-          className={cn(
-            'group relative p-6 lg:p-7 rounded-2xl',
-            'bg-white dark:bg-slate-900/50',
-            'border border-gray-200/50 dark:border-slate-700/50',
-            'hover:border-indigo-300/50 dark:hover:border-indigo-500/30',
-            'shadow-sm hover:shadow-xl',
-            'transition-all duration-300 overflow-hidden'
-          )}
+          className="corp-card p-7 h-full"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 via-sky-50/0 to-blue-50/0 dark:from-indigo-900/5 dark:via-sky-900/5 dark:to-blue-900/5 group-hover:from-indigo-50/30 group-hover:via-sky-50/30 group-hover:to-blue-50/30 dark:group-hover:from-indigo-900/10 dark:group-hover:via-sky-900/10 dark:group-hover:to-blue-900/10 transition-all duration-500" />
-
-          <div className="relative space-y-3">
-            <div className="w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform">
-              {item.icon}
-            </div>
-
-            <h3 className="text-base lg:text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-              {item.title}
-            </h3>
-
-            <p className="text-sm lg:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
-              {item.description}
-            </p>
+          <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center mb-4">
+            {item.icon}
           </div>
+
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+            {item.title}
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            {item.description}
+          </p>
         </div>
       ))}
     </div>

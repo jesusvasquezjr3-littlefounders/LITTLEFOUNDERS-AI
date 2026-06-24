@@ -32,7 +32,6 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({ children }) => {
       return;
     }
 
-    // Start the native browser view transition
     document.startViewTransition(() => {
       flushSync(() => {
         setDisplayLocation(location);

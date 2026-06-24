@@ -56,7 +56,7 @@ export function EmailWaitlistForm({
           />
         </div>
         <button type="submit" disabled={loading}
-          className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 sm:w-auto w-full disabled:opacity-60 active:scale-[0.97] transition-[transform,background] duration-200">
+          className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 sm:w-auto w-full disabled:opacity-60 disabled:cursor-not-allowed">
           {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
           {ctaLabel}
         </button>

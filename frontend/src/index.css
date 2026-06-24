@@ -146,10 +146,10 @@ html[data-reduce-motion="true"] *::after {
     --radius-full: 9999px;
 
     /* Animations - Duolingo Style (bouncy, playful) */
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.15s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.15s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.15s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.15s cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-smooth: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-bounce: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-slow: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 
     /* Liquid Glass Effect Variables */
     --glass-bg: hsl(var(--card) / 0.6);
@@ -393,29 +393,6 @@ html[data-reduce-motion="true"] *::after {
   }
 }
 
-@keyframes shake {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-4px);
-  }
-
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(4px);
-  }
-}
-
 @keyframes slide-up {
   from {
     transform: translateY(20px);
@@ -559,10 +536,6 @@ html[data-reduce-motion="true"] *::after {
 
 .animate-pop {
   animation: pop 0.3s ease-in-out;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
 }
 
 .animate-slide-up {
@@ -2047,7 +2020,7 @@ html[data-reduce-motion="true"] *::after {
 
 /* ── Face transition ── */
 .char-face-transition {
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* ── Blink (generic eye) ── */
@@ -2195,14 +2168,18 @@ html[data-reduce-motion="true"] *::after {
   box-shadow: 0 5px 0 0 rgba(0,0,0,0.2);
   transition: box-shadow 0.12s ease-out, transform 0.12s ease-out;
 }
-.btn-press:hover  { box-shadow: 0 7px 0 0 rgba(0,0,0,0.2); transform: translateY(-2px); transition: box-shadow 0.08s ease-out, transform 0.08s ease-out; }
+@media (hover: hover) and (pointer: fine) {
+  .btn-press:hover  { box-shadow: 0 7px 0 0 rgba(0,0,0,0.2); transform: translateY(-2px); transition: box-shadow 0.08s ease-out, transform 0.08s ease-out; }
+}
 .btn-press:active { box-shadow: 0 2px 0 0 rgba(0,0,0,0.2); transform: translateY(3px); transition: box-shadow 0.08s ease-out, transform 0.08s ease-out; }
 
 /* Card tilt hover */
 .card-tilt {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
 }
-.card-tilt:hover { transform: translateY(-6px) rotate(-1deg); }
+@media (hover: hover) and (pointer: fine) {
+  .card-tilt:hover { transform: translateY(-6px) rotate(-1deg); }
+}
 
 /* Soft pulsing glow */
 @keyframes glow-pulse {
@@ -2229,8 +2206,8 @@ html[data-reduce-motion="true"] *::after {
 /* ── View Transitions API (Organic Page Transitions) ── */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.4s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* Base utility classes for morphing elements */
@@ -2267,8 +2244,7 @@ html[data-reduce-motion="true"] *::after {
   opacity: 1 !important;
 }
 
-/* Stop transition on elements that prefer-reduced-motion */
-@media (prefers-reduced-motion) {
+@media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
@@ -2498,8 +2474,8 @@ html[data-reduce-motion="true"] *::after {
   opacity: 0;
   transform: translateY(28px);
   transition:
-    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .reveal-left  { transform: translateX(-36px); }
 .reveal-right { transform: translateX(36px); }
@@ -2646,7 +2622,7 @@ html[data-reduce-motion="true"] *::after {
   color: #4f46e5;
   background: #f8fafc;
 }
-.corp-btn-secondary:active { transform: translateY(0); }
+.corp-btn-secondary:active { transform: scale(0.97); }
 .dark .corp-btn-secondary {
   background: rgba(255, 255, 255, 0.04);
   color: #e2e8f0;
@@ -2664,6 +2640,7 @@ html[data-reduce-motion="true"] *::after {
   transition: color 0.2s ease, background 0.2s ease;
 }
 .corp-btn-ghost:hover { color: #4f46e5; background: rgba(99, 102, 241, 0.08); }
+.corp-btn-ghost:active { transform: scale(0.97); }
 .dark .corp-btn-ghost { color: #94a3b8; }
 .dark .corp-btn-ghost:hover { color: #c7d2fe; background: rgba(255, 255, 255, 0.06); }
 
@@ -2671,14 +2648,16 @@ html[data-reduce-motion="true"] *::after {
   background-image: linear-gradient(120deg, #e11d48, #dc2626);
   color: #fff;
   box-shadow: 0 10px 28px -10px rgba(220, 38, 38, 0.55);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s cubic-bezier(0.22, 1, 0.36, 1), filter 0.12s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.corp-btn-danger:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.06);
-  box-shadow: 0 16px 36px -12px rgba(220, 38, 38, 0.65);
+@media (hover: hover) and (pointer: fine) {
+  .corp-btn-danger:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: 0 16px 36px -12px rgba(220, 38, 38, 0.65);
+  }
 }
-.corp-btn-danger:active { transform: translateY(0); }
+.corp-btn-danger:active { transform: scale(0.97); }
 
 /* ── Status / role badges (replaces ad-hoc bg-*-100 pills) ────────────────── */
 .corp-badge {
