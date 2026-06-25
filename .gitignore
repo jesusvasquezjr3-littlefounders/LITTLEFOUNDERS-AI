@@ -78,5 +78,8 @@ backend/lesson_engine/littlefounders_lessons_v1_backup_20260416_144555
 # Backups de la tabla lessons (artefactos de runtime del import seguro)
 backend/backups/
 
-# LEGAL
-LEGAL/
+# LEGAL — solo la carpeta de documentos legales en la RAÍZ del repo.
+# Anclada con "/" a propósito: sin ancla, "LEGAL/" también ignora
+# frontend/src/pages/legal/ y components/legal/ (macOS es case-insensitive),
+# lo que dejó sin commitear las páginas legales y rompió el build en CI/Vercel.
+/LEGAL/
