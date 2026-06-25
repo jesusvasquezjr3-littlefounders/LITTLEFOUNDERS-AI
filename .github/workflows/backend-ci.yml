@@ -56,4 +56,8 @@ jobs:
           DATABASE_NAME: littlefounders_test
           SECRET_KEY: ci-secret-key-at-least-32-characters-long
         run: |
-          pytest -v --tb=short 2>&1 || echo "No tests found — skipping"
+          pytest -v --tb=short || code=$?
+          code=${code:-0}
+          # exit 5 = "no se recolectaron tests" → tolerar; cualquier otro fallo real → romper CI
+          if [ "$code" -eq 5 ]; then echo "::warning::No tests collected — skipping"; exit 0; fi
+          exit "$code"

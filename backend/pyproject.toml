@@ -21,6 +21,9 @@ quote-style = "double"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+# Agrega backend/ (rootdir) a sys.path para que los tests importen `main`,
+# `config`, etc. igual que en runtime (uvicorn main:app corre desde backend/).
+pythonpath = ["."]
 asyncio_mode = "auto"
 markers = [
     "slow: tests that are slow (e.g., external API calls)",
