@@ -4,7 +4,9 @@ on:
     branches: [main]
     paths:
       - "frontend/**"
+      - "vercel.json"
       - ".github/workflows/frontend-ci.yml"
+      - ".github/workflows/cd.yml"
   pull_request:
     paths:
       - "frontend/**"
