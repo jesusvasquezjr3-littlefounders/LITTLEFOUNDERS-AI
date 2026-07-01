@@ -127,8 +127,7 @@ export function useUserLanguage() {
             }
         }
 
-        // Apply local change (which may trigger a subdomain redirect)
-        // We do this AFTER the backend save, so the redirect doesn't abort the fetch
+        // Apply local change (client-side only, no redirect)
         await changeLanguage(language);
 
         return backendSuccess;

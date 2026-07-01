@@ -563,22 +563,22 @@ NUNCA hardcodear texto visible en español o inglés.
 | Plugin | `@vitejs/plugin-react-swc` |
 | Path alias | `@` → `./src` |
 
-### Dual Build (Dos HTML entries)
+### Dual Build (Query-param i18n)
 
 ```typescript
 build: {
   rollupOptions: {
     input: {
-      main: path.resolve(__dirname, 'index.html'),     // Español (default)
-      en: path.resolve(__dirname, 'index-en.html'),     // Inglés
+      main: path.resolve(__dirname, 'index.html'),
+      en: path.resolve(__dirname, 'index-en.html'),
     }
   }
 }
 ```
 
-- **`index.html`**: meta tags en español, Open Graph ES
-- **`index-en.html`**: meta tags en inglés, Open Graph EN
-- Vercel rewrites `en.littlefounders.ai/*` → `index-en.html`
+- **`index.html`**: meta tags / OG en español (default)
+- **`index-en.html`**: meta tags / OG en inglés, servido vía `?lang=en`
+- Vercel rewrites `?lang=en` → `index-en.html`; `es.`/`en.` subdomains → 301 redirect con `?lang=`
 
 ### TypeScript Config
 

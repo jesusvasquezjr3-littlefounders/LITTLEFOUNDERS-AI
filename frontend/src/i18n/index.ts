@@ -118,50 +118,14 @@ const resources = {
     },
 };
 
-// Helper to determine if we are on a main domain (no lang subdomain)
-const isMainDomain = (hostname: string): boolean => {
-    return (
-        hostname === 'localhost' ||
-        hostname === '127.0.0.1' ||
-        hostname === 'littlefounders.ai' ||
-        hostname === 'www.littlefounders.ai' ||
-        // Match Vercel preview URLs (e.g. littlefounders-ai-git-main-username.vercel.app)
-        // Ensure it doesn't match en.littlefounders.vercel.app if we ever do that
-        (hostname.endsWith('.vercel.app') && !hostname.startsWith('es.') && !hostname.startsWith('en.'))
-    );
-};
-
-// Helper to construct a new URL with a given language subdomain
-const getSubdomainUrl = (lang: SupportedLanguage): string => {
-    const currentDomain = window.location.hostname;
-
-    // If we're already on a language subdomain, replace it
-    if (currentDomain.startsWith('es.') || currentDomain.startsWith('en.')) {
-        const newDomain = currentDomain.replace(/^(es|en)\./, `${lang}.`);
-        return `${window.location.protocol}//${newDomain}${window.location.port ? `:${window.location.port}` : ''}${window.location.pathname}${window.location.search}${window.location.hash}`;
-    }
-
-    // If we're on a main domain and want to switch to a subdomain (optional, based on your logic)
-    // For now, we only construct subdomain URLs if we were already on one, 
-    // BUT the requirement states user wants es. or en.
-    // If they are on littlefounders.ai and switch language, do we send them to es.littlefounders.ai?
-    // Let's assume yes, if it's production.
-    if (currentDomain === 'littlefounders.ai' || currentDomain === 'www.littlefounders.ai') {
-        const baseDomain = currentDomain.replace(/^www\./, '');
-        return `${window.location.protocol}//${lang}.${baseDomain}${window.location.pathname}${window.location.search}${window.location.hash}`;
-    }
-
-    // Default fallback (e.g. localhost) - just return current URL + something or handle elsewhere
-    return window.location.href;
-};
-
-// Custom language detector that maps browser language to our supported languages
+// Custom language detector: query param > localStorage > browser
 const getInitialLanguage = (): SupportedLanguage => {
-    const hostname = window.location.hostname;
-
-    // 1. Detect from subdomain (Overrides everything)
-    if (hostname.startsWith('es.')) return 'es';
-    if (hostname.startsWith('en.')) return 'en';
+    // 1. Detect from ?lang= query param (redirect from old subdomain or shared link)
+    const params = new URLSearchParams(window.location.search);
+    const queryLang = params.get('lang');
+    if (queryLang && SUPPORTED_LANGUAGES.includes(queryLang as SupportedLanguage)) {
+        return queryLang as SupportedLanguage;
+    }
 
     // 2. Check if user has explicitly saved a preference
     const savedLang = localStorage.getItem('littlefounders_language') as SupportedLanguage | null;
@@ -201,32 +165,13 @@ i18n
     });
 
 /**
- * Change the current language and handle subdomain redirection if necessary
+ * Change the current language without redirecting.
+ * Language is stored in localStorage and applied immediately in-app.
  * @param lang - Language code ('es' or 'en')
  */
 export const changeLanguage = (lang: SupportedLanguage): Promise<void> => {
-    const hostname = window.location.hostname;
-
     return i18n.changeLanguage(lang).then(() => {
-        // Store preference in localStorage
         localStorage.setItem('littlefounders_language', lang);
-
-        // Handle redirection
-        if (isMainDomain(hostname)) {
-            // If we are on littlefounders.ai and want to force them to the subdomain:
-            if (hostname === 'littlefounders.ai' || hostname === 'www.littlefounders.ai') {
-                window.location.href = getSubdomainUrl(lang);
-            }
-            // If localhost or vercel preview, just let i18n change the state without redirecting
-            // (or optionally redirect to lang.localhost if configured locally, but usually not)
-        } else {
-            // We are on a subdomain (e.g., es.littlefounders.ai)
-            // Redirect to the new subdomain
-            const currentLang = hostname.startsWith('es.') ? 'es' : 'en';
-            if (currentLang !== lang) {
-                window.location.href = getSubdomainUrl(lang);
-            }
-        }
     });
 };
 

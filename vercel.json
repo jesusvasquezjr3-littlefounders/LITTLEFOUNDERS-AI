@@ -1,15 +1,24 @@
 {
     "buildCommand": "cd frontend && npm install && npm run build",
     "outputDirectory": "frontend/dist",
+    "redirects": [
+        {
+            "source": "/(.*)",
+            "has": [{ "type": "host", "value": "en.littlefounders.ai" }],
+            "destination": "https://littlefounders.ai/$1?lang=en",
+            "permanent": true
+        },
+        {
+            "source": "/(.*)",
+            "has": [{ "type": "host", "value": "es.littlefounders.ai" }],
+            "destination": "https://littlefounders.ai/$1?lang=es",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/((?!api/).*)",
-            "has": [
-                {
-                    "type": "host",
-                    "value": "en.littlefounders.ai"
-                }
-            ],
+            "has": [{ "type": "query", "key": "lang", "value": "en" }],
             "destination": "/index-en.html"
         },
         {

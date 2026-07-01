@@ -58,8 +58,8 @@ littlefounders.ai
 | 2026-06-07 | CD backend implementado: `cd.yml` → `deploy-railway` (`railway up` + `RAILWAY_TOKEN`) |
 | 2026-06-07 | Optimización de costo: App Sleeping activado + startup no-bloqueante (cold start ~1s) |
 | 2026-06-07 | Limpieza: `Procfile` eliminado, `.railwayignore` agregado, secretos rotados |
-| 2026-06-11 | Arquitectura: `index-en.html` añadido al build de Vite para servir metadatos Open Graph en inglés desde `en.littlefounders.ai` vía Vercel rewrites |
 | 2026-06-11 | SEO: Optimización integral (JSON-LD WebApp/EducationalOrganization, Sitemap hreflang, preloads LCP, lazy loading imgs) |
+| 2026-07-01 | Arquitectura: Eliminados subdominios de idioma (`es.`/`en.`) — unificado a `littlefounders.ai` único; i18n ahora 100% client-side via `navigator.language` + localStorage |
 | 2026-06-11 | UX: Añadidos viñetas descriptivas en Hero section (edad, tiempo y beneficio principal) |
 | 2026-06-14 | UX/UI: Estandarización visual integral bajo el sistema "corp" (`corp-grid-bg`, `corp-card`, `corp-btn-primary`) en todas las páginas de autenticación, onboarding, landings y modales utilitarios |
 | 2026-06-16 | UX/UI (Landing & Lessons): Remoción sistemática de marcadores genéricos de IA (gradientes índigo, animaciones elásticas) en favor de la paleta corporativa y animaciones modernas, validado con `impeccable` (0 anti-patrones). |
