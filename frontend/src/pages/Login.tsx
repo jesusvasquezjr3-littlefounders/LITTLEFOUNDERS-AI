@@ -147,25 +147,24 @@ const Login = () => {
   );
 
   return (
-    <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-
-      {/* Corp grid background */}
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-
-      {/* Ambient glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
-
+    <div className="corp min-h-screen relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
       {/* Language Selector */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-6 right-6 z-20">
         <LanguageSelector variant="full" />
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-sm">
-
-          {/* Back link */}
-          <div className="text-center mb-8">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 py-12">
+        {/* Top Brand Logo & Back */}
+        <div className="text-center mb-8 space-y-4">
+          <Link to="/" className="inline-block">
+            <img
+              src="/logo-sized.png"
+              alt="LittleFounders"
+              className="h-10 w-auto object-contain mx-auto dark:brightness-110"
+            />
+          </Link>
+          <div>
             <Link
               to="/"
               className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
@@ -174,9 +173,11 @@ const Login = () => {
               {t('auth:login.back_to_home')}
             </Link>
           </div>
+        </div>
 
+        <div className="w-full max-w-md px-2">
           {/* Card */}
-          <div className="corp-card p-7 space-y-6 animate-in fade-in zoom-in-95 duration-300">
+          <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6">
 
             {/* Header */}
             <div className="text-center space-y-1.5">
@@ -283,7 +284,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="corp-btn-primary w-full h-11 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2"
+                className="corp-btn-primary w-full h-12 rounded-full text-base font-semibold inline-flex items-center justify-center gap-2 shadow-md"
               >
                 {isLoading ? (
                   <>
