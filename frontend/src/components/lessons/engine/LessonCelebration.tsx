@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, ArrowRight, Loader2, Sparkles, Zap, Star, Flame, RotateCcw, LogOut } from "lucide-react";
+import { Clock, ArrowRight, Loader2, Zap, Star, Flame, RotateCcw, LogOut } from "lucide-react";
 import { DinoCharacter } from "@/components/characters/DinoCharacter";
 import { DinaCharacter } from "@/components/characters/DinaCharacter";
 import DrRhoCharacter from "@/components/characters/DrRhoCharacter";
@@ -83,36 +83,21 @@ interface StatCardProps {
   value: string | number;
   label: string;
   delay: string;
-  lipColor: string;
-  glowColor: string;
+  accentColor: string;
   prefix?: string;
 }
 
-function StatCard({ icon, value, label, delay, lipColor, glowColor, prefix = "" }: StatCardProps) {
+function StatCard({ icon, value, label, delay, accentColor, prefix = "" }: StatCardProps) {
   return (
     <div
-      className="lp-stat-pop lp-shimmer-card relative flex flex-col items-center gap-1 rounded-2xl px-3 py-4 flex-1 min-w-0"
-      style={{
-        animationDelay: delay,
-        background: "var(--lp-surface)",
-        border: "1.5px solid var(--lp-line)",
-        boxShadow: `0 6px 0 ${lipColor}, 0 10px 24px -8px ${glowColor}`,
-      }}
+      className="lp-stat-pop flex flex-col items-center gap-1.5 rounded-[1.5rem] px-3 py-4 flex-1 min-w-0 bg-white dark:bg-[#0d1426] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)]"
+      style={{ animationDelay: delay }}
     >
-      {/* Icon */}
       <div className="mb-1">{icon}</div>
-      {/* Value */}
-      <span
-        className="lp-display text-2xl sm:text-3xl font-black"
-        style={{ color: "var(--lp-ink)" }}
-      >
+      <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
         {prefix}{value}
       </span>
-      {/* Label */}
-      <span
-        className="lp-display text-[9px] sm:text-[10px] font-bold uppercase tracking-widest"
-        style={{ color: "var(--lp-muted)" }}
-      >
+      <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
         {label}
       </span>
     </div>
@@ -227,7 +212,7 @@ export function LessonCelebration({
       aria-modal="true"
       aria-labelledby="celebration-title"
     >
-      {/* ── Flash burst on entry ─────────────────────────────────────────── */}
+      {/* Flash burst on entry */}
       {showFlash && (
         <div
           className="lp-flash-in absolute inset-0 z-[10001] pointer-events-none"
@@ -235,12 +220,8 @@ export function LessonCelebration({
         />
       )}
 
-      {/* ── Background: Light/Dark ───────────────────────── */}
-      <div
-        className={cn(
-          "bg-slate-50 absolute inset-0 z-0 animate-in fade-in duration-700",
-        )}
-      />
+      {/* Clean slate-50 background */}
+      <div className="bg-slate-50 dark:bg-[#0a0e1a] absolute inset-0 z-0 animate-in fade-in duration-700" />
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div
@@ -253,21 +234,9 @@ export function LessonCelebration({
         <div className="flex flex-col items-center text-center w-full">
 
           {/* Character */}
-          <div className="relative flex justify-center mb-3 pointer-events-none isolate">
-            {/* Glow behind character */}
-            <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 rounded-full z-[-1]"
-              style={{ background: `radial-gradient(circle, ${accentColor}33 0%, transparent 65%)`, filter: "blur(30px)" }}
-            />
-            <div className="lp-bounce-in relative w-44 h-44 sm:w-52 sm:h-52 drop-shadow-2xl z-10 lp-bob">
+          <div className="relative flex justify-center mb-3 pointer-events-none">
+            <div className="lp-bounce-in relative w-40 h-40 sm:w-48 sm:h-48 z-10 lp-bob">
               <CelebrationCharacter key={characterCode} characterCode={characterCode} />
-            </div>
-            {/* Sparkle accents */}
-            <div className="absolute top-1 right-8 animate-pulse" style={{ color: accentColor, animationDelay: "0.2s" }}>
-              <Sparkles size={22} />
-            </div>
-            <div className="absolute top-6 left-6 animate-pulse" style={{ color: "var(--lp-amber)", animationDelay: "0.5s" }}>
-              <Sparkles size={14} />
             </div>
           </div>
 
@@ -280,41 +249,40 @@ export function LessonCelebration({
           <div className="lp-title-drop" style={{ animationDelay: "0.18s" }}>
             <h2
               id="celebration-title"
-              className="lp-display text-3xl sm:text-4xl font-black mb-1"
-              style={{ color: accentColor, textShadow: `0 0 30px ${accentColor}55` }}
+              className="text-3xl sm:text-4xl font-bold mb-1 text-slate-900 dark:text-white"
             >
               {t(messageKey, { defaultValue: "¡Bien hecho!" })}
             </h2>
           </div>
 
-          <div className="lp-title-drop mb-4" style={{ animationDelay: "0.24s" }}>
-            <p className="lp-display text-sm sm:text-base font-semibold" style={{ color: "var(--lp-muted)" }}>
+          <div className="lp-title-drop mb-5" style={{ animationDelay: "0.24s" }}>
+            <p className="text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
               {t("completion.subtitle")}
             </p>
           </div>
 
-          {/* Accuracy bar */}
+          {/* Accuracy bar — inside island card */}
           <div
-            className="w-full max-w-xs mb-6 animate-in fade-in duration-500"
+            className="w-full max-w-sm mb-5 bg-white dark:bg-[#0d1426] rounded-[2rem] p-5 border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] animate-in fade-in duration-500"
             style={{ animationDelay: "300ms", animationFillMode: "backwards" }}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="lp-display text-xs font-bold uppercase tracking-wider" style={{ color: "var(--lp-muted)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 {t("completion.accuracy", { defaultValue: "Precisión" })}
               </span>
-              <span className="lp-display text-sm font-black" style={{ color: accentColor }}>
+              <span className="text-sm font-bold" style={{ color: accentColor }}>
                 {correctCount}/{totalCount}
               </span>
             </div>
-            <div className="lp-track h-4">
+            <div className="relative w-full h-3 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
               <div
-                className="lp-track-fill h-full transition-all duration-1000 ease-out"
+                className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out"
                 style={{
                   width: phase === "visible" ? `${accuracy}%` : "0%",
                   transitionDelay: "500ms",
                   background: isPerfect
-                    ? "linear-gradient(90deg, var(--lp-indigo), #818cf8)"
-                    : "linear-gradient(90deg, var(--lp-emerald), #34d399)",
+                    ? "#5b6ef5"
+                    : "#10b981",
                 }}
               />
             </div>
@@ -326,33 +294,30 @@ export function LessonCelebration({
             {/* Points */}
             <StatCard
               delay="0.30s"
-              icon={<Star className="w-7 h-7" style={{ color: "var(--lp-indigo)", fill: "var(--lp-indigo)" }} />}
+              icon={<Star className="w-6 h-6 text-indigo-500" fill="currentColor" />}
               value={animatedPoints}
               label={t("completion.points_earned", { defaultValue: "Puntos" })}
               prefix="+"
-              lipColor="var(--lp-indigo-lip)"
-              glowColor="rgba(91,110,245,0.25)"
+              accentColor="#5b6ef5"
             />
 
             {/* XP */}
             <StatCard
               delay="0.42s"
-              icon={<Zap className="w-7 h-7" style={{ color: "var(--lp-amber)", fill: "var(--lp-amber)" }} />}
+              icon={<Zap className="w-6 h-6 text-amber-500" fill="currentColor" />}
               value={animatedXP}
               label="XP"
               prefix="+"
-              lipColor="var(--lp-amber-lip)"
-              glowColor="rgba(246,168,33,0.25)"
+              accentColor="#f59e0b"
             />
 
             {/* Time */}
             <StatCard
               delay="0.54s"
-              icon={<Clock className="w-7 h-7" style={{ color: "var(--lp-muted)" }} />}
+              icon={<Clock className="w-6 h-6 text-slate-400" />}
               value={formatDuration(durationSeconds)}
               label={t("completion.time")}
-              lipColor="rgba(44,38,64,0.18)"
-              glowColor="rgba(0,0,0,0.15)"
+              accentColor="#64748b"
             />
 
             {/* Streak */}
@@ -360,18 +325,16 @@ export function LessonCelebration({
               delay="0.66s"
               icon={
                 <Flame
-                  className="w-7 h-7"
+                  className="w-6 h-6"
                   style={{
-                    color: streakValue > 0 ? "var(--lp-amber)" : "var(--lp-muted)",
-                    fill: streakValue > 0 ? "var(--lp-amber)" : "transparent",
-                    filter: streakValue > 0 ? "drop-shadow(0 0 8px rgba(246,168,33,0.6))" : "none",
+                    color: streakValue > 0 ? "#f59e0b" : "#94a3b8",
+                    fill: streakValue > 0 ? "#f59e0b" : "transparent",
                   }}
                 />
               }
               value={animatedStreak}
               label={t("completion.streak")}
-              lipColor={streakValue > 0 ? "var(--lp-amber-lip)" : "rgba(44,38,64,0.18)"}
-              glowColor={streakValue > 0 ? "rgba(246,168,33,0.22)" : "rgba(0,0,0,0.1)"}
+              accentColor={streakValue > 0 ? "#f59e0b" : "#94a3b8"}
             />
           </div>
         </div>
@@ -385,7 +348,7 @@ export function LessonCelebration({
           <button
             onClick={onNext}
             disabled={nextLessonCode === undefined}
-            className="lp-cta lp-cta--go w-full h-14 sm:h-16 text-lg sm:text-xl lp-display flex items-center justify-center gap-2 disabled:opacity-50"
+            className="corp-btn-primary w-full h-12 rounded-full text-base font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {nextLessonCode === undefined ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -403,15 +366,14 @@ export function LessonCelebration({
           <div className="flex gap-3">
             <button
               onClick={onExit}
-              className="lp-token flex-1 h-12 lp-display text-sm sm:text-base font-bold flex items-center justify-center gap-1.5"
-              style={{ color: "var(--lp-muted)" }}
+              className="flex-1 h-11 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               {t("game_over.exit_button")}
             </button>
             <button
               onClick={onRetry}
-              className="lp-cta lp-cta--retry flex-1 h-12 lp-display text-sm sm:text-base flex items-center justify-center gap-1.5"
+              className="flex-1 h-11 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               {t("actions.retry")}

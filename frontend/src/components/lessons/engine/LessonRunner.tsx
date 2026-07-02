@@ -672,14 +672,14 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ LOADING STATE ============
     if (loading) {
         return (
-            <div className="bg-slate-50 fixed inset-0 flex flex-col items-center justify-center gap-4">
+            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4">
                 <dotlottie-wc
                     src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
                     style={{ width: '300px', height: '300px' }}
                     autoplay
                     loop
                 />
-                <p className="lp-display text-lg font-medium" style={{ color: 'var(--lp-muted)' }}>{t('loading')}</p>
+                <p className="text-slate-500 text-lg font-semibold">{t('loading')}</p>
             </div>
         );
     }
@@ -687,12 +687,12 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ ERROR STATE ============
     if (error || !data) {
         return (
-            <div className="bg-slate-50 fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
-                <AlertCircle className="w-16 h-16" style={{ color: 'var(--lp-coral)' }} />
-                <p className="lp-display text-lg font-medium text-center" style={{ color: 'var(--lp-coral-ink)' }}>
+            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
+                <AlertCircle className="w-16 h-16 text-red-400" />
+                <p className="text-lg font-semibold text-center text-slate-700 dark:text-slate-300">
                     {error || t('error')}
                 </p>
-                <Button variant="outline" onClick={handleClose} className="mt-4">
+                <Button variant="outline" onClick={handleClose} className="mt-4 rounded-full">
                     {t('common:buttons.back')}
                 </Button>
             </div>
@@ -704,49 +704,58 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         const startCharacterCode = normalizeCharacterCode(data.timeline[0]?.character_code || 'liruf');
 
         return (
-            <div className="bg-slate-50 fixed inset-0 flex flex-col overflow-hidden">
+            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col overflow-hidden">
+                {/* Top bar with close button */}
+                <div className="flex items-center justify-between px-4 py-4">
+                    <button
+                        onClick={handleClose}
+                        aria-label="Close"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                        <X className="w-5 h-5" strokeWidth={2.5} />
+                    </button>
+                </div>
+
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
-                    {/* Character - with staggered entrance */}
-                    <div className="mb-6 animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
-                        <div className="animate-float">
-                            <div className="animate-breathe">
-                                {startCharacterCode === 'dina' ? (
-                                    <DinaCharacter className="w-full max-w-[300px] sm:max-w-[360px]" expression="happy" />
-                                ) : startCharacterCode === 'dr_rho' ? (
-                                    <DrRhoCharacter className="w-full max-w-[300px] sm:max-w-[360px]" mood="wise" />
-                                ) : startCharacterCode === 'zara_vex' ? (
-                                    <ZaraVexCharacter className="w-full max-w-[300px] sm:max-w-[360px]" mood="happy" />
-                                ) : (
-                                    <DinoCharacter className="w-full max-w-[300px] sm:max-w-[360px]" showBubble={false} mood="excited" />
-                                )}
-                            </div>
-                        </div>
+                <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8 relative max-w-lg mx-auto w-full">
+                    {/* Character — floating freely, outside the island */}
+                    <div className="mb-2 animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
+                        {startCharacterCode === 'dina' ? (
+                            <DinaCharacter className="w-full max-w-[260px] sm:max-w-[300px]" expression="happy" />
+                        ) : startCharacterCode === 'dr_rho' ? (
+                            <DrRhoCharacter className="w-full max-w-[260px] sm:max-w-[300px]" mood="wise" />
+                        ) : startCharacterCode === 'zara_vex' ? (
+                            <ZaraVexCharacter className="w-full max-w-[260px] sm:max-w-[300px]" mood="happy" />
+                        ) : (
+                            <DinoCharacter className="w-full max-w-[260px] sm:max-w-[300px]" showBubble={false} mood="excited" />
+                        )}
                     </div>
 
-                    {/* Lesson Info Card - staggered entrance */}
+                    {/* Island Card — white, rounded-[2.5rem], matches Onboarding pattern */}
                     <div
-                        className="lp-card relative px-6 py-6 text-center max-w-sm w-full mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700"
+                        className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-5 text-center animate-in fade-in slide-in-from-bottom-6 duration-700"
                         style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
                     >
-                        <h1 className="lp-display text-2xl sm:text-3xl mb-2 relative" style={{ color: 'var(--lp-ink)' }}>
-                            {data.lesson.title}
-                        </h1>
-                        <p className="mb-5 relative text-base font-medium leading-relaxed" style={{ color: 'var(--lp-muted)' }}>
-                            {data.lesson.description}
-                        </p>
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                                {data.lesson.title}
+                            </h1>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                {data.lesson.description}
+                            </p>
+                        </div>
 
-                        {/* Rewards */}
-                        <div className="flex justify-center gap-4 relative">
-                            <div className="lp-chip flex items-center gap-2 px-4 py-2 animate-in fade-in zoom-in duration-500" style={{ animationDelay: '450ms', animationFillMode: 'backwards', color: 'var(--lp-amber-ink)' }}>
-                                <Star className="w-5 h-5" style={{ color: 'var(--lp-amber)', fill: 'var(--lp-amber)' }} />
-                                <span className="text-base">
+                        {/* Rewards chips */}
+                        <div className="flex justify-center gap-3">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20">
+                                <Star className="w-4 h-4 text-amber-500" fill="currentColor" />
+                                <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
                                     {data.meta.points_reward} pts
                                 </span>
                             </div>
-                            <div className="lp-chip flex items-center gap-2 px-4 py-2 animate-in fade-in zoom-in duration-500" style={{ animationDelay: '550ms', animationFillMode: 'backwards', color: 'var(--lp-indigo-ink)' }}>
-                                <Clock className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
-                                <span className="text-base">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20">
+                                <Clock className="w-4 h-4 text-indigo-500" />
+                                <span className="text-sm font-bold text-indigo-700 dark:text-indigo-400">
                                     {data.meta.estimated_duration_seconds >= 60
                                         ? `${Math.round(data.meta.estimated_duration_seconds / 60)} min`
                                         : `${data.meta.estimated_duration_seconds}s`
@@ -754,24 +763,18 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                                 </span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Start Button - with shimmer */}
-                    <div
-                        className="relative w-full max-w-sm animate-in fade-in slide-in-from-bottom-8 duration-700"
-                        style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}
-                    >
-                        <Button
+                        {/* Start Button — rounded-full matching corp-btn-primary */}
+                        <button
                             onClick={() => {
                                 lessonStartTimeRef.current = Date.now();
                                 startLesson();
                             }}
-                            size="lg"
-                            className="lp-cta relative w-full h-14 sm:h-16 text-lg sm:text-xl overflow-hidden"
+                            className="corp-btn-primary w-full h-12 rounded-full text-lg font-semibold inline-flex items-center justify-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-700"
+                            style={{ animationDelay: '450ms', animationFillMode: 'backwards' }}
                         >
-                            <span className="relative z-10">{t('start.button')}</span>
-                            <div className="absolute inset-0 animate-shimmer-sweep pointer-events-none" />
-                        </Button>
+                            {t('start.button')}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -787,55 +790,49 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         : progress;
 
     return (
-        <div className="bg-slate-50 fixed inset-0 flex flex-col">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col">
 
             {/* ===== TOP BAR ===== */}
-            <div className="flex items-center gap-3 p-4 pb-2">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-white/5">
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
                     aria-label={t('actions.close', { defaultValue: 'Close lesson' })}
-                    className="lp-token w-10 h-10 flex items-center justify-center flex-shrink-0"
-                    style={{ color: 'var(--lp-muted)' }}
+                    className="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 >
                     <X className="w-5 h-5" strokeWidth={2.5} />
                 </button>
 
-                {/* Progress Bar */}
-                <div className="lp-track flex-1 h-3.5 relative">
+                {/* Progress Bar — Brilliant indigo style */}
+                <div className="flex-1 relative h-2.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
                     <div
-                        className="lp-track-fill h-full transition-all duration-500 ease-out relative overflow-hidden"
+                        className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-[width] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]"
                         style={{ width: `${displayProgress}%` }}
-                    >
-                        <div className="absolute top-1 left-2 right-2 h-1.5 bg-white/30 rounded-full" />
-                        <div className="animate-shimmer-sweep" />
-                    </div>
+                    />
                 </div>
 
                 {/* Combo streak (2+ consecutive correct answers) */}
                 {combo >= 2 && (
                     <div
                         key={`combo-${combo}`}
-                        className="lp-chip flex items-center gap-1 px-2.5 py-1.5 animate-pop"
-                        style={{ color: 'var(--lp-amber-ink)' }}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 animate-pop"
                         aria-label={t('combo', { count: combo, defaultValue: '¡Racha x{{count}}!' })}
                     >
-                        <Flame className="w-5 h-5" style={{ color: 'var(--lp-amber)', fill: 'var(--lp-amber)' }} />
-                        <span className="text-base">x{combo}</span>
+                        <Flame className="w-4 h-4 text-amber-500" fill="currentColor" />
+                        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">x{combo}</span>
                     </div>
                 )}
 
-                {/* Energy (formerly Lives) — shakes on each life lost */}
+                {/* Energy (lives) */}
                 <div
                     key={`energy-${lifeLossTick}`}
                     className={cn(
-                        "lp-chip flex items-center gap-1.5 px-3 py-1.5",
+                        "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20",
                         lifeLossTick > 0 && "animate-shake"
                     )}
-                    style={{ color: 'var(--lp-coral-ink)' }}
                 >
-                    <Zap className="w-5 h-5" style={{ color: 'var(--lp-coral)', fill: 'var(--lp-coral)' }} />
-                    <span className="text-base">{lives}</span>
+                    <Zap className="w-4 h-4 text-red-500" fill="currentColor" />
+                    <span className="text-sm font-bold text-red-700 dark:text-red-400">{lives}</span>
                 </div>
 
                 {/* Audio Toggle */}
@@ -843,8 +840,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                     onClick={() => setAudioMuted()}
                     aria-label={audioMuted ? t('actions.unmute', { defaultValue: 'Unmute audio' }) : t('actions.mute', { defaultValue: 'Mute audio' })}
                     aria-pressed={audioMuted}
-                    className="lp-token w-10 h-10 flex items-center justify-center"
-                    style={{ color: 'var(--lp-muted)' }}
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 >
                     {audioMuted ? (
                         <VolumeX className="w-5 h-5" />
@@ -861,8 +857,8 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
             {state === 'COMPLETED' && !showSuccess && !showStreakCelebration ? (
                 <div className="flex-1 flex flex-col items-center justify-center px-4 pb-2 pt-4 min-h-0 w-full">
                     <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-500">
-                        <Loader2 className="w-12 h-12 animate-spin" style={{ color: 'var(--lp-emerald)' }} />
-                        <p className="lp-display text-lg" style={{ color: 'var(--lp-emerald-ink)' }}>
+                        <Loader2 className="w-12 h-12 animate-spin text-emerald-500" />
+                        <p className="text-lg font-semibold text-slate-500 dark:text-slate-400">
                             {t('completion.finishing', { defaultValue: 'Guardando progreso...' })}
                         </p>
                     </div>
@@ -879,21 +875,21 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                 {/* Hide default Bubble/Character for StoryMode and IntroNarrative as they have their own */}
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
                     <>
-                        {/* Speech Bubble - ADAPTIVE */}
+                        {/* Speech Bubble — Island style, clean white card with border */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-pop" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
-                                className="bg-white rounded-[2.5rem] shadow-sm relative lesson-speech mx-2 px-5 py-3"
+                                className="bg-white dark:bg-[#0d1426] border border-slate-100 dark:border-white/5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] relative lesson-speech mx-2 px-5 py-3 rounded-[2rem]"
                                 role="status"
                                 aria-live="polite"
                                 aria-atomic="true"
                             >
-                                <p className="lp-display text-center text-lg leading-snug" style={{ color: 'var(--lp-ink)' }}>
+                                <p className="text-center text-base font-semibold leading-snug text-slate-800 dark:text-white">
                                     {getCurrentText()}
                                 </p>
                                 {/* Tail */}
                                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px]" style={{ borderTopColor: 'var(--lp-line)' }} />
-                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] absolute -top-[12px] -left-[8px]" style={{ borderTopColor: 'var(--lp-surface)' }} />
+                                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px] border-t-slate-100 dark:border-t-white/5" />
+                                    <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-white dark:border-t-[#0d1426] absolute -top-[12px] -left-[8px]" />
                                 </div>
                             </div>
                         </div>
@@ -1508,33 +1504,32 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                 }}
             >
                 <DialogContent
-                    className="lp lp-card sm:max-w-md border-none"
+                    className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] sm:max-w-md border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-0 overflow-hidden"
                     onPointerDownOutside={(e) => e.preventDefault()}
                     onEscapeKeyDown={(e) => e.preventDefault()}
                 >
-                    <div className="text-center py-6">
-                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--lp-indigo-soft)' }}>
-                            <BatteryLow className="w-10 h-10" style={{ color: 'var(--lp-indigo)' }} />
+                    <div className="text-center p-8">
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-indigo-50 dark:bg-indigo-500/10">
+                            <BatteryLow className="w-8 h-8 text-indigo-500" />
                         </div>
 
-                        <DialogTitle className="lp-display text-3xl mb-2" style={{ color: 'var(--lp-ink)' }}>
+                        <DialogTitle className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
                             {t('game_over.title')}
                         </DialogTitle>
-                        <DialogDescription className="text-lg mb-6" style={{ color: 'var(--lp-muted)' }}>
+                        <DialogDescription className="text-base mb-6 text-slate-500 dark:text-slate-400">
                             {t('game_over.subtitle')} ⚡
                         </DialogDescription>
 
                         <div className="flex gap-3">
                             <Button
                                 onClick={handleClose}
-                                className="lp-token flex-1 h-14 sm:h-16 flex items-center justify-center gap-2 bg-transparent hover:bg-transparent"
-                                style={{ color: 'var(--lp-muted)' }}
+                                className="flex-1 h-11 rounded-full border border-slate-200 dark:border-white/10 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 font-semibold"
                             >
                                 {t('game_over.exit_button')}
                             </Button>
                             <Button
                                 onClick={restartLessonRun}
-                                className="lp-cta flex-1 h-14 sm:h-16 flex items-center justify-center gap-2"
+                                className="corp-btn-primary flex-1 h-11 rounded-full inline-flex items-center justify-center gap-2 font-semibold"
                             >
                                 <Zap className="w-4 h-4 fill-current" />
                                 {t('game_over.retry_button')}
