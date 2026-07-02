@@ -119,7 +119,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-7 sm:mt-12",
+                bubblePosition === 'top' && "-top-4 sm:-top-8 left-1/2 -translate-x-1/2",
                 bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 translate-y-4 pointer-events-none"
             )}>

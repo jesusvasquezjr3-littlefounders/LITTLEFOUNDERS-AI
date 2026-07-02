@@ -207,8 +207,8 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
             {showBubble && (
                 <div className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    bubblePosition === 'standard' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-6 sm:mt-10",
-                    bubblePosition === 'top' && "bottom-full mb-2 left-1/2 -translate-x-1/2 mt-6 sm:mt-10",
+                    bubblePosition === 'standard' && "-top-4 sm:-top-8 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'top' && "-top-4 sm:-top-8 left-1/2 -translate-x-1/2",
                     showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}>
                     <div className="relative bg-white rounded-2xl shadow-lg px-4 py-2 border border-slate-100 min-w-[180px] max-w-[240px] w-auto text-center">
