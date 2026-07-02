@@ -371,6 +371,7 @@
     },
     "scroll_to_current": "Go to my lesson",
     "scroll_to_current_hint": "Jump back to where you left off and highlight your next lesson",
+    "empty_state_hint": "Select an adventure to view the learning path.",
     "beta_notice": "We're working daily to bring you the best lessons."
   }
 }

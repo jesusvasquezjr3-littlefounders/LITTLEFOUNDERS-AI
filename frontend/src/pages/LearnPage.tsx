@@ -562,7 +562,7 @@ export default function LearnPage() {
                 >
                   <Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
                   <p className="text-lg font-bold text-slate-400 dark:text-slate-500 max-w-xs">
-                    {t('lessons:learn.adventure.expand')} para ver el camino de aprendizaje
+                    {t('lessons:learn.empty_state_hint')}
                   </p>
                 </motion.div>
               )}
