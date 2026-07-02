@@ -142,8 +142,7 @@ export default function GamesPage() {
               <Gamepad2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
             </div>
             <div className="text-left">
-              <span className="corp-eyebrow">{t('common:app_name')}</span>
-              <h1 className="corp-display mt-1 text-xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-1">
+              <h1 className="corp-display text-xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-1">
                 {t('games:listing.title')}
               </h1>
               <p className="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-tight">

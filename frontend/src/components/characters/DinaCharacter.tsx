@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, {useId, useEffect, useRef, useState, useCallback} from 'react';
 import { cn } from '@/lib/utils';
 
 interface DinaCharacterProps {
@@ -25,6 +25,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
     bubblePosition = 'top',
     isTalking = false
 }) => {
+    const uid = useId().replace(/:/g, "");
     const headRef = useRef<SVGGElement>(null);
     const pupilLRef = useRef<SVGGElement>(null);
     const pupilRRef = useRef<SVGGElement>(null);
@@ -244,7 +245,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
             `}</style>
 
             <svg
-                id="dina-svg"
+                id={`dina-svg-${uid}`}
                 viewBox="0 0 550 550"
                 xmlns="http://www.w3.org/2000/svg"
                 className={cn(
@@ -253,19 +254,19 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                 )}
             >
                 <defs>
-                    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id={`skinGrad-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#fb923c" }} />
                         <stop offset="100%" style={{ stopColor: "#f97316" }} />
                     </linearGradient>
-                    <radialGradient id="blushGrad">
+                    <radialGradient id={`blushGrad-${uid}`}>
                         <stop offset="0%" style={{ stopColor: "#fb7185", stopOpacity: 0.5 }} />
                         <stop offset="100%" style={{ stopColor: "#fb7185", stopOpacity: 0 }} />
                     </radialGradient>
-                    <linearGradient id="plateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id={`plateGrad-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#fef3c7" }} />
                         <stop offset="100%" style={{ stopColor: "#fde047" }} />
                     </linearGradient>
-                    <filter id="dinaShadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <filter id={`dinaShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
                         <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
                         <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
                         <feFlood floodColor="#7a2a0e" floodOpacity="0.22" result="dropColor" />
@@ -304,7 +305,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                             <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
-                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
                         <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
                         <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
                         <feFlood floodColor="#9A3412" floodOpacity="0.25" result="color" />
@@ -316,13 +317,13 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     </filter>
                 </defs>
 
-                <g filter="url(#dinaShadow)">
+                <g filter={`url(#dinaShadow-${uid})`}>
                 <g className="dina-breathe">
                     {/* GRUPO COLA */}
                     <g className="dina-tail-anim">
-                        <path d="M40 160 Q 30 130 50 145" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
-                        <path d="M65 200 Q 55 170 80 185" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
-                        <path d="M95 250 Q 85 220 115 240" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
+                        <path d="M40 160 Q 30 130 50 145" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
+                        <path d="M65 200 Q 55 170 80 185" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
+                        <path d="M95 250 Q 85 220 115 240" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
                         <path d="M140 310 Q 20 290 30 180 Q 35 130 65 130 Q 60 180 85 220 Q 110 280 150 300 Z" fill="#f97316" />
                     </g>
 
@@ -341,9 +342,9 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     </g>
 
                     {/* CUERPO PRINCIPAL */}
-                    <path d="M175 250 Q 190 210 215 245" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1.5" />
-                    <path d="M225 240 Q 245 200 270 235" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1.5" />
-                    <ellipse cx="240" cy="320" rx="105" ry="90" fill="url(#skinGrad)" />
+                    <path d="M175 250 Q 190 210 215 245" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1.5" />
+                    <path d="M225 240 Q 245 200 270 235" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1.5" />
+                    <ellipse cx="240" cy="320" rx="105" ry="90" fill={`url(#skinGrad-${uid})`} />
                     <circle cx="185" cy="295" r="12" fill="#fdba74" opacity="0.4" />
                     <circle cx="215" cy="275" r="9" fill="#fdba74" opacity="0.4" />
                     <circle cx="170" cy="330" r="7" fill="#fdba74" opacity="0.3" />
@@ -354,13 +355,13 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     <ellipse cx="240" cy="340" rx="80" ry="60" fill="#ffedd5" opacity="0.4" />
 
                     {/* PATAS FRENTE */}
-                    <g transform="translate(170, 335)" filter="url(#innerDropShadow)">
+                    <g transform="translate(170, 335)" filter={`url(#innerDropShadow-${uid})`}>
                         <rect x="0" y="0" width="55" height="90" rx="27.5" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="27" cy="85" r="6" fill="#ffedd5" />
                         <circle cx="41" cy="82" r="6" fill="#ffedd5" />
                     </g>
-                    <g transform="translate(260, 335)" filter="url(#innerDropShadow)">
+                    <g transform="translate(260, 335)" filter={`url(#innerDropShadow-${uid})`}>
                         <rect x="0" y="0" width="52" height="90" rx="26" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="26" cy="85" r="6" fill="#ffedd5" />
@@ -369,57 +370,57 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
 
                     {/* CUELLO Y CABEZA */}
                     <g className="dina-neck-sway">
-                        <path d="M315 240 Q 335 210 345 235" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
-                        <path d="M340 190 Q 365 160 375 195" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1" />
+                        <path d="M315 240 Q 335 210 345 235" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
+                        <path d="M340 190 Q 365 160 375 195" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
                         <path d="M290 280 Q 350 250 360 140" stroke="#fb923c" strokeWidth="55" fill="none" strokeLinecap="round" />
 
-                        <g id="dina-head-group" ref={headRef} transform="translate(360, 110)" filter="url(#innerDropShadow)">
-                            <path d="M-10 -48 Q 15 -75 40 -48" fill="url(#plateGrad)" stroke="#eab308" strokeWidth="1.5" />
+                        <g id={`dina-head-group-${uid}`} ref={headRef} transform="translate(360, 110)" filter={`url(#innerDropShadow-${uid})`}>
+                            <path d="M-10 -48 Q 15 -75 40 -48" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1.5" />
                             <ellipse cx="15" cy="0" rx="65" ry="55" fill="#fb923c" />
-                            <circle cx="-28" cy="20" r="16" fill="url(#blushGrad)" />
-                            <circle cx="58" cy="20" r="16" fill="url(#blushGrad)" />
+                            <circle cx="-28" cy="20" r="16" fill={`url(#blushGrad-${uid})`} />
+                            <circle cx="58" cy="20" r="16" fill={`url(#blushGrad-${uid})`} />
 
-                            <g id="eyebrows">
-                                <path id="eyebrow-l" d="M-30 -35 Q -15 -42 0 -35" stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className="dina-face-element" transform={config.browLTransform} />
-                                <path id="eyebrow-r" d="M30 -35 Q 45 -42 60 -35" stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className="dina-face-element" transform={config.browRTransform} />
+                            <g id={`eyebrows-${uid}`}>
+                                <path id={`eyebrow-l-${uid}`} d="M-30 -35 Q -15 -42 0 -35" stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className="dina-face-element" transform={config.browLTransform} />
+                                <path id={`eyebrow-r-${uid}`} d="M30 -35 Q 45 -42 60 -35" stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className="dina-face-element" transform={config.browRTransform} />
                             </g>
 
-                            <g id="eyes">
+                            <g id={`eyes-${uid}`}>
                                 {/* Ojo Izquierdo */}
-                                <g id="eye-l-group" transform="translate(-15, -10)" className="dina-face-element">
-                                    <g id="lashes-l" className="dina-face-element" transform={leftLashTransform}>
+                                <g id={`eye-l-group-${uid}`} transform="translate(-15, -10)" className="dina-face-element">
+                                    <g id={`lashes-l-${uid}`} className="dina-face-element" transform={leftLashTransform}>
                                         <path d="M-16 -8 Q-22 -12 -25 -5" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         <path d="M-14 -12 Q-18 -18 -20 -10" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         <path d="M-10 -15 Q-12 -22 -10 -15" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                     </g>
-                                    <circle id="dina-eye-l-white" cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={leftEyeOpen ? 1 : 0} className="dina-face-element" />
-                                    <g id="dina-pupil-l" ref={pupilLRef} className="dina-face-element" opacity={leftEyeOpen ? 1 : 0}>
+                                    <circle id={`dina-eye-l-white-${uid}`} cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={leftEyeOpen ? 1 : 0} className="dina-face-element" />
+                                    <g id={`dina-pupil-l-${uid}`} ref={pupilLRef} className="dina-face-element" opacity={leftEyeOpen ? 1 : 0}>
                                         <circle cx="2" cy="2" r="11" fill="#1e293b" />
                                         <circle cx="-3" cy="-3" r="5" fill="white" />
                                         <circle cx="4" cy="5" r="2" fill="white" opacity="0.6" />
                                     </g>
-                                    <path id="dina-eye-l-closed" d={leftEyeClosedPath} stroke="#7c2d12" strokeWidth="4" fill="none" strokeLinecap="round" opacity={leftEyeClosed ? 1 : 0} className="dina-face-element" />
+                                    <path id={`dina-eye-l-closed-${uid}`} d={leftEyeClosedPath} stroke="#7c2d12" strokeWidth="4" fill="none" strokeLinecap="round" opacity={leftEyeClosed ? 1 : 0} className="dina-face-element" />
                                 </g>
 
                                 {/* Ojo Derecho */}
-                                <g id="eye-r-group" transform="translate(45, -10)" className="dina-face-element">
-                                    <g id="lashes-r" className="dina-face-element" transform={rightLashTransform}>
+                                <g id={`eye-r-group-${uid}`} transform="translate(45, -10)" className="dina-face-element">
+                                    <g id={`lashes-r-${uid}`} className="dina-face-element" transform={rightLashTransform}>
                                         <path d="M16 -8 Q22 -12 25 -5" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         <path d="M14 -12 Q18 -18 20 -10" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         <path d="M10 -15 Q12 -22 10 -15" stroke="#7c2d12" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                     </g>
-                                    <circle id="dina-eye-r-white" cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={rightEyeOpen ? 1 : 0} />
-                                    <g id="dina-pupil-r" ref={pupilRRef} className="dina-face-element" opacity={rightEyeOpen ? 1 : 0}>
+                                    <circle id={`dina-eye-r-white-${uid}`} cx="0" cy="0" r={config.eyeRadius} fill="white" opacity={rightEyeOpen ? 1 : 0} />
+                                    <g id={`dina-pupil-r-${uid}`} ref={pupilRRef} className="dina-face-element" opacity={rightEyeOpen ? 1 : 0}>
                                         <circle cx="2" cy="2" r="11" fill="#1e293b" />
                                         <circle cx="-3" cy="-3" r="5" fill="white" />
                                         <circle cx="4" cy="5" r="2" fill="white" opacity="0.6" />
                                     </g>
-                                    <path id="dina-eye-r-closed" d={rightEyeClosedPath} stroke="#7c2d12" strokeWidth="4" fill="none" strokeLinecap="round" opacity={rightEyeClosed ? 1 : 0} className="dina-face-element" />
+                                    <path id={`dina-eye-r-closed-${uid}`} d={rightEyeClosedPath} stroke="#7c2d12" strokeWidth="4" fill="none" strokeLinecap="round" opacity={rightEyeClosed ? 1 : 0} className="dina-face-element" />
                                 </g>
                             </g>
 
                             {/* BOCA */}
-                            <path id="mouth-path" d={config.mouthPath} stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className={cn("dina-face-element", isTalking ? "dina-mouth-talk" : "")} />
+                            <path id={`mouth-path-${uid}`} d={config.mouthPath} stroke="#7c2d12" strokeWidth="3" fill="none" strokeLinecap="round" className={cn("dina-face-element", isTalking ? "dina-mouth-talk" : "")} />
 
                             {/* NARIZ */}
                             <circle cx="25" cy="15" r="2" fill="#7c2d12" opacity="0.2" />

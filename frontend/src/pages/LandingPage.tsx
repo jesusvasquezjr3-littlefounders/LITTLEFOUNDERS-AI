@@ -106,7 +106,7 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
               <Reveal as="span" className="corp-eyebrow">
-                <Sparkles className="w-3.5 h-3.5" /> {t("corp.hero.badge")}
+                {t("corp.hero.badge")}
               </Reveal>
 
               <Reveal delay={60}>

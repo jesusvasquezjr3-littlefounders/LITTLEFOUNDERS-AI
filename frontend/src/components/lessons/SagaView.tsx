@@ -10,13 +10,13 @@ import { useSagaData, SagaData } from './hooks/useSagaData';
 
 const SagaHeader: React.FC<{ saga: SagaData }> = ({ saga }) => {
     return (
-        <div className="corp-panel p-6 mb-8 rounded-3xl flex items-center justify-between">
+        <div className="mb-8 p-6 rounded-3xl flex items-center justify-between bg-sky-500 border-b-8 border-sky-600 text-white shadow-sm transition-transform hover:-translate-y-1">
             <div>
-                <span className="corp-eyebrow">{saga.title}</span>
-                <p className="mt-2 font-medium text-slate-600 dark:text-slate-400">{saga.description}</p>
+                <h3 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-sm">{saga.title}</h3>
+                <p className="mt-2 text-sky-50 font-medium text-sm sm:text-base opacity-90">{saga.description}</p>
             </div>
-            <div className="hidden sm:block corp-icon-chip w-14 h-14 rounded-2xl">
-                <BookOpen size={28} />
+            <div className="hidden sm:flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm shadow-inner">
+                <BookOpen size={32} className="text-white" />
             </div>
         </div>
     );

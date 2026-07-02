@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import {useId, useEffect, useRef, useState, useCallback} from 'react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +20,7 @@ interface DinoCharacterProps {
  * squash-and-stretch bounce on click.
  */
 export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false }: DinoCharacterProps) {
+    const uid = useId().replace(/:/g, "");
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
@@ -151,7 +152,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
             `}</style>
 
             <svg
-                id="dino-svg"
+                id={`dino-svg-${uid}`}
                 viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
                 className={cn(
@@ -163,15 +164,15 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 onClick={handleClick}
             >
                 <defs>
-                    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id={`bodyGradient-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#4ADE80", stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: "#22C55E", stopOpacity: 1 }} />
                     </linearGradient>
-                    <linearGradient id="bellyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id={`bellyGradient-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style={{ stopColor: "#dcfce7", stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
                     </linearGradient>
-                    <filter id="dinoShadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <filter id={`dinoShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
                         <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
                         <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
                         <feFlood floodColor="#0c3d20" floodOpacity="0.22" result="dropColor" />
@@ -210,7 +211,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                             <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
-                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
                         <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
                         <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
                         <feFlood floodColor="#14532D" floodOpacity="0.25" result="color" />
@@ -222,7 +223,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     </filter>
                 </defs>
 
-                <g filter="url(#dinoShadow)">
+                <g filter={`url(#dinoShadow-${uid})`}>
                     {/* TAIL */}
                     <path className="dino-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
                     <g className="dino-tail-anim">
@@ -236,7 +237,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M200 330 Q 200 350 210 350 L 250 350 Q 260 350 260 330" fill="#16a34a" />
 
                     {/* BODY */}
-                    <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill="url(#bodyGradient)" />
+                    <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill={`url(#bodyGradient-${uid})`} />
 
                     {/* SPINES (Static) */}
                     <path d="M125 220 L110 210 L128 200 Z" fill="#15803d" />
@@ -244,7 +245,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M155 160 L145 145 L165 145 Z" fill="#15803d" />
 
                     {/* BELLY */}
-                    <path d="M170 180 Q 240 180 235 320 Q 190 345 155 320 Q 140 250 170 180 Z" fill="url(#bellyGradient)" opacity="0.9" />
+                    <path d="M170 180 Q 240 180 235 320 Q 190 345 155 320 Q 140 250 170 180 Z" fill={`url(#bellyGradient-${uid})`} opacity="0.9" />
 
                     {/* Belly Lines */}
                     <path d="M170 220 Q 200 230 220 220" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
@@ -252,8 +253,8 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M170 280 Q 200 290 220 280" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
 
                     {/* FRONT LEG (Right) */}
-                    <g transform="translate(140, 310)" filter="url(#innerDropShadow)">
-                        <ellipse cx="30" cy="10" rx="35" ry="35" fill="url(#bodyGradient)" />
+                    <g transform="translate(140, 310)" filter={`url(#innerDropShadow-${uid})`}>
+                        <ellipse cx="30" cy="10" rx="35" ry="35" fill={`url(#bodyGradient-${uid})`} />
                         <path d="M10 30 Q 10 45 20 45 L 50 45 Q 60 45 60 30" fill="#22C55E" />
                         <circle cx="20" cy="45" r="5" fill="#f0fdf4" />
                         <circle cx="35" cy="45" r="5" fill="#f0fdf4" />
@@ -261,14 +262,14 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     </g>
 
                     {/* ARM */}
-                    <g transform="translate(180, 220) rotate(-20)" filter="url(#innerDropShadow)">
+                    <g transform="translate(180, 220) rotate(-20)" filter={`url(#innerDropShadow-${uid})`}>
                         <path d="M0 0 Q 30 10 40 40 Q 10 40 0 0" fill="#22C55E" />
                         <circle cx="40" cy="40" r="4" fill="#f0fdf4" />
                         <circle cx="32" cy="42" r="4" fill="#f0fdf4" />
                     </g>
 
                     {/* HEAD GROUP */}
-                    <g id="head-group" ref={headGroupRef} transform="translate(200, 140)" filter="url(#innerDropShadow)">
+                    <g id={`head-group-${uid}`} ref={headGroupRef} transform="translate(200, 140)" filter={`url(#innerDropShadow-${uid})`}>
                         {/* Neck */}
                         <path d="M-40 20 Q -20 50 10 40 L 10 0 L -40 0 Z" fill="#4ADE80" />
 

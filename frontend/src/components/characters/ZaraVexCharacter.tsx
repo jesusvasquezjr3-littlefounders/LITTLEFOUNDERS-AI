@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {useId, useEffect, useRef, useState, useCallback} from "react";
 import { cn } from "@/lib/utils";
 
 export type ZaraMood = 'neutral' | 'happy' | 'flirty' | 'curious' | 'excited';
@@ -52,6 +52,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     const rafId = useRef<number | null>(null);
 
     // Blinking — randomized per-blink for natural rhythm
+    const uid = useId().replace(/:/g, "");
     const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
         const doBlink = () => {
@@ -155,7 +156,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             `}</style>
 
             <svg
-                id="zara-svg"
+                id={`zara-svg-${uid}`}
                 viewBox="-180 -100 500 500"
                 className={cn(
                     "w-full h-full object-contain",
@@ -165,22 +166,22 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
             >
                 <defs>
-                    <linearGradient id="hairShine" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient id={`hairShine-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor={COLORS.hair} />
                         <stop offset="20%" stopColor={COLORS.hairHighlight} />
                         <stop offset="60%" stopColor={COLORS.hair} />
                     </linearGradient>
                     {/* Form-shading gradients (light from top-left) */}
-                    <radialGradient id="zaraSkin" cx="40%" cy="34%" r="78%">
+                    <radialGradient id={`zaraSkin-${uid}`} cx="40%" cy="34%" r="78%">
                         <stop offset="0%" stopColor="#FCE0CA" />
                         <stop offset="58%" stopColor="#F5D0B5" />
                         <stop offset="100%" stopColor="#E2B190" />
                     </radialGradient>
-                    <linearGradient id="zaraTop" x1="22%" y1="0%" x2="78%" y2="100%">
+                    <linearGradient id={`zaraTop-${uid}`} x1="22%" y1="0%" x2="78%" y2="100%">
                         <stop offset="0%" stopColor="#A23A4C" />
                         <stop offset="100%" stopColor="#741F2C" />
                     </linearGradient>
-                    <filter id="zaraShadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <filter id={`zaraShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
                         <feOffset in="SourceAlpha" dx="0" dy="16" result="dropOffset" />
                         <feGaussianBlur in="dropOffset" stdDeviation="12" result="dropBlur" />
                         <feFlood floodColor="#3a1218" floodOpacity="0.22" result="dropColor" />
@@ -219,7 +220,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                             <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
-                    <filter id="zaraHairHighlights" x="-20%" y="-20%" width="140%" height="140%">
+                    <filter id={`zaraHairHighlights-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
                         <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
                         <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
                         <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
@@ -238,7 +239,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                             <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
-                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
                         <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
                         <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
                         <feFlood floodColor="#581C24" floodOpacity="0.25" result="color" />
@@ -250,9 +251,9 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     </filter>
                 </defs>
 
-                <g filter="url(#zaraShadow)">
+                <g filter={`url(#zaraShadow-${uid})`}>
                 {/* === CABELLO TRASERO === */}
-                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} filter="url(#zaraHairHighlights)" />
+                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} filter={`url(#zaraHairHighlights-${uid})`} />
 
                 {/* === CUERPO INFERIOR === */}
                 <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
@@ -261,17 +262,17 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
 
                 {/* === CUERPO SUPERIOR === */}
-                <g filter="url(#innerDropShadow)">
-                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill="url(#zaraTop)" />
+                <g filter={`url(#innerDropShadow-${uid})`}>
+                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={`url(#zaraTop-${uid})`} />
 
                     {/* Brazos */}
                     <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="32" cy="210" r="4.5" fill="url(#zaraSkin)" />
+                    <circle cx="32" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
                     <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="108" cy="210" r="4.5" fill="url(#zaraSkin)" />
+                    <circle cx="108" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
 
                     {/* Cuello */}
-                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2.5" />
+                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Collar */}
                     <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
@@ -280,11 +281,11 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 </g>
 
                 {/* === CABEZA === */}
-                <g id="zara-head-group" style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
-                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2.5" />
+                <g id={`zara-head-group-${uid}`} style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }} filter={`url(#innerDropShadow-${uid})`}>
+                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Cabello Frontal y Mechones agrupados para el filtro de luz */}
-                    <g filter="url(#zaraHairHighlights)">
+                    <g filter={`url(#zaraHairHighlights-${uid})`}>
                         {/* Cabello Frontal */}
                         <path d="M35 45 Q 45 15 70 15 Q 95 15 105 45" fill={COLORS.hair} />
 
@@ -292,7 +293,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                         <path d="M40 38 Q 35 50 40 70 Q 50 50 55 40 Z" fill={COLORS.hair} />
 
                         {/* Mechón Derecho */}
-                        <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill="url(#hairShine)" />
+                        <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill={`url(#hairShine-${uid})`} />
                     </g>
 
                     {/* Flor SVG (reemplaza emoji) */}
@@ -305,8 +306,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     </g>
 
                     {/* Orejas */}
-                    <ellipse cx="38" cy="65" rx="4" ry="6" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2" />
-                    <ellipse cx="102" cy="65" rx="4" ry="6" fill="url(#zaraSkin)" stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="38" cy="65" rx="4" ry="6" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="102" cy="65" rx="4" ry="6" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2" />
 
                     {/* Rubor */}
                     <ellipse cx="50" cy="75" rx="6" ry="3" fill={COLORS.blush} opacity={c.blush} />

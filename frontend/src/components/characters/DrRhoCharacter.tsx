@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {useId, useEffect, useRef, useState, useCallback} from "react";
 import { cn } from "@/lib/utils";
 
 export type RhoMood = 'neutral' | 'wise' | 'mysterious' | 'explaining' | 'surprised';
@@ -46,6 +46,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     const rafId = useRef<number | null>(null);
 
     // Blinking — randomized per-blink for natural rhythm
+    const uid = useId().replace(/:/g, "");
     const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
         const doBlink = () => {
@@ -149,7 +150,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
             `}</style>
 
             <svg
-                id="drrho-svg"
+                id={`drrho-svg-${uid}`}
                 viewBox="-175 -125 750 750"
                 className={cn(
                     "w-full h-full object-contain transition-transform duration-500",
@@ -161,7 +162,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 strokeLinejoin="round"
             >
                 <defs>
-                    <pattern id="plaidPattern" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                    <pattern id={`plaidPattern-${uid}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
                         <rect width="20" height="20" fill="#7f8c8d" />
                         <line x1="0" y1="0" x2="0" y2="20" stroke="#e74c3c" strokeWidth="3" />
                         <line x1="10" y1="0" x2="10" y2="20" stroke="#e74c3c" strokeWidth="1.5" />
@@ -169,29 +170,29 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                         <line x1="0" y1="10" x2="20" y2="10" stroke="#3498db" strokeWidth="1.5" />
                     </pattern>
                     {/* Form-shading gradients (light from top-left) */}
-                    <radialGradient id="rhoSkin" cx="38%" cy="30%" r="78%">
+                    <radialGradient id={`rhoSkin-${uid}`} cx="38%" cy="30%" r="78%">
                         <stop offset="0%" stopColor="#FFE2C8" />
                         <stop offset="58%" stopColor="#FBD3B6" />
                         <stop offset="100%" stopColor="#E7B795" />
                     </radialGradient>
-                    <linearGradient id="rhoHair" x1="20%" y1="0%" x2="80%" y2="100%">
+                    <linearGradient id={`rhoHair-${uid}`} x1="20%" y1="0%" x2="80%" y2="100%">
                         <stop offset="0%" stopColor="#5C4838" />
                         <stop offset="100%" stopColor="#392A1E" />
                     </linearGradient>
-                    <linearGradient id="rhoPants" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id={`rhoPants-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stopColor="#69727F" />
                         <stop offset="100%" stopColor="#474F5B" />
                     </linearGradient>
-                    <linearGradient id="rhoShirt" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id={`rhoShirt-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stopColor="#FFFBF0" />
                         <stop offset="100%" stopColor="#F2E4C9" />
                     </linearGradient>
-                    <linearGradient id="rhoFormShade" x1="20%" y1="0%" x2="80%" y2="100%">
+                    <linearGradient id={`rhoFormShade-${uid}`} x1="20%" y1="0%" x2="80%" y2="100%">
                         <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
                         <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
                         <stop offset="100%" stopColor="#2a2018" stopOpacity="0.20" />
                     </linearGradient>
-                    <filter id="rhoShadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <filter id={`rhoShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
                         <feOffset in="SourceAlpha" dx="0" dy="16" result="dropOffset" />
                         <feGaussianBlur in="dropOffset" stdDeviation="12" result="dropBlur" />
                         <feFlood floodColor="#2A2117" floodOpacity="0.22" result="dropColor" />
@@ -230,7 +231,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                             <feMergeNode in="rimLight" />
                         </feMerge>
                     </filter>
-                    <filter id="innerDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
                         <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
                         <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
                         <feFlood floodColor="#3D3229" floodOpacity="0.25" result="color" />
@@ -242,40 +243,40 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                     </filter>
                 </defs>
 
-                <g filter="url(#rhoShadow)">
+                <g filter={`url(#rhoShadow-${uid})`}>
                 {/* Piernas */}
                 <g transform="translate(0, 40)">
-                    <ellipse cx="165" cy="410" rx="20" ry="45" fill="url(#rhoPants)" />
-                    <ellipse cx="235" cy="410" rx="20" ry="45" fill="url(#rhoPants)" />
+                    <ellipse cx="165" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
+                    <ellipse cx="235" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
                     <ellipse cx="165" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
                     <ellipse cx="235" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
                 </g>
 
                 {/* Cuerpo */}
-                <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
-                    <rect x="130" y="270" width="140" height="150" rx="40" fill="url(#plaidPattern)" />
-                    <rect x="130" y="270" width="140" height="150" rx="40" fill="url(#rhoFormShade)" />
-                    <path d="M160 270 Q 200 340 240 270" fill="url(#rhoShirt)" />
+                <g transform="translate(0, 40)" filter={`url(#innerDropShadow-${uid})`}>
+                    <rect x="130" y="270" width="140" height="150" rx="40" fill={`url(#plaidPattern-${uid})`} />
+                    <rect x="130" y="270" width="140" height="150" rx="40" fill={`url(#rhoFormShade-${uid})`} />
+                    <path d="M160 270 Q 200 340 240 270" fill={`url(#rhoShirt-${uid})`} />
                     <path d="M200 300 L 185 330 L 200 350 L 215 330 Z" fill="#EF5777" />
                 </g>
 
                 {/* Brazos */}
-                <g transform="translate(0, 40)" filter="url(#innerDropShadow)">
+                <g transform="translate(0, 40)" filter={`url(#innerDropShadow-${uid})`}>
                     <path d="M135 290 Q 110 350 145 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
-                    <circle cx="145" cy="370" r="14" fill="url(#rhoSkin)" />
+                    <circle cx="145" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
                     <path d="M265 290 Q 290 350 255 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
-                    <circle cx="255" cy="370" r="14" fill="url(#rhoSkin)" />
+                    <circle cx="255" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
                 </g>
 
                 {/* Cabeza */}
-                <g id="dr-rho-head-group" style={{ transformOrigin: '200px 200px', transition: 'transform 0.1s linear' }} filter="url(#innerDropShadow)">
+                <g id={`dr-rho-head-group-${uid}`} style={{ transformOrigin: '200px 200px', transition: 'transform 0.1s linear' }} filter={`url(#innerDropShadow-${uid})`}>
                     <g transform="translate(0, 25)">
-                        <circle cx="120" cy="200" r="18" fill="url(#rhoSkin)" />
-                        <circle cx="280" cy="200" r="18" fill="url(#rhoSkin)" />
-                        <rect x="125" y="100" width="150" height="180" rx="60" fill="url(#rhoSkin)" />
+                        <circle cx="120" cy="200" r="18" fill={`url(#rhoSkin-${uid})`} />
+                        <circle cx="280" cy="200" r="18" fill={`url(#rhoSkin-${uid})`} />
+                        <rect x="125" y="100" width="150" height="180" rx="60" fill={`url(#rhoSkin-${uid})`} />
 
                         {/* Pelo */}
-                        <path d="M125 150 C 125 80, 275 80, 275 150 L 275 160 C 275 160, 260 160, 250 140 C 200 140, 150 140, 150 160 L 125 160 Z" fill="url(#rhoHair)" />
+                        <path d="M125 150 C 125 80, 275 80, 275 150 L 275 160 C 275 160, 260 160, 250 140 C 200 140, 150 140, 150 160 L 125 160 Z" fill={`url(#rhoHair-${uid})`} />
 
                         {/* Rostro */}
                         <g className="rho-face-transition">
@@ -306,12 +307,12 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                                             <>
                                                 <circle cx="160" cy="195" r="14" fill="white" stroke={COLORS.stroke} strokeWidth="4" />
                                                 <circle cx="160" cy="197" r="6" fill={COLORS.stroke} />
-                                                <path d="M142 190 H 178 V 175 H 142 Z" fill="url(#rhoSkin)" stroke="none" />
+                                                <path d="M142 190 H 178 V 175 H 142 Z" fill={`url(#rhoSkin-${uid})`} stroke="none" />
                                                 <line x1="143" y1="190" x2="177" y2="190" stroke={COLORS.stroke} strokeWidth="4" />
 
                                                 <circle cx="240" cy="195" r="14" fill="white" stroke={COLORS.stroke} strokeWidth="4" />
                                                 <circle cx="240" cy="197" r="6" fill={COLORS.stroke} />
-                                                <path d="M222 190 H 258 V 175 H 222 Z" fill="url(#rhoSkin)" stroke="none" />
+                                                <path d="M222 190 H 258 V 175 H 222 Z" fill={`url(#rhoSkin-${uid})`} stroke="none" />
                                                 <line x1="223" y1="190" x2="257" y2="190" stroke={COLORS.stroke} strokeWidth="4" />
                                             </>
                                         )}
@@ -351,7 +352,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 </g>
 
                 {/* Mapa Rúnico Flotante */}
-                <g transform="translate(280, 340) rotate(10)" filter="url(#innerDropShadow)">
+                <g transform="translate(280, 340) rotate(10)" filter={`url(#innerDropShadow-${uid})`}>
                     <g className="animate-[pulse_3s_infinite]">
                         <rect x="-25" y="-35" width="50" height="70" rx="8" fill="#F8EFBA" stroke={COLORS.gold} strokeWidth="4" />
                         <circle cx="0" cy="-10" r="10" fill="none" stroke={COLORS.magic} strokeWidth="3" strokeDasharray="3 3" />

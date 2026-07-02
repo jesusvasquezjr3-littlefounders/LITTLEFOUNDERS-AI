@@ -342,8 +342,7 @@ const Settings = () => {
                         <Shield className="w-6 h-6 md:w-7 md:h-7 text-white" />
                     </div>
                     <div>
-                        <span className="corp-eyebrow">{t('common:app_name')}</span>
-                        <h1 className="corp-display mt-1 text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                        <h1 className="corp-display text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
                             {t('settings:title')}
                         </h1>
                     </div>

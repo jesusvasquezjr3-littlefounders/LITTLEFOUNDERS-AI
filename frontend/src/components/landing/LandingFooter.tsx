@@ -104,12 +104,14 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               <h3 className="corp-eyebrow mb-4">
                 {t("footer.contact")}
               </h3>
-              <a
-                href="mailto:informame@littlefounders.ai"
-                className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
-              >
-                <Mail className="w-4 h-4" /> informame@littlefounders.ai
-              </a>
+              <div>
+                <a
+                  href="mailto:informame@littlefounders.ai"
+                  className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
+                >
+                  <Mail className="w-4 h-4" /> informame@littlefounders.ai
+                </a>
+              </div>
               <div className="mt-5 flex flex-col gap-3">
                 <Link
                   to="/login"

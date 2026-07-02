@@ -2571,38 +2571,40 @@ html[data-reduce-motion="true"] *::after {
 }
 
 /* ── Form field (input / textarea / select-trigger) ──────────────────────── */
-.corp-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  background: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, 0.10);
-  border-radius: 0.75rem;
-  color: #0f172a;
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+@layer components {
+  .corp-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    border-radius: 0.75rem;
+    color: #0f172a;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .corp-input::placeholder { color: #94a3b8; }
+  .corp-input:focus,
+  .corp-input:focus-visible {
+    outline: none;
+    background: #ffffff;
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+  }
+  .dark .corp-input {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+  }
+  .dark .corp-input::placeholder { color: #64748b; }
+  .dark .corp-input:focus,
+  .dark .corp-input:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.30);
+  }
+  .corp-input--error { border-color: #f87171; }
+  .corp-input--error:focus { box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.20); }
 }
-.corp-input::placeholder { color: #94a3b8; }
-.corp-input:focus,
-.corp-input:focus-visible {
-  outline: none;
-  background: #ffffff;
-  border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
-}
-.dark .corp-input {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.10);
-  color: #ffffff;
-}
-.dark .corp-input::placeholder { color: #64748b; }
-.dark .corp-input:focus,
-.dark .corp-input:focus-visible {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.30);
-}
-.corp-input--error { border-color: #f87171; }
-.corp-input--error:focus { box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.20); }
 
 /* Uppercase field label (pairs with corp-input) */
 .corp-label {

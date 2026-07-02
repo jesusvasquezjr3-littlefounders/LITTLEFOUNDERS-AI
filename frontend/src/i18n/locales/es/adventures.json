@@ -47,7 +47,7 @@
     },
     "sagas": {
         "1": {
-            "title": "Saga 1: Detectives del Tesoro",
+            "title": "Detectives del Tesoro",
             "subtitle": "Reconocimiento Financiero",
             "description": "Aprende a identificar el dinero y sus formas básicas.",
             "topics": {
@@ -98,7 +98,7 @@
             }
         },
         "2": {
-            "title": "Saga 2: El Origen de las Cosas",
+            "title": "El Origen de las Cosas",
             "subtitle": "Valor y Trabajo",
             "description": "Entiende de dónde vienen las cosas y el valor del trabajo.",
             "topics": {
@@ -145,7 +145,7 @@
             }
         },
         "3": {
-            "title": "Saga 3: El Mercado de la Selva",
+            "title": "El Mercado de la Selva",
             "subtitle": "Intercambio Básico",
             "description": "Descubre cómo funciona el intercambio y la compra.",
             "topics": {
@@ -192,7 +192,7 @@
             }
         },
         "4": {
-            "title": "Saga 4: La Balanza de los Deseos",
+            "title": "La Balanza de los Deseos",
             "subtitle": "Necesidad vs. Deseo",
             "description": "Aprende a diferenciar lo que necesitas de lo que quieres.",
             "topics": {
@@ -247,7 +247,7 @@
             }
         },
         "5": {
-            "title": "Saga 5: El Cofre del Futuro",
+            "title": "El Cofre del Futuro",
             "subtitle": "Ahorro Inicial",
             "description": "Iníciate en el hábito del ahorro.",
             "topics": {

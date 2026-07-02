@@ -56,7 +56,7 @@ export default function HowItWorksPage() {
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-20 text-center">
           <Reveal as="span" className="corp-eyebrow">
-            <Sparkles className="w-3.5 h-3.5" /> {t("how_it_works.hero_badge")}
+            {t("how_it_works.hero_badge")}
           </Reveal>
           <Reveal delay={60}>
             <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.08] text-slate-900 dark:text-white">

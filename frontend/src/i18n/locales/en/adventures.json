@@ -47,7 +47,7 @@
     },
     "sagas": {
         "1": {
-            "title": "Saga 1: Treasure Detectives",
+            "title": "Treasure Detectives",
             "subtitle": "Financial Recognition",
             "description": "Learn to identify money and its basic forms.",
             "topics": {
@@ -98,7 +98,7 @@
             }
         },
         "2": {
-            "title": "Saga 2: The Origin of Things",
+            "title": "The Origin of Things",
             "subtitle": "Value and Work",
             "description": "Understand where things come from and the value of work.",
             "topics": {
@@ -145,7 +145,7 @@
             }
         },
         "3": {
-            "title": "Saga 3: The Jungle Market",
+            "title": "The Jungle Market",
             "subtitle": "Basic Exchange",
             "description": "Discover how exchange and buying work.",
             "topics": {
@@ -192,7 +192,7 @@
             }
         },
         "4": {
-            "title": "Saga 4: The Scale of Desires",
+            "title": "The Scale of Desires",
             "subtitle": "Need vs. Want",
             "description": "Learn to differentiate what you need from what you want.",
             "topics": {
@@ -247,7 +247,7 @@
             }
         },
         "5": {
-            "title": "Saga 5: The Chest of the Future",
+            "title": "The Chest of the Future",
             "subtitle": "Initial Savings",
             "description": "Start the habit of saving.",
             "topics": {

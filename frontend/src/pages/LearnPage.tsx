@@ -15,7 +15,8 @@ import { useResumeLesson } from '@/components/lessons/hooks/useResumeLesson';
 import { useSagaData, type SagaData } from '@/components/lessons/hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '@/components/ui/LoadingScreen';
-import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap, LocateFixed } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap, LocateFixed, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getGuestProfile } from '@/lib/guestProfile';
 import { cn } from '@/lib/utils';
 
@@ -70,45 +71,48 @@ const SagaSectionItem: React.FC<{
         isCurrentSaga && 'ring-2 ring-indigo-400/40 dark:ring-indigo-500/30'
       )}
     >
-      {/* Saga Header — always visible, click to toggle */}
+      {/* Saga Header — Gamified Duolingo Style */}
       <button
         id={`saga-header-${adventureId}-${saga.id}`}
         onClick={onToggle}
         className={cn(
-          'w-full flex items-center justify-between gap-4 px-5 py-4 text-left',
-          'transition-all duration-200 hover:bg-white/10 dark:hover:bg-white/5',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50 rounded-2xl'
+          'w-full flex items-center justify-between text-left relative overflow-hidden',
+          'bg-sky-500 text-white',
+          isOpen ? 'rounded-t-2xl' : 'rounded-2xl',
+          'transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2'
         )}
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-3 min-w-0">
-          {/* Saga color dot */}
-          <div className={cn(
-            'shrink-0 w-3 h-3 rounded-full shadow-sm',
-            isCurrentSaga ? 'bg-indigo-500' : 'bg-slate-400 dark:bg-slate-600'
-          )} />
-          <div className="min-w-0">
-            <p className="text-base font-black text-slate-800 dark:text-white truncate leading-tight">
+        <div className="px-5 py-4 sm:px-6 sm:py-5 w-full flex items-center justify-between z-10 relative">
+          <div className="flex flex-col min-w-0 pr-4">
+            <div className="flex items-center gap-2 mb-1 opacity-90">
+              {isOpen ? (
+                <ArrowLeft strokeWidth={2.5} className="w-4 h-4 shrink-0" />
+              ) : (
+                <div className={cn(
+                  "w-2.5 h-2.5 rounded-full shrink-0",
+                  isCurrentSaga ? "bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" : "bg-sky-200"
+                )} />
+              )}
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white line-clamp-1">
+                {saga.description || `Saga ${saga.id}`}
+              </span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-white truncate leading-tight">
               {saga.title}
-            </p>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              {lessons.length > 0
-                ? t('lessons:learn.adventure.progress', { completed: completedCount, total: lessons.length })
-                : `${t('lessons:learn.saga.lessons_count', { count: '…' as any })}`}
-            </p>
+            </h3>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {isCurrentSaga && (
-            <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-xs font-semibold uppercase tracking-wide border border-indigo-400/20">
-              <Sparkles className="w-3 h-3" />
-              {t('lessons:learn.continue_button')}
-            </span>
-          )}
-          {isOpen
-            ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-            : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-slate-500" />}
+          <div className="flex items-center shrink-0">
+            {/* Expand/Collapse Button Style */}
+            <div className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sky-500 border-b-[4px] border-sky-600 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2)] hover:bg-sky-400 active:border-b-0 active:translate-y-1 transition-all">
+              {isOpen ? (
+                <ChevronUp strokeWidth={3} className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              ) : (
+                <ChevronDown strokeWidth={3} className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              )}
+            </div>
+          </div>
         </div>
       </button>
 
@@ -184,14 +188,6 @@ const AdventureBanner: React.FC<{
           <p className="text-white text-2xl font-black drop-shadow-md leading-tight">
             {adventure.title}
           </p>
-          {!isLocked && (
-            <p className="text-white/80 text-sm font-semibold mt-1">
-              {t('learn.adventure.progress', {
-                completed: adventure.completedLessons,
-                total: adventure.totalLessons
-              })}
-            </p>
-          )}
         </div>
 
         {/* Expand / Lock button */}
@@ -397,26 +393,22 @@ export default function LearnPage() {
         <div className="lg:grid lg:grid-cols-12 lg:gap-12 items-stretch min-h-screen">
           
           {/* Left Column: Adventures List + Header (Sticky Sidebar - WIDER) */}
-          <div className="lg:col-span-7 lg:sticky lg:top-10 lg:self-start space-y-8 lg:pr-10 lg:border-r lg:border-white/10 dark:lg:border-white/5 pb-20">
+          <div className="lg:col-span-7 lg:sticky lg:top-10 lg:self-start space-y-6 pb-20">
             
             {/* ── Page Header (Internal to Left Column) ────────────────────── */}
-            <div className="flex items-center justify-between gap-4 py-2 border-b border-white/10 dark:border-white/5 mb-2">
+            <div className="flex items-center justify-between gap-4 py-2 border-b border-white/10 dark:border-white/5 mb-6">
               <div className="flex items-center gap-4 min-w-0">
                 <div className="p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl shadow-xl shadow-indigo-500/20 shrink-0">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1 truncate">
+                  <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
                     {t('lessons:learn.page_title')}
                   </h1>
-                  <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 uppercase tracking-wide leading-none truncate">
-                    {t('common:app_name')}
-                  </p>
                 </div>
               </div>
 
-              {/* "Go to my lesson" — jumps & highlights where the user left off.
-                  Amber matches the highlighted lesson node, with a gentle attention pulse. */}
+              {/* "Go to my lesson" */}
               {!isFinished && nextLessonCode && (
                 <button
                   id="learn-continue-btn"
@@ -434,39 +426,28 @@ export default function LearnPage() {
                   )}
                 >
                   <LocateFixed className="w-4 h-4 shrink-0" />
-                  <span>{t('lessons:learn.scroll_to_current')}</span>
+                  <span className="hidden sm:inline">{t('lessons:learn.scroll_to_current')}</span>
                 </button>
               )}
 
               {/* All-completed badge */}
               {isFinished && (
                 <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30">
-                  🏆 {t('lessons:learn.all_completed_title')}
+                  🏆 <span className="hidden sm:inline">{t('lessons:learn.all_completed_title')}</span>
                 </div>
               )}
             </div>
 
-            {/* ── Beta notice strip (Internal to Left Column) ───────────────── */}
-            <div className="bg-indigo-400/10 dark:bg-indigo-400/5 border border-indigo-400/20 h-10 px-4 rounded-xl flex items-center gap-3 overflow-hidden">
-              <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-              <div className="relative flex-1 overflow-hidden whitespace-nowrap">
-                <p className="inline-block text-[11px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300 animate-marquee sm:animate-none">
-                  {t('lessons:learn.beta_notice')}
-                </p>
-              </div>
-              <style>{`
-                @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-                .animate-marquee { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
-                @media (min-width: 640px) { .animate-marquee { animation: none; padding-left: 0; transform: none; white-space: normal; } }
-                @keyframes lfLessonFlash { 0%, 100% { filter: none; } 25%, 65% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.95)); } }
-                .lf-lesson-flash { animation: lfLessonFlash 1.6s ease-in-out; }
-                @keyframes lfResumePulse { 0%, 100% { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12)); } 50% { filter: drop-shadow(0 0 11px rgba(245, 158, 11, 0.9)); } }
-                .lf-resume-pulse { animation: lfResumePulse 2.4s ease-in-out infinite; }
-                @media (prefers-reduced-motion: reduce) { .lf-lesson-flash, .lf-resume-pulse { animation: none; } }
-              `}</style>
-            </div>
+            {/* ── Internal styles ───────────────── */}
+            <style>{`
+              @keyframes lfLessonFlash { 0%, 100% { filter: none; } 25%, 65% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.95)); } }
+              .lf-lesson-flash { animation: lfLessonFlash 1.6s ease-in-out; }
+              @keyframes lfResumePulse { 0%, 100% { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12)); } 50% { filter: drop-shadow(0 0 11px rgba(245, 158, 11, 0.9)); } }
+              .lf-resume-pulse { animation: lfResumePulse 2.4s ease-in-out infinite; }
+              @media (prefers-reduced-motion: reduce) { .lf-lesson-flash, .lf-resume-pulse { animation: none; } }
+            `}</style>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {adventures.map(adventure => {
                 const isExpanded = expandedAdventures.has(adventure.id);
                 const isLocked = adventure.status === 'locked';
@@ -474,7 +455,15 @@ export default function LearnPage() {
                 const sagas = getSagasForAdventure(adventure.id);
 
                 return (
-                  <div key={adventure.id} className="space-y-4">
+                  <div 
+                    key={adventure.id} 
+                    className={cn(
+                      "relative transition-all duration-500 rounded-[32px] sm:rounded-[36px]",
+                      isSelected 
+                        ? "bg-amber-400 dark:bg-amber-500 p-2 sm:p-3 shadow-xl ring-4 ring-amber-400/30 lg:-mr-[56px] lg:pr-[56px] lg:rounded-r-none z-20" 
+                        : ""
+                    )}
+                  >
                     <AdventureBanner
                       adventure={adventure}
                       isExpanded={isExpanded}
@@ -483,26 +472,40 @@ export default function LearnPage() {
                       isLocked={isLocked}
                     />
 
-                    {/* Mobile Inline Sagas (Accordion) */}
-                    <div className={cn(
-                      "lg:hidden space-y-3 pl-1 pr-1",
-                      isExpanded ? "animate-in fade-in slide-in-from-top-2 duration-300" : "hidden"
-                    )}>
-                      {sagas.map(saga => {
-                        const sagaKey = `${adventure.id}-${saga.id}`;
-                        return (
-                          <SagaSectionItem
-                            key={sagaKey}
-                            saga={saga}
-                            adventureId={adventure.id}
-                            userId={userId || undefined}
-                            isOpen={openSagas.has(sagaKey)}
-                            onToggle={() => toggleSaga(sagaKey)}
-                            nextLessonCode={nextLessonCode}
-                          />
-                        );
-                      })}
-                    </div>
+                    {/* Mobile Inline Sagas (Accordion) - Now sits inside the yellow box! */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="lg:hidden px-2 pb-2 pt-4 space-y-3 overflow-hidden"
+                        >
+                          {sagas.map((saga, index) => {
+                            const sagaKey = `${adventure.id}-${saga.id}`;
+                            return (
+                              <motion.div 
+                                key={sagaKey} 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
+                                className="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-1 shadow-sm"
+                              >
+                                <SagaSectionItem
+                                  saga={saga}
+                                  adventureId={adventure.id}
+                                  userId={userId || undefined}
+                                  isOpen={openSagas.has(sagaKey)}
+                                  onToggle={() => toggleSaga(sagaKey)}
+                                  nextLessonCode={nextLessonCode}
+                                />
+                              </motion.div>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
@@ -510,41 +513,57 @@ export default function LearnPage() {
           </div>
 
           {/* Right Column: Sagas List (Narrower: 5/12 Proportions) */}
-          <div className="hidden lg:block lg:col-span-5 pt-2">
-            {activeAdventureId ? (
-              <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
-                <div className="flex items-center gap-3 mb-2 px-2">
-                  <BookOpen className="w-5 h-5 text-indigo-500" />
-                  <h2 className="text-xl font-black text-slate-800 dark:text-white">
-                    {adventures.find(a => a.id === activeAdventureId)?.title}
-                  </h2>
-                </div>
-                
-                <div className="space-y-3">
-                  {getSagasForAdventure(activeAdventureId).map(saga => {
-                    const sagaKey = `${activeAdventureId}-${saga.id}`;
-                    return (
-                      <SagaSectionItem
-                        key={sagaKey}
-                        saga={saga}
-                        adventureId={activeAdventureId}
-                        userId={userId || undefined}
-                        isOpen={openSagas.has(sagaKey)}
-                        onToggle={() => toggleSaga(sagaKey)}
-                        nextLessonCode={nextLessonCode}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <div className="h-[400px] flex flex-col items-center justify-center text-center liquid-glass-subtle border border-dashed border-white/20 rounded-[32px] p-12">
-                <Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
-                <p className="text-lg font-bold text-slate-400 dark:text-slate-500 max-w-xs">
-                  {t('lessons:learn.adventure.expand')} para ver el camino de aprendizaje
-                </p>
-              </div>
-            )}
+          <div className="hidden lg:block lg:col-span-5 pt-2 relative z-10">
+            <AnimatePresence mode="wait">
+              {activeAdventureId ? (
+                <motion.div 
+                  key={`adv-${activeAdventureId}`}
+                  initial={{ opacity: 0, x: -40, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, x: 20, filter: 'blur(4px)' }}
+                  transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
+                  className="space-y-4 bg-amber-400 dark:bg-amber-500 p-4 sm:p-5 rounded-[32px] sm:rounded-[36px] shadow-xl min-h-[500px]"
+                >
+                  <div className="space-y-3">
+                    {getSagasForAdventure(activeAdventureId).map((saga, index) => {
+                      const sagaKey = `${activeAdventureId}-${saga.id}`;
+                      return (
+                        <motion.div 
+                          key={sagaKey}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 + 0.1, duration: 0.4 }}
+                          className="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-1 shadow-sm"
+                        >
+                          <SagaSectionItem
+                            saga={saga}
+                            adventureId={activeAdventureId}
+                            userId={userId || undefined}
+                            isOpen={openSagas.has(sagaKey)}
+                            onToggle={() => toggleSaga(sagaKey)}
+                            nextLessonCode={nextLessonCode}
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="empty-state"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-[400px] flex flex-col items-center justify-center text-center liquid-glass-subtle border border-dashed border-white/20 rounded-[32px] p-12"
+                >
+                  <Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
+                  <p className="text-lg font-bold text-slate-400 dark:text-slate-500 max-w-xs">
+                    {t('lessons:learn.adventure.expand')} para ver el camino de aprendizaje
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

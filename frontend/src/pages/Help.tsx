@@ -132,8 +132,7 @@ const Help = () => {
             <HelpCircle className="w-7 h-7 text-white" />
           </div>
           <div className="text-left">
-            <span className="corp-eyebrow">{t('common:app_name')}</span>
-            <h1 className="corp-display mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
               {t("reports:help_page.title")}
             </h1>
             <p className="mt-1 text-[10px] md:text-sm text-slate-500 dark:text-slate-400 leading-tight">

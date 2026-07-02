@@ -121,7 +121,7 @@ export default function PricingPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-20 text-center">
           <Reveal as="span" className="corp-eyebrow">
-            <Zap className="w-3.5 h-3.5" /> {t("nav.pricing")}
+            {t("nav.pricing")}
           </Reveal>
 
           <Reveal delay={60}>

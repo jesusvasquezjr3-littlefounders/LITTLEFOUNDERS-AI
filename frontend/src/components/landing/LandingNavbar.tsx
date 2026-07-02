@@ -45,7 +45,7 @@ export const LandingNavbar = () => {
 
     return (
         <nav
-            className={`corp fixed top-0 w-full z-50 py-3 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ease-out ${
+            className={`corp fixed top-0 w-full z-50 py-5 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ease-out ${
                 showSolid
                     ? 'bg-white/85 dark:bg-[#0a0e1a]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 shadow-[0_4px_30px_-12px_rgba(15,23,42,0.15)]'
                     : 'bg-transparent border-b border-transparent'
