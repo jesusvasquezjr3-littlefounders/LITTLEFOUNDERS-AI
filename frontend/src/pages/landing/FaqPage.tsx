@@ -12,6 +12,17 @@ import {
 } from "@/components/ui/accordion";
 import { Bot, Globe, ShieldCheck, Mail, Sparkles, ArrowRight } from "lucide-react";
 
+// El wrapper "Isla" que define el estilo Brilliant.org
+function Island({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+  return (
+    <div className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-[85rem] mx-auto">
+      <section className={`rounded-[2.5rem] md:rounded-[3rem] overflow-hidden ${className}`}>
+        {children}
+      </section>
+    </div>
+  );
+}
+
 const FAQ_ITEMS = [
   { id: "item-1", icon: Globe, qKey: "faq.q1", aKey: "faq.a1", trans: true },
   { id: "item-2", icon: Bot, qKey: "faq.q2", aKey: "faq.a2", trans: false },
@@ -25,52 +36,53 @@ export default function FaqPage() {
 
   return (
     <LandingLayout hideCTA>
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-        <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo-400/10 dark:bg-indigo-500/8 blur-[140px] pointer-events-none" />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-16 text-center">
-          <Reveal as="span" className="corp-eyebrow">{t("nav.faq")}</Reveal>
-          <Reveal delay={60}>
-            <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-              {t("faq.title")}
-            </h1>
-          </Reveal>
-        </div>
-      </header>
+      <Island className="bg-slate-50 dark:bg-[#0a0e1a] mb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16">
+          
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <Reveal as="span" className="inline-flex items-center px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-800 dark:text-slate-200 mb-8 shadow-sm">
+              {t("nav.faq")}
+            </Reveal>
+            <Reveal delay={60}>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] text-slate-900 dark:text-white">
+                {t("faq.title")}
+              </h1>
+            </Reveal>
+          </div>
 
-      <section className="relative py-16 sm:py-24 bg-white dark:bg-[#070b14]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
-            <Reveal variant="left" className="w-full lg:w-7/12 lg:sticky lg:top-28">
-              <div className="corp-panel rounded-3xl p-2 shadow-2xl">
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900">
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+            {/* Video — sticky on desktop */}
+            <Reveal variant="left" className="w-full lg:w-1/2 lg:sticky lg:top-28">
+              <div className="rounded-[2.5rem] overflow-hidden bg-slate-900 shadow-xl border-4 border-white dark:border-[#0d1426]">
+                <div className="relative w-full aspect-[4/3]">
                   <ShowreelPlayer playerRef={playerRef} />
                 </div>
               </div>
             </Reveal>
 
-            <Reveal variant="right" className="w-full lg:w-5/12">
-              <Accordion type="single" collapsible className="w-full space-y-3">
+            {/* FAQ Accordion */}
+            <Reveal variant="right" className="w-full lg:w-1/2">
+              <Accordion type="single" collapsible className="w-full">
                 {FAQ_ITEMS.map((item) => {
                   const Icon = item.icon;
                   return (
                     <AccordionItem
                       key={item.id}
                       value={item.id}
-                      className="corp-card overflow-hidden !border-transparent"
+                      className="border-b border-slate-200 dark:border-white/10"
                     >
-                      <AccordionTrigger className="px-5 py-4 hover:no-underline text-left">
-                        <div className="flex items-center gap-3 w-full pr-2">
-                          <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center shrink-0">
-                            <Icon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      <AccordionTrigger className="py-8 hover:no-underline text-left">
+                        <div className="flex items-center gap-5 w-full pr-4">
+                          <div className="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center shrink-0">
+                            <Icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                           </div>
-                          <span className="font-semibold text-slate-900 dark:text-white text-sm leading-snug">
+                          <span className="font-bold text-slate-900 dark:text-white text-xl leading-snug tracking-tight">
                             {t(item.qKey)}
                           </span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <p className="px-5 pb-5 pl-16 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <p className="pb-8 pl-[4.25rem] text-lg text-slate-600 dark:text-slate-400 leading-relaxed pr-8">
                           {item.trans ? <Trans i18nKey={item.aKey} ns="landing" /> : t(item.aKey)}
                         </p>
                       </AccordionContent>
@@ -81,29 +93,32 @@ export default function FaqPage() {
             </Reveal>
           </div>
         </div>
-      </section>
+      </Island>
 
-      <section className="relative py-20 sm:py-28 bg-slate-50 dark:bg-[#0a0e1a]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* ── CONTACT CTA ───────────────────────────────────────────────── */}
+      <section className="bg-slate-900 py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <div className="corp-icon-chip w-14 h-14 mx-auto">
-              <Mail className="w-7 h-7" />
+            <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-8">
+              <Mail className="w-8 h-8 text-white" />
             </div>
-            <h2 className="mt-6 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{t("faq.contact_title")}</h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
+            <h2 className="text-2xl md:text-xl font-bold text-white tracking-tight leading-tight mb-8">
+              {t("faq.contact_title")}
+            </h2>
+            <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto mb-12">
               {t("faq.contact_subtitle")}
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
                 href="mailto:informame@littlefounders.ai"
-                className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5"
+                className="inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white text-lg font-semibold rounded-full px-10 py-5 transition-colors duration-200"
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="w-6 h-6" />
                 {t("faq.contact_button")}
               </a>
               <Link
                 to="/onboarding"
-                className="corp-btn-secondary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-lg font-semibold rounded-full px-10 py-5 transition-colors duration-200"
               >
                 {t("corp.hero.cta_primary")}
                 <ArrowRight className="w-5 h-5" />

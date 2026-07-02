@@ -31,7 +31,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-amber-500/12 blur-[80px] pointer-events-none" />
               <span className="corp-eyebrow text-white/70">
-                <Sparkles className="w-4 h-4" /> {t("families.hero.coming_soon_label")}
+                {t("families.hero.coming_soon_label")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
                 {t("families.cta.title")}

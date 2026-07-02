@@ -4,6 +4,17 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { CheckCircle2, ArrowRight, Zap, Users, Building2, Minus } from "lucide-react";
 
+// El wrapper "Isla" que define el estilo Brilliant.org
+function Island({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+  return (
+    <div className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-[85rem] mx-auto">
+      <section className={`rounded-[2.5rem] md:rounded-[3rem] overflow-hidden ${className}`}>
+        {children}
+      </section>
+    </div>
+  );
+}
+
 function ActiveCard({ t }: { t: (key: string) => string }) {
   const features = [
     t("pricing.freemium_feature_1"),
@@ -14,45 +25,46 @@ function ActiveCard({ t }: { t: (key: string) => string }) {
   ];
 
   return (
-    <div className="corp-card relative flex flex-col h-full p-8 ring-2 ring-indigo-500/30 dark:ring-indigo-400/30">
-      <div className="flex justify-between items-start gap-4 mb-6">
-        <div>
-          <span className="corp-badge corp-badge--brand">
-            <Zap className="w-3 h-3" /> {t("pricing.freemium_badge")}
-          </span>
-          <h3 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">
-            {t("pricing.freemium_title")}
-          </h3>
-        </div>
+    <div className="relative flex flex-col h-full p-6 rounded-[2rem] bg-white dark:bg-[#0d1426] shadow-xl border-0 ring-4 ring-white dark:ring-[#0d1426]">
+      {/* Active badge */}
+      <div className="absolute -top-4 left-10">
+        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-indigo-600 text-white text-sm font-bold shadow-md">
+          <Zap className="w-4 h-4 fill-white" /> {t("pricing.freemium_badge")}
+        </span>
       </div>
 
-      <div className="flex items-baseline gap-2 mb-3">
+      <div className="mt-4 mb-8">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+          {t("pricing.freemium_title")}
+        </h3>
+      </div>
+
+      <div className="flex items-baseline gap-2 mb-4">
         <span className="text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
           {t("pricing.freemium_price")}
         </span>
-        <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+        <span className="text-slate-500 dark:text-slate-400 text-base font-medium">
           {t("pricing.freemium_period")}
         </span>
       </div>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-8 leading-relaxed border-b border-slate-100 dark:border-white/5 pb-6">
+      <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 leading-relaxed border-b border-slate-100 dark:border-white/5 pb-8">
         {t("pricing.freemium_desc")}
       </p>
 
-      <ul className="space-y-4 mb-8 flex-1">
+      <ul className="space-y-5 mb-10 flex-1">
         {features.map((feat, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">{feat}</span>
+          <li key={i} className="flex items-start gap-4">
+            <CheckCircle2 className="w-6 h-6 text-indigo-500 shrink-0 mt-0.5" />
+            <span className="text-base font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{feat}</span>
           </li>
         ))}
       </ul>
 
       <Link
         to="/onboarding"
-        className="corp-btn-primary inline-flex items-center justify-center gap-2 w-full h-12 rounded-xl text-sm font-semibold"
+        className="inline-flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl text-lg font-bold transition-colors shadow-md"
       >
         {t("pricing.freemium_btn")}
-        <ArrowRight className="w-4 h-4" />
       </Link>
     </div>
   );
@@ -74,35 +86,35 @@ function GhostCard({
   ];
 
   return (
-    <div className="corp-card flex flex-col h-full p-8">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="corp-icon-chip w-12 h-12">
-          <Icon className="w-6 h-6" />
+    <div className="flex flex-col h-full p-6 rounded-[2rem] bg-white/40 dark:bg-[#0d1426]/40 shadow-sm opacity-80">
+      <div className="flex items-center gap-5 mb-8">
+        <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+          <Icon className="w-7 h-7 text-slate-400 dark:text-slate-500" />
         </div>
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+        <h3 className="text-xl font-bold text-slate-600 dark:text-slate-400">
           {t(`pricing.${tier}_title`)}
         </h3>
       </div>
 
-      <div className="flex items-baseline gap-2 mb-3">
-        <span className="text-4xl font-bold text-slate-400 dark:text-slate-500 tracking-tight">
+      <div className="flex items-baseline gap-2 mb-4">
+        <span className="text-4xl font-bold text-slate-400 dark:text-slate-600 tracking-tight">
           {t("pricing.coming_soon_price")}
         </span>
       </div>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed border-b border-slate-100 dark:border-white/5 pb-6">
+      <p className="text-lg text-slate-500 dark:text-slate-500 mb-10 leading-relaxed border-b border-slate-100 dark:border-white/5 pb-8">
         {t("pricing.coming_soon")}
       </p>
 
-      <ul className="space-y-4 mb-8 flex-1">
+      <ul className="space-y-5 mb-10 flex-1">
         {features.map((feat, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <Minus className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
-            <span className="text-sm text-slate-500 dark:text-slate-400 leading-snug">{feat}</span>
+          <li key={i} className="flex items-start gap-4">
+            <Minus className="w-6 h-6 text-slate-300 dark:text-slate-600 shrink-0 mt-0.5" />
+            <span className="text-base text-slate-500 dark:text-slate-500 leading-relaxed">{feat}</span>
           </li>
         ))}
       </ul>
 
-      <div className="corp-btn-secondary inline-flex items-center justify-center w-full h-12 rounded-xl text-sm font-semibold opacity-60 cursor-default pointer-events-none">
+      <div className="inline-flex items-center justify-center w-full py-5 rounded-2xl text-lg font-bold bg-slate-100/50 dark:bg-white/5 text-slate-400 dark:text-slate-500 cursor-default">
         {t("pricing.very_soon")}
       </div>
     </div>
@@ -114,34 +126,28 @@ export default function PricingPage() {
 
   return (
     <LandingLayout>
-
-      <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-        <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo-400/10 dark:bg-indigo-500/8 blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-20 text-center">
-          <Reveal as="span" className="corp-eyebrow">
-            {t("nav.pricing")}
+      <Island className="bg-slate-50 dark:bg-[#0a0e1a] mb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16 text-center">
+          <Reveal>
+            <span className="inline-flex items-center px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-800 dark:text-slate-200 mb-8 shadow-sm">
+              {t("nav.pricing")}
+            </span>
           </Reveal>
 
           <Reveal delay={60}>
-            <h1 className="mt-6 text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-slate-900 dark:text-white">
+            <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight max-w-3xl mx-auto">
               {t("pricing.title")}
             </h1>
           </Reveal>
 
           <Reveal delay={120}>
-            <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12">
               {t("pricing.subtitle")}
             </p>
           </Reveal>
-        </div>
-      </header>
 
-      <section className="relative py-20 sm:py-28 bg-slate-50 dark:bg-[#0a0e1a]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
-            <Reveal variant="left" className="h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch text-left">
+            <Reveal variant="left" className="h-full relative z-10 lg:scale-105">
               <ActiveCard t={t} />
             </Reveal>
             <Reveal delay={60} className="h-full">
@@ -153,42 +159,13 @@ export default function PricingPage() {
           </div>
 
           <Reveal delay={180}>
-            <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-16 font-medium">
+            <p className="text-center text-base text-slate-500 dark:text-slate-400 mt-12 font-medium">
               {t("hero.cta_subtext")}
             </p>
           </Reveal>
         </div>
-      </section>
+      </Island>
 
-      <section className="relative py-20 sm:py-28 bg-white dark:bg-[#070b14]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Reveal>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
-              {t("corp.final_cta.title")}
-            </h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto">
-              {t("corp.final_cta.subtitle")}
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                to="/onboarding"
-                className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5"
-              >
-                {t("corp.final_cta.primary")}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/faq"
-                className="corp-btn-secondary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-8 py-3.5"
-              >
-                {t("corp.faq_teaser.cta")}
-              </Link>
-            </div>
-            <p className="mt-5 text-sm text-slate-500 dark:text-slate-400 font-medium">{t("corp.final_cta.microcopy")}</p>
-          </Reveal>
-        </div>
-      </section>
-
-    </LandingLayout>
+      </LandingLayout>
   );
 }
