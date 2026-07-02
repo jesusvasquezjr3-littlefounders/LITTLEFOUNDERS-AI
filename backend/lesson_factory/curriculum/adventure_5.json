@@ -1,0 +1,103 @@
+{
+  "adventure": 5,
+  "title_es": "El Reino de los Titanes",
+  "title_en": "The Kingdom of Titans",
+  "age_range": "15-17",
+  "total_lessons": 576,
+  "primary_character": "zara_vex",
+  "world_description_es": "Un reino donde los jóvenes adultos enfrentan decisiones financieras reales: primer empleo, impuestos, crédito, inversiones serias. Zara Vex los guía hacia la independencia total.",
+  "overarching_narrative_es": "En el Reino de los Titanes no hay simulaciones. Las decisiones tienen consecuencias reales. Zara Vex, que empezó desde cero y construyó su propio imperio, comparte los secretos que nadie te enseña en la escuela.",
+
+  "sagas": [
+    {
+      "saga_number": 1,
+      "title_es": "La Vida Adulta Financiera",
+      "theme_es": "Primer Empleo, Nómina y Obligaciones",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 1, "title_es": "El Primer Empleo", "concept_es": "Cómo buscar trabajo: CV, entrevista, negociación de salario. Sueldo bruto vs neto. El primer cheque es menos de lo esperado.", "learning_objective_es": "El estudiante puede presentar un CV básico, hacer una entrevista y entender su nómina.", "key_vocabulary_es": ["sueldo bruto", "sueldo neto", "deducciones", "prestaciones", "negociación"], "lessons_count": 12},
+        {"topic_number": 2, "title_es": "Entendiendo la Nómina", "concept_es": "Desglose de recibo de nómina: salario base, IMSS, INFONAVIT, ISR, bonos, aguinaldo. Qué es obligatorio, qué es extra.", "learning_objective_es": "El estudiante puede interpretar completamente su recibo de nómina.", "key_vocabulary_es": ["IMSS", "INFONAVIT", "ISR", "aguinaldo", "nómina"], "lessons_count": 12},
+        {"topic_number": 3, "title_es": "El SAR y el Retiro", "concept_es": "El SAR es el ahorro para el retiro. AFORE: quién elige la tuya, cómo cambiarte, cómo aumentar aportaciones. El retiro se construye hoy.", "learning_objective_es": "El estudiante entiende el sistema de pensiones mexicano y puede tomar decisiones sobre su AFORE.", "key_vocabulary_es": ["SAR", "AFORE", "retiro", "pensión", "aportación voluntaria"], "lessons_count": 10},
+        {"topic_number": 4, "title_es": "El Impuesto Sobre la Renta (ISR)", "concept_es": "El ISR grava los ingresos. En relación de dependencia, el patrón lo retiene. Como freelancer, debes declararlo tú mismo. Tablas y cálculo básico.", "learning_objective_es": "El estudiante entiende cómo funciona el ISR en relación de dependencia y como independiente.", "key_vocabulary_es": ["ISR", "declaración", "retención", "deducción", "régimen fiscal"], "lessons_count": 10},
+        {"topic_number": 5, "title_es": "Freelance y Emprendimiento Formal", "concept_es": "Registrarse como persona física con actividad empresarial o RESICO. Emitir facturas, declarar ISR mensual. Las ventajas y trampas del freelance.", "learning_objective_es": "El estudiante puede formalizar una actividad económica básica en México.", "key_vocabulary_es": ["RFC", "RESICO", "factura", "CFDI", "persona física"], "lessons_count": 10},
+        {"topic_number": 6, "title_es": "El Presupuesto del Adulto Independiente", "concept_es": "Vivir solo o semi-solo: renta, servicios, comida, transporte, entretenimiento, emergencias. ¿Cuánto necesito ganar para vivir solo en mi ciudad?", "learning_objective_es": "El estudiante calcula el costo real de independencia en su contexto.", "key_vocabulary_es": ["independencia", "costo de vida", "renta", "servicios", "presupuesto adulto"], "lessons_count": 10},
+        {"topic_number": 7, "title_es": "Negociación Salarial", "concept_es": "Cómo investigar el salario justo para tu puesto, cómo hacer la negociación, cuándo aceptar y cuándo no. El salario de entrada marca la trayectoria.", "learning_objective_es": "El estudiante puede negociar su salario de forma asertiva y fundamentada.", "key_vocabulary_es": ["negociación", "salario de mercado", "contraoferta", "beneficios", "asertivo"], "lessons_count": 10},
+        {"topic_number": 8, "title_es": "Repaso: La Vida Adulta", "concept_es": "Repaso de empleo, nómina, impuestos e independencia.", "lessons_count": 2, "is_review_topic": true}
+      ]
+    },
+    {
+      "saga_number": 2,
+      "title_es": "El Crédito Inteligente",
+      "theme_es": "Crédito, Historial Crediticio y Deudas",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 9, "title_es": "El Buró de Crédito", "concept_es": "El historial crediticio es tu 'reputación financiera'. Buen historial = acceso a mejores créditos a menor tasa. Cómo se construye y cómo no destruirlo.", "learning_objective_es": "El estudiante entiende cómo funciona el Buró de Crédito y puede revisar su historial.", "key_vocabulary_es": ["Buró de Crédito", "historial", "score crediticio", "reporte", "puntualidad"], "lessons_count": 12},
+        {"topic_number": 10, "title_es": "La Tarjeta de Crédito Real", "concept_es": "CAT, fecha de corte, fecha límite de pago, pago mínimo trampa, intereses sobre saldo insoluto. La tarjeta de crédito: herramienta o trampa.", "learning_objective_es": "El estudiante puede usar una tarjeta de crédito de forma inteligente y sin pagar intereses.", "key_vocabulary_es": ["CAT", "fecha de corte", "pago total", "pago mínimo", "interés sobre saldo"], "lessons_count": 12},
+        {"topic_number": 11, "title_es": "Crédito al Consumo", "concept_es": "Créditos personales, crédito de nómina, ABCD de Profuturo. Cuándo tiene sentido pedir crédito y cuándo no.", "learning_objective_es": "El estudiante evalúa cuándo conviene un crédito personal y cuándo es una trampa.", "key_vocabulary_es": ["crédito personal", "tasa nominal", "tasa efectiva", "SOFOM", "liquidación"], "lessons_count": 10},
+        {"topic_number": 12, "title_es": "Estrategias para Salir de Deudas", "concept_es": "Método avalancha (pagar primero la de mayor tasa) vs bola de nieve (pagar primero la más pequeña). Consolidación de deudas.", "learning_objective_es": "El estudiante puede diseñar un plan para salir de deudas de forma óptima.", "key_vocabulary_es": ["avalancha", "bola de nieve", "consolidación", "renegociación", "quitas"], "lessons_count": 10},
+        {"topic_number": 13, "title_es": "El Crédito Hipotecario", "concept_es": "Para comprar casa: INFONAVIT, FOVISSSTE, hipoteca bancaria. Enganche, mensualidades, plazo. ¿Conviene más rentar o comprar?", "learning_objective_es": "El estudiante puede comparar opciones de crédito hipotecario y hacer el análisis rentar vs comprar.", "key_vocabulary_es": ["hipoteca", "INFONAVIT", "enganche", "plazo", "rentar vs comprar"], "lessons_count": 10},
+        {"topic_number": 14, "title_es": "Construir el Score Crediticio Desde Cero", "concept_es": "Estrategias para jóvenes sin historial: tarjeta garantizada, crédito de tienda, ser coacreditado. Los 5 factores del score.", "learning_objective_es": "El estudiante puede iniciar la construcción de un historial crediticio sólido.", "key_vocabulary_es": ["score", "tarjeta garantizada", "historial positivo", "coacreditado", "utilización"], "lessons_count": 10},
+        {"topic_number": 15, "title_es": "Repaso: Crédito Inteligente", "concept_es": "Repaso de crédito e historial.", "lessons_count": 2, "is_review_topic": true}
+      ]
+    },
+    {
+      "saga_number": 3,
+      "title_es": "El Hacedor de Impuestos",
+      "theme_es": "Sistema Fiscal Mexicano Real",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 16, "title_es": "El SAT y el RFC", "concept_es": "El SAT administra los impuestos en México. El RFC es tu ID fiscal. Todos los que trabajan deben tener RFC y cumplir obligaciones.", "learning_objective_es": "El estudiante puede tramitar su RFC y conoce sus obligaciones básicas ante el SAT.", "key_vocabulary_es": ["SAT", "RFC", "e.firma", "contraseña SAT", "buzón tributario"], "lessons_count": 10},
+        {"topic_number": 17, "title_es": "Declaración Anual de Personas Físicas", "concept_es": "Cómo hacer la declaración anual: ingresos, deducciones autorizadas (médicas, educativas, donativos), saldo a favor o a pagar.", "learning_objective_es": "El estudiante puede preparar su declaración anual básica.", "key_vocabulary_es": ["declaración anual", "deducción autorizada", "saldo a favor", "complementario", "plataforma SAT"], "lessons_count": 12},
+        {"topic_number": 18, "title_es": "El RESICO: Régimen para Jóvenes", "concept_es": "El RESICO es un régimen simplificado para personas físicas con ingresos hasta $3.5M. Tasas bajas (1-2.5%), fácil de cumplir.", "learning_objective_es": "El estudiante puede determinar si le conviene el RESICO y puede operar en él.", "key_vocabulary_es": ["RESICO", "tasa reducida", "ingresos bajo $3.5M", "simplificado", "bimestral"], "lessons_count": 10},
+        {"topic_number": 19, "title_es": "Deducciones Autorizadas Personales", "concept_es": "Gastos médicos, dentistas, lentes, colegiaturas, intereses hipotecarios, donativos. Guardar facturas durante el año para recuperar ISR.", "learning_objective_es": "El estudiante puede maximizar sus deducciones personales legalmente.", "key_vocabulary_es": ["deducción", "factura", "CFDI", "colegiaturas", "gastos médicos"], "lessons_count": 10},
+        {"topic_number": 20, "title_es": "Impuestos en la Inversión", "concept_es": "Los rendimientos de inversión pagan ISR. Cómo se retiene en cuentas bancarias, fondos, acciones. El ISR en el extranjero.", "learning_objective_es": "El estudiante entiende las implicaciones fiscales de sus inversiones.", "key_vocabulary_es": ["ISR inversiones", "retención", "exento", "dividendos", "ganancia de capital"], "lessons_count": 10},
+        {"topic_number": 21, "title_es": "Planeación Fiscal Legal", "concept_es": "Diferencia entre evasión fiscal (ilegal) y planeación fiscal (legal). Cómo pagar lo justo sin un peso de más ni de menos.", "learning_objective_es": "El estudiante aplica planeación fiscal básica para pagar impuestos justos.", "key_vocabulary_es": ["planeación fiscal", "evasión", "elusión", "optimización", "legal"], "lessons_count": 10},
+        {"topic_number": 22, "title_es": "Repaso: El Maestro de Impuestos", "concept_es": "Repaso del sistema fiscal.", "lessons_count": 4, "is_review_topic": true}
+      ]
+    },
+    {
+      "saga_number": 4,
+      "title_es": "El Portfolio Manager",
+      "theme_es": "Inversiones Avanzadas",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 23, "title_es": "Análisis Técnico Básico", "concept_es": "Gráficas de precios, soporte y resistencia, tendencias, medias móviles. Herramientas básicas del análisis técnico.", "learning_objective_es": "El estudiante puede interpretar una gráfica de precios y identificar tendencias.", "key_vocabulary_es": ["gráfica", "soporte", "resistencia", "tendencia", "media móvil"], "lessons_count": 10},
+        {"topic_number": 24, "title_es": "CETES Directo y Deuda Gubernamental", "concept_es": "CETES: el instrumento más seguro de inversión en México. Cómo invertir desde $100 en CETES Directo.", "learning_objective_es": "El estudiante puede abrir cuenta y realizar su primera inversión en CETES Directo.", "key_vocabulary_es": ["CETES", "tasa libre de riesgo", "subasta", "plazo", "CETES Directo"], "lessons_count": 10},
+        {"topic_number": 25, "title_es": "Acciones en México y EE.UU.", "concept_es": "Cómo comprar acciones en la BMV (GBM, Actinver) o en NYSE/NASDAQ (Bitso, Flink, Kuspit). Diferencias y costos.", "learning_objective_es": "El estudiante puede abrir una cuenta bursátil y realizar su primera operación en acciones.", "key_vocabulary_es": ["BMV", "NASDAQ", "broker", "comisión", "orden de compra"], "lessons_count": 10},
+        {"topic_number": 26, "title_es": "Fibras y Bienes Raíces Accesibles", "concept_es": "FIBRAS: invertir en bienes raíces desde $100. Diferencias con comprar propiedad directa. Rendimiento histórico y riesgo.", "learning_objective_es": "El estudiante puede evaluar una FIBRA como opción de inversión.", "key_vocabulary_es": ["FIBRA", "REIT", "dividendo", "propiedad fraccionada", "plusvalía"], "lessons_count": 10},
+        {"topic_number": 27, "title_es": "Criptomonedas Avanzado", "concept_es": "Bitcoin, Ethereum, stablecoins, DeFi básico. Cómo custodiar, cold wallet vs hot wallet. Regulación en México.", "learning_objective_es": "El estudiante puede operar criptomonedas de forma segura y entiende sus implicaciones fiscales.", "key_vocabulary_es": ["Bitcoin", "Ethereum", "wallet", "DeFi", "LAFINTECH"], "lessons_count": 10},
+        {"topic_number": 28, "title_es": "Estrategia DCA (Dollar Cost Averaging)", "concept_es": "Invertir una cantidad fija cada mes sin importar el precio. La estrategia más eficiente para la mayoría. Elimina el 'timing' del mercado.", "learning_objective_es": "El estudiante aplica DCA en un portafolio simulado y ve los resultados a 5 años.", "key_vocabulary_es": ["DCA", "aportación periódica", "promedio de costo", "sin timing", "largo plazo"], "lessons_count": 10},
+        {"topic_number": 29, "title_es": "Repaso: El Portfolio Manager", "concept_es": "Repaso de inversiones avanzadas.", "lessons_count": 6, "is_review_topic": true}
+      ]
+    },
+    {
+      "saga_number": 5,
+      "title_es": "El Fundador Avanzado",
+      "theme_es": "Emprendimiento Avanzado y Startups",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 30, "title_es": "Estructuras Corporativas", "concept_es": "SA, SAPI, SAS, SC. Cuándo y por qué constituir una empresa. La SAPI y las acciones como herramienta de financiamiento.", "learning_objective_es": "El estudiante puede elegir la estructura corporativa adecuada para una startup.", "key_vocabulary_es": ["SA", "SAPI", "SAS", "constitución", "accionistas"], "lessons_count": 10},
+        {"topic_number": 31, "title_es": "Valuación de Startups", "concept_es": "Cómo se valúa una startup que no tiene ingresos: tracción, equipo, mercado, tecnología. Métodos: DCF, comparables, VC method.", "learning_objective_es": "El estudiante puede hacer una valuación básica de startup y defender su número.", "key_vocabulary_es": ["valuación", "premoney", "postmoney", "dilución", "cap table"], "lessons_count": 10},
+        {"topic_number": 32, "title_es": "Rondas de Inversión", "concept_es": "Pre-seed, Seed, Serie A, B, C. Qué busca cada tipo de inversionista, qué dan y qué piden. Term sheet básico.", "learning_objective_es": "El estudiante entiende el ciclo de financiamiento de una startup.", "key_vocabulary_es": ["ronda", "seed", "Series A", "VC", "term sheet"], "lessons_count": 10},
+        {"topic_number": 33, "title_es": "El Pitch Deck Profesional", "concept_es": "Las 10 slides que todo pitch deck debe tener. Qué buscan los inversionistas en cada slide. Errores más comunes.", "learning_objective_es": "El estudiante construye un pitch deck de 10 slides para su startup.", "key_vocabulary_es": ["pitch deck", "problema", "solución", "traction", "ask"], "lessons_count": 10},
+        {"topic_number": 34, "title_es": "Indicadores Clave de un Negocio (KPIs)", "concept_es": "MRR, ARR, CAC, LTV, churn, NPS. Los números que dicen la verdad del negocio.", "learning_objective_es": "El estudiante puede calcular e interpretar los KPIs fundamentales de un negocio.", "key_vocabulary_es": ["MRR", "CAC", "LTV", "churn", "NPS"], "lessons_count": 10},
+        {"topic_number": 35, "title_es": "Ecosistema Emprendedor en México", "concept_es": "Fondeadoras, aceleradoras (Y Combinator México, 500 Startups), fondos de VC (IGNIA, Dux Capital), programas de gobierno (INADEM).", "learning_objective_es": "El estudiante puede navegar el ecosistema emprendedor mexicano para obtener recursos.", "key_vocabulary_es": ["aceleradora", "fondo VC", "ecosistema", "INADEM", "bootcamp"], "lessons_count": 10},
+        {"topic_number": 36, "title_es": "Repaso: El Fundador Avanzado", "concept_es": "Repaso de emprendimiento avanzado.", "lessons_count": 6, "is_review_topic": true}
+      ]
+    },
+    {
+      "saga_number": 6,
+      "title_es": "La Libertad Financiera",
+      "theme_es": "Construcción de Riqueza a Largo Plazo",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 37, "title_es": "¿Qué Es la Libertad Financiera?", "concept_es": "No depender de un salario para vivir. Los activos generan suficientes ingresos pasivos para cubrir todos los gastos. El número de la libertad.", "learning_objective_es": "El estudiante puede calcular su número de libertad financiera.", "key_vocabulary_es": ["libertad financiera", "número", "ingreso pasivo", "retiro temprano", "FIRE"], "lessons_count": 10},
+        {"topic_number": 38, "title_es": "El Movimiento FIRE", "concept_es": "Financial Independence, Retire Early. Estrategias: Lean FIRE, Fat FIRE, Barista FIRE. La regla del 4%.", "learning_objective_es": "El estudiante entiende el movimiento FIRE y puede calcular si es viable para él.", "key_vocabulary_es": ["FIRE", "regla del 4%", "tasa de ahorro", "retiro temprano", "SWR"], "lessons_count": 10},
+        {"topic_number": 39, "title_es": "Ingresos Pasivos Reales", "concept_es": "Dividendos, rentas, regalías, royalties digitales, negocios sin presencia activa. La diferencia entre ingreso activo y pasivo.", "learning_objective_es": "El estudiante puede identificar y construir al menos una fuente de ingreso pasivo.", "key_vocabulary_es": ["ingreso pasivo", "dividendo", "renta", "royalties", "flujo positivo"], "lessons_count": 12},
+        {"topic_number": 40, "title_es": "Planificación Patrimonial Básica", "concept_es": "Testamento, fideicomiso básico, seguros de vida, beneficiarios. Proteger lo construido para la siguiente generación.", "learning_objective_es": "El estudiante entiende la importancia de planificar la transferencia de patrimonio.", "key_vocabulary_es": ["testamento", "fideicomiso", "heredero", "beneficiario", "patrimonio"], "lessons_count": 10},
+        {"topic_number": 41, "title_es": "El Legado", "concept_es": "Más allá del dinero: cómo el conocimiento financiero y los valores son el mayor legado. La riqueza intergeneracional.", "learning_objective_es": "El estudiante reflexiona sobre el impacto de la educación financiera en las generaciones futuras.", "key_vocabulary_es": ["legado", "intergeneracional", "valores", "enseñar", "impacto"], "lessons_count": 10},
+        {"topic_number": 42, "title_es": "Repaso Final: El Titán", "concept_es": "Gran repaso de la Aventura 5 completa.", "lessons_count": 4, "is_review_topic": true}
+      ]
+    }
+  ]
+}

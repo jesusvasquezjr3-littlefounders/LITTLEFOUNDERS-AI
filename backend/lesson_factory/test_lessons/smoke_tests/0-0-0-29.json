@@ -1,0 +1,80 @@
+{
+  "lesson_code": "0-0-0-29",
+  "title_es": "Smoke Test: mystery_investment",
+  "title_en": "Smoke Test: mystery_investment",
+  "description_es": "Lección de prueba de renderizado para el tipo mystery_investment.",
+  "description_en": "Render smoke test for exercise type mystery_investment.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 29,
+  "content_es": [
+    {
+      "type": "mystery_investment",
+      "character_code": "liruf",
+      "content": {
+        "totalCoins": 100,
+        "boxes": [
+          {
+            "id": "b1",
+            "name": "Caja segura",
+            "risk": "low"
+          },
+          {
+            "id": "b2",
+            "name": "Caja riesgo medio",
+            "risk": "medium"
+          },
+          {
+            "id": "b3",
+            "name": "Caja sorpresa",
+            "risk": "high"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b1"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "mystery_investment",
+      "character_code": "liruf",
+      "content": {
+        "totalCoins": 100,
+        "boxes": [
+          {
+            "id": "b1",
+            "name": "Caja segura",
+            "risk": "low"
+          },
+          {
+            "id": "b2",
+            "name": "Caja riesgo medio",
+            "risk": "medium"
+          },
+          {
+            "id": "b3",
+            "name": "Caja sorpresa",
+            "risk": "high"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "b1"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

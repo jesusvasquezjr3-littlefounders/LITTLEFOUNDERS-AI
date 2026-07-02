@@ -25,6 +25,10 @@ VALID_EXERCISE_TYPES = [
     "inflation_simulator", "credit_score", "debt_strategy",
     "tax_puzzle", "salary_comparison", "spot_trap",
     "impact_meter", "mindset_comparison",
+    # Grupo 6 — Escenario Genérico (3 tipos)
+    "comparison", "case_study", "decision_challenge",
+    # Grupo 7 — Spatial (4 tipos)
+    "drag_drop", "sorting_buckets", "image_hotspot", "balance_scale",
 ]
 
 
@@ -72,6 +76,15 @@ REQUIRED_CONTENT_FIELDS = {
     "spot_trap": ["instruction"],
     "impact_meter": ["budget", "causes"],
     "mindset_comparison": ["instruction", "pair"],
+    # Grupo 6 — Escenario Genérico
+    "comparison": [],
+    "case_study": [],
+    "decision_challenge": ["scenario"],
+    # Grupo 7 — Spatial
+    "drag_drop": [],
+    "sorting_buckets": [],
+    "image_hotspot": [],
+    "balance_scale": [],
 }
 
 # Tipos que requieren correct_answer
@@ -83,6 +96,10 @@ TYPES_REQUIRING_CORRECT_ANSWER = [
     "expense_timeline", "goal_roadmap", "mystery_investment",
     "opportunity_cost", "market_reaction", "salary_comparison", "spot_trap",
     "credit_score",
+    # Grupo 6 — Escenario Genérico
+    "comparison", "case_study", "decision_challenge",
+    # Grupo 7 — Spatial
+    "drag_drop", "sorting_buckets", "image_hotspot", "balance_scale",
 ]
 
 # Tipos siempre verdaderos (exploratorios/educativos, no requieren correct_answer)

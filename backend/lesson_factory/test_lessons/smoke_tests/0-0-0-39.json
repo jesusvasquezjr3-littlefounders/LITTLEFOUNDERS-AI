@@ -1,0 +1,56 @@
+{
+  "lesson_code": "0-0-0-39",
+  "title_es": "Smoke Test: emergency_fund",
+  "title_en": "Smoke Test: emergency_fund",
+  "description_es": "Lección de prueba de renderizado para el tipo emergency_fund.",
+  "description_en": "Render smoke test for exercise type emergency_fund.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 39,
+  "content_es": [
+    {
+      "type": "emergency_fund",
+      "character_code": "liruf",
+      "content": {
+        "initialFund": 5000,
+        "events": [
+          {
+            "id": "ev1",
+            "text": "Se descompuso el auto.",
+            "cost": 2000
+          },
+          {
+            "id": "ev2",
+            "text": "Emergencia médica.",
+            "cost": 3500
+          }
+        ]
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "emergency_fund",
+      "character_code": "liruf",
+      "content": {
+        "initialFund": 5000,
+        "events": [
+          {
+            "id": "ev1",
+            "text": "Se descompuso el auto.",
+            "cost": 2000
+          },
+          {
+            "id": "ev2",
+            "text": "Emergencia médica.",
+            "cost": 3500
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "lesson_code": "0-0-0-42",
+  "title_es": "Smoke Test: inflation_simulator",
+  "title_en": "Smoke Test: inflation_simulator",
+  "description_es": "Lección de prueba de renderizado para el tipo inflation_simulator.",
+  "description_en": "Render smoke test for exercise type inflation_simulator.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 42,
+  "content_es": [
+    {
+      "type": "inflation_simulator",
+      "character_code": "liruf",
+      "content": {
+        "product": "Canasta básica",
+        "initialPrice": 1000,
+        "inflationRate": 5,
+        "years": 10
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "inflation_simulator",
+      "character_code": "liruf",
+      "content": {
+        "product": "Canasta básica",
+        "initialPrice": 1000,
+        "inflationRate": 5,
+        "years": 10
+      }
+    }
+  ]
+}

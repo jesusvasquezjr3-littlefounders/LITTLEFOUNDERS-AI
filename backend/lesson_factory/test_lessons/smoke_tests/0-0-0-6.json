@@ -1,0 +1,82 @@
+{
+  "lesson_code": "0-0-0-6",
+  "title_es": "Smoke Test: sequencing",
+  "title_en": "Smoke Test: sequencing",
+  "description_es": "Lección de prueba de renderizado para el tipo sequencing.",
+  "description_en": "Render smoke test for exercise type sequencing.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 6,
+  "content_es": [
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Ordena los pasos correctamente.",
+        "items": [
+          {
+            "id": "s1",
+            "text": "Paso 1"
+          },
+          {
+            "id": "s2",
+            "text": "Paso 2"
+          },
+          {
+            "id": "s3",
+            "text": "Paso 3"
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "s1",
+          "s2",
+          "s3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "sequencing",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Ordena los pasos correctamente.",
+        "items": [
+          {
+            "id": "s1",
+            "text": "Paso 1"
+          },
+          {
+            "id": "s2",
+            "text": "Paso 2"
+          },
+          {
+            "id": "s3",
+            "text": "Paso 3"
+          }
+        ]
+      },
+      "correct_answer": {
+        "sequence": [
+          "s1",
+          "s2",
+          "s3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

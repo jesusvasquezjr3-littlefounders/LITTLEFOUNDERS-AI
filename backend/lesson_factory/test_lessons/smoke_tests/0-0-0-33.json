@@ -1,0 +1,52 @@
+{
+  "lesson_code": "0-0-0-33",
+  "title_es": "Smoke Test: portfolio_builder",
+  "title_en": "Smoke Test: portfolio_builder",
+  "description_es": "Lección de prueba de renderizado para el tipo portfolio_builder.",
+  "description_en": "Render smoke test for exercise type portfolio_builder.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 33,
+  "content_es": [
+    {
+      "type": "portfolio_builder",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "Construye tu portafolio de inversión.",
+        "options": [
+          {
+            "id": "a",
+            "text": "100% acciones."
+          },
+          {
+            "id": "b",
+            "text": "60% acciones, 40% bonos."
+          }
+        ]
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "portfolio_builder",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "Construye tu portafolio de inversión.",
+        "options": [
+          {
+            "id": "a",
+            "text": "100% acciones."
+          },
+          {
+            "id": "b",
+            "text": "60% acciones, 40% bonos."
+          }
+        ]
+      }
+    }
+  ]
+}

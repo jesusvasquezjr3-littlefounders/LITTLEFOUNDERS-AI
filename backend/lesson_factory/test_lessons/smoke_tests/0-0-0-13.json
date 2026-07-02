@@ -1,0 +1,42 @@
+{
+  "lesson_code": "0-0-0-13",
+  "title_es": "Smoke Test: interest_calculator",
+  "title_en": "Smoke Test: interest_calculator",
+  "description_es": "Lección de prueba de renderizado para el tipo interest_calculator.",
+  "description_en": "Render smoke test for exercise type interest_calculator.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 13,
+  "content_es": [
+    {
+      "type": "interest_calculator",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "Calcula el interés simple.",
+        "parameters": {
+          "principal": 100,
+          "rate": 5,
+          "time": 2
+        }
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "interest_calculator",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "Calcula el interés simple.",
+        "parameters": {
+          "principal": 100,
+          "rate": 5,
+          "time": 2
+        }
+      }
+    }
+  ]
+}

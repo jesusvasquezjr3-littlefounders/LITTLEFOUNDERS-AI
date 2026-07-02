@@ -1,0 +1,450 @@
+{
+  "adventure": 1,
+  "title_es": "El Archipiélago del Trueque",
+  "title_en": "The Barter Archipelago",
+  "age_range": "5-7",
+  "total_lessons": 480,
+  "primary_character": "liruf",
+  "world_description_es": "Un archipiélago mágico donde cada isla enseña algo sobre el dinero. Liruf, el dinosaurio explorador, acompaña al niño en cada aventura.",
+  "overarching_narrative_es": "Liruf encontró un mapa del tesoro. Cada isla del archipiélago guarda un secreto sobre el dinero. Para llegar al gran cofre del tesoro, hay que aprender todos los secretos.",
+
+  "lessons_per_topic_default": 9,
+  "topics_per_saga": "variable",
+
+  "sagas": [
+    {
+      "saga_number": 1,
+      "title_es": "Detectives del Tesoro",
+      "title_en": "Treasury Detectives",
+      "theme_es": "Reconocimiento del dinero",
+      "description_es": "Aprender a identificar qué es el dinero, sus formas, colores, y dónde vive.",
+      "lessons_target": 96,
+      "topics": [
+        {
+          "topic_number": 1,
+          "display_number": "1-1-1",
+          "title_es": "Lecciones Introductorias",
+          "title_en": "Introductory Lessons",
+          "concept_es": "Presentación de la app, del personaje Liruf y del mundo LittleFounders. Qué vamos a aprender juntos.",
+          "learning_objective_es": "El niño sabe que va a aprender sobre el dinero con Liruf y se siente emocionado.",
+          "key_vocabulary_es": ["dinero", "aprender", "aventura", "amigo", "Liruf"],
+          "prior_knowledge_es": "Ninguno. Primera vez en la app.",
+          "lessons_count": 4,
+          "lesson_blueprints": [
+            {
+              "lesson_number": 1,
+              "micro_objective_es": "Conocer a Liruf y saber que vamos a aprender sobre el dinero",
+              "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"],
+              "scenario_es": "Liruf aparece en una playa tropical y dice que encontró un mapa del tesoro",
+              "key_interaction_es": "El niño toca a Liruf para conocerlo. Responde si el dinero es algo bueno para aprender."
+            },
+            {
+              "lesson_number": 2,
+              "micro_objective_es": "Entender que el dinero sirve para comprar cosas",
+              "activity_sequence": ["intro_narrative", "multiple_choice", "tap_action", "intro_narrative"],
+              "scenario_es": "Liruf va a la tienda y quiere comprar una manzana",
+              "key_interaction_es": "Elegir qué se necesita para comprar: dinero, una canción, o un abrazo. Tocar los objetos que se pueden comprar con dinero."
+            },
+            {
+              "lesson_number": 3,
+              "micro_objective_es": "Reconocer que el dinero tiene formas especiales: monedas y billetes",
+              "activity_sequence": ["intro_narrative", "true_false", "matching_pairs", "intro_narrative"],
+              "scenario_es": "Liruf abre su alcancía y muestra lo que hay dentro",
+              "key_interaction_es": "Emparejar: alcancía con moneda, billetera con billete."
+            },
+            {
+              "lesson_number": 4,
+              "micro_objective_es": "Saber que el dinero se guarda con cuidado",
+              "activity_sequence": ["intro_narrative", "tap_action", "sequencing", "intro_narrative"],
+              "scenario_es": "Liruf encuentra dinero en el suelo y hay que decidir qué hacer",
+              "key_interaction_es": "Secuenciar: encontrar moneda → limpiarla → guardarla en la alcancía."
+            }
+          ]
+        },
+        {
+          "topic_number": 2,
+          "display_number": "1-1-2",
+          "title_es": "Formas y Colores",
+          "title_en": "Shapes and Colors",
+          "concept_es": "Las monedas son redondas y brillantes. Los billetes son rectangulares y de papel. Cada uno se ve diferente.",
+          "learning_objective_es": "El niño distingue una moneda de un billete solo por su forma y material.",
+          "key_vocabulary_es": ["moneda", "billete", "redondo", "rectángulo", "brillante"],
+          "prior_knowledge_es": "Sabe que existe el dinero.",
+          "lessons_count": 9,
+          "lesson_blueprints": [
+            {
+              "lesson_number": 1,
+              "micro_objective_es": "Identificar que las monedas son redondas",
+              "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"],
+              "scenario_es": "Liruf tiene una bolsa llena de objetos. ¿Cuáles son redondos como una moneda?",
+              "key_interaction_es": "Tocar todos los objetos redondos entre círculos, cuadrados y triángulos."
+            },
+            {
+              "lesson_number": 2,
+              "micro_objective_es": "Identificar que los billetes son rectangulares",
+              "activity_sequence": ["intro_narrative", "tap_action", "multiple_choice", "intro_narrative"],
+              "scenario_es": "Liruf encuentra papeles de diferentes formas. ¿Cuál parece un billete?",
+              "key_interaction_es": "Tocar los rectángulos. Elegir cuál se parece más a un billete."
+            },
+            {
+              "lesson_number": 3,
+              "micro_objective_es": "Distinguir moneda de billete por su forma",
+              "activity_sequence": ["intro_narrative", "matching_pairs", "true_false", "intro_narrative"],
+              "scenario_es": "Liruf mezcló sus monedas y billetes. Hay que ordenarlos.",
+              "key_interaction_es": "Emparejar: 'redondo y brillante' con moneda, 'rectangular y de papel' con billete."
+            },
+            {
+              "lesson_number": 4,
+              "micro_objective_es": "Identificar la moneda por su material brillante/metálico",
+              "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"],
+              "scenario_es": "Sol brilla en el archipiélago. Liruf ve cosas brillantes en la arena.",
+              "key_interaction_es": "Tocar solo las cosas brillantes (monedas) entre objetos de diferentes materiales."
+            },
+            {
+              "lesson_number": 5,
+              "micro_objective_es": "Identificar el billete por su material de papel",
+              "activity_sequence": ["intro_narrative", "tap_action", "multiple_choice", "intro_narrative"],
+              "scenario_es": "Liruf tiene una colección de papeles. ¿Cuáles son dinero de papel?",
+              "key_interaction_es": "Tocar los papeles rectangulares entre objetos de plástico, metal y papel."
+            },
+            {
+              "lesson_number": 6,
+              "micro_objective_es": "Clasificar objetos como moneda o billete",
+              "activity_sequence": ["intro_narrative", "matching_pairs", "tap_action", "intro_narrative"],
+              "scenario_es": "El mercado de la isla tiene monedas y billetes mezclados. Hay que separarlos.",
+              "key_interaction_es": "Poner cada objeto en su caja: 'Monedas' o 'Billetes'."
+            },
+            {
+              "lesson_number": 7,
+              "micro_objective_es": "Identificar que las monedas son más pequeñas que los billetes",
+              "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"],
+              "scenario_es": "Liruf compara su mano con una moneda y un billete.",
+              "key_interaction_es": "¿Verdadero o falso? Los billetes son más grandes que las monedas."
+            },
+            {
+              "lesson_number": 8,
+              "micro_objective_es": "Reconocer que a pesar del tamaño, el valor puede ser diferente",
+              "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"],
+              "scenario_es": "Liruf tiene una moneda pequeña de $10 y un billete grande de $5. ¿Cuál es más valioso?",
+              "key_interaction_es": "Descubrir que el tamaño no determina el valor. La respuesta sorprende."
+            },
+            {
+              "lesson_number": 9,
+              "micro_objective_es": "Repaso: identificar moneda vs billete con confianza",
+              "activity_sequence": ["intro_narrative", "tap_action", "matching_pairs", "true_false", "intro_narrative"],
+              "scenario_es": "Liruf hace un examen divertido de Detectives del Tesoro.",
+              "key_interaction_es": "Mezcla de los 3 tipos de actividad anteriores como revisión general."
+            }
+          ]
+        },
+        {
+          "topic_number": 3,
+          "display_number": "1-1-3",
+          "title_es": "El Sonido del Dinero",
+          "title_en": "The Sound of Money",
+          "concept_es": "Las monedas hacen un sonido especial (clinc) cuando se juntan o caen. Los billetes no hacen ruido. El sonido ayuda a reconocer el dinero.",
+          "learning_objective_es": "El niño asocia el sonido metálico con las monedas y entiende que los billetes son silenciosos.",
+          "key_vocabulary_es": ["sonido", "clinc", "metal", "silencio", "moneda"],
+          "prior_knowledge_es": "Distingue monedas de billetes por forma.",
+          "lessons_count": 9,
+          "lesson_blueprints": [
+            {"lesson_number": 1, "micro_objective_es": "Asociar el sonido 'clinc' con las monedas", "activity_sequence": ["intro_narrative", "true_false", "tap_action", "intro_narrative"], "scenario_es": "Liruf deja caer monedas en una alcancía y escuchan el sonido juntos.", "key_interaction_es": "¿Cuál objeto hace 'clinc' cuando cae?"},
+            {"lesson_number": 2, "micro_objective_es": "Reconocer que los billetes no hacen sonido metálico", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"], "scenario_es": "Liruf lanza un billete al aire. ¿Qué escucha?", "key_interaction_es": "Elegir el sonido correcto del billete: silencio, clinc, o splash."},
+            {"lesson_number": 3, "micro_objective_es": "Diferenciar sonidos: moneda vs billete", "activity_sequence": ["intro_narrative", "matching_pairs", "true_false", "intro_narrative"], "scenario_es": "La isla tiene una caja de sonidos. ¿Qué sonido pertenece a qué?", "key_interaction_es": "Emparejar sonido 'clinc' con moneda, sonido suave con billete."},
+            {"lesson_number": 4, "micro_objective_es": "Identificar que muchas monedas juntas hacen más ruido", "activity_sequence": ["intro_narrative", "true_false", "sequencing", "intro_narrative"], "scenario_es": "Liruf va llenando su alcancía una moneda a la vez.", "key_interaction_es": "Ordenar de menos a más ruido según cuántas monedas hay."},
+            {"lesson_number": 5, "micro_objective_es": "Asociar el peso de las monedas con su material metálico", "activity_sequence": ["intro_narrative", "multiple_choice", "true_false", "intro_narrative"], "scenario_es": "Liruf tiene una bolsa con monedas y una con billetes. ¿Cuál pesa más?", "key_interaction_es": "Elegir cuál bolsa es más pesada y por qué."},
+            {"lesson_number": 6, "micro_objective_es": "Reconocer una moneda en la oscuridad por su tacto y sonido", "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"], "scenario_es": "Liruf busca su dinero en una cueva oscura, solo con las manos.", "key_interaction_es": "Tocar el objeto correcto basándose solo en la descripción de textura."},
+            {"lesson_number": 7, "micro_objective_es": "Saber que el sonido del dinero es señal de que es real", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"], "scenario_es": "Un personaje quiere engañar a Liruf con monedas de plástico. ¿Son reales?", "key_interaction_es": "Distinguir moneda real (hace clinc) de moneda de juguete (no hace clinc)."},
+            {"lesson_number": 8, "micro_objective_es": "Entender que el dinero digital no hace sonido pero también es dinero", "activity_sequence": ["intro_narrative", "true_false", "matching_pairs", "intro_narrative"], "scenario_es": "El papá de Liruf paga con el teléfono. ¿Es dinero aunque no suene?", "key_interaction_es": "Emparejar formas de dinero: moneda-clinc, billete-silencio, teléfono-bip."},
+            {"lesson_number": 9, "micro_objective_es": "Repaso sensorial: identificar dinero por forma, material y sonido", "activity_sequence": ["intro_narrative", "multiple_choice", "matching_pairs", "true_false", "intro_narrative"], "scenario_es": "Gran repaso sensorial de las 3 pistas para reconocer el dinero.", "key_interaction_es": "Actividades combinadas sobre las 3 pistas."}
+          ]
+        },
+        {
+          "topic_number": 4,
+          "display_number": "1-1-4",
+          "title_es": "Números en el Dinero",
+          "title_en": "Numbers on Money",
+          "concept_es": "Las monedas y billetes tienen números que indican cuánto valen. El número 5 en una moneda significa que vale 5.",
+          "learning_objective_es": "El niño puede leer el número de una moneda o billete y saber cuánto vale.",
+          "key_vocabulary_es": ["número", "valor", "dice", "cuánto vale", "1", "2", "5", "10"],
+          "prior_knowledge_es": "Reconoce monedas y billetes. Puede contar hasta 10.",
+          "lessons_count": 9,
+          "lesson_blueprints": [
+            {"lesson_number": 1, "micro_objective_es": "Ver que las monedas tienen un número escrito", "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"], "scenario_es": "Liruf usa una lupa para ver los números en sus monedas.", "key_interaction_es": "Tocar las monedas que tienen números."},
+            {"lesson_number": 2, "micro_objective_es": "Reconocer la moneda de $1", "activity_sequence": ["intro_narrative", "multiple_choice", "tap_action", "intro_narrative"], "scenario_es": "Liruf quiere comprar un dulce que cuesta $1. ¿Qué moneda necesita?", "key_interaction_es": "Elegir la moneda con el número '1' entre varias opciones."},
+            {"lesson_number": 3, "micro_objective_es": "Reconocer la moneda de $2", "activity_sequence": ["intro_narrative", "matching_pairs", "true_false", "intro_narrative"], "scenario_es": "Liruf encuentra dos monedas distintas. Emparejarlas con sus números.", "key_interaction_es": "Emparejar moneda de $1 con '1' y moneda de $2 con '2'."},
+            {"lesson_number": 4, "micro_objective_es": "Reconocer la moneda de $5", "activity_sequence": ["intro_narrative", "multiple_choice", "tap_action", "intro_narrative"], "scenario_es": "En la tienda hay precios: $1, $2, $5. Liruf tiene solo la de $5.", "key_interaction_es": "Identificar qué puede comprar con la moneda de $5."},
+            {"lesson_number": 5, "micro_objective_es": "Reconocer el billete de $10", "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"], "scenario_es": "El abuelo de Liruf le regala su primer billete de $10.", "key_interaction_es": "Tocar el billete de $10 entre varios billetes de diferentes tamaños y colores."},
+            {"lesson_number": 6, "micro_objective_es": "Ordenar $1, $2, $5 de menor a mayor valor", "activity_sequence": ["intro_narrative", "sequencing", "true_false", "intro_narrative"], "scenario_es": "Liruf organiza su colección de monedas por valor.", "key_interaction_es": "Ordenar de menor a mayor: $1, $2, $5."},
+            {"lesson_number": 7, "micro_objective_es": "Saber que $10 es más que $5", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"], "scenario_es": "¿Con qué puedo comprar más cosas, con $5 o con $10?", "key_interaction_es": "Comparar cuál alcanza para más."},
+            {"lesson_number": 8, "micro_objective_es": "Emparejar número con moneda o billete correcto", "activity_sequence": ["intro_narrative", "matching_pairs", "tap_action", "intro_narrative"], "scenario_es": "El mapa del tesoro tiene números. Hay que encontrar las monedas correctas.", "key_interaction_es": "Emparejar $1, $2, $5, $10 con su imagen."},
+            {"lesson_number": 9, "micro_objective_es": "Repaso: leer el valor de cualquier moneda o billete hasta $10", "activity_sequence": ["intro_narrative", "multiple_choice", "matching_pairs", "true_false", "intro_narrative"], "scenario_es": "Quiz de Detective del Tesoro: ¿cuánto vale cada moneda?", "key_interaction_es": "Repaso completo de $1 a $10."}
+          ]
+        },
+        {
+          "topic_number": 5,
+          "display_number": "1-1-5",
+          "title_es": "Grande No Es Más Valioso",
+          "title_en": "Bigger Is Not More Valuable",
+          "concept_es": "El tamaño físico del dinero no determina su valor. Una moneda pequeña de $10 vale más que un billete grande de $5.",
+          "learning_objective_es": "El niño entiende que hay que leer el número para saber el valor, no mirar el tamaño.",
+          "key_vocabulary_es": ["tamaño", "valor", "número", "más grande", "vale más"],
+          "prior_knowledge_es": "Reconoce los valores $1, $2, $5, $10.",
+          "lessons_count": 9,
+          "lesson_blueprints": [
+            {"lesson_number": 1, "micro_objective_es": "Ver que una moneda grande puede valer menos que una pequeña", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"], "scenario_es": "Liruf encuentra una moneda muy grande de $1 y una pequeñita de $5. ¿Cuál lleva?", "key_interaction_es": "Elegir cuál es más valiosa aunque sea más pequeña."},
+            {"lesson_number": 2, "micro_objective_es": "Confirmar que hay que leer el número para saber el valor", "activity_sequence": ["intro_narrative", "tap_action", "true_false", "intro_narrative"], "scenario_es": "Un amigo de Liruf dice 'yo siempre elijo la más grande'. ¿Tiene razón?", "key_interaction_es": "Tocar el número en la moneda para saber cuánto vale realmente."},
+            {"lesson_number": 3, "micro_objective_es": "Practicar eligiendo la moneda de mayor valor aunque sea más pequeña", "activity_sequence": ["intro_narrative", "multiple_choice", "matching_pairs", "intro_narrative"], "scenario_es": "Liruf puede quedarse con UNA moneda. ¿Cuál elige para comprar más cosas?", "key_interaction_es": "Elegir la moneda de mayor valor entre pares de diferente tamaño."},
+            {"lesson_number": 4, "micro_objective_es": "Entender que el color tampoco determina el valor", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "intro_narrative"], "scenario_es": "En la isla hay monedas doradas de $1 y plateadas de $5. ¿Cuál prefiero?", "key_interaction_es": "Elegir por valor, no por color."},
+            {"lesson_number": 5, "micro_objective_es": "Comparar billete vs moneda: el billete puede valer menos", "activity_sequence": ["intro_narrative", "true_false", "tap_action", "intro_narrative"], "scenario_es": "Liruf tiene un billete de $5 y una moneda de $10. ¿Cuál es más valioso?", "key_interaction_es": "Tocar el que vale más entre los dos."},
+            {"lesson_number": 6, "micro_objective_es": "Practicar la regla: 'lee el número, eso es lo que vale'", "activity_sequence": ["intro_narrative", "matching_pairs", "true_false", "intro_narrative"], "scenario_es": "Un robot en la isla pregunta: ¿cuánto vale esto? Solo mira el número.", "key_interaction_es": "Emparejar cada moneda/billete con su valor correcto."},
+            {"lesson_number": 7, "micro_objective_es": "Aplicar el conocimiento en una situación de compra real", "activity_sequence": ["intro_narrative", "multiple_choice", "true_false", "intro_narrative"], "scenario_es": "En la tienda hay dulces a $5. Liruf tiene una moneda grande de $2 y una pequeña de $5.", "key_interaction_es": "Elegir cuál moneda alcanza para el dulce."},
+            {"lesson_number": 8, "micro_objective_es": "Evitar ser engañado por el tamaño en un mercado", "activity_sequence": ["intro_narrative", "multiple_choice", "tap_action", "intro_narrative"], "scenario_es": "Un vendedor quiere darle la moneda más grande a cambio de la de mayor valor. ¿Es justo?", "key_interaction_es": "Detectar que no es justo y elegir quedarse con la de mayor valor."},
+            {"lesson_number": 9, "micro_objective_es": "Repaso: valor vs tamaño en diferentes situaciones", "activity_sequence": ["intro_narrative", "true_false", "multiple_choice", "matching_pairs", "intro_narrative"], "scenario_es": "Gran desafío del Detective: ¿Puedes evitar ser engañado por el tamaño?", "key_interaction_es": "Serie de preguntas variadas sobre valor vs tamaño."}
+          ]
+        },
+        {
+          "topic_number": 6,
+          "display_number": "1-1-6",
+          "title_es": "Caras Famosas",
+          "title_en": "Famous Faces",
+          "concept_es": "Los billetes y monedas tienen retratos de personas o símbolos nacionales importantes. Eso hace al dinero especial y difícil de falsificar.",
+          "learning_objective_es": "El niño reconoce que el dinero tiene imágenes de personas o símbolos y entiende que eso lo hace auténtico.",
+          "key_vocabulary_es": ["retrato", "símbolo", "águila", "monumento", "auténtico", "falso"],
+          "prior_knowledge_es": "Reconoce monedas y billetes. Sabe leer sus valores.",
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 7,
+          "display_number": "1-1-7",
+          "title_es": "El Símbolo Mágico",
+          "title_en": "The Magic Symbol",
+          "concept_es": "El signo $ significa 'pesos' (o dólares). Cuando ves $5, significa 5 pesos. El $ siempre va junto al número del precio.",
+          "learning_objective_es": "El niño reconoce el símbolo $ y entiende que significa que el número es dinero.",
+          "key_vocabulary_es": ["$", "signo", "pesos", "precio", "cuesta"],
+          "prior_knowledge_es": "Puede leer números hasta 20.",
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 8,
+          "display_number": "1-1-8",
+          "title_es": "Dinero de Juguete vs. Real",
+          "title_en": "Toy Money vs. Real Money",
+          "concept_es": "El dinero de juguete (de juegos de mesa, impreso en papel) no sirve para comprar en tiendas reales. Solo el dinero real tiene valor de verdad.",
+          "learning_objective_es": "El niño distingue dinero real de imitaciones y entiende que solo el real funciona para comprar.",
+          "key_vocabulary_es": ["real", "juguete", "de verdad", "juego", "tienda real"],
+          "prior_knowledge_es": "Conoce el concepto de comprar con dinero.",
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 9,
+          "display_number": "1-1-9",
+          "title_es": "Cuidando el Tesoro",
+          "title_en": "Taking Care of the Treasure",
+          "concept_es": "El dinero se cuida: no se arruga, no se rompe, no se dibuja. Un billete roto o muy sucio puede dejar de valer.",
+          "learning_objective_es": "El niño adopta hábitos de cuidado del dinero: guardarlo, no maltratarlo, tenerlo en un lugar seguro.",
+          "key_vocabulary_es": ["cuidar", "guardar", "limpio", "arrugado", "roto", "alcancía"],
+          "prior_knowledge_es": "Sabe qué es el dinero real.",
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 10,
+          "display_number": "1-1-10",
+          "title_es": "La Casa del Dinero",
+          "title_en": "The Home of Money",
+          "concept_es": "El dinero tiene lugares específicos donde vive: la alcancía (para niños), la billetera (para adultos), el banco (para guardar mucho dinero).",
+          "learning_objective_es": "El niño sabe en qué contenedor guardar su dinero y para qué sirve cada uno.",
+          "key_vocabulary_es": ["alcancía", "billetera", "banco", "guardar", "seguro"],
+          "prior_knowledge_es": "Cuida su dinero.",
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 11,
+          "display_number": "1-1-11",
+          "title_es": "Repaso: Detective del Tesoro",
+          "title_en": "Review: Treasury Detective",
+          "concept_es": "Repaso integrado de toda la Saga 1. El niño demuestra que puede identificar dinero, leer su valor, y cuidarlo.",
+          "learning_objective_es": "El niño supera el Reto Detective: identifica, valora y cuida el dinero.",
+          "key_vocabulary_es": ["repaso", "reto", "detective", "dinero", "valor"],
+          "prior_knowledge_es": "Todo lo de la Saga 1.",
+          "lessons_count": 10,
+          "is_review_topic": true
+        }
+      ]
+    },
+
+    {
+      "saga_number": 2,
+      "title_es": "El Origen de las Cosas",
+      "title_en": "The Origin of Things",
+      "theme_es": "Valor y Trabajo",
+      "description_es": "Entender de dónde viene el dinero: del trabajo, del esfuerzo, de hacer algo útil para otros.",
+      "lessons_target": 96,
+      "topics": [
+        {
+          "topic_number": 12,
+          "display_number": "1-2-12",
+          "title_es": "Todo Tiene un Dueño",
+          "title_en": "Everything Has an Owner",
+          "concept_es": "Las cosas tienen dueño. Tomar algo de otro sin permiso no está bien. El dinero también tiene dueño.",
+          "learning_objective_es": "El niño entiende el concepto de propiedad y que respetar lo ajeno es fundamental.",
+          "key_vocabulary_es": ["dueño", "mío", "tuyo", "permiso", "respetar"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 13,
+          "display_number": "1-2-13",
+          "title_es": "Antes de la Tienda",
+          "title_en": "Before the Store",
+          "concept_es": "Las cosas que compramos en la tienda fueron hechas por alguien: el granjero cultiva la comida, el constructor hace casas, el sastre hace ropa.",
+          "learning_objective_es": "El niño entiende que detrás de cada producto hay trabajo humano.",
+          "key_vocabulary_es": ["granjero", "constructor", "trabajo", "hacer", "producto"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 14,
+          "display_number": "1-2-14",
+          "title_es": "¿De Dónde Viene la Leche?",
+          "title_en": "Where Does Milk Come From?",
+          "concept_es": "Cadena de valor simple: la vaca da leche → el granjero la recoge → la fábrica la pone en caja → el camión la lleva → la tienda la vende → yo la compro.",
+          "learning_objective_es": "El niño puede describir cómo llega un producto simple al hogar.",
+          "key_vocabulary_es": ["cadena", "pasos", "granjero", "fábrica", "tienda"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 15,
+          "display_number": "1-2-15",
+          "title_es": "El Dinero No Es Mágico",
+          "title_en": "Money Is Not Magic",
+          "concept_es": "El dinero no aparece de la nada. Alguien tiene que trabajar para ganarlo. Papá y mamá trabajan para tener dinero.",
+          "learning_objective_es": "El niño entiende que el dinero es el resultado del trabajo, no algo que simplemente aparece.",
+          "key_vocabulary_es": ["trabajo", "ganar", "esfuerzo", "papá", "mamá"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 16,
+          "display_number": "1-2-16",
+          "title_es": "Trabajo Visible",
+          "title_en": "Visible Work",
+          "concept_es": "Algunos trabajos se ven claramente: el cajero cobra en la tienda, el policía cuida la calle, la maestra enseña en la escuela.",
+          "learning_objective_es": "El niño puede nombrar trabajos visibles y lo que hace cada uno.",
+          "key_vocabulary_es": ["cajero", "policía", "maestra", "oficio", "servicio"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 17,
+          "display_number": "1-2-17",
+          "title_es": "Trabajo Invisible",
+          "title_en": "Invisible Work",
+          "concept_es": "Algunos trabajos no se ven directamente pero son igual de importantes: el programador hace que las apps funcionen, el contador cuida los números de las empresas.",
+          "learning_objective_es": "El niño entiende que hay trabajos que no se ven pero que son necesarios.",
+          "key_vocabulary_es": ["invisible", "programador", "contador", "necesario", "importante"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 18,
+          "display_number": "1-2-18",
+          "title_es": "El Esfuerzo Cansa",
+          "title_en": "Effort Is Tiring",
+          "concept_es": "Trabajar requiere esfuerzo. Por eso merecemos descanso. Por eso el dinero que ganamos con esfuerzo es valioso.",
+          "learning_objective_es": "El niño valora el esfuerzo detrás del dinero y empatiza con los trabajadores.",
+          "key_vocabulary_es": ["esfuerzo", "cansado", "descanso", "merecer", "valioso"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 19,
+          "display_number": "1-2-19",
+          "title_es": "Tareas de Equipo",
+          "title_en": "Team Tasks",
+          "concept_es": "En casa, todos ayudan y eso tiene valor. Hacer tareas del hogar es una forma de contribuir. Algunos papás dan 'domingo' (mesada) por ayudar.",
+          "learning_objective_es": "El niño conecta su contribución en casa con el concepto de ganar dinero por trabajo.",
+          "key_vocabulary_es": ["tarea", "equipo", "ayudar", "contribuir", "domingo"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 20,
+          "display_number": "1-2-20",
+          "title_es": "Ganar vs. Encontrar",
+          "title_en": "Earning vs. Finding",
+          "concept_es": "Diferencia entre dinero ganado (por trabajo) y dinero encontrado (suerte, regalo). El dinero ganado es más predecible y sostenible.",
+          "learning_objective_es": "El niño distingue ingresos regulares de ingresos extraordinarios.",
+          "key_vocabulary_es": ["ganar", "encontrar", "trabajo", "regalo", "suerte"],
+          "lessons_count": 9
+        },
+        {
+          "topic_number": 21,
+          "display_number": "1-2-21",
+          "title_es": "El Regalo",
+          "title_en": "The Gift",
+          "concept_es": "Recibir dinero como regalo (cumpleaños, navidad) es un ingreso especial. ¿Qué hacer con él? Gastarlo todo de golpe o guardarlo para algo mejor.",
+          "learning_objective_es": "El niño practica la primera decisión financiera: gastar todo vs guardar parte.",
+          "key_vocabulary_es": ["regalo", "guardar", "gastar", "decidir", "cumpleaños"],
+          "lessons_count": 12
+        }
+      ]
+    },
+
+    {
+      "saga_number": 3,
+      "title_es": "El Mercado de la Selva",
+      "title_en": "The Jungle Market",
+      "theme_es": "Intercambio Básico y Compra",
+      "description_es": "Aprender cómo funciona el intercambio y el proceso completo de una compra.",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 22, "display_number": "1-3-22", "title_es": "El Cuento del Trueque", "title_en": "The Barter Story", "concept_es": "Antes del dinero, la gente intercambiaba cosas directamente. Yo te doy mis canicas, tú me das tus estampas.", "learning_objective_es": "El niño entiende el trueque como forma primitiva de intercambio.", "key_vocabulary_es": ["trueque", "intercambio", "cambiar", "dar", "recibir"], "lessons_count": 9},
+        {"topic_number": 23, "display_number": "1-3-23", "title_es": "Cuando el Trueque Falla", "title_en": "When Barter Fails", "concept_es": "'No quiero tus canicas.' El problema del trueque: no siempre las dos personas quieren lo que tiene la otra.", "learning_objective_es": "El niño entiende por qué el trueque tiene limitaciones.", "key_vocabulary_es": ["problema", "no quiero", "límite", "acuerdo", "necesidad"], "lessons_count": 9},
+        {"topic_number": 24, "display_number": "1-3-24", "title_es": "La Moneda Facilita Todo", "title_en": "The Coin Makes Everything Easier", "concept_es": "El dinero resuelve el problema del trueque. Con dinero puedo comprar a cualquiera lo que yo quiero.", "learning_objective_es": "El niño entiende por qué inventamos el dinero.", "key_vocabulary_es": ["solución", "fácil", "cualquiera", "inventar", "dinero"], "lessons_count": 9},
+        {"topic_number": 25, "display_number": "1-3-25", "title_es": "Comprar Es Elegir", "title_en": "Buying Is Choosing", "concept_es": "Cuando compro una cosa, no puedo comprar otra con el mismo dinero. Comprar siempre significa elegir.", "learning_objective_es": "El niño entiende que comprar implica renunciar a otras opciones.", "key_vocabulary_es": ["elegir", "renunciar", "solo uno", "decisión", "o"], "lessons_count": 9},
+        {"topic_number": 26, "display_number": "1-3-26", "title_es": "La Etiqueta de Precio", "title_en": "The Price Tag", "concept_es": "Las cosas tienen una etiqueta que dice cuánto cuestan. Hay que leer la etiqueta antes de comprar para saber si tengo suficiente.", "learning_objective_es": "El niño puede leer una etiqueta de precio simple y compararlo con el dinero que tiene.", "key_vocabulary_es": ["etiqueta", "precio", "cuesta", "suficiente", "leer"], "lessons_count": 9},
+        {"topic_number": 27, "display_number": "1-3-27", "title_es": "Pagar en Caja", "title_en": "Paying at the Counter", "concept_es": "En la tienda hay una caja donde se paga. Hay que hacer fila, esperar el turno, y entregar el dinero al cajero.", "learning_objective_es": "El niño conoce el proceso de pago en caja y puede simularlo.", "key_vocabulary_es": ["caja", "fila", "turno", "cajero", "pagar"], "lessons_count": 9},
+        {"topic_number": 28, "display_number": "1-3-28", "title_es": "Entregar el Dinero", "title_en": "Handing Over the Money", "concept_es": "Cuando pago, entrego el dinero y ya no es mío. Es normal sentir que 'duele' un poco. Eso está bien.", "learning_objective_es": "El niño procesa emocionalmente el acto de despedirse del dinero al pagar.", "key_vocabulary_es": ["entregar", "ya no es mío", "normal", "vale la pena", "pagado"], "lessons_count": 9},
+        {"topic_number": 29, "display_number": "1-3-29", "title_es": "El Ticket", "title_en": "The Receipt", "concept_es": "El ticket es el papel que el cajero te da. Prueba que pagaste. Es importante guardarlo.", "learning_objective_es": "El niño entiende para qué sirve el ticket y la importancia de guardarlo.", "key_vocabulary_es": ["ticket", "recibo", "prueba", "guardar", "comprobante"], "lessons_count": 9},
+        {"topic_number": 30, "display_number": "1-3-30", "title_es": "El Cambio (Vuelto)", "title_en": "The Change", "concept_es": "Si pago con más dinero del que cuesta algo, el cajero me regresa la diferencia. Eso es el cambio o vuelto.", "learning_objective_es": "El niño entiende el concepto de vuelto y puede calcularlo en situaciones simples.", "key_vocabulary_es": ["vuelto", "cambio", "sobra", "diferencia", "recibir"], "lessons_count": 9},
+        {"topic_number": 31, "display_number": "1-3-31", "title_es": "Revisar el Cambio", "title_en": "Check Your Change", "concept_es": "Antes de salir de la caja, hay que contar el cambio para asegurarse de que es correcto.", "learning_objective_es": "El niño adopta el hábito de verificar el cambio recibido.", "key_vocabulary_es": ["revisar", "contar", "correcto", "verificar", "error"], "lessons_count": 15}
+      ]
+    },
+
+    {
+      "saga_number": 4,
+      "title_es": "La Balanza de los Deseos",
+      "title_en": "The Scale of Desires",
+      "theme_es": "Necesidad vs. Deseo",
+      "description_es": "Aprender a diferenciar lo que necesitamos para vivir de lo que queremos por gusto.",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 32, "display_number": "1-4-32", "title_es": "El Rugido de la Panza", "title_en": "The Rumble in the Tummy", "concept_es": "Hambre es una necesidad: el cuerpo la pide. Sin comer, no podemos vivir ni aprender.", "learning_objective_es": "El niño clasifica el hambre (comer) como necesidad básica.", "key_vocabulary_es": ["hambre", "necesidad", "comer", "vivir", "importante"], "lessons_count": 8},
+        {"topic_number": 33, "display_number": "1-4-33", "title_es": "El Antojo Dulce", "title_en": "The Sweet Craving", "concept_es": "El chocolate es rico pero no lo necesitamos para vivir. Es un deseo. Podemos vivir sin él.", "learning_objective_es": "El niño clasifica el chocolate/dulce como deseo (no necesidad).", "key_vocabulary_es": ["deseo", "antojo", "rico", "sin él puedo vivir", "gusto"], "lessons_count": 8},
+        {"topic_number": 34, "display_number": "1-4-34", "title_es": "Tener Sed", "title_en": "Being Thirsty", "concept_es": "El agua es necesidad: el cuerpo la necesita para vivir. El agua pura es más importante que los jugos azucarados.", "learning_objective_es": "El niño identifica el agua como necesidad básica de salud.", "key_vocabulary_es": ["agua", "sed", "necesidad", "salud", "cuerpo"], "lessons_count": 8},
+        {"topic_number": 35, "display_number": "1-4-35", "title_es": "Bebidas de Colores", "title_en": "Colorful Drinks", "concept_es": "Los refrescos y jugos de caja son ricos pero son un deseo. No los necesitamos para vivir.", "learning_objective_es": "El niño distingue agua (necesidad) de refresco (deseo).", "key_vocabulary_es": ["refresco", "jugo", "agua", "deseo", "diferencia"], "lessons_count": 8},
+        {"topic_number": 36, "display_number": "1-4-36", "title_es": "Protección", "title_en": "Protection", "concept_es": "Zapatos básicos son necesidad: protegen los pies del frío y las piedras.", "learning_objective_es": "El niño identifica la ropa y calzado básicos como necesidades.", "key_vocabulary_es": ["zapatos", "proteger", "necesidad", "pies", "básico"], "lessons_count": 8},
+        {"topic_number": 37, "display_number": "1-4-37", "title_es": "Moda", "title_en": "Fashion", "concept_es": "Los zapatos con luces o de marca son un deseo: son más caros pero no protegen mejor.", "learning_objective_es": "El niño distingue calzado básico (necesidad) de calzado de lujo (deseo).", "key_vocabulary_es": ["moda", "lujo", "deseo", "marca", "caro"], "lessons_count": 8},
+        {"topic_number": 38, "display_number": "1-4-38", "title_es": "Techo y Cama", "title_en": "Roof and Bed", "concept_es": "Un lugar para dormir y estar protegido es necesidad. Sin casa, estamos en peligro.", "learning_objective_es": "El niño identifica la vivienda como necesidad fundamental.", "key_vocabulary_es": ["techo", "casa", "dormir", "protegido", "necesidad"], "lessons_count": 8},
+        {"topic_number": 39, "display_number": "1-4-39", "title_es": "Juguetes y Pantallas", "title_en": "Toys and Screens", "concept_es": "Los juguetes y videojuegos son divertidos pero son deseos. Podemos ser felices y sanos sin ellos.", "learning_objective_es": "El niño clasifica juguetes y entretenimiento digital como deseos.", "key_vocabulary_es": ["juguete", "pantalla", "videojuego", "diversión", "deseo"], "lessons_count": 8},
+        {"topic_number": 40, "display_number": "1-4-40", "title_es": "Medicina", "title_en": "Medicine", "concept_es": "Cuando estamos enfermos, la medicina es necesidad: ayuda al cuerpo a recuperarse.", "learning_objective_es": "El niño identifica la salud/medicina como necesidad.", "key_vocabulary_es": ["medicina", "enfermo", "curar", "necesidad", "salud"], "lessons_count": 8},
+        {"topic_number": 41, "display_number": "1-4-41", "title_es": "Prioridades", "title_en": "Priorities", "concept_es": "Cuando el dinero es poco, primero se paga lo necesario y después lo deseado. El orden importa.", "learning_objective_es": "El niño puede ordenar necesidades antes que deseos cuando el dinero es limitado.", "key_vocabulary_es": ["primero", "después", "prioridad", "orden", "importante primero"], "lessons_count": 9},
+        {"topic_number": 42, "display_number": "1-4-42", "title_es": "¡Se Acabó!", "title_en": "It's All Gone!", "concept_es": "El dinero puede terminarse. Cuando se acaba, ya no puedo comprar más hasta que llegue más.", "learning_objective_es": "El niño entiende que el dinero es finito y hay que administrarlo.", "key_vocabulary_es": ["acabar", "terminarse", "ya no hay", "esperar", "finito"], "lessons_count": 9},
+        {"topic_number": 43, "display_number": "1-4-43", "title_es": "La Rabieta No Paga", "title_en": "Tantrums Don't Pay", "concept_es": "Llorar o hacer berrinche no genera más dinero. La solución es ahorrar o esperar. Las emociones son válidas, pero el dinero funciona diferente.", "learning_objective_es": "El niño aprende a aceptar que no siempre puede tener todo y a manejar la frustración financiera.", "key_vocabulary_es": ["berrinche", "frustración", "aceptar", "esperar", "solución"], "lessons_count": 15}
+      ]
+    },
+
+    {
+      "saga_number": 5,
+      "title_es": "El Cofre del Futuro",
+      "title_en": "The Future Chest",
+      "theme_es": "Ahorro Inicial",
+      "description_es": "Iniciarse en el hábito del ahorro: guardar una parte del dinero para alcanzar una meta futura.",
+      "lessons_target": 96,
+      "topics": [
+        {"topic_number": 44, "display_number": "1-5-44", "title_es": "¿Qué Es Ahorrar?", "title_en": "What Is Saving?", "concept_es": "Ahorrar es guardar dinero hoy para poder usarlo mañana para algo importante o especial.", "learning_objective_es": "El niño puede definir ahorro con sus propias palabras.", "key_vocabulary_es": ["ahorrar", "guardar", "hoy", "mañana", "futuro"], "lessons_count": 9},
+        {"topic_number": 45, "display_number": "1-5-45", "title_es": "La Alcancía Transparente", "title_en": "The Clear Piggy Bank", "concept_es": "Cuando se usa una alcancía transparente, el niño puede VER cómo el ahorro crece con cada moneda que agrega.", "learning_objective_es": "El niño experimenta la satisfacción visual de ver crecer sus ahorros.", "key_vocabulary_es": ["alcancía", "transparente", "ver", "crecer", "subir"], "lessons_count": 9},
+        {"topic_number": 46, "display_number": "1-5-46", "title_es": "El Objetivo", "title_en": "The Goal", "concept_es": "Ahorrar es más fácil cuando hay un objetivo claro: 'quiero comprar ese juguete que cuesta $50'. La meta nos da dirección.", "learning_objective_es": "El niño puede establecer su primera meta de ahorro concreta.", "key_vocabulary_es": ["meta", "objetivo", "quiero", "cuánto cuesta", "cuánto me falta"], "lessons_count": 9},
+        {"topic_number": 47, "display_number": "1-5-47", "title_es": "Paciencia", "title_en": "Patience", "concept_es": "Ahorrar toma tiempo. No se llena la alcancía en un día. Hay que esperar. La espera vale la pena.", "learning_objective_es": "El niño practica la tolerancia a la espera en el contexto del ahorro.", "key_vocabulary_es": ["paciencia", "esperar", "tiempo", "poco a poco", "vale la pena"], "lessons_count": 9},
+        {"topic_number": 48, "display_number": "1-5-48", "title_es": "La Tentación", "title_en": "The Temptation", "concept_es": "A veces queremos gastar el ahorro en algo pequeño. Esa es la tentación. Hay que ser fuerte y pensar en la meta.", "learning_objective_es": "El niño desarrolla la capacidad de resistir la gratificación inmediata para lograr su meta.", "key_vocabulary_es": ["tentación", "resistir", "meta", "ahorro", "fuerte"], "lessons_count": 9},
+        {"topic_number": 49, "display_number": "1-5-49", "title_es": "El Guardián", "title_en": "The Guardian", "concept_es": "Pedir ayuda a un adulto de confianza para guardar el ahorro es una estrategia inteligente. El adulto es el 'guardián' del dinero.", "learning_objective_es": "El niño aprende que pedir ayuda para guardar el dinero es una estrategia válida.", "key_vocabulary_es": ["guardián", "ayuda", "confianza", "adulto", "estrategia"], "lessons_count": 9},
+        {"topic_number": 50, "display_number": "1-5-50", "title_es": "Sumando Monedas", "title_en": "Adding Coins", "concept_es": "1 moneda + 1 moneda = 2. Con aritmética básica, el niño puede saber cuánto tiene ahorrado y cuánto le falta para su meta.", "learning_objective_es": "El niño puede sumar sus monedas de ahorro y calcular cuánto le falta para su meta.", "key_vocabulary_es": ["sumar", "cuánto tengo", "cuánto falta", "meta", "contar"], "lessons_count": 9},
+        {"topic_number": 51, "display_number": "1-5-51", "title_es": "¡Lo Logré!", "title_en": "I Did It!", "concept_es": "Cuando finalmente se alcanza la meta, la satisfacción de haberlo logrado con esfuerzo propio es enorme. Eso es el poder del ahorro.", "learning_objective_es": "El niño completa su primera meta de ahorro y celebra el logro.", "key_vocabulary_es": ["lograr", "celebrar", "orgullo", "esfuerzo propio", "conseguí"], "lessons_count": 15}
+      ]
+    }
+  ]
+}

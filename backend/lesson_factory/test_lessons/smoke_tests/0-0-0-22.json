@@ -1,0 +1,78 @@
+{
+  "lesson_code": "0-0-0-22",
+  "title_es": "Smoke Test: price_detective",
+  "title_en": "Smoke Test: price_detective",
+  "description_es": "Lección de prueba de renderizado para el tipo price_detective.",
+  "description_en": "Render smoke test for exercise type price_detective.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 22,
+  "content_es": [
+    {
+      "type": "price_detective",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "¿Qué producto tiene mejor precio por unidad?",
+        "items": [
+          {
+            "id": "p1",
+            "name": "Jugo 1L",
+            "price": 15,
+            "quantity": 1,
+            "unit": "L"
+          },
+          {
+            "id": "p2",
+            "name": "Jugo 2L",
+            "price": 24,
+            "quantity": 2,
+            "unit": "L"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "p2"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "price_detective",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "¿Qué producto tiene mejor precio por unidad?",
+        "items": [
+          {
+            "id": "p1",
+            "name": "Jugo 1L",
+            "price": 15,
+            "quantity": 1,
+            "unit": "L"
+          },
+          {
+            "id": "p2",
+            "name": "Jugo 2L",
+            "price": 24,
+            "quantity": 2,
+            "unit": "L"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "p2"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

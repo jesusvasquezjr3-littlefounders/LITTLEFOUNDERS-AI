@@ -1,0 +1,56 @@
+{
+  "lesson_code": "0-0-0-12",
+  "title_es": "Smoke Test: estimation_slider",
+  "title_en": "Smoke Test: estimation_slider",
+  "description_es": "Lección de prueba de renderizado para el tipo estimation_slider.",
+  "description_en": "Render smoke test for exercise type estimation_slider.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 12,
+  "content_es": [
+    {
+      "type": "estimation_slider",
+      "character_code": "liruf",
+      "content": {
+        "problem": "Estima el resultado de 48 / 4.",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": ""
+      },
+      "correct_answer": {
+        "value": 12,
+        "tolerance": 2
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "estimation_slider",
+      "character_code": "liruf",
+      "content": {
+        "problem": "Estima el resultado de 48 / 4.",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": ""
+      },
+      "correct_answer": {
+        "value": 12,
+        "tolerance": 2
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

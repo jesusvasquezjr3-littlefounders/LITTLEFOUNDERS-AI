@@ -1,0 +1,82 @@
+{
+  "lesson_code": "0-0-0-46",
+  "title_es": "Smoke Test: image_hotspot",
+  "title_en": "Smoke Test: image_hotspot",
+  "description_es": "Lección de prueba de renderizado para el tipo image_hotspot.",
+  "description_en": "Render smoke test for exercise type image_hotspot.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 46,
+  "content_es": [
+    {
+      "type": "image_hotspot",
+      "character_code": "liruf",
+      "content": {
+        "imageUrl": "https://placehold.co/600x400/png",
+        "hotspots": [
+          {
+            "id": "h1",
+            "x": 100,
+            "y": 150,
+            "radius": 30,
+            "label": "Zona A"
+          },
+          {
+            "id": "h2",
+            "x": 300,
+            "y": 200,
+            "radius": 30,
+            "label": "Zona B"
+          }
+        ]
+      },
+      "correct_answer": {
+        "hotspotIds": [
+          "h1"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "image_hotspot",
+      "character_code": "liruf",
+      "content": {
+        "imageUrl": "https://placehold.co/600x400/png",
+        "hotspots": [
+          {
+            "id": "h1",
+            "x": 100,
+            "y": 150,
+            "radius": 30,
+            "label": "Zona A"
+          },
+          {
+            "id": "h2",
+            "x": 300,
+            "y": 200,
+            "radius": 30,
+            "label": "Zona B"
+          }
+        ]
+      },
+      "correct_answer": {
+        "hotspotIds": [
+          "h1"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

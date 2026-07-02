@@ -1,0 +1,46 @@
+{
+  "lesson_code": "0-0-0-3",
+  "title_es": "Smoke Test: true_false",
+  "title_en": "Smoke Test: true_false",
+  "description_es": "Lección de prueba de renderizado para el tipo true_false.",
+  "description_en": "Render smoke test for exercise type true_false.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 3,
+  "content_es": [
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "content": {
+        "statement": "Este es un ejercicio true_false."
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "true_false",
+      "character_code": "liruf",
+      "content": {
+        "statement": "Este es un ejercicio true_false."
+      },
+      "correct_answer": {
+        "isTrue": true
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "lesson_code": "0-0-0-17",
+  "title_es": "Smoke Test: risk_reward",
+  "title_en": "Smoke Test: risk_reward",
+  "description_es": "Lección de prueba de renderizado para el tipo risk_reward.",
+  "description_en": "Render smoke test for exercise type risk_reward.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 17,
+  "content_es": [
+    {
+      "type": "risk_reward",
+      "character_code": "liruf",
+      "content": {
+        "decision": "¿Arriesgas o juegas seguro?",
+        "scenario": "Tienes $100 para invertir.",
+        "options": [
+          {
+            "id": "safe1",
+            "type": "safe",
+            "text": "Guardar en alcancía",
+            "reward": "+$0"
+          },
+          {
+            "id": "risk1",
+            "type": "risk",
+            "text": "Invertir en negocio",
+            "reward": "+$20"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "risk1"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "risk_reward",
+      "character_code": "liruf",
+      "content": {
+        "decision": "¿Arriesgas o juegas seguro?",
+        "scenario": "Tienes $100 para invertir.",
+        "options": [
+          {
+            "id": "safe1",
+            "type": "safe",
+            "text": "Guardar en alcancía",
+            "reward": "+$0"
+          },
+          {
+            "id": "risk1",
+            "type": "risk",
+            "text": "Invertir en negocio",
+            "reward": "+$20"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "risk1"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

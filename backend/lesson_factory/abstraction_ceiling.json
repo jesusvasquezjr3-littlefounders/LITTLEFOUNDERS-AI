@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "description": "Techo de abstracción cognitiva por banda de edad (Piaget + CFPB). Exceder el techo de una banda NO es 'difícil' — es del desarrollo INVÁLIDO y debe ser HARD-FAIL en el validador/crítico, no una puntuación baja. allowed_math es acumulativo hacia arriba. max_number es el valor numérico máximo razonable a usar en ejemplos.",
+  "bands": {
+    "1": {
+      "age_range": "5-7",
+      "piaget_stage": "preoperacional",
+      "cognitive_focus": "Función ejecutiva como juego (esperar, ordenar, recordar); hábito de ahorrar; todo concreto y visual",
+      "max_number": 20,
+      "whole_numbers_only": true,
+      "allowed_math": ["contar", "comparar mayor/menor", "sumar/restar hasta 10"],
+      "forbidden_abstractions": ["fracciones", "porcentajes", "razones", "interés", "fórmulas", "hipotéticos ('imagina si...')", "variables múltiples"]
+    },
+    "2": {
+      "age_range": "8-9",
+      "piaget_stage": "operaciones concretas (temprano)",
+      "cognitive_focus": "Rutinas y normas concretas (mensualidad, intercambio simple); dar cambio",
+      "max_number": 100,
+      "whole_numbers_only": true,
+      "allowed_math": ["sumar/restar", "dar cambio", "comparar cantidades"],
+      "forbidden_abstractions": ["porcentajes", "razones", "interés compuesto", "fórmulas", "hipotéticos abstractos"]
+    },
+    "3": {
+      "age_range": "10-12",
+      "piaget_stage": "operaciones concretas",
+      "cognitive_focus": "Razonamiento lógico sobre objetos concretos; valor/comparación; mitades y partes",
+      "max_number": 1000,
+      "whole_numbers_only": false,
+      "allowed_math": ["multiplicar/dividir simple", "fracciones simples (1/2, 1/4)", "partes de un todo"],
+      "forbidden_abstractions": ["porcentaje formal", "interés compuesto con fórmula", "razones complejas", "modelado multi-variable"]
+    },
+    "4": {
+      "age_range": "13-14",
+      "piaget_stage": "transición a operaciones formales",
+      "cognitive_focus": "Abstracción emergente; decisiones de dinero sociales/identidad; introducción a proporciones",
+      "max_number": 100000,
+      "whole_numbers_only": false,
+      "allowed_math": ["porcentajes", "razones simples", "razonamiento proporcional básico", "interés como concepto (sin fórmula compuesta)"],
+      "forbidden_abstractions": ["fórmulas de interés compuesto multi-periodo", "derivados", "modelos financieros formales"]
+    },
+    "5": {
+      "age_range": "15-17",
+      "piaget_stage": "operaciones formales",
+      "cognitive_focus": "Razonamiento hipotético-deductivo; trade-offs multi-criterio; riesgo",
+      "max_number": 10000000,
+      "whole_numbers_only": false,
+      "allowed_math": ["fórmulas (interés simple y compuesto)", "razones y proporciones", "hipotéticos", "trade-offs multi-variable"],
+      "forbidden_abstractions": []
+    },
+    "6": {
+      "age_range": "18+",
+      "piaget_stage": "operaciones formales (transferencia profesional)",
+      "cognitive_focus": "Rigor profesional; transferencia al mundo real",
+      "max_number": null,
+      "whole_numbers_only": false,
+      "allowed_math": ["todo"],
+      "forbidden_abstractions": []
+    }
+  }
+}

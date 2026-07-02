@@ -1,0 +1,66 @@
+{
+  "lesson_code": "0-0-0-27",
+  "title_es": "Smoke Test: impact_meter",
+  "title_en": "Smoke Test: impact_meter",
+  "description_es": "Lección de prueba de renderizado para el tipo impact_meter.",
+  "description_en": "Render smoke test for exercise type impact_meter.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 27,
+  "content_es": [
+    {
+      "type": "impact_meter",
+      "character_code": "liruf",
+      "content": {
+        "budget": 100,
+        "causes": [
+          {
+            "id": "c1",
+            "name": "Educación",
+            "icon": "📚"
+          },
+          {
+            "id": "c2",
+            "name": "Salud",
+            "icon": "🏥"
+          },
+          {
+            "id": "c3",
+            "name": "Ambiente",
+            "icon": "🌳"
+          }
+        ]
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "impact_meter",
+      "character_code": "liruf",
+      "content": {
+        "budget": 100,
+        "causes": [
+          {
+            "id": "c1",
+            "name": "Educación",
+            "icon": "📚"
+          },
+          {
+            "id": "c2",
+            "name": "Salud",
+            "icon": "🏥"
+          },
+          {
+            "id": "c3",
+            "name": "Ambiente",
+            "icon": "🌳"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "lesson_code": "0-0-0-41",
+  "title_es": "Smoke Test: tax_puzzle",
+  "title_en": "Smoke Test: tax_puzzle",
+  "description_es": "Lección de prueba de renderizado para el tipo tax_puzzle.",
+  "description_en": "Render smoke test for exercise type tax_puzzle.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 41,
+  "content_es": [
+    {
+      "type": "tax_puzzle",
+      "character_code": "liruf",
+      "content": {
+        "puzzle": "Calcula el impuesto (16% IVA) sobre $1,000.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$160"
+          },
+          {
+            "id": "b",
+            "text": "$16"
+          }
+        ]
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "tax_puzzle",
+      "character_code": "liruf",
+      "content": {
+        "puzzle": "Calcula el impuesto (16% IVA) sobre $1,000.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$160"
+          },
+          {
+            "id": "b",
+            "text": "$16"
+          }
+        ]
+      }
+    }
+  ]
+}

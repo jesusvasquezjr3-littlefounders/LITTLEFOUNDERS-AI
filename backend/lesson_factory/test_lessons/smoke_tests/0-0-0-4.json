@@ -1,0 +1,86 @@
+{
+  "lesson_code": "0-0-0-4",
+  "title_es": "Smoke Test: tap_action",
+  "title_en": "Smoke Test: tap_action",
+  "description_es": "Lección de prueba de renderizado para el tipo tap_action.",
+  "description_en": "Render smoke test for exercise type tap_action.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 4,
+  "content_es": [
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "content": {
+        "statement": "Toca los ítems correctos.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem correcto",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "Ítem incorrecto",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "Ítem correcto",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1",
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "tap_action",
+      "character_code": "liruf",
+      "content": {
+        "statement": "Toca los ítems correctos.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem correcto",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "Ítem incorrecto",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "Ítem correcto",
+            "isTarget": true
+          }
+        ]
+      },
+      "correct_answer": {
+        "targetIds": [
+          "i1",
+          "i3"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

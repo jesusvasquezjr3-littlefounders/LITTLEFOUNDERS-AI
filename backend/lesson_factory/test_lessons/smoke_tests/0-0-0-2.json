@@ -1,0 +1,74 @@
+{
+  "lesson_code": "0-0-0-2",
+  "title_es": "Smoke Test: multiple_choice",
+  "title_en": "Smoke Test: multiple_choice",
+  "description_es": "Lección de prueba de renderizado para el tipo multiple_choice.",
+  "description_en": "Render smoke test for exercise type multiple_choice.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 2,
+  "content_es": [
+    {
+      "type": "multiple_choice",
+      "character_code": "liruf",
+      "content": {
+        "question": "¿Cuál es el tipo de este ejercicio?",
+        "options": [
+          {
+            "id": "a",
+            "text": "multiple_choice"
+          },
+          {
+            "id": "b",
+            "text": "true_false"
+          },
+          {
+            "id": "c",
+            "text": "fill_blank"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "multiple_choice",
+      "character_code": "liruf",
+      "content": {
+        "question": "¿Cuál es el tipo de este ejercicio?",
+        "options": [
+          {
+            "id": "a",
+            "text": "multiple_choice"
+          },
+          {
+            "id": "b",
+            "text": "true_false"
+          },
+          {
+            "id": "c",
+            "text": "fill_blank"
+          }
+        ]
+      },
+      "correct_answer": {
+        "correctOptionId": "a"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}
