@@ -97,7 +97,7 @@ export function PlacementQuestion({ item, itemNumber, onAnswer }: Props) {
       </div>
 
       {/* Question card */}
-      <div className="corp-card w-full p-6 mb-4">
+      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-6 sm:p-8 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 mb-4">
         <p className="text-base font-bold text-slate-900 dark:text-white leading-snug text-center">
           {question}
         </p>

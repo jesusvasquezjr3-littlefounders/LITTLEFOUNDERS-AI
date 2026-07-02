@@ -206,13 +206,11 @@ export function PlacementEngine({ name, age }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+    <div className="min-h-screen flex flex-col items-center relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
 
-      {/* Corp grid background */}
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
+      
 
-      {/* Ambient glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
+      
 
       {/* Progress bar — during quiz and closing */}
       {(state.phase === 'quiz' || state.phase === 'closing') && (

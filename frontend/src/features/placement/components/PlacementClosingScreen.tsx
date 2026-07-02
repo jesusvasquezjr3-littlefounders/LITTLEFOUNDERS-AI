@@ -70,7 +70,7 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
           <button
             type="button"
             onClick={onContinue}
-            className="corp-btn-primary group w-full max-w-sm h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2"
+            className="corp-btn-primary group w-full max-w-sm h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2"
           >
             {t('closing.cta')}
             <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />

@@ -38,7 +38,7 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
       </div>
 
       {/* Card */}
-      <div className="corp-card w-full max-w-sm p-7">
+      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full max-w-sm p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 leading-snug">
           {t('intro.title', { name })}
         </h2>
@@ -53,7 +53,7 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
         <button
           type="button"
           onClick={onAccept}
-          className="corp-btn-primary group w-full h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 mb-3"
+          className="corp-btn-primary group w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 mb-3"
         >
           {t('intro.accept_button')}
           <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />

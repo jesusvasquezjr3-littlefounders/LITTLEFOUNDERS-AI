@@ -449,13 +449,11 @@ export default function Onboarding() {
 
   // ── Render ────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
       
-      {/* Corp grid background */}
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
+      
 
-      {/* Ambient glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
+      
 
       {/* Progress bar */}
       <ProgressBar step={step} />
@@ -478,7 +476,7 @@ export default function Onboarding() {
             </div>
 
             {/* Speech bubble */}
-            <div className="corp-card mb-6 w-full p-7 space-y-3 text-center">
+            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] mb-6 w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-3 text-center">
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                 {t("welcome.liruf_greeting")}
               </h1>
@@ -496,7 +494,7 @@ export default function Onboarding() {
             <button 
               type="button" 
               onClick={handleStartFromWelcome} 
-              className="corp-btn-primary w-full h-12 rounded-2xl text-lg font-semibold inline-flex items-center justify-center gap-2 group"
+              className="corp-btn-primary w-full h-12 rounded-full text-lg font-semibold inline-flex items-center justify-center gap-2 group"
             >
               {t("welcome.start_button")}
               <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
@@ -523,7 +521,7 @@ export default function Onboarding() {
               </p>
             )}
 
-            <div className="corp-card w-full p-7 space-y-4">
+            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-4">
               <div className="text-center">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
                   {t("name.question")}
@@ -555,7 +553,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={handleNameContinue} 
-                className="corp-btn-primary w-full h-12 mt-5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+                className="corp-btn-primary w-full h-12 mt-5 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
               >
                 {t("name.continue")}
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
@@ -601,7 +599,7 @@ export default function Onboarding() {
               return null;
             })()}
 
-            <div className="corp-card w-full p-7 space-y-4">
+            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-4">
               <div className="text-center">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
                   {t("age.question")}
@@ -636,7 +634,7 @@ export default function Onboarding() {
               <button 
                 type="button" 
                 onClick={handleAgeContinue} 
-                className="corp-btn-primary w-full h-12 mt-5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+                className="corp-btn-primary w-full h-12 mt-5 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
               >
                 {t("age.continue")}
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
@@ -708,7 +706,7 @@ export default function Onboarding() {
             <button
               onClick={handleInterestContinue}
               disabled={data.interests.length === 0}
-              className="corp-btn-primary max-w-xs w-full h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="corp-btn-primary max-w-xs w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t("common:buttons.continue")}
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
