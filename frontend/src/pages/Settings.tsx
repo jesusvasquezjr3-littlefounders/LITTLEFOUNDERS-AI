@@ -71,7 +71,7 @@ const Section = ({ title, children }: { title: string, children: React.ReactNode
         <div className="px-1">
             <span className="corp-eyebrow">{title}</span>
         </div>
-        <div className="corp-panel overflow-hidden divide-y divide-slate-200 dark:divide-white/5">
+        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] overflow-hidden divide-y divide-slate-200 dark:divide-white/5">
             {children}
         </div>
     </div>
@@ -337,7 +337,7 @@ const Settings = () => {
         <div className="corp max-w-6xl mx-auto pb-24 px-4 pt-8 animate-in fade-in duration-500 space-y-8">
 
                 {/* Premium Page Header */}
-                <div className="corp-panel px-5 py-5 md:px-7 md:py-6 flex items-center gap-5">
+                <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] px-6 py-6 md:px-8 md:py-7 flex items-center gap-5">
                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0">
                         <Shield className="w-6 h-6 md:w-7 md:h-7 text-white" />
                     </div>
@@ -354,7 +354,7 @@ const Settings = () => {
                     {/* ── Sidebar (3/12) ── */}
                     <div className="lg:col-span-3 space-y-6">
                         {/* Compact Profile Card */}
-                        <div className="corp-card p-6 flex flex-col items-center text-center gap-4">
+                        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col items-center text-center gap-4">
                             <AvatarDisplay
                                 config={user.avatar_config}
                                 size={96}
@@ -371,7 +371,7 @@ const Settings = () => {
                         </div>
 
                         {/* Navigation Sidebar */}
-                        <div className="corp-card p-2 overflow-hidden hidden lg:block">
+                        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-3 overflow-hidden hidden lg:block">
                             <div className="flex flex-col gap-1">
                                 {([
                                     { icon: UserIcon, label: t('settings:identity.title'), id: 'identity', iconCls: "group-hover:text-indigo-500" },
@@ -661,7 +661,7 @@ const Settings = () => {
 
                         {/* FINAL SAVE BAR */}
                         <div className="pt-6 sticky bottom-6 z-20">
-                            <div className="corp-panel p-4 flex justify-between items-center gap-4">
+                            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-4 px-6 flex justify-between items-center gap-4">
                                 <div className="hidden md:flex items-center gap-3">
                                     <div className="corp-icon-chip w-9 h-9">
                                         <Save className="w-4 h-4" />
@@ -674,7 +674,7 @@ const Settings = () => {
                                 <Button
                                     onClick={handleSaveProfile}
                                     disabled={isSaving || !!usernameError}
-                                    className="corp-btn-primary flex-1 md:flex-none md:min-w-[220px] h-12 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="corp-btn-primary flex-1 md:flex-none md:min-w-[220px] h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSaving ? (
                                         <><Loader2 className="w-5 h-5 animate-spin" /> {t('settings:actions.saving')}</>

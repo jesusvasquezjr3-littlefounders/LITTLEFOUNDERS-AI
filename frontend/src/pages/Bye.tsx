@@ -17,12 +17,9 @@ const Bye = () => {
     }, [navigate]);
 
     return (
-        <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14] flex items-center justify-center">
-            <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
-
+        <div className="corp min-h-screen relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a] flex items-center justify-center">
             {/* Main Content */}
-            <div className="relative z-10 text-center space-y-8 p-4 animate-in fade-in zoom-in-95 duration-700">
+            <div className="relative z-10 text-center space-y-8 p-8 sm:p-12 bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] max-w-md w-full mx-4 animate-in fade-in zoom-in-95 duration-700">
                 <div className="flex justify-center">
                     <div className="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full">
                         <Rocket className="w-16 h-16 text-indigo-600" />
@@ -41,7 +38,7 @@ const Bye = () => {
                 <div className="pt-4">
                     <Button
                         onClick={() => navigate('/')}
-                        className="corp-btn-primary h-12 rounded-xl px-8 text-sm font-semibold inline-flex items-center justify-center"
+                        className="corp-btn-primary h-12 rounded-full px-8 text-sm font-semibold inline-flex items-center justify-center"
                     >
                         {t('common:bye_page.back_home')}
                     </Button>

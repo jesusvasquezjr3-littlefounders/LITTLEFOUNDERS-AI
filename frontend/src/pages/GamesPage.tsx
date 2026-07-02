@@ -136,7 +136,7 @@ export default function GamesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 animate-in fade-in slide-in-from-top-4 duration-700">
         {/* Premium Header Section */}
-        <div className="corp-panel relative mb-6 md:mb-10 px-5 py-5 md:px-7 md:py-6">
+        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] relative mb-6 md:mb-10 px-6 py-6 md:px-8 md:py-7">
           <div className="flex flex-row items-center gap-4 md:gap-5 relative z-10">
             <div className="p-2 md:p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl md:rounded-2xl shrink-0">
               <Gamepad2 className="w-5 h-5 md:w-7 md:h-7 text-white" />
@@ -172,8 +172,7 @@ export default function GamesPage() {
                       <button
                         onClick={() => navigate(game.path)}
                         className={cn(
-                          "relative overflow-hidden rounded-3xl w-full",
-                          "liquid-glass",
+                          "relative overflow-hidden rounded-[2.5rem] w-full bg-white dark:bg-[#0d1426] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)]",
                           "transition-all duration-300",
                           "active:scale-[0.98]",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
@@ -265,7 +264,7 @@ export default function GamesPage() {
 
               {/* Coming Soon Card - Within each age group */}
               <div className={cn(
-                "relative rounded-2xl sm:rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/10",
+                "relative rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/10",
                 "flex flex-col items-center justify-center gap-3 sm:gap-4 p-4 sm:p-6 text-center",
                 "bg-slate-50 dark:bg-[#0d1426]",
                 "overflow-hidden",

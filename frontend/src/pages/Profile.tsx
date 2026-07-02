@@ -201,7 +201,7 @@ const Profile = () => {
         {/* Profile Header Card */}
         <div
           className={cn(
-            "corp relative rounded-2xl p-6 md:p-10 overflow-hidden",
+            "corp relative rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5",
             !hasCustomBanner && "corp-panel"
           )}
           style={hasCustomBanner ? { backgroundColor: user.avatar_config.bannerColor } : {}}
@@ -278,7 +278,7 @@ const Profile = () => {
 
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   <div className={cn(
-                    "px-5 py-2.5 rounded-xl border flex items-center gap-3 transition-colors",
+                    "px-5 py-2.5 rounded-full border flex items-center gap-3 transition-colors",
                     hasCustomBanner
                       ? "bg-white/20 border-white/30"
                       : "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-white/10"
@@ -303,7 +303,7 @@ const Profile = () => {
                   <Button
                     onClick={handleShare}
                     variant="ghost"
-                    className="h-[52px] px-6 rounded-xl font-semibold text-xs uppercase tracking-widest transition-colors inline-flex items-center gap-2 bg-white/20 text-white hover:bg-white/30 border border-white/30"
+                    className="h-[52px] px-6 rounded-full font-semibold text-xs uppercase tracking-widest transition-colors inline-flex items-center gap-2 bg-white/20 text-white hover:bg-white/30 border border-white/30"
                   >
                     <Globe className="w-4 h-4" />
                     <span>{t('profile:actions.share_profile')}</span>
@@ -311,7 +311,7 @@ const Profile = () => {
                 ) : (
                   <Button
                     onClick={handleShare}
-                    className="corp-btn-primary h-[52px] px-6 rounded-xl font-semibold text-xs uppercase tracking-widest inline-flex items-center gap-2"
+                    className="corp-btn-primary h-[52px] px-6 rounded-full font-semibold text-xs uppercase tracking-widest inline-flex items-center gap-2"
                   >
                     <Globe className="w-4 h-4" />
                     <span>{t('profile:actions.share_profile')}</span>
@@ -322,7 +322,7 @@ const Profile = () => {
 
             {/* Desktop Stats Summary */}
             <div className={cn(
-              "hidden xl:flex items-center gap-10 px-8 py-6 rounded-2xl border transition-colors ml-auto self-stretch",
+              "hidden xl:flex items-center gap-10 px-8 py-6 rounded-[2.5rem] border transition-colors ml-auto self-stretch",
               hasCustomBanner
                 ? "bg-black/10 dark:bg-black/20 border-white/20"
                 : "bg-slate-50 dark:bg-[#0d1426] border-slate-200 dark:border-white/10"
@@ -360,7 +360,7 @@ const Profile = () => {
         </div>
 
         {/* Mobile/Tablet Social Stats — hidden on xl (where the inline panel shows) */}
-        <div className="xl:hidden corp-panel flex items-center justify-center gap-8 px-6 py-4">
+        <div className="xl:hidden bg-white dark:bg-[#0d1426] border border-slate-100 dark:border-white/5 rounded-[2.5rem] shadow-sm flex items-center justify-center gap-8 px-6 py-4">
           <div className="text-center">
             <p className="text-2xl font-bold leading-none text-slate-900 dark:text-white">{socialStats.followers}</p>
             <p className="text-[10px] font-semibold uppercase tracking-widest mt-1 text-slate-500 dark:text-slate-400">{t('profile:social.followers')}</p>
@@ -387,7 +387,7 @@ const Profile = () => {
                   { title: t('common:dashboard.stats.points'), value: pointsEarned, lottieSrc: "https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie", size: "70px" },
                   { title: t('common:dashboard.stats.streak'), value: currentStreak, lottieSrc: "https://lottie.host/3edaf8fb-44e9-43da-b623-1836120273cf/9pmK4xn6MU.lottie", size: "60px" }
                 ].map((stat, idx) => (
-                  <div key={idx} className={cn("corp-card", stat.value === 0 && "grayscale-[0.5] opacity-70")}>
+                  <div key={idx} className={cn("bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)]", stat.value === 0 && "grayscale-[0.5] opacity-70")}>
                     <div className="p-5 flex flex-col items-center text-center">
                       <div className="h-16 flex items-center justify-center mb-2">
                         {/* @ts-ignore */}
@@ -405,7 +405,7 @@ const Profile = () => {
               <div className="px-1">
                 <h3 className="corp-eyebrow">{t('profile:sections.personal_info')}</h3>
               </div>
-              <div className="corp-panel overflow-hidden">
+              <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="p-6 md:p-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[
@@ -414,7 +414,7 @@ const Profile = () => {
                       { icon: Mail, label: t('auth:fields.email.label'), value: user.email },
                       { icon: Shield, label: t('profile:fields.user_type'), value: getUserTypeLabel(user.user_type) }
                     ].map((item, i) => (
-                      <div key={i} className="corp-panel-subtle flex items-center gap-5 p-5">
+                      <div key={i} className="bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center gap-5 p-5">
                         <div className="corp-icon-chip w-12 h-12 flex-shrink-0">
                           <item.icon className="w-6 h-6" />
                         </div>
@@ -453,7 +453,7 @@ const Profile = () => {
                 </Button>
               </div>
 
-              <div className="corp-card overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px]">
+              <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col h-full min-h-[600px] lg:min-h-[700px]">
                 <div className="flex border-b border-slate-200 dark:border-white/10 shrink-0 overflow-hidden">
                   {[
                     { id: "following", label: t('profile:tabs.friends'), icon: Users },

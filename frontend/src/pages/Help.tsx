@@ -29,7 +29,7 @@ function FAQItem({
   return (
     <div
       className={cn(
-        "corp-card overflow-hidden transition-all duration-300",
+        "bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-300",
         isOpen && "ring-1 ring-indigo-500/20"
       )}
     >
@@ -87,7 +87,7 @@ function CategoryCard({
   gradient: string;
 }) {
   return (
-    <div className="corp-card p-5 flex flex-col items-center gap-3 cursor-pointer group">
+    <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-5 flex flex-col items-center gap-3 cursor-pointer group">
       <div
         className={cn(
           "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3",
@@ -127,7 +127,7 @@ const Help = () => {
     <div className="corp max-w-6xl mx-auto px-4 py-8 animate-in fade-in duration-300 space-y-8">
 
         {/* ── Page Header ── */}
-        <div className="corp-panel px-7 py-6 flex items-center gap-5">
+        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] px-7 py-6 flex items-center gap-5">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0">
             <HelpCircle className="w-7 h-7 text-white" />
           </div>
@@ -194,7 +194,7 @@ const Help = () => {
           <div className="lg:col-span-4 w-full lg:sticky lg:top-8 space-y-4">
 
             {/* Support Card */}
-            <div className="corp-card p-7 space-y-6">
+            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-7 space-y-6">
               <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25">
                   <MessageSquare className="w-8 h-8 text-white" />
@@ -215,7 +215,7 @@ const Help = () => {
             </div>
 
             {/* 24/7 availability badge */}
-            <div className="corp-panel-subtle px-5 py-4 flex items-center justify-center gap-2">
+            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm px-5 py-4 flex items-center justify-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm shadow-emerald-400" />
               <span className="corp-eyebrow text-center">
                 {t("reports:help_page.team_available")}
