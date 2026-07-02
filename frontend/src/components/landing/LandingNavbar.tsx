@@ -70,7 +70,7 @@ export const LandingNavbar = () => {
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`text-sm font-medium transition-[color,transform] duration-150 active:scale-[0.97] ${
+                                className={`text-sm font-medium transition-[color,transform] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:rounded-md ${
                                     isCurrent(link.path)
                                         ? 'text-indigo-600 dark:text-indigo-300'
                                         : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300'
@@ -111,24 +111,33 @@ export const LandingNavbar = () => {
             {isMenuVisible && (
                 <div
                     ref={menuRef}
-                    className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl transition-[opacity,transform] duration-200"
+                    className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl"
                     style={{
                         opacity: mobileMenuOpen ? 1 : 0,
                         transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-8px)',
-                        transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
+                        transition: 'opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
                     }}
                 >
-                    {navLinks.map((link) => (
+                    {navLinks.map((link, i) => (
                         <Link
                             key={link.path}
                             to={link.path}
-                            className="text-base font-medium text-slate-700 dark:text-slate-200 py-3 border-b border-slate-100 dark:border-white/5"
+                            className="text-base font-medium text-slate-700 dark:text-slate-200 py-3 border-b border-slate-100 dark:border-white/5 transition-colors duration-150 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
                             onClick={() => setMobileMenuOpen(false)}
+                            style={{
+                                opacity: mobileMenuOpen ? 1 : 0,
+                                transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-8px)',
+                                transition: `opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + i * 50}ms, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + i * 50}ms`,
+                            }}
                         >
                             {link.label}
                         </Link>
                     ))}
-                    <div className="flex flex-col gap-2 mt-3">
+                    <div className="flex flex-col gap-2 mt-3" style={{
+                        opacity: mobileMenuOpen ? 1 : 0,
+                        transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(4px)',
+                        transition: `opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + navLinks.length * 50}ms, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + navLinks.length * 50}ms`,
+                    }}>
                         <Link
                             to={ctaTo}
                             className="corp-btn-primary text-center text-sm font-semibold py-3 rounded-xl"

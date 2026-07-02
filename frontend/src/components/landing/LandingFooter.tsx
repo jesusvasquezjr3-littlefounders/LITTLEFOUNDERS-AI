@@ -24,19 +24,15 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
       {/* ── Pre-footer waitlist band ──────────────────────────────────────── */}
       {!hideCTA && (
         <section className="corp relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a] border-t border-slate-200/70 dark:border-white/10">
-          <div className="absolute inset-0 corp-grid-bg opacity-60 dark:opacity-40 pointer-events-none" />
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-            <div className="rounded-3xl bg-slate-900 px-6 sm:px-12 py-12 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)] relative overflow-hidden">
-              {/* Brand glows — jade + amber, not indigo */}
-              <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-[#1a9e7a]/15 blur-[80px] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-amber-500/12 blur-[80px] pointer-events-none" />
-              <span className="corp-eyebrow text-white/70">
+            <div className="rounded-3xl bg-slate-900 px-6 sm:px-12 py-12 text-center shadow-[0_20px_60px_-20px_rgba(0,0,0,0.4)] relative overflow-hidden border border-white/5 transition-shadow duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_24px_60px_-16px_rgba(0,0,0,0.5)]">
+              <span className="corp-eyebrow text-white/60">
                 {t("families.hero.coming_soon_label")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
                 {t("families.cta.title")}
               </h2>
-                <p className="mt-3 text-white/70 max-w-xl mx-auto leading-relaxed">
+              <p className="mt-3 text-white/60 max-w-xl mx-auto leading-relaxed">
                 {t("families.hero.notify_desc")}
               </p>
               <div className="mt-7 flex justify-center">
@@ -90,9 +86,9 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
                   <li key={l.to}>
                     <Link
                        to={l.to}
-                       className="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
+                        className="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:rounded-md"
                     >
-                      {l.label}
+                       {l.label}
                     </Link>
                   </li>
                 ))}
@@ -107,7 +103,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
               <div>
                 <a
                   href="mailto:informame@littlefounders.ai"
-                  className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150"
+                  className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.97] transition-[color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:rounded-md"
                 >
                   <Mail className="w-4 h-4" /> informame@littlefounders.ai
                 </a>
@@ -127,8 +123,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ hideCTA = false })
           <div className="mt-12 pt-6 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-xs text-slate-400 dark:text-slate-500">{t("footer.copyright")}</p>
             <div className="flex items-center gap-6 text-xs text-slate-400 dark:text-slate-500">
-              <Link to="/legal/terms" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.terms")}</Link>
-              <Link to="/legal/privacy" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150">{t("footer.privacy")}</Link>
+              <Link to="/legal/terms" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded-md">{t("footer.terms")}</Link>
+              <Link to="/legal/privacy" className="hover:text-slate-700 dark:hover:text-slate-300 active:scale-[0.97] transition-[color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded-md">{t("footer.privacy")}</Link>
             </div>
           </div>
         </div>

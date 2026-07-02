@@ -26,13 +26,13 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-4 font-medium transition-[color] duration-150 hover:underline [&[data-state=open]>svg]:rotate-180",
+        "flex flex-1 items-center justify-between py-4 font-medium transition-[color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:underline [&[data-state=open]>svg]:rotate-180",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-150 ease-out" />
+      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))
@@ -44,7 +44,7 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="grid text-sm transition-[grid-template-rows] duration-200 ease-out data-[state=open]:grid-rows-[1fr] data-[state=closed]:grid-rows-[0fr]"
+      className="grid text-sm transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[state=open]:grid-rows-[1fr] data-[state=closed]:grid-rows-[0fr]"
     {...props}
   >
     <div className="overflow-hidden">

@@ -18,7 +18,7 @@ import {
 function Island({ children, className = "" }: { children: React.ReactNode, className?: string }) {
   return (
     <div className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-[85rem] mx-auto">
-      <section className={`rounded-[2.5rem] md:rounded-[3rem] overflow-hidden ${className}`}>
+      <section className={`rounded-[2.5rem] md:rounded-[3rem] overflow-hidden border border-slate-200/60 dark:border-white/5 ${className}`}>
         {children}
       </section>
     </div>
@@ -64,7 +64,7 @@ export default function HowItWorksPage() {
       {/* ── HERO (Isla masiva gris claro) ─────────────────────────────── */}
       <Island className="bg-slate-50 dark:bg-[#0a0e1a]">
         <div className="max-w-4xl mx-auto px-6 pt-24 pb-24 text-center">
-          <Reveal as="span" className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-slate-200 mb-6 shadow-sm">
+          <Reveal as="span" className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-white/5 border border-slate-200/70 dark:border-white/8 text-xs font-semibold text-slate-800 dark:text-slate-200 mb-6 shadow-sm">
             {t("how_it_works.hero_badge")}
           </Reveal>
           <Reveal delay={60}>
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
           <Reveal delay={180}>
             <Link
               to="/onboarding"
-              className="mt-10 inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-base font-semibold rounded-full px-8 py-4 transition-colors duration-200 shadow-[0_4px_14px_0_rgb(79,70,229,0.39)]"
+              className="corp-btn-primary mt-10 inline-flex items-center justify-center gap-2 text-base font-semibold rounded-full px-8 py-4"
             >
               {t("how_it_works.hero_cta")}
             </Link>
@@ -92,30 +92,31 @@ export default function HowItWorksPage() {
       {/* ── STEPS (Zig-Zag, Fondo blanco de la página) ────────────────── */}
       <section className="py-16 sm:py-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12 md:mb-32">
-            <Reveal delay={60}>
-              <h2 className="text-2xl md:text-2xl lg:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <div className="text-center max-w-2xl mx-auto mb-16 md:mb-24">
+            <Reveal>
+              <span className="corp-eyebrow">{t("how_it_works.steps_eyebrow")}</span>
+            </Reveal>
+            <Reveal delay={40}>
+              <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {t("how_it_works.steps_title")}
               </h2>
             </Reveal>
           </div>
 
-          <div className="space-y-16 md:space-y-20">
+          <div className="space-y-20 md:space-y-28">
             {steps.map((step, i) => (
               <Reveal key={i} variant={i % 2 === 0 ? "left" : "right"} delay={i * 60}>
                 <div className={`md:flex items-center gap-12 lg:gap-20 ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}>
-                  {/* Lado de la Imagen/Gráfico (Recuadro pastel) */}
                   <div className="md:w-1/2 mb-10 md:mb-0 relative">
-                    <div className="absolute top-4 left-4 sm:top-6 sm:left-8 w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-xl font-bold text-slate-900 dark:text-white shadow-lg z-10">
+                    <div className="absolute top-4 left-4 sm:top-6 sm:left-8 w-11 h-11 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-lg font-bold text-slate-900 dark:text-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.15)] z-10 border border-slate-100 dark:border-white/10">
                       {i + 1}
                     </div>
-                    <div className={`aspect-[4/3] rounded-[2.5rem] ${step.bg} flex items-center justify-center p-6 relative overflow-hidden`}>
-                      <step.icon className={`w-32 h-32 ${step.iconColor} opacity-90`} strokeWidth={1.5} />
+                    <div className={`aspect-[4/3] rounded-[2.5rem] ${step.bg} flex items-center justify-center p-6 relative overflow-hidden border border-slate-200/50 dark:border-white/5 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)] hover:border-slate-200/80 dark:hover:border-white/10 group`}>
+                      <step.icon className={`w-28 h-28 sm:w-32 sm:h-32 ${step.iconColor} opacity-90 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105`} strokeWidth={1.25} />
                     </div>
                   </div>
-                  {/* Lado del Texto (Limpio sobre fondo blanco) */}
                   <div className="md:w-1/2">
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
                       {step.title}
                     </h3>
                     <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -132,24 +133,27 @@ export default function HowItWorksPage() {
       {/* ── KIDS & PARENTS (Isla masiva gris claro) ───────────────────── */}
       <Island className="bg-slate-50 dark:bg-[#0a0e1a] mb-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-16">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <Reveal delay={60}>
-              <h2 className="text-2xl md:text-2xl lg:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <Reveal>
+              <span className="corp-eyebrow">{t("how_it_works.experience_eyebrow")}</span>
+            </Reveal>
+            <Reveal delay={40}>
+              <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {t("how_it_works.kids_section_title")}
               </h2>
             </Reveal>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <Reveal variant="left">
-              <div className="bg-white dark:bg-[#0d1426] rounded-3xl p-6 h-full shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)]">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-white/5 flex items-center justify-center mb-8">
-                  <Smile className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <div className="bg-white dark:bg-[#0d1426] rounded-3xl p-8 h-full shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-white/5 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.3)] hover:border-slate-200 dark:hover:border-white/10">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-white/5 flex items-center justify-center mb-8 border border-slate-100 dark:border-white/5">
+                  <Smile className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{t("how_it_works.kids_title")}</h3>
                 <ul className="space-y-4">
                   {[t("how_it_works.kids_1"), t("how_it_works.kids_2"), t("how_it_works.kids_3")].map((it, i) => (
-                    <li key={i} className="flex items-start gap-4 text-base text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 className="w-6 h-6 text-indigo-500 shrink-0 mt-0.5" /> 
+                    <li key={i} className="flex items-start gap-3 text-base text-slate-700 dark:text-slate-300">
+                      <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" /> 
                       <span className="leading-relaxed">{it}</span>
                     </li>
                   ))}
@@ -157,16 +161,16 @@ export default function HowItWorksPage() {
               </div>
             </Reveal>
             <Reveal variant="right" delay={60}>
-              <div className="bg-white dark:bg-[#0d1426] rounded-3xl p-6 h-full shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)]">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-white/5 flex items-center justify-center mb-8">
-                  <ShieldCheck className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <div className="bg-white dark:bg-[#0d1426] rounded-3xl p-8 h-full shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-white/5 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.3)] hover:border-slate-200 dark:hover:border-white/10">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-white/5 flex items-center justify-center mb-8 border border-slate-100 dark:border-white/5">
+                  <ShieldCheck className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <span className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-xs font-semibold text-slate-600 dark:text-slate-300 mb-4">{t("how_it_works.parents_label")}</span>
+                <span className="corp-eyebrow mb-4">{t("how_it_works.parents_label")}</span>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{t("how_it_works.parents_title")}</h3>
                 <ul className="space-y-4">
                   {[t("how_it_works.parents_1"), t("how_it_works.parents_2"), t("how_it_works.parents_3")].map((it, i) => (
-                    <li key={i} className="flex items-start gap-4 text-base text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 className="w-6 h-6 text-indigo-500 shrink-0 mt-0.5" /> 
+                    <li key={i} className="flex items-start gap-3 text-base text-slate-700 dark:text-slate-300">
+                      <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" /> 
                       <span className="leading-relaxed">{it}</span>
                     </li>
                   ))}
@@ -178,19 +182,19 @@ export default function HowItWorksPage() {
       </Island>
 
       {/* ── FINAL CTA (Full width dark) ───────────────────────────────── */}
-      <section className="bg-slate-900 py-16 sm:py-20">
+      <section className="bg-slate-900 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <h2 className="text-2xl md:text-2xl lg:text-xl font-bold text-white tracking-tight leading-tight mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight mb-6">
               {t("how_it_works.cta_title")}
             </h2>
-            <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto mb-12">
+            <p className="text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto mb-10">
               {t("how_it_works.cta_subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 to="/onboarding"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white text-lg font-semibold rounded-full px-10 py-5 transition-colors duration-200"
+                className="corp-btn-primary inline-flex items-center justify-center gap-2 text-lg font-semibold rounded-full px-10 py-5"
               >
                 {t("how_it_works.cta_button")}
               </Link>
