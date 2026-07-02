@@ -53,7 +53,7 @@ Antes de hacer commit, verificar (checklist unificado):
 - **Sin `any`:** usar tipos concretos; justificar excepciones en PR
 - **`strict: true`** en tsconfig — no relajar sin aprobación
 - **Tailwind utility classes:** sin valores raw hex/pixel
-- **Estándar visual "corp":** toda vista de "chrome serio" (marketing, auth, cuenta, admin, utilitarias) usa las clases `corp-*` y sigue `frontend/DESIGN_SYSTEM.md`. Prohibido `liquid-glass`/`GlassPanel` y estilos ad-hoc por página. Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful" (§9 de ese doc).
+- **Estándar visual "corp" (Island / Brilliant Style):** toda vista de "chrome serio" (marketing, auth, cuenta, admin, utilitarias) usa el patrón de "islas" (fondos `slate-50` limpios con contenedores `bg-white rounded-[2.5rem] shadow-sm`) y botones `rounded-full`. Sigue `frontend/DESIGN_SYSTEM.md`. Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful" (§9 de ese doc).
 - **Sin Prettier:** formateo vía ESLint + convenciones
 
 ### Backend (Python/FastAPI)

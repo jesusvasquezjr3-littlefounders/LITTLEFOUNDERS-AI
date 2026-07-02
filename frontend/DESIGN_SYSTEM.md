@@ -121,8 +121,11 @@ LittleFounders tiene **dos lenguajes visuales** deliberados:
 return (
   <LandingLayout>           {/* root .corp + Navbar + Footer */}
     <header className="relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-20">…</div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-20">
+        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-12 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5">
+          …
+        </div>
+      </div>
     </header>
     {/* secciones alternando bg-white / bg-slate-50 */}
   </LandingLayout>
@@ -132,12 +135,10 @@ return (
 ### B) Página standalone full-screen (auth / error / splash)
 
 ```tsx
-<div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-  <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-  <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
+<div className="corp min-h-screen relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
   <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
     <div className="w-full max-w-sm">
-      <div className="corp-card p-7 space-y-6">…</div>
+      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6">…</div>
     </div>
   </div>
 </div>
@@ -151,8 +152,7 @@ return (
 </DashboardLayout>
 ```
 
-**Fondo corp canónico** (memorízalo): `bg-gradient-to-b from-indigo-50/80
-via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]`.
+**Fondo corp canónico** (Estilo Brilliant/Island): Fondo sólido `bg-slate-50 dark:bg-[#0a0e1a]`, sin cuadrículas ni glows.
 
 ---
 
@@ -214,7 +214,7 @@ via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]`.
   `pt-36 lg:pt-44 pb-20` (compensa navbar fijo).
 - **Alternancia de fondo:** secciones alternan `bg-white dark:bg-[#070b14]` ↔
   `bg-slate-50 dark:bg-[#0a0e1a]`.
-- **Radios:** botones `rounded-xl`; cards `rounded-2xl`/`corp-card` (1.25rem);
+- **Radios:** botones `rounded-full` (o `rounded-xl` para cards interactivos de opciones); cards principales estilo Isla `rounded-[2.5rem]` (40px);
   CTA grande `rounded-3xl`. **No** uses radios arbitrarios (`rounded-[2rem]`).
 - **Alturas botón:** `h-10` (social/inputs), `h-11` (submit auth), `h-12` (CTA card/modal).
 
@@ -229,7 +229,7 @@ via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]`.
 
 | Clase | Uso |
 |-------|-----|
-| `corp-card` | Card **interactiva** (hover lift). Para tarjetas en grid: `corp-card h-full p-7`. |
+| `corp-card` | Card **interactiva** (hover lift). Para islas grandes/estáticas, prefiere clases raw: `bg-white rounded-[2.5rem] p-8 shadow-sm`. |
 | `corp-panel` | Superficie **estática** (sin hover): secciones, headers, sidebars, barras de filtro. |
 | `corp-panel-subtle` | Panel anidado / filas de lista. |
 | `corp-dialog` | Sólo para `DialogContent` de Radix (sin transform, evita el bug de centrado). Añade `rounded-3xl`. |
@@ -259,7 +259,7 @@ via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]`.
 
 ```tsx
 {/* primario, full width */}
-<button className="corp-btn-primary w-full h-11 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2">
+<button className="corp-btn-primary w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2">
   {t('x.cta')} <ArrowRight className="w-4 h-4" />
 </button>
 {/* secundario */}
@@ -380,7 +380,7 @@ ver commit `0493588`).
 - ❌ `liquid-glass*` / `GlassPanel` en código nuevo (las clases legacy ya renderizan corp; ver §5.1).
 - ❌ Gradientes lúdicos viejos: multi-stop `blue→purple→pink`, acentos dominados por `pink`/`rose` decorativo, o sistemas "arcoíris" por-ítem. (Los acentos `violet`/`fuchsia` mesurados de §4.1 SÍ se permiten — las bases los usan.)
 - ❌ Títulos `font-black` con gradiente multi-stop.
-- ❌ Blobs "ambient glow" decorativos apilados (usa a lo más un glow índigo sutil + `corp-grid-bg`).
+- ❌ Blobs "ambient glow" decorativos y `corp-grid-bg` (REMOVIDOS a favor del estilo limpio slate-50).
 - ❌ Micro-labels `font-black uppercase tracking-widest` → `corp-eyebrow`.
 - ❌ `dark:` sobre clases `corp-*` (ya traen su variante).
 - ❌ Radios arbitrarios / `backdrop-blur` apilado / `hover:scale-*` bespoke (el hover de `corp-card` ya eleva).
