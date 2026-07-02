@@ -193,7 +193,10 @@
     "interest_earned": "Interés Ganado",
     "total": "Total",
     "calculate": "CALCULAR",
-    "calculated": "¡Calculado!"
+    "calculated": "¡Calculado!",
+    "amount": "Monto ($)",
+    "simple_interest": "Interés Simple",
+    "compound_interest": "Interés Compuesto"
   },
   "tax_puzzle": {
     "title": "Rompecabezas de Impuestos",

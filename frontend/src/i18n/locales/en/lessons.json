@@ -198,7 +198,10 @@
     "interest_earned": "Interest Earned",
     "total": "Total",
     "calculate": "CALCULATE",
-    "calculated": "Calculated!"
+    "calculated": "Calculated!",
+    "amount": "Amount ($)",
+    "simple_interest": "Simple Interest",
+    "compound_interest": "Compound Interest"
   },
   "tax_puzzle": {
     "title": "Tax Puzzle",

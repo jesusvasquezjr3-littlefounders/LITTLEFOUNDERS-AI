@@ -7,8 +7,9 @@ export function GoogleAnalytics() {
   const location = useLocation();
 
   useEffect(() => {
-    // Only track in production (not on localhost)
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    // Measure ONLY the canonical production host — never localhost, preview
+    // deploys, or the es./en. language subdomains.
+    if (window.location.hostname !== 'littlefounders.ai') {
       return;
     }
 

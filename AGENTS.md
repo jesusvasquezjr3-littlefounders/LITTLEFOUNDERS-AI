@@ -54,6 +54,7 @@ Antes de hacer commit, verificar (checklist unificado):
 - **`strict: true`** en tsconfig — no relajar sin aprobación
 - **Tailwind utility classes:** sin valores raw hex/pixel
 - **Estándar visual "corp" (Island / Brilliant Style):** toda vista de "chrome serio" (marketing, auth, cuenta, admin, utilitarias) usa el patrón de "islas" (fondos `slate-50` limpios con contenedores `bg-white rounded-[2.5rem] shadow-sm`) y botones `rounded-full`. Sigue `frontend/DESIGN_SYSTEM.md`. Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful" (§9 de ese doc).
+- **Lesson Engine Layout (Regla de Oro):** Todos los componentes de ejercicio (personaje, burbuja de diálogo, tarjetas interactiva, excluyendo la barra de progreso superior) DEBEN estar perfectamente centrados en el punto (0,0) de los ejes X y Y dentro del contenedor dinámico de la página (`items-center justify-center flex-1`), tanto en Mobile (`flex-col`) como en Desktop (`lg:flex-row`). Prohibido usar offsets `sticky`, paddings superiores asimétricos o `items-start` que desfacen la alineación.
 - **Sin Prettier:** formateo vía ESLint + convenciones
 
 ### Backend (Python/FastAPI)

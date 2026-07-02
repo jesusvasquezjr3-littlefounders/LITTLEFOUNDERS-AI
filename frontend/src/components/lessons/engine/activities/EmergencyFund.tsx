@@ -33,7 +33,25 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
         };
     }, [exercise]);
 
-    const events = exercise?.content?.events || [];
+    const rawEvents = exercise?.content?.events || [];
+
+    // Normalize legacy flat events ({ id, text, cost }) into full events with options.
+    const events = rawEvents.map((ev: any) => {
+        if (Array.isArray(ev.options) && ev.options.length > 0) return ev;
+        const cost = Number(ev.cost ?? ev.amount ?? 0);
+        const low = Math.round(cost * 0.5);
+        const high = Math.round(cost * 1.5);
+        return {
+            ...ev,
+            description: ev.description ?? ev.text ?? ev.title ?? ev.content ?? 'Emergencia',
+            options: [
+                { id: `${ev.id}_low`, text: ev.options?.[0]?.text ?? `Ahorra más ($${low})`, cost: low },
+                { id: `${ev.id}_orig`, text: ev.options?.[1]?.text ?? `Gasta $${cost}`, cost },
+                { id: `${ev.id}_high`, text: ev.options?.[2]?.text ?? `Pide prestado ($${high})`, cost: high },
+            ],
+        };
+    });
+
     const event = events[currentEvent];
 
     if (events.length === 0) {

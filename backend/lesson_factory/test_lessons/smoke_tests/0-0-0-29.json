@@ -16,22 +16,28 @@
       "type": "mystery_investment",
       "character_code": "liruf",
       "content": {
-        "totalCoins": 100,
+        "totalCoins": 10,
         "boxes": [
           {
             "id": "b1",
             "name": "Caja segura",
-            "risk": "low"
+            "risk": "low",
+            "minReturn": 1.1,
+            "maxReturn": 1.3
           },
           {
             "id": "b2",
             "name": "Caja riesgo medio",
-            "risk": "medium"
+            "risk": "medium",
+            "minReturn": 0.8,
+            "maxReturn": 1.8
           },
           {
             "id": "b3",
             "name": "Caja sorpresa",
-            "risk": "high"
+            "risk": "high",
+            "minReturn": 0.2,
+            "maxReturn": 3.0
           }
         ]
       },
@@ -49,22 +55,28 @@
       "type": "mystery_investment",
       "character_code": "liruf",
       "content": {
-        "totalCoins": 100,
+        "totalCoins": 10,
         "boxes": [
           {
             "id": "b1",
             "name": "Caja segura",
-            "risk": "low"
+            "risk": "low",
+            "minReturn": 1.1,
+            "maxReturn": 1.3
           },
           {
             "id": "b2",
             "name": "Caja riesgo medio",
-            "risk": "medium"
+            "risk": "medium",
+            "minReturn": 0.8,
+            "maxReturn": 1.8
           },
           {
             "id": "b3",
             "name": "Caja sorpresa",
-            "risk": "high"
+            "risk": "high",
+            "minReturn": 0.2,
+            "maxReturn": 3.0
           }
         ]
       },

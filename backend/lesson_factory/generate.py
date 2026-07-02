@@ -177,6 +177,42 @@ SEQUENCING (máximo 3 items en aventura 1, hasta 5 en aventuras superiores):
     "error": "El orden no es ese. Piensa en qué pasa primero."
   }
 }
+ESTIMATION_SLIDER (deslizador numérico):
+{
+  "type": "estimation_slider",
+  "character_code": "liruf",
+  "content": {
+    "question": "Estima el resultado de 48 / 4",
+    "min": 0,
+    "max": 30
+  },
+  "correct_answer": {
+    "value": 12,
+    "tolerance": 0  // REGLA CRÍTICA: Usa 0 SI ES UN CÁLCULO ABSOLUTO EXACTO. Usa mayor a 0 solo si es una estimación real.
+  },
+  "feedback": {
+    "success": "¡Exacto! 48 / 4 es 12.",
+    "error": "Recuerda que 48 dividido entre 4 es 12."
+  }
+}
+MYSTERY_INVESTMENT (cajas de inversión con riesgo/retorno):
+{
+  "type": "mystery_investment",
+  "character_code": "liruf",
+  "content": {
+    "totalCoins": 10,  // REGLA CRÍTICA: totalCoins DEBE estar entre 5 y 10 para evitar fatiga de clics (MÁXIMO 10-15).
+    "boxes": [
+      {"id": "b1", "name": "Caja segura", "risk": "low", "minReturn": 1.1, "maxReturn": 1.3},
+      {"id": "b2", "name": "Caja riesgo medio", "risk": "medium", "minReturn": 0.8, "maxReturn": 1.8},
+      {"id": "b3", "name": "Caja sorpresa", "risk": "high", "minReturn": 0.2, "maxReturn": 3.0}
+    ]
+  },
+  "correct_answer": {"correctOptionId": "b1"},
+  "feedback": {
+    "success": "¡Excelente inversión!",
+    "error": "Recuerda evaluar los riesgos."
+  }
+}
 """
 
 GOLD_STANDARD_EXAMPLE = """

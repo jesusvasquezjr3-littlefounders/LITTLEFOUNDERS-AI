@@ -27,6 +27,13 @@
             "text": "Deuda con 5% de interés."
           }
         ]
+      },
+      "correct_answer": {
+        "correctOptionId": "A"
+      },
+      "feedback": {
+        "success": "¡Exacto! Pagar primero la deuda con mayor tasa de interés (método avalancha) te ahorra la mayor cantidad de dinero.",
+        "error": "Recuerda que la deuda con 25% de interés genera más costo. Pagar esa primero ahorra más dinero."
       }
     }
   ],
@@ -46,6 +53,13 @@
             "text": "Deuda con 5% de interés."
           }
         ]
+      },
+      "correct_answer": {
+        "correctOptionId": "A"
+      },
+      "feedback": {
+        "success": "Exact! Paying off the higher interest rate debt first saves you the most money.",
+        "error": "Remember that the 25% interest debt costs more. Pay that one first to save money."
       }
     }
   ]

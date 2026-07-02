@@ -795,14 +795,19 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             return numericMatch(Number(answer), Number(targetAmount), 0.01);
         }
 
-        // ─── SHOP SIM ───
-        // Component sends string[] (cart item IDs) OR string (single selected item)
+        // ── SHOP SIM ───
+        // Component sends string[] (cart item IDs).
+        // shop_sim is a cart exercise — never use extractCorrectId() (which has 60+
+        // aliases including correctOptionId) because a stray correctOptionId from
+        // another exercise type would force single-item exact match and reject
+        // every multi-item cart selection.
         case 'shop_sim': {
             const userItems = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
-            // Single selection mode (correctId resolves optionId/selectedProductId/selectedId/…)
-            const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) {
-                return userItems.size === 1 && optionIdMatches([...userItems][0], correctId);
+            // Explicit single-ID keys only (no broad extractCorrectId).
+            const singleId = correctAnswer?.selectedProductId ?? correctAnswer?.selectedId
+                ?? correctAnswer?.correctProductId ?? correctAnswer?.correctItemId;
+            if (singleId !== undefined && singleId !== null) {
+                return userItems.size === 1 && optionIdMatches([...userItems][0], String(singleId));
             }
             // Multi-selection: exact id-set (correctItems / selectedIds / selectedProductIds / shopItems)
             const idList = correctAnswer?.correctItems ?? correctAnswer?.selectedIds
@@ -837,7 +842,7 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                 });
                 return numericMatch(totalSpent, expectedTotal, 0.01);
             }
-            // Budget constraint validation
+            // Budget constraint validation (default fallback — any non-empty cart under budget)
             const budget = content?.budget || 0;
             const products = content?.products || content?.items || [];
             let totalSpent = 0;
@@ -1087,10 +1092,45 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             return true;
 
         // ─── UNMAPPED TYPES (defensive) ───
-        case 'drag_drop':
-        case 'sorting_buckets':
-        case 'image_hotspot':
+        case 'drag_drop': {
+            const correct = normalizeClassifications(correctAnswer);
+            if (!correct) return true;
+            const userMap = (answer && typeof answer === 'object' && !Array.isArray(answer))
+                ? answer as Record<string, string>
+                : null;
+            if (!userMap) return false;
+            return Object.keys(correct).every(key =>
+                String(userMap[key] ?? '').toLowerCase() === String(correct[key]).toLowerCase()
+            );
+        }
+
+        // ─── IMAGE HOTSPOT (multi-select hotspot IDs) ───
+        case 'image_hotspot': {
+            const correctIds = correctAnswer?.hotspotIds || correctAnswer?.hotspot_ids
+                || correctAnswer?.targetIds || correctAnswer?.correctHotspotIds;
+            if (Array.isArray(correctIds)) {
+                const want = new Set(correctIds.map(String));
+                const userSet = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
+                return want.size === userSet.size && [...want].every(id => userSet.has(id));
+            }
+            const singleId = correctAnswer?.hotspotId || correctAnswer?.targetId;
+            if (singleId !== undefined) return String(answer) === String(singleId);
+            return true;
+        }
+
+        // ─── BALANCE SCALE (condition: left_heavy | right_heavy | balanced) ───
         case 'balance_scale': {
+            const condition = correctAnswer?.condition || correctAnswer?.correctCondition
+                || correctAnswer?.answer || correctAnswer?.correctAnswer;
+            if (condition !== undefined) return String(answer).toLowerCase() === String(condition).toLowerCase();
+            const leftVal = Number(content?.left?.value ?? 0);
+            const rightVal = Number(content?.right?.value ?? 0);
+            const expected = leftVal > rightVal ? 'left_heavy' : leftVal < rightVal ? 'right_heavy' : 'balanced';
+            return String(answer).toLowerCase() === expected;
+        }
+
+        // ─── UNMAPPED TYPES (defensive) ───
+        case 'sorting_buckets': {
             const correctId = extractCorrectId(correctAnswer);
             if (correctId !== undefined) return String(answer) === String(correctId);
             console.warn(`[LessonEngine] validateAnswer: unmapped exercise type '${type}'`);

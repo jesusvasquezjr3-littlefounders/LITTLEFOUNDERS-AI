@@ -432,11 +432,11 @@ def make_exercise(ex_type: str, idx: int) -> dict:
         return {
             "type": ex_type, "character_code": CHARACTER,
             "content": {
-                "totalCoins": 100,
+                "totalCoins": 10,
                 "boxes": [
-                    {"id": "b1", "name": "Caja segura", "risk": "low"},
-                    {"id": "b2", "name": "Caja riesgo medio", "risk": "medium"},
-                    {"id": "b3", "name": "Caja sorpresa", "risk": "high"},
+                    {"id": "b1", "name": "Caja segura", "risk": "low", "minReturn": 1.1, "maxReturn": 1.3},
+                    {"id": "b2", "name": "Caja riesgo medio", "risk": "medium", "minReturn": 0.8, "maxReturn": 1.8},
+                    {"id": "b3", "name": "Caja sorpresa", "risk": "high", "minReturn": 0.2, "maxReturn": 3.0},
                 ],
             },
             "correct_answer": {"correctOptionId": "b1"},
@@ -631,7 +631,13 @@ def make_exercise(ex_type: str, idx: int) -> dict:
                     {"id": "p3", "name": "Huevos", "price": 15},
                 ],
             },
-            "correct_answer": {"correctOptionId": "p1"},
+            "correct_answer": {
+                "validCombinations": [
+                    ["p1"],
+                    ["p2"],
+                    ["p1", "p2"]
+                ]
+            },
             "feedback": BASIC_FEEDBACK,
         }
 
@@ -676,25 +682,34 @@ def make_exercise(ex_type: str, idx: int) -> dict:
         return {
             "type": ex_type, "character_code": CHARACTER,
             "content": {
+                "instruction": "Selecciona los **gastos fijos** en este estado de cuenta (renta, servicios, suscripciones).",
                 "imageUrl": "https://placehold.co/600x400/png",
                 "hotspots": [
-                    {"id": "h1", "x": 100, "y": 150, "radius": 30, "label": "Zona A"},
-                    {"id": "h2", "x": 300, "y": 200, "radius": 30, "label": "Zona B"},
+                    {"id": "h1", "x": 100, "y": 150, "radius": 30, "label": "Renta"},
+                    {"id": "h2", "x": 300, "y": 200, "radius": 30, "label": "Netflix"},
+                    {"id": "h3", "x": 200, "y": 100, "radius": 30, "label": "Cena restaurante"},
                 ],
             },
-            "correct_answer": {"hotspotIds": ["h1"]},
-            "feedback": BASIC_FEEDBACK,
+            "correct_answer": {"hotspotIds": ["h1", "h2"]},
+            "feedback": {
+                "success": "¡Correcto! ✅ Renta y Netflix son gastos fijos.",
+                "error": "Intenta de nuevo 💡 Los gastos fijos son pagos recurrentes."
+            },
         }
 
     if ex_type == "balance_scale":
         return {
             "type": ex_type, "character_code": CHARACTER,
             "content": {
+                "scenario": "Tienes $100. Puedes gastarlos hoy o invertirlos al 5% anual durante 5 años. ¿Cuál opción tiene más valor?",
                 "left": {"label": "Gastar hoy", "value": 100},
-                "right": {"label": "Invertir a 5 años", "value": 150},
+                "right": {"label": "Invertir 5 años", "value": 128},
             },
-            "correct_answer": {"condition": "balanced"},
-            "feedback": BASIC_FEEDBACK,
+            "correct_answer": {"condition": "right_heavy"},
+            "feedback": {
+                "success": "¡Correcto! ✅ $100 invertidos al 5% por 5 años = $128. El interés compuesto genera más valor.",
+                "error": "Intenta de nuevo 💡 Recuerda: el interés compuesto hace crecer tu dinero con el tiempo."
+            },
         }
 
     # ── Fallback ──

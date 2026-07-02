@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowUp, ArrowDown, Check, ArrowRight, RotateCcw } from 'lucide-react';
+import { Check, ArrowRight, RotateCcw, GripVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from '../ui/QuestButton';
+import { Reorder } from 'framer-motion';
 
 interface SequencingProps {
     exercise: any;
@@ -35,19 +36,6 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
         }
     }, [exercise]);
 
-    const handleSwap = (index: number, direction: 'up' | 'down') => {
-        if (isChecked) return;
-        playSound('ui_tap');
-
-        const newItems = [...items];
-        const targetIndex = direction === 'up' ? index - 1 : index + 1;
-
-        if (targetIndex >= 0 && targetIndex < newItems.length) {
-            [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
-            setItems(newItems);
-        }
-    };
-
     const handleCheck = () => {
         const currentIds = items.map(i => i.id);
         // Delegate validation to useLessonState via onSubmit (single source of truth)
@@ -76,23 +64,34 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
 
     return (
         <div className="w-full max-w-lg">
-            <div role="list" className="space-y-3 mb-8">
+            <Reorder.Group 
+                axis="y" 
+                values={items} 
+                onReorder={setItems} 
+                className="space-y-3 mb-8"
+            >
                 {items.map((item, index) => {
-                    const isFirst = index === 0;
-                    const isLast = index === items.length - 1;
-
                     return (
-                        <div
-                            role="listitem"
+                        <Reorder.Item
                             key={item.id}
-                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
+                            value={item}
+                            dragListener={!isChecked}
                             className={cn(
-                                "bg-white rounded-[2.5rem] shadow-sm flex items-center gap-3 p-4 transition-all duration-300",
+                                "bg-white rounded-[2.5rem] shadow-sm flex items-center gap-3 p-4 transition-colors duration-300",
+                                !isChecked && "cursor-grab active:cursor-grabbing",
                                 "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
                                 isChecked && feedback === 'success' && "border-[var(--lp-emerald)] bg-[var(--lp-emerald-soft)]",
                                 isChecked && feedback === 'error' && "border-[var(--lp-coral)] bg-[var(--lp-coral-soft)]"
                             )}
+                            style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                         >
+                            {/* Grip Handle */}
+                            {!isChecked && (
+                                <div className="text-slate-300 hover:text-slate-400 touch-none shrink-0 cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="w-6 h-6" />
+                                </div>
+                            )}
+
                             {/* Order Badge */}
                             <div
                                 className="lp-badge lp-display w-9 h-9 rounded-full flex items-center justify-center text-base shrink-0"
@@ -106,42 +105,14 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                                 {item.text}
                             </div>
 
-                            {/* Controls */}
-                            {!isChecked && (
-                                <div className="flex flex-col gap-1">
-                                    <button
-                                        aria-label="Mover arriba"
-                                        onClick={() => handleSwap(index, 'up')}
-                                        disabled={isFirst}
-                                        className={cn(
-                                            "p-1.5 rounded-lg transition-colors",
-                                            isFirst ? "opacity-20 cursor-not-allowed" : "text-[var(--lp-indigo)] hover:bg-[var(--lp-indigo-soft)]"
-                                        )}
-                                    >
-                                        <ArrowUp className="w-5 h-5" strokeWidth={2.75} />
-                                    </button>
-                                    <button
-                                        aria-label="Mover abajo"
-                                        onClick={() => handleSwap(index, 'down')}
-                                        disabled={isLast}
-                                        className={cn(
-                                            "p-1.5 rounded-lg transition-colors",
-                                            isLast ? "opacity-20 cursor-not-allowed" : "text-[var(--lp-indigo)] hover:bg-[var(--lp-indigo-soft)]"
-                                        )}
-                                    >
-                                        <ArrowDown className="w-5 h-5" strokeWidth={2.75} />
-                                    </button>
-                                </div>
-                            )}
-
                             {/* Result Icon */}
                             {isChecked && feedback === 'success' && (
                                 <Check className="w-6 h-6 shrink-0" strokeWidth={3.5} style={{ color: "var(--lp-emerald)" }} />
                             )}
-                        </div>
+                        </Reorder.Item>
                     );
                 })}
-            </div>
+            </Reorder.Group>
 
             {/* Action Button */}
             {!isChecked ? (
@@ -149,7 +120,10 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                     {t('actions.verify')}
                 </QuestButton>
             ) : (
-                <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
+                <QuestButton
+                    variant={feedback === 'success' ? 'go' : 'retry'}
+                    onClick={handleContinue}
+                >
                     {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
                     {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
                 </QuestButton>

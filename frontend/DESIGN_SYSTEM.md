@@ -417,6 +417,7 @@ sean "estilo libre":
 - **Sonido:** `useSound()` de `@/contexts/SoundContext`.
 - **i18n:** namespace por juego en `i18n/locales/{es,en}/games.json` (o namespace
   dedicado, p. ej. `hackerDefense`).
+- **Regla de Oro de Layout (Centrado Absoluto 0,0 X,Y):** En el Lesson Engine (`LessonRunner`), la agrupación compuesta por personaje + burbuja de diálogo + tarjetas/actividades de ejercicio (excluyendo la barra superior de progreso) DEBE estar bidimensionalmente centrada en el punto (0,0) de los ejes X y Y respecto al viewport. En desktop (`lg:flex-row`), el personaje ocupa la columna izquierda (`lg:w-1/3`) y el ejercicio la derecha (`lg:w-2/3`), centrados con `items-center justify-center`. En mobile (`flex-col`), se apilan verticalmente con `items-center justify-center`. Se prohíbe el uso de paddings superiores o posiciones sticky desalineadas.
 
 > **Regla de oro:** una vista o es **Corp** (§1–§8) o es **Playful** (§9). No
 > existe una tercera categoría "estilo propio". Si encuentras una vista que no

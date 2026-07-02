@@ -21,6 +21,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
     const [selectedCards, setSelectedCards] = useState<number[]>([]); // Indices
     const [matchedIndices, setMatchedIndices] = useState<Set<number>>(new Set());
     const [isChecking, setIsChecking] = useState(false); // Validating a pair
+    const [isMismatch, setIsMismatch] = useState(false); // Visual indicator for wrong pair
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -29,10 +30,11 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
         if (!exercise?.content?.pairs) return;
 
         const pairs: Array<{ id: string, text: string, pairId: string }> = [];
-        exercise.content.pairs.forEach((pair: any) => {
+        exercise.content.pairs.forEach((pair: any, index: number) => {
+            const pId = pair.id || `pair-${index}`;
             // Create two cards for each pair
-            pairs.push({ id: `${pair.id}-a`, text: pickText(pair.left), pairId: pair.id });
-            pairs.push({ id: `${pair.id}-b`, text: pickText(pair.right), pairId: pair.id });
+            pairs.push({ id: `${pId}-a`, text: pickText(pair.left), pairId: pId });
+            pairs.push({ id: `${pId}-b`, text: pickText(pair.right), pairId: pId });
         });
 
         // Shuffle
@@ -44,6 +46,7 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
         setCards(pairs);
         setMatchedIndices(new Set());
         setSelectedCards([]);
+        setIsMismatch(false);
         setFeedback('none');
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -79,12 +82,16 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                     setIsChecking(false);
                 }, 500);
             } else {
-                // No match
-                playSound('ui_tap');
+                // No match - register the error with the engine to reduce lives/streak
+                onSubmit(false);
+                setIsMismatch(true);
+                setFeedback('error'); // Trigger the retry button to unblock the engine
+                
                 timeoutRef.current = setTimeout(() => {
                     setSelectedCards([]);
+                    setIsMismatch(false);
                     setIsChecking(false);
-                }, 1000);
+                }, 800);
             }
         }
     };
@@ -109,9 +116,11 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                                 "animate-in fade-in zoom-in-95 duration-500 fill-mode-both",
                                 isMatched
                                     ? "lp-option--emerald lp-token--locked is-correct opacity-60 scale-95"
-                                    : isSelected
-                                        ? "lp-option--indigo is-selected"
-                                        : "lp-option--indigo"
+                                    : isSelected && isMismatch
+                                        ? "lp-option--coral is-wrong animate-shake"
+                                        : isSelected
+                                            ? "lp-option--indigo is-selected"
+                                            : "lp-option--indigo"
                             )}
                         >
                             <span className="transition-opacity duration-300 opacity-100" style={{ color: "var(--lp-ink)" }}>
@@ -130,9 +139,11 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                         if (feedback === 'success') {
                             onNext();
                         } else {
+                            // On retry, reset the board and clear the engine error state
                             setMatchedIndices(new Set());
                             setSelectedCards([]);
                             setIsChecking(false);
+                            setIsMismatch(false);
                             setFeedback('none');
                             onRetry();
                         }
@@ -143,5 +154,6 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                 </QuestButton>
             )}
         </div>
+
     );
 };

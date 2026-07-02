@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 /** Single source of truth for the external analytics dashboard URL. */
-export const ADMIN_ANALYTICS_URL = 'https://lf-analytics-production-669d.up.railway.app/';
+export const ADMIN_ANALYTICS_URL = 'https://analytics.littlefounders.ai/';
 
 /**
  * The dashboard is Metabase, which serves `X-Frame-Options: DENY` +

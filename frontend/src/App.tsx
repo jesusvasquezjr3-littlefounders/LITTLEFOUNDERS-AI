@@ -100,7 +100,17 @@ const App = () => (
         <SoundProvider>
           <Toaster />
           <Sonner />
-          <Analytics />
+          {/* Measure ONLY the canonical production host — beforeSend drops
+              events from previews (*.vercel.app) and the es./en. subdomains
+              so Vercel Analytics stays scoped to littlefounders.ai. */}
+          <Analytics
+            beforeSend={(event) =>
+              typeof window !== 'undefined' &&
+              window.location.hostname === 'littlefounders.ai'
+                ? event
+                : null
+            }
+          />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToTop />
             <GoogleAnalytics />

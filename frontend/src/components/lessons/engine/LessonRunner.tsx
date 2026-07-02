@@ -59,6 +59,9 @@ import { GoalRoadmap } from './activities/GoalRoadmap';
 import { MindsetComparison } from './activities/MindsetComparison';
 import { PassiveIncome } from './activities/PassiveIncome';
 import { QuizBattle } from './activities/QuizBattle';
+import { DragDrop } from './activities/DragDrop';
+import { ImageHotspot } from './activities/ImageHotspot';
+import { BalanceScale } from './activities/BalanceScale';
 import { GenericChoice } from './activities/GenericChoice';
 import { LessonCelebration } from './LessonCelebration';
 import { StreakCelebration } from '@/components/ui/StreakCelebration';
@@ -213,6 +216,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     const [realDurationSeconds, setRealDurationSeconds] = useState(0);
     const [showGameOver, setShowGameOver] = useState(false);
     const [localFeedback, setLocalFeedback] = useState<'none' | 'success' | 'error'>('none');
+    const [lastAnswer, setLastAnswer] = useState<any>(null);
 
     // ─── Show the lesson celebration screen ───────────────────────────────────
     // Called either directly (no streak activation) or from StreakCelebration.onComplete
@@ -234,6 +238,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     const handleStandardSubmit = useCallback((answer: any): boolean => {
         if (isSubmittingRef.current) return false;
         isSubmittingRef.current = true;
+        setLastAnswer(answer);
         const isCorrect = submitAnswer(answer);
         if (isCorrect) {
             playSound('edu_success');
@@ -272,6 +277,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
      *  agree — no more "confetti + success" while the card shows "retry"), but never
      *  costs a life. Exploratory types validate to true, so they still always succeed. */
     const handleSimulatorSubmit = useCallback((answer: any): boolean => {
+        setLastAnswer(answer);
         const isCorrect = submitAnswer(answer);
         if (isCorrect) {
             playSound('edu_success');
@@ -285,18 +291,20 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         return isCorrect;
     }, [submitAnswer, playSound, playNarrativeFeedback]);
 
-    /** Standard next: reset feedback, stop narrative audio, advance */
+    /** Next handler: resets state, stops audio, proceeds to next exercise */
     const handleNext = useCallback(() => {
         isSubmittingRef.current = false;
         setLocalFeedback('none');
+        setLastAnswer(null);
         stopNarrativeAudio();
         nextExercise();
     }, [nextExercise, stopNarrativeAudio]);
 
-    /** Standard retry: reset feedback, stop narrative audio, retry */
+    /** Retry handler: resets state, stops audio, lets user try again */
     const handleRetry = useCallback(() => {
         isSubmittingRef.current = false;
         setLocalFeedback('none');
+        setLastAnswer(null);
         stopNarrativeAudio();
         retryExercise();
     }, [retryExercise, stopNarrativeAudio]);
@@ -346,17 +354,33 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     const getCurrentText = (): string => {
         if (!currentExercise) return '';
 
-        // Mostrar feedback si está disponible
-        if (localFeedback === 'success' && currentExercise.feedback?.success) {
-            return currentExercise.feedback.success;
-        }
-        if (localFeedback === 'error' && currentExercise.feedback?.error) {
-            return currentExercise.feedback.error;
+        const content = currentExercise.content as any;
+        const feedbackObj = currentExercise.feedback || content?.feedback;
+
+        // Mostrar feedback si está disponible (root o dentro de content)
+        if (localFeedback !== 'none' && feedbackObj) {
+            // Check for option-specific feedback first
+            if (lastAnswer !== null && typeof lastAnswer === 'string') {
+                // Format 1: nested in per_option (e.g. feedback.per_option.a)
+                if (feedbackObj.per_option && feedbackObj.per_option[lastAnswer]) {
+                    return feedbackObj.per_option[lastAnswer];
+                }
+                // Format 2: direct key (e.g. feedback.a)
+                if (feedbackObj[lastAnswer]) {
+                    return feedbackObj[lastAnswer];
+                }
+            }
+            
+            // Fallback to standard success/error keys
+            if (localFeedback === 'success' && feedbackObj.success) {
+                return feedbackObj.success;
+            }
+            if (localFeedback === 'error' && feedbackObj.error) {
+                return feedbackObj.error;
+            }
         }
 
         // Support different content types: question, instruction, transcript
-        const content = currentExercise.content as any;
-
         // CRITICAL: Check ALL possible text fields in order of priority
         // Based on actual JSON structure from lesson files
         if (content) {
@@ -672,7 +696,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ LOADING STATE ============
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4">
+            <div className="lp min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4">
                 <dotlottie-wc
                     src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
                     style={{ width: '300px', height: '300px' }}
@@ -687,7 +711,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ ERROR STATE ============
     if (error || !data) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
+            <div className="lp min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
                 <AlertCircle className="w-16 h-16 text-red-400" />
                 <p className="text-lg font-semibold text-center text-slate-700 dark:text-slate-300">
                     {error || t('error')}
@@ -704,7 +728,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         const startCharacterCode = normalizeCharacterCode(data.timeline[0]?.character_code || 'liruf');
 
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col overflow-hidden">
+            <div className="lp min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col overflow-hidden">
                 {/* Top bar with close button */}
                 <div className="flex items-center justify-between px-4 py-4">
                     <button
@@ -790,7 +814,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         : progress;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col">
+        <div className="lp min-h-screen bg-slate-50 dark:bg-[#0a0e1a] fixed inset-0 flex flex-col">
 
             {/* ===== TOP BAR ===== */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-white/5">
@@ -867,14 +891,14 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                 <div
                     key={`exercise-${currentExerciseIndex}`}
                     className={cn(
-                        "flex-1 flex flex-col items-center justify-start px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch",
+                        "flex-1 flex flex-col lg:flex-row items-center justify-center px-4 pb-2 pt-4 overflow-y-auto min-h-0 w-full scrolling-touch lg:gap-8 max-w-7xl mx-auto",
                         state === 'COMPLETED' ? "opacity-0 pointer-events-none" : "animate-in fade-in slide-in-from-bottom-4 duration-500"
                     )}
                 >
 
                 {/* Hide default Bubble/Character for StoryMode and IntroNarrative as they have their own */}
                 {currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative' && (
-                    <>
+                    <div className="w-full lg:w-1/3 flex flex-col items-center justify-center flex-shrink-0">
                         {/* Speech Bubble — Island style, clean white card with border */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-pop" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
@@ -923,8 +947,14 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                                 />
                             )}
                         </div>
-                    </>
+                    </div>
                 )}
+
+                {/* Right Column (Exercise Content) */}
+                <div className={cn(
+                    "w-full flex flex-col items-center justify-center lg:min-h-0",
+                    (currentExercise?.type !== 'story_mode' && currentExercise?.type !== 'intro_narrative') ? "lg:w-2/3" : "lg:w-full max-w-4xl mx-auto"
+                )}>
 
                 {/* ===== STORY MODE ===== */}
                 {currentExercise?.type === 'story_mode' && (
@@ -1303,12 +1333,11 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                 )}
 
                 {/* ===== DEBT STRATEGY ===== */}
-                {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'debt_strategy' && (
                     <DebtStrategy
                         key={currentExerciseIndex}
                         exercise={currentExercise}
-                        onSubmit={handleSimulatorSubmit}
+                        onSubmit={handleStandardSubmit}
                         onNext={handleNext}
                         onRetry={handleRetry}
                     />
@@ -1349,12 +1378,11 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                 )}
 
                 {/* ===== MINDSET COMPARISON ===== */}
-                {/* SIMULATOR: No validation, always succeeds */}
                 {currentExercise?.type === 'mindset_comparison' && (
                     <MindsetComparison
                         key={currentExerciseIndex}
                         exercise={currentExercise}
-                        onSubmit={handleSimulatorSubmit}
+                        onSubmit={handleStandardSubmit}
                         onNext={handleNext}
                         onRetry={handleRetry}
                     />
@@ -1397,6 +1425,39 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                     />
                 )}
 
+                {/* ===== DRAG & DROP ===== */}
+                {currentExercise?.type === 'drag_drop' && (
+                    <DragDrop
+                        key={currentExerciseIndex}
+                        exercise={currentExercise}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
+                    />
+                )}
+
+                {/* ===== IMAGE HOTSPOT ===== */}
+                {currentExercise?.type === 'image_hotspot' && (
+                    <ImageHotspot
+                        key={currentExerciseIndex}
+                        exercise={currentExercise}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
+                    />
+                )}
+
+                {/* ===== BALANCE SCALE ===== */}
+                {currentExercise?.type === 'balance_scale' && (
+                    <BalanceScale
+                        key={currentExerciseIndex}
+                        exercise={currentExercise}
+                        onSubmit={handleStandardSubmit}
+                        onNext={handleNext}
+                        onRetry={handleRetry}
+                    />
+                )}
+
                 {/* ===== FALLBACK: Unsupported / Unmapped Exercise Type ===== */}
                 {currentExercise && ![
                     'story_mode', 'intro_narrative', 'multiple_choice', 'true_false',
@@ -1410,6 +1471,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                     'opportunity_cost', 'market_reaction', 'inflation_simulator',
                     'credit_score', 'debt_strategy', 'tax_puzzle', 'salary_comparison',
                     'spot_trap', 'impact_meter', 'mindset_comparison',
+                    'drag_drop', 'image_hotspot', 'balance_scale',
                     'comparison', 'compare', 'comparison_chart', 'comparison_table',
                     'comparison_slider', 'comparison_matrix', 'comparison_challenge',
                     'case_study', 'case_real', 'decision_challenge', 'decision_matrix'
@@ -1446,6 +1508,8 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                         </div>
                     </div>
                 )}
+
+                </div> {/* End Right Column */}
 
             </div>
             )}

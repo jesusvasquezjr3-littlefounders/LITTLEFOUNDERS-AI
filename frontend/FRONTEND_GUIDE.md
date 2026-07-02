@@ -440,6 +440,14 @@ IDLE ──startLesson()──> PLAYING
 
 ### 7.3 Actividades (40 componentes)
 
+### 7.4 Regla de Oro de Layout y Alineación (Centrado Absoluto 0,0 X,Y)
+
+> **REGLA DE ORO DE ALINEACIÓN:** Todos los elementos interactivos y narrativos de una lección (Personaje + Burbuja de diálogo + Tarjetas/Actividades, excluyendo la barra de progreso superior de la lección) DEBEN estar estrictamente centrados en el eje (0,0) (horizontal X y vertical Y) respecto a la pantalla visible disponible.
+
+- **Mobile:** Se apilan en layout vertical (`flex-col`) utilizando `items-center justify-center` en el contenedor `flex-1`.
+- **Desktop:** Se distribuyen en dos columnas responsivas (`lg:flex-row`), donde la columna izquierda (`lg:w-1/3`) alberga al personaje con la burbuja de texto, y la columna derecha (`lg:w-2/3`) contiene el componente interactivo. Ambas columnas se alinean mediante `items-center justify-center`.
+- **Restricción estricta:** Está estrictamente prohibido usar posiciones `sticky`, paddings superiores asimétricos (`pt-12`, `mt-8`) o alineaciones al tope (`items-start`) en la grilla maestra `LessonRunner` que rompan la simetría bidimensional central.
+
 | Archivo | Exercise Types que renderiza |
 |---|---|
 | `MultipleChoice.tsx` | `multiple_choice` |

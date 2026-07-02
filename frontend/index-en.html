@@ -106,8 +106,10 @@
       } catch (e) { return false; }
     }
 
-    // Prevent tracking on localhost/dev environments
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Measure ONLY the canonical production host. Excludes localhost/dev,
+    // *.vercel.app preview deploys, and the es./en. language subdomains, so
+    // the analytics are never contaminated by anything but littlefounders.ai.
+    if (window.location.hostname === 'littlefounders.ai') {
       var lfBot = lfIsLikelyBot();
       // Custom dimension 'traffic_type' => filtrable en GA4 (segmento / data filter)
       gtag('set', { traffic_type: lfBot ? 'bot' : 'human' });
@@ -117,8 +119,8 @@
 
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
-    // Only track on production domains (littlefounders.ai and subdomains)
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Only track the canonical production host (never subdomains/previews).
+    if (window.location.hostname === 'littlefounders.ai') {
       (function (c, l, a, r, i, t, y) {
         c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
         t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;

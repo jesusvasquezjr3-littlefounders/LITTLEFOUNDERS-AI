@@ -113,10 +113,25 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
         playSound('ui_tap');
 
         timeoutRef.current = setTimeout(() => {
-            const isCorrect = onSubmit(selectedOptionId);
+            const validated = onSubmit(selectedOptionId);
+            
+            // If JSON lacks correct_answer, evaluate option A ("25%" / higher rate) as correct
+            const hasExplicitCorrectAnswer = Boolean(exercise.correct_answer || exercise.content?.correct_answer);
+            let isCorrect = validated;
+            if (!hasExplicitCorrectAnswer) {
+                const selectedOpt = options.find((o: any) => (o?.id ?? o?.text) === selectedOptionId);
+                const text = (selectedOpt?.text || '').toLowerCase();
+                // Higher interest (25%, avalancha, mayor) is correct; lower interest (5%) is incorrect
+                if (text.includes('25%') || text.includes('mayor') || selectedOptionId === 'A' || selectedOptionId === 'a') {
+                    isCorrect = true;
+                } else if (text.includes('5%') || selectedOptionId === 'B' || selectedOptionId === 'b') {
+                    isCorrect = false;
+                }
+            }
+
             setFeedback(isCorrect ? 'success' : 'error');
             setIsSimulating(false);
-        }, 800);
+        }, 600);
     };
 
     const handleContinue = () => {
@@ -129,6 +144,19 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             setFeedback('none');
             onRetry();
         }
+    };
+
+    const getOptionFeedbackText = () => {
+        const fb = exercise.feedback || content.feedback;
+        if (fb) {
+            if (typeof fb === 'string') return fb;
+            if (selectedOptionId && fb[selectedOptionId]) return fb[selectedOptionId];
+            if (feedback === 'success' && fb.success && fb.success !== '🎉 CONTINUAR') return fb.success;
+            if (feedback === 'error' && fb.error && fb.error !== '🔄 REINTENTAR') return fb.error;
+        }
+        return feedback === 'success'
+            ? t('debt_strategy.feedback_success', { defaultValue: '¡Exacto! Pagar primero la deuda con la mayor tasa de interés te ahorra más dinero.' })
+            : t('debt_strategy.feedback_error', { defaultValue: 'Recuerda que las tasas más altas generan más costo. Prioriza la deuda con mayor interés.' });
     };
 
     /* ─────────────── Fallback ─────────────── */
@@ -183,7 +211,15 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                         const id = opt?.id ?? opt?.text ?? '';
                         const text = opt?.text ?? '';
                         const isSelected = selectedOptionId === id;
-                        const optState: OptionState = isSelected ? 'selected' : 'idle';
+
+                        let optState: OptionState = 'idle';
+                        if (feedback === 'success') {
+                            optState = isSelected ? 'correct' : 'disabled';
+                        } else if (feedback === 'error') {
+                            optState = isSelected ? 'wrong' : 'disabled';
+                        } else {
+                            optState = isSelected ? 'selected' : 'idle';
+                        }
 
                         return (
                             <OptionCard
@@ -192,6 +228,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                                 text={text}
                                 state={optState}
                                 onClick={() => {
+                                    if (feedback !== 'none') return;
                                     setSelectedOptionId(id);
                                     playSound('ui_tap');
                                 }}
@@ -217,11 +254,24 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                         </QuestButton>
                     ) : (
                         <div className="flex flex-col items-center w-full">
-                            <p className="lp-display text-lg mb-3" style={{ color: feedback === 'success' ? "var(--lp-emerald)" : "var(--lp-coral)" }}>
+                            <p className="lp-display text-lg mb-2 text-center" style={{ color: feedback === 'success' ? "var(--lp-emerald-ink)" : "var(--lp-coral-ink)" }}>
                                 {feedback === 'success'
-                                    ? t('feedback.success', { defaultValue: '¡Correcto!' })
+                                    ? t('feedback.success', { defaultValue: '¡Excelente Elección!' })
                                     : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                             </p>
+                            <div
+                                className="bg-white rounded-[2rem] shadow-sm mb-4 p-4 max-w-2xl border w-full text-center"
+                                style={feedback === 'success'
+                                    ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
+                                    : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }}
+                            >
+                                <p
+                                    className="text-sm font-medium leading-relaxed"
+                                    style={{ color: feedback === 'success' ? 'var(--lp-emerald-ink)' : 'var(--lp-coral-ink)' }}
+                                >
+                                    {getOptionFeedbackText()}
+                                </p>
+                            </div>
                             <QuestButton
                                 variant={feedback === 'success' ? 'go' : 'retry'}
                                 onClick={handleContinue}

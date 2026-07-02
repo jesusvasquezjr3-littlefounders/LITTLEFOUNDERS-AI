@@ -55,7 +55,7 @@ Generas UNA lección como JSON válido (LessonV2). Devuelve SOLO el JSON, sin ma
 REGLAS DE LENGUAJE (banda {band}): máx {lr.get('max_words_per_sentence','?')} palabras/oración; emojis={lr.get('use_emojis')}; PROHIBIDO usar: {lr.get('forbidden_words',[])}.
 TECHO DE ABSTRACCIÓN (HARD): números ≤ {ceil.get('max_number')}; {'solo enteros; ' if ceil.get('whole_numbers_only') else ''}PROHIBIDAS estas abstracciones: {ceil.get('forbidden_abstractions',[])}.
 TIPOS DE EJERCICIO PERMITIDOS: {allowed}. Ejercicios por lección: {ac.get('exercises_per_lesson',{})}.
-FORMAS de correct_answer por tipo (usa EXACTAMENTE estas claves): multiple_choice→{{"correctOptionId":"a"}}; true_false→{{"isTrue":true}}; tap_action→{{"targetIds":["i2"]}}; sequencing→{{"sequence":["s1","s2","s3"]}}; matching_pairs→SIN correct_answer; intro_narrative→SIN correct_answer.
+FORMAS de correct_answer por tipo (usa EXACTAMENTE estas claves): multiple_choice→{{"correctOptionId":"a"}}; true_false→{{"isTrue":true}}; tap_action→{{"targetIds":["i2"]}}; sequencing→{{"sequence":["s1","s2","s3"]}}; estimation_slider→{{"value":10,"tolerance":0}} (Usa tolerance: 0 SI ES CÁLCULO ABSOLUTO EXACTO, > 0 solo si es estimación real); mystery_investment→{{"correctOptionId":"b1"}} (totalCoins DEBE ser entre 5 y 10 para evitar fatiga de clics, y cada caja DEBE tener minReturn y maxReturn como números válidos); matching_pairs→SIN correct_answer; intro_narrative→SIN correct_answer.
 
 CALIDAD OBLIGATORIA (rúbrica v2):
 - FORMA: cubre las 6 fases conectar→enseñar→practicar→reforzar→aplicar_variante→cerrar. El 1er ejercicio ENGANCHA (misterio/predicción/escena relatable), el último CONECTA con un concepto y anticipa la próxima lección.

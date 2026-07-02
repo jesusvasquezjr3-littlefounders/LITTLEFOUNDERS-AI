@@ -341,7 +341,7 @@ export function LessonCelebration({
 
         {/* BOTTOM: action buttons */}
         <div
-          className="flex flex-col gap-3 w-full animate-in slide-in-from-bottom-8 duration-700"
+          className="flex flex-col gap-3 w-full max-w-sm mx-auto animate-in slide-in-from-bottom-8 duration-700"
           style={{ animationDelay: "700ms", animationFillMode: "backwards" }}
         >
           {/* Primary: next lesson / back to map */}

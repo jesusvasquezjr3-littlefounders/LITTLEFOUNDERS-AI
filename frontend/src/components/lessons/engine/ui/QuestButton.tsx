@@ -29,7 +29,7 @@ export function QuestButton({ children, onClick, disabled, variant = "gold", cla
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "lp-cta w-full h-[3.75rem] px-6 text-lg inline-flex items-center justify-center gap-2 select-none",
+        "lp-cta w-full max-w-sm mx-auto h-[3.5rem] px-6 text-base sm:text-lg flex items-center justify-center gap-2 select-none",
         "animate-in fade-in slide-in-from-bottom-2 duration-300 fill-mode-both",
         VARIANT_CLASS[variant],
         className,

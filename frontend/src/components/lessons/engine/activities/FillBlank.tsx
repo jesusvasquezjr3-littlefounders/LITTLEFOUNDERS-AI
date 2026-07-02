@@ -169,11 +169,32 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
             {/* Statement Area */}
             <div className="bg-white rounded-[2.5rem] shadow-sm p-6 mb-6 w-full">
-                <div className="lp-display flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl leading-loose" style={{ color: "var(--lp-ink)" }}>
+                <div className="lp-display flex flex-wrap gap-2 items-center justify-center text-xl sm:text-2xl leading-loose" style={{ color: "var(--lp-ink)" }}>
                     {segments.map((segment: any, idx: number) => {
                         if (segment.type === 'text') {
-                            return <span key={idx}>{segment.text}</span>;
+                            return <span key={idx} className="whitespace-pre-wrap">{segment.text}</span>;
                         } else {
+                            if (!hasWordBank) {
+                                // Inline Text Input
+                                return (
+                                    <input
+                                        key={idx}
+                                        type="text"
+                                        value={textInput}
+                                        onChange={(e) => setTextInput(e.target.value)}
+                                        disabled={isChecked}
+                                        autoFocus
+                                        className={cn(
+                                            "lp-display min-w-[120px] max-w-[250px] h-12 px-3 rounded-[var(--lp-radius-sm)] border-2 transition-all mx-1 text-center focus:outline-none focus:border-[var(--lp-indigo)]",
+                                            isChecked && feedback === 'success' && "border-[var(--lp-emerald)] text-[var(--lp-emerald)] bg-[var(--lp-emerald-soft)]",
+                                            isChecked && feedback === 'error' && "border-[var(--lp-coral)] text-[var(--lp-coral)] bg-[var(--lp-coral-soft)]"
+                                        )}
+                                        style={!isChecked ? { background: "var(--lp-surface)", borderColor: "var(--lp-line)", color: "var(--lp-ink)" } : {}}
+                                    />
+                                );
+                            }
+
+                            // Word Bank Slot
                             const filledWordId = selectedWords[idx];
                             const filledWord = wordBank.find((w: any) => w.id === filledWordId);
                             return (
@@ -199,6 +220,19 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                     {segments.length === 0 && statement && (
                         <p className="text-center">{statement}</p>
                     )}
+                    {/* If no blanks and no wordbank, show fallback inline input */}
+                    {segments.length === 0 && !hasWordBank && (
+                        <input
+                            type="text"
+                            value={textInput}
+                            onChange={(e) => setTextInput(e.target.value)}
+                            disabled={isChecked}
+                            autoFocus
+                            placeholder={content.placeholder || t('fill_blank.placeholder', { defaultValue: 'Respuesta...' })}
+                            className="lp-display min-w-[160px] max-w-[300px] h-12 px-4 rounded-[var(--lp-radius-sm)] border-2 text-center focus:outline-none transition-colors disabled:opacity-50 focus:border-[var(--lp-indigo)] mt-4"
+                            style={{ background: "var(--lp-surface)", borderColor: "var(--lp-line)", color: "var(--lp-ink)" }}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -207,21 +241,6 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                 <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: "var(--lp-indigo-ink)" }}>
                     <Lightbulb className="w-4 h-4" />
                     <span>{hint}</span>
-                </div>
-            )}
-
-            {/* Free text input when no word bank */}
-            {!hasWordBank && (
-                <div className="w-full mb-6">
-                    <input
-                        type="text"
-                        value={textInput}
-                        onChange={(e) => setTextInput(e.target.value)}
-                        disabled={isChecked}
-                        placeholder={content.placeholder || t('fill_blank.placeholder', { defaultValue: 'Escribe tu respuesta...' })}
-                        className="lp-display w-full px-4 py-3 rounded-[var(--lp-radius-sm)] border-2 text-lg text-center focus:outline-none transition-colors disabled:opacity-50 focus:border-[var(--lp-indigo)]"
-                        style={{ background: "var(--lp-surface)", borderColor: "var(--lp-line)", color: "var(--lp-ink)" }}
-                    />
                 </div>
             )}
 

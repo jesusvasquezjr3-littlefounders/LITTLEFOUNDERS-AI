@@ -37,7 +37,11 @@
         ]
       },
       "correct_answer": {
-        "correctOptionId": "p1"
+        "validCombinations": [
+          ["p1"],
+          ["p2"],
+          ["p1", "p2"]
+        ]
       },
       "feedback": {
         "success": "¡Correcto! ✅",
@@ -50,32 +54,36 @@
       "type": "shop_sim",
       "character_code": "liruf",
       "content": {
-        "scenario": "Compra productos sin exceder tu presupuesto de $30.",
+        "scenario": "Buy items without exceeding your $30 budget.",
         "budget": 30,
         "items": [
           {
             "id": "p1",
-            "name": "Leche",
+            "name": "Milk",
             "price": 12
           },
           {
             "id": "p2",
-            "name": "Pan",
+            "name": "Bread",
             "price": 8
           },
           {
             "id": "p3",
-            "name": "Huevos",
+            "name": "Eggs",
             "price": 15
           }
         ]
       },
       "correct_answer": {
-        "correctOptionId": "p1"
+        "validCombinations": [
+          ["p1"],
+          ["p2"],
+          ["p1", "p2"]
+        ]
       },
       "feedback": {
-        "success": "¡Correcto! ✅",
-        "error": "Intenta de nuevo 💡"
+        "success": "Correct! ✅",
+        "error": "Try again 💡"
       }
     }
   ]

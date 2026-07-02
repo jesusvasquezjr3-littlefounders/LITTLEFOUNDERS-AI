@@ -2793,8 +2793,54 @@ html[data-reduce-motion="true"] *::after {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -18px rgba(0, 0, 0, 0.6) !important;
 }
 
+/* ── Range sliders inside .lp scope (BudgetBuilder exercise) ───────────── */
+.lp input[type='range'] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  background: color-mix(in srgb, var(--lp-ink) 8%, transparent) !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+.lp input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lp-emerald);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+  cursor: pointer;
+  border: 2.5px solid #fff;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.lp input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.lp input[type='range']::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.lp input[type='range']::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lp-emerald);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+  cursor: pointer;
+  border: 2.5px solid #fff;
+}
+.lp input[type='range']:disabled::-webkit-slider-thumb,
+.lp input[type='range'][disabled]::-moz-range-thumb {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ════════════════════════════════════════════════════════════════════════
-   LESSON ENGINE — PLAYFUL DS v2  ("Founder's Quest")
+    LESSON ENGINE — PLAYFUL DS v2  ("Founder's Quest")
    Distinctive, tactile design language for the immersive lesson experience.
    This is the §9 "Playful" sub-standard — deliberately NOT corp. Everything is
    scoped under `.lp` so it never leaks into the rest of the app.

@@ -10,10 +10,14 @@ declare global {
   }
 }
 
+// Measure ONLY the canonical production host — never localhost, preview
+// deploys (*.vercel.app), or the es./en. language subdomains — so the
+// analytics stay scoped to littlefounders.ai and nothing else.
+const CANONICAL_HOST = 'littlefounders.ai';
+
 function isTrackingEnabled(): boolean {
   if (typeof window === 'undefined') return false;
-  const host = window.location.hostname;
-  if (host === 'localhost' || host === '127.0.0.1') return false;
+  if (window.location.hostname !== CANONICAL_HOST) return false;
   return typeof window.gtag === 'function';
 }
 
