@@ -44,15 +44,17 @@ interface TopicNodeProps {
     theme: string;
 }
 
-const PathLine = ({ nodesCount }: { nodesCount: number }) => {
+const PathLine = ({ nodesCount, parentRef }: { nodesCount: number, parentRef: React.RefObject<HTMLDivElement> }) => {
     const [pathD, setPathD] = useState("");
     const containerRef = useRef<SVGSVGElement>(null);
 
     useEffect(() => {
         const updatePath = () => {
-            if (!containerRef.current) return;
+            if (!containerRef.current || !parentRef.current) return;
             const containerBox = containerRef.current.getBoundingClientRect();
-            const nodes = document.querySelectorAll('.topic-node-center');
+            
+            // Scope the query to this specific saga's container to avoid drawing lines to other open sagas
+            const nodes = parentRef.current.querySelectorAll('.topic-node-center');
             
             if (nodes.length < 2) return;
             
@@ -80,13 +82,15 @@ const PathLine = ({ nodesCount }: { nodesCount: number }) => {
         window.addEventListener('resize', updatePath);
         const timeout1 = setTimeout(updatePath, 100);
         const timeout2 = setTimeout(updatePath, 500);
+        const timeout3 = setTimeout(updatePath, 1000);
         
         return () => {
             window.removeEventListener('resize', updatePath);
             clearTimeout(timeout1);
             clearTimeout(timeout2);
+            clearTimeout(timeout3);
         };
-    }, [nodesCount]);
+    }, [nodesCount, parentRef]);
 
     return (
         <svg ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -166,12 +170,32 @@ const TopicNode: React.FC<TopicNodeProps> = ({
         const patternIndex = topicIndex % 8;
         const shouldShow = patternIndex === 2 || patternIndex === 6;
         
-        // Define safe contrasting background blob colors for each character
+        // Define safe contrasting background blob colors for each character with premium gradients
         const blobColors = {
-            dino: ['bg-rose-200', 'bg-purple-200', 'bg-amber-200', 'bg-sky-200'],
-            dina: ['bg-emerald-200', 'bg-cyan-200', 'bg-purple-200', 'bg-rose-200'],
-            rho: ['bg-emerald-200', 'bg-sky-200', 'bg-purple-200', 'bg-rose-200'],
-            zara: ['bg-sky-200', 'bg-emerald-200', 'bg-amber-200', 'bg-indigo-200'],
+            dino: [
+                { gradient: 'from-rose-300 to-rose-100 dark:from-rose-800 dark:to-rose-950', solid: 'bg-rose-300 dark:bg-rose-700' },
+                { gradient: 'from-purple-300 to-purple-100 dark:from-purple-800 dark:to-purple-950', solid: 'bg-purple-300 dark:bg-purple-700' },
+                { gradient: 'from-amber-300 to-amber-100 dark:from-amber-800 dark:to-amber-950', solid: 'bg-amber-300 dark:bg-amber-700' },
+                { gradient: 'from-sky-300 to-sky-100 dark:from-sky-800 dark:to-sky-950', solid: 'bg-sky-300 dark:bg-sky-700' }
+            ],
+            dina: [
+                { gradient: 'from-emerald-300 to-emerald-100 dark:from-emerald-800 dark:to-emerald-950', solid: 'bg-emerald-300 dark:bg-emerald-700' },
+                { gradient: 'from-cyan-300 to-cyan-100 dark:from-cyan-800 dark:to-cyan-950', solid: 'bg-cyan-300 dark:bg-cyan-700' },
+                { gradient: 'from-purple-300 to-purple-100 dark:from-purple-800 dark:to-purple-950', solid: 'bg-purple-300 dark:bg-purple-700' },
+                { gradient: 'from-rose-300 to-rose-100 dark:from-rose-800 dark:to-rose-950', solid: 'bg-rose-300 dark:bg-rose-700' }
+            ],
+            rho: [
+                { gradient: 'from-emerald-300 to-emerald-100 dark:from-emerald-800 dark:to-emerald-950', solid: 'bg-emerald-300 dark:bg-emerald-700' },
+                { gradient: 'from-sky-300 to-sky-100 dark:from-sky-800 dark:to-sky-950', solid: 'bg-sky-300 dark:bg-sky-700' },
+                { gradient: 'from-purple-300 to-purple-100 dark:from-purple-800 dark:to-purple-950', solid: 'bg-purple-300 dark:bg-purple-700' },
+                { gradient: 'from-rose-300 to-rose-100 dark:from-rose-800 dark:to-rose-950', solid: 'bg-rose-300 dark:bg-rose-700' }
+            ],
+            zara: [
+                { gradient: 'from-sky-300 to-sky-100 dark:from-sky-800 dark:to-sky-950', solid: 'bg-sky-300 dark:bg-sky-700' },
+                { gradient: 'from-emerald-300 to-emerald-100 dark:from-emerald-800 dark:to-emerald-950', solid: 'bg-emerald-300 dark:bg-emerald-700' },
+                { gradient: 'from-amber-300 to-amber-100 dark:from-amber-800 dark:to-amber-950', solid: 'bg-amber-300 dark:bg-amber-700' },
+                { gradient: 'from-indigo-300 to-indigo-100 dark:from-indigo-800 dark:to-indigo-950', solid: 'bg-indigo-300 dark:bg-indigo-700' }
+            ],
         };
         const safeColors = blobColors[cType];
         
@@ -262,26 +286,40 @@ const TopicNode: React.FC<TopicNodeProps> = ({
                         .animate-particle-1 { animation: particleTwinkle1 4s ease-in-out infinite; }
                         .animate-particle-2 { animation: particleTwinkle2 5s ease-in-out infinite; }
                         .animate-particle-3 { animation: particleTwinkle3 6s ease-in-out infinite; }
+                        .heavy-blob-noise {
+                            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+                        }
                     `}</style>
                     
                     {/* Floating Particles (Outside the liquid filter so they stay sharp) */}
                     <div className="absolute w-80 h-80 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-screen">
-                        <div className={cn("absolute top-[10%] left-[20%] w-2 h-2 rounded-full animate-particle-1", blobColor)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
-                        <div className={cn("absolute top-[80%] left-[15%] w-3 h-3 rounded-full animate-particle-2", blobColor)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
-                        <div className={cn("absolute top-[20%] right-[15%] w-1.5 h-1.5 rounded-full animate-particle-3", blobColor)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
-                        <div className={cn("absolute top-[75%] right-[20%] w-2.5 h-2.5 rounded-full animate-particle-1", blobColor)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
-                        <div className={cn("absolute top-[50%] left-[5%] w-2 h-2 rounded-full animate-particle-3", blobColor)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
+                        <div className={cn("absolute top-[10%] left-[20%] w-2 h-2 rounded-full animate-particle-1", blobColor.solid)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
+                        <div className={cn("absolute top-[80%] left-[15%] w-3 h-3 rounded-full animate-particle-2", blobColor.solid)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
+                        <div className={cn("absolute top-[20%] right-[15%] w-1.5 h-1.5 rounded-full animate-particle-3", blobColor.solid)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
+                        <div className={cn("absolute top-[75%] right-[20%] w-2.5 h-2.5 rounded-full animate-particle-1", blobColor.solid)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
+                        <div className={cn("absolute top-[50%] left-[5%] w-2 h-2 rounded-full animate-particle-3", blobColor.solid)} style={{ animationDelay: `${-(Math.random() * 4)}s` }} />
                     </div>
 
                     {/* Defined Contour Container */}
                     <div 
-                        className="absolute w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center opacity-70 dark:opacity-40 mix-blend-multiply dark:mix-blend-screen"
+                        className="absolute w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center opacity-90 dark:opacity-70 mix-blend-multiply dark:mix-blend-screen"
                     >
                         {/* Main Clean Blob */}
                         <div 
-                            className={cn("absolute w-48 h-48 sm:w-60 sm:h-60 animate-blob-morph transition-colors duration-1000 shadow-xl", blobColor)}
+                            className={cn(
+                                "absolute w-48 h-48 sm:w-60 sm:h-60 animate-blob-morph transition-colors duration-1000",
+                                "bg-gradient-to-br shadow-[inset_0_4px_20px_rgba(255,255,255,0.6),inset_0_-4px_12px_rgba(0,0,0,0.05),0_10px_30px_rgba(0,0,0,0.1)]",
+                                "dark:shadow-[inset_0_4px_20px_rgba(255,255,255,0.1),inset_0_-4px_12px_rgba(0,0,0,0.3),0_10px_30px_rgba(0,0,0,0.3)]",
+                                "overflow-hidden",
+                                blobColor.gradient
+                            )}
                             style={{ animationDelay: blobDelay }}
-                        />
+                        >
+                            {/* Inner Grain Texture - Layer 1 (Dark Grit) */}
+                            <div className="absolute inset-0 opacity-[0.9] mix-blend-color-burn heavy-blob-noise pointer-events-none" />
+                            {/* Inner Grain Texture - Layer 2 (Light noise) */}
+                            <div className="absolute inset-0 opacity-[0.8] mix-blend-overlay heavy-blob-noise pointer-events-none" />
+                        </div>
                     </div>
 
                     {/* Character */}
@@ -482,11 +520,13 @@ export const LessonPath: React.FC<LessonPathProps> = ({
         ? (lessons[currentLessonGlobalIndex]?.id ?? null)
         : null;
 
+    const pathWrapperRef = useRef<HTMLDivElement>(null);
+
     return (
         <div className="w-full py-2 pb-32">
             {/* Topics Path */}
-            <div className="relative flex flex-col items-center py-6 space-y-2 min-h-[500px]">
-                <PathLine nodesCount={groupedLessons.length} />
+            <div ref={pathWrapperRef} className="relative flex flex-col items-center py-6 space-y-2 min-h-[500px]">
+                <PathLine nodesCount={groupedLessons.length} parentRef={pathWrapperRef} />
                 {groupedLessons.map((group, groupIndex) => {
                     const isCurrentTopic = group.lessons.some(l => l.id === currentLessonId);
                     const isTopicLocked = !group.lessons[0]?.completed && !isCurrentTopic;

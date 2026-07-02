@@ -157,14 +157,14 @@ const AdventureBanner: React.FC<{
   return (
     <div
       className={cn(
-        'relative w-full max-w-2xl mx-auto rounded-[28px] overflow-hidden',
+        'relative w-full max-w-2xl mx-auto rounded-[24px] sm:rounded-[28px] overflow-hidden',
+        'h-[100px] sm:h-[280px]',
         'shadow-[0_12px_0_rgba(0,0,0,0.07)] dark:shadow-[0_12px_0_rgba(0,0,0,0.3)]',
         'border-4 transition-all duration-300',
         isSelected ? 'border-indigo-500/60 dark:border-indigo-400/50 shadow-2xl' : 'border-black/5 dark:border-white/5',
         'cursor-pointer',
         isLocked && 'saturate-50 cursor-default'
       )}
-      style={{ height: '280px' }}
       onClick={isLocked ? undefined : onToggle}
       role={isLocked ? undefined : 'button'}
       aria-expanded={isLocked ? undefined : isExpanded}
@@ -180,36 +180,39 @@ const AdventureBanner: React.FC<{
       />
 
       {/* Overlay gradient for readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-[55]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 sm:from-black/70 sm:via-black/20 to-transparent z-[55]" />
 
       {/* Bottom content row */}
-      <div className="absolute bottom-0 left-0 right-0 z-[60] flex items-end justify-between px-5 pb-4">
-        <div>
-          <p className="text-white text-2xl font-black drop-shadow-md leading-tight">
+      <div className="absolute bottom-0 left-0 right-0 z-[60] flex items-end justify-between px-4 pb-3 sm:px-5 sm:pb-4 gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-white text-xl sm:text-2xl font-black drop-shadow-md leading-tight truncate sm:whitespace-normal">
             {adventure.title}
           </p>
         </div>
 
         {/* Expand / Lock button */}
-        {isLocked ? (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
-            <Lock className="w-5 h-5 text-white/80" />
-            <span className="text-white/80 text-sm font-bold">{t('locked')}</span>
-          </div>
-        ) : adventure.completedLessons === adventure.totalLessons && adventure.totalLessons > 0 ? (
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-500/90 backdrop-blur-md border border-blue-300/20 shadow-lg">
-            <span className="text-white text-sm font-black">🏆 {t('learn.adventure.completed_badge')}</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 hover:bg-white/30 transition-colors">
-            {isExpanded
-              ? <ChevronUp className="w-5 h-5 text-white" />
-              : <ChevronDown className="w-5 h-5 text-white" />}
-            <span className="text-white text-sm font-bold">
-              {isExpanded ? t('learn.adventure.collapse') : t('learn.adventure.expand')}
-            </span>
-          </div>
-        )}
+        <div className="shrink-0">
+          {isLocked ? (
+            <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
+              <span className="text-white/80 text-xs sm:text-sm font-bold">{t('locked')}</span>
+            </div>
+          ) : adventure.completedLessons === adventure.totalLessons && adventure.totalLessons > 0 ? (
+            <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-blue-500/90 backdrop-blur-md border border-blue-300/20 shadow-lg">
+              <span className="text-white text-xs sm:text-sm font-black">🏆 <span className="hidden sm:inline">{t('learn.adventure.completed_badge')}</span></span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 hover:bg-white/30 transition-colors">
+              {isExpanded
+                ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
+              <span className="text-white text-xs sm:text-sm font-bold">
+                <span className="sm:hidden">{isExpanded ? t('learn.adventure.collapse').slice(0,3) : t('learn.adventure.expand').slice(0,3)}</span>
+                <span className="hidden sm:inline">{isExpanded ? t('learn.adventure.collapse') : t('learn.adventure.expand')}</span>
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Lock overlay for locked adventures */}
@@ -426,14 +429,14 @@ export default function LearnPage() {
                   )}
                 >
                   <LocateFixed className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline">{t('lessons:learn.scroll_to_current')}</span>
+                  <span>{t('lessons:learn.scroll_to_current')}</span>
                 </button>
               )}
 
               {/* All-completed badge */}
               {isFinished && (
                 <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30">
-                  🏆 <span className="hidden sm:inline">{t('lessons:learn.all_completed_title')}</span>
+                  🏆 <span>{t('lessons:learn.all_completed_title')}</span>
                 </div>
               )}
             </div>

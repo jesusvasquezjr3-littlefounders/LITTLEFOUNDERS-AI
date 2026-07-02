@@ -50,17 +50,19 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                 </div>
             )}
 
-            {/* Scene Container */}
-            <div className="scene w-full h-full relative overflow-hidden">
-                {theme === 'archipelago' && <ArchipelagoScene />}
-                {theme === 'forest' && <ForestScene />}
-                {theme === 'city' && <CityScene />}
-                {theme === 'valley' && <ValleyScene />}
-                {theme === 'kingdom' && <KingdomScene />}
-                {theme === 'cosmos' && <CosmosScene />}
+            {/* Scene Container - Centered to crop the middle on mobile sizes */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                <div className="w-full h-[280px] min-h-[280px] relative shrink-0">
+                    {theme === 'archipelago' && <ArchipelagoScene />}
+                    {theme === 'forest' && <ForestScene />}
+                    {theme === 'city' && <CityScene />}
+                    {theme === 'valley' && <ValleyScene />}
+                    {theme === 'kingdom' && <KingdomScene />}
+                    {theme === 'cosmos' && <CosmosScene />}
 
-                {/* Premium atmosphere — applies to every scene */}
-                <Atmosphere />
+                    {/* Premium atmosphere — applies to every scene */}
+                    <Atmosphere />
+                </div>
             </div>
 
             {/* Hover Effect Layer */}
