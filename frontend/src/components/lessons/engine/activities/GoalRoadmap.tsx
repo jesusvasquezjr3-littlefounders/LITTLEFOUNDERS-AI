@@ -107,7 +107,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
             )}
 
             {/* Roadmap Timeline */}
-            <div className="lp-card mb-6 p-4 sm:p-6">
+            <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-4 sm:p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <MapPin className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
                     <h3 className="lp-display text-lg" style={{ color: 'var(--lp-ink)' }}>
@@ -179,7 +179,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                                         <Flag className="w-7 h-7" style={{ color: 'var(--lp-emerald)' }} />
                                     </div>
                                     <div
-                                        className="flex-1 p-4 rounded-2xl border-2"
+                                        className="flex-1 p-4 rounded-full border-2"
                                         style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }}
                                     >
                                         <div className="lp-display text-center" style={{ color: 'var(--lp-emerald-ink)' }}>
@@ -215,7 +215,7 @@ export const GoalRoadmap = ({ exercise, onSubmit, onNext, onRetry }: GoalRoadmap
                             {feedback === 'success' ? t('feedback.success') : t('feedback.error')}
                         </p>
                         <div
-                            className="mb-4 p-4 rounded-2xl border-2 max-w-2xl"
+                            className="mb-4 p-4 rounded-full border-2 max-w-2xl"
                             style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
                         >
                             <p className="lp-display text-sm text-center" style={{ color: 'var(--lp-indigo-ink)' }}>

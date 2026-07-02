@@ -56,7 +56,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
         <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-3 duration-500">
 
             {/* Newspaper Headline */}
-            <div className="lp-card mb-8 p-6 sm:p-8">
+            <div className="bg-white rounded-[2.5rem] shadow-sm mb-8 p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4 pb-3 border-b-2" style={{ borderColor: "var(--lp-line)" }}>
                     <span className="lp-badge lp-option--indigo shrink-0 w-11 h-11 flex items-center justify-center">
                         <Newspaper className="w-6 h-6" />
@@ -68,7 +68,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
                 <p className="lp-display text-2xl sm:text-3xl leading-tight mb-6" style={{ color: "var(--lp-ink)" }}>
                     {headline}
                 </p>
-                <div className="p-4 rounded-xl border" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                <div className="p-4 rounded-full border" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                     <p className="lp-display text-lg" style={{ color: "var(--lp-indigo-ink)" }}>
                         {question}
                     </p>
@@ -115,7 +115,7 @@ export const MarketReaction = ({ exercise, onSubmit, onNext, onRetry }: MarketRe
             {/* Explanation (shown after answer) */}
             {feedback !== 'none' && exercise.content.explanation && (
                 <div
-                    className="mb-8 rounded-2xl p-6 border-2 animate-in fade-in slide-in-from-bottom-4"
+                    className="mb-8 rounded-full p-6 border-2 animate-in fade-in slide-in-from-bottom-4"
                     style={{ background: "var(--lp-amber-soft)", borderColor: "var(--lp-amber)" }}
                 >
                     <div className="flex items-start gap-3">

@@ -34,7 +34,7 @@ export function IntroNarrativeStage({ exercise, onComplete, isTalking = false }:
             <Button
                 size="lg"
                 onClick={onComplete}
-                className="mt-4 gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
+                className="mt-4 gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-full shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all"
             >
                 Continuar
                 <ArrowRight className="w-5 h-5" />

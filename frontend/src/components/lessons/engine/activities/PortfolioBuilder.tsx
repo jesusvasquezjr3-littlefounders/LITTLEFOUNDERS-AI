@@ -173,21 +173,21 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {(scenario || instruction || criteria.length > 0) && (
                 <div className="mb-6 space-y-3">
                     {scenario && (
-                        <div className="lp-card p-4">
+                        <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                             <p className="text-sm" style={{ color: "var(--lp-ink)" }}>
                                 {scenario}
                             </p>
                         </div>
                     )}
                     {instruction && (
-                        <div className="lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                        <div className="bg-white rounded-[2.5rem] shadow-sm p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                             <p className="text-sm lp-display" style={{ color: "var(--lp-indigo-ink)" }}>
                                 {instruction}
                             </p>
                         </div>
                     )}
                     {criteria.length > 0 && (
-                        <div className="lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                        <div className="bg-white rounded-[2.5rem] shadow-sm p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                             <p className="text-xs lp-display uppercase tracking-wide mb-2" style={{ color: "var(--lp-indigo-ink)" }}>
                                 {t('portfolio_builder.criteria', { defaultValue: 'Criterios' })}
                             </p>
@@ -250,7 +250,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             {isLegacy && (
                 <div className="mb-6 space-y-3">
                     {assets.map((asset) => (
-                        <div key={asset.id} className="lp-card p-4">
+                        <div key={asset.id} className="bg-white rounded-[2.5rem] shadow-sm p-4">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <div
@@ -336,7 +336,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
             {/* Legacy: Risk Indicator */}
             {isLegacy && (
-                <div className="mb-6 lp-card p-4">
+                <div className="mb-6 bg-white rounded-[2.5rem] shadow-sm p-4">
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-sm" style={{ color: "var(--lp-ink)" }}>
                             {t('portfolio_builder.risk_level', { defaultValue: 'Nivel de riesgo' })}
@@ -359,7 +359,7 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
 
             {/* Options format: Selected option summary */}
             {isOptions && selectedOptionId && (
-                <div className="mb-6 lp-card p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                <div className="mb-6 bg-white rounded-[2.5rem] shadow-sm p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                     <div className="flex items-center gap-2">
                         <CheckCircle className="w-5 h-5" style={{ color: "var(--lp-indigo)" }} />
                         <span className="text-sm lp-display" style={{ color: "var(--lp-indigo-ink)" }}>

@@ -49,7 +49,7 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
         <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both flex flex-col items-center">
 
             {/* Statement Card */}
-            <div className="lp-card p-6 sm:p-8 mb-8 sm:mb-10 w-full text-center">
+            <div className="bg-white rounded-[2.5rem] shadow-sm p-6 sm:p-8 mb-8 sm:mb-10 w-full text-center">
                 <h3 className="lp-display text-2xl sm:text-3xl leading-tight" style={{ color: 'var(--lp-ink)' }}>
                     {pickText(exercise.content, ['statement', 'text', 'question', 'prompt', 'title'])}
                 </h3>

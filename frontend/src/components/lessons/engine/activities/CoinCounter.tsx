@@ -72,7 +72,7 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
         <div className="w-full max-w-lg animate-slide-in-bottom flex flex-col items-center">
 
             {/* Goal Display */}
-            <div className="lp-card p-6 w-full mb-6 text-center">
+            <div className="bg-white rounded-[2.5rem] shadow-sm p-6 w-full mb-6 text-center">
                 <span className="lp-display text-xs uppercase tracking-widest block mb-2" style={{ color: "var(--lp-muted)" }}>{t('actions.pay_exact')}</span>
                 <div className="lp-display text-5xl flex items-center justify-center gap-2" style={{ color: "var(--lp-ink)" }}>
                     <DollarSign className="w-8 h-8 md:w-10 md:h-10" style={{ color: "var(--lp-emerald)" }} /> {targetAmount}
@@ -80,7 +80,7 @@ export const CoinCounter = ({ exercise, onSubmit, onNext, onRetry }: CoinCounter
             </div>
 
             {/* Coin/Bill Tray (Source) */}
-            <div className="flex justify-center flex-wrap gap-4 sm:gap-5 mb-8 p-4 rounded-2xl w-full" style={{ background: "var(--lp-bg-2)" }}>
+            <div className="flex justify-center flex-wrap gap-4 sm:gap-5 mb-8 p-4 rounded-full w-full" style={{ background: "var(--lp-bg-2)" }}>
                 {availableCoins.map((coin: any, idx: number) => (
                     <button
                         key={idx}

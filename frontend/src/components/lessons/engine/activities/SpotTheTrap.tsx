@@ -114,7 +114,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
 
             <div className="mb-8 text-center">
                 <div
-                    className="lp-chip inline-flex items-center gap-2 px-6 py-3"
+                    className="bg-white rounded-full shadow-sm inline-flex items-center gap-2 px-6 py-3"
                     style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}
                 >
                     <AlertTriangle className="w-5 h-5" style={{ color: 'var(--lp-amber-ink)' }} />
@@ -147,7 +147,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                 className={cn(
                                     "lp-token lp-option lp-option--coral w-full text-left p-4 relative overflow-hidden select-none",
                                     "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
-                                    feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:ring-offset-2",
+                                    feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:",
                                     isRevealed && "lp-token--locked",
                                     !isRevealed && isSelected && "is-selected",
                                     isRevealed && isTrap && "is-wrong",
@@ -257,7 +257,7 @@ export const SpotTheTrap = ({ exercise, onSubmit, onNext, onRetry }: SpotTheTrap
                                     className={cn(
                                         "lp-token lp-option lp-option--indigo w-full text-left p-4 select-none",
                                         "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
-                                        feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:ring-offset-2",
+                                        feedback === 'none' && "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lp-amber)] focus-visible:",
                                         isRevealed && "lp-token--locked",
                                         !isRevealed && isSelected && "is-selected",
                                         isRevealed && isCorrectAnswer && "is-correct",

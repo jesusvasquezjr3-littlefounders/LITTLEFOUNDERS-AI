@@ -157,7 +157,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
             {feedback !== 'complete' ? (
                 <>
                     <div className="mb-5 flex items-center justify-between">
-                        <div className="lp-chip h-11 px-4 flex items-center gap-2" style={{ color: 'var(--lp-amber-ink)' }}>
+                        <div className="bg-white rounded-full shadow-sm h-11 px-4 flex items-center gap-2" style={{ color: 'var(--lp-amber-ink)' }}>
                             <Trophy className="w-5 h-5" style={{ color: 'var(--lp-amber)' }} />
                             <span className="lp-display text-xl tabular-nums">
                                 {score}
@@ -165,7 +165,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                         </div>
 
                         <div
-                            className={cn("lp-chip h-11 px-4 flex items-center gap-2", timeLeft <= 5 && "lp-shake")}
+                            className={cn("bg-white rounded-full shadow-sm h-11 px-4 flex items-center gap-2", timeLeft <= 5 && "lp-shake")}
                             style={{ color: timeLeft <= 5 ? 'var(--lp-coral-ink)' : 'var(--lp-indigo-ink)' }}
                         >
                             <Clock
@@ -185,7 +185,7 @@ export const QuizBattle = ({ exercise, onSubmit, onNext, onRetry }: QuizBattlePr
                         ></div>
                     </div>
 
-                    <div className="lp-card mb-6 p-6">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-6">
                         <div className="lp-display text-sm mb-2 uppercase tracking-wide" style={{ color: 'var(--lp-muted)' }}>
                             {t('quiz_battle.question', { defaultValue: 'Pregunta' })} {currentQuestion + 1}/{totalQuestions}
                         </div>

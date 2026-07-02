@@ -60,7 +60,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
         return (
             <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {(content.scenario || content.question || content.instruction) && (
-                    <div className="lp-card mb-6 p-5 text-center">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-5 text-center">
                         <p className="lp-display text-base sm:text-lg text-[var(--lp-ink)]">
                             {content.question || content.scenario || content.instruction}
                         </p>
@@ -176,7 +176,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {/* Credit Score Meter */}
             <div className="mb-6">
                 <div
-                    className="rounded-2xl p-6 text-center border-2 transition-all duration-500"
+                    className="rounded-full p-6 text-center border-2 transition-all duration-500"
                     style={{ ...getScoreStyle(), boxShadow: 'var(--lp-shadow)' }}
                 >
                     <div className="flex items-center justify-center gap-2 mb-2">
@@ -205,7 +205,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {/* Scenario */}
             {scenario && feedback === 'none' && (
                 <>
-                    <div className="lp-card mb-6 p-4 sm:p-5">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-4 sm:p-5">
                         <h3 className="lp-display text-sm sm:text-base mb-2 text-[var(--lp-muted)]">
                             {t('credit_score.scenario')} {currentScenario + 1}/{scenarios.length}
                         </h3>
@@ -234,7 +234,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
                                         </p>
                                         {/* Score change hidden until after selection to avoid spoiling the challenge */}
                                         <div className={cn(
-                                            "lp-display text-sm sm:text-base shrink-0 px-3 py-1.5 rounded-xl border-2 transition-opacity duration-300",
+                                            "lp-display text-sm sm:text-base shrink-0 px-3 py-1.5 rounded-full border-2 transition-opacity duration-300",
                                             feedback !== 'none' ? "opacity-100" : "opacity-0"
                                         )}
                                         style={feedback !== 'none' ? (
@@ -260,7 +260,7 @@ export const CreditScoreBuilder = ({ exercise, onSubmit, onNext, onRetry }: Cred
             {feedback !== 'none' && (
                 <div className="flex flex-col items-center">
                     <div
-                        className="mb-6 p-6 rounded-2xl text-center w-full border-2 animate-in fade-in zoom-in-95 duration-300"
+                        className="mb-6 p-6 rounded-full text-center w-full border-2 animate-in fade-in zoom-in-95 duration-300"
                         style={feedback === 'success'
                             ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
                             : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }

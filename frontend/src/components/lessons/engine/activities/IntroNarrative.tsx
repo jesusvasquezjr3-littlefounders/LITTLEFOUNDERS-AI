@@ -62,7 +62,7 @@ export const IntroNarrative = ({ exercise, onNext, isAudioPlaying }: IntroNarrat
 
                 {/* Speech bubble */}
                 <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both">
-                    <div className="lp-card relative px-6 py-5">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm relative px-6 py-5">
                         <p className="lp-display text-center text-lg sm:text-xl leading-snug" style={{ color: 'var(--lp-ink)' }}>
                             {narrativeText}
                         </p>

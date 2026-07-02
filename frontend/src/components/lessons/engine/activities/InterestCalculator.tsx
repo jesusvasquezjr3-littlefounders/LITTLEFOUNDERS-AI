@@ -81,7 +81,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
             {/* Sliders */}
             <div className="space-y-6 mb-8">
                 {/* Principal */}
-                <div className="lp-card p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.principal')}
@@ -110,7 +110,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Interest Rate */}
-                <div className="lp-card p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.rate')}
@@ -139,7 +139,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                 </div>
 
                 {/* Time */}
-                <div className="lp-card p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                     <div className="flex items-center justify-between mb-3">
                         <label className="lp-display text-sm" style={{ color: 'var(--lp-muted)' }}>
                             {t('interest_calculator.time')}
@@ -196,7 +196,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
 
             {/* Visual Chart - Comparative Line Chart */}
             <div className="mb-8">
-                <div className="lp-card p-6">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-6">
                     {/* Legend */}
                     <div className="flex justify-center gap-6 mb-4">
                         <div className="flex items-center gap-2">

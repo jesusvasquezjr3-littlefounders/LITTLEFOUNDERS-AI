@@ -93,7 +93,7 @@ export const SavingsRace = ({ exercise, onSubmit, onNext, onRetry }: SavingsRace
             {/* Goal Display */}
             <div className="mb-6 text-center">
                 <div
-                    className="inline-flex flex-col items-center rounded-2xl px-6 py-4 sm:px-8 sm:py-5"
+                    className="inline-flex flex-col items-center rounded-full px-6 py-4 sm:px-8 sm:py-5"
                     style={{
                         background: 'var(--lp-indigo)',
                         boxShadow: '0 6px 0 var(--lp-indigo-lip), var(--lp-shadow)',

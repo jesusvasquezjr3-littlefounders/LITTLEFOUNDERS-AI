@@ -135,7 +135,7 @@ export const MathChallenge = ({ exercise, onSubmit, onNext, onRetry }: MathChall
         <div className="w-full max-w-sm animate-slide-in-bottom flex flex-col items-center">
 
             {/* Display / Question */}
-            <div className="lp-card p-6 w-full mb-6 text-center">
+            <div className="bg-white rounded-[2.5rem] shadow-sm p-6 w-full mb-6 text-center">
                 <h3 className="lp-display text-sm sm:text-base mb-2 uppercase tracking-[0.18em]" style={{ color: "var(--lp-muted)" }}>
                     {t('actions.calculate')}
                 </h3>

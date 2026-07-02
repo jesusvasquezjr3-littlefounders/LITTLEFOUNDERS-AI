@@ -187,7 +187,7 @@ export const StoryMode = ({ exercise, onNext, onSubmit, isAudioPlaying = false }
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in duration-500 relative px-4">
-            <div className="lp-card w-full max-w-4xl overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
+            <div className="bg-white rounded-[2.5rem] shadow-sm w-full max-w-4xl overflow-hidden flex flex-col md:flex-row min-h-[500px] relative">
                 <div className="absolute top-0 left-0 w-full h-4 z-10" style={{ background: 'var(--lp-amber)' }} />
 
                 <div className="w-full md:w-1/2 flex items-end justify-center p-6 relative overflow-hidden" style={{ background: 'var(--lp-indigo-soft)' }}>
@@ -198,7 +198,7 @@ export const StoryMode = ({ exercise, onNext, onSubmit, isAudioPlaying = false }
                 </div>
 
                 <div className="w-full md:w-1/2 p-8 flex flex-col relative" style={{ background: 'var(--lp-surface)' }}>
-                    <div className="lp-chip absolute top-6 right-8 lp-display text-xs px-3 py-1 text-[var(--lp-muted)]">
+                    <div className="bg-white rounded-full shadow-sm absolute top-6 right-8 lp-display text-xs px-3 py-1 text-[var(--lp-muted)]">
                         PAGE {pageIndex + 1} / {pages.length}
                     </div>
 

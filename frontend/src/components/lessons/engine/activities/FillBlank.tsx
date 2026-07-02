@@ -168,7 +168,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
     return (
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
             {/* Statement Area */}
-            <div className="lp-card p-6 mb-6 w-full">
+            <div className="bg-white rounded-[2.5rem] shadow-sm p-6 mb-6 w-full">
                 <div className="lp-display flex flex-wrap gap-2 items-end justify-center text-xl sm:text-2xl leading-loose" style={{ color: "var(--lp-ink)" }}>
                     {segments.map((segment: any, idx: number) => {
                         if (segment.type === 'text') {

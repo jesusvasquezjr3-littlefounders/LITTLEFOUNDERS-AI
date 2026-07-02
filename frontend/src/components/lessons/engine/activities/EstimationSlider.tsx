@@ -80,7 +80,7 @@ export const EstimationSlider = ({ exercise, onSubmit, onNext, onRetry }: Estima
         <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Question Card */}
-            <div className="lp-card p-6 sm:p-8 mb-10 w-full text-center">
+            <div className="bg-white rounded-[2.5rem] shadow-sm p-6 sm:p-8 mb-10 w-full text-center">
                 <h3 className="lp-display text-xl sm:text-2xl mb-4" style={{ color: 'var(--lp-ink)' }}>
                     {content.problem || content.question || t('instructions.estimation_slider', { defaultValue: 'Estima el valor' })}
                 </h3>

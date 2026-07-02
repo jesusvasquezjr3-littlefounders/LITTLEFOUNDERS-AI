@@ -107,7 +107,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
             {/* Coin Bank */}
             <div className="mb-8 flex justify-center">
                 <div
-                    className="lp-card rounded-3xl px-8 py-6"
+                    className="bg-white rounded-[2.5rem] shadow-sm rounded-3xl px-8 py-6"
                     style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}
                 >
                     <div className="text-center" style={{ color: 'var(--lp-amber-ink)' }}>
@@ -136,7 +136,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                     return (
                         <div
                             key={box.id}
-                            className="lp-card p-4 rounded-3xl transition-all duration-300"
+                            className="bg-white rounded-[2.5rem] shadow-sm p-4 rounded-3xl transition-all duration-300"
                             style={{
                                 borderColor: showResults
                                     ? 'var(--lp-emerald)'
@@ -188,7 +188,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                         <Minus className="w-4 h-4" strokeWidth={3} />
                                     </button>
                                     <div
-                                        className="lp-display w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                                        className="lp-display w-12 h-12 rounded-full flex items-center justify-center text-xl"
                                         style={{ background: 'var(--lp-indigo-soft)', color: 'var(--lp-indigo-ink)', border: '2px solid var(--lp-indigo)' }}
                                     >
                                         {invested}
@@ -208,7 +208,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                             {showResults && invested > 0 && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                                     <div
-                                        className="rounded-xl p-3"
+                                        className="rounded-full p-3"
                                         style={{ background: 'var(--lp-emerald-soft)', border: '2px solid var(--lp-emerald)' }}
                                     >
                                         <div className="flex items-center justify-between mb-1">
@@ -240,7 +240,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
             {showResults && (
                 <div className="mb-6 text-center animate-in fade-in zoom-in duration-700">
                     <div
-                        className="inline-flex flex-col items-center rounded-2xl px-8 py-6"
+                        className="inline-flex flex-col items-center rounded-full px-8 py-6"
                         style={{ background: 'var(--lp-amber)', border: '2px solid var(--lp-amber-lip)', color: '#3a2606', boxShadow: '0 6px 0 var(--lp-amber-lip), var(--lp-shadow)' }}
                     >
                         <span className="lp-display text-base opacity-90 mb-1">

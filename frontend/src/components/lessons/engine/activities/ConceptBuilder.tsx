@@ -168,7 +168,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
                         <div className={cn(
                             "lp-display relative px-5 py-4 sm:px-6 text-center min-w-[120px]",
                             block.type === 'connector'
-                                ? "lp-chip text-sm text-[var(--lp-muted)] px-4 py-2.5"
+                                ? "bg-white rounded-full shadow-sm text-sm text-[var(--lp-muted)] px-4 py-2.5"
                                 : "lp-token text-lg text-[var(--lp-ink)]",
                             feedback === 'success' && block.type !== 'connector' && "is-correct lp-option lp-option--emerald"
                         )}>
@@ -176,7 +176,7 @@ export const ConceptBuilder = ({ exercise, onSubmit, onNext, onRetry }: ConceptB
 
                             {/* Controls (Hidden if done) */}
                             {feedback === 'none' && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:opacity-0 sm:hover:opacity-100 opacity-100 transition-opacity lp-chip px-1.5 py-0.5">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:opacity-0 sm:hover:opacity-100 opacity-100 transition-opacity bg-white rounded-full shadow-sm px-1.5 py-0.5">
                                     <button onClick={() => moveBlock(index, 'left')} className="p-1 text-[var(--lp-muted)] hover:text-[var(--lp-indigo)]" disabled={index === 0} aria-label={t('actions.move_left', { defaultValue: 'Mover izquierda' })}>←</button>
                                     <button onClick={() => moveBlock(index, 'right')} className="p-1 text-[var(--lp-muted)] hover:text-[var(--lp-indigo)]" disabled={index === blocks.length - 1} aria-label={t('actions.move_right', { defaultValue: 'Mover derecha' })}>→</button>
                                 </div>

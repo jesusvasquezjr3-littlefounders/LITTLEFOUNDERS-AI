@@ -86,11 +86,11 @@ export function MultipleChoiceStage({
                             onClick={() => handleSelect(option.id)}
                             disabled={isChecked}
                             className={cn(
-                                "p-4 rounded-xl border-2 transition-all duration-200",
+                                "p-4 rounded-full border-2 transition-all duration-200",
                                 "font-medium text-lg",
                                 "hover:scale-[1.02] active:scale-[0.98]",
                                 !showResult && !isSelected && "border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20",
-                                !showResult && isSelected && "border-blue-500 bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-500/30",
+                                !showResult && isSelected && "border-blue-500 bg-blue-100 dark:bg-blue-900/30 ring-2 /30",
                                 showResult && isCorrect && "border-green-500 bg-green-100 dark:bg-green-900/30",
                                 showResult && isSelected && !isCorrect && "border-red-500 bg-red-100 dark:bg-red-900/30"
                             )}
@@ -112,7 +112,7 @@ export function MultipleChoiceStage({
             {/* Feedback */}
             {isChecked && feedback && (
                 <div className={cn(
-                    "p-4 rounded-xl mb-4 max-w-md text-center",
+                    "p-4 rounded-full mb-4 max-w-md text-center",
                     feedbackState === 'success' && "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200",
                     feedbackState === 'error' && "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200"
                 )}>
@@ -127,7 +127,7 @@ export function MultipleChoiceStage({
                         size="lg"
                         onClick={handleCheck}
                         disabled={!selectedId}
-                        className="gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full max-w-md"
+                        className="gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-full shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none w-full max-w-md"
                     >
                         {(exercise.content as any)?.checkLabel || 'Verificar'}
                         <Check className="w-5 h-5" />
@@ -139,7 +139,7 @@ export function MultipleChoiceStage({
                         size="lg"
                         onClick={handleContinue}
                         className={cn(
-                            "gap-2 font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-2xl transition-all hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] w-full max-w-md text-white",
+                            "gap-2 font-bold px-8 h-14 sm:h-16 text-lg sm:text-xl rounded-full transition-all hover:-translate-y-[2px] active:shadow-none active:translate-y-[4px] w-full max-w-md text-white",
                             feedbackState === 'success' && "bg-green-500 hover:bg-green-600 shadow-[0_4px_0_rgb(22,101,52)] hover:shadow-[0_2px_0_rgb(22,101,52)]",
                             feedbackState === 'error' && "bg-violet-500 hover:bg-violet-600 shadow-[0_4px_0_rgb(194,65,12)] hover:shadow-[0_2px_0_rgb(194,65,12)]"
                         )}

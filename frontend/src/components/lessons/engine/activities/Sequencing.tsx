@@ -87,7 +87,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                             key={item.id}
                             style={{ animationDelay: `${0.04 + index * 0.06}s` }}
                             className={cn(
-                                "lp-card flex items-center gap-3 p-4 transition-all duration-300",
+                                "bg-white rounded-[2.5rem] shadow-sm flex items-center gap-3 p-4 transition-all duration-300",
                                 "animate-in fade-in slide-in-from-bottom-3 duration-500 fill-mode-both",
                                 isChecked && feedback === 'success' && "border-[var(--lp-emerald)] bg-[var(--lp-emerald-soft)]",
                                 isChecked && feedback === 'error' && "border-[var(--lp-coral)] bg-[var(--lp-coral-soft)]"
@@ -95,7 +95,7 @@ export const Sequencing = ({ exercise, onSubmit, onNext, onRetry }: SequencingPr
                         >
                             {/* Order Badge */}
                             <div
-                                className="lp-badge lp-display w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+                                className="lp-badge lp-display w-9 h-9 rounded-full flex items-center justify-center text-base shrink-0"
                                 style={{ background: "var(--lp-indigo)" }}
                             >
                                 {index + 1}

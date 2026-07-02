@@ -104,7 +104,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
         return (
             <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="mb-6 text-center">
-                    <div className="lp-chip inline-flex items-center gap-2 px-4 py-3" style={{ color: 'var(--lp-indigo-ink)' }}>
+                    <div className="bg-white rounded-full shadow-sm inline-flex items-center gap-2 px-4 py-3" style={{ color: 'var(--lp-indigo-ink)' }}>
                         <Calculator className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
                         <span className="lp-display text-sm">
                             {content.puzzle || content.instruction || t('tax_puzzle.title', { defaultValue: 'Puzzle Fiscal' })}
@@ -142,7 +142,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 
             {/* Title */}
             <div className="mb-6 text-center">
-                <div className="lp-chip inline-flex items-center gap-2 px-4 py-3" style={{ color: 'var(--lp-indigo-ink)' }}>
+                <div className="bg-white rounded-full shadow-sm inline-flex items-center gap-2 px-4 py-3" style={{ color: 'var(--lp-indigo-ink)' }}>
                     <Calculator className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
                     <span className="lp-display text-sm">
                         {content.puzzle || t('tax_puzzle.title', { defaultValue: 'Puzzle Fiscal' })}
@@ -155,7 +155,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                 {puzzlePieces.map((piece: any) => (
                     <div
                         key={piece.id}
-                        className="lp-card p-4 sm:p-6"
+                        className="bg-white rounded-[2.5rem] shadow-sm p-4 sm:p-6"
                     >
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
 
             {/* Calculation Flow */}
             <div className="mb-8 space-y-3">
-                <div className="lp-card p-4 sm:p-6" style={{ borderColor: 'var(--lp-emerald)' }}>
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4 sm:p-6" style={{ borderColor: 'var(--lp-emerald)' }}>
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                             {t('tax_puzzle.gross_income')}
@@ -204,7 +204,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     <div className="lp-display text-2xl" style={{ color: 'var(--lp-muted)' }}>−</div>
                 </div>
 
-                <div className="lp-card p-4 sm:p-6" style={{ borderColor: 'var(--lp-coral)' }}>
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4 sm:p-6" style={{ borderColor: 'var(--lp-coral)' }}>
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                             {t('tax_puzzle.deductions')}
@@ -219,7 +219,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     <div className="lp-display text-2xl" style={{ color: 'var(--lp-muted)' }}>=</div>
                 </div>
 
-                <div className="lp-card p-4 sm:p-6" style={{ borderColor: 'var(--lp-indigo)' }}>
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4 sm:p-6" style={{ borderColor: 'var(--lp-indigo)' }}>
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                             {t('tax_puzzle.taxable_income')}
@@ -234,7 +234,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     <div className="lp-display text-2xl" style={{ color: 'var(--lp-muted)' }}>×</div>
                 </div>
 
-                <div className="lp-card p-4 sm:p-6" style={{ borderColor: 'var(--lp-amber)' }}>
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4 sm:p-6" style={{ borderColor: 'var(--lp-amber)' }}>
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-sm" style={{ color: 'var(--lp-ink)' }}>
                             {t('tax_puzzle.tax_rate')}
@@ -249,7 +249,7 @@ export const TaxPuzzle = ({ exercise, onSubmit, onNext, onRetry }: TaxPuzzleProp
                     <div className="lp-display text-2xl" style={{ color: 'var(--lp-muted)' }}>=</div>
                 </div>
 
-                <div className="lp-card p-6" style={{ borderWidth: '3px', borderColor: 'var(--lp-coral)' }}>
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-6" style={{ borderWidth: '3px', borderColor: 'var(--lp-coral)' }}>
                     <div className="flex items-center justify-between">
                         <span className="lp-display text-base" style={{ color: 'var(--lp-ink)' }}>
                             {t('tax_puzzle.tax_owed')}

@@ -138,7 +138,7 @@ export const ShopSim = ({ exercise, onSubmit, onNext, onRetry }: ShopSimProps) =
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
 
             {/* Header / HUD */}
-            <div className="lp-card w-full flex justify-between items-center mb-6 p-4 sm:p-5">
+            <div className="bg-white rounded-[2.5rem] shadow-sm w-full flex justify-between items-center mb-6 p-4 sm:p-5">
                 <div className="flex flex-col">
                     <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--lp-muted)' }}>{t('economy.budget')}</span>
                     <span className="lp-display text-3xl sm:text-4xl" style={{ color: 'var(--lp-amber-ink)' }}>${budget}</span>

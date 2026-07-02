@@ -76,7 +76,7 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div
-                    className="rounded-2xl p-4"
+                    className="rounded-full p-4"
                     style={{
                         background: 'var(--lp-coral-soft)',
                         border: '2px solid var(--lp-coral)',
@@ -89,7 +89,7 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                 </div>
 
                 <div
-                    className="rounded-2xl p-4"
+                    className="rounded-full p-4"
                     style={{
                         background: 'var(--lp-emerald-soft)',
                         border: '2px solid var(--lp-emerald)',

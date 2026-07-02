@@ -64,7 +64,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
 
             {/* Product Display */}
             <div className="mb-6 text-center">
-                <div className="inline-flex flex-col items-center lp-card px-8 py-5">
+                <div className="inline-flex flex-col items-center bg-white rounded-[2.5rem] shadow-sm px-8 py-5">
                     <div className="text-6xl sm:text-7xl mb-2 lp-bob">{product.icon || '🛒'}</div>
                     <div className="lp-display text-xl sm:text-2xl" style={{ color: 'var(--lp-ink)' }}>{pickText(product, ['name', 'label', 'text', 'title'])}</div>
                     <div className="text-sm font-semibold" style={{ color: 'var(--lp-muted)' }}>
@@ -75,7 +75,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
 
             {/* Year Selectors */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="lp-card p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                     <label className="lp-display text-sm block mb-3" style={{ color: 'var(--lp-muted)' }}>
                         {t('inflation.start_year')}
                     </label>
@@ -103,7 +103,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                     </div>
                 </div>
 
-                <div className="lp-card p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-4">
                     <label className="lp-display text-sm block mb-3" style={{ color: 'var(--lp-muted)' }}>
                         {t('inflation.end_year')}
                     </label>
@@ -135,7 +135,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
             {/* Comparison */}
             <div className="mb-6">
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="rounded-2xl border-2 p-4 text-center" style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}>
+                    <div className="rounded-full border-2 p-4 text-center" style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}>
                         <div className="lp-display text-sm mb-2" style={{ color: 'var(--lp-indigo-ink)' }}>
                             {yearStart}
                         </div>
@@ -145,7 +145,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border-2 p-4 text-center" style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}>
+                    <div className="rounded-full border-2 p-4 text-center" style={{ background: 'var(--lp-amber-soft)', borderColor: 'var(--lp-amber)' }}>
                         <div className="lp-display text-sm mb-2" style={{ color: 'var(--lp-amber-ink)' }}>
                             {yearEnd}
                         </div>
@@ -156,7 +156,7 @@ export const InflationSimulator = ({ exercise, onSubmit, onNext, onRetry }: Infl
                     </div>
                 </div>
 
-                <div className="mt-4 rounded-2xl border-2 p-4 text-center" style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }}>
+                <div className="mt-4 rounded-full border-2 p-4 text-center" style={{ background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }}>
                     <div className="flex items-center justify-center gap-2 mb-1">
                         <TrendingUp className="w-5 h-5" style={{ color: 'var(--lp-emerald-ink)' }} />
                         <span className="lp-display text-sm" style={{ color: 'var(--lp-emerald-ink)' }}>

@@ -83,7 +83,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                     return (
                         <div
                             key={category.id}
-                            className="lp-display rounded-2xl px-4 py-2.5 text-center min-w-[120px] text-white text-lg"
+                            className="lp-display rounded-full px-4 py-2.5 text-center min-w-[120px] text-white text-lg"
                             style={{ background: catColor.fill, boxShadow: `0 4px 0 ${catColor.lip}` }}
                         >
                             <span className="font-bold">
@@ -103,7 +103,7 @@ export const Classification = ({ exercise, onSubmit, onNext, onRetry }: Classifi
                         <div
                             key={item.id}
                             className={cn(
-                                "lp-card p-4 transition-opacity duration-200",
+                                "bg-white rounded-[2.5rem] shadow-sm p-4 transition-opacity duration-200",
                                 selectedCategory ? "opacity-100" : "opacity-95"
                             )}
                         >

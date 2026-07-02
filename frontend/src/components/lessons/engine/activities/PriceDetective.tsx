@@ -131,7 +131,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
 
                             {/* Price Tag */}
                             {hasPriceData && (
-                                <div className="rounded-xl p-3 mb-3 text-white" style={{ background: 'var(--lp-emerald)', boxShadow: 'inset 0 -3px 0 var(--lp-emerald-lip)' }}>
+                                <div className="rounded-full p-3 mb-3 text-white" style={{ background: 'var(--lp-emerald)', boxShadow: 'inset 0 -3px 0 var(--lp-emerald-lip)' }}>
                                     <div className="text-xs font-medium opacity-90">{t('price_detective.total_price')}</div>
                                     <div className="lp-display text-2xl">${product.price.toFixed(2)}</div>
                                 </div>
@@ -142,7 +142,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
                                 "transition-all duration-500 overflow-hidden",
                                 showUnitPrices ? "max-h-32 opacity-100" : "max-h-0 opacity-0"
                             )}>
-                                <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--lp-indigo-soft)', border: '2px solid var(--lp-indigo)' }}>
+                                <div className="rounded-full p-3 flex items-center justify-between" style={{ background: 'var(--lp-indigo-soft)', border: '2px solid var(--lp-indigo)' }}>
                                     <div className="flex items-center gap-2">
                                         <Search className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
                                         <span className="text-sm font-bold" style={{ color: 'var(--lp-indigo-ink)' }}>

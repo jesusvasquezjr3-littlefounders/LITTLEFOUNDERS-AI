@@ -152,13 +152,13 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
 
             {/* Items List (only in proportional mode) */}
             {mode === 'proportional' && (
-                <div className="lp-card mb-6 p-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-4">
                     <h3 className="lp-display text-sm mb-3" style={{ color: "var(--lp-ink)" }}>
                         {t('bill_splitter.assign_items')}
                     </h3>
                     <div className="space-y-2">
                         {items.map((item: any) => (
-                            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl" style={{ background: "var(--lp-bg-2)" }}>
+                            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-full" style={{ background: "var(--lp-bg-2)" }}>
                                 <div className="flex-1">
                                     <span className="lp-display" style={{ color: "var(--lp-ink)" }}>{pickText(item)}</span>
                                     <span className="ml-2 text-sm" style={{ color: "var(--lp-muted)" }}>
@@ -188,7 +188,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
             )}
 
             {/* Tip Slider */}
-            <div className="lp-card mb-6 p-4">
+            <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-4">
                 <div className="flex items-center justify-between mb-3">
                     <label className="lp-display text-sm" style={{ color: "var(--lp-ink)" }}>
                         {t('bill_splitter.tip')}
@@ -217,10 +217,10 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
             </div>
 
             {/* Results */}
-            <div className="lp-card mb-6 p-6" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+            <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-6" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {people.map((person: any) => (
-                        <div key={person.id} className="lp-card p-4">
+                        <div key={person.id} className="bg-white rounded-[2.5rem] shadow-sm p-4">
                             <div className="text-sm mb-1" style={{ color: "var(--lp-muted)" }}>
                                 {pickText(person, ['name', 'label', 'text', 'title'])}
                             </div>
@@ -251,7 +251,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                     </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
-                        <div className="lp-card mb-4 p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
+                        <div className="bg-white rounded-[2.5rem] shadow-sm mb-4 p-4" style={{ background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }}>
                             <p className="text-sm text-center" style={{ color: "var(--lp-indigo-ink)" }}>
                                 {mode === 'equitable'
                                     ? t('bill_splitter.feedback_equitable')

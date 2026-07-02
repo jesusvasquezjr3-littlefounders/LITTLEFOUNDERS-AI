@@ -57,7 +57,7 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
     return (
         <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Intro Explanation */}
-            <div className="mb-6 p-4 sm:p-6 lp-card">
+            <div className="mb-6 p-4 sm:p-6 bg-white rounded-[2.5rem] shadow-sm">
                 <p className="lp-display text-base sm:text-lg leading-snug mb-2" style={{ color: 'var(--lp-ink)' }}>
                     {t('passive_income.intro_title')} <strong>{t('passive_income.intro_desc')}</strong>
                 </p>
@@ -67,7 +67,7 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
             </div>
 
             {/* Target Display */}
-            <div className="mb-6 lp-card p-6">
+            <div className="mb-6 bg-white rounded-[2.5rem] shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="w-6 h-6" style={{ color: 'var(--lp-emerald)' }} />
@@ -153,7 +153,7 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
 
             {/* Pipeline Visualization */}
             {selectedStreams.length > 0 && (
-                <div className="mb-6 lp-card p-6">
+                <div className="mb-6 bg-white rounded-[2.5rem] shadow-sm p-6">
                     <h3 className="lp-display text-sm sm:text-base mb-4 flex items-center gap-2" style={{ color: 'var(--lp-ink)' }}>
                         <DollarSign className="w-5 h-5" style={{ color: 'var(--lp-emerald)' }} />
                         {t('passive_income.your_streams')}

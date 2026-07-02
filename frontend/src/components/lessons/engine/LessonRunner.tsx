@@ -672,7 +672,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ LOADING STATE ============
     if (loading) {
         return (
-            <div className="lp lp-bg fixed inset-0 flex flex-col items-center justify-center gap-4">
+            <div className="bg-slate-50 fixed inset-0 flex flex-col items-center justify-center gap-4">
                 <dotlottie-wc
                     src="https://lottie.host/eac96c27-cdf7-40fa-a2b9-f709f50501de/RKfFgQWDLf.lottie"
                     style={{ width: '300px', height: '300px' }}
@@ -687,7 +687,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
     // ============ ERROR STATE ============
     if (error || !data) {
         return (
-            <div className="lp lp-bg fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
+            <div className="bg-slate-50 fixed inset-0 flex flex-col items-center justify-center gap-4 p-6">
                 <AlertCircle className="w-16 h-16" style={{ color: 'var(--lp-coral)' }} />
                 <p className="lp-display text-lg font-medium text-center" style={{ color: 'var(--lp-coral-ink)' }}>
                     {error || t('error')}
@@ -704,7 +704,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         const startCharacterCode = normalizeCharacterCode(data.timeline[0]?.character_code || 'liruf');
 
         return (
-            <div className="lp lp-bg fixed inset-0 flex flex-col overflow-hidden">
+            <div className="bg-slate-50 fixed inset-0 flex flex-col overflow-hidden">
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
                     {/* Character - with staggered entrance */}
@@ -787,7 +787,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
         : progress;
 
     return (
-        <div className="lp lp-bg fixed inset-0 flex flex-col">
+        <div className="bg-slate-50 fixed inset-0 flex flex-col">
 
             {/* ===== TOP BAR ===== */}
             <div className="flex items-center gap-3 p-4 pb-2">
@@ -882,7 +882,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                         {/* Speech Bubble - ADAPTIVE */}
                         <div className="w-full flex justify-center lesson-mb-sm flex-shrink-0 animate-pop" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
                             <div
-                                className="lp-card relative lesson-speech mx-2 px-5 py-3"
+                                className="bg-white rounded-[2.5rem] shadow-sm relative lesson-speech mx-2 px-5 py-3"
                                 role="status"
                                 aria-live="polite"
                                 aria-atomic="true"

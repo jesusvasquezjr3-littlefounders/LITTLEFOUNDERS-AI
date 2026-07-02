@@ -110,7 +110,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Scenario / Instruction */}
             {scenarioText && (
-                <div className="lp-card mb-6 p-5 sm:p-6">
+                <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-5 sm:p-6">
                     <div className="flex items-center gap-3 mb-3">
                         <span className="lp-badge lp-option--indigo shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center">
                             <Brain className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -201,7 +201,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
                             {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <div
-                            className="lp-card mb-4 p-4 max-w-2xl"
+                            className="bg-white rounded-[2.5rem] shadow-sm mb-4 p-4 max-w-2xl"
                             style={feedback === 'success'
                                 ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
                                 : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }}

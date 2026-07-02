@@ -218,7 +218,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                 {/* Scenario & Instruction */}
                 {scenario && (
                     <div
-                        className="mb-4 p-4 rounded-2xl"
+                        className="mb-4 p-4 rounded-full"
                         style={{ background: 'var(--lp-indigo-soft)', border: '1.5px solid var(--lp-indigo)' }}
                     >
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--lp-ink)' }}>
@@ -257,7 +257,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                         return (
                             <div
                                 key={category.id}
-                                className="lp-card p-4 transition-all"
+                                className="bg-white rounded-[2.5rem] shadow-sm p-4 transition-all"
                                 style={
                                     isDca && !dcaValid && dcaError
                                         ? { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }
@@ -323,7 +323,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                 {/* Warnings */}
                 {dcaError && !dcaValid && (
                     <div
-                        className="mb-4 p-3 rounded-2xl text-center"
+                        className="mb-4 p-3 rounded-full text-center"
                         style={{ background: 'var(--lp-coral-soft)', border: '1.5px solid var(--lp-coral)' }}
                     >
                         <p className="lp-display text-sm" style={{ color: 'var(--lp-coral)' }}>
@@ -336,7 +336,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
 
                 {overBudget && feedback === 'none' && (
                     <div
-                        className="mb-4 p-3 rounded-2xl text-center"
+                        className="mb-4 p-3 rounded-full text-center"
                         style={{ background: 'var(--lp-coral-soft)', border: '1.5px solid var(--lp-coral)' }}
                     >
                         <p className="lp-display text-sm" style={{ color: 'var(--lp-coral)' }}>
@@ -480,7 +480,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                             key={category}
                             onDrop={(e) => handleDrop(e, category)}
                             onDragOver={handleDragOver}
-                            className="min-h-[200px] p-4 rounded-2xl border-2 border-dashed transition-all"
+                            className="min-h-[200px] p-4 rounded-full border-2 border-dashed transition-all"
                             style={{ borderColor: accent, background: accentSoft }}
                         >
                             <div className="flex items-center justify-between mb-3">
@@ -514,7 +514,7 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                                 });
                                             }
                                         }}
-                                        className="rounded-xl p-2 cursor-pointer"
+                                        className="rounded-full p-2 cursor-pointer"
                                         style={{ background: 'var(--lp-surface)', border: '1.5px solid var(--lp-line)' }}
                                     >
                                         <div className="flex items-center justify-between">

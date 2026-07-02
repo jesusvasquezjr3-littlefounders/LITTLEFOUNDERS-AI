@@ -366,7 +366,7 @@
     },
     "scroll_to_current": "Ir a mi lección",
     "scroll_to_current_hint": "Ir a donde te quedaste y resaltar tu próxima lección",
-    "empty_state_hint": "Selecciona una aventura para ver el camino de aprendizaje.",
+    "empty_state_hint": "Selecciona una aventura para iniciar el recorrido.",
     "beta_notice": "Trabajamos a diario para ofrecerte las mejores lecciones."
   }
 }

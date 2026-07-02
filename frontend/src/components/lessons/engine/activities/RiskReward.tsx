@@ -104,7 +104,7 @@ export const RiskReward = ({ exercise, onSubmit, onNext, onRetry }: RiskRewardPr
                             {/* Hidden Reward (Revealed on Select) */}
                             <div
                                 className={cn(
-                                    "mt-4 p-4 rounded-2xl w-full text-center transition-all duration-500",
+                                    "mt-4 p-4 rounded-full w-full text-center transition-all duration-500",
                                     isSelected ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                                 )}
                                 style={{ background: 'var(--soft)' }}

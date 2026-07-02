@@ -99,7 +99,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             {/* Fund Balance */}
             <div className="mb-6">
                 <div
-                    className="rounded-2xl p-6 border-2 text-center transition-all duration-500"
+                    className="rounded-full p-6 border-2 text-center transition-all duration-500"
                     style={{
                         ...(fundBalance >= 3000
                             ? { background: 'var(--lp-emerald)', borderColor: 'var(--lp-emerald-lip)', color: '#fff' }
@@ -123,7 +123,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             {event && feedback === 'none' && (
                 <>
                     <div
-                        className="mb-6 border-2 rounded-2xl p-4 sm:p-5"
+                        className="mb-6 border-2 rounded-full p-4 sm:p-5"
                         style={{ background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }}
                     >
                         <div className="flex items-start gap-3">
@@ -182,7 +182,7 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
             {feedback !== 'none' && (
                 <div className="flex flex-col items-center">
                     <div
-                        className="mb-6 p-6 rounded-2xl text-center w-full border-2 animate-in fade-in zoom-in-95 duration-300"
+                        className="mb-6 p-6 rounded-full text-center w-full border-2 animate-in fade-in zoom-in-95 duration-300"
                         style={feedback === 'success'
                             ? { background: 'var(--lp-emerald-soft)', borderColor: 'var(--lp-emerald)' }
                             : { background: 'var(--lp-coral-soft)', borderColor: 'var(--lp-coral)' }

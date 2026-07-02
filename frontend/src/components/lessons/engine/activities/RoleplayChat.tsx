@@ -128,7 +128,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
     const contextText = exercise.content?.scenario || exercise.content?.instruction || "...";
 
     return (
-        <div className="lp-card w-full max-w-md animate-in fade-in slide-in-from-bottom-3 duration-500 min-h-[400px] max-h-[70vh] flex flex-col overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] shadow-sm w-full max-w-md animate-in fade-in slide-in-from-bottom-3 duration-500 min-h-[400px] max-h-[70vh] flex flex-col overflow-hidden">
 
             {/* Header */}
             <div className="p-4 flex items-center gap-3" style={{ background: "var(--lp-bg-2)", borderBottom: "1.5px solid var(--lp-line)" }}>
@@ -149,7 +149,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
                         <div key={msg.id} className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
                             <div
                                 className={cn(
-                                    "max-w-[85%] rounded-2xl p-4 text-sm animate-in zoom-in-95 slide-in-from-bottom-4 duration-300",
+                                    "max-w-[85%] rounded-full p-4 text-sm animate-in zoom-in-95 slide-in-from-bottom-4 duration-300",
                                     isUser ? "rounded-tr-none" : "rounded-tl-none"
                                 )}
                                 style={isUser

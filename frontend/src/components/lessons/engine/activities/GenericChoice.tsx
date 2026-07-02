@@ -76,7 +76,7 @@ export const GenericChoice = ({ exercise, onSubmit, onNext, onRetry }: GenericCh
     if (shuffled.length === 0) {
         return (
             <div className="w-full max-w-md mx-auto animate-slide-in-bottom">
-                <div className="lp-card p-8 text-center space-y-4">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-8 text-center space-y-4">
                     <div className="text-4xl">📊</div>
                     <p className="text-sm" style={{ color: 'var(--lp-muted)' }}>
                         {content.scenario || content.context || t('actions.continue', { defaultValue: 'Continuar' })}

@@ -65,7 +65,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
             {/* Scenario text if available */}
             {content.scenario && (
                 <div
-                    className="lp-card mb-4 p-4 text-center"
+                    className="bg-white rounded-[2.5rem] shadow-sm mb-4 p-4 text-center"
                     style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
                 >
                     <p className="lp-display text-base" style={{ color: 'var(--lp-indigo-ink)' }}>{content.scenario}</p>
@@ -144,7 +144,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
             {/* Analysis (only for rich data) */}
             {showAnalysis && hasRichData && selectedOption && notSelectedOption && (
                 <div
-                    className="lp-card mb-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
                     style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
                 >
                     <div className="flex items-center gap-3 mb-4">
@@ -154,7 +154,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                         </h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="lp-card p-4" style={{ boxShadow: 'none' }}>
+                        <div className="bg-white rounded-[2.5rem] shadow-sm p-4" style={{ boxShadow: 'none' }}>
                             <div className="lp-display text-sm mb-2" style={{ color: 'var(--lp-emerald-ink)' }}>
                                 ✅ {t('opportunity_cost.you_gain', { defaultValue: 'Ganas' })}
                             </div>
@@ -164,7 +164,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                                 ))}
                             </ul>
                         </div>
-                        <div className="lp-card p-4" style={{ boxShadow: 'none' }}>
+                        <div className="bg-white rounded-[2.5rem] shadow-sm p-4" style={{ boxShadow: 'none' }}>
                             <div className="lp-display text-sm mb-2" style={{ color: 'var(--lp-coral-ink)' }}>
                                 ❌ {t('opportunity_cost.you_lose', { defaultValue: 'Pierdes' })}
                             </div>

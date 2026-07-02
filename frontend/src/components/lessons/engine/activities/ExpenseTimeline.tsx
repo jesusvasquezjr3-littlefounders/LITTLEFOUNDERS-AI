@@ -85,7 +85,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
             {/* Instructions */}
             <div className="mb-6 text-center">
                 <div
-                    className="lp-chip inline-flex items-center gap-2 px-4 py-3"
+                    className="bg-white rounded-full shadow-sm inline-flex items-center gap-2 px-4 py-3"
                     style={{ background: 'var(--lp-indigo-soft)', borderColor: 'var(--lp-indigo)' }}
                 >
                     <Clock className="w-5 h-5" style={{ color: 'var(--lp-indigo)' }} />
@@ -175,7 +175,7 @@ export const ExpenseTimeline = ({ exercise, onSubmit, onNext, onRetry }: Expense
                                         </div>
                                     ) : (
                                         <div
-                                            className="rounded-2xl p-3"
+                                            className="rounded-full p-3"
                                             style={{ border: '2px dashed var(--lp-line)', background: 'var(--lp-bg-2)' }}
                                         >
                                             <div className="lp-display flex items-center justify-center h-12 text-xs" style={{ color: 'var(--lp-muted)' }}>

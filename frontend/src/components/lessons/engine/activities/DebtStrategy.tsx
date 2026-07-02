@@ -139,7 +139,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 "w-full max-w-2xl mx-auto p-6 sm:p-8 text-center",
                 "animate-in fade-in slide-in-from-bottom-4 duration-500"
             )}>
-                <div className="lp-card p-6">
+                <div className="bg-white rounded-[2.5rem] shadow-sm p-6">
                     <h3 className="lp-display text-lg mb-2" style={{ color: "var(--lp-ink)" }}>
                         {t('debt_strategy.fallback_title', { defaultValue: 'Ejercicio no disponible' })}
                     </h3>
@@ -164,7 +164,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
                 "animate-in fade-in slide-in-from-bottom-4 duration-500"
             )}>
                 {/* Context Card */}
-                <div className="lp-card mb-6 p-6">
+                <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-6">
                     {scenario && (
                         <p className="text-sm mb-3 leading-relaxed" style={{ color: "var(--lp-ink)" }}>
                             {scenario}
@@ -249,7 +249,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             "animate-in fade-in slide-in-from-bottom-4 duration-500"
         )}>
             {/* Explanation Card */}
-            <div className="lp-card mb-6 p-6">
+            <div className="bg-white rounded-[2.5rem] shadow-sm mb-6 p-6">
                 <h3 className="lp-display text-lg mb-2 flex items-center gap-2" style={{ color: "var(--lp-ink)" }}>
                     {t('debt_strategy.intro_title', { defaultValue: 'Estrategia de Pago de Deudas' })}
                 </h3>
@@ -316,7 +316,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
             <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Snowball */}
                 <div
-                    className="lp-card p-6 transition-all"
+                    className="bg-white rounded-[2.5rem] shadow-sm p-6 transition-all"
                     style={selectedStrategy === 'snowball'
                         ? { background: "var(--lp-indigo-soft)", borderColor: "var(--lp-indigo)" }
                         : undefined}
@@ -353,7 +353,7 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 
                 {/* Avalanche */}
                 <div
-                    className="lp-card p-6 transition-all"
+                    className="bg-white rounded-[2.5rem] shadow-sm p-6 transition-all"
                     style={selectedStrategy === 'avalanche'
                         ? { background: "var(--lp-emerald-soft)", borderColor: "var(--lp-emerald)" }
                         : undefined}
