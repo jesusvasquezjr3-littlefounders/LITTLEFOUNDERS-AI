@@ -443,6 +443,7 @@ export const LessonPath: React.FC<LessonPathProps> = ({
     const { t } = useTranslation('lessons');
     const { t: tAdventures } = useTranslation('adventures');
     const colors = THEME_COLORS[themeColor] || THEME_COLORS.archipelago;
+    const pathWrapperRef = useRef<HTMLDivElement>(null);
 
     // Group lessons by Topic
     const groupedLessons = useMemo(() => {
@@ -519,8 +520,6 @@ export const LessonPath: React.FC<LessonPathProps> = ({
     const currentLessonId = currentLessonGlobalIndex !== -1
         ? (lessons[currentLessonGlobalIndex]?.id ?? null)
         : null;
-
-    const pathWrapperRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="w-full py-2 pb-32">
