@@ -155,24 +155,15 @@ const Login = () => {
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 py-12">
-        {/* Top Brand Logo & Back */}
-        <div className="text-center mb-8 space-y-4">
-          <Link to="/" className="inline-block">
-            <img
-              src="/logo-sized.png"
-              alt="LittleFounders"
-              className="h-10 w-auto object-contain mx-auto dark:brightness-110"
-            />
+        {/* Back link */}
+        <div className="text-center mb-8">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">←</span>
+            {t('auth:login.back_to_home')}
           </Link>
-          <div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
-            >
-              <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">←</span>
-              {t('auth:login.back_to_home')}
-            </Link>
-          </div>
         </div>
 
         <div className="w-full max-w-md px-2">

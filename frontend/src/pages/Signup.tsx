@@ -29,16 +29,6 @@ function AuthShell({ children }: { children: React.ReactNode }) {
         <LanguageSelector variant="full" />
       </div>
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 py-12">
-        {/* Top Brand Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <img
-              src="/logo-sized.png"
-              alt="LittleFounders"
-              className="h-10 w-auto object-contain mx-auto dark:brightness-110"
-            />
-          </Link>
-        </div>
         <div className="w-full max-w-md px-2">
           {children}
         </div>
