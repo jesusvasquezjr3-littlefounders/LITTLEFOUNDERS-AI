@@ -30,9 +30,9 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
   return (
     <LandingLayout hideCTA>
       {/* ── Hero header ───────────────────────────────────────── */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-        <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/8 dark:bg-indigo-500/6 blur-[140px] pointer-events-none" />
+      <div className="bg-slate-50 dark:bg-[#0a0e1a] min-h-screen pb-16 sm:pb-24">
+      {/* ── Hero header ───────────────────────────────────────── */}
+      <header className="relative overflow-hidden">
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 lg:pt-44 pb-16 text-center">
           <Reveal as="span" className="corp-eyebrow">{t(eyebrowKey)}</Reveal>
           <Reveal delay={60}>
@@ -54,8 +54,9 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
       </header>
 
       {/* ── Main content area ─────────────────────────────────── */}
-      <section className="relative py-16 sm:py-24 bg-white dark:bg-[#070b14]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative -mt-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-12 lg:p-16 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5">
           {children ? (
             <div className="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-400 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 max-w-none">
               {children}
@@ -63,7 +64,7 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
           ) : (
             /* Placeholder until content is provided */
             <Reveal>
-              <div className="corp-card rounded-3xl p-10 sm:p-14 text-center flex flex-col items-center gap-6">
+              <div className="text-center flex flex-col items-center gap-6 py-12">
                 <div className="corp-icon-chip w-16 h-16">
                   <FileText className="w-8 h-8" />
                 </div>
@@ -85,8 +86,10 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
               </div>
             </Reveal>
           )}
+          </div>
         </div>
       </section>
-    </LandingLayout>
+    </div>
+  </LandingLayout>
   );
 };
