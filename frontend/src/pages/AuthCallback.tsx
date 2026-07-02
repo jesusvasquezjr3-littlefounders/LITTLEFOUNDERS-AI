@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { getTranslatedError } from '@/utils/errorUtils';
 import { useSound } from '@/contexts/SoundContext';
 import { savePendingMerge, clearPendingMerge } from '@/lib/guestProfile';
+import { setAccessToken } from '@/lib/apiClient';
 
 const AuthCallback = () => {
     const navigate = useNavigate();
@@ -95,12 +96,14 @@ const AuthCallback = () => {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ access_token: session.access_token }),
+                            credentials: 'include',
                         });
 
                         const data = await response.json();
 
                         if (response.ok) {
                             const mergedUser = await mergeGuestIfPresent(data.access_token, data.user);
+                            setAccessToken(data.access_token);
                             localStorage.setItem('user', JSON.stringify(mergedUser));
                             localStorage.setItem('token', data.access_token);
 
@@ -144,12 +147,14 @@ const AuthCallback = () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ access_token: session.access_token }),
+                        credentials: 'include',
                     });
 
                     const data = await response.json();
 
                     if (response.ok) {
                         const mergedUser = await mergeGuestIfPresent(data.access_token, data.user);
+                        setAccessToken(data.access_token);
                         localStorage.setItem('user', JSON.stringify(mergedUser));
                         localStorage.setItem('token', data.access_token);
 

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { apiLogout } from "@/lib/apiClient";
 
 interface AdminSidebarProps {
   collapsed: boolean;
@@ -77,6 +78,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleLogout = () => {
+    apiLogout().catch(() => {});
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     window.location.href = '/login';

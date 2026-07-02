@@ -210,6 +210,27 @@ class User(Base):
         back_populates="follower",
         cascade="all, delete-orphan"
     )
+    refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+
+
+class RefreshToken(Base):
+    """Long-lived refresh tokens stored in httpOnly cookies.
+    Rotated on every use; reuse of a revoked token revokes the entire family (theft detection).
+    """
+    __tablename__ = "refresh_tokens"
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    token_hash = Column(String(64), unique=True, index=True, nullable=False)
+    family_id = Column(PG_UUID(as_uuid=True), nullable=False, index=True)
+    parent_token_hash = Column(String(64), nullable=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
+    replaced_by = Column(String(64), nullable=True)
+
+    user = relationship("User", back_populates="refresh_tokens")
+
 
 class Follow(Base):
     __tablename__ = "follows"

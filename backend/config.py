@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
+    # Refresh token: long-lived, httpOnly cookie, rotated on each use
+    refresh_token_expire_days: int = 30
+    cookie_secure: bool = True  # Set COOKIE_SECURE=false for localhost dev
+
     # Supabase Auth (for validating Supabase OAuth tokens)
     supabase_url: str = ""
     supabase_key: str = ""  # anon key

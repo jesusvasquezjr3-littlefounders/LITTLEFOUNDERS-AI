@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { GuestBanner } from "@/components/auth/GuestBanner";
 import { GuestNudgeModal } from "@/components/auth/GuestNudgeModal";
 import { isGuest } from "@/lib/guestProfile";
+import { initSession, apiFetch } from "@/lib/apiClient";
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
@@ -20,38 +21,41 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation('dashboard');
   const showGuestBanner = isGuest() && !localStorage.getItem('user');
 
-  // On mount: refresh user stats from /auth/me so streak/points are always fresh
-  // This ensures cross-device consistency — stats stored in DB are fetched on each session
+  // On mount: refresh user stats from /auth/me so streak/points are always fresh.
+  // If access token is missing (page reload), try silent refresh via httpOnly cookie first.
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userStr = localStorage.getItem('user');
-    if (!token || !userStr) return;
+    const doFetch = async () => {
+      // On page refresh, the in-memory access token is gone.
+      // Try a silent refresh via the httpOnly cookie — this is the Duolingo pattern.
+      await initSession();
 
-    fetch(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => (res.ok ? res.json() : null))
-      .then(freshUser => {
-        if (!freshUser) return;
-        const stored = JSON.parse(userStr);
-        const merged = {
-          ...stored,
-          current_streak: freshUser.current_streak ?? stored.current_streak ?? 0,
-          max_streak: freshUser.max_streak ?? stored.max_streak ?? 0,
-          lessons_completed: freshUser.lessons_completed ?? stored.lessons_completed ?? 0,
-          minutes_studied: freshUser.minutes_studied ?? stored.minutes_studied ?? 0,
-          points_earned: freshUser.points_earned ?? stored.points_earned ?? 0,
-          avatar_config: freshUser.avatar_config ?? stored.avatar_config,
-          username: freshUser.username ?? stored.username,
-          preferred_language: freshUser.preferred_language ?? stored.preferred_language,
-          // last_activity_date drives the 3-state streak display (zero / inactive / active).
-          // /auth/me also resets stale streaks in DB when user missed 2+ days.
-          last_activity_date: freshUser.last_activity_date ?? stored.last_activity_date ?? null,
-        };
-        localStorage.setItem('user', JSON.stringify(merged));
-        window.dispatchEvent(new CustomEvent('lf:user-updated'));
-      })
-      .catch(() => {/* silently fail — user keeps cached data */});
+      const userStr = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      if (!token || !userStr) return;
+
+      const res = await apiFetch('/auth/me');
+      if (!res.ok) return;
+
+      const freshUser = await res.json().catch(() => null);
+      if (!freshUser) return;
+
+      const stored = JSON.parse(userStr);
+      const merged = {
+        ...stored,
+        current_streak: freshUser.current_streak ?? stored.current_streak ?? 0,
+        max_streak: freshUser.max_streak ?? stored.max_streak ?? 0,
+        lessons_completed: freshUser.lessons_completed ?? stored.lessons_completed ?? 0,
+        minutes_studied: freshUser.minutes_studied ?? stored.minutes_studied ?? 0,
+        points_earned: freshUser.points_earned ?? stored.points_earned ?? 0,
+        avatar_config: freshUser.avatar_config ?? stored.avatar_config,
+        username: freshUser.username ?? stored.username,
+        preferred_language: freshUser.preferred_language ?? stored.preferred_language,
+        last_activity_date: freshUser.last_activity_date ?? stored.last_activity_date ?? null,
+      };
+      localStorage.setItem('user', JSON.stringify(merged));
+      window.dispatchEvent(new CustomEvent('lf:user-updated'));
+    };
+    doFetch();
   }, []);
 
   // Initialize from localStorage or default to true (collapsed by default)

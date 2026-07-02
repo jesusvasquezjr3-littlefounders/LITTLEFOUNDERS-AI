@@ -4,10 +4,18 @@ from datetime import date, datetime, timedelta
 
 import requests
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
+from auth.refresh import (
+    COOKIE_NAME,
+    create_refresh_token_family,
+    extract_refresh_token_from_cookie,
+    revoke_all_user_tokens,
+    rotate_refresh_token,
+)
 from auth.schemas import (
     GuestMergeRequest,
     SupabaseAuthRequest,
@@ -66,6 +74,51 @@ def _reset_stale_streak_if_needed(db: Session, user: User) -> None:
         # Missed 2+ days — streak is broken
         user.current_streak = 0
         db.commit()
+
+def _build_user_data(user: User, last_activity_date: str | None) -> dict:
+    return {
+        "public_id": str(user.public_id),
+        "name": user.name,
+        "email": user.email,
+        "user_type": user.user_type,
+        "created_at": user.created_at.isoformat(),
+        "avatar_config": user.avatar_config,
+        "username": user.username,
+        "preferred_language": user.preferred_language,
+        "auth_provider": user.auth_provider,
+        "birth_date": user.birth_date.isoformat() if user.birth_date else None,
+        "gender": user.gender,
+        "lessons_completed": getattr(user, "lessons_completed", 0) or 0,
+        "points_earned": getattr(user, "points_earned", 0) or 0,
+        "balance": getattr(user, "balance", 0.0) or 0.0,
+        "current_streak": getattr(user, "current_streak", 0) or 0,
+        "max_streak": getattr(user, "max_streak", 0) or 0,
+        "minutes_studied": getattr(user, "minutes_studied", 0) or 0,
+        "last_activity_date": last_activity_date,
+    }
+
+
+def _set_refresh_cookie(response: JSONResponse, raw_token: str) -> None:
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=raw_token,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="none" if settings.cookie_secure else "lax",
+        max_age=settings.refresh_token_expire_days * 86400,
+        path="/auth",
+    )
+
+
+def _delete_refresh_cookie(response: JSONResponse) -> None:
+    response.delete_cookie(
+        key=COOKIE_NAME,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="none" if settings.cookie_secure else "lax",
+        path="/auth",
+    )
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/supabase")
 
@@ -190,37 +243,19 @@ async def supabase_social_login(request: Request, payload: SupabaseAuthRequest, 
         # Compute last activity date for frontend streak-state display
         last_activity_date = _get_last_activity_date(db, user.id)
 
-        user_data = {
-            "public_id": str(user.public_id),
-            "name": user.name,
-            "email": user.email,
-            "user_type": user.user_type,
-            "created_at": user.created_at.isoformat(),
-            "avatar_config": user.avatar_config,
-            "username": user.username,
-            "preferred_language": user.preferred_language,
-            "auth_provider": user.auth_provider,
-            "birth_date": user.birth_date.isoformat() if user.birth_date else None,
-            "gender": user.gender,
-            "lessons_completed": getattr(user, "lessons_completed", 0) or 0,
-            "points_earned": getattr(user, "points_earned", 0) or 0,
-            "balance": getattr(user, "balance", 0.0) or 0.0,
-            "current_streak": getattr(user, "current_streak", 0) or 0,
-            "max_streak": getattr(user, "max_streak", 0) or 0,
-            "minutes_studied": getattr(user, "minutes_studied", 0) or 0,
-            # last_activity_date: YYYY-MM-DD of most recent streak entry.
-            # Frontend uses this + current_streak to derive the 3 visual states:
-            # 'zero' (no activity 2+ days), 'inactive' (yesterday only), 'active' (today).
-            "last_activity_date": last_activity_date,
-        }
+        user_data = _build_user_data(user, last_activity_date)
 
-        return {
+        refresh_token_raw = create_refresh_token_family(db, user.id)
+
+        response = JSONResponse(content={
             "message": f"{provider.capitalize()} Login successful",
             "user": user_data,
             "access_token": access_token,
             "token_type": "bearer",
             "is_new_user": is_new_user,
-        }
+        })
+        _set_refresh_cookie(response, refresh_token_raw)
+        return response
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
@@ -383,6 +418,98 @@ async def get_user_family(
         ]
 
     return family_data
+
+
+# ═══════════════════════════════════════════════════════════════════
+# SESSION MANAGEMENT: Refresh & Logout
+# ═══════════════════════════════════════════════════════════════════
+
+@router.post("/refresh")
+async def refresh_session(request: Request, db: Session = Depends(get_db)):
+    """Rotate the refresh token and issue a new access token.
+    - Reads the current refresh token from the httpOnly cookie.
+    - On success: revokes old token, issues new cookie + new access token.
+    - On reuse of a revoked token: revokes the entire family (theft protection).
+    - On expired / missing / invalid: returns 401.
+    """
+    cookie_header = request.headers.get("Cookie")
+    old_token_raw = extract_refresh_token_from_cookie(cookie_header)
+
+    if not old_token_raw:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No refresh token provided",
+        )
+
+    result = rotate_refresh_token(db, old_token_raw)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        )
+
+    new_raw, user_id = result
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive",
+        )
+
+    access_token = create_access_token(
+        data={"sub": user.email},
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
+
+    last_activity_date = _get_last_activity_date(db, user.id)
+    user_data = _build_user_data(user, last_activity_date)
+
+    response = JSONResponse(content={
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user_data,
+    })
+    _set_refresh_cookie(response, new_raw)
+    return response
+
+
+@router.post("/logout")
+async def logout(request: Request, db: Session = Depends(get_db)):
+    """Revoke all active refresh tokens and clear the cookie.
+    Works with either an access token (Authorization header) or the refresh cookie.
+    Always succeeds (200) — silent no-op if already logged out.
+    """
+    user_id: int | None = None
+
+    # Try to identify the user from the Authorization header first
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+        try:
+            email = verify_token(token, None)
+            if email:
+                user = db.query(User).filter(User.email == email).first()
+                if user:
+                    user_id = user.id
+        except Exception:
+            pass
+
+    # Fall back to the refresh cookie (lookup only, no rotation)
+    if user_id is None:
+        cookie_header = request.headers.get("Cookie")
+        old_token_raw = extract_refresh_token_from_cookie(cookie_header)
+        if old_token_raw:
+            from auth.refresh import lookup_user_id_from_token
+            user_id = lookup_user_id_from_token(db, old_token_raw)
+
+    if user_id is not None:
+        revoke_all_user_tokens(db, user_id)
+
+    response = JSONResponse(content={"message": "Logged out"})
+    _delete_refresh_cookie(response)
+    return response
 
 
 # =====================================================

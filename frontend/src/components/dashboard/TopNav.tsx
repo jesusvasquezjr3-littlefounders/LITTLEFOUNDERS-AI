@@ -26,6 +26,7 @@ import { notificationsApi, type NotificationItem } from "@/lib/api/notifications
 import { isGuest, getGuestProfile } from "@/lib/guestProfile";
 import { getStreakState, getDisplayStreak } from "@/lib/streakUtils";
 import { supabase } from "@/lib/supabase";
+import { apiLogout } from "@/lib/apiClient";
 
 const NOTIFICATION_TYPE_CONFIG: Record<string, { icon: any; bgClass: string }> = {
   follow_request: { icon: UserPlus, bgClass: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
@@ -181,14 +182,13 @@ export function TopNav() {
 
   const handleLogout = async () => {
     playSound('auth_bye');
-    // Sign out of Supabase first — this clears the 'sb-*-auth-token' key from
-    // localStorage. Without this, the Supabase session survives and the NEXT
-    // user who logs in via OAuth on the same browser can inherit this session,
-    // causing their lessons to be recorded under the previous user's account.
+    // Revoke server-side refresh tokens + clear httpOnly cookie.
+    apiLogout().catch(() => {});
+    // Sign out of Supabase as well (clears 'sb-*-auth-token' from localStorage).
     try {
       await supabase.auth.signOut();
     } catch {
-      // If signOut fails (network error, already expired), still clear local storage.
+      // If signOut fails, still clear local state.
     }
     localStorage.removeItem('user');
     localStorage.removeItem('token');

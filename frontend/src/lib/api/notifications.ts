@@ -1,14 +1,11 @@
 import { API_URL } from "../../config/api";
+import { apiFetch } from "../apiClient";
 
-const getToken = () => {
-  const rawToken = localStorage.getItem('token');
-  return rawToken ? rawToken.replace(/"/g, '') : '';
-};
-
-const authHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${getToken()}`
-});
+const api = (url: string, options: RequestInit = {}) =>
+  apiFetch(url, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers as Record<string, string> || {}) },
+  });
 
 // ── Types ──
 
@@ -77,43 +74,30 @@ export interface UserSearchResult {
 
 export const notificationsApi = {
   getNotifications: async (limit = 30, offset = 0): Promise<NotificationItem[]> => {
-    const response = await fetch(`${API_URL}/notifications?limit=${limit}&offset=${offset}`, {
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/notifications?limit=${limit}&offset=${offset}`);
     if (!response.ok) throw new Error("Failed to fetch notifications");
     return response.json();
   },
 
   getUnreadCount: async (): Promise<number> => {
-    const response = await fetch(`${API_URL}/notifications/unread-count`, {
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/notifications/unread-count`);
     if (!response.ok) throw new Error("Failed to fetch unread count");
     const data = await response.json();
     return data.count;
   },
 
   markAsRead: async (publicId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/notifications/${publicId}/read`, {
-      method: 'POST',
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/notifications/${publicId}/read`, { method: 'POST' });
     if (!response.ok) throw new Error("Failed to mark as read");
   },
 
   markAllAsRead: async (): Promise<void> => {
-    const response = await fetch(`${API_URL}/notifications/read-all`, {
-      method: 'POST',
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/notifications/read-all`, { method: 'POST' });
     if (!response.ok) throw new Error("Failed to mark all as read");
   },
 
   dismiss: async (publicId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/notifications/${publicId}/dismiss`, {
-      method: 'POST',
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/notifications/${publicId}/dismiss`, { method: 'POST' });
     if (!response.ok) throw new Error("Failed to dismiss notification");
   },
 };
@@ -127,17 +111,14 @@ export const notificationsAdminApi = {
     if (filters?.type) params.set('type', filters.type);
     if (filters?.target) params.set('target', filters.target);
 
-    const response = await fetch(`${API_URL}/admin/notifications?${params.toString()}`, {
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/admin/notifications?${params.toString()}`);
     if (!response.ok) throw new Error("Failed to fetch notifications");
     return response.json();
   },
 
   create: async (data: NotificationCreateData): Promise<NotificationAdminItem> => {
-    const response = await fetch(`${API_URL}/admin/notifications`, {
+    const response = await api(`${API_URL}/admin/notifications`, {
       method: 'POST',
-      headers: authHeaders(),
       body: JSON.stringify(data)
     });
     if (!response.ok) throw new Error("Failed to create notification");
@@ -145,9 +126,8 @@ export const notificationsAdminApi = {
   },
 
   update: async (publicId: string, data: Partial<NotificationCreateData>): Promise<NotificationAdminItem> => {
-    const response = await fetch(`${API_URL}/admin/notifications/${publicId}`, {
+    const response = await api(`${API_URL}/admin/notifications/${publicId}`, {
       method: 'PUT',
-      headers: authHeaders(),
       body: JSON.stringify(data)
     });
     if (!response.ok) throw new Error("Failed to update notification");
@@ -155,18 +135,13 @@ export const notificationsAdminApi = {
   },
 
   archive: async (publicId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/admin/notifications/${publicId}`, {
-      method: 'DELETE',
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/admin/notifications/${publicId}`, { method: 'DELETE' });
     if (!response.ok) throw new Error("Failed to archive notification");
   },
 
   searchUsers: async (query: string): Promise<UserSearchResult[]> => {
     if (!query || query.length < 2) return [];
-    const response = await fetch(`${API_URL}/admin/notifications/users?q=${encodeURIComponent(query)}`, {
-      headers: authHeaders()
-    });
+    const response = await api(`${API_URL}/admin/notifications/users?q=${encodeURIComponent(query)}`);
     if (!response.ok) throw new Error("Failed to search users");
     return response.json();
   },

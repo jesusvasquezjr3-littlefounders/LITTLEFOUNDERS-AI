@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { setAccessToken } from "@/lib/apiClient";
 
 const Login = () => {
   const { t } = useTranslation(['auth', 'common', 'errors']);
@@ -55,15 +56,18 @@ const Login = () => {
       }
 
       // 2. Sync with backend to get app token + user profile
+      // credentials: 'include' — allows the backend to set the httpOnly refresh cookie
       const response = await fetch(`${API_URL}/auth/supabase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ access_token: authData.session.access_token }),
+        credentials: 'include',
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        setAccessToken(data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('token', data.access_token);
 
