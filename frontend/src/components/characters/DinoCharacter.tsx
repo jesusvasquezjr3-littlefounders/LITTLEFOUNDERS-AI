@@ -112,7 +112,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 ref={bubbleRef}
                 className={cn(
                     "absolute z-20 transition-all duration-300 ease-out",
-                    bubblePosition === 'standard' && "-top-4 sm:-top-8 left-1/2 -translate-x-1/2",
+                    bubblePosition === 'standard' && "-top-14 sm:-top-10 left-1/2 -translate-x-1/2",
                     bubblePosition === 'demo' && "-top-2 md:-top-4 left-1/2 -translate-x-1/2",
                     bubblePosition === 'tutorial' && "-top-16 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2",
                     bubblePosition === 'hero' && "-top-14 left-1/2 -translate-x-1/2 md:-left-[10%] md:translate-x-0",

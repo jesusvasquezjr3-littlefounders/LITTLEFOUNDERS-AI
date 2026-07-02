@@ -125,7 +125,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             {/* Burbuja */}
             <div className={cn(
                 "absolute z-30 transition-all duration-300 ease-out",
-                bubblePosition === 'top' && "-top-4 sm:-top-8 left-1/2 -translate-x-1/2",
+                bubblePosition === 'top' && "-top-14 sm:-top-10 left-1/2 -translate-x-1/2",
                 bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 pointer-events-none"
             )}>
