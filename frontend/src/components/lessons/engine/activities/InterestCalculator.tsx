@@ -283,7 +283,7 @@ export const InterestCalculator = ({ exercise, onSubmit, onNext, onRetry }: Inte
                     {/* X-axis Footer Title */}
                     <div className="text-center mt-3">
                         <span className="lp-display text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--lp-muted)' }}>
-                            {t('interest_calculator.years', { defaultValue: 'Tiempo (Años)' })}
+                            {t('interest_calculator.time_axis', { defaultValue: 'Tiempo (Años)' })}
                         </span>
                     </div>
                 </div>

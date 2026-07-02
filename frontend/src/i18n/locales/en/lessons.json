@@ -27,7 +27,13 @@
     "build_income": "BUILD INCOME",
     "finish_quiz": "FINISH QUIZ",
     "compare": "COMPARE",
-    "skip": "Skip exercise"
+    "skip": "Skip exercise",
+    "select_option": "Select option",
+    "close": "Close lesson",
+    "mute": "Mute audio",
+    "unmute": "Unmute audio",
+    "finish": "Finish",
+    "reset": "Reset"
   },
   "economy": {
     "budget": "BUDGET",
@@ -47,8 +53,8 @@
     "system": "System"
   },
   "feedback": {
-    "success": "🎉 CONTINUE",
-    "error": "🔄 RETRY",
+    "success": "Correct!",
+    "error": "Try again",
     "exact": "Exact!",
     "lower": "Lower",
     "higher": "Higher"
@@ -68,7 +74,8 @@
     "streak": "Streak",
     "time": "Time",
     "accuracy": "Accuracy",
-    "finishing": "Saving progress..."
+    "finishing": "Saving progress...",
+    "back_to_map": "Back to map"
   },
   "badges": {
     "perfect": "Perfect",
@@ -135,7 +142,8 @@
   "price_detective": {
     "investigate": "🔍 INVESTIGATE PRICES",
     "total_price": "Total Price",
-    "unit_price": "Price per Unit"
+    "unit_price": "Price per Unit",
+    "unit_fallback": "unit"
   },
   "spot_trap": {
     "warning": "Beware of Scams!",
@@ -162,7 +170,16 @@
     "profit": "You Won!",
     "loss": "You Lost Some",
     "invest": "INVEST",
-    "complete": "Investment Complete!"
+    "complete": "Investment Complete!",
+    "box": "Investment Box",
+    "assign_all": "Assign remaining",
+    "remove_coin": "Remove coin",
+    "add_coin": "Add coin",
+    "great_investment": "Great Investment!",
+    "investment_done": "Investment Complete",
+    "try_again": "Try again",
+    "gain_made": "You Made a Profit!",
+    "had_loss": "You Had a Loss"
   },
   "budget_builder": {
     "total_budget": "Total Budget",
@@ -170,7 +187,12 @@
     "drag_items": "Drag items to categories",
     "needs": "Needs",
     "wants": "Wants",
-    "drop_here": "Drop here"
+    "drop_here": "Drop here",
+    "no_data": "There's no data available for this exercise.",
+    "remaining": "Remaining",
+    "min_dca_label": "Minimum required: ${{amount}}",
+    "dca_error": "Your DCA investment must be at least ${{amount}}",
+    "over_budget": "You've gone over your total budget"
   },
   "savings_race": {
     "goal": "Savings Goal",
@@ -201,7 +223,8 @@
     "calculated": "Calculated!",
     "amount": "Amount ($)",
     "simple_interest": "Simple Interest",
-    "compound_interest": "Compound Interest"
+    "compound_interest": "Compound Interest",
+    "time_axis": "Time (Years)"
   },
   "tax_puzzle": {
     "title": "Tax Puzzle",
@@ -225,7 +248,9 @@
     "per_month": "per month",
     "if_cancelled": "if cancelled",
     "optimize": "OPTIMIZE SUBSCRIPTIONS",
-    "optimized": "Subscriptions Optimized!"
+    "optimized": "Subscriptions Optimized!",
+    "price_per_month": "${{amount}}/mo",
+    "price_per_year": "${{amount}}/yr"
   },
   "inflation": {
     "base_price": "Base Price",
@@ -245,7 +270,10 @@
     "great_job": "Great Job!",
     "needs_work": "Needs Work",
     "success_message": "You reached a good score",
-    "error_message": "Try making better decisions"
+    "error_message": "Try making better decisions",
+    "title": "Build Your Credit Score",
+    "no_data": "A learning activity about managing credit.",
+    "loading": "Loading scenarios..."
   },
   "emergency_fund": {
     "balance": "Emergency Fund",
@@ -253,7 +281,12 @@
     "survived": "You Survived!",
     "depleted": "Fund Depleted",
     "success_message": "You handled emergencies well",
-    "error_message": "You need a bigger fund"
+    "error_message": "You need a bigger fund",
+    "loading": "Loading emergencies...",
+    "default_event": "Emergency",
+    "option_save_more": "Save more (${{amount}})",
+    "option_spend": "Spend ${{amount}}",
+    "option_borrow": "Borrow (${{amount}})"
   },
   "compound_visualizer": {
     "seed_money": "Seed Money",
@@ -273,14 +306,17 @@
     "tip": "Tip",
     "total": "Total",
     "feedback_equitable": "💡 Perfect! Equitable split: everyone pays the same. Simple and fair when consumption is similar.",
-    "feedback_proportional": "💡 Excellent! Proportional split: everyone pays for what they consumed. Very precise and fair."
+    "feedback_proportional": "💡 Excellent! Proportional split: everyone pays for what they consumed. Very precise and fair.",
+    "tip_value": "{{percent}}% (${{amount}})"
   },
   "salary_comparison": {
     "salary": "Salary",
     "benefits": "Benefits",
     "location": "Location",
     "growth": "Growth",
-    "score": "Score"
+    "score": "Score",
+    "no_data": "No comparison data available.",
+    "not_quite": "Not quite right."
   },
   "debt_strategy": {
     "snowball": "Snowball",
@@ -295,7 +331,13 @@
     "avalanche_desc": "Pay highest interest debts first. Saves you more money in the long run.",
     "result_title": "💡 Result:",
     "result_avalanche_win": "Avalanche saves you ${{savings}} in interest! But Snowball gives you quick wins to keep you motivated. Choose based on your personality.",
-    "result_tie": "Both strategies work well. The important thing is to be consistent and avoid new debt."
+    "result_tie": "Both strategies work well. The important thing is to be consistent and avoid new debt.",
+    "feedback_success": "Exactly! Paying off the debt with the highest interest rate first saves you the most money.",
+    "feedback_error": "Remember, higher rates cost you more. Focus on the debt with the highest interest first.",
+    "fallback_title": "Exercise unavailable",
+    "fallback_text": "This exercise's content isn't in the expected format. Please contact the administrator.",
+    "submitting": "Submitting...",
+    "submit": "Answer"
   },
   "portfolio_builder": {
     "allocated": "Allocated",
@@ -303,14 +345,19 @@
     "risk_level": "Risk Level",
     "low": "Low",
     "medium": "Medium",
-    "high": "High"
+    "high": "High",
+    "no_data": "No portfolio data available.",
+    "criteria": "Criteria",
+    "selected": "Selected option",
+    "try_again": "Try again"
   },
   "opportunity_cost": {
     "benefits": "Benefits",
     "sacrificed": "Sacrificed",
     "analysis": "Opportunity Cost Analysis",
     "you_gain": "You Gain",
-    "you_lose": "You Lose"
+    "you_lose": "You Lose",
+    "try_again_message": "Try again"
   },
   "goal_roadmap": {
     "available_goals": "Available Goals",
@@ -327,7 +374,11 @@
     "response": "Response",
     "consequences": "Consequences",
     "feedback_abundance": "💡 Exactly! Abundance mindset sees problems as opportunities. This leads you to act and find solutions.",
-    "feedback_scarcity": "💡 Notice how scarcity mindset paralyzes you. Fear and stress prevent you from seeing solutions right in front of you."
+    "feedback_scarcity": "💡 Notice how scarcity mindset paralyzes you. Fear and stress prevent you from seeing solutions right in front of you.",
+    "option_a": "Mindset A",
+    "option_b": "Mindset B",
+    "feedback_success_text": "Great! \"{{text}}\" shows a smart money mindset.",
+    "feedback_error_text": "\"{{text}}\" reflects a stance that could hurt your stability."
   },
   "passive_income": {
     "target": "Passive Income Target",
@@ -338,7 +389,8 @@
     "not_enough": "Target not reached",
     "intro_title": "💡 Passive Income:",
     "intro_desc": "Money you earn without active work (while you sleep!).",
-    "intro_goal": "Your goal is to build enough income streams to cover your monthly expenses of ${{amount}}."
+    "intro_goal": "Your goal is to build enough income streams to cover your monthly expenses of ${{amount}}.",
+    "amount_per_month": "${{amount}}/mo"
   },
   "quiz_battle": {
     "question": "Question",
@@ -346,11 +398,14 @@
     "excellent": "Excellent!",
     "good": "Good job!",
     "keep_practicing": "Keep practicing",
-    "complete": "Lesson Completed!"
+    "complete": "Lesson Completed!",
+    "no_questions": "No questions available",
+    "try_again": "You need more points"
   },
   "roleplay_chat": {
     "excellent_decision": "Excellent decision!",
-    "not_best_choice": "Hmm, maybe that's not the best choice..."
+    "not_best_choice": "Hmm, maybe that's not the best choice...",
+    "npc": "Guide"
   },
   "notices": {
     "beta_improvement": "We're working daily to bring you the best lessons; current content may evolve to be more engaging and effective."
@@ -376,5 +431,53 @@
     "scroll_to_current_hint": "Jump back to where you left off and highlight your next lesson",
     "empty_state_hint": "Select an adventure to view the learning path.",
     "beta_notice": "We're working daily to bring you the best lessons."
+  },
+  "balance_scale": {
+    "left_heavy": "The left side is worth more",
+    "balanced": "They're worth the same",
+    "right_heavy": "The right side is worth more",
+    "scenario": "Compare the value of these two money choices.",
+    "question": "Which choice is worth more?",
+    "left_default": "Left",
+    "right_default": "Right",
+    "try_again": "Try again"
+  },
+  "concept_builder": {
+    "drag_hint": "🖐️ Move or drag each block to put it in the right spot"
+  },
+  "drag_drop": {
+    "items": "Items",
+    "all_assigned": "All assigned",
+    "drop_here": "Drop here",
+    "try_again": "Try again"
+  },
+  "fill_blank": {
+    "placeholder": "Type your answer...",
+    "blank_slot": "____",
+    "try_again": "Try again"
+  },
+  "image_hotspot": {
+    "no_image": "No image",
+    "selected": "selected",
+    "try_again": "Try again"
+  },
+  "intro": {
+    "welcome": "Hi there! Let's learn together."
+  },
+  "math_challenge": {
+    "placeholder": "Answer..."
+  },
+  "story_mode": {
+    "page_counter": "PAGE {{current}} / {{total}}"
+  },
+  "tap_action": {
+    "item": "option"
+  },
+  "word_scramble": {
+    "answer_slots": "Word slots",
+    "empty_slot": "Empty slot",
+    "letter_bank": "Letter bank",
+    "letter_slot": "Letter slot",
+    "letter_tile": "Letter tile"
   }
 }

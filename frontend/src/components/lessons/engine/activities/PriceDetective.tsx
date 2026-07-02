@@ -39,7 +39,7 @@ export const PriceDetective = ({ exercise, onSubmit, onNext, onRetry }: PriceDet
         name: p.name || p.label || p.text || '',
         price: typeof p.price === 'number' ? p.price : parseFloat(String(p.price ?? '').replace(/[^0-9.]/g, '')) || 0,
         quantity: p.quantity || 1,
-        unit: p.unit || 'unidad',
+        unit: p.unit || t('price_detective.unit_fallback', { defaultValue: 'unidad' }),
         icon: p.icon || '🔍',
     }));
     // Some price_detective lessons are plain choices (no per-unit price data).

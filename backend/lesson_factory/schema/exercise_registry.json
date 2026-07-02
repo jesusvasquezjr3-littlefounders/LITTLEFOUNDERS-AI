@@ -1,55 +1,1624 @@
 {
-  "registry_version": "2.0",
-  "description": "Fuente única de verdad de los tipos de ejercicio del Lesson Engine. Anclado a (a) la unión ExerciseData.type del frontend (useLessonData.ts) y (b) las formas reales de correct_answer/content observadas en el corpus de 2,461 lecciones (escaneo 2026-06-18). 'canonical_answer' es la forma OBJETIVO para la generación v2; 'accepted_answer_keys' lista las variantes legadas que el validador acepta para que el corpus actual siga validando. 'deprecated_types' mapea sinónimos a su tipo canónico (a plegar durante la regeneración por tipo).",
-  "answer_optional_types": ["intro_narrative", "matching_pairs", "coin_counter", "word_scramble"],
+  "registry_version": "2.1",
+  "description": "Fuente única de verdad de los tipos de ejercicio del Lesson Engine. Anclado a (a) la unión ExerciseData.type del frontend (useLessonData.ts) y (b) las formas reales de correct_answer/content observadas en el corpus de 2,461 lecciones (escaneo 2026-06-18). 'canonical_answer' es la forma OBJETIVO para la generación v2; 'accepted_answer_keys' lista las variantes legadas que el validador acepta para que el corpus actual siga validando. 'deprecated_types' mapea sinónimos a su tipo canónico (a plegar durante la regeneración por tipo). | v2.1 (2026-07): required_content corrected + content_example/answer_example added from the VERIFIED 0-0-0-X smoke fixtures (each renders+grades correctly in the Lesson Engine post-2026-07 audit). These examples are the taxonomy-pure target shapes for generation.",
+  "answer_optional_types": [
+    "intro_narrative",
+    "matching_pairs",
+    "coin_counter",
+    "word_scramble"
+  ],
   "canonical_types": {
-    "intro_narrative": {"category": "narrative", "objective": null, "gradable": false, "required_content": ["transcript"], "canonical_answer": null, "accepted_answer_keys": []},
-    "multiple_choice": {"category": "core_choice", "objective": "recognize", "gradable": true, "required_content": ["question", "options"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctOptionIds"]},
-    "true_false": {"category": "core_choice", "objective": "recognize", "gradable": true, "required_content": ["statement"], "canonical_answer": "isTrue", "accepted_answer_keys": ["isTrue"]},
-    "tap_action": {"category": "core_interaction", "objective": "recognize", "gradable": true, "required_content": ["statement", "items"], "canonical_answer": "targetIds", "accepted_answer_keys": ["targetIds"]},
-    "matching_pairs": {"category": "core_interaction", "objective": "recognize", "gradable": true, "required_content": ["pairs"], "canonical_answer": null, "accepted_answer_keys": ["pairs", "matches"]},
-    "sequencing": {"category": "core_interaction", "objective": "apply", "gradable": true, "required_content": ["items"], "canonical_answer": "sequence", "accepted_answer_keys": ["sequence", "order"]},
-    "coin_counter": {"category": "counting", "objective": "calculate", "gradable": true, "required_content": ["targetAmount", "coins_available"], "canonical_answer": "value", "accepted_answer_keys": ["value", "targetAmount"]},
-    "word_scramble": {"category": "text", "objective": "recognize", "gradable": true, "required_content": ["word"], "canonical_answer": "word", "accepted_answer_keys": ["word", "text"]},
-    "fill_blank": {"category": "text", "objective": "calculate", "gradable": true, "required_content": ["statement"], "canonical_answer": "blanks", "accepted_answer_keys": ["blanks", "blank_ids", "text", "correctOptionId"]},
-    "classification": {"category": "classify", "objective": "recognize", "gradable": true, "required_content": ["items", "categories"], "canonical_answer": "classifications", "accepted_answer_keys": ["classifications", "correct_classification", "correctClassification", "correct_mapping"]},
-    "math_challenge": {"category": "numeric", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "value", "accepted_answer_keys": ["value", "tolerance", "unit", "correctOptionId"]},
-    "estimation_slider": {"category": "numeric", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "value", "accepted_answer_keys": ["value", "tolerance", "range", "correctValue"]},
-    "interest_calculator": {"category": "numeric", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "value", "accepted_answer_keys": ["value", "tolerance", "correctOptionId", "preferredOption"]},
-    "spot_trap": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": ["scenario"], "canonical_answer": "trapIds", "accepted_answer_keys": ["trapIds", "trapId", "correctTrapId", "correctOptionId", "targetIds"]},
-    "roleplay_chat": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": ["scenario", "options"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctOptionIds", "chosenOptionId", "keywords"]},
-    "story_mode": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctChoiceId", "value"]},
-    "risk_reward": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": ["scenario"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "chosenOptionId", "bestOptionId", "chosenOption"]},
-    "opportunity_cost": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": ["scenario"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "relevantIds", "chosenOption"]},
-    "comparison": {"category": "scenario_choice", "objective": "compare", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctScenario", "correctOption", "correctItemId"]},
-    "case_study": {"category": "scenario_choice", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctOptionIds", "value", "sequence"]},
-    "decision_challenge": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": ["scenario"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "decision"]},
-    "price_detective": {"category": "scenario_choice", "objective": "compare", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctProductId", "targetIds", "bestOptionId"]},
-    "market_reaction": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId"]},
-    "mindset_comparison": {"category": "scenario_choice", "objective": "compare", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctMindsetId", "correctMindset", "correctApproach"]},
-    "salary_comparison": {"category": "scenario_choice", "objective": "compare", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctOfferId", "correctOption", "bestOffer", "choice"]},
-    "credit_score": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "correctProfile", "minScore"]},
-    "impact_meter": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "acceptAny"]},
-    "quiz_battle": {"category": "scenario_choice", "objective": "recognize", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "sequence", "isTrue", "minScore"]},
-    "mystery_investment": {"category": "scenario_choice", "objective": "decide", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "minBoxes"]},
-    "debt_strategy": {"category": "builder", "objective": "decide", "gradable": true, "required_content": ["scenario"], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "sequence", "debtId", "betterStrategyId"]},
-    "concept_builder": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "sequence", "accepted_answer_keys": ["sequence", "correctOptionIds", "correctOptionId"]},
-    "budget_builder": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "allocation", "accepted_answer_keys": ["allocation", "allocations", "correctOptionId", "selectedIds"]},
-    "portfolio_builder": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "allocation", "accepted_answer_keys": ["allocation", "portfolio", "correctOptionId", "recommendedOptionId", "correctSequence"]},
-    "goal_roadmap": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "sequence", "accepted_answer_keys": ["sequence", "order", "correct_sequence"]},
-    "expense_timeline": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "order", "accepted_answer_keys": ["order", "sequence"]},
-    "savings_race": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "value"]},
-    "passive_income": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "targetIncome", "selectedIds"]},
-    "subscription_tracker": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "selectedIds"]},
-    "emergency_fund": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "value", "minBoxes"]},
-    "bill_splitter": {"category": "builder", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "splits", "accepted_answer_keys": ["splits", "value", "correctOptionId"]},
-    "tax_puzzle": {"category": "builder", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "value"]},
-    "inflation_simulator": {"category": "builder", "objective": "calculate", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "value"]},
-    "shop_sim": {"category": "builder", "objective": "apply", "gradable": true, "required_content": [], "canonical_answer": "correctOptionId", "accepted_answer_keys": ["correctOptionId", "value", "selectedId", "selectedIds", "shopItems"]},
-    "drag_drop": {"category": "spatial", "objective": "recognize", "gradable": true, "required_content": [], "canonical_answer": "classifications", "accepted_answer_keys": ["classifications", "targetIds", "order"]},
-    "sorting_buckets": {"category": "spatial", "objective": "recognize", "gradable": true, "required_content": [], "canonical_answer": "classifications", "accepted_answer_keys": ["classifications"]},
-    "image_hotspot": {"category": "spatial", "objective": "recognize", "gradable": true, "required_content": [], "canonical_answer": "hotspotIds", "accepted_answer_keys": ["hotspotIds", "targetIds"]},
-    "balance_scale": {"category": "spatial", "objective": "compare", "gradable": true, "required_content": [], "canonical_answer": "condition", "accepted_answer_keys": ["condition", "correctOptionId"]}
+    "intro_narrative": {
+      "category": "narrative",
+      "objective": null,
+      "gradable": false,
+      "required_content": [
+        "transcript"
+      ],
+      "canonical_answer": null,
+      "accepted_answer_keys": [],
+      "content_example": {
+        "transcript": "Este es un ejercicio de prueba tipo intro_narrative."
+      },
+      "answer_example": null
+    },
+    "multiple_choice": {
+      "category": "core_choice",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "options",
+        "question"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctOptionIds"
+      ],
+      "content_example": {
+        "question": "¿Cuál es el tipo de este ejercicio?",
+        "options": [
+          {
+            "id": "a",
+            "text": "multiple_choice"
+          },
+          {
+            "id": "b",
+            "text": "true_false"
+          },
+          {
+            "id": "c",
+            "text": "fill_blank"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "true_false": {
+      "category": "core_choice",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "statement"
+      ],
+      "canonical_answer": "isTrue",
+      "accepted_answer_keys": [
+        "isTrue"
+      ],
+      "content_example": {
+        "statement": "Este es un ejercicio true_false."
+      },
+      "answer_example": {
+        "isTrue": true
+      }
+    },
+    "tap_action": {
+      "category": "core_interaction",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "items",
+        "statement"
+      ],
+      "canonical_answer": "targetIds",
+      "accepted_answer_keys": [
+        "targetIds"
+      ],
+      "content_example": {
+        "statement": "Toca los ítems correctos.",
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem correcto",
+            "isTarget": true
+          },
+          {
+            "id": "i2",
+            "text": "Ítem incorrecto",
+            "isTarget": false
+          },
+          {
+            "id": "i3",
+            "text": "Ítem correcto",
+            "isTarget": true
+          }
+        ]
+      },
+      "answer_example": {
+        "targetIds": [
+          "i1",
+          "i3"
+        ]
+      }
+    },
+    "matching_pairs": {
+      "category": "core_interaction",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "pairs"
+      ],
+      "canonical_answer": null,
+      "accepted_answer_keys": [
+        "pairs",
+        "matches"
+      ],
+      "content_example": {
+        "pairs": [
+          {
+            "left": "Moneda",
+            "right": "Clinc"
+          },
+          {
+            "left": "Billete",
+            "right": "Silencio"
+          }
+        ]
+      },
+      "answer_example": null
+    },
+    "sequencing": {
+      "category": "core_interaction",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "items"
+      ],
+      "canonical_answer": "sequence",
+      "accepted_answer_keys": [
+        "sequence",
+        "order"
+      ],
+      "content_example": {
+        "instruction": "Ordena los pasos correctamente.",
+        "items": [
+          {
+            "id": "s1",
+            "text": "Paso 1"
+          },
+          {
+            "id": "s2",
+            "text": "Paso 2"
+          },
+          {
+            "id": "s3",
+            "text": "Paso 3"
+          }
+        ]
+      },
+      "answer_example": {
+        "sequence": [
+          "s1",
+          "s2",
+          "s3"
+        ]
+      }
+    },
+    "coin_counter": {
+      "category": "counting",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "coins_available",
+        "targetAmount"
+      ],
+      "canonical_answer": "value",
+      "accepted_answer_keys": [
+        "value",
+        "targetAmount"
+      ],
+      "content_example": {
+        "targetAmount": 25,
+        "coins_available": [
+          {
+            "value": 1,
+            "image": "🪙"
+          },
+          {
+            "value": 5,
+            "image": "💵"
+          },
+          {
+            "value": 10,
+            "image": "💶"
+          }
+        ]
+      },
+      "answer_example": null
+    },
+    "word_scramble": {
+      "category": "text",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "word"
+      ],
+      "canonical_answer": "word",
+      "accepted_answer_keys": [
+        "word",
+        "text"
+      ],
+      "content_example": {
+        "word": "DINERO",
+        "hint": "Lo usamos para comprar cosas."
+      },
+      "answer_example": null
+    },
+    "fill_blank": {
+      "category": "text",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "statement"
+      ],
+      "canonical_answer": "blanks",
+      "accepted_answer_keys": [
+        "blanks",
+        "blank_ids",
+        "text",
+        "correctOptionId"
+      ],
+      "content_example": {
+        "statement": "El ________ es un tipo de ejercicio de texto."
+      },
+      "answer_example": {
+        "blanks": [
+          "fill_blank"
+        ]
+      }
+    },
+    "classification": {
+      "category": "classify",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "categories",
+        "items"
+      ],
+      "canonical_answer": "classifications",
+      "accepted_answer_keys": [
+        "classifications",
+        "correct_classification",
+        "correctClassification",
+        "correct_mapping"
+      ],
+      "content_example": {
+        "instruction": "Clasifica cada ítem.",
+        "categories": [
+          {
+            "id": "catA",
+            "text": "Categoría A"
+          },
+          {
+            "id": "catB",
+            "text": "Categoría B"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem 1",
+            "category": "catA"
+          },
+          {
+            "id": "i2",
+            "text": "Ítem 2",
+            "category": "catB"
+          },
+          {
+            "id": "i3",
+            "text": "Ítem 3",
+            "category": "catA"
+          }
+        ]
+      },
+      "answer_example": {
+        "classifications": {
+          "i1": "catA",
+          "i2": "catB",
+          "i3": "catA"
+        }
+      }
+    },
+    "math_challenge": {
+      "category": "numeric",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "question"
+      ],
+      "canonical_answer": "value",
+      "accepted_answer_keys": [
+        "value",
+        "tolerance",
+        "unit",
+        "correctOptionId"
+      ],
+      "content_example": {
+        "question": "¿Cuánto es 12 + 8?",
+        "answer_format": "number"
+      },
+      "answer_example": {
+        "value": 20,
+        "tolerance": 0.01
+      }
+    },
+    "estimation_slider": {
+      "category": "numeric",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "max",
+        "min",
+        "step",
+        "unit"
+      ],
+      "canonical_answer": "value",
+      "accepted_answer_keys": [
+        "value",
+        "tolerance",
+        "range",
+        "correctValue"
+      ],
+      "content_example": {
+        "problem": "Estima el resultado de 48 / 4.",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": ""
+      },
+      "answer_example": {
+        "value": 12,
+        "tolerance": 2
+      }
+    },
+    "interest_calculator": {
+      "category": "numeric",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "parameters"
+      ],
+      "canonical_answer": "value",
+      "accepted_answer_keys": [
+        "value",
+        "tolerance",
+        "correctOptionId",
+        "preferredOption"
+      ],
+      "content_example": {
+        "scenario": "Calcula el interés simple.",
+        "parameters": {
+          "principal": 100,
+          "rate": 5,
+          "time": 2
+        }
+      },
+      "answer_example": null,
+      "generation_mode": "simulator",
+      "generation_note": "Exploratorio: sin respuesta única correcta; el motor lo trata como simulador (siempre pasa). Genera contenido rico pero no fuerces correct_answer."
+    },
+    "spot_trap": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "messages"
+      ],
+      "canonical_answer": "trapIds",
+      "accepted_answer_keys": [
+        "trapIds",
+        "trapId",
+        "correctTrapId",
+        "correctOptionId",
+        "targetIds"
+      ],
+      "content_example": {
+        "instruction": "Encuentra las trampas.",
+        "scenario": "Recibes varias ofertas. Algunas son trampas.",
+        "messages": [
+          {
+            "id": "m1",
+            "text": "¡Gana 1 millón hoy!",
+            "isTrap": true
+          },
+          {
+            "id": "m2",
+            "text": "Ahorra 10% de tu mesada.",
+            "isTrap": false
+          },
+          {
+            "id": "m3",
+            "text": "Inversión segura 200% mensual.",
+            "isTrap": true
+          }
+        ]
+      },
+      "answer_example": {
+        "trapIds": [
+          "m1",
+          "m3"
+        ]
+      }
+    },
+    "roleplay_chat": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctOptionIds",
+        "chosenOptionId",
+        "keywords"
+      ],
+      "content_example": {
+        "scenario": "Un amigo te pide dinero prestado.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Prestarle con condiciones claras."
+          },
+          {
+            "id": "b",
+            "text": "Decir que no tienes dinero."
+          },
+          {
+            "id": "c",
+            "text": "Regalarle el dinero sin esperar nada."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "story_mode": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "choices"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctChoiceId",
+        "value"
+      ],
+      "content_example": {
+        "scenario": "Eres un joven emprendedor que debe decidir cómo usar sus ahorros.",
+        "choices": [
+          {
+            "id": "a",
+            "text": "Invertir en un negocio."
+          },
+          {
+            "id": "b",
+            "text": "Guardar todo en el banco."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "risk_reward": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "chosenOptionId",
+        "bestOptionId",
+        "chosenOption"
+      ],
+      "content_example": {
+        "decision": "¿Arriesgas o juegas seguro?",
+        "scenario": "Tienes $100 para invertir.",
+        "options": [
+          {
+            "id": "safe1",
+            "type": "safe",
+            "text": "Guardar en alcancía",
+            "reward": "+$0"
+          },
+          {
+            "id": "risk1",
+            "type": "risk",
+            "text": "Invertir en negocio",
+            "reward": "+$20"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "risk1"
+      }
+    },
+    "opportunity_cost": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "relevantIds",
+        "chosenOption"
+      ],
+      "content_example": {
+        "scenario": "Tienes $50. Puedes comprar un libro o un videojuego.",
+        "options": [
+          {
+            "id": "A",
+            "text": "Libro (aprendes)"
+          },
+          {
+            "id": "B",
+            "text": "Videojuego (diversión)"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "A"
+      }
+    },
+    "comparison": {
+      "category": "scenario_choice",
+      "objective": "compare",
+      "gradable": true,
+      "required_content": [
+        "options",
+        "question"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctScenario",
+        "correctOption",
+        "correctItemId"
+      ],
+      "content_example": {
+        "question": "¿Qué opción conviene más?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Opción A: $10/mes"
+          },
+          {
+            "id": "B",
+            "text": "Opción B: $100/año"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "B"
+      }
+    },
+    "case_study": {
+      "category": "scenario_choice",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctOptionIds",
+        "value",
+        "sequence"
+      ],
+      "content_example": {
+        "scenario": "Ana ahorró $500 en 6 meses. Quiere comprar una laptop de $800.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Seguir ahorrando 6 meses más."
+          },
+          {
+            "id": "b",
+            "text": "Pedir un préstamo."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "decision_challenge": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "decision"
+      ],
+      "content_example": {
+        "scenario": "Debes decidir entre dos trabajos de verano.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Trabajo A: $15/hora, 20 horas/semana."
+          },
+          {
+            "id": "b",
+            "text": "Trabajo B: $12/hora, 30 horas/semana."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "price_detective": {
+      "category": "scenario_choice",
+      "objective": "compare",
+      "gradable": true,
+      "required_content": [
+        "items"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctProductId",
+        "targetIds",
+        "bestOptionId"
+      ],
+      "content_example": {
+        "scenario": "¿Qué producto tiene mejor precio por unidad?",
+        "items": [
+          {
+            "id": "p1",
+            "name": "Jugo 1L",
+            "price": 15,
+            "quantity": 1,
+            "unit": "L"
+          },
+          {
+            "id": "p2",
+            "name": "Jugo 2L",
+            "price": 24,
+            "quantity": 2,
+            "unit": "L"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "p2"
+      }
+    },
+    "market_reaction": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId"
+      ],
+      "content_example": {
+        "scenario": "Una noticia anuncia que el precio del limón subirá.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Comprar limones ahora."
+          },
+          {
+            "id": "b",
+            "text": "Esperar a que bajen."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "mindset_comparison": {
+      "category": "scenario_choice",
+      "objective": "compare",
+      "gradable": true,
+      "required_content": [
+        "pair"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctMindsetId",
+        "correctMindset",
+        "correctApproach"
+      ],
+      "content_example": {
+        "instruction": "Compara dos mentalidades financieras.",
+        "pair": {
+          "mindsetA": {
+            "id": "A",
+            "text": "Ahorrador: guarda 30% de todo ingreso."
+          },
+          "mindsetB": {
+            "id": "B",
+            "text": "Gastador: gasta todo lo que gana."
+          }
+        }
+      },
+      "answer_example": {
+        "correctMindsetId": "A"
+      }
+    },
+    "salary_comparison": {
+      "category": "scenario_choice",
+      "objective": "compare",
+      "gradable": true,
+      "required_content": [
+        "optionA",
+        "optionB"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctOfferId",
+        "correctOption",
+        "bestOffer",
+        "choice"
+      ],
+      "content_example": {
+        "scenario": "Compara dos ofertas de trabajo.",
+        "optionA": {
+          "id": "A",
+          "text": "Oferta A: $30,000/mes + seguro médico."
+        },
+        "optionB": {
+          "id": "B",
+          "text": "Oferta B: $35,000/mes sin seguro."
+        }
+      },
+      "answer_example": {
+        "correctOptionId": "A"
+      }
+    },
+    "credit_score": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "correctProfile",
+        "minScore"
+      ],
+      "content_example": {
+        "instruction": "¿Qué acción mejora más tu score crediticio?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Pagar todas tus deudas a tiempo."
+          },
+          {
+            "id": "b",
+            "text": "No usar crédito nunca."
+          },
+          {
+            "id": "c",
+            "text": "Pedir muchas tarjetas."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "impact_meter": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "budget",
+        "causes"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "acceptAny"
+      ],
+      "content_example": {
+        "budget": 100,
+        "causes": [
+          {
+            "id": "c1",
+            "name": "Educación",
+            "icon": "📚"
+          },
+          {
+            "id": "c2",
+            "name": "Salud",
+            "icon": "🏥"
+          },
+          {
+            "id": "c3",
+            "name": "Ambiente",
+            "icon": "🌳"
+          }
+        ]
+      },
+      "answer_example": null,
+      "generation_mode": "simulator",
+      "generation_note": "Exploratorio: sin respuesta única correcta; el motor lo trata como simulador (siempre pasa). Genera contenido rico pero no fuerces correct_answer."
+    },
+    "quiz_battle": {
+      "category": "scenario_choice",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "options",
+        "question"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "sequence",
+        "isTrue",
+        "minScore"
+      ],
+      "content_example": {
+        "question": "¿Qué significa DCA?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Donar, Comprar, Ahorrar."
+          },
+          {
+            "id": "b",
+            "text": "Deber, Correr, Avanzar."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "mystery_investment": {
+      "category": "scenario_choice",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "boxes",
+        "totalCoins"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "minBoxes"
+      ],
+      "content_example": {
+        "totalCoins": 10,
+        "boxes": [
+          {
+            "id": "b1",
+            "name": "Caja segura",
+            "risk": "low",
+            "minReturn": 1.1,
+            "maxReturn": 1.3
+          },
+          {
+            "id": "b2",
+            "name": "Caja riesgo medio",
+            "risk": "medium",
+            "minReturn": 0.8,
+            "maxReturn": 1.8
+          },
+          {
+            "id": "b3",
+            "name": "Caja sorpresa",
+            "risk": "high",
+            "minReturn": 0.2,
+            "maxReturn": 3.0
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "b1"
+      }
+    },
+    "debt_strategy": {
+      "category": "builder",
+      "objective": "decide",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "sequence",
+        "debtId",
+        "betterStrategyId"
+      ],
+      "content_example": {
+        "scenario": "Tienes dos deudas. ¿Cuál pagas primero?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Deuda con 25% de interés."
+          },
+          {
+            "id": "B",
+            "text": "Deuda con 5% de interés."
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "A"
+      }
+    },
+    "concept_builder": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "items"
+      ],
+      "canonical_answer": "sequence",
+      "accepted_answer_keys": [
+        "sequence",
+        "correctOptionIds",
+        "correctOptionId"
+      ],
+      "content_example": {
+        "instruction": "Ordena los conceptos del más básico al más avanzado.",
+        "items": [
+          {
+            "id": "c1",
+            "label": "Ahorrar"
+          },
+          {
+            "id": "c2",
+            "label": "Invertir"
+          },
+          {
+            "id": "c3",
+            "label": "Diversificar"
+          }
+        ]
+      },
+      "answer_example": {
+        "sequence": [
+          "c1",
+          "c2",
+          "c3"
+        ]
+      }
+    },
+    "budget_builder": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "categories",
+        "totalIncome"
+      ],
+      "canonical_answer": "allocation",
+      "accepted_answer_keys": [
+        "allocation",
+        "allocations",
+        "correctOptionId",
+        "selectedIds"
+      ],
+      "content_example": {
+        "scenario": "Distribuye tu ingreso mensual de $1,000.",
+        "totalIncome": 1000,
+        "categories": [
+          {
+            "id": "needs",
+            "name": "Necesidades",
+            "allocated": 0,
+            "target": 500
+          },
+          {
+            "id": "wants",
+            "name": "Deseos",
+            "allocated": 0,
+            "target": 300
+          },
+          {
+            "id": "dca",
+            "name": "DCA",
+            "allocated": 0,
+            "target": 200
+          }
+        ]
+      },
+      "answer_example": {
+        "allocation": {
+          "needs": 500,
+          "wants": 300,
+          "dca": 200
+        }
+      }
+    },
+    "portfolio_builder": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "options"
+      ],
+      "canonical_answer": "allocation",
+      "accepted_answer_keys": [
+        "allocation",
+        "portfolio",
+        "correctOptionId",
+        "recommendedOptionId",
+        "correctSequence"
+      ],
+      "content_example": {
+        "scenario": "Construye tu portafolio de inversión.",
+        "options": [
+          {
+            "id": "a",
+            "text": "100% acciones."
+          },
+          {
+            "id": "b",
+            "text": "60% acciones, 40% bonos."
+          }
+        ]
+      },
+      "answer_example": {
+        "recommendedOptionId": "b"
+      }
+    },
+    "goal_roadmap": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "goals"
+      ],
+      "canonical_answer": "sequence",
+      "accepted_answer_keys": [
+        "sequence",
+        "order",
+        "correct_sequence"
+      ],
+      "content_example": {
+        "instruction": "Ordena las metas por prioridad.",
+        "goals": [
+          {
+            "id": "g1",
+            "text": "Fondo de emergencia",
+            "amount": 1000,
+            "icon": "🛡️"
+          },
+          {
+            "id": "g2",
+            "text": "Comprar bici",
+            "amount": 500,
+            "icon": "🚲"
+          },
+          {
+            "id": "g3",
+            "text": "Viaje",
+            "amount": 2000,
+            "icon": "✈️"
+          }
+        ]
+      },
+      "answer_example": {
+        "sequence": [
+          "g1",
+          "g2",
+          "g3"
+        ]
+      }
+    },
+    "expense_timeline": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "expenses"
+      ],
+      "canonical_answer": "order",
+      "accepted_answer_keys": [
+        "order",
+        "sequence"
+      ],
+      "content_example": {
+        "instruction": "Ordena los gastos del más urgente al menos urgente.",
+        "expenses": [
+          {
+            "id": "e1",
+            "name": "Renta",
+            "amount": 1000,
+            "priority": "urgent",
+            "icon": "🏠"
+          },
+          {
+            "id": "e2",
+            "name": "Netflix",
+            "amount": 15,
+            "priority": "can_wait",
+            "icon": "📺"
+          },
+          {
+            "id": "e3",
+            "name": "Super",
+            "amount": 200,
+            "priority": "important",
+            "icon": "🛒"
+          }
+        ]
+      },
+      "answer_example": {
+        "order": [
+          "e1",
+          "e3",
+          "e2"
+        ]
+      }
+    },
+    "savings_race": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "goal",
+        "strategies"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "value"
+      ],
+      "content_example": {
+        "goal": "Ahorrar $500 para una bici.",
+        "strategies": [
+          {
+            "id": "s1",
+            "name": "Alcancía",
+            "weeklyAmount": 10
+          },
+          {
+            "id": "s2",
+            "name": "Trabajo extra",
+            "weeklyAmount": 25
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "s1"
+      }
+    },
+    "passive_income": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "streams",
+        "targetIncome"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "targetIncome",
+        "selectedIds"
+      ],
+      "content_example": {
+        "targetIncome": 500,
+        "streams": [
+          {
+            "id": "s1",
+            "name": "Intereses banco",
+            "monthlyIncome": 50
+          },
+          {
+            "id": "s2",
+            "name": "Renta propiedad",
+            "monthlyIncome": 300
+          },
+          {
+            "id": "s3",
+            "name": "Dividendos",
+            "monthlyIncome": 200
+          }
+        ]
+      },
+      "answer_example": null,
+      "generation_mode": "simulator",
+      "generation_note": "Exploratorio: sin respuesta única correcta; el motor lo trata como simulador (siempre pasa). Genera contenido rico pero no fuerces correct_answer."
+    },
+    "subscription_tracker": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "subscriptions"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "selectedIds"
+      ],
+      "content_example": {
+        "subscriptions": [
+          {
+            "id": "sub1",
+            "name": "Streaming",
+            "monthlyCost": 15
+          },
+          {
+            "id": "sub2",
+            "name": "Gym",
+            "monthlyCost": 30
+          }
+        ]
+      },
+      "answer_example": null,
+      "generation_mode": "simulator",
+      "generation_note": "Exploratorio: sin respuesta única correcta; el motor lo trata como simulador (siempre pasa). Genera contenido rico pero no fuerces correct_answer."
+    },
+    "emergency_fund": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "events",
+        "initialFund"
+      ],
+      "canonical_answer": "minBalance",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "minBalance",
+        "minBoxes",
+        "minFund",
+        "value"
+      ],
+      "content_example": {
+        "initialFund": 5000,
+        "events": [
+          {
+            "id": "ev1",
+            "text": "Se descompuso el auto.",
+            "cost": 2000
+          },
+          {
+            "id": "ev2",
+            "text": "Emergencia médica.",
+            "cost": 3500
+          }
+        ]
+      },
+      "answer_example": {
+        "minBalance": 2000
+      }
+    },
+    "bill_splitter": {
+      "category": "builder",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "items",
+        "people"
+      ],
+      "canonical_answer": "splits",
+      "accepted_answer_keys": [
+        "splits",
+        "value",
+        "correctOptionId"
+      ],
+      "content_example": {
+        "scenario": "Dividan la cuenta del restaurante.",
+        "people": [
+          {
+            "id": "p1",
+            "name": "Ana"
+          },
+          {
+            "id": "p2",
+            "name": "Luis"
+          },
+          {
+            "id": "p3",
+            "name": "Sofía"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "name": "Pizza",
+            "price": 180
+          },
+          {
+            "id": "i2",
+            "name": "Refrescos",
+            "price": 60
+          }
+        ]
+      },
+      "answer_example": {
+        "splits": {
+          "p1": 80,
+          "p2": 80,
+          "p3": 80
+        }
+      }
+    },
+    "tax_puzzle": {
+      "category": "builder",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "options",
+        "puzzle"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "value"
+      ],
+      "content_example": {
+        "puzzle": "Calcula el impuesto (16% IVA) sobre $1,000.",
+        "options": [
+          {
+            "id": "a",
+            "text": "$160"
+          },
+          {
+            "id": "b",
+            "text": "$16"
+          }
+        ]
+      },
+      "answer_example": {
+        "correctOptionId": "a"
+      }
+    },
+    "inflation_simulator": {
+      "category": "builder",
+      "objective": "calculate",
+      "gradable": true,
+      "required_content": [
+        "inflationRate",
+        "initialPrice",
+        "product",
+        "years"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctOptionId",
+        "value"
+      ],
+      "content_example": {
+        "product": "Canasta básica",
+        "initialPrice": 1000,
+        "inflationRate": 5,
+        "years": 10
+      },
+      "answer_example": null,
+      "generation_mode": "simulator",
+      "generation_note": "Exploratorio: sin respuesta única correcta; el motor lo trata como simulador (siempre pasa). Genera contenido rico pero no fuerces correct_answer."
+    },
+    "shop_sim": {
+      "category": "builder",
+      "objective": "apply",
+      "gradable": true,
+      "required_content": [
+        "budget",
+        "items"
+      ],
+      "canonical_answer": "correctOptionId",
+      "accepted_answer_keys": [
+        "correctItemId",
+        "correctItems",
+        "correctOptionId",
+        "correctPrices",
+        "correctProductId",
+        "optionId",
+        "selectedId",
+        "selectedIds",
+        "selectedProductId",
+        "selectedProductIds",
+        "shopItems",
+        "validCombinations",
+        "value"
+      ],
+      "content_example": {
+        "scenario": "Compra productos sin exceder tu presupuesto de $30.",
+        "budget": 30,
+        "items": [
+          {
+            "id": "p1",
+            "name": "Leche",
+            "price": 12
+          },
+          {
+            "id": "p2",
+            "name": "Pan",
+            "price": 8
+          },
+          {
+            "id": "p3",
+            "name": "Huevos",
+            "price": 15
+          }
+        ]
+      },
+      "answer_example": {
+        "validCombinations": [
+          [
+            "p1"
+          ],
+          [
+            "p2"
+          ],
+          [
+            "p1",
+            "p2"
+          ]
+        ]
+      }
+    },
+    "drag_drop": {
+      "category": "spatial",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "categories",
+        "items"
+      ],
+      "canonical_answer": "classifications",
+      "accepted_answer_keys": [
+        "classifications",
+        "targetIds",
+        "order"
+      ],
+      "content_example": {
+        "instruction": "Arrastra cada ítem a su categoría.",
+        "categories": [
+          {
+            "id": "cat1",
+            "text": "Ingreso"
+          },
+          {
+            "id": "cat2",
+            "text": "Gasto"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Salario"
+          },
+          {
+            "id": "i2",
+            "text": "Renta"
+          }
+        ]
+      },
+      "answer_example": {
+        "classifications": {
+          "i1": "cat1",
+          "i2": "cat2"
+        }
+      }
+    },
+    "sorting_buckets": {
+      "category": "spatial",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "categories",
+        "items"
+      ],
+      "canonical_answer": "classifications",
+      "accepted_answer_keys": [
+        "classifications"
+      ],
+      "content_example": {
+        "instruction": "Clasifica en los cubos correctos.",
+        "categories": [
+          {
+            "id": "b1",
+            "text": "Ahorro"
+          },
+          {
+            "id": "b2",
+            "text": "Inversión"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Alcancía"
+          },
+          {
+            "id": "i2",
+            "text": "Acciones"
+          }
+        ]
+      },
+      "answer_example": {
+        "classifications": {
+          "i1": "b1",
+          "i2": "b2"
+        }
+      }
+    },
+    "image_hotspot": {
+      "category": "spatial",
+      "objective": "recognize",
+      "gradable": true,
+      "required_content": [
+        "hotspots",
+        "imageUrl"
+      ],
+      "canonical_answer": "hotspotIds",
+      "accepted_answer_keys": [
+        "hotspotIds",
+        "targetIds"
+      ],
+      "content_example": {
+        "instruction": "Selecciona los **gastos fijos** en este estado de cuenta (renta, servicios, suscripciones).",
+        "imageUrl": "https://placehold.co/600x400/png",
+        "hotspots": [
+          {
+            "id": "h1",
+            "x": 100,
+            "y": 150,
+            "radius": 30,
+            "label": "Renta"
+          },
+          {
+            "id": "h2",
+            "x": 300,
+            "y": 200,
+            "radius": 30,
+            "label": "Netflix"
+          },
+          {
+            "id": "h3",
+            "x": 200,
+            "y": 100,
+            "radius": 30,
+            "label": "Cena restaurante"
+          }
+        ]
+      },
+      "answer_example": {
+        "hotspotIds": [
+          "h1",
+          "h2"
+        ]
+      }
+    },
+    "balance_scale": {
+      "category": "spatial",
+      "objective": "compare",
+      "gradable": true,
+      "required_content": [
+        "left",
+        "right"
+      ],
+      "canonical_answer": "condition",
+      "accepted_answer_keys": [
+        "condition",
+        "correctOptionId"
+      ],
+      "content_example": {
+        "scenario": "Tienes $100. Puedes gastarlos hoy o invertirlos al 5% anual durante 5 años. ¿Cuál opción tiene más valor?",
+        "left": {
+          "label": "Gastar hoy",
+          "value": 100
+        },
+        "right": {
+          "label": "Invertir 5 años",
+          "value": 128
+        }
+      },
+      "answer_example": {
+        "condition": "right_heavy"
+      }
+    }
   },
   "deprecated_types": {
     "compare": "comparison",

@@ -19,8 +19,8 @@ export const BalanceScale = ({ exercise, onSubmit, onNext, onRetry }: BalanceSca
     const { playSound } = useSound();
 
     const content = exercise?.content || {};
-    const left = content.left || { label: 'Izquierda', value: 0 };
-    const right = content.right || { label: 'Derecha', value: 0 };
+    const left = content.left || { label: t('balance_scale.left_default', { defaultValue: 'Izquierda' }), value: 0 };
+    const right = content.right || { label: t('balance_scale.right_default', { defaultValue: 'Derecha' }), value: 0 };
 
     const [userCondition, setUserCondition] = useState<Condition | null>(null);
     const [feedback, setFeedback] = useState<'none' | 'success' | 'error'>('none');
@@ -180,8 +180,8 @@ export const BalanceScale = ({ exercise, onSubmit, onNext, onRetry }: BalanceSca
                             style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
                             {feedback === 'success'
-                                ? t('feedback.success', { defaultValue: '¡Correcto!' })
-                                : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                                ? t('status.correct', { defaultValue: '¡Correcto!' })
+                                : t('balance_scale.try_again', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <QuestButton
                             variant={feedback === 'success' ? 'go' : 'retry'}

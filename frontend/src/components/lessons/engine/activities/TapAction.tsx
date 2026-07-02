@@ -91,12 +91,17 @@ export const TapAction = ({ exercise, onSubmit, onNext, onRetry }: TapActionProp
                     else if (item.shape === 'rectangle') content = item.color === 'green' ? '💵' : '📄';
 
                     const hue = HUES[idx % HUES.length];
+                    // Accessible name: prefer real text, never leave a bare emoji/❓ nameless.
+                    const label = item.text || item.alt || item.label || item.name
+                        || item.emoji || t('tap_action.item', { defaultValue: 'opción' });
 
                     return (
                         <button
                             key={item.id}
                             onClick={() => handleTapItem(item.id)}
                             disabled={isChecked}
+                            aria-pressed={isTapped}
+                            aria-label={label}
                             style={{ animationDelay: `${0.04 + idx * 0.05}s` }}
                             className={cn(
                                 "lp-token lp-option relative flex items-center justify-center p-3 overflow-hidden",

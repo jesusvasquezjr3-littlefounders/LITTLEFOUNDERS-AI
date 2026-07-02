@@ -214,7 +214,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                             type="button"
                                             onClick={() => removeCoin(box.id)}
                                             disabled={!canRemove}
-                                            aria-label="Remove coin"
+                                            aria-label={t('mystery_investment.remove_coin', { defaultValue: 'Quitar moneda' })}
                                             className="w-9 h-9 rounded-full text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all active:translate-y-[2px]"
                                             style={{ background: 'var(--lp-coral)', boxShadow: '0 3px 0 var(--lp-coral-lip)' }}
                                         >
@@ -230,7 +230,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                                             type="button"
                                             onClick={() => addCoin(box.id, 1)}
                                             disabled={!canAdd}
-                                            aria-label="Add coin"
+                                            aria-label={t('mystery_investment.add_coin', { defaultValue: 'Agregar moneda' })}
                                             className="w-9 h-9 rounded-full text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all active:translate-y-[2px]"
                                             style={{ background: 'var(--lp-emerald)', boxShadow: '0 3px 0 var(--lp-emerald-lip)' }}
                                         >
@@ -298,7 +298,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                             <span>{totalReturn}</span>
                         </div>
                         <span className="text-xs opacity-90 mt-1 font-bold">
-                            {totalReturn >= allocatedCoins ? t('mystery_investment.profit', { defaultValue: '¡Ganancia Obtenida!' }) : t('mystery_investment.loss', { defaultValue: 'Tuviste Pérdida' })}
+                            {totalReturn >= allocatedCoins ? t('mystery_investment.gain_made', { defaultValue: '¡Ganancia Obtenida!' }) : t('mystery_investment.had_loss', { defaultValue: 'Tuviste Pérdida' })}
                         </span>
                     </div>
                 </div>
@@ -319,7 +319,7 @@ export const MysteryInvestment = ({ exercise, onSubmit, onNext, onRetry }: Myste
                             className="lp-display text-base sm:text-lg mb-3"
                             style={{ color: feedback === 'success' ? (totalReturn >= totalCoins ? 'var(--lp-emerald-ink)' : 'var(--lp-amber-ink)') : 'var(--lp-coral-ink)' }}
                         >
-                            {feedback === 'success' ? (totalReturn >= totalCoins ? t('mystery_investment.profit', { defaultValue: '¡Excelente Inversión!' }) : t('mystery_investment.loss', { defaultValue: 'Inversión Completada' })) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                            {feedback === 'success' ? (totalReturn >= totalCoins ? t('mystery_investment.great_investment', { defaultValue: '¡Excelente Inversión!' }) : t('mystery_investment.investment_done', { defaultValue: 'Inversión Completada' })) : t('mystery_investment.try_again', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <div className="w-full max-w-md">
                             <QuestButton variant={totalReturn >= totalCoins ? 'go' : 'gold'} onClick={handleContinue}>

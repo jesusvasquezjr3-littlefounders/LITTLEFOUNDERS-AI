@@ -26,7 +26,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -57,35 +57,35 @@ def canonical_type(t: str) -> str:
 
 class Feedback(BaseModel):
     model_config = ConfigDict(extra="allow")
-    success: Optional[str] = None
-    error: Optional[str] = None
+    success: str | None = None
+    error: str | None = None
     # v2 aditivo: diagnóstico por distractor (id de opción -> texto). Forward-looking.
-    per_option: Optional[dict[str, str]] = None
+    per_option: dict[str, str] | None = None
 
 
 class ExerciseV2(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     type: str
-    character_code: Optional[str] = None
+    character_code: str | None = None
     content: dict[str, Any]
-    correct_answer: Optional[dict[str, Any]] = None
-    feedback: Optional[Feedback] = None
+    correct_answer: dict[str, Any] | None = None
+    feedback: Feedback | None = None
 
     # ── Campos v2 aditivos (todos opcionales; el corpus legado los deja en None) ──
-    id: Optional[str] = None
-    concept_ids: Optional[list[str]] = None
-    prerequisite_concept_ids: Optional[list[str]] = None
-    depth_tier: Optional[int] = Field(default=None, ge=1, le=5)
-    bloom_level: Optional[str] = None
-    scaffold_level: Optional[str] = None
-    review_of: Optional[list[str]] = None
-    engagement_role: Optional[str] = None
-    phase: Optional[str] = None
-    narrative_weight: Optional[float] = None
-    stakes_realism: Optional[float] = None
-    alt_explanation: Optional[dict[str, Any]] = None
-    reassess_item: Optional[dict[str, Any]] = None
+    id: str | None = None
+    concept_ids: list[str] | None = None
+    prerequisite_concept_ids: list[str] | None = None
+    depth_tier: int | None = Field(default=None, ge=1, le=5)
+    bloom_level: str | None = None
+    scaffold_level: str | None = None
+    review_of: list[str] | None = None
+    engagement_role: str | None = None
+    phase: str | None = None
+    narrative_weight: float | None = None
+    stakes_realism: float | None = None
+    alt_explanation: dict[str, Any] | None = None
+    reassess_item: dict[str, Any] | None = None
 
     @field_validator("type")
     @classmethod
@@ -151,7 +151,7 @@ class LessonV2(BaseModel):
     content_en: list[ExerciseV2]
 
     # v2 aditivo a nivel lección
-    lf_meta: Optional[dict[str, Any]] = None
+    lf_meta: dict[str, Any] | None = None
 
     @field_validator("lesson_code")
     @classmethod
@@ -224,7 +224,6 @@ def validate_corpus() -> int:
             ok += 1
             for adv in advisory_checks(lesson):
                 advisory_count += 1
-                kind = adv.split("] ", 1)[-1].split(" ", 3)[0:3]
                 key = adv.split("] ", 1)[-1]
                 # agrupar por patrón corto
                 if "deprecado" in key:
@@ -238,7 +237,7 @@ def validate_corpus() -> int:
             if len(fail_samples) < 10:
                 fail_samples.append(f"{path.name}: {str(e).splitlines()[0][:160]}")
     total = ok + struct_fail
-    print(f"\n=== Validación estructural LessonV2 contra el corpus ===")
+    print("\n=== Validación estructural LessonV2 contra el corpus ===")
     print(f"Total lecciones: {total}")
     print(f"✅ Pasan estructura: {ok}")
     print(f"❌ Fallan estructura: {struct_fail}")
@@ -246,7 +245,7 @@ def validate_corpus() -> int:
         print("\nMuestras de fallo:")
         for s in fail_samples:
             print(f"  - {s}")
-    print(f"\n--- Advisories (NO bloquean) ---")
+    print("\n--- Advisories (NO bloquean) ---")
     print(f"Total señales: {advisory_count}")
     for k, c in sorted(advisory_by_kind.items(), key=lambda x: -x[1]):
         print(f"  · {k}: {c}")

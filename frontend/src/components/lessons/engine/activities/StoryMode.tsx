@@ -199,7 +199,7 @@ export const StoryMode = ({ exercise, onNext, onSubmit, isAudioPlaying = false }
 
                 <div className="w-full md:w-1/2 p-8 flex flex-col relative" style={{ background: 'var(--lp-surface)' }}>
                     <div className="bg-white rounded-full shadow-sm absolute top-6 right-8 lp-display text-xs px-3 py-1 text-[var(--lp-muted)]">
-                        PAGE {pageIndex + 1} / {pages.length}
+                        {t('story_mode.page_counter', { current: pageIndex + 1, total: pages.length, defaultValue: 'PÁGINA {{current}} / {{total}}' })}
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center">

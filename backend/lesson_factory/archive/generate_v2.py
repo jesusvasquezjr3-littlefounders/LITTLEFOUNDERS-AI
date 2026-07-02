@@ -16,7 +16,12 @@ Uso:
   (el plan es un dict; ver PLAN_SCHEMA abajo)
 """
 from __future__ import annotations
-import argparse, json, sys, time, urllib.request
+
+import argparse
+import json
+import sys
+import time
+import urllib.request
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent

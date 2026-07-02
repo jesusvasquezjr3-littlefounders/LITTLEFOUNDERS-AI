@@ -303,6 +303,91 @@ def validate_exercise_structure(exercise: dict, index: int, result: ValidationRe
         if not non_targets:
             result.add_warning(f"{prefix}: todos los items son target (sin distractores)")
 
+    # Semantic answer-key contracts (language-independent → run once, on ES).
+    if lang == "es":
+        validate_answer_keys(exercise, index, result)
+
+
+def _answer_has(ca: dict, keys) -> bool:
+    """True if correct_answer carries any of `keys` with a non-empty value."""
+    return any(k in ca and ca[k] not in (None, "", [], {}) for k in keys)
+
+
+def validate_answer_keys(exercise: dict, index: int, result: ValidationResult):
+    """Enforce the semantic answer-key contracts the frontend grader relies on.
+
+    Prevents the grading defects found in the 2026-07 Lesson Engine audit from
+    recurring in generated lessons: positional mis-grading, unwinnable exercises,
+    and "any answer passes" false-positives. This is the gen-2.0 safety net.
+    """
+    ex_type = exercise.get("type", "")
+    prefix = f"Ejercicio {index+1} ({ex_type})"
+    ca = exercise.get("correct_answer") or {}
+    if not isinstance(ca, dict):
+        ca = {}
+    content = exercise.get("content") or {}
+    if not isinstance(content, dict):
+        content = {}
+
+    if ex_type == "mindset_comparison":
+        keys = ["correctMindsetId", "correctMindset", "correctApproach", "betterMindsetId",
+                "correctOptionId", "correctId", "correctOption", "betterOption"]
+        if not _answer_has(ca, keys):
+            result.add_error(
+                f"{prefix}: falta la clave de respuesta (p.ej. correctMindsetId). "
+                "Sin ella la corrección se vuelve posicional y puede enseñar la mentalidad equivocada.")
+
+    elif ex_type == "budget_builder":
+        target = _answer_has(ca, ["allocation", "allocations", "minCategory", "correctOptionId"]) or ca.get("isValid") is True
+        numeric = any(isinstance(v, (int, float)) for k, v in ca.items()
+                      if k not in ("feedback", "success", "error", "tolerance"))
+        if not (target or numeric):
+            result.add_warning(f"{prefix}: sin target (allocation/minCategory/...) budget_builder es un simulador sin corrección.")
+        if _answer_has(ca, ["allocation", "allocations"]) and "tolerance" not in ca:
+            result.add_warning(
+                f"{prefix}: allocation sin 'tolerance' — se usará el default satisficing (±5% del ingreso). "
+                "Añade 'tolerance' para fijar el margen explícitamente.")
+
+    elif ex_type == "portfolio_builder":
+        is_options = bool(content.get("options")) and not content.get("assets")
+        if is_options and not _answer_has(ca, ["recommendedOptionId", "correctOptionId", "correctOption", "correctId"]):
+            result.add_error(
+                f"{prefix}: portfolio_builder en modo opciones necesita recommendedOptionId/correctOptionId; "
+                "sin ella cualquier opción se marca correcta.")
+
+    elif ex_type == "shop_sim":
+        is_choice = not (content.get("products") or content.get("items")) and bool(
+            content.get("options") or content.get("price_options") or content.get("money_options")
+            or content.get("choices") or content.get("offers"))
+        if is_choice and not _answer_has(ca, ["correctOptionId", "optionId", "selectedProductId",
+                                              "selectedId", "correctProductId", "correctItemId"]):
+            result.add_error(f"{prefix}: shop_sim en modo elección necesita correctOptionId (u otra clave de id).")
+
+    elif ex_type in ("sorting_buckets", "drag_drop"):
+        wrapper_keys = ["classifications", "classification", "categoryAssignments", "assignments",
+                        "mappings", "mapping", "matches", "placement", "categoryMatches"]
+        has_map = _answer_has(ca, wrapper_keys)
+        has_item_cat = any(isinstance(it, dict) and ("correctCategory" in it or "correctCategoryId" in it)
+                           for it in (content.get("items") or []))
+        if not (has_map or has_item_cat):
+            result.add_error(f"{prefix}: {ex_type} necesita correct_answer.classifications (o items con correctCategory).")
+
+    elif ex_type == "emergency_fund":
+        if not _answer_has(ca, ["minBalance", "minFund", "correctOptionId"]):
+            result.add_warning(f"{prefix}: sin minBalance/minFund, emergency_fund no tiene estado de fallo (simulador sin apuestas).")
+
+    elif ex_type == "bill_splitter":
+        if not _answer_has(ca, ["splits", "correctSplits", "shares", "correctOptionId", "value"]):
+            result.add_warning(f"{prefix}: sin splits/correctSplits, bill_splitter es un simulador (cualquier división pasa).")
+
+    # Single-choice types must not declare a multi-id set the UI can't satisfy.
+    single_choice = ("multiple_choice", "true_false", "risk_reward", "price_detective",
+                     "market_reaction", "case_study", "decision_challenge")
+    if ex_type in single_choice and isinstance(ca.get("correctOptionIds"), list) and len(ca["correctOptionIds"]) != 1:
+        result.add_error(
+            f"{prefix}: correctOptionIds tiene {len(ca['correctOptionIds'])} ids; la UI de opción única sólo "
+            "admite 1 → el ejercicio sería ingrabable. Usa correctOptionId o deja exactamente 1 id.")
+
 
 def validate_pedagogy(lesson: dict, result: ValidationResult, rules: dict):
     """Valida reglas pedagógicas según la aventura."""

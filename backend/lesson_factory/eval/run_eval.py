@@ -170,7 +170,8 @@ def main():
     if args.glob:
         paths += glob.glob(str(BASE / args.glob))
     if not paths:
-        ap.print_help(); return 0
+        ap.print_help()
+        return 0
     for p in paths:
         r = evaluate(p)
         print(f"\n=== {r['lesson_code']} (banda {r['band']}) ===")

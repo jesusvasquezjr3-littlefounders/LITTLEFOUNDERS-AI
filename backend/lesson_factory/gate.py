@@ -13,6 +13,7 @@ Uso:
 Salida: resumen + exit code (0 todo pasa, 1 alguna hard-fail).
 """
 from __future__ import annotations
+
 import glob as _glob
 import sys
 from pathlib import Path
@@ -31,13 +32,16 @@ def run(paths: list[str]) -> int:
         files += _glob.glob(p) if any(c in p for c in "*?[") else [p]
     files = sorted(set(files))
     if not files:
-        print("gate: no se encontraron lecciones"); return 1
+        print("gate: no se encontraron lecciones")
+        return 1
     failed = 0
     for f in files:
         try:
             r = run_eval.evaluate(f)
         except Exception as e:
-            print(f"❌ {f}: error al evaluar — {str(e)[:80]}"); failed += 1; continue
+            print(f"❌ {f}: error al evaluar — {str(e)[:80]}")
+            failed += 1
+            continue
         fails = [k for k in HARD if not r["deterministic"].get(k, {}).get("passed", True)]
         # feedback_prelim es advisory (no bloquea), pero se reporta
         fb = not r["deterministic"].get("feedback_prelim", {}).get("passed", True)
@@ -55,7 +59,8 @@ def run(paths: list[str]) -> int:
 def main():
     args = [a for a in sys.argv[1:] if a != "--strict"]
     if not args:
-        print(__doc__); return 0
+        print(__doc__)
+    return 0
     return run(args)
 
 

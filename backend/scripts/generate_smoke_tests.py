@@ -20,7 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from database import SessionLocal  # noqa: E402
-from models import Lesson         # noqa: E402
+from models import Lesson  # noqa: E402
 
 OUT_DIR = Path(__file__).parent.parent / "lesson_factory" / "test_lessons" / "smoke_tests"
 
@@ -65,7 +65,6 @@ BASIC_FEEDBACK = {"success": "¡Correcto! ✅", "error": "Intenta de nuevo 💡"
 
 def make_exercise(ex_type: str, idx: int) -> dict:
     """Return a minimal valid {type, character_code, content, correct_answer?, feedback}."""
-    cid = f"smoke-{idx:02d}"
 
     # ── Narrative ──
     if ex_type == "intro_narrative":
@@ -721,7 +720,6 @@ def make_exercise(ex_type: str, idx: int) -> dict:
 
 def build_lesson(idx: int, ex_type: str) -> dict:
     """Build a full LessonV2-compatible dict for lesson 0-0-0-{idx}."""
-    idx_str = f"{idx:02d}"
     exercise = make_exercise(ex_type, idx)
 
     return {
@@ -833,7 +831,7 @@ def main():
         if not writing:
             print("\n🧪 DRY-RUN (no se escribe en BD). Usa --commit --prod para insertar.")
         else:
-            print(f"\n🚀 INSERTANDO en producción...")
+            print("\n🚀 INSERTANDO en producción...")
 
         stats = upsert_lessons_db(lessons, dry_run=not writing)
         print(f"   inserciones: {stats['inserted']} · actualizaciones: {stats['updated']} · errores: {stats['errors']}")

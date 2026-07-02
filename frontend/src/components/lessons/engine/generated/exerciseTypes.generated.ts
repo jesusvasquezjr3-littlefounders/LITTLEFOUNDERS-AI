@@ -1,5 +1,7 @@
 // ⚠️  ARCHIVO AUTOGENERADO — NO EDITAR A MANO.
-// registry_version: 2.0
+// Fuente: backend/lesson_factory/schema/exercise_registry.json
+// Regenerar: python3 backend/lesson_factory/schema/gen_frontend_types.py
+// registry_version: 2.1
 
 export type CanonicalExerciseType = 'intro_narrative' | 'multiple_choice' | 'true_false' | 'tap_action' | 'matching_pairs' | 'sequencing' | 'coin_counter' | 'word_scramble' | 'fill_blank' | 'classification' | 'math_challenge' | 'estimation_slider' | 'interest_calculator' | 'spot_trap' | 'roleplay_chat' | 'story_mode' | 'risk_reward' | 'opportunity_cost' | 'comparison' | 'case_study' | 'decision_challenge' | 'price_detective' | 'market_reaction' | 'mindset_comparison' | 'salary_comparison' | 'credit_score' | 'impact_meter' | 'quiz_battle' | 'mystery_investment' | 'debt_strategy' | 'concept_builder' | 'budget_builder' | 'portfolio_builder' | 'goal_roadmap' | 'expense_timeline' | 'savings_race' | 'passive_income' | 'subscription_tracker' | 'emergency_fund' | 'bill_splitter' | 'tax_puzzle' | 'inflation_simulator' | 'shop_sim' | 'drag_drop' | 'sorting_buckets' | 'image_hotspot' | 'balance_scale';
 
@@ -60,11 +62,11 @@ export const ANSWER_KEYS_BY_TYPE: Record<CanonicalExerciseType, string[]> = {
   'savings_race': ['correctOptionId', 'value'],
   'passive_income': ['correctOptionId', 'targetIncome', 'selectedIds'],
   'subscription_tracker': ['correctOptionId', 'selectedIds'],
-  'emergency_fund': ['correctOptionId', 'value', 'minBoxes'],
+  'emergency_fund': ['correctOptionId', 'minBalance', 'minBoxes', 'minFund', 'value'],
   'bill_splitter': ['splits', 'value', 'correctOptionId'],
   'tax_puzzle': ['correctOptionId', 'value'],
   'inflation_simulator': ['correctOptionId', 'value'],
-  'shop_sim': ['correctOptionId', 'value', 'selectedId', 'selectedIds', 'shopItems'],
+  'shop_sim': ['correctItemId', 'correctItems', 'correctOptionId', 'correctPrices', 'correctProductId', 'optionId', 'selectedId', 'selectedIds', 'selectedProductId', 'selectedProductIds', 'shopItems', 'validCombinations', 'value'],
   'drag_drop': ['classifications', 'targetIds', 'order'],
   'sorting_buckets': ['classifications'],
   'image_hotspot': ['hotspotIds', 'targetIds'],

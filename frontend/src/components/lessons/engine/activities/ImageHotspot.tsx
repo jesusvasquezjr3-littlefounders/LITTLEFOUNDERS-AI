@@ -155,8 +155,8 @@ export const ImageHotspot = ({ exercise, onSubmit, onNext, onRetry }: ImageHotsp
                             style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
                             {feedback === 'success'
-                                ? t('feedback.success', { defaultValue: '¡Correcto!' })
-                                : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                                ? t('status.correct', { defaultValue: '¡Correcto!' })
+                                : t('image_hotspot.try_again', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <QuestButton
                             variant={feedback === 'success' ? 'go' : 'retry'}

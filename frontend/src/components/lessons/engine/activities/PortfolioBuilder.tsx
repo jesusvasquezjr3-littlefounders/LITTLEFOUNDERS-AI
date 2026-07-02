@@ -8,7 +8,8 @@ import { pickText } from './fieldText';
 
 interface PortfolioBuilderProps {
     exercise: any;
-    onSubmit: (allocation: Record<string, number>) => boolean;
+    // Record<assetId, pct> for ASSETS mode, or a plain option id for OPTIONS mode.
+    onSubmit: (allocation: Record<string, number> | string) => boolean;
     onNext: () => void;
     onRetry: () => void;
 }
@@ -125,7 +126,9 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
             setFeedback(isCorrect ? 'success' : 'error');
         } else if (isOptions) {
             if (!selectedOptionId) return;
-            const isCorrect = onSubmit({ [selectedOptionId]: 100 });
+            // Options mode is a single pick — submit the option id directly so the
+            // engine grades it against the author's recommendedOptionId/correctOptionId.
+            const isCorrect = onSubmit(selectedOptionId);
             setFeedback(isCorrect ? 'success' : 'error');
         }
     };
@@ -388,8 +391,8 @@ export const PortfolioBuilder = ({ exercise, onSubmit, onNext, onRetry }: Portfo
                             style={{ color: feedback === 'success' ? "var(--lp-emerald-ink)" : "var(--lp-coral-ink)" }}
                         >
                             {feedback === 'success'
-                                ? t('feedback.success', { defaultValue: '¡Correcto!' })
-                                : t('feedback.error', { defaultValue: 'Intenta de nuevo' })
+                                ? t('status.correct', { defaultValue: '¡Correcto!' })
+                                : t('portfolio_builder.try_again', { defaultValue: 'Intenta de nuevo' })
                             }
                         </p>
                         <div className="w-full max-w-md">

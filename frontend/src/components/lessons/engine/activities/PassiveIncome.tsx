@@ -76,7 +76,7 @@ export const PassiveIncome = ({ exercise, onSubmit, onNext, onRetry }: PassiveIn
                         </h3>
                     </div>
                     <div className="lp-display text-2xl sm:text-3xl" style={{ color: 'var(--lp-emerald)' }}>
-                        ${targetIncome}/mo
+                        {t('passive_income.amount_per_month', { amount: targetIncome, defaultValue: '${{amount}}/mes' })}
                     </div>
                 </div>
 

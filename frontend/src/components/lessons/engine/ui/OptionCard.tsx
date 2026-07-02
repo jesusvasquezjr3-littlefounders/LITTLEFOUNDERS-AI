@@ -31,6 +31,9 @@ export function OptionCard({ index, text, state, onClick, disabled, showLetter =
       type="button"
       onClick={onClick}
       disabled={disabled}
+      role="radio"
+      aria-checked={state === "selected" || state === "correct"}
+      aria-label={text}
       whileTap={locked ? undefined : { scale: 0.97 }}
       style={{ animationDelay: `${0.04 + index * 0.06}s` }}
       className={cn(

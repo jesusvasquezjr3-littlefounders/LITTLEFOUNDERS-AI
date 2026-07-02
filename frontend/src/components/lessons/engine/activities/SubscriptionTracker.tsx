@@ -134,10 +134,10 @@ export const SubscriptionTracker = ({ exercise, onSubmit, onNext, onRetry }: Sub
                                 <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                                     <div className="text-right">
                                         <div className="lp-display text-sm sm:text-base" style={{ color: 'var(--lp-ink)' }}>
-                                            ${sub.monthlyCost}/mo
+                                            {t('subscription.price_per_month', { amount: sub.monthlyCost, defaultValue: '${{amount}}/mo' })}
                                         </div>
                                         <div className="text-xs" style={{ color: 'var(--lp-muted)' }}>
-                                            ${(sub.monthlyCost * 12).toFixed(0)}/yr
+                                            {t('subscription.price_per_year', { amount: (sub.monthlyCost * 12).toFixed(0), defaultValue: '${{amount}}/yr' })}
                                         </div>
                                     </div>
                                     {isActive ? (

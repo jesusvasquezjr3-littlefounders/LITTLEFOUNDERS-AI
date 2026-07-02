@@ -43,7 +43,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
             initialMessages.push({
                 id: 'scenario',
                 sender: 'npc',
-                name: 'NPC',
+                name: t('roleplay_chat.npc', { defaultValue: 'NPC' }),
                 text: content.scenario,
                 avatar: '🤖'
             });
@@ -102,7 +102,7 @@ export const RoleplayChat = ({ exercise, onSubmit, onNext, onRetry }: RoleplayCh
             const npcMsg: ChatMessage = {
                 id: `npc-${Date.now()}`,
                 sender: 'npc',
-                name: 'NPC',
+                name: t('roleplay_chat.npc', { defaultValue: 'NPC' }),
                 text: npcResponseText,
                 avatar: '🤖'
             };

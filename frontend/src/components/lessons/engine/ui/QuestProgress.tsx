@@ -42,14 +42,14 @@ export function QuestProgress({ value, coins, hearts, maxHearts = 3, onClose }: 
         initial={{ scale: 1 }}
         animate={{ scale: [1, 1.18, 1] }}
         transition={{ duration: 0.35 }}
-        className="bg-white rounded-full shadow-sm shrink-0 h-10 px-3 flex items-center gap-1.5"
+        className="lp-chip shrink-0 h-10 px-3 flex items-center gap-1.5"
         style={{ color: "var(--lp-amber-ink)" }}
       >
         <Coins className="w-4.5 h-4.5" style={{ color: "var(--lp-amber)" }} />
         <span className="text-sm tabular-nums">{coins}</span>
       </motion.div>
 
-      <div className="bg-white rounded-full shadow-sm shrink-0 h-10 px-3 flex items-center gap-1" style={{ color: "var(--lp-coral-ink)" }}>
+      <div className="lp-chip shrink-0 h-10 px-3 flex items-center gap-1" style={{ color: "var(--lp-coral-ink)" }}>
         {Array.from({ length: maxHearts }).map((_, i) => (
           <Heart
             key={i}

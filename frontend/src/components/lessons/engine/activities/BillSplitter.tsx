@@ -194,7 +194,7 @@ export const BillSplitter = ({ exercise, onSubmit, onNext, onRetry }: BillSplitt
                         {t('bill_splitter.tip')}
                     </label>
                     <span className="lp-display text-lg" style={{ color: "var(--lp-emerald-ink)" }}>
-                        {tip}% (${tipAmount.toFixed(2)})
+                        {t('bill_splitter.tip_value', { percent: tip, amount: tipAmount.toFixed(2), defaultValue: '{{percent}}% (${{amount}})' })}
                     </span>
                 </div>
                 <input

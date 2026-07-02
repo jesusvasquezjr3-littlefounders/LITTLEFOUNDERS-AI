@@ -311,7 +311,8 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                                         }}
                                     >
                                         {t('budget_builder.min_dca_label', {
-                                            defaultValue: `Mínimo requerido: $${minDca}`,
+                                            amount: minDca,
+                                            defaultValue: 'Mínimo requerido: ${{amount}}',
                                         })}
                                     </p>
                                 )}
@@ -328,7 +329,8 @@ export const BudgetBuilder = ({ exercise, onSubmit, onNext, onRetry }: BudgetBui
                     >
                         <p className="lp-display text-sm" style={{ color: 'var(--lp-coral)' }}>
                             {t('budget_builder.dca_error', {
-                                defaultValue: `La inversión DCA debe ser al menos $${minDca}`,
+                                amount: minDca,
+                                defaultValue: 'La inversión DCA debe ser al menos ${{amount}}',
                             })}
                         </p>
                     </div>

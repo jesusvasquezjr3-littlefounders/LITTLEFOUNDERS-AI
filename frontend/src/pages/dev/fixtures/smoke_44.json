@@ -1,0 +1,92 @@
+{
+  "lesson_code": "0-0-0-44",
+  "title_es": "Smoke Test: drag_drop",
+  "title_en": "Smoke Test: drag_drop",
+  "description_es": "Lección de prueba de renderizado para el tipo drag_drop.",
+  "description_en": "Render smoke test for exercise type drag_drop.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 44,
+  "content_es": [
+    {
+      "type": "drag_drop",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Arrastra cada ítem a su categoría.",
+        "categories": [
+          {
+            "id": "cat1",
+            "text": "Ingreso"
+          },
+          {
+            "id": "cat2",
+            "text": "Gasto"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Salario"
+          },
+          {
+            "id": "i2",
+            "text": "Renta"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "i1": "cat1",
+          "i2": "cat2"
+        }
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "drag_drop",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Arrastra cada ítem a su categoría.",
+        "categories": [
+          {
+            "id": "cat1",
+            "text": "Ingreso"
+          },
+          {
+            "id": "cat2",
+            "text": "Gasto"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Salario"
+          },
+          {
+            "id": "i2",
+            "text": "Renta"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "i1": "cat1",
+          "i2": "cat2"
+        }
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

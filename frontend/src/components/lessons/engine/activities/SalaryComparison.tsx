@@ -94,7 +94,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
             )}>
                 <AlertCircle className="w-12 h-12" style={{ color: 'var(--lp-muted)' }} />
                 <p className="lp-display text-base" style={{ color: 'var(--lp-muted)' }}>
-                    {content.scenario || content.question || t('salary_comparison.no_data', { defaultValue: 'No comparison data available.' })}
+                    {content.scenario || content.question || t('salary_comparison.no_data', { defaultValue: 'No hay datos de comparación disponibles.' })}
                 </p>
                 <div className="w-full">
                     <QuestButton variant="brand" onClick={onNext}>
@@ -172,7 +172,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                                 <div className="space-y-2 mb-4">
                                     <div className="flex justify-between">
                                         <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
-                                            {t('salary_comparison.salary', { defaultValue: 'Salary' })}
+                                            {t('salary_comparison.salary', { defaultValue: 'Salario' })}
                                         </span>
                                         <span className="lp-display" style={{ color: 'var(--lp-emerald)' }}>
                                             ${offer.salary?.toLocaleString() ?? '0'}
@@ -180,19 +180,19 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
-                                            {t('salary_comparison.benefits', { defaultValue: 'Benefits' })}
+                                            {t('salary_comparison.benefits', { defaultValue: 'Beneficios' })}
                                         </span>
                                         <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.benefits ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
-                                            {t('salary_comparison.location', { defaultValue: 'Location' })}
+                                            {t('salary_comparison.location', { defaultValue: 'Ubicación' })}
                                         </span>
                                         <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.location ?? '0'}/10</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-sm" style={{ color: 'var(--lp-muted)' }}>
-                                            {t('salary_comparison.growth', { defaultValue: 'Growth' })}
+                                            {t('salary_comparison.growth', { defaultValue: 'Crecimiento' })}
                                         </span>
                                         <span className="lp-display" style={{ color: 'var(--lp-ink)' }}>{offer.growth ?? '0'}/10</span>
                                     </div>
@@ -209,7 +209,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                                 <div className="pt-3" style={{ borderTop: '1.5px solid var(--lp-line)' }}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs" style={{ color: 'var(--lp-muted)' }}>
-                                            {t('salary_comparison.score', { defaultValue: 'Score' })}
+                                            {t('salary_comparison.score', { defaultValue: 'Puntaje' })}
                                         </span>
                                         <span className="lp-display text-xl" style={{ color: 'var(--lp-indigo)' }}>
                                             {score.toFixed(1)}
@@ -227,7 +227,7 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                 {feedback === 'none' ? (
                     <div className="w-full max-w-md">
                         <QuestButton variant="gold" disabled={!selected} onClick={handleSubmit}>
-                            {t('actions.select_offer', { defaultValue: 'Select Offer' })}
+                            {t('actions.select_offer', { defaultValue: 'SELECCIONAR OFERTA' })}
                             <ArrowRight className="w-5 h-5" />
                         </QuestButton>
                     </div>
@@ -238,12 +238,12 @@ export const SalaryComparison = ({ exercise, onSubmit, onNext, onRetry }: Salary
                             style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
                             {feedback === 'success'
-                                ? t('feedback.success', { defaultValue: 'Great job!' })
-                                : t('feedback.error', { defaultValue: 'Not quite right.' })}
+                                ? t('status.great_job', { defaultValue: '¡Excelente!' })
+                                : t('salary_comparison.not_quite', { defaultValue: 'No es del todo correcto.' })}
                         </p>
                         <div className="w-full max-w-md">
                             <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
-                                {t('actions.continue', { defaultValue: 'Continue' })}
+                                {t('actions.continue', { defaultValue: 'CONTINUAR' })}
                                 <ArrowRight className="w-5 h-5" />
                             </QuestButton>
                         </div>

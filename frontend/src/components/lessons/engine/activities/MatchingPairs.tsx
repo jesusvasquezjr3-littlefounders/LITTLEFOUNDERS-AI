@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Check, RotateCcw } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSound } from "@/contexts/SoundContext";
 import { QuestButton } from "../ui/QuestButton";
@@ -10,10 +10,10 @@ interface MatchingPairsProps {
     exercise: any;
     onSubmit: (matchedPairs: string[][] | boolean) => boolean;
     onNext: () => void;
-    onRetry: () => void;
+    onRetry?: () => void; // unused: mismatches are cost-free, there is no error/retry state
 }
 
-export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingPairsProps) => {
+export const MatchingPairs = ({ exercise, onSubmit, onNext }: MatchingPairsProps) => {
     const { t } = useTranslation('lessons');
     const { playSound } = useSound();
 
@@ -82,11 +82,13 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                     setIsChecking(false);
                 }, 500);
             } else {
-                // No match - register the error with the engine to reduce lives/streak
-                onSubmit(false);
+                // No match — COST-FREE. Trial-and-error is the core mechanic of a
+                // memory/matching game, not a graded failure, so we do NOT call
+                // onSubmit(false) (which would drain a life and wipe the board).
+                // The two cards simply flip back after a short beat.
+                playSound('edu_error');
                 setIsMismatch(true);
-                setFeedback('error'); // Trigger the retry button to unblock the engine
-                
+
                 timeoutRef.current = setTimeout(() => {
                     setSelectedCards([]);
                     setIsMismatch(false);
@@ -132,25 +134,10 @@ export const MatchingPairs = ({ exercise, onSubmit, onNext, onRetry }: MatchingP
                 })}
             </div>
 
-            {(feedback === 'success' || feedback === 'error') && (
-                <QuestButton
-                    variant={feedback === 'success' ? 'go' : 'retry'}
-                    onClick={() => {
-                        if (feedback === 'success') {
-                            onNext();
-                        } else {
-                            // On retry, reset the board and clear the engine error state
-                            setMatchedIndices(new Set());
-                            setSelectedCards([]);
-                            setIsChecking(false);
-                            setIsMismatch(false);
-                            setFeedback('none');
-                            onRetry();
-                        }
-                    }}
-                >
-                    {feedback === 'success' ? t('actions.continue') : t('actions.retry')}
-                    {feedback === 'success' ? <ArrowRight className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}
+            {feedback === 'success' && (
+                <QuestButton variant="go" onClick={onNext}>
+                    {t('actions.continue')}
+                    <ArrowRight className="w-5 h-5" />
                 </QuestButton>
             )}
         </div>

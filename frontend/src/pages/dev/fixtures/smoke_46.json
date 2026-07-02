@@ -1,0 +1,100 @@
+{
+  "lesson_code": "0-0-0-46",
+  "title_es": "Smoke Test: image_hotspot",
+  "title_en": "Smoke Test: image_hotspot",
+  "description_es": "Lección de prueba para identificar elementos en un estado de cuenta.",
+  "description_en": "Test lesson for identifying items in a bank statement.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 46,
+  "content_es": [
+    {
+      "type": "image_hotspot",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Selecciona los **gastos fijos** en este estado de cuenta (renta, servicios, suscripciones).",
+        "imageUrl": "https://placehold.co/600x400/png",
+        "hotspots": [
+          {
+            "id": "h1",
+            "x": 100,
+            "y": 150,
+            "radius": 30,
+            "label": "Renta"
+          },
+          {
+            "id": "h2",
+            "x": 300,
+            "y": 200,
+            "radius": 30,
+            "label": "Netflix"
+          },
+          {
+            "id": "h3",
+            "x": 200,
+            "y": 100,
+            "radius": 30,
+            "label": "Cena restaurante"
+          }
+        ]
+      },
+      "correct_answer": {
+        "hotspotIds": [
+          "h1",
+          "h2"
+        ]
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅ Renta y Netflix son gastos fijos.",
+        "error": "Intenta de nuevo 💡 Los gastos fijos son pagos recurrentes."
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "image_hotspot",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Select the **fixed expenses** in this bank statement (rent, utilities, subscriptions).",
+        "imageUrl": "https://placehold.co/600x400/png",
+        "hotspots": [
+          {
+            "id": "h1",
+            "x": 100,
+            "y": 150,
+            "radius": 30,
+            "label": "Rent"
+          },
+          {
+            "id": "h2",
+            "x": 300,
+            "y": 200,
+            "radius": 30,
+            "label": "Netflix"
+          },
+          {
+            "id": "h3",
+            "x": 200,
+            "y": 100,
+            "radius": 30,
+            "label": "Restaurant dinner"
+          }
+        ]
+      },
+      "correct_answer": {
+        "hotspotIds": [
+          "h1",
+          "h2"
+        ]
+      },
+      "feedback": {
+        "success": "Correct! ✅ Rent and Netflix are fixed expenses.",
+        "error": "Try again 💡 Fixed expenses are recurring payments."
+      }
+    }
+  ]
+}

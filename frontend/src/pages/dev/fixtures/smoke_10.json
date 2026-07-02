@@ -1,0 +1,108 @@
+{
+  "lesson_code": "0-0-0-10",
+  "title_es": "Smoke Test: classification",
+  "title_en": "Smoke Test: classification",
+  "description_es": "Lección de prueba de renderizado para el tipo classification.",
+  "description_en": "Render smoke test for exercise type classification.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 10,
+  "content_es": [
+    {
+      "type": "classification",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Clasifica cada ítem.",
+        "categories": [
+          {
+            "id": "catA",
+            "text": "Categoría A"
+          },
+          {
+            "id": "catB",
+            "text": "Categoría B"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem 1",
+            "category": "catA"
+          },
+          {
+            "id": "i2",
+            "text": "Ítem 2",
+            "category": "catB"
+          },
+          {
+            "id": "i3",
+            "text": "Ítem 3",
+            "category": "catA"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "i1": "catA",
+          "i2": "catB",
+          "i3": "catA"
+        }
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "classification",
+      "character_code": "liruf",
+      "content": {
+        "instruction": "Clasifica cada ítem.",
+        "categories": [
+          {
+            "id": "catA",
+            "text": "Categoría A"
+          },
+          {
+            "id": "catB",
+            "text": "Categoría B"
+          }
+        ],
+        "items": [
+          {
+            "id": "i1",
+            "text": "Ítem 1",
+            "category": "catA"
+          },
+          {
+            "id": "i2",
+            "text": "Ítem 2",
+            "category": "catB"
+          },
+          {
+            "id": "i3",
+            "text": "Ítem 3",
+            "category": "catA"
+          }
+        ]
+      },
+      "correct_answer": {
+        "classifications": {
+          "i1": "catA",
+          "i2": "catB",
+          "i3": "catA"
+        }
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅",
+        "error": "Intenta de nuevo 💡"
+      }
+    }
+  ]
+}

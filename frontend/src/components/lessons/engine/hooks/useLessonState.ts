@@ -622,7 +622,14 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             if (legacyTargets) {
                 legacyTargets.forEach((id: string) => targetIds.add(id));
             }
-            if (targetIds.size === 0) return false;
+            if (targetIds.size === 0) {
+                // Authoring footgun: no item.isTarget and no correct_answer.targetIds
+                // makes this exercise unwinnable. Warn loudly in dev so it's caught.
+                if (import.meta.env?.DEV) {
+                    console.warn(`[LessonEngine] tap_action has no targets (set item.isTarget or correct_answer.targetIds) → currently unwinnable`);
+                }
+                return false;
+            }
             return tappedIds.size === targetIds.size &&
                 [...tappedIds].every(id => targetIds.has(id));
         }
@@ -804,7 +811,11 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'shop_sim': {
             const userItems = new Set(Array.isArray(answer) ? answer.map(String) : [String(answer)]);
             // Explicit single-ID keys only (no broad extractCorrectId).
-            const singleId = correctAnswer?.selectedProductId ?? correctAnswer?.selectedId
+            // Includes correctOptionId/optionId because shop_sim's CHOICE mode
+            // (ShopSim.tsx isChoiceMode) is a single-pick decision authored with those
+            // keys; it always submits exactly one id, so this stays safe for carts.
+            const singleId = correctAnswer?.correctOptionId ?? correctAnswer?.optionId
+                ?? correctAnswer?.selectedProductId ?? correctAnswer?.selectedId
                 ?? correctAnswer?.correctProductId ?? correctAnswer?.correctItemId;
             if (singleId !== undefined && singleId !== null) {
                 return userItems.size === 1 && optionIdMatches([...userItems][0], String(singleId));
@@ -879,7 +890,14 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
                 case 'allocation': {
                     // answer is Record<string, number|string>
                     const userAlloc = answer as Record<string, number | string>;
-                    const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
+                    // Budgeting is SATISFICING, not a single pixel-perfect point: many
+                    // allocations are "good". When the lesson doesn't pin a tolerance,
+                    // default to ±5% of the target income (min $1) so a near-correct
+                    // split isn't a false-negative (which would cost a life). See audit.
+                    const totalTarget = Object.values(normalized.data)
+                        .reduce((s: number, v) => s + Number(v || 0), 0);
+                    const defaultTol = Math.max(1, Math.round(Math.abs(totalTarget) * 0.05));
+                    const tolerance = Number(correctAnswer?.tolerance ?? defaultTol);
                     return Object.keys(normalized.data).every(key => {
                         const expected = normalized.data[key];
                         const actual = Number(userAlloc?.[key] ?? 0);
@@ -962,18 +980,24 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         // Component sends Record<string, number> (asset ID to percentage)
         case 'portfolio_builder': {
             const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) {
-                // OPTIONS mode submits { [selectedOptionId]: 100 }; ASSETS mode a string id.
-                const picked = (answer && typeof answer === 'object' && !Array.isArray(answer))
+            // OPTIONS mode submits a plain string option id (or legacy { [id]: 100 }).
+            const pickedOption = (typeof answer === 'string')
+                ? answer
+                : (answer && typeof answer === 'object' && !Array.isArray(answer)
+                    && Object.keys(answer).length === 1 && Number(Object.values(answer)[0]) === 100)
                     ? Object.keys(answer)[0]
-                    : answer;
-                return optionIdMatches(picked, correctId);
+                    : undefined;
+            if (pickedOption !== undefined) {
+                if (correctId !== undefined) return optionIdMatches(pickedOption, correctId);
+                // No author key → reflective single-pick; accept (backend lint flags this).
+                return true;
             }
-            // Allocation validation: sum must be ~100%
+            if (correctId !== undefined) return optionIdMatches(answer, correctId);
+            // ASSETS allocation validation: sum must be ~100%
             const allocation = answer as Record<string, number>;
             if (typeof allocation !== 'object' || allocation === null) return false;
             const total = Object.values(allocation).reduce((sum, val) => sum + Number(val), 0);
-            return numericMatch(total, 100, 0.01);
+            return numericMatch(total, 100, 0.5);
         }
 
         // ─── PASSIVE INCOME ───
@@ -1071,9 +1095,39 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             return true;
         }
 
-        // ─── BILL SPLITTER / SUBSCRIPTION TRACKER / INFLATION SIMULATOR / SAVINGS RACE ───
+        // ─── BILL SPLITTER ───
+        // Component sends Record<personId, amount>. When the lesson declares the
+        // expected split we grade the SHARE SHAPE (each person's fraction of the
+        // total), not raw amounts — this stays robust to the tip slider and total
+        // while still rejecting an unfair division. No key → free simulator.
+        case 'bill_splitter': {
+            const correctId = extractCorrectId(correctAnswer);
+            if (correctId !== undefined) return String(answer) === String(correctId);
+            const expectedSplits = correctAnswer?.splits ?? correctAnswer?.correctSplits ?? correctAnswer?.shares;
+            if (expectedSplits && typeof expectedSplits === 'object'
+                && answer && typeof answer === 'object' && !Array.isArray(answer)) {
+                const keys = Object.keys(expectedSplits);
+                if (keys.length === 0) return true;
+                const expTotal = keys.reduce((s, k) => s + Number((expectedSplits as any)[k] || 0), 0);
+                const userTotal = keys.reduce((s, k) => s + Number((answer as any)[k] ?? 0), 0);
+                if (expTotal <= 0 || userTotal <= 0) return true;
+                // each person's fraction must match within 5 percentage points
+                return keys.every(k => {
+                    const expFrac = Number((expectedSplits as any)[k] || 0) / expTotal;
+                    const userFrac = Number((answer as any)[k] ?? 0) / userTotal;
+                    return Math.abs(expFrac - userFrac) <= 0.05;
+                });
+            }
+            const correctVal = extractCorrectNumeric(correctAnswer, content);
+            if (correctVal !== undefined) {
+                const tolerance = Number(correctAnswer?.tolerance ?? 0.01);
+                return numericMatch(Number(answer), correctVal, tolerance);
+            }
+            return true;
+        }
+
+        // ─── SUBSCRIPTION TRACKER / INFLATION SIMULATOR / SAVINGS RACE ───
         // Exploratory simulators: always correct unless explicit correct_answer exists
-        case 'bill_splitter':
         case 'subscription_tracker':
         case 'inflation_simulator':
         case 'savings_race': {
@@ -1091,9 +1145,11 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
         case 'intro_narrative':
             return true;
 
-        // ─── UNMAPPED TYPES (defensive) ───
-        case 'drag_drop': {
-            const correct = normalizeClassifications(correctAnswer);
+        // ─── DRAG & DROP / SORTING BUCKETS (item → category/bucket map) ───
+        // Both share the classification shape { classifications: { itemId: catId } }.
+        case 'drag_drop':
+        case 'sorting_buckets': {
+            const correct = normalizeClassifications(correctAnswer, content);
             if (!correct) return true;
             const userMap = (answer && typeof answer === 'object' && !Array.isArray(answer))
                 ? answer as Record<string, string>
@@ -1127,14 +1183,6 @@ export function validateAnswer(exercise: ExerciseData, answer: any): boolean {
             const rightVal = Number(content?.right?.value ?? 0);
             const expected = leftVal > rightVal ? 'left_heavy' : leftVal < rightVal ? 'right_heavy' : 'balanced';
             return String(answer).toLowerCase() === expected;
-        }
-
-        // ─── UNMAPPED TYPES (defensive) ───
-        case 'sorting_buckets': {
-            const correctId = extractCorrectId(correctAnswer);
-            if (correctId !== undefined) return String(answer) === String(correctId);
-            console.warn(`[LessonEngine] validateAnswer: unmapped exercise type '${type}'`);
-            return false;
         }
 
         // ─── DEFAULT FALLBACK ───

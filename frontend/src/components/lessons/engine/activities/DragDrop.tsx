@@ -210,8 +210,8 @@ export const DragDrop = ({ exercise, onSubmit, onNext, onRetry }: DragDropProps)
                             style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
                             {feedback === 'success'
-                                ? t('feedback.success', { defaultValue: '¡Correcto!' })
-                                : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                                ? t('status.correct', { defaultValue: '¡Correcto!' })
+                                : t('drag_drop.try_again', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <QuestButton
                             variant={feedback === 'success' ? 'go' : 'retry'}

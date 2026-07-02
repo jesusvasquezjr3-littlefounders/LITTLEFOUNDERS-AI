@@ -193,7 +193,7 @@ export const OpportunityCost = ({ exercise, onSubmit, onNext, onRetry }: Opportu
                             className="lp-display text-lg mb-3"
                             style={{ color: feedback === 'success' ? 'var(--lp-emerald)' : 'var(--lp-coral)' }}
                         >
-                            {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                            {feedback === 'success' ? t('status.correct', { defaultValue: '¡Correcto!' }) : t('opportunity_cost.try_again_message', { defaultValue: 'Inténtalo de nuevo' })}
                         </p>
                         <QuestButton variant={feedback === 'success' ? 'go' : 'retry'} onClick={handleContinue}>
                             {t('actions.continue', { defaultValue: 'Continuar' })}

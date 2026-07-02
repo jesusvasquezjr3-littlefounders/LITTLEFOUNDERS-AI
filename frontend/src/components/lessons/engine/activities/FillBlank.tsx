@@ -211,7 +211,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                                         ? { color: "var(--lp-indigo-ink)" }
                                         : { background: "var(--lp-bg-2)", borderColor: "var(--lp-line)" }}
                                 >
-                                    {filledWord ? pickText(filledWord) : "____"}
+                                    {filledWord ? pickText(filledWord) : t('fill_blank.blank_slot', { defaultValue: '____' })}
                                 </button>
                             );
                         }
@@ -249,7 +249,7 @@ export const FillBlank = ({ exercise, onSubmit, onNext, onRetry }: FillBlankProp
                 <div className="mb-6 text-center animate-in zoom-in">
                     <span className="text-4xl block mb-2">{feedback === 'success' ? '🎉' : '🤔'}</span>
                     <p className="lp-display text-xl" style={{ color: feedback === 'success' ? "var(--lp-emerald)" : "var(--lp-coral)" }}>
-                        {feedback === 'success' ? t('feedback.success', { defaultValue: '¡Correcto!' }) : t('feedback.error', { defaultValue: 'Inténtalo de nuevo' })}
+                        {feedback === 'success' ? t('status.correct', { defaultValue: '¡Correcto!' }) : t('fill_blank.try_again', { defaultValue: 'Inténtalo de nuevo' })}
                     </p>
                 </div>
             )}

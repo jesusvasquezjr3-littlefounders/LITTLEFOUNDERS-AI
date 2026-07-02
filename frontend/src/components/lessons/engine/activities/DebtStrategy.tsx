@@ -214,9 +214,9 @@ export const DebtStrategy = ({ exercise, onSubmit, onNext, onRetry }: DebtStrate
 
                         let optState: OptionState = 'idle';
                         if (feedback === 'success') {
-                            optState = isSelected ? 'correct' : 'disabled';
+                            optState = isSelected ? 'correct' : 'dimmed';
                         } else if (feedback === 'error') {
-                            optState = isSelected ? 'wrong' : 'disabled';
+                            optState = isSelected ? 'wrong' : 'dimmed';
                         } else {
                             optState = isSelected ? 'selected' : 'idle';
                         }

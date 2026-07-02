@@ -92,22 +92,11 @@ export const TrueFalse = ({ exercise, onSubmit, onNext, onRetry }: TrueFalseProp
                 </button>
             </div>
 
-            {/* Continue Button */}
+            {/* Continue Button — the win/loss MESSAGE is owned by the runner's speech
+                bubble (getCurrentText); the per-button is-correct/is-wrong states above
+                already give the visual verdict, so no duplicate banner here. */}
             {answered !== null && (
                 <div className="w-full animate-in fade-in slide-in-from-bottom-4">
-                    {/* Feedback Message */}
-                    <div className="lp-display text-center mb-4 text-xl">
-                        {feedback === 'success' ? (
-                            <span className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-emerald)' }}>
-                                <Check className="w-6 h-6" strokeWidth={3} /> {t('feedback.success')}
-                            </span>
-                        ) : (
-                            <span className="flex items-center justify-center gap-2" style={{ color: 'var(--lp-coral)' }}>
-                                <X className="w-6 h-6" strokeWidth={3} /> {t('feedback.error')}
-                            </span>
-                        )}
-                    </div>
-
                     <QuestButton
                         variant={feedback === 'success' ? 'go' : 'retry'}
                         onClick={handleContinue}

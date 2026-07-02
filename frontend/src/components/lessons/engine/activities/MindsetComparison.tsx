@@ -82,7 +82,7 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         const arr = content.mindsets || content.options || content.pairs;
         mindsets = arr.slice(0, 2).map((item: any, idx: number) => ({
             id: String(item.id || (idx === 0 ? 'A' : 'B')),
-            label: getText(item, ['name', 'label', 'title', 'heading', 'type']) || (idx === 0 ? 'Mentalidad A' : 'Mentalidad B'),
+            label: getText(item, ['name', 'label', 'title', 'heading', 'type']) || (idx === 0 ? t('mindset_comparison.option_a', { defaultValue: 'Mentalidad A' }) : t('mindset_comparison.option_b', { defaultValue: 'Mentalidad B' })),
             text: getText(item, ['text', 'description', 'thought', 'label', 'name']),
             consequences: Array.isArray(item.consequences) ? item.consequences : [],
             color: idx === 0 ? 'green' : 'red'
@@ -97,6 +97,21 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
             { id: 'scarcity', label: t('mindset_comparison.scarcity', { defaultValue: 'Mentalidad de Escasez' }), text: getText(scarcity, ['thought', 'text', 'description']), consequences: scarcity.consequences || [], color: 'red' },
             { id: 'abundance', label: t('mindset_comparison.abundance', { defaultValue: 'Mentalidad de Abundancia' }), text: getText(abundance, ['thought', 'text', 'description']), consequences: abundance.consequences || [], color: 'green' },
         ];
+    }
+
+    // Which mindset is the financially-sound one? Derive it from the EXPLICIT answer
+    // key (never from list position — that silently mis-taught when the risky mindset
+    // was listed first). When a key exists, the matching card is 'green', the rest 'red'.
+    const rawCorrect = exercise.correct_answer || content.correct_answer;
+    const correctMindsetId = rawCorrect ? (
+        rawCorrect.correctMindsetId ?? rawCorrect.correctMindset ?? rawCorrect.correctApproach
+        ?? rawCorrect.betterMindsetId ?? rawCorrect.correctOptionId ?? rawCorrect.correctId
+        ?? rawCorrect.correctOption ?? rawCorrect.betterOption
+    ) : undefined;
+    if (correctMindsetId != null && mindsets.length > 0) {
+        const norm = (s: string) => String(s).trim().toLowerCase();
+        const cid = norm(String(correctMindsetId));
+        mindsets = mindsets.map(m => ({ ...m, color: norm(m.id) === cid ? 'green' : 'red' }));
     }
 
     const scenarioText = content.instruction || content.scenario || content.question || content.statement || '';
@@ -114,18 +129,11 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
 
     const handleSubmit = () => {
         if (!selectedId) return;
-        
+        // Single source of truth: trust the engine's validateAnswer result. (Previously
+        // this re-derived correctness from the card's positional color, which mis-graded
+        // whenever the risky mindset was listed first.)
         const validated = onSubmit(selectedId);
-        
-        // If exercise lacks explicit correct_answer in JSON, evaluate based on green/positive mindset
-        const hasExplicitCorrectAnswer = Boolean(exercise.correct_answer || exercise.content?.correct_answer);
-        let isCorrect = validated;
-        if (!hasExplicitCorrectAnswer) {
-            const selectedMindset = mindsets.find(m => m.id === selectedId);
-            isCorrect = selectedMindset ? selectedMindset.color === 'green' : true;
-        }
-
-        setFeedback(isCorrect ? 'success' : 'error');
+        setFeedback(validated ? 'success' : 'error');
     };
 
     const handleContinue = () => {
@@ -149,11 +157,11 @@ export const MindsetComparison = ({ exercise, onSubmit, onNext, onRetry }: Minds
         const selectedMindset = mindsets.find(m => m.id === selectedId);
         if (feedback === 'success') {
             return selectedMindset?.text
-                ? `¡Excelente! "${selectedMindset.text}" demuestra una mentalidad financiera recomendable.`
+                ? t('mindset_comparison.feedback_success_text', { text: selectedMindset.text, defaultValue: '¡Excelente! "{{text}}" demuestra una mentalidad financiera recomendable.' })
                 : t('mindset_comparison.feedback_abundance', { defaultValue: '¡Mentalidad de abundancia! Piensa en el futuro y construye valor.' });
         } else {
             return selectedMindset?.text
-                ? `"${selectedMindset.text}" refleja una postura que puede perjudicar tu estabilidad.`
+                ? t('mindset_comparison.feedback_error_text', { text: selectedMindset.text, defaultValue: '"{{text}}" refleja una postura que puede perjudicar tu estabilidad.' })
                 : t('mindset_comparison.feedback_scarcity', { defaultValue: 'La mentalidad de escasez o gasto sin control limita tu potencial.' });
         }
     };

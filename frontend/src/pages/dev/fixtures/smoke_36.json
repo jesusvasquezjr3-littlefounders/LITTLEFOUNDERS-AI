@@ -1,0 +1,56 @@
+{
+  "lesson_code": "0-0-0-36",
+  "title_es": "Smoke Test: savings_race",
+  "title_en": "Smoke Test: savings_race",
+  "description_es": "Lección de prueba de renderizado para el tipo savings_race.",
+  "description_en": "Render smoke test for exercise type savings_race.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 36,
+  "content_es": [
+    {
+      "type": "savings_race",
+      "character_code": "liruf",
+      "content": {
+        "goal": "Ahorrar $500 para una bici.",
+        "strategies": [
+          {
+            "id": "s1",
+            "name": "Alcancía",
+            "weeklyAmount": 10
+          },
+          {
+            "id": "s2",
+            "name": "Trabajo extra",
+            "weeklyAmount": 25
+          }
+        ]
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "savings_race",
+      "character_code": "liruf",
+      "content": {
+        "goal": "Ahorrar $500 para una bici.",
+        "strategies": [
+          {
+            "id": "s1",
+            "name": "Alcancía",
+            "weeklyAmount": 10
+          },
+          {
+            "id": "s2",
+            "name": "Trabajo extra",
+            "weeklyAmount": 25
+          }
+        ]
+      }
+    }
+  ]
+}

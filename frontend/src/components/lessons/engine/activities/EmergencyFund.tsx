@@ -43,11 +43,11 @@ export const EmergencyFund = ({ exercise, onSubmit, onNext, onRetry }: Emergency
         const high = Math.round(cost * 1.5);
         return {
             ...ev,
-            description: ev.description ?? ev.text ?? ev.title ?? ev.content ?? 'Emergencia',
+            description: ev.description ?? ev.text ?? ev.title ?? ev.content ?? t('emergency_fund.default_event', { defaultValue: 'Emergencia' }),
             options: [
-                { id: `${ev.id}_low`, text: ev.options?.[0]?.text ?? `Ahorra más ($${low})`, cost: low },
-                { id: `${ev.id}_orig`, text: ev.options?.[1]?.text ?? `Gasta $${cost}`, cost },
-                { id: `${ev.id}_high`, text: ev.options?.[2]?.text ?? `Pide prestado ($${high})`, cost: high },
+                { id: `${ev.id}_low`, text: ev.options?.[0]?.text ?? t('emergency_fund.option_save_more', { amount: low, defaultValue: 'Ahorra más (${{amount}})' }), cost: low },
+                { id: `${ev.id}_orig`, text: ev.options?.[1]?.text ?? t('emergency_fund.option_spend', { amount: cost, defaultValue: 'Gasta ${{amount}}' }), cost },
+                { id: `${ev.id}_high`, text: ev.options?.[2]?.text ?? t('emergency_fund.option_borrow', { amount: high, defaultValue: 'Pide prestado (${{amount}})' }), cost: high },
             ],
         };
     });

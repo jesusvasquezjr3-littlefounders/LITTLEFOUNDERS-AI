@@ -1,0 +1,62 @@
+{
+  "lesson_code": "0-0-0-47",
+  "title_es": "Smoke Test: balance_scale",
+  "title_en": "Smoke Test: balance_scale",
+  "description_es": "Lección de prueba sobre valor del dinero en el tiempo.",
+  "description_en": "Test lesson about time value of money.",
+  "duration": 2,
+  "age_rate": "5-7",
+  "points_reward": 10,
+  "adventure_level": 0,
+  "saga_level": 0,
+  "topic_level": 0,
+  "lesson_number": 47,
+  "content_es": [
+    {
+      "type": "balance_scale",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "Tienes $100. Puedes gastarlos hoy o invertirlos al 5% anual durante 5 años. ¿Cuál opción tiene más valor?",
+        "left": {
+          "label": "Gastar hoy",
+          "value": 100
+        },
+        "right": {
+          "label": "Invertir 5 años",
+          "value": 128
+        }
+      },
+      "correct_answer": {
+        "condition": "right_heavy"
+      },
+      "feedback": {
+        "success": "¡Correcto! ✅ $100 invertidos al 5% por 5 años = $128. El interés compuesto genera más valor.",
+        "error": "Intenta de nuevo 💡 Recuerda: el interés compuesto hace crecer tu dinero con el tiempo."
+      }
+    }
+  ],
+  "content_en": [
+    {
+      "type": "balance_scale",
+      "character_code": "liruf",
+      "content": {
+        "scenario": "You have $100. You can spend it today or invest it at 5% annually for 5 years. Which option has more value?",
+        "left": {
+          "label": "Spend today",
+          "value": 100
+        },
+        "right": {
+          "label": "Invest 5 years",
+          "value": 128
+        }
+      },
+      "correct_answer": {
+        "condition": "right_heavy"
+      },
+      "feedback": {
+        "success": "Correct! ✅ $100 invested at 5% for 5 years = $128. Compound interest generates more value.",
+        "error": "Try again 💡 Remember: compound interest grows your money over time."
+      }
+    }
+  ]
+}

@@ -359,15 +359,22 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
 
         // Mostrar feedback si está disponible (root o dentro de content)
         if (localFeedback !== 'none' && feedbackObj) {
-            // Check for option-specific feedback first
-            if (lastAnswer !== null && typeof lastAnswer === 'string') {
-                // Format 1: nested in per_option (e.g. feedback.per_option.a)
-                if (feedbackObj.per_option && feedbackObj.per_option[lastAnswer]) {
-                    return feedbackObj.per_option[lastAnswer];
+            // Per-choice ("per-distractor rationale") feedback. Normalize the answer to
+            // a lookup key so it works for string ids, booleans (true_false → 'true'/
+            // 'false'), and single-item arrays — this is what turns a right/wrong verdict
+            // into a teaching moment when the lesson provides per-choice rationale.
+            let optKey: string | null = null;
+            if (typeof lastAnswer === 'string') optKey = lastAnswer;
+            else if (typeof lastAnswer === 'boolean') optKey = String(lastAnswer);
+            else if (Array.isArray(lastAnswer) && lastAnswer.length === 1) optKey = String(lastAnswer[0]);
+            if (optKey !== null) {
+                // Format 1: nested in per_option (e.g. feedback.per_option.a / .true)
+                if (feedbackObj.per_option && feedbackObj.per_option[optKey]) {
+                    return feedbackObj.per_option[optKey];
                 }
-                // Format 2: direct key (e.g. feedback.a)
-                if (feedbackObj[lastAnswer]) {
-                    return feedbackObj[lastAnswer];
+                // Format 2: direct key (e.g. feedback.a / feedback.true)
+                if (feedbackObj[optKey]) {
+                    return feedbackObj[optKey];
                 }
             }
             
@@ -378,6 +385,16 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
             if (localFeedback === 'error' && feedbackObj.error) {
                 return feedbackObj.error;
             }
+        }
+
+        // Guaranteed default: a win/loss ALWAYS speaks, even when the lesson JSON
+        // omits a `feedback` object. Previously we fell through to re-showing the
+        // question here, which read as "no feedback at all" (e.g. matching_pairs).
+        if (localFeedback === 'success') {
+            return t('feedback.success', { defaultValue: '¡Correcto!' });
+        }
+        if (localFeedback === 'error') {
+            return t('feedback.error', { defaultValue: 'Inténtalo de nuevo' });
         }
 
         // Support different content types: question, instruction, transcript
@@ -1425,8 +1442,9 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                     />
                 )}
 
-                {/* ===== DRAG & DROP ===== */}
-                {currentExercise?.type === 'drag_drop' && (
+                {/* ===== DRAG & DROP / SORTING BUCKETS ===== */}
+                {/* sorting_buckets shares the item→category/bucket shape, so it reuses DragDrop. */}
+                {(currentExercise?.type === 'drag_drop' || currentExercise?.type === 'sorting_buckets') && (
                     <DragDrop
                         key={currentExerciseIndex}
                         exercise={currentExercise}
@@ -1471,7 +1489,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                     'opportunity_cost', 'market_reaction', 'inflation_simulator',
                     'credit_score', 'debt_strategy', 'tax_puzzle', 'salary_comparison',
                     'spot_trap', 'impact_meter', 'mindset_comparison',
-                    'drag_drop', 'image_hotspot', 'balance_scale',
+                    'drag_drop', 'sorting_buckets', 'image_hotspot', 'balance_scale',
                     'comparison', 'compare', 'comparison_chart', 'comparison_table',
                     'comparison_slider', 'comparison_matrix', 'comparison_challenge',
                     'case_study', 'case_real', 'decision_challenge', 'decision_matrix'
