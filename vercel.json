@@ -16,6 +16,18 @@
         }
     ],
     "rewrites": [
+        { "source": "/families", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/families-en.html" },
+        { "source": "/families", "destination": "/families.html" },
+        { "source": "/pricing", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/pricing-en.html" },
+        { "source": "/pricing", "destination": "/pricing.html" },
+        { "source": "/faq", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/faq-en.html" },
+        { "source": "/faq", "destination": "/faq.html" },
+        { "source": "/how-it-works", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/how-it-works-en.html" },
+        { "source": "/how-it-works", "destination": "/how-it-works.html" },
+        { "source": "/legal/terms", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/legal-terms-en.html" },
+        { "source": "/legal/terms", "destination": "/legal-terms.html" },
+        { "source": "/legal/privacy", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/legal-privacy-en.html" },
+        { "source": "/legal/privacy", "destination": "/legal-privacy.html" },
         {
             "source": "/((?!api/).*)",
             "has": [{ "type": "query", "key": "lang", "value": "en" }],
@@ -24,6 +36,12 @@
         {
             "source": "/((?!api/).*)",
             "destination": "/index.html"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/(dashboard|admin|games|learn|profile|settings|help|avatar|tasks|parent-tasks|growth|savings|store|lesson|ai|onboarding|auth)(/.*)?",
+            "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
         }
     ]
 }

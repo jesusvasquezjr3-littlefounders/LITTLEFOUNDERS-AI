@@ -704,10 +704,11 @@ Eventos custom: `frontend/src/lib/analytics.ts` → `trackEvent(name, params?)`.
 
 ### SEO
 
-- JSON-LD Schema (`WebSite` + `EducationalOrganization`) en `index.html` e `index-en.html`
-- Sitemap hreflang para ES/EN
-- Preloads LCP, lazy loading de imágenes
+- JSON-LD Schema (`WebSite` + `EducationalOrganization`) en `index.html` e `index-en.html`, más `FAQPage` inyectado solo en `/faq`
+- Sitemap hreflang para ES/EN (`frontend/public/sitemap.xml`)
 - Meta tags diferenciados por idioma (dual build, ver §11)
+- **Prerender de shells estáticos por ruta** (`frontend/scripts/prerender-seo.mjs`, corre como parte de `npm run build` vía `seo:prerender`): genera HTML real (no solo el `<div id="root">` vacío del CSR) para las 7 rutas públicas de contenido (`/`, `/families`, `/pricing`, `/faq`, `/how-it-works`, `/legal/terms`, `/legal/privacy`) × ES/EN, para que crawlers sin JS (incluye la mayoría de bots de IA) vean contenido real. Título/descripción por ruta viven en `frontend/src/seo/route-meta.json`, única fuente de verdad usada tanto por el script (build-time) como por el hook `useDocumentMeta` (client-side nav, montado en `App.tsx` junto a `ScrollToTop`). El contenido de los shells se lee directamente de `src/i18n/locales/{es,en}/landing.json` y `legal.json` — no hay copy duplicado a mano.
+- `vercel.json` enruta cada ruta prerenderizada a su archivo estático (`rewrites`, antes del catch-all) y añade `X-Robots-Tag: noindex` a las rutas protegidas de la app (dashboard, admin, games, etc.)
 
 ---
 

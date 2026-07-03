@@ -66,6 +66,7 @@ littlefounders.ai
 | 2026-06-17 | Lesson Engine: auditoría integral de los 40+ tipos contra el corpus real (2,462 lecciones). Corrección de falsos negativos en `validateAnswer` (la opción correcta marcaba error), nuevos renderers para tipos sin soporte (`comparison`/`case_*`/`decision_*` vía `GenericChoice`), helper `resolveOptions`, feedback de simuladores unificado y StoryMode calificado. Cobertura con tests de corpus. PR #21 → producción. Ver `frontend/src/components/lessons/engine/VALIDATION_AUDIT.md`. |
 | 2026-06-17 | Placement: el flujo "empezar desde lo básico" (skip) ahora navega directo a la primera lección y muestra una pantalla de cierre dedicada (`skipped_title`/`skipped_body`). |
 | 2026-06-17 | UI (Landing): imágenes Hero/showcase actualizadas a fotos de niños usando la plataforma. |
+| 2026-07-02 | SEO: fix de indexación — prerender de shells estáticos por ruta (crawlers sin JS ya ven contenido real, no solo `<div id="root">` vacío) vía `frontend/scripts/prerender-seo.mjs` + `frontend/src/seo/route-meta.json`, meta tags dinámicos en nav cliente (`useDocumentMeta`), `X-Robots-Tag: noindex` en rutas protegidas (`vercel.json`), sitemap corregido (+`/how-it-works` +`/legal/*`, −`/placement` que solo redirige), FAQPage JSON-LD, compresión de imágenes hero/OG (Hero-Families 4.6MB→172KB webp, og-image 1.3MB→332KB, Hero-Landing.png eliminado por no usarse). |
 
 ---
 
