@@ -115,7 +115,7 @@ export default function FamiliesPage() {
             <Reveal variant="scale" delay={100} className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)] border border-slate-200/60 dark:border-white/5 bg-white flex items-center justify-center">
               <LiquidGlassMedia
                 type="image"
-                src="/Hero-Families.png"
+                src="/Hero-Families.webp"
                 alt="LittleFounders Families"
               />
             </Reveal>

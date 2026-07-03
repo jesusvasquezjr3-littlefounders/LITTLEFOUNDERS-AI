@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run seo:prerender",
+    "seo:prerender": "node scripts/prerender-seo.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint src/ --report-unused-disable-directives",
     "type-check": "tsc --noEmit",

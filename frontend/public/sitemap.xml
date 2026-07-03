@@ -33,12 +33,28 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://littlefounders.ai/placement</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/placement?lang=es" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://littlefounders.ai/placement?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/placement" />
+    <loc>https://littlefounders.ai/how-it-works</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/how-it-works?lang=es" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://littlefounders.ai/how-it-works?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/how-it-works" />
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/legal/terms</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/legal/terms?lang=es" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://littlefounders.ai/legal/terms?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/legal/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://littlefounders.ai/legal/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://littlefounders.ai/legal/privacy?lang=es" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://littlefounders.ai/legal/privacy?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://littlefounders.ai/legal/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://littlefounders.ai/login</loc>

@@ -77,6 +77,7 @@ import AdminSettings from "@/pages/admin/AdminSettings";
 
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 
 // Common
 import { ReportFAB } from "@/components/common/ReportFAB";
@@ -90,6 +91,11 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  return null;
+}
+
+function DocumentMetaSync() {
+  useDocumentMeta();
   return null;
 }
 
@@ -113,6 +119,7 @@ const App = () => (
           />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToTop />
+            <DocumentMetaSync />
             <GoogleAnalytics />
             <LanguageSyncWrapper>
               <ReportFAB />
