@@ -778,10 +778,10 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                         style={{ animationDelay: '250ms', animationFillMode: 'backwards' }}
                     >
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                            <h1 className="corp-h2 mb-2">
                                 {data.lesson.title}
                             </h1>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            <p className="corp-body">
                                 {data.lesson.description}
                             </p>
                         </div>
@@ -1595,7 +1595,7 @@ export function LessonRunner({ lessonCode: propLessonCode, dataOverride }: Lesso
                             <BatteryLow className="w-8 h-8 text-indigo-500" />
                         </div>
 
-                        <DialogTitle className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
+                        <DialogTitle className="corp-h2 mb-2">
                             {t('game_over.title')}
                         </DialogTitle>
                         <DialogDescription className="text-base mb-6 text-slate-500 dark:text-slate-400">

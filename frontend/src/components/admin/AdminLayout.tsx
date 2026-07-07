@@ -50,7 +50,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm view-transition-header">
             <div className="px-6 py-4 flex items-center justify-between">
-              <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="corp-h2">
                 {t('layout.panelTitle')}
               </h1>
               <div className="flex items-center gap-2 md:gap-3">
@@ -67,10 +67,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </Button>
 
                 <div className="hidden sm:block text-right pl-1">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
+                  <p className="corp-subtitle-sm">
                     {getAdminName()}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="corp-caption">
                     {t('layout.role')}
                   </p>
                 </div>
@@ -79,7 +79,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </header>
 
           <main
-            className="flex-1 overflow-y-auto transition-all duration-300 p-6 view-transition-content"
+            className="flex-1 overflow-y-auto transition-[margin-left] duration-300 p-6 view-transition-content"
             aria-label={t('layout.mainContent')}
           >
             {children}

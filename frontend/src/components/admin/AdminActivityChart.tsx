@@ -121,7 +121,7 @@ export const AdminActivityChart: React.FC<AdminActivityChartProps> = ({ data }) 
                         <TrendingUp className="h-5 w-5" />
                         {t('dashboard.activityChart.title')}
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="corp-body-sm">
                         {t('dashboard.activityChart.subtitle')}
                     </p>
                 </div>
@@ -130,7 +130,7 @@ export const AdminActivityChart: React.FC<AdminActivityChartProps> = ({ data }) 
                         variant={range === 'week' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setRange('week')}
-                        className="h-8 px-3 text-xs"
+                        className="h-8 px-3 corp-caption"
                     >
                         {t('dashboard.activityChart.week')}
                     </Button>
@@ -138,7 +138,7 @@ export const AdminActivityChart: React.FC<AdminActivityChartProps> = ({ data }) 
                         variant={range === 'month' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setRange('month')}
-                        className="h-8 px-3 text-xs"
+                        className="h-8 px-3 corp-caption"
                     >
                         {t('dashboard.activityChart.month')}
                     </Button>
@@ -146,7 +146,7 @@ export const AdminActivityChart: React.FC<AdminActivityChartProps> = ({ data }) 
                         variant={range === 'year' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setRange('year')}
-                        className="h-8 px-3 text-xs"
+                        className="h-8 px-3 corp-caption"
                     >
                         {t('dashboard.activityChart.year')}
                     </Button>

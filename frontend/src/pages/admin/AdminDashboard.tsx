@@ -105,7 +105,7 @@ export const AdminDashboard: React.FC = () => {
             <Skeleton className="mt-4 h-8 w-16" />
           ) : (
             <>
-              <div className="mt-4 text-3xl font-bold text-slate-900 dark:text-white mb-1">
+              <div className="mt-4 corp-number-lg mb-1">
                 {typedStats?.total_lessons || 0}
               </div>
               <Link to="/admin/lessons">
@@ -128,7 +128,7 @@ export const AdminDashboard: React.FC = () => {
           {isLoading ? (
             <Skeleton className="mt-4 h-8 w-16" />
           ) : (
-            <div className="mt-4 text-3xl font-bold text-slate-900 dark:text-white">
+            <div className="mt-4 corp-number-lg">
               {typedStats?.total_exercises || 0}
             </div>
           )}
@@ -146,7 +146,7 @@ export const AdminDashboard: React.FC = () => {
             <Skeleton className="mt-4 h-8 w-16" />
           ) : (
             <Link to="/admin/characters">
-              <div className="mt-4 text-3xl font-bold text-slate-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">
+              <div className="mt-4 corp-number-lg cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">
                 {typedStats?.total_characters || 0}
               </div>
             </Link>
@@ -165,7 +165,7 @@ export const AdminDashboard: React.FC = () => {
             <Skeleton className="mt-4 h-8 w-16" />
           ) : (
             <Link to="/admin/audio">
-              <div className="mt-4 text-3xl font-bold text-slate-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">
+              <div className="mt-4 corp-number-lg cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors">
                 {typedStats?.total_audio_segments || 0}
               </div>
             </Link>
@@ -211,13 +211,13 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden relative">
                     <div
-                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-all duration-1000 ease-out"
+                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-[width] duration-1000 ease-out"
                       style={{
                         width: `${Math.max(4, (count / (typedStats.total_lessons || 1)) * 100)}%`,
                       }}
                     />
                   </div>
-                  <div className="w-10 text-right text-sm font-bold text-slate-900 dark:text-white">{count}</div>
+                  <div className="w-10 text-right corp-number">{count}</div>
                 </div>
               ))}
           </div>
@@ -331,7 +331,7 @@ export const AdminDashboard: React.FC = () => {
                   {link.label}
                 </span>
               </div>
-              <ArrowLeft className="w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 rotate-180 transition-all translate-x-2 group-hover:translate-x-0" />
+              <ArrowLeft className="w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 rotate-180 transition-[opacity,transform] duration-200 translate-x-2 group-hover:translate-x-0" />
             </Link>
           ))}
         </div>

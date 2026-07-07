@@ -57,7 +57,7 @@ export const AdminHelp: React.FC = () => {
         </div>
         <div>
           <h1 className="corp-display text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{t('help.title')}</h1>
-          <p className="mt-1 text-sm md:text-base text-slate-500 dark:text-slate-400">{t('help.subtitle')}</p>
+          <p className="mt-1 corp-body">{t('help.subtitle')}</p>
         </div>
       </div>
 

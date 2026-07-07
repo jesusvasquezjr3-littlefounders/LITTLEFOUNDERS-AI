@@ -46,10 +46,10 @@ const PasswordStrength = ({ password = '' }: PasswordStrengthProps) => {
   return (
     <div className="mt-2">
       <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+        <span className="corp-caption font-semibold">
           {t('password_strength.label')}
         </span>
-        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+        <span className="corp-caption font-bold">
           {t(`password_strength.levels.${levelKey}`)}
         </span>
       </div>

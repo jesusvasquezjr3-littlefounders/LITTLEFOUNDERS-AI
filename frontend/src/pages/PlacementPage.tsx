@@ -46,8 +46,12 @@ export default function PlacementPage() {
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
-        <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-        <Loader2 className="relative z-10 h-8 w-8 animate-spin text-indigo-500" />
+        <div className="relative z-10 flex flex-col items-center gap-4 animate-in fade-in duration-300">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+          <p className="corp-caption">
+            Preparing your journey...
+          </p>
+        </div>
       </div>
     );
   }

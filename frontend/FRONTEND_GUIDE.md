@@ -3,8 +3,8 @@
 > **Guía técnica completa para contribuidores del frontend.**
 > Framework: React 18 + Vite 5 + TypeScript 5.5 + Tailwind CSS 3.4 | Despliegue: Vercel
 
-> ⚠️ **Estilos visuales → `DESIGN_SYSTEM.md`.** Antes de crear o modificar
-> cualquier UI, lee [`frontend/DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md): es el
+> ⚠️ **Estilos visuales → `DESIGN.md` (documento Director de Frontend).** Antes de crear o modificar
+> cualquier UI, lee [`frontend/DESIGN.md`](./DESIGN.md): es el
 > estándar visual **inmutable** ("corp"). Toda vista de chrome serio usa las
 > clases `corp-*` (nada de `liquid-glass`/`GlassPanel` ni estilos por página).
 > Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful".
@@ -756,11 +756,22 @@ Hook `useLessonAudio()` maneja playback de narración por ejercicio con:
 
 ### Diseño y Estilos (Corp Standard)
 
-Todo el proyecto sigue un estándar unificado (índigo/white frosted glass):
-- **Fondos globales:** `bg-gradient-to-b from-indigo-50/80 via-white to-white` + `<div className="absolute inset-0 corp-grid-bg pointer-events-none" />`.
-- **Paneles y formularios:** Usar exclusivamente la clase `corp-card` para asegurar las transparencias consistentes (no blurs customizados aleatorios).
-- **Botones principales:** Usar `corp-btn-primary`.
-- **Componentes de Auth/Onboarding:** Ya implementan este layout exacto. No crear diseños aislados sin antes ajustarse a la línea visual principal.
+Todo el proyecto sigue el estándar visual unificado documentado en [`DESIGN.md`](./DESIGN.md) —
+el documento **Director de Frontend** con autoridad sobre cualquier estilo de página o componente.
+
+- **Fondo global corp:** `bg-slate-50 dark:bg-[#0a0e1a]` limpio, sin cuadrículas ni glows.
+  Las islas de contenido usan `bg-white dark:bg-[#0d1426] rounded-[2.5rem] shadow-sm`.
+- **Superficies:** `corp-card` (interactiva con hover lift), `corp-panel` (estática),
+  `corp-panel-subtle` (anidada), `corp-dialog` (modales Radix).
+- **Botones:** `corp-btn-primary` (gradiente índigo→azul), `corp-btn-secondary` (outline),
+  `corp-btn-ghost` (texto/icono), `corp-btn-danger` (destructivo).
+- **Formularios:** `corp-input` + `corp-label`. Error: `corp-input--error`.
+- **Badges:** `corp-badge` + variantes `--brand`, `--info`, `--success`, `--warning`, `--danger`.
+- **Tipografía:** Inter (body/UI) + Sora (headings) vía scope `.corp`. Clases centralizadas obligatorias: `corp-h1`–`corp-h4`, `corp-subtitle-*`, `corp-body-*`, `corp-number-*`, `corp-eyebrow`, `corp-display`, `corp-gradient-text`, `corp-label`. Ver catálogo completo en `DESIGN.md §4.2`. **Prohibido componer tamaños ad-hoc con utilidades Tailwind** (`DESIGN.md §4.2.5`).
+- **Componentes de Auth/Onboarding:** Ya implementan el layout corp canónico.
+- **Prohibido:** `liquid-glass*`, `GlassPanel`, `corp-grid-bg`, gradientes multi-stop, blobs decorativos.
+- **Skills de diseño:** Ver [`DESIGN.md` §10.2](./DESIGN.md) y [`CLAUDE.md` §4](../CLAUDE.md) para
+  el catálogo de skills (`agave`, `emil-design-eng`, `impeccable`, `review-animations`).
 
 ### Estructura de Archivos
 
@@ -780,7 +791,7 @@ Al trabajar en UI Frontend, los agentes AI **deben** invocar las skills especial
 | **impeccable** | Al diseñar, rediseñar, auditar o pulir interfaces | Usar subcomandos: `craft`/`shape` (diseño nuevo), `audit`/`polish` (calidad), `animate`/`delight` (mejoras), `harden` (producción) |
 | **review-animations** | Al revisar código de animación/motion existente | Invocar **solo** para review de CSS/JS de motion; no para review general |
 
-**Regla clave:** Las skills complementan el `DESIGN_SYSTEM.md` — no lo reemplazan. Las skills refinan la ejecución; el design system define los tokens y clases `corp-*`.
+**Regla clave:** Las skills complementan `DESIGN.md` — no lo reemplazan. Las skills refinan la ejecución; el design system define los tokens y clases `corp-*`.
 
 ---
 

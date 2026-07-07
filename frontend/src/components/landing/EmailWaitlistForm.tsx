@@ -39,7 +39,7 @@ export function EmailWaitlistForm({
     return (
       <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300">
         <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-        <span className="font-semibold text-sm">{successMsg}</span>
+        <span className="corp-body-sm font-semibold">{successMsg}</span>
       </div>
     );
   }
@@ -52,16 +52,16 @@ export function EmailWaitlistForm({
           <input
             type="email" value={email} onChange={e => setEmail(e.target.value)}
             placeholder={placeholder} required
-            className="corp-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium"
+            className="corp-input pl-10 pr-4 py-3 rounded-xl corp-body-sm font-medium"
           />
         </div>
         <button type="submit" disabled={loading}
-          className="corp-btn-primary inline-flex items-center justify-center gap-2 text-base font-semibold rounded-xl px-7 py-3.5 sm:w-auto w-full disabled:opacity-60 disabled:cursor-not-allowed">
+          className="corp-btn-primary inline-flex items-center justify-center gap-2 corp-body font-semibold rounded-xl px-7 py-3.5 sm:w-auto w-full disabled:opacity-60 disabled:cursor-not-allowed">
           {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
           {ctaLabel}
         </button>
       </form>
-      {error && <p className="text-xs text-red-500 dark:text-red-400 font-medium pl-1">{error}</p>}
+      {error && <p className="corp-caption text-red-500 dark:text-red-400 font-medium pl-1">{error}</p>}
     </div>
   );
 }

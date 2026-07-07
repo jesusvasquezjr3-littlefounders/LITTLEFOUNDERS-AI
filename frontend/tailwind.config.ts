@@ -1,5 +1,15 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * LittleFounders Tailwind Configuration
+ * 
+ * Design tokens authority: frontend/DESIGN.md (documento Director de Frontend).
+ * The HSL variables read here are defined in frontend/src/index.css (:root / .dark).
+ * For the corporate visual system, see DESIGN.md §§4.1–4.5.
+ * Corp component classes (corp-*) are implemented in index.css and do NOT read
+ * from these HSL tokens — they use hard-coded hex values with their own .dark
+ * variants. See DESIGN.md §5 for the full component catalog.
+ */
 export default {
 	darkMode: ["class"],
 	content: [

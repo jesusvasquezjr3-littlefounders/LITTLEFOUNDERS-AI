@@ -20,9 +20,9 @@ export function SpeechBubble({
     size = 'md'
 }: SpeechBubbleProps) {
     const sizeClasses = {
-        sm: "px-4 py-2 text-sm max-w-[200px]",
-        md: "px-6 py-3 text-base md:text-lg max-w-[280px] md:max-w-[320px]",
-        lg: "px-8 py-4 text-lg md:text-xl max-w-[350px] md:max-w-[400px]"
+        sm: "px-4 py-2 corp-body-sm max-w-[200px]",
+        md: "px-6 py-3 corp-body max-w-[280px] md:max-w-[320px]",
+        lg: "px-8 py-4 corp-body-lg max-w-[350px] md:max-w-[400px]"
     };
 
     const positionClasses = {

@@ -39,7 +39,7 @@ function OptionsList({ items, correctId }: { items: any[]; correctId?: string })
                 const isCorrect = opt.id === correctId;
                 return (
                     <div key={opt.id || i}
-                        className={`px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
+                        className={`px-4 py-3 rounded-xl border-2 text-sm font-medium transition-[border-color,background-color,color]
                             ${isCorrect
                                 ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-900/40 dark:text-emerald-200'
                                 : 'border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
@@ -106,8 +106,8 @@ function ProductsGrid({ products, budget }: { products: any[]; budget?: number }
             <div className="grid grid-cols-2 gap-2">
                 {products.map((p: any, i: number) => (
                     <div key={p.id || i} className="px-3 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-600 text-center">
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{p.name || `Item ${i + 1}`}</p>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-1">${p.price || p.cost || 0}</p>
+                        <p className="corp-body-sm">{p.name || `Item ${i + 1}`}</p>
+                        <p className="corp-caption text-emerald-600 dark:text-emerald-400 font-bold mt-1">${p.price || p.cost || 0}</p>
                     </div>
                 ))}
             </div>
@@ -125,7 +125,7 @@ function SliderPreview({ exercise }: { exercise: any }) {
     return (
         <div className="mt-4 space-y-2">
             <div className="relative h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-[width] duration-700 ease-out" style={{ width: `${pct}%` }} />
             </div>
             <div className="flex justify-between text-xs text-slate-400">
                 <span>{min}{c.unit ? ` ${c.unit}` : ''}</span>
@@ -143,12 +143,12 @@ function StoryPages({ pages }: { pages: any[] }) {
         <div className="mt-4 space-y-3">
             {pages.slice(0, 3).map((page: any, i: number) => (
                 <div key={page.id || i} className="px-4 py-3 bg-blue-50/60 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/50">
-                    <span className="text-xs text-blue-500 dark:text-blue-400 font-bold">📄 {i + 1}</span>
-                    <p className="text-sm text-slate-700 dark:text-slate-300 mt-1">{page.text || '...'}</p>
+                    <span className="corp-caption text-blue-500 dark:text-blue-400 font-bold">📄 {i + 1}</span>
+                    <p className="corp-body-sm mt-1">{page.text || '...'}</p>
                 </div>
             ))}
             {pages.length > 3 && (
-                <p className="text-xs text-center text-slate-400">+{pages.length - 3} more pages...</p>
+                <p className="corp-caption text-center">+{pages.length - 3} more pages...</p>
             )}
         </div>
     );
@@ -158,13 +158,13 @@ function StoryPages({ pages }: { pages: any[] }) {
 function TrueFalsePreview({ correctValue }: { correctValue?: boolean }) {
     return (
         <div className="flex gap-3 mt-4">
-            <div className={`flex-1 py-4 rounded-xl border-2 text-center font-bold text-lg transition-all
+            <div className={`flex-1 py-4 rounded-xl border-2 text-center font-bold text-lg transition-[border-color,background-color,color]
                 ${correctValue === true
                     ? 'border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-900/40 dark:text-emerald-300'
                     : 'border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
                 ✅ True
             </div>
-            <div className={`flex-1 py-4 rounded-xl border-2 text-center font-bold text-lg transition-all
+            <div className={`flex-1 py-4 rounded-xl border-2 text-center font-bold text-lg transition-[border-color,background-color,color]
                 ${correctValue === false
                     ? 'border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-900/40 dark:text-emerald-300'
                     : 'border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
@@ -226,14 +226,14 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
                 <div className="flex-1 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full w-1/2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full" />
                 </div>
-                <span className="text-xs font-bold text-slate-400">1/5</span>
-                <span className="text-xs">⚡ 5</span>
+                <span className="corp-caption font-bold">1/5</span>
+                <span className="corp-caption">⚡ 5</span>
             </div>
 
             {/* Speech bubble */}
             {mainText && (
                 <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 px-4 py-3 mb-3">
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-100 text-center leading-relaxed">
+                    <p className="corp-body-sm text-center leading-relaxed">
                         {mainText}
                     </p>
                     <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2">
@@ -338,12 +338,12 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
                 {type === 'interest_calculator' && (
                     <div className="mt-4 grid grid-cols-2 gap-2 text-center">
                         <div className="px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                            <p className="text-xs text-slate-400">Principal</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200">${c.defaultPrincipal || 0}</p>
+                            <p className="corp-caption">Principal</p>
+                            <p className="corp-body-sm font-bold">${c.defaultPrincipal || 0}</p>
                         </div>
                         <div className="px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                            <p className="text-xs text-slate-400">Rate</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200">{c.defaultRate || 0}%</p>
+                            <p className="corp-caption">Rate</p>
+                            <p className="corp-body-sm font-bold">{c.defaultRate || 0}%</p>
                         </div>
                     </div>
                 )}
@@ -351,8 +351,8 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({ exercise, t })
                 {/* Generic fallback — show feedback if available */}
                 {exercise.feedback?.success && (
                     <div className="mt-4 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-0.5">✅ Success</p>
-                        <p className="text-sm text-emerald-700 dark:text-emerald-300">{exercise.feedback.success}</p>
+                        <p className="corp-caption font-semibold text-emerald-600 dark:text-emerald-400 mb-0.5">✅ Success</p>
+                        <p className="corp-body-sm text-emerald-700 dark:text-emerald-300">{exercise.feedback.success}</p>
                     </div>
                 )}
             </div>

@@ -340,7 +340,7 @@ function NotificationEditor({ notification, onSave, onClose }: EditorProps) {
                       </div>
                     )}
                     {searchingUsers && (
-                      <div className="corp-panel absolute z-10 w-full mt-1 rounded-xl shadow-lg p-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                      <div className="corp-panel absolute z-10 w-full mt-1 rounded-xl shadow-lg p-4 text-center corp-body-sm">
                         Buscando...
                       </div>
                     )}
@@ -512,11 +512,11 @@ export default function AdminNotifications() {
         {/* Header */}
         <div className="corp-panel p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h1 className="corp-h3 flex items-center gap-2">
               <Bell className="h-6 w-6 text-indigo-500" />
               Notificaciones
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="corp-body-sm mt-1">
               Gestiona las notificaciones de la plataforma
             </p>
           </div>
@@ -532,20 +532,20 @@ export default function AdminNotifications() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="corp-card p-4">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Activas</p>
-            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{totalActive}</p>
+            <p className="corp-body-sm">Activas</p>
+            <p className="corp-number-lg text-emerald-600 dark:text-emerald-400">{totalActive}</p>
           </div>
           <div className="corp-card p-4">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Borradores</p>
-            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{totalDraft}</p>
+            <p className="corp-body-sm">Borradores</p>
+            <p className="corp-number-lg text-indigo-600 dark:text-indigo-300">{totalDraft}</p>
           </div>
           <div className="corp-card p-4">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Archivadas</p>
-            <p className="text-2xl font-bold text-slate-500 dark:text-slate-400">{totalArchived}</p>
+            <p className="corp-body-sm">Archivadas</p>
+            <p className="corp-number-lg text-slate-500 dark:text-slate-400">{totalArchived}</p>
           </div>
           <div className="corp-card p-4">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Lecturas Totales</p>
-            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{totalRead}</p>
+            <p className="corp-body-sm">Lecturas Totales</p>
+            <p className="corp-number-lg text-indigo-600 dark:text-indigo-300">{totalRead}</p>
           </div>
         </div>
 
@@ -594,7 +594,7 @@ export default function AdminNotifications() {
             <div className="corp-empty py-16">
               <Bell className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" />
               <p className="text-lg font-medium text-slate-900 dark:text-white">Sin notificaciones</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Crea tu primera notificacion para comenzar.</p>
+              <p className="corp-body-sm mt-1">Crea tu primera notificacion para comenzar.</p>
               <button
                 onClick={() => openEditor()}
                 className="corp-btn-primary mt-4 h-10 rounded-xl px-4 text-sm font-semibold inline-flex items-center justify-center gap-2"

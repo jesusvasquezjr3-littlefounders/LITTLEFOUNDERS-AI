@@ -291,7 +291,7 @@ export const AdminLessons: React.FC = () => {
       </div>
 
       {/* Results Info */}
-      <div className="text-sm text-slate-600 dark:text-slate-400">
+      <div className="corp-body-sm">
         {paginatedLessons.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}-{Math.min(currentPage * pageSize, totalLessons)} {t('lessons.of')} {totalLessons}
       </div>
 
@@ -428,7 +428,7 @@ export const AdminLessons: React.FC = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="corp-body-sm">
             {t('lessons.page')} {currentPage} {t('lessons.of')} {totalPages}
           </p>
           <div className="flex gap-2">

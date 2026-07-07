@@ -67,10 +67,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                             <BookOpen className="w-5 h-5 md:w-7 md:h-7" />
                         </div>
                         <div className="text-left overflow-hidden">
-                            <div className="flex items-center gap-2 mb-0.5">
-                                <span className="corp-eyebrow">{t('common:app_name')}</span>
-                            </div>
-                            <h1 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-1">
+                            <h1 className="corp-h2 mb-1">
                                 {t('general.title')}
                             </h1>
                             <div className="relative overflow-hidden whitespace-nowrap">
@@ -120,7 +117,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                 {adventures.map((adventure) => (
                     <div
                         key={adventure.id}
-                        className={`adventure-wrapper relative transition-all duration-300 ${adventure.status === 'locked'
+                        className={`adventure-wrapper relative transition-[transform,opacity,filter] duration-300 ${adventure.status === 'locked'
                             ? 'opacity-70 grayscale cursor-not-allowed'
                             : 'cursor-pointer'
                             }`}
@@ -148,7 +145,7 @@ export const Adventures: React.FC<AdventuresProps> = ({ onSelectAdventure, onRes
                         {/* Botón de continuar para disponibles */}
                         {adventure.status === 'available' && (
                             <div className="absolute bottom-6 right-6 z-50">
-                                <button className="flex items-center gap-2 px-6 py-3 bg-white/90 dark:bg-gray-900/90 rounded-full font-bold text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-all">
+                                <button className="flex items-center gap-2 px-6 py-3 bg-white/90 dark:bg-gray-900/90 rounded-full font-bold text-gray-900 dark:text-white shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-[background-color,box-shadow]">
                                     {t('general.continue')}
                                     <ChevronRight size={20} />
                                 </button>

@@ -38,16 +38,16 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
           'space-y-5',
           isCharacterLeft ? 'lg:order-2' : 'lg:order-1'
         )}>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {subtitle && (
               <span className="corp-eyebrow">{subtitle}</span>
             )}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+            <h2 className="corp-h2">
               {title}
             </h2>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-400 text-base lg:text-lg leading-relaxed">
+          <p className="corp-body-lg">
             {description}
           </p>
 
@@ -56,7 +56,7 @@ export const CharacterSection: React.FC<CharacterSectionProps> = ({
               {features.map((feature, idx) => (
                 <li key={idx} className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" />
-                  <span className="text-sm text-slate-700 dark:text-slate-300">
+                  <span className="corp-body">
                     {feature}
                   </span>
                 </li>

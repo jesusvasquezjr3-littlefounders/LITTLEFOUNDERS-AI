@@ -125,7 +125,7 @@ function ReportDetail({
               {TYPE_LABELS[report.report_type] ?? report.report_type}
             </span>
           </div>
-          <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">{report.subject}</h3>
+          <h3 className="corp-h4">{report.subject}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">{report.reporter_email} · {timeAgo(report.created_at)}</p>
         </div>
         <button onClick={onClose} className="corp-btn-ghost p-1.5 rounded-lg">
@@ -187,7 +187,7 @@ function ReportDetail({
                 if (cleanUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
                   return (
                     <div className="space-y-3">
-                      <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-[#0d1426] group">
+                      <div className="relative rounded-xl overflow-hidden bg-slate-200 dark:bg-[#0d1426] group">
                         <img src={url} alt="Evidence" className="w-full h-auto max-h-[300px] object-contain transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <a href={url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white rounded-full text-slate-900 shadow-xl transition-transform hover:scale-110">
@@ -359,7 +359,7 @@ export default function AdminReports() {
                   <h1 className="corp-display text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                       {t("admin.page_title")}
                   </h1>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-tight">
+                  <p className="mt-1 corp-body-sm">
                     {stats?.total ?? 0} {t("admin.stats.total").toLowerCase()} · {stats?.by_status?.pending ?? 0} {t("admin.stats.pending").toLowerCase()}
                   </p>
               </div>
@@ -382,7 +382,7 @@ export default function AdminReports() {
                 className={cn("corp-card p-4 text-left", filterStatus === key && "ring-2 ring-indigo-400 dark:ring-indigo-500")}>
                 <div className="flex items-center justify-between mb-2">
                   <Icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                  <span className="text-2xl font-bold text-slate-900 dark:text-white">{stats.by_status[key] ?? 0}</span>
+                  <span className="corp-number-lg">{stats.by_status[key] ?? 0}</span>
                 </div>
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{t(cfg.label_key)}</p>
               </button>

@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { updateGuestProfile } from '@/lib/guestProfile';
 import { trackEvent } from '@/lib/analytics';
+import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
+import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import type { PlacementState } from './types';
 import { ageToAdventure, selectNextItem, shouldStop, computePlacementResult } from './scoring/engine';
 import { PlacementIntroScreen } from './components/PlacementIntroScreen';
@@ -206,11 +208,7 @@ export function PlacementEngine({ name, age }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
-
-      
-
-      
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-[#0a0e1a]">
 
       {/* Progress bar — during quiz and closing */}
       {(state.phase === 'quiz' || state.phase === 'closing') && (
@@ -233,38 +231,55 @@ export function PlacementEngine({ name, age }: Props) {
         </button>
       )}
 
-      {/* Content */}
-      <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center px-4 py-8 gap-6 max-w-lg mx-auto">
+      {/* Content — Lesson Engine grid: character left on desktop */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center px-4 pb-8 pt-4 lg:gap-8 max-w-7xl mx-auto w-full overflow-y-auto min-h-0">
 
-        {state.phase === 'intro' && (
-          <PlacementIntroScreen
-            name={name}
-            onAccept={handleAccept}
-            onSkip={handleSkip}
-          />
-        )}
+        {/* Left column: Character */}
+        <div className="w-full lg:w-[38%] flex flex-col items-center justify-center flex-shrink-0 lg:sticky lg:top-0 lg:h-full">
+          {state.phase === 'intro' && (
+            <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 relative z-10 drop-shadow-xl animate-in fade-in zoom-in-95 duration-300">
+              <DrRhoCharacter mood="explaining" showBubble currentText={t('intro.rho_bubble', { name })} bubblePosition="top" />
+            </div>
+          )}
+          {state.phase === 'closing' && (
+            <div className="w-56 h-56 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative z-10 drop-shadow-xl animate-in fade-in zoom-in-95 duration-300">
+              <DinoCharacter mood="excited" showBubble currentText={t('closing.liruf_bubble', { name, adventure: state.result?.finalAdventure ?? '-', saga: state.result?.finalSaga ?? '-' })} bubblePosition="standard" />
+            </div>
+          )}
+        </div>
 
-        {state.phase === 'quiz' && state.currentItem && (
-          <PlacementQuestion
-            key={state.currentItem.id}
-            item={state.currentItem}
-            itemNumber={state.servedIds.length}
-            onAnswer={handleAnswer}
-          />
-        )}
+        {/* Right column: Content */}
+        <div className="w-full lg:w-[62%] flex flex-col items-center justify-center lg:min-h-0 max-w-lg mx-auto lg:mx-0">
 
-        {state.phase === 'quiz' && !state.currentItem && (
-          /* Between questions — brief empty state */
-          <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-        )}
+          {state.phase === 'intro' && (
+            <PlacementIntroScreen
+              name={name}
+              onAccept={handleAccept}
+              onSkip={handleSkip}
+            />
+          )}
 
-        {state.phase === 'closing' && (
-          <PlacementClosingScreen
-            result={state.result}
-            name={name}
-            onContinue={handleContinue}
-          />
-        )}
+          {state.phase === 'quiz' && state.currentItem && (
+            <PlacementQuestion
+              key={state.currentItem.id}
+              item={state.currentItem}
+              itemNumber={state.servedIds.length}
+              onAnswer={handleAnswer}
+            />
+          )}
+
+          {state.phase === 'quiz' && !state.currentItem && (
+            <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+          )}
+
+          {state.phase === 'closing' && (
+            <PlacementClosingScreen
+              result={state.result}
+              name={name}
+              onContinue={handleContinue}
+            />
+          )}
+        </div>
       </div>
 
       <div className="h-6 shrink-0" />

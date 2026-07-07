@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { motion } from "framer-motion";
 
 const ForgotPassword = () => {
   const { t } = useTranslation(['auth']);
@@ -52,9 +53,6 @@ const ForgotPassword = () => {
   return (
     <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
 
-      {/* Corp grid background */}
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
-
       {/* Ambient glow */}
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
 
@@ -69,22 +67,26 @@ const ForgotPassword = () => {
 
           {/* Back link */}
           <div className="text-center mb-8 space-y-4">
-            <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors group">
+            <Link to="/login" className="corp-body-sm inline-flex items-center gap-2 hover:text-slate-800 dark:hover:text-slate-100 transition-colors group">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               {t('auth:forgot_password.back_to_login')}
             </Link>
           </div>
 
           {/* Card */}
-          <div className="corp-card p-7 space-y-6">
+          <motion.div
+            className="corp-card p-7 space-y-6"
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
 
             {/* Header */}
             <div className="text-center space-y-1.5">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="corp-h3">
                 {t('auth:forgot_password.title')}
               </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('auth:forgot_password.subtitle')}
+              <p className="corp-body-sm">
               </p>
             </div>
 
@@ -93,12 +95,12 @@ const ForgotPassword = () => {
                 <div className="w-16 h-16 mx-auto bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
                   <Mail className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="corp-body-sm">
                   {t('auth:forgot_password.email_sent', { email })}
                 </p>
                 <Link
                   to="/login"
-                  className="inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+                  className="corp-body-sm inline-block font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
                 >
                   {t('auth:forgot_password.back_to_login')}
                 </Link>
@@ -139,10 +141,10 @@ const ForgotPassword = () => {
                 </button>
               </form>
             )}
-          </div>
+          </motion.div>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-sm text-slate-400 dark:text-slate-500">
+          <p className="mt-6 text-center corp-body-sm">
             {t('auth:login.footer')}
           </p>
         </div>

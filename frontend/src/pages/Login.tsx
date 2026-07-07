@@ -9,6 +9,7 @@ import { API_URL } from "@/config/api";
 import { useSound } from "@/contexts/SoundContext";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { setAccessToken } from "@/lib/apiClient";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const { t } = useTranslation(['auth', 'common', 'errors']);
@@ -159,7 +160,7 @@ const Login = () => {
         <div className="text-center mb-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
+            className="corp-body-sm inline-flex items-center gap-2 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200 group"
           >
             <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">←</span>
             {t('auth:login.back_to_home')}
@@ -168,14 +169,19 @@ const Login = () => {
 
         <div className="w-full max-w-md px-2">
           {/* Card */}
-          <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6">
+          <motion.div
+            className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6"
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
 
             {/* Header */}
             <div className="text-center space-y-1.5">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="corp-h3">
                 {t('auth:login.title')}
               </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="corp-body-sm">
                 {t('auth:login.subtitle')}
               </p>
             </div>
@@ -206,7 +212,7 @@ const Login = () => {
                 <div className="w-full border-t border-slate-200 dark:border-white/10" />
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 bg-white dark:bg-[#0f1628] text-xs font-medium text-slate-400 dark:text-slate-500">
+                <span className="corp-caption px-3 bg-white dark:bg-[#0f1628]">
                   {t('auth:login.or')}
                 </span>
               </div>
@@ -265,7 +271,7 @@ const Login = () => {
               <div className="text-right -mt-1">
                 <Link
                   to="/forgot-password"
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors duration-150"
+                  className="corp-body-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors duration-150"
                 >
                   {t('auth:login.forgot_password')}
                 </Link>
@@ -291,7 +297,7 @@ const Login = () => {
               </button>
 
               {/* Sign up link */}
-              <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-center corp-body-sm">
                 {t('auth:login.no_account')}{" "}
                 <Link
                   to="/signup"
@@ -301,10 +307,10 @@ const Login = () => {
                 </Link>
               </p>
             </form>
-          </div>
+          </motion.div>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-6 text-center corp-body-sm">
             {t('auth:login.footer')}
           </p>
         </div>

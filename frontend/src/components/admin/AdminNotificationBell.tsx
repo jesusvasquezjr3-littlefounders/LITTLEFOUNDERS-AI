@@ -102,8 +102,8 @@ export const AdminNotificationBell: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3">
           <div>
-            <p className="text-sm font-black text-slate-900 dark:text-white">{t('alerts.title')}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="corp-h4">{t('alerts.title')}</p>
+            <p className="corp-caption">
               {unreadCount > 0 ? t('alerts.unreadOther', { count: unreadCount }) : t('alerts.subtitle')}
             </p>
           </div>
@@ -119,13 +119,13 @@ export const AdminNotificationBell: React.FC = () => {
         {/* List */}
         <ScrollArea className="max-h-[320px]">
           {isLoading && alerts.length === 0 ? (
-            <div className="px-4 py-10 text-center text-xs font-bold uppercase tracking-widest text-slate-400">
+            <div className="px-4 py-10 text-center corp-caption uppercase tracking-widest">
               {t('alerts.loading')}
             </div>
           ) : alerts.length === 0 ? (
             <div className="px-4 py-12 text-center">
               <Inbox className="mx-auto mb-3 h-10 w-10 text-slate-300 dark:text-slate-600" />
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{t('alerts.empty')}</p>
+              <p className="corp-caption uppercase tracking-widest">{t('alerts.empty')}</p>
             </div>
           ) : (
             <ul className="py-1">
@@ -149,8 +149,8 @@ export const AdminNotificationBell: React.FC = () => {
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-100">{alert.title}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="truncate corp-body font-bold">{alert.title}</p>
+                        <p className="corp-caption">
                           {alert.meta} · {relative(alert.time)}
                         </p>
                       </div>

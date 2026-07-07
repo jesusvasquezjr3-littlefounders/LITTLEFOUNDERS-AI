@@ -55,7 +55,16 @@ html[data-reduce-motion="true"] *::after {
 @layer base {
   html {
     font-size: 14.4px;
-    /* Scaled to 90% (16px * 0.9) to fit design better */
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   :root {
@@ -149,7 +158,7 @@ html[data-reduce-motion="true"] *::after {
     --transition-fast: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.15s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.15s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.15s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.15s cubic-bezier(0.23, 1, 0.32, 1);
     --transition-smooth: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     --transition-bounce: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    --transition-slow: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-slow: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.35s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 
     /* Liquid Glass Effect Variables */
     --glass-bg: hsl(var(--card) / 0.6);
@@ -873,25 +882,27 @@ html[data-reduce-motion="true"] *::after {
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Custom Scrollbar - Duolingo Style */
+/* Custom Scrollbar — subtle, gets out of the way */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-  border-radius: 10px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, hsl(var(--primary)), hsl(236 72% 66%));
-  border-radius: 10px;
-  border: 2px solid hsl(var(--background));
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 200ms ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, hsl(236 72% 66%), hsl(var(--primary)));
+  background: hsl(var(--muted-foreground) / 0.35);
+  background-clip: padding-box;
 }
 
 /* Custom scrollbar class for sidebars */
@@ -1820,7 +1831,9 @@ html[data-reduce-motion="true"] *::after {
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   .animate-in,
-  .animate-out {
+  .animate-out,
+  .animate-badge-pop,
+  .animate-content-enter {
     animation-duration: 0.001ms !important;
   }
 
@@ -2080,31 +2093,6 @@ html[data-reduce-motion="true"] *::after {
    LANDING PAGE — Design system additions
    ════════════════════════════════════════════════════ */
 
-/* Nunito heading override for landing sections */
-.landing-heading {
-  font-family: 'Nunito', 'system-ui', sans-serif;
-}
-.landing-body-text {
-  font-family: 'Nunito', 'system-ui', sans-serif;
-}
-/* Standardize typography for all landing sections to use Nunito */
-.landing-page-root,
-.landing-page-root button,
-.landing-page-root input,
-.landing-page-root select,
-.landing-page-root textarea,
-.landing-page-root span,
-.landing-page-root p,
-.landing-page-root h1,
-.landing-page-root h2,
-.landing-page-root h3,
-.landing-page-root h4,
-.landing-page-root h5,
-.landing-page-root h6,
-.landing-page-root a {
-  font-family: 'Nunito', 'system-ui', sans-serif !important;
-}
-
 /* Starburst / sunburst radial pattern behind hero */
 .hero-sunburst {
   background-image: repeating-conic-gradient(
@@ -2211,8 +2199,8 @@ html[data-reduce-motion="true"] *::after {
 /* ── View Transitions API (Organic Page Transitions) ── */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.35s;
-  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Base utility classes for morphing elements */
@@ -2358,8 +2346,7 @@ html[data-reduce-motion="true"] *::after {
 
 /* ════════════════════════════════════════════════════════════════════════
    CORPORATE MARKETING SYSTEM  (LandingPage v2 — clean / trustworthy)
-   The `.corp` scope opts a subtree out of the playful Nunito defaults and
-   into a professional Inter/Sora type system.
+   The `.corp` scope enforces the Inter/Sora type system.
    ════════════════════════════════════════════════════════════════════════ */
 .corp,
 .corp button,
@@ -2405,20 +2392,207 @@ html[data-reduce-motion="true"] *::after {
 }
 .dark .corp-eyebrow { color: #a5b4fc; }
 
+/* ════════════════════════════════════════════════════════════════════════
+   CORP TYPOGRAPHIC SCALE — Centralized heading & text classes.
+   Every text element in Corp views MUST use one of these classes.
+   Do NOT compose sizes ad‑hoc with Tailwind utilities.
+   Reference: frontend/DESIGN.md §4.2
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Headings (Sora, bold, text-balance) ─────────────────────────────── */
+/* h1 — Hero. One per marketing page or standalone view.                   */
+.corp-h1 {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  font-size: 2rem;                        /* 32px mobile */
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: #0f172a;
+}
+@media (min-width: 640px)  { .corp-h1 { font-size: 2.5rem; } }          /* 40px tablet */
+@media (min-width: 1024px) { .corp-h1 { font-size: 3rem; } }            /* 48px desktop */
+
+/* h2 — Section heading. Always has .corp-eyebrow above.                  */
+.corp-h2 {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  font-size: 1.5rem;                      /* 24px mobile */
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: #0f172a;
+}
+@media (min-width: 640px) { .corp-h2 { font-size: 1.75rem; } }          /* 28px tablet */
+@media (min-width: 1024px) { .corp-h2 { font-size: 2rem; } }            /* 32px desktop */
+
+/* h3 — Card / panel / dialog title.                                       */
+.corp-h3 {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  font-size: 1.125rem;                    /* 18px mobile */
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: #0f172a;
+}
+@media (min-width: 640px) { .corp-h3 { font-size: 1.25rem; } }          /* 20px tablet */
+@media (min-width: 1024px) { .corp-h3 { font-size: 1.5rem; } }          /* 24px desktop */
+
+/* h4 — Sub-section / secondary heading.                                   */
+.corp-h4 {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  font-size: 1rem;                        /* 16px mobile */
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: #0f172a;
+}
+@media (min-width: 640px) { .corp-h4 { font-size: 1.125rem; } }         /* 18px tablet */
+@media (min-width: 1024px) { .corp-h4 { font-size: 1.25rem; } }         /* 20px desktop */
+
+/* ── Subtitles (Inter, medium weight) ─────────────────────────────────── */
+/* Large subtitle — under hero or section H2.                              */
+.corp-subtitle-lg {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 1rem;                        /* 16px mobile */
+  font-weight: 500;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: #475569;
+}
+@media (min-width: 640px) { .corp-subtitle-lg { font-size: 1.125rem; } } /* 18px tablet */
+@media (min-width: 1024px) { .corp-subtitle-lg { font-size: 1.25rem; } } /* 20px desktop */
+.corp-subtitle-lg strong { color: #0f172a; }
+
+/* Default subtitle — under card title or section intro.                   */
+.corp-subtitle {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 0.875rem;                    /* 14px mobile */
+  font-weight: 500;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: #475569;
+}
+@media (min-width: 640px) { .corp-subtitle { font-size: 1rem; } }       /* 16px tablet */
+@media (min-width: 1024px) { .corp-subtitle { font-size: 1.125rem; } }  /* 18px desktop */
+.corp-subtitle strong { color: #0f172a; }
+
+/* Small subtitle — metadata / description under a card title.             */
+.corp-subtitle-sm {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 0.75rem;                     /* 12px mobile */
+  font-weight: 500;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: #64748b;
+}
+@media (min-width: 640px) { .corp-subtitle-sm { font-size: 0.875rem; } } /* 14px tablet */
+@media (min-width: 1024px) { .corp-subtitle-sm { font-size: 1rem; } }   /* 16px desktop */
+.corp-subtitle-sm strong { color: #0f172a; }
+
+/* ── Body text (Inter, normal weight) ─────────────────────────────────── */
+/* Large body — intro paragraphs, testimonials, callouts.                  */
+.corp-body-lg {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 1rem;                        /* 16px mobile */
+  font-weight: 400;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: #334155;
+}
+@media (min-width: 640px) { .corp-body-lg { font-size: 1.125rem; } }    /* 18px tablet */
+@media (min-width: 1024px) { .corp-body-lg { font-size: 1.25rem; } }    /* 20px desktop */
+.corp-body-lg strong { color: #0f172a; }
+
+/* Default body — paragraphs, descriptions, list items.                    */
+.corp-body {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 0.875rem;                    /* 14px mobile */
+  font-weight: 400;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: #475569;
+}
+@media (min-width: 640px) { .corp-body { font-size: 1rem; } }           /* 16px tablet */
+.corp-body strong { color: #0f172a; }
+
+/* Small body — fine print, footnotes, meta text.                          */
+.corp-body-sm {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 0.75rem;                     /* 12px mobile */
+  font-weight: 400;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: #64748b;
+}
+@media (min-width: 640px) { .corp-body-sm { font-size: 0.875rem; } }    /* 14px tablet */
+.corp-body-sm strong { color: #0f172a; }
+
+/* Caption — legend, image credit, non-critical annotation.                */
+.corp-caption {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 0.6875rem;                   /* 11px mobile */
+  font-weight: 400;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+@media (min-width: 640px) { .corp-caption { font-size: 0.75rem; } }     /* 12px tablet */
+@media (min-width: 1024px) { .corp-caption { font-size: 0.875rem; } }   /* 14px desktop */
+
+/* ── Numeric / Utility ────────────────────────────────────────────────── */
+/* Dynamic numbers — counters, stats, scores, prices, timers.              */
+.corp-number {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+}
+.corp-number-lg {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+  font-size: 1.5rem;                      /* 24px mobile */
+}
+@media (min-width: 640px) { .corp-number-lg { font-size: 1.75rem; } }   /* 28px tablet */
+@media (min-width: 1024px) { .corp-number-lg { font-size: 2rem; } }     /* 32px desktop */
+
+/* ── Dark-mode overrides for all typography classes ───────────────────── */
+.dark .corp-h1,
+.dark .corp-h2,
+.dark .corp-h3,
+.dark .corp-h4 { color: #f8fafc; }
+.dark .corp-subtitle-lg,
+.dark .corp-subtitle,
+.dark .corp-subtitle-sm { color: #cbd5e1; }
+.dark .corp-body-lg { color: #e2e8f0; }
+.dark .corp-body   { color: #cbd5e1; }
+.dark .corp-body-sm { color: #94a3b8; }
+.dark .corp-caption { color: #64748b; }
+.dark .corp-number,
+.dark .corp-number-lg { color: #f8fafc; }
+.dark .corp-subtitle-lg strong,
+.dark .corp-subtitle strong,
+.dark .corp-subtitle-sm strong,
+.dark .corp-body-lg strong,
+.dark .corp-body strong,
+.dark .corp-body-sm strong { color: #f8fafc; }
+
 /* Soft enterprise card */
 .corp-card {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 1.25rem;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -16px rgba(15, 23, 42, 0.18);
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .corp-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 24px 48px -24px rgba(79, 70, 229, 0.35);
     border-color: rgba(79, 70, 229, 0.22);
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .dark .corp-card:hover {
     border-color: rgba(129, 140, 248, 0.35);
@@ -2452,39 +2626,31 @@ html[data-reduce-motion="true"] *::after {
   background-image: linear-gradient(120deg, #4f46e5, #2563eb);
   color: #fff;
   box-shadow: 0 10px 28px -10px rgba(37, 99, 235, 0.6);
-  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1), filter 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .corp-btn-primary:hover {
     transform: translateY(-2px);
     filter: brightness(1.06);
     box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.7);
-    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease-out, box-shadow 0.2s ease-out;
   }
 }
-.corp-btn-primary:active { transform: scale(0.97); transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1); }
+.corp-btn-primary:active { transform: scale(0.97); transition: transform 100ms cubic-bezier(0.22, 1, 0.36, 1); }
 .corp-btn-primary:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
-
-/* Subtle dotted/grid backdrops */
-.corp-grid-bg {
-  background-image:
-    linear-gradient(rgba(79, 70, 229, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 70, 229, 0.06) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
-}
 
 /* ── Scroll reveal (IntersectionObserver driven) ───────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(24px);
   transition:
-    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
-.reveal-left  { transform: translateX(-36px); }
-.reveal-right { transform: translateX(36px); }
+.reveal-left  { transform: translateX(-28px); }
+.reveal-right { transform: translateX(28px); }
 .reveal-scale { transform: scale(0.94); }
 .reveal.is-visible {
   opacity: 1;
@@ -2500,6 +2666,23 @@ html[data-reduce-motion="true"] *::after {
   }
   .corp-card:hover { transform: none !important; }
   .corp-btn-primary:hover { transform: none !important; }
+}
+
+@keyframes badge-pop {
+  0%   { opacity: 0; transform: scale(0.5); }
+  70%  { transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-badge-pop {
+  animation: badge-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes content-enter {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-content-enter {
+  animation: content-enter 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Slow ken-burns drift for hero background media */
@@ -2532,7 +2715,7 @@ html[data-reduce-motion="true"] *::after {
    and hard-codes the slate(neutral)+indigo/blue(brand) palette — it does NOT
    read the HSL design tokens. Buttons bake COLOR ONLY (no size/radius/padding);
    the caller always supplies layout utilities (h-*, px-*, rounded-*, flex).
-   See frontend/DESIGN_SYSTEM.md for the full standard and usage examples.
+   See frontend/DESIGN.md for the full standard and usage examples.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* Preserve intentional monospace inside the corp scope. The global `.corp`
@@ -2581,7 +2764,8 @@ html[data-reduce-motion="true"] *::after {
     border-radius: 0.75rem;
     color: #0f172a;
     font-size: 0.875rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), background 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-tap-highlight-color: transparent;
   }
   .corp-input::placeholder { color: #94a3b8; }
   .corp-input:focus,

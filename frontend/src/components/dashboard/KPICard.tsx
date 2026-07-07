@@ -72,12 +72,12 @@ export function KPICard({
     : changeLabel;
 
   return (
-    <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-medium hover:-translate-y-1 liquid-glass border-none">
+    <Card className="relative overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-medium hover:-translate-y-1 corp-card border-none">
       {/* Franja de color superior */}
       <div className={cn("absolute top-0 left-0 w-full h-1", config.bgGradient)} />
 
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="corp-body-sm">
           {translatedTitles[variant] || title}
         </CardTitle>
         <div className={cn("p-2 rounded-lg", config.lightBg)}>
@@ -88,7 +88,7 @@ export function KPICard({
       <CardContent>
         <div className="space-y-3">
           {/* Valor principal */}
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="corp-number-lg">{value}</div>
 
           {/* Indicador de cambio */}
           <div className="flex items-center space-x-2">
@@ -99,7 +99,7 @@ export function KPICard({
               <TrendIcon className="h-3 w-3" />
               <span>{Math.abs(change)}%</span>
             </Badge>
-            <span className="text-xs text-muted-foreground">
+            <span className="corp-caption">
               {isPositive && "¡Superaste el mes pasado! "}
               {isNegative && "Bajó respecto al mes anterior. "}
               {!isPositive && !isNegative && "Sin cambios."}
@@ -110,17 +110,17 @@ export function KPICard({
           {/* Progreso hacia la meta */}
           {target && targetProgress !== undefined && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Meta: {target}</span>
+              <div className="flex items-center justify-between corp-caption">
+                <span>Meta: {target}</span>
                 <span className={config.textColor}>{targetProgress}%</span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div
-                  className={cn("h-2 rounded-full transition-all duration-500", config.bgGradient)}
+                  className={cn("h-2 rounded-full transition-[width] duration-500", config.bgGradient)}
                   style={{ width: `${Math.min(targetProgress, 100)}%` }}
                 />
               </div>
-              <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+              <div className="flex items-center space-x-1 corp-caption">
                 <Target className="h-3 w-3" />
                 <span>
                   {targetProgress >= 100

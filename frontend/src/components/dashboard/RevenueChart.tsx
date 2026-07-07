@@ -118,16 +118,16 @@ export function RevenueChart() {
         {/* Métricas de ingresos */}
         <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
           <div className="text-center">
-            <div className="text-2xl font-bold text-revenue">$20K</div>
-            <div className="text-sm text-muted-foreground">MRR actual</div>
+            <div className="corp-number-lg text-revenue">$20K</div>
+            <div className="corp-body-sm">MRR actual</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-revenue">$240K</div>
-            <div className="text-sm text-muted-foreground">Proyección anual (ARR)</div>
+            <div className="corp-number-lg text-revenue">$240K</div>
+            <div className="corp-body-sm">Proyección anual (ARR)</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">16.2%</div>
-            <div className="text-sm text-muted-foreground">Tasa de crecimiento</div>
+            <div className="corp-number-lg text-primary">16.2%</div>
+            <div className="corp-body-sm">Tasa de crecimiento</div>
           </div>
         </div>
       </CardContent>

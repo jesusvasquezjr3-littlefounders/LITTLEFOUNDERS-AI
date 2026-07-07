@@ -68,10 +68,10 @@ export default function LessonPreview() {
   }
 
   return (
-    <div className="corp-grid-bg min-h-screen p-6 sm:p-10">
+    <div className="min-h-screen p-6 sm:p-10 bg-slate-50 dark:bg-[#0a0e1a]">
       <div className="max-w-3xl mx-auto">
         <h1 className="corp-h1 mb-2">Lesson Preview (dev)</h1>
-        <p className="corp-body-muted mb-6">
+        <p className="corp-body mb-6">
           Renderiza una lección en el motor REAL (sin backend). Elige un fixture o pega un JSON de lección.
           Idioma actual: <strong>{lang.toUpperCase()}</strong>{" "}
           <button className="underline" onClick={() => setLang(lang === "es" ? "en" : "es")}>cambiar</button>
@@ -85,7 +85,7 @@ export default function LessonPreview() {
               className="corp-card text-left p-4 hover:shadow-md transition-shadow"
             >
               <div className="font-semibold">{f.json.title_es || f.name}</div>
-              <div className="corp-body-muted text-sm mt-1">
+              <div className="corp-body-sm mt-1">
                 {f.name} · banda {f.json.adventure_level} · {f.json.content_es?.length ?? 0} ej
               </div>
             </button>

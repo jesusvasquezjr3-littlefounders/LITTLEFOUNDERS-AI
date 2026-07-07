@@ -103,7 +103,7 @@ const NextAdventurePreview: React.FC<NextAdventurePreviewProps> = ({
                 <div className="inline-block p-6 rounded-full bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 mb-4 text-5xl">
                     🏆
                 </div>
-                <p className="font-bold text-2xl text-slate-900 dark:text-white mb-2">{t('general.completed_all_title')}</p>
+                <p className="corp-h2 mb-2">{t('general.completed_all_title')}</p>
                 <p className="text-slate-500 dark:text-slate-400">{t('general.completed_all_desc')}</p>
             </div>
         );
@@ -124,7 +124,7 @@ const NextAdventurePreview: React.FC<NextAdventurePreviewProps> = ({
             </div>
 
             {/* Next Adventure Card - Locked State */}
-            <div className="relative transform scale-90 opacity-80 hover:opacity-95 transition-all duration-300">
+            <div className="relative transform scale-90 opacity-80 hover:opacity-95 transition-[opacity,transform] duration-300">
                 <AdventureCard
                     title={nextAdventure.title}
                     theme={nextAdventure.theme}
@@ -177,8 +177,7 @@ export const SagaView: React.FC<SagaViewProps> = ({ adventureId = 1, onBack, onS
                 </Button>
 
                 <div className="relative z-10 flex flex-col">
-                    <span className="corp-eyebrow">{t('common:app_name')}</span>
-                    <h1 className="corp-display mt-1 text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                    <h1 className="corp-h3 mt-1">
                         {adventureTitle}
                     </h1>
                 </div>

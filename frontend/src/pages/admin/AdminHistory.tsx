@@ -139,11 +139,10 @@ export const AdminHistory: React.FC = () => {
             <History className="w-5 h-5" />
           </div>
           <div>
-            <span className="corp-eyebrow">{t('app_name', 'LittleFounders')}</span>
             <h1 className="corp-display mt-1 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
               {t('history.title')}
             </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 corp-body-sm">
               {t('history.description')}
             </p>
           </div>
@@ -269,7 +268,7 @@ export const AdminHistory: React.FC = () => {
       </div>
 
       {/* Results Info */}
-      <div className="text-sm text-slate-600 dark:text-slate-400">
+      <div className="corp-body-sm">
         {t('common.showing')} {paginatedEntries.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} {t('common.to')}{' '}
         {Math.min(currentPage * pageSize, filteredEntries.length)} {t('common.of')} {filteredEntries.length}{' '}
         {t('history.entries')}
@@ -458,7 +457,7 @@ export const AdminHistory: React.FC = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="corp-body-sm">
             {t('common.page')} {currentPage} {t('common.of')} {totalPages}
           </p>
           <div className="flex gap-2">

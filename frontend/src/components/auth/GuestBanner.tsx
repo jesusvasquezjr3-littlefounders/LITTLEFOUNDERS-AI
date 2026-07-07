@@ -19,17 +19,17 @@ export function GuestBanner() {
                     <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-sm font-bold text-amber-900 dark:text-amber-200 leading-tight truncate">
+                    <p className="corp-body-sm font-bold text-amber-900 dark:text-amber-200 leading-tight truncate">
                         {t('guest.banner_title')}
                     </p>
-                    <p className="text-xs text-amber-700/90 dark:text-amber-300/80 leading-tight mt-0.5">
+                    <p className="corp-caption text-amber-700/90 dark:text-amber-300/80 leading-tight mt-0.5">
                         {t('guest.banner_description', { xp: guest.xp, streak: guest.current_streak })}
                     </p>
                 </div>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-                <Button asChild size="sm" className="text-xs h-8 rounded-xl font-bold bg-amber-500 hover:bg-amber-600 text-white border-0 shadow-sm shadow-amber-500/30">
+                <Button asChild size="sm" className="corp-caption h-8 rounded-xl font-bold bg-amber-500 hover:bg-amber-600 text-white border-0 shadow-sm shadow-amber-500/30">
                     <Link to="/signup">
                         <UserPlus className="w-3.5 h-3.5 mr-1.5" />
                         {t('guest.banner_cta')}

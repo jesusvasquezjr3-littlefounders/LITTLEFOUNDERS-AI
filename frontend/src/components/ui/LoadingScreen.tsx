@@ -30,8 +30,8 @@ export function LoadingScreen({
           loop
         />
       )}
-      <h2 className="text-2xl font-bold">{loadingMessage}</h2>
-      <p className="text-muted-foreground max-w-md">
+      <h2 className="corp-h2">{loadingMessage}</h2>
+      <p className="corp-body max-w-md">
         {t('loading.please_wait')}
       </p>
     </div>
@@ -42,8 +42,8 @@ export function LoadingScreen({
       {(title || description) && (
         <div className="flex items-center justify-between">
           <div>
-            {title && <h1 className="text-3xl font-bold">{title}</h1>}
-            {description && <p className="text-muted-foreground">{description}</p>}
+            {title && <h1 className="corp-h2">{title}</h1>}
+            {description && <p className="corp-body">{description}</p>}
           </div>
         </div>
       )}

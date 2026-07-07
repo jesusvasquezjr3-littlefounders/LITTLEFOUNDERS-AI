@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Star } from 'lucide-react';
-import { DinoCharacter } from '@/components/characters/DinoCharacter';
 import { StreakCelebration } from '@/components/ui/StreakCelebration';
 import type { PlacementResult } from '@/lib/guestProfile';
 
@@ -23,13 +22,6 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
   return (
     <>
       <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-300">
-        <div className="relative w-full flex justify-center mt-2 mb-6 pointer-events-none">
-          <div className="absolute bottom-4 w-48 h-48 rounded-full z-0 bg-emerald-400/20 dark:bg-emerald-500/15 blur-2xl" />
-          <div className="relative w-64 h-64 sm:w-72 sm:h-72 drop-shadow-2xl z-10">
-            <DinoCharacter mood="excited" showBubble currentText={t('closing.liruf_bubble', { name, adventure: result?.finalAdventure ?? '-', saga: result?.finalSaga ?? '-' })} bubblePosition="standard" />
-          </div>
-        </div>
-
         <div className="w-full px-2 flex flex-col items-center animate-in slide-in-from-bottom-4 duration-300 delay-100 fill-mode-both">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
             {result?.skipped ? t('closing.skipped_title', { name }) : t('closing.title', { name })}
@@ -58,7 +50,7 @@ export function PlacementClosingScreen({ result, name, onContinue }: Props) {
               />
             </div>
             <div className="flex items-center gap-1.5 -ml-1">
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-amber-400 to-amber-600 drop-shadow-sm">
+              <span className="text-2xl font-bold text-amber-500 drop-shadow-sm">
                 1
               </span>
               <span className="text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-[0.22em] text-[11px] mt-0.5">

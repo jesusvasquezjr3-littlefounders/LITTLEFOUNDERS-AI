@@ -10,6 +10,7 @@ import { savePendingMerge, clearPendingMerge } from "@/lib/guestProfile";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { useSound } from "@/contexts/SoundContext";
+import { motion } from "framer-motion";
 
 /* ─── Shared Google Icon ──────────────────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -226,24 +227,23 @@ const Signup = () => {
 
           {/* Title */}
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {t('auth:verify_email.title')}
+            <h1 className="corp-h3">
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="corp-body-sm">
               {t('auth:verify_email.subtitle')}
             </p>
-            <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-400 break-all bg-indigo-50 dark:bg-indigo-900/20 rounded-xl px-3 py-2 border border-indigo-100 dark:border-indigo-500/20">
+            <p className="corp-body-sm font-semibold text-indigo-700 dark:text-indigo-400 break-all bg-indigo-50 dark:bg-indigo-900/20 rounded-xl px-3 py-2 border border-indigo-100 dark:border-indigo-500/20">
               {sentToEmail}
             </p>
           </div>
 
           {/* Instruction */}
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="corp-body-sm">
             {t('auth:verify_email.instruction')}
           </p>
 
           {/* Spam note */}
-            <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+            <p className="corp-body-sm italic">
             {t('auth:verify_email.spam_note')}
           </p>
 
@@ -259,7 +259,7 @@ const Signup = () => {
             <button
               onClick={handleResend}
               disabled={isResending || resendDone}
-              className="w-full text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 disabled:opacity-50 py-2"
+              className="corp-body-sm w-full hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 disabled:opacity-50 py-2"
             >
               {resendDone ? t('auth:verify_email.resend_sent') : isResending ? '...' : t('auth:verify_email.resend')}
             </button>
@@ -276,7 +276,7 @@ const Signup = () => {
       <div className="text-center mb-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
+            className="corp-body-sm inline-flex items-center gap-2 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200 group"
         >
           <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">←</span>
           {t('auth:register.back_to_home')}
@@ -284,14 +284,19 @@ const Signup = () => {
       </div>
 
       {/* Card */}
-      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6">
+      <motion.div
+        className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-6"
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      >
 
         {/* Header */}
         <div className="text-center space-y-1.5">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="corp-h3">
             {t('auth:register.title')}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="corp-body-sm">
             {t('auth:register.subtitle')}
           </p>
         </div>
@@ -322,7 +327,7 @@ const Signup = () => {
             <div className="w-full border-t border-slate-200 dark:border-white/10" />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 bg-white dark:bg-[#0f1628] text-xs font-medium text-slate-400 dark:text-slate-500">
+            <span className="corp-caption px-3 bg-white dark:bg-[#0f1628]">
               {t('auth:register.or')}
             </span>
           </div>
@@ -417,7 +422,7 @@ const Signup = () => {
           </button>
 
           {/* Login link */}
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-center corp-body-sm">
             {t('auth:register.have_account')}{" "}
             <Link
               to="/login"
@@ -427,10 +432,10 @@ const Signup = () => {
             </Link>
           </p>
         </form>
-      </div>
+      </motion.div>
 
       {/* Footer */}
-      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-center corp-body-sm">
         {t('auth:register.footer')}
       </p>
     </AuthShell>

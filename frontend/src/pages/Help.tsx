@@ -3,15 +3,12 @@ import { useTranslation } from "react-i18next";
 import { ReportFAB } from "@/components/common/ReportFAB";
 import { cn } from "@/lib/utils";
 import {
-  HelpCircle,
   ChevronDown,
   BookOpen,
   Gamepad2,
   Shield,
   MessageSquare,
 } from "lucide-react";
-
-// ── FAQ Item Component ─────────────────────────────────────────────────────────
 
 function FAQItem({
   icon: Icon,
@@ -29,91 +26,58 @@ function FAQItem({
   return (
     <div
       className={cn(
-        "bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-300",
-        isOpen && "ring-1 ring-indigo-500/20"
+        "bg-white dark:bg-[#0d1426] rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden transition-[box-shadow,border-color] duration-200 ease-out",
+        isOpen && "ring-1 ring-indigo-500/20 border-indigo-200/50 dark:border-indigo-500/20 shadow-sm"
       )}
     >
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center gap-4 px-5 py-5 text-left group"
-      >
+      <button onClick={onToggle} className="w-full flex items-center gap-4 px-5 py-4 text-left group">
         <div
           className={cn(
-            "flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300",
+            "flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-[background-color,color,box-shadow] duration-200",
             isOpen
-              ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-md shadow-indigo-500/30"
-              : "bg-slate-100 dark:bg-[#0d1426] text-slate-500 dark:text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 group-hover:text-indigo-500"
+              ? "bg-indigo-600 text-white"
+              : "bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
           )}
         >
           <Icon className="w-5 h-5" />
         </div>
-        <span className="flex-1 font-bold text-sm text-slate-800 dark:text-white leading-snug">
+        <span className="flex-1 corp-body font-semibold">
           {question}
         </span>
         <ChevronDown
           className={cn(
-            "w-4 h-4 flex-shrink-0 transition-all duration-300",
-            isOpen
-              ? "rotate-180 text-indigo-500"
-              : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+            "w-4 h-4 flex-shrink-0 transition-[transform,color] duration-200 ease-out",
+            isOpen ? "rotate-180 text-indigo-500" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
           )}
         />
       </button>
       <div
         className={cn(
-          "overflow-hidden transition-all duration-300",
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         )}
       >
-        <div className="px-5 pb-5">
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-14">
-            {answer}
-          </p>
+        <div className="overflow-hidden">
+          <div className="px-5 pb-5">
+            <p className="corp-body-sm pl-14">
+              {answer}
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-// ── Category Card ──────────────────────────────────────────────────────────────
-
-function CategoryCard({
-  icon: Icon,
-  label,
-  gradient,
-}: {
-  icon: React.ElementType;
-  label: string;
-  gradient: string;
-}) {
-  return (
-    <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-5 flex flex-col items-center gap-3 cursor-pointer group">
-      <div
-        className={cn(
-          "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3",
-          gradient
-        )}
-      >
-        <Icon className="w-6 h-6" />
-      </div>
-      <span className="corp-eyebrow text-center">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-// ── Help Page ──────────────────────────────────────────────────────────────────
 
 const Help = () => {
   const { t } = useTranslation(["reports"]);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const CATEGORIES = [
-    { icon: BookOpen, labelKey: "help_page.categories.lessons", gradient: "bg-gradient-to-br from-blue-500 to-cyan-500" },
-    { icon: Gamepad2, labelKey: "help_page.categories.games", gradient: "bg-gradient-to-br from-indigo-500 to-blue-500" },
-    { icon: Shield, labelKey: "help_page.categories.privacy", gradient: "bg-gradient-to-br from-emerald-500 to-teal-500" },
-    { icon: MessageSquare, labelKey: "help_page.categories.contact", gradient: "bg-gradient-to-br from-sky-500 to-blue-500" },
+    { icon: BookOpen, labelKey: "help_page.categories.lessons" },
+    { icon: Gamepad2, labelKey: "help_page.categories.games" },
+    { icon: Shield, labelKey: "help_page.categories.privacy" },
+    { icon: MessageSquare, labelKey: "help_page.categories.contact" },
   ];
 
   const FAQ_KEYS = [
@@ -124,106 +88,86 @@ const Help = () => {
   ];
 
   return (
-    <div className="corp max-w-6xl mx-auto px-4 py-8 animate-in fade-in duration-300 space-y-8">
+    <div className="corp max-w-6xl mx-auto pb-16 px-4 pt-8 animate-in fade-in duration-300">
 
-        {/* ── Page Header ── */}
-        <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] px-7 py-6 flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25 flex-shrink-0">
-            <HelpCircle className="w-7 h-7 text-white" />
+      {/* ── Page header ────────────────────────────────────────────── */}
+      <div className="mb-8">
+        <h1 className="corp-h1">
+          {t("reports:help_page.title")}
+        </h1>
+        <p className="mt-2 corp-body">
+          {t("reports:help_page.subtitle")}
+        </p>
+      </div>
+
+      {/* ── Layout ─────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        {/* ── Left: Content (8/12) ─────────────────────────────────── */}
+        <div className="lg:col-span-8 space-y-8">
+
+          {/* Categories */}
+          <div className="corp-panel rounded-[2.5rem] p-6 md:p-8">
+            <span className="corp-eyebrow">{t("reports:help_page.popular_questions")}</span>
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {CATEGORIES.map((cat, idx) => (
+                <div key={idx} className="corp-card rounded-2xl p-5 flex flex-col items-center text-center gap-3">
+                  <div className="corp-icon-chip w-12 h-12">
+                    <cat.icon className="w-6 h-6" />
+                  </div>
+                  <span className="corp-label">
+                    {t(cat.labelKey as any)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-left">
-            <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
-              {t("reports:help_page.title")}
-            </h1>
-            <p className="mt-1 text-[10px] md:text-sm text-slate-500 dark:text-slate-400 leading-tight">
-              {t("reports:help_page.subtitle")}
-            </p>
+
+          {/* FAQ */}
+          <div className="corp-panel rounded-[2.5rem] p-6 md:p-8">
+            <span className="corp-eyebrow">{t("reports:help_page.popular_questions")}</span>
+            <div className="mt-6 space-y-3">
+              {FAQ_KEYS.map((item, i) => (
+                <FAQItem
+                  key={i}
+                  icon={item.icon}
+                  question={t(item.q as any)}
+                  answer={t(item.a as any)}
+                  isOpen={openIndex === i}
+                  onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ── Main Content Grid ── */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+        {/* ── Right: Support Panel (4/12) ──────────────────────────── */}
+        <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-8">
 
-          {/* ── Left Column: Categories + FAQ (8/12) ── */}
-          <div className="lg:col-span-8 space-y-10 w-full">
-
-            {/* ── Quick Categories Grid ── */}
-            <section className="space-y-4">
-              <div className="px-1">
-                <span className="corp-eyebrow">
-                  {t("reports:help_page.popular_questions")}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {CATEGORIES.map((cat, idx) => (
-                  <CategoryCard
-                    key={idx}
-                    icon={cat.icon}
-                    label={t(cat.labelKey as any)}
-                    gradient={cat.gradient}
-                  />
-                ))}
-              </div>
-            </section>
-
-            {/* ── FAQ Section ── */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-4">
-                <h2 className="corp-display text-xl font-bold text-slate-900 dark:text-white whitespace-nowrap">
-                  {t("reports:help_page.popular_questions")}
-                </h2>
-                <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
-              </div>
-
-              <div className="space-y-3">
-                {FAQ_KEYS.map((item, i) => (
-                  <FAQItem
-                    key={i}
-                    icon={item.icon}
-                    question={t(item.q as any)}
-                    answer={t(item.a as any)}
-                    isOpen={openIndex === i}
-                    onToggle={() => setOpenIndex(openIndex === i ? null : i)}
-                  />
-                ))}
-              </div>
-            </section>
+          <div className="corp-panel rounded-[2.5rem] p-8 flex flex-col items-center text-center gap-5">
+            <div className="corp-icon-chip w-14 h-14">
+              <MessageSquare className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="corp-h4">
+                {t("reports:help_page.section_title")}
+              </h2>
+              <p className="corp-body-sm">
+                {t("reports:help_page.section_description")}
+              </p>
+            </div>
+            <div className="w-full pt-2">
+              <ReportFAB inline />
+            </div>
           </div>
 
-          {/* ── Right Column: Support Panel (4/12) ── */}
-          <div className="lg:col-span-4 w-full lg:sticky lg:top-8 space-y-4">
-
-            {/* Support Card */}
-            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] p-7 space-y-6">
-              <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-xl shadow-indigo-500/25">
-                  <MessageSquare className="w-8 h-8 text-white" />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="corp-display text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                    {t("reports:help_page.section_title")}
-                  </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                    {t("reports:help_page.section_description")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <ReportFAB inline />
-              </div>
-            </div>
-
-            {/* 24/7 availability badge */}
-            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm px-5 py-4 flex items-center justify-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm shadow-emerald-400" />
-              <span className="corp-eyebrow text-center">
-                {t("reports:help_page.team_available")}
-              </span>
-            </div>
+          <div className="corp-panel rounded-full px-5 py-3 flex items-center justify-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="corp-eyebrow">{t("reports:help_page.team_available")}</span>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

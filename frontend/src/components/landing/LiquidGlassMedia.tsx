@@ -19,7 +19,7 @@ export const LiquidGlassMedia: React.FC<LiquidGlassMediaProps> = ({
   return (
     <div className="w-full relative z-10">
       <div
-        className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800/50 p-[6px] shadow-[0_4px_20px_-6px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_-6px_rgba(0,0,0,0.4)] border border-slate-200/80 dark:border-white/8 transition-shadow duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.5)]"
+        className="rounded-2xl overflow-hidden shadow-[0_4px_20px_-6px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_-6px_rgba(0,0,0,0.4)] transition-shadow duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.5)]"
       >
         <div className="relative aspect-[4/3] overflow-hidden bg-white dark:bg-slate-900/80 rounded-xl">
           {type === 'video' ? (

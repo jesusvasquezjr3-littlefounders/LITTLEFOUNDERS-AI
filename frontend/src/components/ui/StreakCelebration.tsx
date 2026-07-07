@@ -75,9 +75,8 @@ function CinematicBackground({ isVisible }: { isVisible: boolean }) {
         }`}
       />
 
-      {/* Dot-grid overlay — characteristic map-paper texture */}
       {isVisible && (
-        <div className="absolute inset-0 corp-grid-bg pointer-events-none opacity-20 dark:opacity-10 z-0" />
+        <div className="absolute inset-0 pointer-events-none z-0 opacity-15 dark:opacity-8 bg-[radial-gradient(circle,#4f46e5_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_30%,transparent_100%)]" />
       )}
 
       {/* Animated orbs in background */}

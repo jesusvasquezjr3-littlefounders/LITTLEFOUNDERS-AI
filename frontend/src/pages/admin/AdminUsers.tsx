@@ -133,8 +133,8 @@ export const AdminUsers: React.FC = () => {
     <TableRow key={user.id} className={!user.is_active ? 'opacity-60' : ''}>
       <TableCell>
         <div>
-          <p className="font-medium text-slate-900 dark:text-white">{user.name}</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{user.email}</p>
+          <p className="corp-subtitle-sm">{user.name}</p>
+          <p className="corp-body-sm">{user.email}</p>
         </div>
       </TableCell>
       <TableCell>
@@ -291,7 +291,7 @@ export const AdminUsers: React.FC = () => {
           {isLoading ? (
             <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
           ) : (
-            <div className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{users.length}</div>
+            <div className="mt-3 corp-number-lg">{users.length}</div>
           )}
         </div>
         <div className="corp-card p-6">
@@ -299,7 +299,7 @@ export const AdminUsers: React.FC = () => {
           {isLoading ? (
             <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
           ) : (
-            <div className="mt-3 text-2xl font-bold text-indigo-600 dark:text-indigo-300">{adminUsers.length}</div>
+            <div className="mt-3 corp-number-lg text-indigo-600 dark:text-indigo-300">{adminUsers.length}</div>
           )}
         </div>
         <div className="corp-card p-6">
@@ -307,7 +307,7 @@ export const AdminUsers: React.FC = () => {
           {isLoading ? (
             <Skeleton className="mt-3 h-8 w-12 bg-slate-200 dark:bg-slate-700" />
           ) : (
-            <div className="mt-3 text-2xl font-bold text-slate-600 dark:text-slate-400">{otherUsers.length}</div>
+            <div className="mt-3 corp-number-lg text-slate-600 dark:text-slate-400">{otherUsers.length}</div>
           )}
         </div>
       </div>
@@ -378,10 +378,10 @@ export const AdminUsers: React.FC = () => {
                 <Lock className="h-8 w-8 text-slate-400 dark:text-slate-500" />
               </div>
               <div className="max-w-md space-y-2 px-4">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="corp-h4">
                   {t('users.securityLock.title')}
                 </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="corp-body-sm">
                   {t('users.securityLock.description')}
                 </p>
               </div>

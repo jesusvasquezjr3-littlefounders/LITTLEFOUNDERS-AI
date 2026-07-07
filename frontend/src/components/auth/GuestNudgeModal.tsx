@@ -54,17 +54,17 @@ export function GuestNudgeModal() {
           <div className="mx-auto w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 flex items-center justify-center mb-5">
             <Sparkles className="w-7 h-7 text-amber-500 dark:text-amber-400" />
           </div>
-          <DialogTitle className="corp-display text-xl font-bold text-slate-900 dark:text-white">
+          <DialogTitle className="corp-h3">
             {t("guest.nudge_title", { name: guest.name })}
           </DialogTitle>
-          <DialogDescription className="mt-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <DialogDescription className="corp-body mt-3">
             {t("guest.nudge_body", { xp: guest.xp, streak: guest.current_streak })}
           </DialogDescription>
           <div className="mt-7 flex flex-col gap-2">
             <button
               type="button"
               onClick={handleCreate}
-              className="corp-btn-primary w-full h-11 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2"
+              className="corp-btn-primary w-full h-11 rounded-xl corp-body-sm font-semibold inline-flex items-center justify-center gap-2"
             >
               <UserPlus className="w-4 h-4" />
               {t("guest.nudge_cta")}
@@ -72,7 +72,7 @@ export function GuestNudgeModal() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="w-full h-10 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              className="w-full h-10 rounded-xl corp-body-sm hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
             >
               {t("guest.nudge_later")}
             </button>

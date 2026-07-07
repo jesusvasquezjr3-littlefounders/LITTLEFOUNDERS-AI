@@ -323,7 +323,7 @@ const TopicNode: React.FC<TopicNodeProps> = ({
                     </div>
 
                     {/* Character */}
-                    <div className="w-40 h-40 sm:w-56 sm:h-56 hover:-translate-y-2 hover:scale-105 transition-all duration-300 relative z-10">
+                    <div className="w-40 h-40 sm:w-56 sm:h-56 hover:-translate-y-2 hover:scale-105 transition-[transform,filter] duration-300 relative z-10">
                         {charType === 'dino' && <DinoCharacter mood={dinoMoods[moodIndex] as any} showBubble={false} />}
                         {charType === 'dina' && <DinaCharacter expression={dinaExpressions[moodIndex] as any} showBubble={false} />}
                         {charType === 'rho' && <DrRhoCharacter mood={rhoMoods[moodIndex] as any} showBubble={false} />}
@@ -359,7 +359,7 @@ const TopicNode: React.FC<TopicNodeProps> = ({
                                 cx={size / 2}
                                 cy={size / 2}
                                 r={radius}
-                                className={`fill-transparent transition-all duration-1000 ease-out drop-shadow-md ${colors.stroke} ${isCompleted ? 'stroke-amber-400' : ''}`}
+                                className={`fill-transparent transition-[stroke] duration-1000 ease-out drop-shadow-md ${colors.stroke} ${isCompleted ? 'stroke-amber-400' : ''}`}
                                 strokeWidth={strokeWidth}
                                 strokeLinecap="round"
                                 strokeDasharray={circumference}
@@ -376,7 +376,7 @@ const TopicNode: React.FC<TopicNodeProps> = ({
                             disabled={isLocked}
                             className={cn(
                                 'topic-node-center group relative w-[76px] h-[76px] rounded-full flex items-center justify-center',
-                                'transition-all duration-200 outline-none',
+                                'transition-[filter,transform] duration-200 outline-none',
                                 colors.bg,
                                 !isLocked && `border-b-[8px] ${colors.border} active:border-b-[2px] active:translate-y-[6px]`,
                                 isLocked && 'bg-[#e5e5e5] dark:bg-slate-800 border-b-[8px] border-[#cecece] dark:border-slate-900 cursor-not-allowed',
@@ -415,7 +415,7 @@ const TopicNode: React.FC<TopicNodeProps> = ({
                     <HoverCardContent side="top" className="w-72 p-0 overflow-hidden border-2 shadow-xl z-50">
                         <div className={`h-2 w-full ${colors.bg}`} />
                         <div className="p-4 bg-popover/95 backdrop-blur-sm">
-                            <h4 className="text-sm font-bold mb-1 flex items-center gap-2">
+                            <h4 className="corp-h4 mb-1 flex items-center gap-2">
                                 {title}
                                 {isCompleted && <Check className="w-4 h-4 text-amber-500" />}
                             </h4>

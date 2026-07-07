@@ -85,12 +85,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           collapsed={sidebarCollapsed}
           onToggle={handleToggle}
         />
-        <div className="flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 pb-24 md:pb-0">
+        <div className="flex-1 flex flex-col h-full overflow-hidden pb-24 md:pb-0">
           {/* Barra superior - spans full width */}
           <TopNav />
           <main className={cn(
-            "flex-1 p-6 overflow-y-auto transition-all duration-300",
-            // Desktop: dynamic margin for sidebar
+            "flex-1 p-6 overflow-y-auto transition-[margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
             !sidebarCollapsed ? "md:ml-64" : "md:ml-28",
             "view-transition-content"
           )} aria-label={t('layout.main_content_aria')}>

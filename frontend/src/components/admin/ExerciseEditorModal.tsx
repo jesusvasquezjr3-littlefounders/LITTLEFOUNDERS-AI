@@ -197,7 +197,7 @@ export default function ExerciseEditorModal({
             <TabsContent value="side-by-side" className="mt-2">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium mb-1 block">
+                  <Label className="corp-body-sm mb-1 block">
                     Español (ES)
                   </Label>
                   <Textarea
@@ -211,7 +211,7 @@ export default function ExerciseEditorModal({
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium mb-1 block">
+                  <Label className="corp-body-sm mb-1 block">
                     English (EN)
                   </Label>
                   <Textarea
@@ -228,7 +228,7 @@ export default function ExerciseEditorModal({
             </TabsContent>
 
             <TabsContent value="es" className="mt-2">
-              <Label className="text-sm font-medium mb-1 block">
+              <Label className="corp-body-sm mb-1 block">
                 Español (ES)
               </Label>
               <Textarea
@@ -243,7 +243,7 @@ export default function ExerciseEditorModal({
             </TabsContent>
 
             <TabsContent value="en" className="mt-2">
-              <Label className="text-sm font-medium mb-1 block">
+              <Label className="corp-body-sm mb-1 block">
                 English (EN)
               </Label>
               <Textarea

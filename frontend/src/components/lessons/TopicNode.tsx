@@ -45,7 +45,7 @@ export const TopicNode: React.FC<TopicNodeProps> = ({ topic, index, totalInSaga,
         >
             {/* Tooltip Title (Always visible for unlocked, or on hover) */}
             <div className={`
-        absolute -top-12 px-3 py-1.5 rounded-xl text-center whitespace-nowrap z-20 transition-all duration-300
+        absolute -top-12 px-3 py-1.5 rounded-xl text-center whitespace-nowrap z-20 transition-[opacity,transform] duration-300
         bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 shadow-xl
         ${topic.isLocked ? 'opacity-0 hover:opacity-100' : 'opacity-100'}
       `}>
@@ -62,7 +62,7 @@ export const TopicNode: React.FC<TopicNodeProps> = ({ topic, index, totalInSaga,
                 disabled={topic.isLocked}
                 className={`
           group relative w-[70px] h-[70px] rounded-[35px] flex items-center justify-center
-          transition-all duration-150 outline-none
+          transition-[filter,opacity,transform] duration-150 outline-none
           ${colors.base} ${colors.shadow}
           active:translate-y-[6px] active:shadow-none hover:-translate-y-[2px]
           ${topic.isLocked ? 'cursor-not-allowed opacity-80' : 'cursor-pointer hover:brightness-110'}

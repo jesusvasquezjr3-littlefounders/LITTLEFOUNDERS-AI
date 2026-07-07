@@ -50,13 +50,13 @@ function ProgressBar({ step }: { step: Step }) {
   const progress = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
-    <div className="w-full flex flex-col gap-2 px-6 pt-7 pb-1 max-w-lg mx-auto relative z-10">
+    <div className="w-full flex flex-col gap-2 px-6 pt-7 pb-1 max-w-7xl mx-auto relative z-10">
       {/* Label row */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+        <span className="corp-caption uppercase tracking-[0.22em]">
           {t("progress.step_of", { current: step, total: TOTAL_STEPS })}
         </span>
-        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+        <span className="corp-caption">
           {progress}%
         </span>
       </div>
@@ -65,7 +65,7 @@ function ProgressBar({ step }: { step: Step }) {
       <div className="relative w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
         {/* Fill */}
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-[width] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]"
+          className="absolute inset-y-0 left-0 rounded-full bg-indigo-500 transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -81,14 +81,14 @@ function ProgressBar({ step }: { step: Step }) {
               className="w-6 h-2 flex items-center justify-center"
             >
               <div
-                className={cn(
-                  "w-2 h-2 rounded-full transition-[transform,background-color] duration-300 origin-left",
-                  active
-                    ? "bg-indigo-500 dark:bg-indigo-400 scale-x-[3]"
-                    : done
-                    ? "bg-indigo-400 dark:bg-indigo-500 scale-x-100"
-                    : "bg-slate-200 dark:bg-white/15 scale-x-100"
-                )}
+                  className={cn(
+                   "w-2 h-2 rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left",
+                   active
+                     ? "bg-indigo-500 dark:bg-indigo-400 scale-x-[3]"
+                     : done
+                     ? "bg-indigo-400 dark:bg-indigo-500 scale-x-100"
+                     : "bg-slate-200 dark:bg-white/15 scale-x-100"
+                 )}
               />
             </div>
           );
@@ -458,325 +458,262 @@ export default function Onboarding() {
       {/* Progress bar */}
       <ProgressBar step={step} />
 
-      {/* ── Step content ──────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center px-4 py-4 sm:py-8 gap-4 sm:gap-6 max-w-lg mx-auto">
+      {/* ── Step content — Lesson Engine grid: character left on desktop ── */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center px-4 pb-8 pt-4 lg:gap-8 max-w-7xl mx-auto w-full overflow-y-auto min-h-0">
 
-        {/* ── STEP 0: Welcome ─────────────────────────────────────────── */}
-        {step === 0 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-300">
-            {/* Single character in spotlight, matching other steps */}
-            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
-                <DinoCharacter
-                  mood="happy"
-                  showBubble
-                  currentText={t("welcome.liruf_bubble")}
-                  bubblePosition="standard"
-                  isTalking={isNarrationPlaying}
-                />
+        {/* ── Left column: Character ──────────────────────────────────── */}
+        <div className="w-full lg:w-[38%] flex flex-col items-center justify-center flex-shrink-0 lg:sticky lg:top-0 lg:h-full">
+
+          {step === 0 && (
+            <div className="w-56 h-56 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative z-10 drop-shadow-xl animate-in fade-in zoom-in-[0.96] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+              <DinoCharacter mood="happy" showBubble currentText={t("welcome.liruf_bubble")} bubblePosition="standard" isTalking={isNarrationPlaying} />
             </div>
+          )}
+          {step === 1 && (
+            <div className="w-56 h-56 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative z-10 drop-shadow-xl animate-in fade-in duration-300">
+              <DinoCharacter mood={nameInput.trim().length > 0 ? "excited" : "happy"} showBubble={!!nameBubble} currentText={nameBubble} bubblePosition="standard" isTalking={isNarrationPlaying} />
+            </div>
+          )}
+          {step === 2 && (
+            <div className="w-56 h-56 sm:w-64 sm:h-64 lg:w-72 lg:h-72 relative z-10 drop-shadow-xl animate-in fade-in duration-300">
+              <DinaCharacter expression={(() => { const p = parseInt(ageInput.trim(), 10); return !isNaN(p) && p >= 6 && p <= 100 ? "surprised" : "wink"; })()} showBubble={!!ageBubble} currentText={ageBubble} bubblePosition="standard" isTalking={isNarrationPlaying} />
+            </div>
+          )}
+          {step === 3 && (
+            <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 relative z-10 drop-shadow-xl animate-in fade-in duration-300">
+              <DrRhoCharacter mood="explaining" showBubble={!!interestsBubble} currentText={interestsBubble} bubblePosition="top" isTalking={isNarrationPlaying} />
+            </div>
+          )}
+          {step === 4 && (
+            <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 relative z-10 drop-shadow-xl animate-in fade-in duration-300">
+              <ZaraVexCharacter mood={expSelected ? "flirty" : expHovered ? "excited" : "happy"} showBubble={!!experienceBubble} currentText={experienceBubble} bubblePosition="top" isTalking={isNarrationPlaying} />
+            </div>
+          )}
+        </div>
 
-            {/* Speech bubble */}
-            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] mb-6 w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-3 text-center">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                {t("welcome.liruf_greeting")}
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                {t("welcome.liruf_intro")}
-              </p>
-              <div className="pt-3 border-t border-slate-200 dark:border-white/10">
-                <p className="text-slate-500 dark:text-slate-500 text-xs">
-                  {t("welcome.characters_intro")}
+        {/* ── Right column: Content ───────────────────────────────────── */}
+        <div className="w-full lg:w-[62%] flex flex-col items-center justify-center lg:min-h-0 max-w-lg mx-auto lg:mx-0">
+
+          {/* ── STEP 0: Welcome ───────────────────────────────────────── */}
+          {step === 0 && (
+            <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-[0.96] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+              <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-7 sm:p-9 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.03)] border border-slate-200/50 dark:border-white/5 space-y-3 text-center">
+                <h1 className="corp-h4">
+                  {t("welcome.liruf_greeting")}
+                </h1>
+                <p className="corp-body">
+                  {t("welcome.liruf_intro")}
                 </p>
+                <div className="pt-3 border-t border-slate-200/50 dark:border-white/8">
+                  <p className="corp-eyebrow">
+                    {t("welcome.characters_intro")}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Start CTA */}
-            <button 
-              type="button" 
-              onClick={handleStartFromWelcome} 
-              className="corp-btn-primary w-full h-12 rounded-full text-lg font-semibold inline-flex items-center justify-center gap-2 group"
-            >
-              {t("welcome.start_button")}
-              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
-            </button>
-          </div>
-        )}
-
-        {/* ── STEP 1: Name ────────────────────────────────────────────── */}
-        {step === 1 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
-            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
-                <DinoCharacter
-                  mood={nameInput.trim().length > 0 ? "excited" : "happy"}
-                  showBubble={!!nameBubble}
-                  currentText={nameBubble}
-                  bubblePosition="standard"
-                  isTalking={isNarrationPlaying}
-                />
-            </div>
-
-            {nameInput.trim().length > 0 && (
-              <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-indigo-600 dark:text-indigo-400">
-                {t("name.liruf_done", { name: nameInput.trim() })} 🎉
-              </p>
-            )}
-
-            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-4">
-              <div className="text-center">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-                  {t("name.question")}
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
-                  {t("name.subtitle")}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <input
-                  ref={nameRef}
-                  type="text"
-                  value={nameInput}
-                  onChange={(e) => { setNameInput(e.target.value); setError(""); }}
-                  onKeyDown={(e) => e.key === "Enter" && handleNameContinue()}
-                  placeholder={t("name.placeholder")}
-                  maxLength={50}
-                  className={cn(
-                    "corp-input h-14 px-4 text-center text-lg font-bold",
-                    error && "corp-input--error"
-                  )}
-                />
-                {error && (
-                  <p className="text-red-500 text-xs font-semibold">{error}</p>
-                )}
-              </div>
-
               <button
                 type="button"
-                onClick={handleNameContinue} 
-                className="corp-btn-primary w-full h-12 mt-5 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+                onClick={handleStartFromWelcome}
+                className="corp-btn-primary w-full h-12 mt-6 rounded-full text-base font-semibold inline-flex items-center justify-center gap-2 group"
               >
-                {t("name.continue")}
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
+                {t("welcome.start_button")}
+                <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ── STEP 2: Age ─────────────────────────────────────────────── */}
-        {step === 2 && (
-          <div className="flex flex-col items-center text-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
-            <div className="w-64 h-64 sm:w-80 sm:h-80 mb-2 relative z-10 drop-shadow-xl">
-                <DinaCharacter
-                  expression={(() => {
-                    const p = parseInt(ageInput.trim(), 10);
-                    return !isNaN(p) && p >= 6 && p <= 100 ? "surprised" : "wink";
-                  })()}
-                  showBubble={!!ageBubble}
-                  currentText={ageBubble}
-                  bubblePosition="standard"
-                  isTalking={isNarrationPlaying}
-                />
-            </div>
-
-            {(() => {
-              const parsedAge = parseInt(ageInput.trim(), 10);
-              const isValidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && parsedAge >= 6 && parsedAge <= 100;
-              const isInvalidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && (parsedAge < 6 || parsedAge > 100);
-              if (isValidAge) {
-                return (
-                  <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-indigo-600 dark:text-indigo-400">
-                    {t("age.dina_done", { age: ageInput.trim() })} 🎂
-                  </p>
-                );
-              }
-              if (isInvalidAge) {
-                return (
-                  <p className="text-sm font-semibold mb-3 animate-in fade-in duration-300 text-red-500 dark:text-red-400">
-                    {t("errors.age_range")}
-                  </p>
-                );
-              }
-              return null;
-            })()}
-
-            <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5 space-y-4">
-              <div className="text-center">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-                  {t("age.question")}
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
-                  {t("age.subtitle")}
+          {/* ── STEP 1: Name ──────────────────────────────────────────── */}
+          {step === 1 && (
+            <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-300">
+              {nameInput.trim().length > 0 && (
+                <p className="corp-eyebrow mb-4 animate-in fade-in duration-300">
+                  {t("name.liruf_done", { name: nameInput.trim() })}
                 </p>
+              )}
+              <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.03)] border border-slate-200/50 dark:border-white/5 space-y-5">
+                <div className="text-center">
+                  <h2 className="corp-h4 mb-1">
+                    {t("name.question")}
+                  </h2>
+                  <p className="corp-body-sm">
+                    {t("name.subtitle")}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <input
+                    ref={nameRef}
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => { setNameInput(e.target.value); setError(""); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleNameContinue()}
+                    placeholder={t("name.placeholder")}
+                    maxLength={50}
+                    className={cn(
+                      "corp-input h-14 px-4 text-center text-lg font-bold",
+                      error && "corp-input--error"
+                    )}
+                  />
+                  {error && <p className="corp-caption text-red-500 font-semibold">{error}</p>}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleNameContinue}
+                  className="corp-btn-primary w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+                >
+                  {t("name.continue")}
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
+                </button>
               </div>
+            </div>
+          )}
 
-              <div className="space-y-2">
-                <input
-                  ref={ageRef}
-                  type="number"
-                  inputMode="numeric"
-                  min={6}
-                  max={100}
-                  value={ageInput}
-                  onChange={(e) => { setAgeInput(e.target.value); setError(""); }}
-                  onKeyDown={(e) => e.key === "Enter" && handleAgeContinue()}
-                  placeholder={t("age.placeholder")}
-                  className={cn(
-                    "corp-input h-14 px-4 text-center text-lg font-bold",
-                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                    error && "corp-input--error"
-                  )}
-                />
-                {error && (
-                  <p className="text-red-500 text-xs font-semibold">{error}</p>
-                )}
+          {/* ── STEP 2: Age ──────────────────────────────────────────── */}
+          {step === 2 && (
+            <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-300">
+              {(() => {
+                const parsedAge = parseInt(ageInput.trim(), 10);
+                const isValidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && parsedAge >= 6 && parsedAge <= 100;
+                const isInvalidAge = ageInput.trim() !== "" && !isNaN(parsedAge) && (parsedAge < 6 || parsedAge > 100);
+                if (isValidAge) return <p className="corp-eyebrow mb-4 animate-in fade-in duration-300">{t("age.dina_done", { age: ageInput.trim() })}</p>;
+                if (isInvalidAge) return <p className="corp-caption mb-4 animate-in fade-in duration-300 text-red-500 dark:text-red-400">{t("errors.age_range")}</p>;
+                return null;
+              })()}
+              <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.03)] border border-slate-200/50 dark:border-white/5 space-y-5">
+                <div className="text-center">
+                  <h2 className="corp-h4 mb-1">{t("age.question")}</h2>
+                  <p className="corp-body-sm">{t("age.subtitle")}</p>
+                </div>
+                <div className="space-y-2">
+                  <input
+                    ref={ageRef}
+                    type="number"
+                    inputMode="numeric"
+                    min={6}
+                    max={100}
+                    value={ageInput}
+                    onChange={(e) => { setAgeInput(e.target.value); setError(""); }}
+                    onKeyDown={(e) => e.key === "Enter" && handleAgeContinue()}
+                    placeholder={t("age.placeholder")}
+                    className={cn(
+                      "corp-input h-14 px-4 text-center text-lg font-bold",
+                      "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                      error && "corp-input--error"
+                    )}
+                  />
+                  {error && <p className="corp-caption text-red-500 font-semibold">{error}</p>}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAgeContinue}
+                  className="corp-btn-primary w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+                >
+                  {t("age.continue")}
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
+                </button>
               </div>
+            </div>
+          )}
 
-              <button 
-                type="button" 
-                onClick={handleAgeContinue} 
-                className="corp-btn-primary w-full h-12 mt-5 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group"
+          {/* ── STEP 3: Interests ─────────────────────────────────────── */}
+          {step === 3 && (
+            <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-5">
+                <h2 className="corp-h4 mb-1">{t("interests.title")}</h2>
+                <p className="corp-body-sm">{t("interests.subtitle")}</p>
+              </div>
+              <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-5">
+                {INTERESTS.map((interest) => {
+                  const selected = data.interests.includes(interest);
+                  return (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => toggleInterest(interest)}
+                      className={cn(
+                        "relative rounded-xl p-3 sm:p-4 text-center cursor-pointer border-2 bg-white dark:bg-white/5",
+                        "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
+                        "active:scale-[0.97]",
+                        selected
+                          ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
+                          : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
+                      )}
+                    >
+                      {selected && (
+                        <span className="absolute top-2 right-2 w-5 h-5 bg-indigo-500 dark:bg-indigo-500 rounded-full flex items-center justify-center shadow-sm">
+                          <Check className="w-3 h-3 text-white" />
+                        </span>
+                      )}
+                      <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">
+                        {t(`interests.options.${interest}.icon`)}
+                      </div>
+                      <p className="corp-body-sm font-semibold">
+                        {t(`interests.options.${interest}.title`)}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+              {error && <p className="corp-caption text-red-500 mb-3 font-semibold">{error}</p>}
+              <button
+                onClick={handleInterestContinue}
+                disabled={data.interests.length === 0}
+                className="corp-btn-primary max-w-xs w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t("age.continue")}
+                {t("common:buttons.continue")}
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ── STEP 3: Interests ───────────────────────────────────────── */}
-        {step === 3 && (
-          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
-            <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
-                <DrRhoCharacter
-                  mood="explaining"
-                  showBubble={!!interestsBubble}
-                  currentText={interestsBubble}
-                  bubblePosition="top"
-                  isTalking={isNarrationPlaying}
-                />
+          {/* ── STEP 4: Experience ────────────────────────────────────── */}
+          {step === 4 && (
+            <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-5">
+                <h2 className="corp-h4 mb-1">{t("experience.title")}</h2>
+                <p className="corp-body-sm">{t("experience.subtitle")}</p>
+              </div>
+              <div className="w-full flex flex-col gap-2.5 sm:gap-3">
+                {EXP_LEVELS.map((level) => {
+                  const selected = data.experience_level === level;
+                  return (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => { setExpSelected(true); handleExperienceSelect(level); }}
+                      onMouseEnter={() => setExpHovered(level)}
+                      onMouseLeave={() => setExpHovered(null)}
+                      className={cn(
+                        "relative rounded-xl p-3 sm:p-4 text-left flex flex-row items-center gap-3 sm:gap-4 cursor-pointer border-2 bg-white dark:bg-white/5",
+                        "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
+                        "active:scale-[0.97]",
+                        selected
+                          ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
+                          : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
+                      )}
+                    >
+                      {selected && (
+                        <span className="absolute top-3 right-3 w-5 h-5 bg-indigo-500 dark:bg-indigo-500 rounded-full flex items-center justify-center shadow-sm">
+                          <Check className="w-3 h-3 text-white" />
+                        </span>
+                      )}
+                      <span className="text-3xl shrink-0">{EXP_ICONS[level]}</span>
+                      <div>
+                        <p className="corp-h4">
+                          {t(`experience.${level}.title`)}
+                        </p>
+                        <p className="corp-body-sm mt-0.5">
+                          {t(`experience.${level}.description`)}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+          )}
 
-            <div className="text-center mb-4 sm:mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-                {t("interests.title")}
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 text-sm">
-                {t("interests.subtitle")}
-              </p>
-            </div>
-
-            <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-5">
-              {INTERESTS.map((interest) => {
-                const selected = data.interests.includes(interest);
-                return (
-                  <button
-                    key={interest}
-                    type="button"
-                    onClick={() => toggleInterest(interest)}
-                    className={cn(
-                      "relative rounded-xl p-3 sm:p-4 text-center cursor-pointer border-2 bg-white dark:bg-white/5",
-                       "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
-                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
-                       "active:scale-[0.97]",
-                       selected
-                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
-                         : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
-                    )}
-                  >
-                    {selected && (
-                      <span className="absolute top-2 right-2 w-5 h-5 bg-indigo-500 dark:bg-indigo-500 rounded-full flex items-center justify-center shadow-sm">
-                        <Check className="w-3 h-3 text-white" />
-                      </span>
-                    )}
-                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">
-                      {t(`interests.options.${interest}.icon`)}
-                    </div>
-                    <p className="text-slate-900 dark:text-white font-semibold text-sm">
-                      {t(`interests.options.${interest}.title`)}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-xs mb-3 font-semibold">{error}</p>
-            )}
-
-            <button
-              onClick={handleInterestContinue}
-              disabled={data.interests.length === 0}
-              className="corp-btn-primary max-w-xs w-full h-12 rounded-full text-sm font-semibold inline-flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t("common:buttons.continue")}
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
-            </button>
-          </div>
-        )}
-
-        {/* ── STEP 4: Experience ──────────────────────────────────────── */}
-        {step === 4 && (
-          <div className="flex flex-col items-center w-full animate-in fade-in slide-in-from-right-6 duration-300">
-            <div className="w-56 h-56 sm:w-64 sm:h-64 mb-2 relative z-10 drop-shadow-xl">
-                <ZaraVexCharacter
-                  mood={expSelected ? "flirty" : expHovered ? "excited" : "happy"}
-                  showBubble={!!experienceBubble}
-                  currentText={experienceBubble}
-                  bubblePosition="top"
-                  isTalking={isNarrationPlaying}
-                />
-            </div>
-
-            <div className="text-center mb-4 sm:mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1 text-center">
-                {t("experience.title")}
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 text-sm text-center">
-                {t("experience.subtitle")}
-              </p>
-            </div>
-
-            <div className="w-full flex flex-col gap-2 sm:gap-3">
-              {EXP_LEVELS.map((level) => {
-                const selected = data.experience_level === level;
-                return (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => { setExpSelected(true); handleExperienceSelect(level); }}
-                    onMouseEnter={() => setExpHovered(level)}
-                    onMouseLeave={() => setExpHovered(null)}
-                    className={cn(
-                      "relative rounded-xl p-3 sm:p-4 text-left flex flex-row items-center gap-3 sm:gap-4 cursor-pointer border-2 bg-white dark:bg-white/5",
-                       "transition-[border-color,background-color,transform] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
-                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50",
-                       "active:scale-[0.97]",
-                       selected
-                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
-                         : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-white/10"
-                    )}
-                  >
-                    {selected && (
-                      <span className="absolute top-3 right-3 w-5 h-5 bg-indigo-500 dark:bg-indigo-500 rounded-full flex items-center justify-center shadow-sm">
-                        <Check className="w-3 h-3 text-white" />
-                      </span>
-                    )}
-                    <span className="text-3xl shrink-0">{EXP_ICONS[level]}</span>
-                    <div>
-                      <p className="text-slate-900 dark:text-white font-bold text-base text-left">
-                        {t(`experience.${level}.title`)}
-                      </p>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 text-left leading-snug">
-                        {t(`experience.${level}.description`)}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
+        </div>
       </div>
     </div>
   );

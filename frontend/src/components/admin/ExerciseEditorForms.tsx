@@ -96,7 +96,7 @@ interface FieldProps {
 
 const Field: React.FC<FieldProps> = ({ label, children, className = '' }) => (
     <div className={className}>
-        <Label className="dark:text-slate-300 text-sm font-medium">{label}</Label>
+        <Label className="corp-body-sm">{label}</Label>
         <div className="mt-1">{children}</div>
     </div>
 );

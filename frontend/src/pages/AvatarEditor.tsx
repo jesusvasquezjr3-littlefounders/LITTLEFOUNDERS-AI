@@ -279,8 +279,7 @@ const AvatarEditor = () => {
                                 <User className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="corp-eyebrow leading-none mb-0.5">{t('common:app_name')}</span>
-                                <h1 className="corp-display text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+                                <h1 className="corp-h2">
                                     {t('avatar:title')}
                                 </h1>
                             </div>
@@ -354,14 +353,14 @@ const AvatarEditor = () => {
                                             setActiveTab(key);
                                         }}
                                         className={`
-                                        flex flex-col items-center justify-center gap-1.5 transition-all duration-200 flex-shrink-0
+                                        flex flex-col items-center justify-center gap-1.5 transition-[scale,opacity] duration-200 flex-shrink-0
                                         ${isActive ? 'scale-110' : 'opacity-50 hover:opacity-100'}
                                     `}
                                     >
                                         <div className={`
                                         w-14 h-14 md:w-16 md:h-16 rounded-2xl 
                                         flex items-center justify-center
-                                        shadow-lg transition-all duration-200
+                                        shadow-lg transition-[background-color,box-shadow,ring-color] duration-200
                                         ${isActive
                                                 ? 'bg-gradient-to-br from-indigo-500 to-blue-500 ring-4 ring-white dark:ring-slate-700 shadow-xl'
                                                 : 'bg-slate-200 dark:bg-slate-700'
@@ -371,9 +370,8 @@ const AvatarEditor = () => {
                                                 {opt.icon}
                                             </span>
                                         </div>
-                                        <span className={`
-                                        text-[10px] md:text-xs font-bold whitespace-nowrap
-                                        ${isActive ? 'text-slate-800 dark:text-white' : 'text-slate-400 dark:text-slate-500'}
+                                        <span className={`corp-caption font-semibold whitespace-nowrap
+                                        ${isActive ? 'text-slate-800 dark:text-white' : ''}
                                     `}>
                                             {t(`avatar:categories.${key}`)}
                                         </span>
@@ -397,7 +395,7 @@ const AvatarEditor = () => {
                                         key={value}
                                         onClick={() => updateOption(activeTab, value)}
                                         className={`
-                                            relative aspect-square rounded-2xl border-3 transition-all duration-200 overflow-hidden
+                                            relative aspect-square rounded-2xl border-3 transition-[border-color,scale,ring-color,box-shadow] duration-200 overflow-hidden
                                             ${isSelected
                                                 ? 'border-indigo-500 ring-4 ring-indigo-300/50 dark:ring-indigo-500/40 scale-105 shadow-lg'
                                                 : 'border-slate-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500'

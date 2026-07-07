@@ -189,15 +189,15 @@ export function CompoundInterestRunner() {
 
             {/* HUD */}
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
-                <div className="liquid-glass px-4 py-2 rounded-xl border border-white/20 flex flex-col justify-center">
-                    <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase">{t('minigame.time_label')}</span>
-                    <span className="text-lg font-black text-gray-900 dark:text-white">{t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}</span>
+                <div className="corp-card px-4 py-2 rounded-xl border border-white/20 flex flex-col justify-center">
+                    <span className="corp-caption font-bold uppercase">{t('minigame.time_label')}</span>
+                    <span className="corp-h4 font-black">{t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}</span>
                 </div>
-                <div className="liquid-glass px-4 py-2 rounded-xl border border-[#f6a821]/30 flex items-center gap-2">
+                <div className="corp-card px-4 py-2 rounded-xl border border-[#f6a821]/30 flex items-center gap-2">
                     <Coins className="w-5 h-5 text-[#f6a821]" />
                     <div className="flex flex-col">
-                        <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 leading-none">{t('runner.current_capital')}</span>
-                        <span className="text-xl font-black text-[#f6a821]">
+                        <span className="corp-caption uppercase font-bold leading-none">{t('runner.current_capital')}</span>
+                        <span className="corp-h3 font-black text-[#f6a821]">
                             {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                         </span>
                     </div>
@@ -230,7 +230,7 @@ export function CompoundInterestRunner() {
                         {obj.type === 'obstacle' && obj.subtype === 5 && <TrendingUp className="w-7 h-7 rotate-180" />}
                         {obj.type === 'obstacle' && obj.subtype === 6 && <XCircle className="w-7 h-7" />}
                     </div>
-                    <span className={`text-[12px] font-extrabold mt-2 px-3 py-1 rounded-full whitespace-nowrap bg-white/95 dark:bg-slate-800/95 shadow-lg border border-white/20 ${
+                    <span className={`corp-caption font-extrabold mt-2 px-3 py-1 rounded-full whitespace-nowrap bg-white/95 dark:bg-slate-800/95 shadow-lg border border-white/20 ${
                         obj.type === 'powerup' ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'
                     }`}>
                         {obj.type === 'powerup' ? t(`minigame.powerup_${obj.subtype}`) : t(`minigame.obstacle_${obj.subtype}`)}
@@ -267,19 +267,19 @@ export function CompoundInterestRunner() {
             {/* Idle Area Overlay */}
             {gameState === 'idle' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 bg-white/5 dark:bg-black/5 backdrop-blur-[2px]">
-                    <div className="liquid-glass p-8 rounded-3xl text-center max-w-sm mx-4 transform transition-transform duration-500 hover:scale-105">
+                    <div className="corp-card p-8 rounded-3xl text-center max-w-sm mx-4 transform transition-transform duration-500 hover:scale-105">
                         <div className="w-16 h-16 bg-[#1a9e7a] rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-[#1a9e7a]/30 mb-6">
                             <TrendingUp className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-2xl font-black mb-2 text-gray-900 dark:text-white">
+                        <h3 className="corp-h3 mb-2">
                             {t('minigame.title')}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm">
+                        <p className="corp-body mb-8">
                             {t('minigame.instruction')}
                         </p>
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-[#1a9e7a] hover:bg-[#158063] text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#1a9e7a]/25 transition-[transform,box-shadow] duration-200 transform hover:-translate-y-1"
+                            className="w-full py-4 px-6 bg-[#1a9e7a] hover:bg-[#158063] text-white rounded-2xl corp-body-lg font-bold shadow-xl hover:shadow-[#1a9e7a]/25 transition-[transform,box-shadow] duration-200 transform hover:-translate-y-1"
                         >
                             {t('minigame.start')}
                         </button>
@@ -290,32 +290,32 @@ export function CompoundInterestRunner() {
             {/* Game Over Screen */}
             {gameState === 'gameover' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-40 animate-fade-in bg-white/5 dark:bg-black/5 backdrop-blur-[4px]">
-                    <div className="liquid-glass p-10 rounded-3xl text-center max-w-md mx-4 animate-fade-in-up border border-gray-200/50 dark:border-white/20 shadow-2xl">
+                    <div className="corp-card p-10 rounded-3xl text-center max-w-md mx-4 animate-fade-in-up border border-gray-200/50 dark:border-white/20 shadow-2xl">
                         <div className={`w-20 h-20 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl ${
                             score > 1500 ? 'bg-gradient-to-tr from-green-400 to-emerald-600 shadow-green-500/30' : 'bg-gradient-to-tr from-red-400 to-rose-600 shadow-red-500/30'
                         }`}>
                             <span className="text-4xl">{score > 1500 ? '🚀' : '💥'}</span>
                         </div>
                         
-                        <h3 className="text-3xl font-black mb-1 text-slate-900 dark:text-white">
+                        <h3 className="corp-h2 mb-1">
                             {t('minigame.game_over')}
                         </h3>
                         
                         <div className="my-8 space-y-2">
-                            <p className="text-gray-500 dark:text-gray-300 font-medium uppercase tracking-widest text-sm">
+                            <p className="corp-body-sm font-medium uppercase tracking-widest">
                                 {t('minigame.final_capital')}
                             </p>
-                            <p className="text-5xl font-black text-[#1a9e7a] dark:text-[#34d399]">
+                            <p className="corp-h1 font-black text-[#1a9e7a] dark:text-[#34d399]">
                                 {t('minigame.currency', { amount: Math.floor(score).toLocaleString() })}
                             </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+                            <p className="corp-body-sm mt-2 font-medium">
                                 {t('minigame.time_label')} {t('minigame.seconds_unit', { time: Math.floor(timeElapsed) })}
                             </p>
                         </div>
                         
                         <button 
                             onClick={startGame}
-                            className="w-full py-4 px-6 bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-[#f6a821]/25 transition-[transform,box-shadow] duration-200 transform hover:scale-105"
+                            className="w-full py-4 px-6 bg-[#f6a821] hover:bg-[#e8880a] text-slate-900 rounded-2xl corp-body-lg font-bold shadow-xl hover:shadow-[#f6a821]/25 transition-[transform,box-shadow] duration-200 transform hover:scale-105"
                         >
                             {t('minigame.play_again')}
                         </button>

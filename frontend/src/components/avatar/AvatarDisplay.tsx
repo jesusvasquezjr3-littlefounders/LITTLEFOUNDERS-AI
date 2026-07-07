@@ -64,7 +64,7 @@ export const AvatarDisplay = ({
         return avatar.toDataUri();
     }, [config, size]);
 
-    const borderClass = includeBorder ? "border-4 border-white dark:border-slate-800 shadow-xl" : "";
+    const borderClass = includeBorder ? "shadow-xl" : "";
 
     const content = (
         <div className={`relative group ${className}`}>
@@ -77,7 +77,7 @@ export const AvatarDisplay = ({
                 />
             ) : (
                 <div
-                    className="rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-xl"
+                    className="rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center shadow-xl"
                     style={{ width: size, height: size }}
                 >
                     <Sparkles className="w-1/3 h-1/3 text-white" />

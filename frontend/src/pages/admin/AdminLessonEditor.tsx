@@ -291,7 +291,7 @@ export const AdminLessonEditor: React.FC = () => {
             <h1 className="corp-display text-2xl font-bold text-slate-900 dark:text-white">
               {isNew ? t('editor.createNew') : `${t('editor.editTitle')}: ${lessonData.lesson_code}`}
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="corp-body-sm">
               {isNew ? t('editor.createNewDesc') : t('editor.editDesc')}
             </p>
           </div>
@@ -479,7 +479,7 @@ export const AdminLessonEditor: React.FC = () => {
                   onDragStart={handleDragStart(idx)}
                   onDragEnd={handleDragEnd}
                   onDragOver={handleDragOver(idx)}
-                  className={`flex-shrink-0 w-24 h-24 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all duration-200 relative
+                  className={`flex-shrink-0 w-24 h-24 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-[border-color,background-color,box-shadow] duration-200 relative
                     ${isSelected
                       ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-900/40 shadow-lg'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow dark:border-white/10 dark:bg-[#0d1426] dark:hover:border-white/20'

@@ -15,7 +15,7 @@ import { useResumeLesson } from '@/components/lessons/hooks/useResumeLesson';
 import { useSagaData, type SagaData } from '@/components/lessons/hooks/useSagaData';
 import { useTranslation } from 'react-i18next';
 import { LessonsLoadingScreen } from '@/components/ui/LoadingScreen';
-import { ChevronDown, ChevronUp, Lock, Sparkles, BookOpen, Zap, LocateFixed, ArrowLeft } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lock, Sparkles, Zap, LocateFixed, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getGuestProfile } from '@/lib/guestProfile';
 import { cn } from '@/lib/utils';
@@ -65,9 +65,9 @@ const SagaSectionItem: React.FC<{
   return (
     <div
       className={cn(
-        'rounded-2xl overflow-hidden transition-all duration-300',
+        'rounded-2xl overflow-hidden transition-[box-shadow] duration-300',
         'border border-white/10 dark:border-white/5',
-        'liquid-glass-subtle',
+        'corp-panel-subtle',
         isCurrentSaga && 'ring-2 ring-indigo-400/40 dark:ring-indigo-500/30'
       )}
     >
@@ -79,7 +79,7 @@ const SagaSectionItem: React.FC<{
           'w-full flex items-center justify-between text-left relative overflow-hidden',
           'bg-sky-500 text-white',
           isOpen ? 'rounded-t-2xl' : 'rounded-2xl',
-          'transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2'
+          'transition-[background-color,box-shadow] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2'
         )}
         aria-expanded={isOpen}
       >
@@ -94,18 +94,18 @@ const SagaSectionItem: React.FC<{
                   isCurrentSaga ? "bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" : "bg-sky-200"
                 )} />
               )}
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white line-clamp-1">
+              <span className="corp-caption text-white font-semibold uppercase tracking-wider line-clamp-1">
                 {saga.description || `Saga ${saga.id}`}
               </span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white truncate leading-tight">
+            <h3 className="corp-h3 text-white truncate">
               {saga.title}
             </h3>
           </div>
 
           <div className="flex items-center shrink-0">
             {/* Expand/Collapse Button Style */}
-            <div className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sky-500 border-b-[4px] border-sky-600 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2)] hover:bg-sky-400 active:border-b-0 active:translate-y-1 transition-all">
+            <div className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sky-500 border-b-[4px] border-sky-600 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2)] hover:bg-sky-400 active:border-b-0 active:translate-y-1 transition-[background-color,border-color,transform]">
               {isOpen ? (
                 <ChevronUp strokeWidth={3} className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               ) : (
@@ -160,7 +160,7 @@ const AdventureBanner: React.FC<{
         'relative w-full max-w-2xl mx-auto rounded-[24px] sm:rounded-[28px] overflow-hidden',
         'h-[100px] sm:h-[280px]',
         'shadow-[0_12px_0_rgba(0,0,0,0.07)] dark:shadow-[0_12px_0_rgba(0,0,0,0.3)]',
-        'border-4 transition-all duration-300',
+        'border-4 transition-[border-color,box-shadow,filter] duration-300',
         isSelected ? 'border-indigo-500/60 dark:border-indigo-400/50 shadow-2xl' : 'border-black/5 dark:border-white/5',
         'cursor-pointer',
         isLocked && 'saturate-50 cursor-default'
@@ -185,7 +185,7 @@ const AdventureBanner: React.FC<{
       {/* Bottom content row */}
       <div className="absolute bottom-0 left-0 right-0 z-[60] flex items-end justify-between px-4 pb-3 sm:px-5 sm:pb-4 gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-white text-xl sm:text-2xl font-black drop-shadow-md leading-tight truncate sm:whitespace-normal">
+          <p className="corp-h3 text-white drop-shadow-md truncate sm:whitespace-normal">
             {adventure.title}
           </p>
         </div>
@@ -195,18 +195,18 @@ const AdventureBanner: React.FC<{
           {isLocked ? (
             <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
               <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
-              <span className="text-white/80 text-xs sm:text-sm font-bold">{t('locked')}</span>
+              <span className="corp-body-sm text-white/80 font-bold">{t('locked')}</span>
             </div>
           ) : adventure.completedLessons === adventure.totalLessons && adventure.totalLessons > 0 ? (
             <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-blue-500/90 backdrop-blur-md border border-blue-300/20 shadow-lg">
-              <span className="text-white text-xs sm:text-sm font-black">🏆 <span className="hidden sm:inline">{t('learn.adventure.completed_badge')}</span></span>
+              <span className="corp-body-sm text-white font-bold">🏆 <span className="hidden sm:inline">{t('learn.adventure.completed_badge')}</span></span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 hover:bg-white/30 transition-colors">
               {isExpanded
                 ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
-              <span className="text-white text-xs sm:text-sm font-bold">
+              <span className="corp-body-sm text-white font-bold">
                 <span className="sm:hidden">{isExpanded ? t('learn.adventure.collapse').slice(0,3) : t('learn.adventure.expand').slice(0,3)}</span>
                 <span className="hidden sm:inline">{isExpanded ? t('learn.adventure.collapse') : t('learn.adventure.expand')}</span>
               </span>
@@ -219,7 +219,7 @@ const AdventureBanner: React.FC<{
       {isLocked && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm z-[70]">
           <Lock className="w-12 h-12 text-white mb-2 drop-shadow-xl" />
-          <p className="text-white text-sm font-bold text-center px-6 drop-shadow">
+          <p className="corp-body-sm text-white font-bold text-center px-6 drop-shadow">
             {t('learn.adventure.locked_cta')}
           </p>
         </div>
@@ -398,18 +398,11 @@ export default function LearnPage() {
           {/* Left Column: Adventures List + Header (Sticky Sidebar - WIDER) */}
           <div className="lg:col-span-7 lg:sticky lg:top-10 lg:self-start space-y-6 pb-20">
             
-            {/* ── Page Header (Internal to Left Column) ────────────────────── */}
-            <div className="flex items-center justify-between gap-4 py-2 border-b border-white/10 dark:border-white/5 mb-6">
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="p-3 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl shadow-xl shadow-indigo-500/20 shrink-0">
-                  <BookOpen className="w-6 h-6 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
-                    {t('lessons:learn.page_title')}
-                  </h1>
-                </div>
-              </div>
+            {/* ── Page Header ─────────────────────────────────────────────── */}
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h1 className="corp-h1">
+                {t('lessons:learn.page_title')}
+              </h1>
 
               {/* "Go to my lesson" */}
               {!isFinished && nextLessonCode && (
@@ -422,10 +415,10 @@ export default function LearnPage() {
                     'lf-resume-pulse group relative shrink-0 inline-flex items-center gap-2 rounded-full',
                     'px-4 py-2.5 sm:px-5 sm:py-3',
                     'bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950',
-                    'text-xs sm:text-sm font-black uppercase tracking-wide',
+                    'corp-caption font-bold uppercase tracking-wide',
                     'ring-2 ring-amber-300/70 shadow-lg shadow-amber-500/30',
-                    'hover:from-amber-300 hover:to-amber-400 hover:scale-[1.04] active:scale-95',
-                    'transition-all duration-200'
+                    'hover:from-amber-300 hover:to-amber-400 hover:scale-[1.04] active:scale-[0.96]',
+                    'transition-[background-color,transform,box-shadow] duration-200'
                   )}
                 >
                   <LocateFixed className="w-4 h-4 shrink-0" />
@@ -435,7 +428,7 @@ export default function LearnPage() {
 
               {/* All-completed badge */}
               {isFinished && (
-                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-xs font-black shadow-lg shadow-indigo-500/30">
+                <div className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white corp-caption font-bold shadow-lg shadow-indigo-500/30">
                   🏆 <span>{t('lessons:learn.all_completed_title')}</span>
                 </div>
               )}
@@ -461,7 +454,7 @@ export default function LearnPage() {
                   <div 
                     key={adventure.id} 
                     className={cn(
-                      "relative transition-all duration-500 rounded-[32px] sm:rounded-[36px]",
+                      "relative transition-[box-shadow,transform,background-color] duration-500 rounded-[32px] sm:rounded-[36px]",
                       isSelected 
                         ? "bg-amber-400 dark:bg-amber-500 p-2 sm:p-3 shadow-xl ring-4 ring-amber-400/30 lg:-mr-[56px] lg:pr-[56px] lg:rounded-r-none z-20" 
                         : ""
@@ -476,7 +469,7 @@ export default function LearnPage() {
                     />
 
                     {/* Mobile Inline Sagas (Accordion) - Now sits inside the yellow box! */}
-                    <AnimatePresence>
+                    <AnimatePresence initial={false}>
                       {isExpanded && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
@@ -517,7 +510,7 @@ export default function LearnPage() {
 
           {/* Right Column: Sagas List (Narrower: 5/12 Proportions) */}
           <div className="hidden lg:block lg:col-span-5 pt-2 relative z-10">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               {activeAdventureId ? (
                 <motion.div 
                   key={`adv-${activeAdventureId}`}
@@ -558,10 +551,10 @@ export default function LearnPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
-                  className="h-[400px] flex flex-col items-center justify-center text-center liquid-glass-subtle border border-dashed border-white/20 rounded-[32px] p-12"
+                  className="h-[400px] flex flex-col items-center justify-center text-center corp-panel-subtle border border-dashed border-slate-200 dark:border-white/10 rounded-[32px] p-12"
                 >
                   <Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
-                  <p className="text-lg font-bold text-slate-400 dark:text-slate-500 max-w-xs">
+                  <p className="corp-subtitle max-w-xs">
                     {t('lessons:learn.empty_state_hint')}
                   </p>
                 </motion.div>
@@ -576,10 +569,10 @@ export default function LearnPage() {
             <div className="inline-block p-6 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 mb-4 text-5xl shadow-lg">
               🏆
             </div>
-            <p className="font-black text-3xl text-slate-800 dark:text-white mb-3">
+            <p className="corp-h2 mb-3">
               {t('lessons:learn.all_completed_title')}
             </p>
-            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto text-base">
+            <p className="corp-body max-w-md mx-auto">
               {t('lessons:learn.all_completed_desc')}
             </p>
           </div>

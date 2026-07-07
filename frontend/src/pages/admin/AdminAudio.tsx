@@ -191,11 +191,10 @@ export const AdminAudio: React.FC = () => {
                   <Volume2 className="w-5 h-5 md:w-7 md:h-7" />
               </div>
               <div className="text-left">
-                  <span className="corp-eyebrow">{t('app_name', 'LittleFounders')}</span>
                   <h1 className="corp-display mt-1 text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                       {t('audio.title')}
                   </h1>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-tight">
+                  <p className="mt-1 corp-body-sm">
                       {t('audio.description')}
                   </p>
               </div>
@@ -298,7 +297,7 @@ export const AdminAudio: React.FC = () => {
       </div>
 
       {/* Results Info */}
-      <div className="text-sm text-slate-600 dark:text-slate-400">
+      <div className="corp-body-sm">
         {t('common.showing')} {filteredAudio.length} {t('audio.audioSegments')}
       </div>
 

@@ -223,7 +223,7 @@ export function TopNav() {
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Points Stat */}
         <div className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-colors",
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl corp-panel-subtle border transition-colors",
           (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0))
             ? "border-amber-500/20"
             : "border-slate-300 dark:border-slate-700 opacity-60 grayscale"
@@ -233,7 +233,7 @@ export function TopNav() {
             <dotlottie-wc src="https://lottie.host/670784f8-65c7-4b8b-a506-3da5403c7a3f/bpw4bs7R0M.lottie" autoplay loop style={{ width: '100%', height: '100%' }} />
           </div>
           <span className={cn(
-            "text-base font-bold leading-none",
+            "corp-number font-extrabold",
             (user?.points_earned > 0 || (guestMode && (guestProfile?.xp ?? 0) > 0)) ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"
           )}>
             {guestMode ? (guestProfile?.xp ?? 0) : (user?.points_earned?.toLocaleString() || 0)}
@@ -247,7 +247,7 @@ export function TopNav() {
         ──────────────────────────────────────────────────────────────────── */}
         <div
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl liquid-glass-subtle border transition-colors",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-2xl corp-panel-subtle border transition-colors",
             streakState === 'active'
               ? "border-emerald-500/20"
               : "border-slate-300 dark:border-slate-700 opacity-60"
@@ -260,7 +260,7 @@ export function TopNav() {
         >
           <div
             className={cn(
-              "w-8 h-8 flex items-center justify-center transition-all duration-300",
+              "w-8 h-8 flex items-center justify-center transition-[filter] duration-300",
               streakState !== 'active' && "grayscale"
             )}
           >
@@ -274,7 +274,7 @@ export function TopNav() {
           </div>
           <span
             className={cn(
-              "text-base font-bold leading-none transition-colors duration-300",
+              "corp-number font-extrabold transition-colors duration-300",
               streakState === 'active'
                 ? "text-emerald-600 dark:text-emerald-400"
                 : "text-slate-500 dark:text-slate-400"
@@ -301,7 +301,7 @@ export function TopNav() {
 
         {/* Guest CTA — shown instead of bell + avatar */}
         {guestMode && (
-          <Button asChild size="sm" className="rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-semibold text-xs h-9 px-3">
+          <Button asChild size="sm" className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold corp-caption h-9 px-3">
             <Link to="/signup">{t('guest.create_account')}</Link>
           </Button>
         )}
@@ -309,12 +309,13 @@ export function TopNav() {
         {/* Notifications — only for authenticated users */}
         {!guestMode && <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative">
+            <Button variant="ghost" size="sm" className="relative transition-[background-color,transform] duration-150 ease-out active:scale-[0.96]">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <Badge
+                  key={unreadCount}
                   variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                  className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full p-0 text-xs flex items-center justify-center animate-badge-pop"
                 >
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </Badge>
@@ -324,12 +325,12 @@ export function TopNav() {
           <DropdownMenuContent align="end" className="w-96 max-h-[480px] p-0 rounded-xl shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <h3 className="font-semibold text-sm">{t('notifications.title')}</h3>
+              <h3 className="corp-body-sm font-semibold">{t('notifications.title')}</h3>
               {unreadCount > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-xs h-7 px-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
+                  className="corp-caption h-7 px-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
                   onClick={handleMarkAllRead}
                 >
                   <CheckCheck className="h-3.5 w-3.5 mr-1" />
@@ -341,15 +342,15 @@ export function TopNav() {
             {/* Notification list */}
             <div className="overflow-y-auto max-h-[380px]">
               {isLoading && notifications.length === 0 ? (
-                <div className="flex items-center justify-center py-10 text-muted-foreground text-sm">
+                <div className="flex items-center justify-center py-10 corp-body-sm">
                   <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full mr-2" />
                   {t('notifications.loading')}
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
                   <Bell className="h-10 w-10 text-muted-foreground/30 mb-3" />
-                  <p className="text-sm text-muted-foreground">{t('notifications.empty')}</p>
-                  <p className="text-xs text-muted-foreground/70 mt-1">{t('notifications.empty_desc')}</p>
+                  <p className="corp-body-sm">{t('notifications.empty')}</p>
+                  <p className="corp-caption mt-1">{t('notifications.empty_desc')}</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border">
@@ -371,19 +372,19 @@ export function TopNav() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <p className={`text-sm leading-snug ${isUnread ? 'font-semibold text-slate-900 dark:text-slate-100' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                            <p className={`corp-body-sm leading-snug ${isUnread ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
                               {notif.title}
                             </p>
                             <button
                               onClick={(e) => handleDismiss(e, notif.public_id)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 shrink-0"
+                              className="opacity-0 group-hover:opacity-100 transition-[opacity,background-color] duration-150 ease-out p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.96] shrink-0"
                               title={t('notifications.dismiss')}
                             >
                               <X className="h-3.5 w-3.5 text-muted-foreground" />
                             </button>
                           </div>
                           {notif.body && (
-                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.body}</p>
+                            <p className="corp-caption mt-0.5 line-clamp-2">{notif.body}</p>
                           )}
                           {notif.media_url && (
                             <img
@@ -393,7 +394,7 @@ export function TopNav() {
                             />
                           )}
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[11px] text-muted-foreground/70">
+                            <span className="corp-caption">
                               {getTimeAgo(notif.created_at, t)}
                             </span>
                             {isUnread && (
@@ -414,7 +415,7 @@ export function TopNav() {
         {!guestMode && <>{/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm ring-2 ring-indigo-500/70 ring-offset-2 dark:ring-offset-slate-900">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden shadow-sm transition-[transform,box-shadow] duration-150 ease-out active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900">
               {user?.avatar_config ? (
                 <AvatarDisplay
                   config={user.avatar_config}
@@ -435,13 +436,13 @@ export function TopNav() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-72 p-2 rounded-2xl border border-indigo-100/50 dark:border-slate-800/50 shadow-2xl liquid-glass-strong"
+            className="w-72 p-2 rounded-2xl border border-indigo-100/50 dark:border-slate-800/50 shadow-2xl corp-panel"
             align="end"
             forceMount
           >
             <DropdownMenuLabel className="font-normal p-0 mb-2">
               <div className="flex items-center space-x-3 p-3 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl">
-                <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm bg-white dark:bg-slate-800 shrink-0">
+                <div className="h-12 w-12 rounded-full overflow-hidden shadow-sm bg-white dark:bg-slate-800 shrink-0">
                   {user?.avatar_config ? (
                     <AvatarDisplay
                       config={user.avatar_config}
@@ -461,11 +462,11 @@ export function TopNav() {
                   )}
                 </div>
                 <div className="flex flex-col space-y-1 overflow-hidden min-w-0 flex-1">
-                  <p className="text-base font-semibold leading-none text-slate-900 dark:text-slate-100 truncate">
+                  <p className="corp-body font-semibold truncate">
                     {user ? user.name : t('user_menu.user')}
                   </p>
                   {user?.username && (
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">
+                    <p className="corp-subtitle-sm truncate">
                       @{user.username}
                     </p>
                   )}
@@ -486,7 +487,7 @@ export function TopNav() {
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mr-3">
                     <User className="h-4 w-4" />
                   </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.my_profile')}</span>
+                  <span className="corp-body-sm">{t('user_menu.my_profile')}</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
@@ -494,7 +495,7 @@ export function TopNav() {
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mr-3">
                     <Settings className="h-4 w-4" />
                   </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.settings')}</span>
+                  <span className="corp-body-sm">{t('user_menu.settings')}</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 focus:bg-slate-50 dark:focus:bg-slate-800/50 outline-none">
@@ -502,7 +503,7 @@ export function TopNav() {
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mr-3">
                     <HelpCircle className="h-4 w-4" />
                   </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{t('user_menu.help')}</span>
+                  <span className="corp-body-sm">{t('user_menu.help')}</span>
                 </Link>
               </DropdownMenuItem>
             </div>
@@ -514,7 +515,7 @@ export function TopNav() {
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/40 mr-3">
                   <LogOut className="h-4 w-4" />
                 </div>
-                <span className="font-medium">{t('user_menu.logout')}</span>
+                <span className="corp-body-sm">{t('user_menu.logout')}</span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -542,7 +543,7 @@ export function TopNav() {
                   <div className={`flex items-center justify-center w-9 h-9 rounded-xl shrink-0 ${config.bgClass}`}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <span className="corp-caption font-semibold uppercase tracking-wider">
                     {notif.type.replace(/_/g, ' ')}
                   </span>
                 </div>
@@ -556,11 +557,11 @@ export function TopNav() {
 
               {/* Modal body */}
               <div className="px-5 py-5 space-y-3">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                <h2 className="corp-h3 leading-snug">
                   {notif.title}
                 </h2>
                 {notif.body && (
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="corp-body whitespace-pre-wrap">
                     {notif.body}
                   </p>
                 )}
@@ -572,7 +573,7 @@ export function TopNav() {
                     onError={e => (e.currentTarget.style.display = 'none')}
                   />
                 )}
-                <p className="text-xs text-slate-400 dark:text-slate-500">
+                <p className="corp-body-sm">
                   {getTimeAgo(notif.created_at, t)}
                 </p>
               </div>
@@ -581,14 +582,14 @@ export function TopNav() {
               <div className="px-5 pb-5 flex items-center justify-end gap-3">
                 <button
                   onClick={() => setSelectedNotification(null)}
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 rounded-xl corp-body-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   {t('notifications.dismiss')}
                 </button>
                 {notif.action_url && (
                   <button
                     onClick={handleDetailNavigate}
-                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                    className="px-4 py-2 rounded-xl corp-body-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
                   >
                     {t('notifications.go_to_action') || 'Ver más'}
                   </button>

@@ -210,8 +210,8 @@ export const AdminAnalytics: React.FC = () => {
             <div className="corp-icon-chip mx-auto mb-5 w-16 h-16">
               <BarChart3 className="h-8 w-8" />
             </div>
-            <h2 className="corp-display text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('analytics.launcherTitle')}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{t('analytics.launcherBody')}</p>
+            <h2 className="corp-h3 mb-2">{t('analytics.launcherTitle')}</h2>
+            <p className="corp-body-sm mb-6">{t('analytics.launcherBody')}</p>
 
             {embedBlocked && (
               <div className="mx-auto mb-6 flex items-center gap-2 rounded-xl bg-amber-500/10 dark:bg-amber-500/10 px-4 py-2.5 text-xs font-semibold text-amber-600 dark:text-amber-400">

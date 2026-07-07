@@ -203,7 +203,7 @@ const AuthCallback = () => {
                     autoplay
                     loop
                 />
-                <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-200">
+                <h2 className="corp-h4">
                     {t('auth:login.loading')}
                 </h2>
             </div>

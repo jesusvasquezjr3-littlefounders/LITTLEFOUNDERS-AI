@@ -8,18 +8,16 @@ export const LandingParentCTA: React.FC = () => {
 
   return (
     <section className="relative py-20 sm:py-28 bg-slate-50 dark:bg-[#0a0e1a] overflow-hidden">
-      <div className="absolute inset-0 corp-grid-bg opacity-60 dark:opacity-40 pointer-events-none" />
-
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span className="corp-eyebrow mb-6 inline-flex items-center gap-2">
           <Sparkles className="w-4 h-4" /> {t("cta_parents.disclaimer")}
         </span>
 
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.1] text-slate-900 dark:text-white mb-6">
+        <h2 className="corp-h2 mb-6">
           {t("cta_parents.title")}
         </h2>
 
-        <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="corp-body mb-10 max-w-2xl mx-auto">
           {t("cta_parents.subtitle")}
         </p>
 
@@ -40,7 +38,7 @@ export const LandingParentCTA: React.FC = () => {
           </Link>
         </div>
 
-        <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">
+        <p className="corp-body mt-5">
           {t("hero.cta_subtext")}
         </p>
       </div>

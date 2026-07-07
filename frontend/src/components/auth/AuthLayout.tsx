@@ -15,7 +15,6 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
 
   return (
     <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
 
       <div className="absolute top-4 right-4 z-20">
@@ -29,7 +28,7 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
               <div>
                 <Link
                   to="/"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors duration-200 group"
+                  className="inline-flex items-center gap-2 corp-body-sm hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200 group"
                 >
                   <span className="group-hover:-translate-x-1 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] inline-block">&larr;</span>
                   {t("login.back_to_home")}
@@ -41,8 +40,8 @@ export function AuthLayout({ children, title, description, showBackToWelcome = t
           {/* Auth Card */}
           <div className="corp-card p-7 space-y-6 animate-in fade-in zoom-in-95 duration-300">
             <div className="text-center space-y-1.5">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
+              <h1 className="corp-h3">{title}</h1>
+              <p className="corp-subtitle">{description}</p>
             </div>
             {children}
           </div>

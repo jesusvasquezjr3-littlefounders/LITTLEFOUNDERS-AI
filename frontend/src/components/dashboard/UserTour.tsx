@@ -277,7 +277,7 @@ export function UserTour() {
 
             <div
                 className={cn(
-                    "absolute transition-all duration-500 ease-in-out pointer-events-auto",
+                    "absolute transition-[top,left,transform] duration-500 ease-in-out pointer-events-auto",
                     isCenter
                         ? "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                         : "transition-[top,left]"
@@ -300,10 +300,10 @@ export function UserTour() {
                     </Button>
 
                     <div className="relative z-10">
-                        <h3 className="corp-display text-xl font-bold mb-3 !text-black dark:!text-white">
+                        <h3 className="corp-h3 mb-3 !text-black dark:!text-white">
                             {step.title}
                         </h3>
-                        <p className="mb-6 text-sm leading-relaxed font-semibold !text-black dark:!text-white">
+                        <p className="corp-body mb-6 font-semibold !text-black dark:!text-white">
                             {step.description}
                         </p>
 
@@ -313,7 +313,7 @@ export function UserTour() {
                                     <div
                                         key={idx}
                                         className={cn(
-                                            "h-2 rounded-full transition-all duration-300",
+                                            "h-2 rounded-full transition-[width,background-color] duration-300",
                                             idx === currentStep
                                                 ? "w-4 !bg-[#fdc70c] dark:!bg-black"
                                                 : "w-2 !bg-[#fdc70c]/30 dark:!bg-black/30"
@@ -321,7 +321,7 @@ export function UserTour() {
                                     />
                                 ))}
                             </div>
-                            <Button onClick={handleNext} variant="ghost" size="sm" className="group rounded-xl px-4 text-sm font-bold inline-flex items-center justify-center gap-1 !bg-[#fdc70c] !text-black hover:!bg-[#e5b40b] dark:!bg-black dark:!text-white dark:hover:!bg-black/80">
+                            <Button onClick={handleNext} variant="ghost" size="sm" className="group rounded-xl px-4 corp-body-sm font-bold inline-flex items-center justify-center gap-1 !bg-[#fdc70c] !text-black hover:!bg-[#e5b40b] dark:!bg-black dark:!text-white dark:hover:!bg-black/80">
                                 {currentStep === activeSteps.length - 1 ? t('tour.buttons.start') : t('tour.buttons.next')}
                                 {currentStep !== activeSteps.length - 1 && (
                                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

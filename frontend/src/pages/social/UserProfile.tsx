@@ -134,25 +134,22 @@ export default function UserProfile() {
 
             <div className="flex-1 space-y-5">
               <div>
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                  <span className="corp-eyebrow">{t('common:app_name')}</span>
-                </div>
                 <h1 className="corp-display text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                   {profile.name || `@${profile.username}`}
                 </h1>
-                <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mt-1">
+                <p className="corp-subtitle mt-1">
                   @{profile.username}
                 </p>
               </div>
 
               <div className="flex justify-center md:justify-start items-center gap-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
                 <div className="flex flex-col items-center md:items-start">
-                  <span className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{profile.following_count}</span>
+                  <span className="corp-number-lg">{profile.following_count}</span>
                   <span className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{t('profile:social.following')}</span>
                 </div>
                 <div className="w-px h-10 bg-slate-200 dark:bg-white/10"></div>
                 <div className="flex flex-col items-center md:items-start">
-                  <span className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{profile.followers_count}</span>
+                  <span className="corp-number-lg">{profile.followers_count}</span>
                   <span className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{t('profile:social.followers')}</span>
                 </div>
               </div>
@@ -165,14 +162,14 @@ export default function UserProfile() {
         </div>
 
         {/* Stats Grid */}
-        <h3 className="text-xl font-bold text-slate-800 dark:text-white px-2 mt-8 mb-4">{t('profile:sections.learning_stats')}</h3>
+        <h3 className="corp-h4 px-2 mt-8 mb-4">{t('profile:sections.learning_stats')}</h3>
         <div className="grid grid-cols-3 gap-4">
           <Card className={cn("corp-card bg-violet-50 dark:bg-violet-950/20", profile.current_streak === 0 && "grayscale opacity-60")}>
             <CardContent className="p-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/50 rounded-2xl flex items-center justify-center mb-3 text-violet-600 dark:text-violet-300">
                 <Flame className="w-6 h-6" />
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{profile.current_streak}</p>
+              <p className="corp-number-lg">{profile.current_streak}</p>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{t('common:dashboard.stats.streak')}</p>
             </CardContent>
           </Card>
@@ -182,7 +179,7 @@ export default function UserProfile() {
               <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-2xl flex items-center justify-center mb-3 text-indigo-600 dark:text-indigo-300">
                 <Star className="w-6 h-6" />
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{profile.points_earned}</p>
+              <p className="corp-number-lg">{profile.points_earned}</p>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{t('common:dashboard.stats.points')}</p>
             </CardContent>
           </Card>
@@ -192,7 +189,7 @@ export default function UserProfile() {
               <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center mb-3 text-emerald-600 dark:text-emerald-300">
                 <Trophy className="w-6 h-6" />
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{profile.lessons_completed}</p>
+              <p className="corp-number-lg">{profile.lessons_completed}</p>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{t('common:dashboard.stats.lessons')}</p>
             </CardContent>
           </Card>

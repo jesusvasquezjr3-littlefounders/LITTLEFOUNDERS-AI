@@ -121,10 +121,10 @@ export function ReportFAB({ inline = false, className = "" }: ReportFABProps) {
         <button
           onClick={() => setOpen(true)}
           className={`
-            inline-flex items-center gap-2.5 px-6 py-3 rounded-[20px] font-bold text-sm
+            inline-flex items-center gap-2.5 px-6 py-3 rounded-[20px] corp-body-sm font-bold
             bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-2 border-white/50 dark:border-slate-700/50
             text-slate-800 dark:text-white shadow-xl hover:shadow-indigo-500/10
-            transition-all duration-300 hover:border-indigo-400/30
+            transition-[background-color,border-color,box-shadow] duration-300 hover:border-indigo-400/30
             ${className}
           `}
         >
@@ -167,17 +167,17 @@ export function ReportFAB({ inline = false, className = "" }: ReportFABProps) {
           <button
             type="button"
             className={`
-              flex items-center gap-2.5 px-4 py-3 rounded-full font-bold text-xs
+              flex items-center gap-2.5 px-4 py-3 rounded-full corp-caption font-bold
               bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-2 border-white/60 dark:border-slate-700/60
               text-slate-800 dark:text-white shadow-2xl
-              transition-all duration-300 ${isDragging ? '' : 'hover:scale-105 active:scale-95'}
+              transition-[scale,background-color,box-shadow] duration-300 ${isDragging ? '' : 'hover:scale-105 active:scale-[0.96]'}
               ${!isDragging && 'group-hover:pr-6'}
             `}
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:rotate-6">
               <Flag className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className={`max-w-0 overflow-hidden transition-all duration-500 whitespace-nowrap tracking-tight font-bold ${isDragging ? '' : 'group-hover:max-w-[100px]'}`}>
+            <span className={`max-w-0 overflow-hidden transition-[max-width] duration-500 whitespace-nowrap tracking-tight font-bold ${isDragging ? '' : 'group-hover:max-w-[100px]'}`}>
               {t("button_label")}
             </span>
           </button>

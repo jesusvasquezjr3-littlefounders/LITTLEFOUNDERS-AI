@@ -87,12 +87,12 @@ export function CustomerAnalytics() {
           
           <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">
             <div className="text-center">
-              <div className="text-lg font-bold text-customers">342</div>
-              <div className="text-xs text-muted-foreground">Este mes</div>
+              <div className="corp-number-lg text-customers">342</div>
+              <div className="corp-caption">Este mes</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-primary">+23%</div>
-              <div className="text-xs text-muted-foreground">vs mes anterior</div>
+              <div className="corp-number-lg text-primary">+23%</div>
+              <div className="corp-caption">vs mes anterior</div>
             </div>
           </div>
         </CardContent>
@@ -148,9 +148,9 @@ export function CustomerAnalytics() {
                     className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-sm">{item.segment}</span>
+                  <span className="corp-body-sm">{item.segment}</span>
                 </div>
-                <span className="text-sm font-medium">{item.value}%</span>
+                <span className="corp-body-sm font-medium">{item.value}%</span>
               </div>
             ))}
           </div>
@@ -168,24 +168,24 @@ export function CustomerAnalytics() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center p-4 bg-customers-light rounded-lg">
-              <div className="text-2xl font-bold text-customers">2,847</div>
-              <div className="text-sm text-muted-foreground">Usuarios totales</div>
-              <div className="text-xs text-customers mt-1">+12% este mes</div>
+              <div className="corp-number-lg text-customers">2,847</div>
+              <div className="corp-body-sm">Usuarios totales</div>
+              <div className="corp-caption text-customers mt-1">+12% este mes</div>
             </div>
             <div className="text-center p-4 bg-product-light rounded-lg">
-              <div className="text-2xl font-bold text-product">4.2%</div>
-              <div className="text-sm text-muted-foreground">Churn mensual</div>
-              <div className="text-xs text-destructive mt-1">+0.3% de aumento</div>
+              <div className="corp-number-lg text-product">4.2%</div>
+              <div className="corp-body-sm">Churn mensual</div>
+              <div className="corp-caption text-destructive mt-1">+0.3% de aumento</div>
             </div>
             <div className="text-center p-4 bg-revenue-light rounded-lg">
-              <div className="text-2xl font-bold text-revenue">$89</div>
-              <div className="text-sm text-muted-foreground">Ingreso promedio por usuario</div>
-              <div className="text-xs text-revenue mt-1">+5% este mes</div>
+              <div className="corp-number-lg text-revenue">$89</div>
+              <div className="corp-body-sm">Ingreso promedio por usuario</div>
+              <div className="corp-caption text-revenue mt-1">+5% este mes</div>
             </div>
             <div className="text-center p-4 bg-team-light rounded-lg">
-              <div className="text-2xl font-bold text-team">94%</div>
-              <div className="text-sm text-muted-foreground">Satisfacción de usuarios</div>
-              <div className="text-xs text-team mt-1">Estable</div>
+              <div className="corp-number-lg text-team">94%</div>
+              <div className="corp-body-sm">Satisfacción de usuarios</div>
+              <div className="corp-caption text-team mt-1">Estable</div>
             </div>
           </div>
         </CardContent>

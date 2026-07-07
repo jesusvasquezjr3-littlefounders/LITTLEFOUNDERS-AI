@@ -99,7 +99,7 @@ export const AdminContributionGraph: React.FC<AdminContributionGraphProps> = ({ 
                     <Activity className="h-5 w-5" />
                     {t('dashboard.activityGraph.title')}
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">
+                <p className="corp-body-sm">
                     {t('dashboard.activityGraph.subtitle')}
                 </p>
             </CardHeader>
@@ -107,7 +107,7 @@ export const AdminContributionGraph: React.FC<AdminContributionGraphProps> = ({ 
                 <div className="w-full overflow-x-auto pb-4">
                     <div className="min-w-[800px]">
                         {/* Month Labels */}
-                        <div className="flex mb-2 text-xs text-muted-foreground relative h-5">
+                        <div className="flex mb-2 corp-caption relative h-5">
                             {months.map((m, i) => (
                                 <span
                                     key={i}
@@ -136,7 +136,7 @@ export const AdminContributionGraph: React.FC<AdminContributionGraphProps> = ({ 
                                                 />
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                <div className="text-xs">
+                                                <div className="corp-caption">
                                                     <p className="font-semibold mb-1">
                                                         {format(day.date, 'PPPP', { locale })}
                                                     </p>
@@ -162,7 +162,7 @@ export const AdminContributionGraph: React.FC<AdminContributionGraphProps> = ({ 
                         </div>
 
                         {/* Legend */}
-                        <div className="mt-4 flex items-center justify-end gap-2 text-xs text-muted-foreground">
+                        <div className="mt-4 flex items-center justify-end gap-2 corp-caption">
                             <span>{t('dashboard.activityGraph.less')}</span>
                             <div className="w-3 h-3 rounded-[2px] bg-slate-100 dark:bg-slate-800" />
                             <div className="w-3 h-3 rounded-[2px] bg-emerald-200 dark:bg-emerald-900" />

@@ -8,6 +8,7 @@ import { Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { motion } from "framer-motion";
 
 const ResetPassword = () => {
   const { t } = useTranslation(['auth']);
@@ -74,7 +75,6 @@ const ResetPassword = () => {
 
   return (
     <div className="corp min-h-screen relative overflow-hidden bg-gradient-to-b from-indigo-50/80 via-white to-white dark:from-[#0b1124] dark:via-[#070b14] dark:to-[#070b14]">
-      <div className="absolute inset-0 corp-grid-bg pointer-events-none" />
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo-400/12 dark:bg-indigo-600/12 blur-[120px] pointer-events-none" />
 
       <div className="absolute top-4 right-4 z-20">
@@ -84,12 +84,17 @@ const ResetPassword = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-sm">
 
-          <div className="corp-card p-6 space-y-5">
+          <motion.div
+            className="corp-card p-6 space-y-5"
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="corp-h3">
                 {t('auth:reset_password.title')}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-xs">
+              <p className="corp-body-sm">
                 {t('auth:reset_password.subtitle')}
               </p>
             </div>
@@ -99,7 +104,7 @@ const ResetPassword = () => {
                 <div className="w-16 h-16 mx-auto bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="corp-body-sm">
                   {t('auth:reset_password.success_description')}
                 </p>
               </div>
@@ -167,10 +172,10 @@ const ResetPassword = () => {
                 </Button>
               </form>
             )}
-          </div>
+          </motion.div>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
+            <p className="corp-body-sm flex items-center justify-center gap-2">
               {t('auth:login.footer')}
             </p>
           </div>

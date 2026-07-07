@@ -16,7 +16,7 @@ export function GamifiedLearningSection() {
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
 
           <div className="flex-1 space-y-6 text-center md:text-left">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-slate-900 dark:text-white">
+            <h2 className="corp-h2">
               {t("solution.title_part1")}
               <br />
               {t("solution.title_part2")}{" "}
@@ -25,15 +25,15 @@ export function GamifiedLearningSection() {
               </span>
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mx-auto md:mx-0">
+            <p className="corp-body max-w-xl mx-auto md:mx-0">
               {t("solution.subtitle")}
             </p>
 
             <ul className="space-y-3 text-left max-w-xl mx-auto md:mx-0">
               {benefits.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm sm:text-base">
+                <li key={i} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
-                  <span className="text-slate-700 dark:text-slate-300">{item}</span>
+                  <span className="corp-body">{item}</span>
                 </li>
               ))}
             </ul>

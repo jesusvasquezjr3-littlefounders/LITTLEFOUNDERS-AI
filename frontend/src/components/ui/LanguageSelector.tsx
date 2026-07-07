@@ -62,20 +62,20 @@ export function LanguageSelector({
                     variant="ghost"
                     size="sm"
                     className={cn(
-                        'relative gap-2 liquid-glass-subtle rounded-full border border-white/20 dark:border-white/10 shadow-sm px-4 h-10 transition-all duration-300 hover:bg-white/10 group',
+                        'relative gap-2 corp-panel-subtle rounded-full border border-white/20 dark:border-white/10 shadow-sm px-4 h-10 transition-all duration-300 hover:bg-white/10 group',
                         className
                     )}
                 >
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-indigo-500 transition-colors" />
-                        <span className="text-xs font-bold uppercase tracking-tight text-gray-700 dark:text-gray-200">
+                        <span className="corp-caption font-bold uppercase tracking-tight">
                             {currentLanguageInfo.code}
                         </span>
                         <ChevronDown className={cn("w-3 h-3 text-gray-400 transition-transform duration-300", isOpen && "rotate-180")} />
                     </div>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[140px] liquid-glass animate-in fade-in zoom-in duration-200">
+            <DropdownMenuContent align="end" className="min-w-[140px] corp-card animate-in fade-in zoom-in duration-200">
                 {languages.map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
@@ -86,7 +86,7 @@ export function LanguageSelector({
                         )}
                     >
                         <span className="text-base">{lang.flag}</span>
-                        <span className="text-sm">{lang.name}</span>
+                        <span className="corp-body-sm">{lang.name}</span>
                         {isCurrentLanguage(lang.code) && (
                             <span className="ml-auto">
                                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />

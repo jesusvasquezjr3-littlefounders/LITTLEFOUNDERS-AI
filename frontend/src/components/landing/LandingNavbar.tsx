@@ -65,18 +65,21 @@ export const LandingNavbar = () => {
                         />
                     </Link>
 
-                    <div className="hidden lg:flex items-center gap-8">
+                    <div className="hidden lg:flex items-center gap-7">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`text-sm font-medium transition-[color,transform] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:rounded-md ${
+                                className={`relative corp-caption font-semibold transition-colors duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:rounded-md ${
                                     isCurrent(link.path)
                                         ? 'text-indigo-600 dark:text-indigo-300'
                                         : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300'
                                 }`}
                             >
                                 {link.label}
+                                {isCurrent(link.path) && (
+                                    <span className="absolute -bottom-1 left-0 right-0 h-px bg-indigo-500 dark:bg-indigo-400 rounded-full animate-content-enter" />
+                                )}
                             </Link>
                         ))}
                     </div>
@@ -86,7 +89,7 @@ export const LandingNavbar = () => {
                         <LanguageSelector variant="simple" />
                         <Link
                             to={ctaTo}
-                            className="corp-btn-primary inline-flex items-center gap-1.5 text-sm font-semibold rounded-xl px-5 py-2.5"
+                            className="corp-btn-primary inline-flex items-center gap-2 corp-body-sm font-semibold rounded-full px-6 py-2.5"
                         >
                             {ctaLabel}
                             <ArrowRight className="w-4 h-4" />
@@ -114,20 +117,20 @@ export const LandingNavbar = () => {
                     className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-[#0a0e1a] border-b border-slate-200 dark:border-white/10 p-4 flex flex-col gap-1 shadow-xl"
                     style={{
                         opacity: mobileMenuOpen ? 1 : 0,
-                        transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-8px)',
-                        transition: 'opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+                        transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-6px)',
+                        transition: 'opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1), transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
                     }}
                 >
                     {navLinks.map((link, i) => (
                         <Link
                             key={link.path}
                             to={link.path}
-                            className="text-base font-medium text-slate-700 dark:text-slate-200 py-3 border-b border-slate-100 dark:border-white/5 transition-colors duration-150 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
+                            className="corp-body font-medium py-3 border-b border-slate-100 dark:border-white/5 transition-colors duration-150 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
                             onClick={() => setMobileMenuOpen(false)}
                             style={{
                                 opacity: mobileMenuOpen ? 1 : 0,
-                                transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-8px)',
-                                transition: `opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + i * 50}ms, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + i * 50}ms`,
+                                transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-6px)',
+                                transition: `opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1) ${40 + i * 40}ms, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1) ${40 + i * 40}ms`,
                             }}
                         >
                             {link.label}
@@ -136,11 +139,11 @@ export const LandingNavbar = () => {
                     <div className="flex flex-col gap-2 mt-3" style={{
                         opacity: mobileMenuOpen ? 1 : 0,
                         transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(4px)',
-                        transition: `opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + navLinks.length * 50}ms, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${50 + navLinks.length * 50}ms`,
+                        transition: `opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1) ${40 + navLinks.length * 40}ms, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1) ${40 + navLinks.length * 40}ms`,
                     }}>
                         <Link
                             to={ctaTo}
-                            className="corp-btn-primary text-center text-sm font-semibold py-3 rounded-xl"
+                            className="corp-btn-primary text-center corp-body-sm font-semibold py-3 rounded-xl"
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             {ctaLabel}

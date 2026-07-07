@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
-import DrRhoCharacter from '@/components/characters/DrRhoCharacter';
 
 interface Props {
   name: string;
@@ -29,16 +28,7 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
 
   return (
     <div className="flex flex-col items-center text-center w-full animate-in fade-in zoom-in-95 duration-300">
-      {/* Character */}
-      <div className="relative flex items-center justify-center mb-4">
-        <div className="absolute inset-0 rounded-full blur-3xl pointer-events-none bg-indigo-400/15 dark:bg-indigo-500/15" />
-        <div className="relative w-56 h-56 sm:w-64 sm:h-64 drop-shadow-2xl">
-          <DrRhoCharacter mood="explaining" showBubble currentText={t('intro.rho_bubble', { name })} bubblePosition="top" />
-        </div>
-      </div>
-
-      {/* Card */}
-      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full max-w-sm p-8 sm:p-10 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/5">
+      <div className="bg-white dark:bg-[#0d1426] rounded-[2.5rem] w-full p-8 sm:p-10 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.03)] border border-slate-200/50 dark:border-white/5">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 leading-snug">
           {t('intro.title', { name })}
         </h2>
@@ -49,7 +39,6 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
           {t('intro.later_hint')}
         </p>
 
-        {/* Accept CTA */}
         <button
           type="button"
           onClick={onAccept}
@@ -59,7 +48,6 @@ export function PlacementIntroScreen({ name, onAccept, onSkip }: Props) {
           <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]" />
         </button>
 
-        {/* Skip link */}
         <button
           type="button"
           onClick={onSkip}

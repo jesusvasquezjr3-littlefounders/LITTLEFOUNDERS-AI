@@ -125,7 +125,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           "flex-col items-center gap-1 p-3",
           "rounded-3xl bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-white/10",
           "shadow-xl shadow-black/5 dark:shadow-black/40",
-          "transition-all duration-300 ease-out",
+          "transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           isExpanded ? "w-60" : "w-24",
           "view-transition-sidebar"
         )}
@@ -141,10 +141,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 key={item.title}
                 to={item.url}
                 id={item.id}
-              end={item.url === "/dashboard" || item.url === "/learn"}
+                end={item.url === "/dashboard" || item.url === "/learn"}
                 onClick={(e) => handleItemClick(e, item)}
                 className={cn(
-                  "group flex items-center gap-3 p-2 rounded-2xl transition-all duration-200",
+                  "group flex items-center gap-3 p-2 rounded-2xl transition-[background-color,transform] duration-200 ease-out active:scale-[0.97]",
                   active
                     ? "bg-indigo-50 dark:bg-indigo-500/10"
                     : "hover:bg-slate-100 dark:hover:bg-white/5",
@@ -153,9 +153,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 )}
               >
                 <div className={cn(
-                  "relative flex items-center justify-center w-12 h-12 rounded-2xl transition-colors duration-200",
+                  "relative flex items-center justify-center w-12 h-12 rounded-2xl transition-[background-color,color,box-shadow] duration-200 ease-out",
                   active
-                    ? "bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-md shadow-indigo-500/30"
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
                     : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-white"
                 )}>
                   <item.icon className="w-6 h-6" />
@@ -167,7 +167,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 </div>
                 {isExpanded && (
                   <span className={cn(
-                    "text-xs font-semibold tracking-tight truncate transition-colors",
+                    "corp-caption font-semibold truncate transition-colors",
                     active ? "text-slate-800 dark:text-white" : "text-slate-600 dark:text-slate-300"
                   )}>
                     {item.title}
@@ -183,7 +183,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           size="sm"
           onClick={onToggle}
           className={cn(
-            "mt-2 p-3 rounded-2xl w-full transition-all duration-200",
+            "mt-2 p-3 rounded-2xl w-full transition-[background-color] duration-200 ease-out",
             "hover:bg-slate-100 dark:hover:bg-white/5",
             !collapsed && "bg-indigo-50 dark:bg-indigo-500/10"
           )}
@@ -208,14 +208,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               end={item.url === "/dashboard" || item.url === "/learn"}
               onClick={(e) => handleItemClick(e, item)}
               className={cn(
-                "flex-shrink-0 flex items-center justify-center p-1.5 rounded-xl transition-colors duration-200",
+                "flex-shrink-0 flex items-center justify-center p-1.5 rounded-xl transition-[transform,background-color] duration-150 ease-out active:scale-[0.96]",
                 item.locked && "opacity-50"
               )}
             >
               <div className={cn(
                 "relative flex items-center justify-center w-11 h-11 rounded-xl transition-colors duration-200",
                 active
-                  ? "bg-gradient-to-br from-indigo-500 to-blue-500 text-white shadow-md shadow-indigo-500/30"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30"
                   : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300"
               )}>
                 <item.icon className="w-5 h-5" />

@@ -37,8 +37,8 @@ const Section: React.FC<{
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white tracking-tight">{title}</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
+        <h2 className="corp-h4">{title}</h2>
+        <p className="corp-body-sm">{subtitle}</p>
       </div>
     </div>
     {children}
@@ -53,8 +53,8 @@ const Row: React.FC<{ label: string; description?: string; children: React.React
 }) => (
   <div className="flex items-center justify-between gap-4 py-3">
     <div className="min-w-0">
-      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{label}</p>
-      {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
+      <p className="corp-subtitle-sm">{label}</p>
+      {description && <p className="corp-body-sm mt-0.5">{description}</p>}
     </div>
     <div className="shrink-0">{children}</div>
   </div>
@@ -111,7 +111,7 @@ export const AdminSettings: React.FC = () => {
           <h1 className="corp-display mt-1 text-xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
             {t('settings.title')}
           </h1>
-          <p className="mt-1 text-xs md:text-sm text-slate-500 dark:text-slate-400 leading-tight">
+          <p className="mt-1 corp-body-sm">
             {t('settings.subtitle')}
           </p>
         </div>
@@ -124,10 +124,10 @@ export const AdminSettings: React.FC = () => {
             {initial}
           </div>
           <div className="min-w-0">
-            <p className="text-base font-bold text-slate-900 dark:text-white truncate">
+            <p className="corp-body font-bold truncate">
               {user.name || t('settings.account.unknown')}
             </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+            <p className="corp-body-sm truncate">
               {user.email || t('settings.account.unknown')}
             </p>
           </div>
@@ -222,7 +222,7 @@ export const AdminSettings: React.FC = () => {
         </Row>
       </Section>
 
-      <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 pb-4">
+      <p className="corp-caption pb-4">
         {t('settings.savedNote')}
       </p>
     </div>

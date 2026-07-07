@@ -9,7 +9,7 @@ interface LandingLayoutProps {
 
 export const LandingLayout: React.FC<LandingLayoutProps> = ({ children, hideCTA = false }) => {
     return (
-        <div className="corp min-h-screen bg-white dark:bg-[#070b14] landing-page-root selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-500/40 dark:selection:text-white transition-colors duration-300">
+        <div className="corp min-h-screen bg-white dark:bg-[#070b14] selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-500/40 dark:selection:text-white transition-colors duration-300 ease-out">
             <LandingNavbar />
             
             <main className="view-transition-content pt-24 lg:pt-28">
