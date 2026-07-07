@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 const NotFound = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ const NotFound = () => {
     },
   };
 
-  const item = {
+  const item: Variants = {
     hidden: { opacity: 0, y: 16 },
     visible: {
       opacity: 1,

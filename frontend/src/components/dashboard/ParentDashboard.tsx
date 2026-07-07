@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Construction } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 interface ParentDashboardProps {
   user: any;
@@ -18,7 +18,7 @@ export function ParentDashboard({ user }: ParentDashboardProps) {
     },
   };
 
-  const item = {
+  const item: Variants = {
     hidden: { opacity: 0, y: 12 },
     visible: {
       opacity: 1,

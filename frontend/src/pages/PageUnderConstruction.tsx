@@ -3,7 +3,7 @@ import { Hammer, Construction } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 export default function PageUnderConstruction() {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function PageUnderConstruction() {
         },
     };
 
-    const item = {
+    const item: Variants = {
         hidden: { opacity: 0, y: 10 },
         visible: {
             opacity: 1,
