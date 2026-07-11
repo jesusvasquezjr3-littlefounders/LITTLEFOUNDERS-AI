@@ -3,6 +3,7 @@ export { Icon } from './Icon';
 export { Dropdown } from './Dropdown';
 export type { DropdownOption } from './Dropdown';
 export { ThemeToggle } from './ThemeToggle';
+export { Reveal } from './Reveal';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';

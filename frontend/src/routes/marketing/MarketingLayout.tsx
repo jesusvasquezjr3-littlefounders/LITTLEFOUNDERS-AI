@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
@@ -34,6 +34,7 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 
 export function MarketingLayout() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
@@ -92,7 +93,7 @@ export function MarketingLayout() {
         {menuOpen && (
           <nav
             aria-label={t('app.name')}
-            className="border-t border-surface-sunken px-4 pb-4 sm:px-6 lg:hidden"
+            className="lf-pop border-t border-surface-sunken px-4 pb-4 sm:px-6 lg:hidden"
           >
             {NAV_LINKS.map(({ to, key }) => (
               <NavLink
@@ -114,7 +115,8 @@ export function MarketingLayout() {
         )}
       </header>
 
-      <main>
+      {/* Route transition: remount + rise-in on navigation (/DESIGN.md §Motion). */}
+      <main key={location.pathname} className="lf-page-enter">
         <Outlet />
       </main>
 

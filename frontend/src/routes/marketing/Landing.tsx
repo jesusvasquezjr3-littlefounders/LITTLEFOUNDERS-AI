@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Icon, IconChip } from '@/components/ui';
+import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 
 /* Composition adapted from template/tactile_learning_lab_landing_page (DESIGN.md §0):
    hero (two-line headline w/ gradient line → subtitle → CTA pair → floating
    illustration) → problem/solution → 6-feature clay grid → fact band → motivation →
-   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH). */
+   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH).
+   Sections rise in on scroll; grids stagger (DESIGN.md §Motion). */
 
 const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
@@ -21,7 +22,7 @@ export function Landing() {
 
   return (
     <div className="mx-auto max-w-container px-4 sm:px-6">
-      {/* 1. Hero */}
+      {/* 1. Hero — no reveal: above the fold, the page-enter transition covers it. */}
       <section className="grid items-center gap-12 py-16 md:grid-cols-2 md:py-24">
         <div className="z-10 flex flex-col items-start gap-6">
           <h1 className="lf-display-xl lg:text-6xl lg:leading-tight">
@@ -34,9 +35,12 @@ export function Landing() {
           <p className="lf-body-lg max-w-lg text-content-muted">{t('marketing.hero.subtitle')}</p>
           <div className="mt-4 flex flex-wrap gap-4">
             <Link to="/">
-              <Button>
+              <Button className="group">
                 {t('marketing.hero.ctaPrimary')}
-                <Icon name="arrow_forward" />
+                <Icon
+                  name="arrow_forward"
+                  className="transition-transform duration-200 motion-safe:group-hover:translate-x-1"
+                />
               </Button>
             </Link>
             <Link to="/how-it-works">
@@ -59,50 +63,56 @@ export function Landing() {
 
       {/* 2. Problem → solution */}
       <section className="border-t border-surface-sunken pt-16">
-        <div className="mb-16 text-center">
+        <Reveal className="mb-16 text-center">
           <h2 className="lf-display-lg">{t('marketing.problem.title')}</h2>
-        </div>
+        </Reveal>
         <div className="grid gap-8 md:grid-cols-2">
-          <Card interactive className="flex flex-col gap-4 p-8">
-            <IconChip tone="accent" size="lg">
-              <Icon name="extension" fill />
-            </IconChip>
-            <h3 className="lf-headline">{t('marketing.problem.problemTitle')}</h3>
-            <p className="lf-body text-content-muted">{t('marketing.problem.problemBody')}</p>
-          </Card>
-          <Card interactive className="flex flex-col gap-4 p-8">
-            <IconChip tone="primary" size="lg">
-              <Icon name="rocket_launch" fill />
-            </IconChip>
-            <h3 className="lf-headline">{t('marketing.problem.solutionTitle')}</h3>
-            <p className="lf-body text-content-muted">{t('marketing.problem.solutionBody')}</p>
-          </Card>
+          <Reveal>
+            <Card interactive className="flex h-full flex-col gap-4 p-8">
+              <IconChip tone="accent" size="lg">
+                <Icon name="extension" fill />
+              </IconChip>
+              <h3 className="lf-headline">{t('marketing.problem.problemTitle')}</h3>
+              <p className="lf-body text-content-muted">{t('marketing.problem.problemBody')}</p>
+            </Card>
+          </Reveal>
+          <Reveal delay={80}>
+            <Card interactive className="flex h-full flex-col gap-4 p-8">
+              <IconChip tone="primary" size="lg">
+                <Icon name="rocket_launch" fill />
+              </IconChip>
+              <h3 className="lf-headline">{t('marketing.problem.solutionTitle')}</h3>
+              <p className="lf-body text-content-muted">{t('marketing.problem.solutionBody')}</p>
+            </Card>
+          </Reveal>
         </div>
       </section>
 
       {/* 3. Features grid */}
       <section className="py-24">
-        <div className="mb-16 text-center">
+        <Reveal className="mb-16 text-center">
           <h2 className="lf-display-lg mb-4">{t('marketing.features.title')}</h2>
           <p className="lf-body-lg mx-auto max-w-2xl text-content-muted">
             {t('marketing.features.subtitle')}
           </p>
-        </div>
+        </Reveal>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ key, icon, tone }) => (
-            <Card key={key} interactive className="flex flex-col gap-4 p-8">
-              <IconChip tone={tone} size="lg">
-                <Icon name={icon} fill />
-              </IconChip>
-              <h3 className="lf-headline">{t(`marketing.features.${key}.title`)}</h3>
-              <p className="lf-body text-content-muted">{t(`marketing.features.${key}.body`)}</p>
-            </Card>
+          {FEATURES.map(({ key, icon, tone }, i) => (
+            <Reveal key={key} delay={(i % 3) * 80}>
+              <Card interactive className="flex h-full flex-col gap-4 p-8">
+                <IconChip tone={tone} size="lg">
+                  <Icon name={icon} fill />
+                </IconChip>
+                <h3 className="lf-headline">{t(`marketing.features.${key}.title`)}</h3>
+                <p className="lf-body text-content-muted">{t(`marketing.features.${key}.body`)}</p>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* 4. Historical fact */}
-      <section className="pb-24">
+      <Reveal as="section" className="pb-24">
         <Card hero className="grid items-center gap-8 lg:grid-cols-[auto_1fr]">
           <p className="lf-display-xl lf-number bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {t('marketing.fact.stat')}
@@ -113,10 +123,10 @@ export function Landing() {
             <p className="lf-caption mt-3 text-content-faint">{t('marketing.fact.source')}</p>
           </div>
         </Card>
-      </section>
+      </Reveal>
 
       {/* 5. Human motivation */}
-      <section className="grid items-center gap-12 pb-24 md:grid-cols-2">
+      <Reveal as="section" className="grid items-center gap-12 pb-24 md:grid-cols-2">
         <img
           src="/marketing/pexels-kid-saving-7118210.jpg"
           alt={t('marketing.motivation.imageAlt')}
@@ -127,18 +137,21 @@ export function Landing() {
           <p className="lf-body-lg mt-4 text-content-muted">{t('marketing.motivation.body1')}</p>
           <p className="lf-body-lg mt-3 text-content-muted">{t('marketing.motivation.body2')}</p>
         </div>
-      </section>
+      </Reveal>
 
       {/* 6. Final CTA */}
-      <section>
+      <Reveal as="section">
         <Card hero className="grid items-center gap-8 text-center lg:grid-cols-2 lg:text-left">
           <div>
             <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
             <p className="lf-body-lg mt-3 text-content-muted">{t('marketing.finalCta.body')}</p>
             <Link to="/" className="mt-6 inline-block">
-              <Button>
+              <Button className="group">
                 {t('marketing.finalCta.button')}
-                <Icon name="arrow_forward" />
+                <Icon
+                  name="arrow_forward"
+                  className="transition-transform duration-200 motion-safe:group-hover:translate-x-1"
+                />
               </Button>
             </Link>
           </div>
@@ -148,7 +161,7 @@ export function Landing() {
             className="aspect-[3/2] w-full rounded-xl border border-white object-cover shadow-clay dark:border-white/10"
           />
         </Card>
-      </section>
+      </Reveal>
     </div>
   );
 }

@@ -601,11 +601,11 @@ inputs:
 # Task: add a frontend component
 
 ## Read first
-- `/DESIGN.md` §0 — **COMPOSITION FIDELITY**: if a `template/` mockup screen covers this surface, open its `code.html` + `screen.png` FIRST and replicate the composition. Mockup = structure; DESIGN.md = values.
+- `/DESIGN.md` §Screen Recipes — **COMPOSITION FIDELITY (§0)**: if a recipe covers this surface, build from the recipe. Raw `template/` files are fallback only; fix ambiguous recipes in the same commit.
+- `/DESIGN.md` §Motion — the five motion recipes + tokens; new pages inherit the route transition from the layout, below-the-fold sections use `<Reveal>`.
 - `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes, Material Symbols only. Do not invent values outside it.
 - `/DESIGN.md` §Layout → *Responsive Adaptation* — desktop+mobile is NON-NEGOTIABLE (/AGENTS.md §1.11)
 - `frontend/AGENTS.md` — frontend domain rules
-- `agent/core/CONVENTIONS.md` §Frontend — i18n + dark mode rules
 ```
 
 ### agent/prompts/templates/new-endpoint.md
@@ -1765,9 +1765,9 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 - **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
-- **COMPOSITION FIDELITY (/DESIGN.md §0):** if a `template/` mockup screen covers what you're building, replicate its composition section-by-section — mockup governs structure, DESIGN.md governs values. Deviating without human sign-off is a design bug.
+- **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** (the distilled mockups, in our token vocabulary). Open raw `template/` files only when a recipe is ambiguous — and fix the recipe in the same commit. Deviating without human sign-off is a design bug.
+- **Motion is a closed system** (/DESIGN.md §Motion): only the five recipes (page transition via layout, `<Reveal>` scroll reveal with ≤3×80ms stagger, `.lf-pop` panels, press physics, arrow nudge) with `--lf-ease`/`--lf-dur-*` tokens. `.lf-float` is the only infinite animation. Everything reduced-motion safe (wired in index.css).
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
-- **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
 ```
 
 ### frontend/README.md
@@ -2138,6 +2138,26 @@ export function ProgressBar({ value, tone = 'primary', label, className }: Progr
     <div
 ```
 
+### frontend/src/components/ui/Reveal.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Motion — scroll reveal: content rises in once, as it enters the
+ * viewport. Reduced-motion users (and environments without IntersectionObserver,
+ * e.g. jsdom) see content immediately.
+ */
+
+interface RevealProps extends HTMLAttributes<HTMLElement> {
+  as?: 'div' | 'section';
+  /** Stagger delay in ms — use sparingly, ≤3 steps of 80ms (/DESIGN.md §Motion). */
+  delay?: number;
+}
+```
+
 ### frontend/src/components/ui/StatCard.tsx
 
 ```
@@ -2186,6 +2206,7 @@ export { Icon } from './Icon';
 export { Dropdown } from './Dropdown';
 export type { DropdownOption } from './Dropdown';
 export { ThemeToggle } from './ThemeToggle';
+export { Reveal } from './Reveal';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
@@ -2352,19 +2373,19 @@ export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }
 ```
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Icon, IconChip } from '@/components/ui';
+import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 
 /* Composition adapted from template/tactile_learning_lab_landing_page (DESIGN.md §0):
    hero (two-line headline w/ gradient line → subtitle → CTA pair → floating
    illustration) → problem/solution → 6-feature clay grid → fact band → motivation →
-   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH). */
+   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH).
+   Sections rise in on scroll; grids stagger (DESIGN.md §Motion). */
 
 const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
   { key: 'f2', icon: 'smart_toy', tone: 'primary' },
   { key: 'f3', icon: 'touch_app', tone: 'accent' },
   { key: 'f4', icon: 'joystick', tone: 'success' },
-  { key: 'f5', icon: 'family_restroom', tone: 'warning' },
 ```
 
 ### frontend/src/routes/marketing/LegalPage.tsx
@@ -2391,7 +2412,7 @@ export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
 
 ```
 import { useState } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';

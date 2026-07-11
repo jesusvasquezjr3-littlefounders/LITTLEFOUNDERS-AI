@@ -8,7 +8,8 @@ inputs:
 # Task: add a frontend component
 
 ## Read first
-- `/DESIGN.md` §0 — **COMPOSITION FIDELITY**: if a `template/` mockup screen covers this surface, open its `code.html` + `screen.png` FIRST and replicate the composition. Mockup = structure; DESIGN.md = values.
+- `/DESIGN.md` §Screen Recipes — **COMPOSITION FIDELITY (§0)**: if a recipe covers this surface, build from the recipe. Raw `template/` files are fallback only; fix ambiguous recipes in the same commit.
+- `/DESIGN.md` §Motion — the five motion recipes + tokens; new pages inherit the route transition from the layout, below-the-fold sections use `<Reveal>`.
 - `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes, Material Symbols only. Do not invent values outside it.
 - `/DESIGN.md` §Layout → *Responsive Adaptation* — desktop+mobile is NON-NEGOTIABLE (/AGENTS.md §1.11)
 - `frontend/AGENTS.md` — frontend domain rules

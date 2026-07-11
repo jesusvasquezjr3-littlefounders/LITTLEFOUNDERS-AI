@@ -68,7 +68,7 @@ export function Dropdown<T extends string>({
         <ul
           role="listbox"
           aria-label={ariaLabel}
-          className="absolute right-0 z-50 mt-2 min-w-full overflow-hidden rounded-md border border-white bg-surface py-1 shadow-clay dark:border-white/10"
+          className="lf-pop absolute right-0 z-50 mt-2 min-w-full overflow-hidden rounded-md border border-white bg-surface py-1 shadow-clay dark:border-white/10"
         >
           {options.map((option) => (
             <li key={option.value} role="presentation">
