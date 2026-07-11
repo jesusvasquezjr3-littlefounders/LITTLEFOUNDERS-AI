@@ -1,0 +1,63 @@
+{
+  "app": {
+    "name": "LittleFounders",
+    "tagline": "Learn, play, and build your future"
+  },
+  "nav": {
+    "learn": "Learn",
+    "tutor": "Tutor",
+    "games": "Games",
+    "tasks": "Tasks",
+    "profile": "Profile"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "home": {
+    "welcome": "Welcome to LittleFounders",
+    "subtitle": "The new platform is under construction. Pick a section to explore."
+  },
+  "sections": {
+    "learn": {
+      "title": "Learn",
+      "description": "Gamified courses to become a founder.",
+      "comingSoon": "Courses are coming soon!"
+    },
+    "tutor": {
+      "title": "Tutor",
+      "description": "Your personal AI tutor, live.",
+      "comingSoon": "Your tutor is getting ready!"
+    },
+    "games": {
+      "title": "Games",
+      "description": "Minigames that make concepts stick.",
+      "comingSoon": "Games are loading!"
+    },
+    "tasks": {
+      "title": "Tasks",
+      "description": "Complete tasks, earn rewards.",
+      "comingSoon": "Tasks are on their way!"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "Customize your avatar and settings.",
+      "comingSoon": "Avatar customization is coming soon!"
+    }
+  },
+  "errors": {
+    "api": {
+      "VALIDATION_ERROR": "Something in the request wasn't right.",
+      "UNAUTHORIZED": "You need to sign in for that.",
+      "FORBIDDEN": "You don't have permission for that.",
+      "NOT_FOUND": "We couldn't find that.",
+      "CONFLICT": "That conflicts with something that already exists.",
+      "RATE_LIMITED": "Too many tries — wait a moment.",
+      "INTERNAL": "Something went wrong on our side."
+    }
+  }
+}

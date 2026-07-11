@@ -1,0 +1,63 @@
+{
+  "app": {
+    "name": "LittleFounders",
+    "tagline": "Aprende, juega y construye tu futuro"
+  },
+  "nav": {
+    "learn": "Aprender",
+    "tutor": "Tutor",
+    "games": "Juegos",
+    "tasks": "Tareas",
+    "profile": "Perfil"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "language": {
+    "label": "Idioma"
+  },
+  "home": {
+    "welcome": "Bienvenido a LittleFounders",
+    "subtitle": "La nueva plataforma está en construcción. Elige una sección para explorar."
+  },
+  "sections": {
+    "learn": {
+      "title": "Aprender",
+      "description": "Cursos gamificados para volverte founder.",
+      "comingSoon": "¡Los cursos llegan pronto!"
+    },
+    "tutor": {
+      "title": "Tutor",
+      "description": "Tu tutor de IA personal, en vivo.",
+      "comingSoon": "¡Tu tutor se está preparando!"
+    },
+    "games": {
+      "title": "Juegos",
+      "description": "Minijuegos que hacen que los conceptos se queden.",
+      "comingSoon": "¡Los juegos están cargando!"
+    },
+    "tasks": {
+      "title": "Tareas",
+      "description": "Cumple tareas, gana recompensas.",
+      "comingSoon": "¡Las tareas vienen en camino!"
+    },
+    "profile": {
+      "title": "Perfil",
+      "description": "Personaliza tu avatar y tu configuración.",
+      "comingSoon": "¡La personalización de avatar llega pronto!"
+    }
+  },
+  "errors": {
+    "api": {
+      "VALIDATION_ERROR": "Algo en la solicitud no estuvo bien.",
+      "UNAUTHORIZED": "Necesitas iniciar sesión para eso.",
+      "FORBIDDEN": "No tienes permiso para eso.",
+      "NOT_FOUND": "No pudimos encontrar eso.",
+      "CONFLICT": "Eso choca con algo que ya existe.",
+      "RATE_LIMITED": "Demasiados intentos — espera un momento.",
+      "INTERNAL": "Algo salió mal de nuestro lado."
+    }
+  }
+}
