@@ -57,6 +57,7 @@
       "cta": "Empieza gratis"
     },
     "hero": {
+      "badge": "Una nueva forma de aprender sobre dinero",
       "titleLead": "Educación financiera,",
       "titleHighlight": "aprendida jugando",
       "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar — seguro, guiado y en familia.",
@@ -84,29 +85,27 @@
       "body2": "LittleFounders los encuentra donde juegan: personajes que aman, misiones que quieren terminar y una familia que los acompaña.",
       "imageAlt": "Un niño contando monedas junto a su frasco de ahorros"
     },
-    "reach": {
-      "title": "Hecho para familias de todo el continente",
-      "subtitle": "Una plataforma, tres idiomas, modo claro y oscuro, en cualquier dispositivo — celular, tablet o computadora.",
-      "goals": {
-        "g1": {
-          "title": "Aprendizaje que se queda",
-          "body": "Cursos, tutor de IA y minijuegos que convierten conceptos en hábitos — no en tarea."
-        },
-        "g2": {
-          "title": "Las familias al centro",
-          "body": "Los padres asignan tareas, definen recompensas y ven el progreso. Varios tutores por familia, verificados."
-        },
-        "g3": {
-          "title": "Seguro por diseño",
-          "body": "Vínculos de tutor verificados, contenido moderado y datos de los niños que jamás se venden ni se comparten."
-        }
-      },
-      "imageAlt": "Un niño sonriente metiendo una moneda en una alcancía con corona"
+    "trust": {
+      "label": "Hecho para familias de todo el continente",
+      "us": "Estados Unidos",
+      "mx": "México",
+      "br": "Brasil"
+    },
+    "features": {
+      "title": "Aprendizaje práctico, en casa",
+      "subtitle": "Interactúa directamente con los conceptos de dinero. Nuestro mundo táctil reduce la fricción de aprender y hace que los temas difíciles se sientan como juego.",
+      "f1": { "title": "Gamificación", "body": "Gana XP, mantén rachas vivas y desbloquea recompensas conforme avanzan los cursos." },
+      "f2": { "title": "Tutor de IA", "body": "Un tutor personal que se adapta a cada niño y da pistas suaves — nunca solo la respuesta." },
+      "f3": { "title": "Lecciones interactivas", "body": "Sin cátedras. Arrastra, suelta y construye tu camino por cada concepto." },
+      "f4": { "title": "Juegos de aprendizaje", "body": "Minijuegos ligados a cada lección para que los conceptos se queden jugando." },
+      "f5": { "title": "Tareas familiares", "body": "Los padres asignan tareas y definen recompensas gamificadas; varios tutores verificados por familia." },
+      "f6": { "title": "Seguro por diseño", "body": "Vínculos de tutor verificados, contenido moderado y datos de los niños que jamás se venden ni se comparten." }
     },
     "finalCta": {
       "title": "Cría a un pequeño founder",
       "body": "Crea una cuenta gratis en minutos. Sin tarjeta de crédito.",
-      "button": "Empieza gratis"
+      "button": "Empieza gratis",
+      "imageAlt": "Un niño sonriente metiendo una moneda en una alcancía con corona"
     },
     "footer": {
       "tagline": "Aprende, juega y construye tu futuro.",

@@ -57,6 +57,7 @@
       "cta": "Start free"
     },
     "hero": {
+      "badge": "A new way to learn about money",
       "titleLead": "Money skills,",
       "titleHighlight": "learned by playing",
       "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play — safe, guided, and side by side with your family.",
@@ -84,29 +85,27 @@
       "body2": "LittleFounders meets them where they play: characters they love, quests they want to finish, and a family cheering them on.",
       "imageAlt": "A child counting coins next to a savings jar"
     },
-    "reach": {
-      "title": "Built for families across the Americas",
-      "subtitle": "One platform, three languages, light and dark, on any device — phone, tablet, or desktop.",
-      "goals": {
-        "g1": {
-          "title": "Learning that sticks",
-          "body": "Courses, an AI tutor, and minigames that turn concepts into habits — not homework."
-        },
-        "g2": {
-          "title": "Families at the center",
-          "body": "Parents assign tasks, set rewards, and see progress. Several guardians per family, verified."
-        },
-        "g3": {
-          "title": "Safe by design",
-          "body": "Verified guardian links, moderated content, and no child data ever sold or shared."
-        }
-      },
-      "imageAlt": "A smiling child putting a coin into a crowned piggy bank"
+    "trust": {
+      "label": "Built for families across the Americas",
+      "us": "United States",
+      "mx": "Mexico",
+      "br": "Brazil"
+    },
+    "features": {
+      "title": "Hands-on learning, at home",
+      "subtitle": "Interact with money concepts directly. Our tactile world reduces the friction of learning and makes tough subjects feel like play.",
+      "f1": { "title": "Gamification", "body": "Earn XP, keep streaks alive, and unlock rewards as courses progress." },
+      "f2": { "title": "AI Tutor", "body": "A personal tutor that adapts to each child and gives gentle hints — never just the answer." },
+      "f3": { "title": "Interactive lessons", "body": "No lectures. Drag, drop, and build your way through every concept." },
+      "f4": { "title": "Learning games", "body": "Minigames tied to each lesson so concepts stick through play." },
+      "f5": { "title": "Family tasks", "body": "Parents assign tasks and set gamified rewards; several verified guardians per family." },
+      "f6": { "title": "Safe by design", "body": "Verified guardian links, moderated content, and no child data ever sold or shared." }
     },
     "finalCta": {
       "title": "Raise a little founder",
       "body": "Create a free account in minutes. No credit card required.",
-      "button": "Start free"
+      "button": "Start free",
+      "imageAlt": "A smiling child putting a coin into a crowned piggy bank"
     },
     "footer": {
       "tagline": "Learn, play, and build your future.",

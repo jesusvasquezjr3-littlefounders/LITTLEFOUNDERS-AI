@@ -143,6 +143,44 @@
   .lf-number {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Material Symbols (DESIGN.md: the only icon set). Ligature-based. */
+  .lf-icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+  .lf-icon-fill {
+    font-variation-settings: 'FILL' 1;
+  }
+
+  /* Ambient float — hero illustration ONLY (DESIGN.md §Components → Hero recipe). */
+  .lf-float {
+    animation: lf-soft-bounce 3s ease-in-out infinite;
+  }
+  @keyframes lf-soft-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf-float {
+      animation: none;
+    }
+  }
 }
 
 @layer utilities {

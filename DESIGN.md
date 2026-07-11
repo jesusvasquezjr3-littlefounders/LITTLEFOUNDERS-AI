@@ -173,6 +173,17 @@ components:
 
 > **AUTHORITATIVE** for all frontend visual work (authority: /AGENTS.md §1.1 #4). Derived from the approved mockup in `template/` (7 screens). Implementation lives in `frontend/tailwind.config.js` + `frontend/src/index.css` — those files map 1:1 to the tokens above and must never contain values that aren't here.
 
+## §0 Composition fidelity — THE PRIME RULE
+
+**When a screen in `template/` covers what you're building, you REPLICATE its composition — you do not invent an alternative layout.** The mockup's `code.html` + `screen.png` govern structure, section order, rhythm, component shapes, and interaction treatments; this file's tokens govern the exact values (colors, sizes, shadows). Build order for any mockup-covered surface:
+
+1. Open the matching `template/<screen>/code.html` and `screen.png`. Study both.
+2. Reproduce the composition section by section with our tokens and UI kit.
+3. Adapt only CONTENT (copy, real product features, honest claims — e.g., no fabricated trust logos), never the visual recipe.
+4. If a mockup treatment conflicts with a rule in this file, **the mockup wins** — amend this file in the same commit, don't silently deviate.
+
+Deviating from an existing mockup screen without explicit human sign-off is a design bug, no matter how good the alternative looks.
+
 ## Overview
 
 **Reference: the mockup in `template/` — think Brilliant.org's minimalism molded in soft clay.** The system is *Tactile Gamification*: a claymorphic aesthetic that makes learning feel physical, toy-like, and safe, while staying ruthlessly minimalist. Every screen has generous whitespace, a single dominant action, and at most a handful of soft "clay" surfaces floating on a near-white base.
@@ -249,15 +260,17 @@ Dark mode uses the `-dark` variants (white insets drop to ≤5% opacity; outer s
 
 - `md` **16px** is the base radius (buttons, inputs, icon chips).
 - `lg` **24px** for standard cards; `xl` **32px** for hero cards, lesson canvases, modals.
-- **Pill (`full`)** for every interactive-progress element: buttons, progress bars, badges, toggles.
+- **Pill (`full`)** for progress bars, badges, chips, toggles, and round icon buttons. **Buttons are NOT pills** — they use `rounded-md` chunky blocks (see Components; corrected 2026-07-11 to match the mockup code).
 - Nested elements use concentric radius: inner radius = outer radius − gap.
 
 ## Components
 
 The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do not restyle per-view.**
 
-- **Button (primary)** — chunky pill: `primary` fill, `label` type, 4px bottom border in `primary-strong` for the pressable look. Hover lifts, press compresses (see Elevation). One per view region. Secondary variant: `surface` + `clay-sm`, `primary` text. Minimum hit area 44×44px.
-- **Card** — `surface` + `clay` + `rounded-lg` + ≥24px padding. Hero/lesson variant: `rounded-xl`, 32px padding.
+- **Button (primary)** — chunky block, **`rounded-md` (16px), NOT a pill** (mockup: `clay-button-primary`): `primary` fill, `label` type, **4px bottom border in `primary-strong`**. Hover: `scale(1.02)`. Press: `translate-y(4px)` + bottom border collapses to 0 + inset shadow — the physical "push". Generous padding (`px-8 py-4` on CTAs). Secondary variant: `surface` fill, `primary` text, 4px bottom border in `surface-sunken`. Minimum hit area 44×44px. Buttons may carry a Material Symbol beside the label.
+- **Card** — `surface` + `clay` + **1px white border** (`border-white`, dark: `white/10` — part of the clay illusion, the one border exception) + `rounded-lg` + ≥24px padding. Hero/lesson variant: `rounded-xl`, 32px padding. Feature-card hover: `scale(1.02)`.
+- **FeatureCard** (landing/marketing grids) — clay card, 56×56px icon tile (`rounded-lg`) filled with a rotating `-soft` tone, filled Material Symbol inside, `headline`-adjacent title, `body` copy in `content-muted`. 3-col desktop / 1-col mobile.
+- **Hero recipe** (landing, from the mockup): badge pill (clay surface, `secondary` text, star symbol) → `display-xl` headline where the second line is **gradient text `from-primary to-secondary`** (the ONE permitted gradient) → `body-lg` subtitle → primary CTA with arrow + secondary CTA with play symbol → illustration floating free (no card frame): soft-bounce animation + `primary/5` radial blur glow + drop shadow. Bounce disabled under `prefers-reduced-motion`.
 - **StatCard** — square-ish card: icon chip top, `display-lg` number (`tabular-nums`), `caption` label. Icon chip color rotates `primary-soft`/`accent-soft`/`secondary-soft` by stat kind (XP=primary, streak=accent, accuracy=secondary).
 - **IconChip** — 48px `rounded-md` square, `-soft` fill, solid-color icon. The only place decorative color is allowed.
 - **ProgressBar** — pill track in `surface-sunken`, fill in `primary` (or `accent` for streak-quests). Always paired with a `label` value.
@@ -283,8 +296,8 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - ❌ Ad-hoc type compositions — the closed scale only.
 - ❌ Sharp corners, 1px-border-defined cards, or flat Material shadows — clay tokens only.
 - ❌ `transition: all`, animated `width/height/top/left`, `will-change` outside `transform/opacity/filter`.
-- ❌ Glassmorphism, gradients-as-decoration, or more than one shadow style per element.
-- ❌ New mascots, new icon sets (Lucide only), or text baked into images.
+- ❌ Glassmorphism, gradients-as-decoration (sole exception: the hero headline gradient text, per the mockup), or more than one shadow style per element.
+- ❌ New mascots, new icon sets (**Material Symbols Outlined only** — what the mockup code uses; corrected from the draft's "Lucide" note), emojis as UI icons, or text baked into images.
 - ❌ Noise: decorative borders, double outlines around images, backgrounds behind backgrounds. When a screen feels empty, that's the design working.
 - ❌ Shipping a component checked at only one breakpoint.
 - ❌ A desktop layout that's a stretched mobile column with dead side whitespace, or a mobile layout that crams desktop density into a narrow viewport.

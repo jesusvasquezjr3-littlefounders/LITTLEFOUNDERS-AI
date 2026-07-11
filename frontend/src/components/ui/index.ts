@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { Icon } from './Icon';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';

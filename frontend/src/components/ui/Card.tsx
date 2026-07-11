@@ -1,7 +1,10 @@
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-/* /DESIGN.md §Components — Card: surface + clay + rounded-lg, ≥24px padding. */
+/*
+ * /DESIGN.md §Components — Card: surface + clay + 1px white border (part of
+ * the clay illusion — the one border exception) + rounded-lg, ≥24px padding.
+ */
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hero?: boolean;
@@ -12,10 +15,10 @@ export function Card({ hero = false, interactive = false, className, ...props }:
   return (
     <div
       className={cn(
-        'bg-surface shadow-clay',
+        'border border-white bg-surface shadow-clay dark:border-white/10',
         hero ? 'rounded-xl p-8' : 'rounded-lg p-6',
         interactive &&
-          'motion-safe-lift transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5',
+          'motion-safe-lift transition-transform duration-300 hover:scale-[1.02]',
         className,
       )}
       {...props}

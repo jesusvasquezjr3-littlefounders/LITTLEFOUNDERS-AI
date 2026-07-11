@@ -3,8 +3,10 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { LOCALES } from '@/i18n';
-import { Button } from '@/components/ui';
+import { Button, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
+
+/* Composition per template/tactile_learning_lab_landing_page (DESIGN.md §0). */
 
 const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
@@ -16,11 +18,9 @@ const CONTACT_EMAIL = 'informame@littlefounders.ai';
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return cn(
-    'lf-label inline-flex min-h-11 items-center rounded-md px-4 py-3 transition-[background-color,box-shadow] duration-150',
+    'lf-label inline-flex min-h-11 items-center rounded-sm px-1 transition-colors duration-150',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-    isActive
-      ? 'bg-primary-soft text-primary'
-      : 'text-content-muted hover:bg-surface hover:shadow-clay-sm',
+    isActive ? 'text-primary' : 'text-content-muted hover:text-primary',
   );
 }
 
@@ -31,73 +31,76 @@ export function MarketingLayout() {
 
   return (
     <div className="min-h-screen bg-base text-content">
-      <header className="mx-auto flex max-w-container flex-wrap items-center gap-3 px-4 py-4 sm:px-6">
-        <Link
-          to="/"
-          className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-12 w-auto" />
-        </Link>
-
-        <nav aria-label={t('app.name')} className="hidden gap-1 lg:flex">
-          {NAV_LINKS.map(({ to, key }) => (
-            <NavLink key={to} to={to} className={navLinkClass}>
-              {t(`marketing.nav.${key}`)}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-2">
-          <select
-            aria-label={t('language.label')}
-            className="lf-label min-h-11 rounded-md bg-surface-sunken px-2 py-2 text-content shadow-clay-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            value={i18n.resolvedLanguage ?? 'en-US'}
-            onChange={(e) => void i18n.changeLanguage(e.target.value)}
+      {/* Sticky top app bar — mockup: h-20, raised surface, subtle drop shadow */}
+      <header className="sticky top-0 z-40 bg-surface shadow-clay-sm dark:bg-surface">
+        <div className="mx-auto flex h-20 max-w-container items-center justify-between gap-4 px-4 sm:px-6">
+          <Link
+            to="/"
+            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            {LOCALES.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={t('theme.toggle')}
-            className="lf-label motion-safe-press min-h-11 min-w-11 rounded-full bg-surface px-4 py-2 text-content-muted shadow-clay-sm transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-clay-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            {theme === 'dark' ? t('theme.light') : t('theme.dark')}
-          </button>
-          <Link to="/learn" className="hidden sm:block">
-            <Button>{t('marketing.nav.cta')}</Button>
+            <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-14 w-auto" />
           </Link>
-          <button
-            type="button"
-            aria-label={t('app.name')}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((o) => !o)}
-            className="lf-title min-h-11 min-w-11 rounded-md bg-surface shadow-clay-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
-          >
-            ☰
-          </button>
+
+          <nav aria-label={t('app.name')} className="hidden items-center gap-8 lg:flex">
+            {NAV_LINKS.map(({ to, key }) => (
+              <NavLink key={to} to={to} className={navLinkClass}>
+                {t(`marketing.nav.${key}`)}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <select
+              aria-label={t('language.label')}
+              className="lf-label min-h-11 rounded-md bg-surface-sunken px-2 py-2 text-content shadow-clay-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              value={i18n.resolvedLanguage ?? 'en-US'}
+              onChange={(e) => void i18n.changeLanguage(e.target.value)}
+            >
+              {LOCALES.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={t('theme.toggle')}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <Icon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} />
+            </button>
+            <Link to="/learn" className="hidden md:block">
+              <Button className="px-6 py-2">{t('marketing.nav.cta')}</Button>
+            </Link>
+            <button
+              type="button"
+              aria-label={t('app.name')}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:hidden"
+            >
+              <Icon name={menuOpen ? 'close' : 'menu'} />
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
           <nav
             aria-label={t('app.name')}
-            className="w-full rounded-lg bg-surface p-2 shadow-clay lg:hidden"
+            className="border-t border-surface-sunken px-4 pb-4 sm:px-6 lg:hidden"
           >
             {NAV_LINKS.map(({ to, key }) => (
               <NavLink
                 key={to}
                 to={to}
                 onClick={() => setMenuOpen(false)}
-                className={({ isActive }) => cn(navLinkClass({ isActive }), 'flex w-full')}
+                className={({ isActive }) => cn(navLinkClass({ isActive }), 'flex w-full py-1')}
               >
                 {t(`marketing.nav.${key}`)}
               </NavLink>
             ))}
-            <Link to="/learn" onClick={() => setMenuOpen(false)} className="mt-2 block sm:hidden">
+            <Link to="/learn" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
               <Button className="w-full">{t('marketing.nav.cta')}</Button>
             </Link>
           </nav>
@@ -108,19 +111,20 @@ export function MarketingLayout() {
         <Outlet />
       </main>
 
-      <footer className="mt-16 bg-surface shadow-clay">
-        <div className="mx-auto grid max-w-container gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
+      {/* Footer — mockup: white surface, top border, brand + meta rows */}
+      <footer className="mt-24 border-t border-surface-sunken bg-surface pb-8 pt-16">
+        <div className="mx-auto grid max-w-container gap-10 px-4 sm:px-6 md:grid-cols-3">
           <div>
-            <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-10 w-auto" />
-            <p className="lf-body mt-3 text-content-muted">{t('marketing.footer.tagline')}</p>
+            <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-12 w-auto" />
+            <p className="lf-body mt-4 text-content-muted">{t('marketing.footer.tagline')}</p>
           </div>
           <div>
             <h2 className="lf-title">{t('marketing.footer.legalTitle')}</h2>
-            <ul className="mt-3 space-y-2">
+            <ul className="mt-3 space-y-1">
               <li>
                 <Link
                   to="/legal/terms"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {t('marketing.footer.terms')}
                 </Link>
@@ -128,7 +132,7 @@ export function MarketingLayout() {
               <li>
                 <Link
                   to="/legal/privacy"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {t('marketing.footer.privacy')}
                 </Link>
@@ -139,13 +143,14 @@ export function MarketingLayout() {
             <h2 className="lf-title">{t('marketing.footer.contactLabel')}</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="lf-body mt-3 inline-flex min-h-11 items-center rounded-sm text-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-body mt-3 inline-flex min-h-11 items-center gap-2 rounded-sm text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
+              <Icon name="mail" className="text-xl" />
               {CONTACT_EMAIL}
             </a>
           </div>
         </div>
-        <div className="mx-auto max-w-container px-4 pb-8 sm:px-6">
+        <div className="mx-auto mt-10 max-w-container border-t border-surface-sunken px-4 pt-6 sm:px-6">
           <p className="lf-caption text-content-faint">
             © {new Date().getFullYear()} LittleFounders. {t('marketing.footer.rights')}
           </p>

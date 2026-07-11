@@ -8,7 +8,8 @@ inputs:
 # Task: add a frontend component
 
 ## Read first
-- `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes. Do not invent values outside it.
+- `/DESIGN.md` §0 — **COMPOSITION FIDELITY**: if a `template/` mockup screen covers this surface, open its `code.html` + `screen.png` FIRST and replicate the composition. Mockup = structure; DESIGN.md = values.
+- `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes, Material Symbols only. Do not invent values outside it.
 - `/DESIGN.md` §Layout → *Responsive Adaptation* — desktop+mobile is NON-NEGOTIABLE (/AGENTS.md §1.11)
 - `frontend/AGENTS.md` — frontend domain rules
 - `agent/core/CONVENTIONS.md` §Frontend — i18n + dark mode rules

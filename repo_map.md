@@ -601,11 +601,11 @@ inputs:
 # Task: add a frontend component
 
 ## Read first
-- `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes. Do not invent values outside it.
+- `/DESIGN.md` §0 — **COMPOSITION FIDELITY**: if a `template/` mockup screen covers this surface, open its `code.html` + `screen.png` FIRST and replicate the composition. Mockup = structure; DESIGN.md = values.
+- `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes, Material Symbols only. Do not invent values outside it.
 - `/DESIGN.md` §Layout → *Responsive Adaptation* — desktop+mobile is NON-NEGOTIABLE (/AGENTS.md §1.11)
 - `frontend/AGENTS.md` — frontend domain rules
 - `agent/core/CONVENTIONS.md` §Frontend — i18n + dark mode rules
-- Skills: `impeccable` / `agave` / `emil-design-eng` apply to this task
 ```
 
 ### agent/prompts/templates/new-endpoint.md
@@ -1763,11 +1763,11 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Invariants that bite here
 
-- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited.
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis.
+- **COMPOSITION FIDELITY (/DESIGN.md §0):** if a `template/` mockup screen covers what you're building, replicate its composition section-by-section — mockup governs structure, DESIGN.md governs values. Deviating without human sign-off is a design bug.
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
 - **Characters are canonical assets**: Dina, Dino, Dr. Rho, Zara Vex (`src/components/characters/`). Reuse; no new mascots without sign-off.
-- API calls expect the envelope; error codes map to `errors.api.<code>` i18n keys.
 ```
 
 ### frontend/README.md
@@ -1825,9 +1825,9 @@ export default tseslint.config(
       href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Quicksand:wght@600;700&display=swap"
       rel="stylesheet"
     />
-  </head>
-  <body>
-    <div id="root"></div>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0&display=swap"
+      rel="stylesheet"
 ```
 
 ### frontend/package.json
@@ -2022,7 +2022,11 @@ export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) 
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-/* /DESIGN.md §Components — Button: chunky pill, press compression, ≥44px hit area. */
+/*
+ * /DESIGN.md §Components — Button: chunky rounded-md block (NOT a pill),
+ * 4px bottom border; press = translate-y + border collapse (the mockup's
+ * clay-button physics). Hover: scale(1.02).
+ */
 
 type Variant = 'primary' | 'secondary';
 
@@ -2030,10 +2034,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
 }
 
-const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-primary text-on-primary border-b-4 border-primary-strong hover:-translate-y-0.5 hover:shadow-clay-sm active:translate-y-0.5 active:scale-[0.98] active:shadow-clay-pressed active:border-b-2',
-  secondary:
 ```
 
 ### frontend/src/components/ui/Card.tsx
@@ -2042,7 +2042,10 @@ const VARIANTS: Record<Variant, string> = {
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-/* /DESIGN.md §Components — Card: surface + clay + rounded-lg, ≥24px padding. */
+/*
+ * /DESIGN.md §Components — Card: surface + clay + 1px white border (part of
+ * the clay illusion — the one border exception) + rounded-lg, ≥24px padding.
+ */
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hero?: boolean;
@@ -2051,9 +2054,26 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function Card({ hero = false, interactive = false, className, ...props }: CardProps) {
   return (
-    <div
-      className={cn(
-        'bg-surface shadow-clay',
+```
+
+### frontend/src/components/ui/Icon.tsx
+
+```
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md — Material Symbols Outlined is the only icon set. Ligature-based. */
+
+interface IconProps {
+  name: string; // Material Symbols ligature name, e.g. "smart_toy"
+  fill?: boolean;
+  className?: string;
+}
+
+export function Icon({ name, fill = false, className }: IconProps) {
+  return (
+    <span aria-hidden="true" className={cn('lf-icon', fill && 'lf-icon-fill', className)}>
+      {name}
+    </span>
 ```
 
 ### frontend/src/components/ui/IconChip.tsx
@@ -2062,18 +2082,18 @@ export function Card({ hero = false, interactive = false, className, ...props }:
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-/* /DESIGN.md §Components — IconChip: 48px rounded-md square, -soft fill. */
+/*
+ * /DESIGN.md §Components — IconChip: soft-filled icon tile.
+ * size "md" = 48px rounded-md (stats/rows) · "lg" = 56px rounded-lg (feature cards).
+ */
 
-type Tone = 'primary' | 'secondary' | 'accent';
+type Tone = 'primary' | 'secondary' | 'accent' | 'success' | 'warning';
+type Size = 'md' | 'lg';
 
 interface IconChipProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: Tone;
+  size?: Size;
 }
-
-const TONES: Record<Tone, string> = {
-  primary: 'bg-primary-soft text-primary',
-  secondary: 'bg-secondary-soft text-secondary',
-  accent: 'bg-accent-soft text-accent',
 ```
 
 ### frontend/src/components/ui/ProgressBar.tsx
@@ -2120,6 +2140,7 @@ interface StatCardProps {
 
 ```
 export { Button } from './Button';
+export { Icon } from './Icon';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
@@ -2326,19 +2347,19 @@ export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }
 ```
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, IconChip } from '@/components/ui';
+import { Button, Card, Icon, IconChip } from '@/components/ui';
 
-const GOALS = [
-  { key: 'g1', tone: 'primary', emoji: '🧠' },
-  { key: 'g2', tone: 'secondary', emoji: '👨‍👩‍👧' },
-  { key: 'g3', tone: 'accent', emoji: '🛡️' },
-] as const;
+/* Composition replicates template/tactile_learning_lab_landing_page (DESIGN.md §0):
+   hero (badge → two-line headline w/ gradient line → subtitle → CTA pair → floating
+   illustration) → trust strip → 6-feature clay grid → fact band → motivation → final CTA. */
 
-export function Landing() {
-  const { t } = useTranslation();
-
-  return (
-    <div className="mx-auto max-w-container px-4 sm:px-6">
+const FEATURES = [
+  { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
+  { key: 'f2', icon: 'smart_toy', tone: 'primary' },
+  { key: 'f3', icon: 'touch_app', tone: 'accent' },
+  { key: 'f4', icon: 'joystick', tone: 'success' },
+  { key: 'f5', icon: 'family_restroom', tone: 'warning' },
+  { key: 'f6', icon: 'shield', tone: 'primary' },
 ```
 
 ### frontend/src/routes/marketing/LegalPage.tsx
@@ -2369,16 +2390,16 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { LOCALES } from '@/i18n';
-import { Button } from '@/components/ui';
+import { Button, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
+
+/* Composition per template/tactile_learning_lab_landing_page (DESIGN.md §0). */
 
 const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
   { to: '/families', key: 'families' },
   { to: '/faq', key: 'faq' },
 ] as const;
-
-const CONTACT_EMAIL = 'informame@littlefounders.ai';
 ```
 
 ### frontend/src/test-setup.ts

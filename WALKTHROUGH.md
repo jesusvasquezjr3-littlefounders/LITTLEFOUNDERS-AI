@@ -32,6 +32,8 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 | 2026-07-11 | Marketing site v1 shipped: `/` landing (mini-pitch: problem→solution, S&P FinLit fact, human motivation, reach & goals), `how-it-works`/`families`/`faq` (coming soon), `legal/terms`+`legal/privacy` (under construction), footer contact informame@littlefounders.ai | Jesús's spec; brand assets recovered from main (logo-main.png, Hero-Families.webp) + 2 verified Pexels photos in `frontend/public/marketing/` |
 | 2026-07-11 | Added `dark-secondary` token trio to DESIGN.md + CSS | Contact/footer links (`text-secondary`) were unreadable on dark surfaces — caught in §1.11 dark-mode verification |
 
+| 2026-07-11 | **Composition-fidelity rule added as DESIGN.md §0** after the landing shipped visually unlike the mockup: template/ mockups govern composition (structure, rhythm, shapes); DESIGN.md governs values; mockup wins conflicts and DESIGN.md gets amended. Landing rebuilt to the mockup recipe; corrections: buttons are rounded-md chunky w/ 4px bottom border (NOT pills), cards carry the 1px white clay border, icon set is Material Symbols (not Lucide/emojis), hero gradient text is the one gradient exception | Jesús flagged the mismatch; root cause: agent designed "from tokens" instead of replicating the approved mockup |
+
 ## Known Issues
 
 _None yet._
