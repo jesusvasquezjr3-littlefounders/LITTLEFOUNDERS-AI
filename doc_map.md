@@ -16,7 +16,7 @@
 | Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
 | Architecture decisions & sprint | ROADMAP.md | all |
 | Terminology | GLOSSARY.md | all |
-| Visual design (tokens TBD) | DESIGN.md | all |
+| Visual design (authoritative tokens); desktop+mobile responsive rules | DESIGN.md | all, esp. §Layout → Responsive Adaptation |
 | Current repo state, past decisions | WALKTHROUGH.md | Current State / Decision Log |
 | Incidents, rollback | RUNBOOK.md | all |
 | Skills catalog & session rituals | TEAM_PROTOCOL.md | all |

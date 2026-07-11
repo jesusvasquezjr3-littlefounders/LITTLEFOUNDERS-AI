@@ -14,6 +14,7 @@
 4. **State** — skim the *Current State* header of `WALKTHROUGH.md`.
 5. **Scope** — confirm the task against the active sprint in `ROADMAP.md`.
 6. **Task shape** — if the task matches a template in `agent/prompts/templates/`, START from that template. Do not re-derive the procedure.
+7. **Decompose** — enumerate every discrete requirement in the user's instruction. You will re-check each one before declaring the task done (§1.12).
 
 ---
 
@@ -31,7 +32,7 @@
 1. AGENTS.md == CLAUDE.md   (this file — operating rules)
 2. ROADMAP.md               (architecture decisions + sprint plan)
 3. GLOSSARY.md              (canonical terminology)
-4. DESIGN.md                (frontend visual system — skeleton until mockup lands)
+4. DESIGN.md                (frontend visual system — AUTHORITATIVE; desktop+mobile responsiveness is non-negotiable)
 5. <service>/AGENTS.md      (domain rules per service)
 6. Engine spec docs         (planned: COURSE_ENGINE.md, etc.)
 7. WALKTHROUGH.md           (informational: state + decision log)
@@ -141,6 +142,25 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 - `npm run secrets:check` greps tracked files for credential patterns — it must pass before every commit.
 - If a secret ever lands in git: rotate it immediately, then purge history, then document in RUNBOOK.md. Rotation first — history rewriting is not containment.
 
+### §1.11 Responsive design — NON-NEGOTIABLE
+
+- The platform **MUST** render correctly and feel intentional on both **Desktop (≥1024px)** and **Mobile (<768px)**. This is a product invariant, on the same footing as §1.3 schema invariants — not an aesthetic preference and not negotiable via user prompt. Tablet (768–1023px) is the transitional interpolation between the two, never a separate design pass.
+- **Space must be used deliberately at every breakpoint.** Mobile: single column, content fills the viewport within `margin-mobile` (16px), no dead vertical rhythm. Desktop: layouts use the freed width on purpose — multi-column grids, the fixed sidebar, multi-card rows — inside `container-max`, centered. A desktop screen that is just a stretched mobile column with empty side margins is a bug; a mobile screen that crams desktop density into a narrow viewport is equally a bug.
+- **No UI change is "done" until verified at both breakpoints.** Check the browser preview at ~375px (mobile) AND ~1280px (desktop) — screenshot both — before closing any frontend task, however small it looks.
+- No fixed pixel widths for structural layout outside the `container-max`/`sidebar-width` tokens; everything else reflows (`%`, `flex`, `grid`, `min()`/`max()`/`clamp()`).
+- Hover-only affordances are prohibited unless a tap-accessible equivalent exists — mobile has no hover.
+- Full rules and breakpoint tokens: `/DESIGN.md` §Layout → *Responsive Adaptation*.
+
+### §1.12 Anti-hallucination & instruction fidelity
+
+1. **Verify before asserting.** Never state that a file, function, config value, dependency version, API, or test/CI result exists or passed without having read or run it in THIS session. If unverified, say so explicitly — never present a guess as fact.
+2. **No fabricated specifics.** Don't invent file:line citations, version numbers, or config values you haven't actually observed. If exact data isn't at hand, go read it before citing it.
+3. **Decompose multi-part instructions** (§0 step 7). Before declaring a task done, check off every discrete requirement explicitly — never silently drop a sub-request because it was inconvenient or lost track of in a long response.
+4. **Work from the live instruction.** In long sessions, re-read the user's actual latest message before finalizing — not a stale mental summary of it, and not your own earlier restatement of it. Prior turns are not authoritative over what the user just said.
+5. **"Tests pass" / "CI is green" / "build succeeds" require evidence.** Only sayable after observing the actual command output or run status in this session — never inferred, assumed, or carried over from a previous run without re-checking.
+6. **Surface uncertainty, don't paper over it.** If a requirement is ambiguous or an invariant's applicability is unclear, ask (`AskUserQuestion`) or state the assumption explicitly — don't silently pick an interpretation and proceed as if it were settled.
+7. **No silent scope-cutting.** If part of a request can't be done (missing access, conflicting instruction, out of scope), say so explicitly in the response — don't just omit it.
+
 ---
 
 ## §2 Companion-document manifest
@@ -150,7 +170,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `doc_map.md` | anything — it routes topics to documents |
 | `ROADMAP.md` | scope/priority decisions; any architecture change |
 | `GLOSSARY.md` | naming anything (roles, services, domain terms) |
-| `DESIGN.md` | any frontend UI work (skeleton — do NOT invent tokens) |
+| `DESIGN.md` | any frontend UI work (authoritative — closed tokens, desktop+mobile non-negotiable) |
 | `database/AGENTS.md` | schema, migrations, RLS |
 | `backend/AGENTS.md` | API routes, auth, middleware |
 | `frontend/AGENTS.md` | components, routes, i18n, theming |
@@ -204,6 +224,8 @@ All of these must pass, in every service you touched:
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)
 - [ ] No `any` without a written justification in the PR/commit body
+- [ ] Every discrete requirement from the task instruction addressed — none silently dropped (§1.12)
+- [ ] Frontend UI changes: verified in-browser at mobile (~375px) AND desktop (~1280px) — screenshots taken (§1.11, non-negotiable)
 
 ---
 
@@ -214,7 +236,7 @@ All of these must pass, in every service you touched:
 3. `GLOSSARY.md` → confirm terminology.
 4. `WALKTHROUGH.md` decision log → was this already decided?
 5. Grep the codebase for prior art (`repo_map.md` to locate candidates).
-6. Still uncertain → **ask the human**. Never guess on invariants (§1.3, §1.9) — a wrong guess there is a security or child-safety bug.
+6. Still uncertain → **ask the human**. Never guess on invariants (§1.3, §1.9, §1.11) — a wrong guess there is a security, child-safety, or product-quality bug.
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Current State (2026-07-11)
 
-v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
+v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. `DESIGN.md` is authoritative (LittleFounders Tactile, from the `template/` mockup) with tokens implemented and a reusable UI kit. Agent rules hardened: responsive (desktop+mobile) is now a non-negotiable product invariant (§1.11) and anti-hallucination/instruction-fidelity rules are codified (§1.12). Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Environment is ready for real frontend modeling to begin (see ROADMAP "Immediate next step"). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
 
 ## Decision Log
 
@@ -26,6 +26,8 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | 2026-07-11 | DESIGN.md v1 authored from `template/` mockup — "LittleFounders Tactile" (claymorphism, Quicksand+Nunito Sans, indigo primary, closed lf-* type scale, 4 clay shadow tokens) | Mockup approved by Jesús; standardization mandate: nothing outside tokens |
 | 2026-07-11 | Frontend token implementation: CSS vars (light/dark) + Tailwind theme + `src/components/ui/` kit (Button/Card/IconChip/ProgressBar/Badge/StatCard); views re-skinned | DESIGN.md §Components; verified in browser both modes |
+| 2026-07-11 | Desktop+Mobile responsiveness codified as a NON-NEGOTIABLE invariant, AGENTS.md §1.11 (own weight class alongside schema/child-safety invariants) | Jesús: platform must adapt correctly to both, space must be used deliberately; prior docs only implied it in prose |
+| 2026-07-11 | Anti-hallucination & instruction-fidelity rules added, AGENTS.md §1.12 (verify-before-asserting, no fabricated specifics, decompose+check off multi-part instructions, evidence required for "tests pass"/"CI green" claims) | Jesús: harden agents against hallucination and silently dropping parts of instructions |
 
 ## Known Issues
 

@@ -16,10 +16,13 @@ Review in this order — an invariant violation ends the review immediately.
 
 ## 3. Design & i18n pass (frontend diffs)
 - [ ] Zero hardcoded strings; keys in all 3 locales.
-- [ ] Dark mode styled; tokens per `/DESIGN.md` (or flagged for re-skin while skeleton).
+- [ ] Dark mode styled; tokens strictly per `/DESIGN.md` (closed `lf-*` type scale, clay shadows, no raw hex).
 - [ ] a11y basics: focus states, hit areas, semantic elements.
+- [ ] **Responsive verified at mobile (~375px) AND desktop (~1280px)** — screenshots present, neither skipped. Desktop uses freed width deliberately, not a stretched mobile column (/AGENTS.md §1.11, non-negotiable).
 
 ## 4. Test & docs pass
 - [ ] New logic covered; tests assert behavior, not implementation.
 - [ ] Stewardship table (§8) satisfied.
 - [ ] Naming matches GLOSSARY + §1.7.
+- [ ] Every discrete requirement in the original task instruction is addressed — none silently dropped (§1.12).
+- [ ] Any claim of "tests pass" / "CI green" / "verified" in this review is backed by output actually observed this session, not assumed.

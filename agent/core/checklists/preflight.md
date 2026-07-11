@@ -8,5 +8,6 @@ Before the first edit of any task:
 - [ ] `WALKTHROUGH.md` *Current State* skimmed — no surprises about repo state.
 - [ ] Task confirmed against `ROADMAP.md` active sprint — in scope.
 - [ ] Matching template found in `agent/prompts/templates/` (or confirmed none applies).
-- [ ] If UI work: `/DESIGN.md` read; design skills (impeccable/agave/emil-design-eng) considered.
+- [ ] If UI work: `/DESIGN.md` read (authoritative); design skills (impeccable/agave/emil-design-eng) considered; responsive plan covers mobile AND desktop from the start (/AGENTS.md §1.11).
 - [ ] If touching identity/kid data: `/AGENTS.md` §1.3 + §1.9 re-read; `agent/core/BOUNDARIES.md` checked.
+- [ ] Every discrete requirement in the user's instruction enumerated (§1.12) — nothing to silently drop later.

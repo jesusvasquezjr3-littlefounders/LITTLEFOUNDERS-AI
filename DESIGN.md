@@ -96,6 +96,10 @@ spacing:
   margin-mobile: 16px
   container-max: 1280px
   sidebar-width: 280px
+breakpoints:
+  mobile: 0px                    # <768px — single column, bottom nav, NON-NEGOTIABLE target
+  tablet: 768px                  # 768–1023px — interpolation, not a separate design pass
+  desktop: 1024px                # >=1024px — sidebar + multi-column, NON-NEGOTIABLE target
 shadows:
   clay: "16px 16px 32px rgba(53,37,205,0.06), inset 4px 4px 8px rgba(255,255,255,1), inset -6px -6px 12px rgba(0,0,0,0.04)"
   clay-sm: "6px 6px 12px rgba(53,37,205,0.08), inset 2px 2px 4px rgba(255,255,255,0.9), inset -3px -3px 6px rgba(0,0,0,0.04)"
@@ -210,6 +214,19 @@ Rules:
 - **App shell:** fixed 280px left sidebar on desktop (profile block on top, nav pills, streak widget pinned bottom); content area on `base`. Marketing/landing pages are single-column, centered, airy.
 - Density: one idea per card, one section heading per screen region. When in doubt, remove.
 
+### Responsive Adaptation — NON-NEGOTIABLE
+
+The platform **MUST** render correctly and feel intentional on both **Desktop (≥1024px)** and **Mobile (<768px)**. This is a product requirement, not a styling preference — see `/AGENTS.md` §1.11, which gives it the same weight as a schema invariant. It cannot be relaxed by a task description that doesn't mention it.
+
+- **Breakpoints** (tokens above): mobile <768px, tablet 768–1023px (the interpolation — never its own design pass), desktop ≥1024px.
+- **Space discipline, not identical layouts.** Mobile is single-column, full-bleed within `margin-mobile`, sidebar collapsed to a bottom nav. Desktop deliberately uses the freed width — multi-column grids, the fixed 280px sidebar, multi-card rows — inside `container-max`, centered.
+  - ❌ **Wrong:** a desktop view that is the mobile column simply stretched wide, with dead whitespace on both sides.
+  - ❌ **Wrong:** a mobile view that crams desktop density (multi-column grids, the full sidebar) into a 375px viewport.
+  - ✅ **Right:** each breakpoint re-composes the same content to fit how much space it actually has.
+- **No fixed pixel widths for layout structure** outside `container-max` / `sidebar-width`. Everything else reflows: `%`, `flex`, `grid`, `min()`/`max()`/`clamp()`.
+- **No hover-only affordances.** Anything revealed on hover needs a tap-accessible equivalent — mobile has no hover.
+- **Verification is mandatory, not implied.** No frontend change is "done" until checked in the browser preview at ~375px (mobile) AND ~1280px (desktop) — screenshot both, every time, however small the change looks. A component checked at only one breakpoint has not been verified.
+
 ## Elevation & Depth
 
 Flat elevation is replaced by the **three-layer clay system** — exactly four shadow tokens per mode, no others:
@@ -256,6 +273,7 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - Style light AND dark at write time; test both before commit.
 - Give every interactive element the press-compression physics and a visible focus ring.
 - Route all strings through i18n ×3 locales (/AGENTS.md §1.8).
+- **Verify every UI change at mobile (~375px) AND desktop (~1280px) before commit — screenshot both.** Non-negotiable (/AGENTS.md §1.11).
 
 **Don't**
 - ❌ Raw hex/rgb/arbitrary values (`text-[#3525cd]`, `rounded-[13px]`) — if a value isn't tokenized here, propose a DESIGN.md change first.
@@ -265,3 +283,7 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - ❌ Glassmorphism, gradients-as-decoration, or more than one shadow style per element.
 - ❌ New mascots, new icon sets (Lucide only), or text baked into images.
 - ❌ Noise: decorative borders, double outlines around images, backgrounds behind backgrounds. When a screen feels empty, that's the design working.
+- ❌ Shipping a component checked at only one breakpoint.
+- ❌ A desktop layout that's a stretched mobile column with dead side whitespace, or a mobile layout that crams desktop density into a narrow viewport.
+- ❌ Fixed pixel widths for layout structure outside `container-max`/`sidebar-width`.
+- ❌ Hover-only interactions with no mobile equivalent.

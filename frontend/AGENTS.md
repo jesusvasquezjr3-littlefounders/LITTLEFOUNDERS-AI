@@ -15,6 +15,7 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 - API calls expect the envelope; error codes map to `errors.api.<code>` i18n keys.
 - a11y floor: semantic elements, focus-visible, ≥44×44px hit areas (`min-h-11 min-w-11`).
 - Never import from internal services — backend only.
+- **Responsive is NON-NEGOTIABLE** (/AGENTS.md §1.11, /DESIGN.md §Layout → *Responsive Adaptation*): every screen and component MUST work at Desktop (≥1024px) AND Mobile (<768px). No frontend task is done until verified in-browser at both ~375px and ~1280px — screenshot both. Desktop must use the freed width deliberately (sidebar, multi-column) — never a stretched mobile column.
 
 ## Layout
 

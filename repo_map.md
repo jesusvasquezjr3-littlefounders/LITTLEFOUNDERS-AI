@@ -340,11 +340,11 @@ colors:
 
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
-### Day 1 — Reset & agent environment ✅ target
+### Day 1 — Reset & agent environment ✅ DONE
 Wipe v1 (main intact) · root scaffold · AGENTS/CLAUDE + agent/ + all root docs · repo-map tooling.
-**DoD:** gates runnable (`docs:check`, `secrets:check`), docs complete, pushed.
+**DoD:** gates runnable (`docs:check`, `secrets:check`), docs complete, pushed. — met.
 
-### Day 2 — Service scaffolds
+### Day 2 — Service scaffolds ✅ DONE
 ```
 
 ### RUNBOOK.md
@@ -396,7 +396,7 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 ## Current State (2026-07-11)
 
-v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
+v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. `DESIGN.md` is authoritative (LittleFounders Tactile, from the `template/` mockup) with tokens implemented and a reusable UI kit. Agent rules hardened: responsive (desktop+mobile) is now a non-negotiable product invariant (§1.11) and anti-hallucination/instruction-fidelity rules are codified (§1.12). Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Environment is ready for real frontend modeling to begin (see ROADMAP "Immediate next step"). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
 
 ## Decision Log
 
@@ -520,8 +520,9 @@ Before the first edit of any task:
 - [ ] `WALKTHROUGH.md` *Current State* skimmed — no surprises about repo state.
 - [ ] Task confirmed against `ROADMAP.md` active sprint — in scope.
 - [ ] Matching template found in `agent/prompts/templates/` (or confirmed none applies).
-- [ ] If UI work: `/DESIGN.md` read; design skills (impeccable/agave/emil-design-eng) considered.
+- [ ] If UI work: `/DESIGN.md` read (authoritative); design skills (impeccable/agave/emil-design-eng) considered; responsive plan covers mobile AND desktop from the start (/AGENTS.md §1.11).
 - [ ] If touching identity/kid data: `/AGENTS.md` §1.3 + §1.9 re-read; `agent/core/BOUNDARIES.md` checked.
+- [ ] Every discrete requirement in the user's instruction enumerated (§1.12) — nothing to silently drop later.
 ```
 
 ### agent/core/checklists/review.md
@@ -597,11 +598,11 @@ inputs:
 # Task: add a frontend component
 
 ## Read first
-- `/DESIGN.md` — tokens & rules. While skeleton: plain Tailwind defaults, flag for re-skin, DO NOT invent tokens.
+- `/DESIGN.md` — AUTHORITATIVE tokens & rules. Closed type scale (`lf-*`), clay shadows, hyper-rounded shapes. Do not invent values outside it.
+- `/DESIGN.md` §Layout → *Responsive Adaptation* — desktop+mobile is NON-NEGOTIABLE (/AGENTS.md §1.11)
 - `frontend/AGENTS.md` — frontend domain rules
 - `agent/core/CONVENTIONS.md` §Frontend — i18n + dark mode rules
 - Skills: `impeccable` / `agave` / `emil-design-eng` apply to this task
-
 ```
 
 ### agent/prompts/templates/new-endpoint.md

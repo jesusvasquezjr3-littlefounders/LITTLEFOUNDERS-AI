@@ -49,7 +49,7 @@ npm run secrets:check  # no committed secrets
 2. [`doc_map.md`](doc_map.md) — topic → document routing index
 3. [`ROADMAP.md`](ROADMAP.md) — sprint plan and architecture decisions
 4. [`GLOSSARY.md`](GLOSSARY.md) — canonical terminology
-5. [`DESIGN.md`](DESIGN.md) — frontend design system (skeleton; spec pending mockup)
+5. [`DESIGN.md`](DESIGN.md) — frontend design system (authoritative; desktop+mobile responsiveness is non-negotiable)
 6. [`agent/`](agent/) — prompt templates, workflows, and tools for AI-agent sessions
 
 ## License
