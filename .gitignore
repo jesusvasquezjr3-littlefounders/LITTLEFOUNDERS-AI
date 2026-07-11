@@ -1,0 +1,48 @@
+# ── Dependencies & build output ─────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+*.local
+
+# ── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+
+# ── Environment & secrets ───────────────────────────────────
+# Never commit secrets. Only .example files are tracked.
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+*.pem
+*.p12
+
+# ── Editors & OS ────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.cursor/
+.DS_Store
+
+# ── AI-agent local config (never commit — may hold tokens) ──
+.claude/
+.mcp.json
+.opencode/
+
+# ── Legal working docs (root only — MUST stay anchored with
+#    the leading slash: an unanchored `LEGAL/` once ignored
+#    frontend/src/**/legal/ and broke the production build) ──
+/LEGAL/
+
+# ── Supabase local dev ──────────────────────────────────────
+database/supabase/.branches/
+database/supabase/.temp/
+
+# ── Databases (local snapshots) ─────────────────────────────
+*.db
+*.sqlite
+!database/migrations/*.sql

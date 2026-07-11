@@ -1,0 +1,20 @@
+{
+  "name": "littlefounders",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "repo:map": "bash scripts/update-repo-map.sh",
+    "docs:check": "bash agent/tools/check-docs-sync.sh",
+    "secrets:check": "bash agent/tools/check-secrets.sh",
+    "i18n:check": "bash agent/tools/check-i18n.sh",
+    "deps:check": "bash agent/tools/check-dep-drift.sh",
+    "test:all": "bash agent/tools/run-all.sh test",
+    "typecheck:all": "bash agent/tools/run-all.sh type-check",
+    "lint:all": "bash agent/tools/run-all.sh lint"
+  }
+}
