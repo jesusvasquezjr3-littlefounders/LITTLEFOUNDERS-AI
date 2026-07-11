@@ -5,11 +5,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 OUT="repo_map.md"
-EXCLUDE_DIRS=(.git node_modules dist coverage .claude LEGAL .vscode .github/skills database/supabase/.branches database/supabase/.temp)
+# Pruned by NAME at any depth (per-service node_modules/dist/coverage included):
+EXCLUDE_NAMES=(.git node_modules dist coverage .claude LEGAL .vscode .branches .temp)
+# Pruned by exact PATH from root:
+EXCLUDE_PATHS=(.github/skills)
 INCLUDE_EXT=(ts tsx js jsx json sql md sh yml yaml css html toml)
 
 PRUNE_ARGS=()
-for d in "${EXCLUDE_DIRS[@]}"; do PRUNE_ARGS+=(-path "./$d" -prune -o); done
+for d in "${EXCLUDE_NAMES[@]}"; do PRUNE_ARGS+=(-name "$d" -prune -o); done
+for d in "${EXCLUDE_PATHS[@]}"; do PRUNE_ARGS+=(-path "./$d" -prune -o); done
 
 {
   echo "# repo_map.md — LittleFounders Repository Map"
