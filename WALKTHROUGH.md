@@ -4,7 +4,7 @@
 
 ## Current State (2026-07-11)
 
-v2 total reset executed on branch `littlefounders_v2`. The complete v1 platform (FastAPI backend, React frontend, lesson factory, 5 games) is preserved on `main`. This branch carries the fresh 8-service scaffold and the AI-agent environment. Services are being stamped; nothing is deployed yet. Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
+v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
 
 ## Decision Log
 
