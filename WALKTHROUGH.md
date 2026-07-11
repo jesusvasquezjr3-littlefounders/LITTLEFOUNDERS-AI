@@ -29,6 +29,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 | 2026-07-11 | Desktop+Mobile responsiveness codified as a NON-NEGOTIABLE invariant, AGENTS.md §1.11 (own weight class alongside schema/child-safety invariants) | Jesús: platform must adapt correctly to both, space must be used deliberately; prior docs only implied it in prose |
 | 2026-07-11 | Anti-hallucination & instruction-fidelity rules added, AGENTS.md §1.12 (verify-before-asserting, no fabricated specifics, decompose+check off multi-part instructions, evidence required for "tests pass"/"CI green" claims) | Jesús: harden agents against hallucination and silently dropping parts of instructions |
 
+| 2026-07-11 | Marketing site v1 shipped: `/` landing (mini-pitch: problem→solution, S&P FinLit fact, human motivation, reach & goals), `how-it-works`/`families`/`faq` (coming soon), `legal/terms`+`legal/privacy` (under construction), footer contact informame@littlefounders.ai | Jesús's spec; brand assets recovered from main (logo-main.png, Hero-Families.webp) + 2 verified Pexels photos in `frontend/public/marketing/` |
+| 2026-07-11 | Added `dark-secondary` token trio to DESIGN.md + CSS | Contact/footer links (`text-secondary`) were unreadable on dark surfaces — caught in §1.11 dark-mode verification |
+
 ## Known Issues
 
 _None yet._

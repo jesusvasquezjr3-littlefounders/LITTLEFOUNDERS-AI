@@ -40,6 +40,9 @@ colors:
   dark-primary-strong: "#6a5fff"
   dark-primary-soft: "#2b2758"
   dark-on-primary: "#0f0069"
+  dark-secondary: "#8ab4ff"      # brightened warm blue — links stay readable on dark surfaces
+  dark-secondary-soft: "#22335e"
+  dark-on-secondary: "#001a4d"
 typography:
   display-xl:                    # hero page titles (landing "Learn by Playing")
     fontFamily: Quicksand

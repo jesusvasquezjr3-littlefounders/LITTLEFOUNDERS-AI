@@ -38,6 +38,8 @@ email-server/
     __tests__/
     services/
 frontend/
+  public/
+    marketing/
   src/
     __tests__/
     components/
@@ -46,6 +48,7 @@ frontend/
     i18n/
     lib/
     routes/
+      marketing/
     theme/
 gamegen/
   src/
@@ -1858,24 +1861,39 @@ export default {
 };
 ```
 
+### frontend/public/marketing/CREDITS.md
+
+```
+# Marketing imagery credits
+
+Photos from [Pexels](https://www.pexels.com), used under the Pexels license (free to use, attribution not required — credited here anyway).
+
+| File | Source |
+|---|---|
+| `pexels-kid-saving-7118210.jpg` | https://www.pexels.com/photo/7118210/ |
+| `pexels-kid-piggybank-12955547.jpg` | https://www.pexels.com/photo/12955547/ |
+
+`/logo-main.png`, `/Hero-Families.webp`, favicons and `og-image.png` are LittleFounders brand assets (recovered from the v1 `main` branch).
+```
+
 ### frontend/src/App.tsx
 
 ```
 import { Route, Routes } from 'react-router-dom';
 import { Layout } from '@/routes/Layout';
-import { Home } from '@/routes/Home';
 import { SectionPage } from '@/routes/SectionPage';
+import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
+import { Landing } from '@/routes/marketing/Landing';
+import { ComingSoon } from '@/routes/marketing/ComingSoon';
+import { LegalPage } from '@/routes/marketing/LegalPage';
 
 export function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="learn" element={<SectionPage section="learn" />} />
-        <Route path="tutor" element={<SectionPage section="tutor" />} />
-        <Route path="games" element={<SectionPage section="games" />} />
-        <Route path="tasks" element={<SectionPage section="tasks" />} />
-        <Route path="profile" element={<SectionPage section="profile" />} />
+      <Route element={<MarketingLayout />}>
+        <Route index element={<Landing />} />
+        <Route path="how-it-works" element={<ComingSoon page="howItWorks" />} />
+        <Route path="families" element={<ComingSoon page="families" />} />
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -2243,26 +2261,6 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-### frontend/src/routes/Home.tsx
-
-```
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { IconChip } from '@/components/ui';
-
-const SECTIONS = [
-  { key: 'learn', tone: 'primary', emoji: '📚' },
-  { key: 'tutor', tone: 'secondary', emoji: '💬' },
-  { key: 'games', tone: 'accent', emoji: '🎮' },
-  { key: 'tasks', tone: 'secondary', emoji: '✅' },
-  { key: 'profile', tone: 'primary', emoji: '🦖' },
-] as const;
-
-export function Home() {
-  const { t } = useTranslation();
-
-```
-
 ### frontend/src/routes/Layout.tsx
 
 ```
@@ -2301,6 +2299,86 @@ export function SectionPage({ section }: { section: 'learn' | 'tutor' | 'games' 
       </Card>
     </div>
   );
+```
+
+### frontend/src/routes/marketing/ComingSoon.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Badge, Card } from '@/components/ui';
+
+export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <h1 className="lf-display-lg">{t(`marketing.pages.${page}.title`)}</h1>
+      <p className="lf-body-lg mt-3 text-content-muted">
+        {t(`marketing.pages.${page}.description`)}
+      </p>
+      <Card hero className="mt-10 text-center">
+        <Badge className="bg-primary-soft text-primary">{t('marketing.comingSoon.badge')}</Badge>
+        <p className="lf-body mt-4 text-content-muted">{t('marketing.comingSoon.body')}</p>
+```
+
+### frontend/src/routes/marketing/Landing.tsx
+
+```
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button, Card, IconChip } from '@/components/ui';
+
+const GOALS = [
+  { key: 'g1', tone: 'primary', emoji: '🧠' },
+  { key: 'g2', tone: 'secondary', emoji: '👨‍👩‍👧' },
+  { key: 'g3', tone: 'accent', emoji: '🛡️' },
+] as const;
+
+export function Landing() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto max-w-container px-4 sm:px-6">
+```
+
+### frontend/src/routes/marketing/LegalPage.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Badge, Card } from '@/components/ui';
+
+const CONTACT_EMAIL = 'informame@littlefounders.ai';
+
+export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <h1 className="lf-display-lg">{t(`marketing.legal.${doc}.title`)}</h1>
+      <Card hero className="mt-10 text-center">
+        <Badge className="bg-warning-soft text-warning">{t('marketing.legal.badge')}</Badge>
+        <p className="lf-body mt-4 text-content-muted">{t('marketing.legal.body')}</p>
+        <a
+```
+
+### frontend/src/routes/marketing/MarketingLayout.tsx
+
+```
+import { useState } from 'react';
+import { Link, NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/theme/useTheme';
+import { LOCALES } from '@/i18n';
+import { Button } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+const NAV_LINKS = [
+  { to: '/how-it-works', key: 'howItWorks' },
+  { to: '/families', key: 'families' },
+  { to: '/faq', key: 'faq' },
+] as const;
+
+const CONTACT_EMAIL = 'informame@littlefounders.ai';
 ```
 
 ### frontend/src/test-setup.ts

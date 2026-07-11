@@ -58,6 +58,9 @@
     --lf-primary-strong: 106 95 255;
     --lf-primary-soft: 43 39 88;
     --lf-on-primary: 15 0 105;
+    --lf-secondary: 138 180 255;
+    --lf-secondary-soft: 34 51 94;
+    --lf-on-secondary: 0 26 77;
 
     --lf-shadow-clay: 16px 16px 32px rgba(0, 0, 0, 0.35),
       inset 4px 4px 8px rgba(255, 255, 255, 0.05),

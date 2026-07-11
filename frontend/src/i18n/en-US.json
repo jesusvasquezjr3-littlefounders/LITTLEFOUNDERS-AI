@@ -49,6 +49,98 @@
       "comingSoon": "Avatar customization is coming soon!"
     }
   },
+  "marketing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "families": "Families",
+      "faq": "FAQ",
+      "cta": "Start free"
+    },
+    "hero": {
+      "titleLead": "Money skills,",
+      "titleHighlight": "learned by playing",
+      "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play — safe, guided, and side by side with your family.",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "How it works",
+      "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
+      "logoAlt": "LittleFounders"
+    },
+    "problem": {
+      "title": "The problem is real. So is the fix.",
+      "problemTitle": "The problem",
+      "problemBody": "Money is one of the most important subjects in life — and one of the least taught. Most kids grow into adults without ever practicing how to save, budget, or build something of their own.",
+      "solutionTitle": "Our solution",
+      "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, minigames that make concepts stick, and family tasks with real rewards — all under verified parental control."
+    },
+    "fact": {
+      "stat": "1 in 3",
+      "title": "Only 1 in 3 adults worldwide is financially literate",
+      "body": "That's the finding of the S&P Global FinLit Survey, one of the largest studies on financial literacy ever conducted. Two out of three adults can't answer basic questions about saving, interest, and risk. We believe the fix starts in childhood.",
+      "source": "Source: S&P Global FinLit Survey"
+    },
+    "motivation": {
+      "title": "Kids already dream big. We help them build.",
+      "body1": "Every kid saving coins in a jar is already a little founder — they have a goal, a plan, and the patience to get there. What they're missing is a guide that speaks their language.",
+      "body2": "LittleFounders meets them where they play: characters they love, quests they want to finish, and a family cheering them on.",
+      "imageAlt": "A child counting coins next to a savings jar"
+    },
+    "reach": {
+      "title": "Built for families across the Americas",
+      "subtitle": "One platform, three languages, light and dark, on any device — phone, tablet, or desktop.",
+      "goals": {
+        "g1": {
+          "title": "Learning that sticks",
+          "body": "Courses, an AI tutor, and minigames that turn concepts into habits — not homework."
+        },
+        "g2": {
+          "title": "Families at the center",
+          "body": "Parents assign tasks, set rewards, and see progress. Several guardians per family, verified."
+        },
+        "g3": {
+          "title": "Safe by design",
+          "body": "Verified guardian links, moderated content, and no child data ever sold or shared."
+        }
+      },
+      "imageAlt": "A smiling child putting a coin into a crowned piggy bank"
+    },
+    "finalCta": {
+      "title": "Raise a little founder",
+      "body": "Create a free account in minutes. No credit card required.",
+      "button": "Start free"
+    },
+    "footer": {
+      "tagline": "Learn, play, and build your future.",
+      "contactLabel": "Contact",
+      "legalTitle": "Legal",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Notice",
+      "rights": "All rights reserved."
+    },
+    "comingSoon": {
+      "badge": "Coming soon",
+      "body": "We're building this page. Come back shortly — it will be worth it."
+    },
+    "pages": {
+      "howItWorks": {
+        "title": "How it works",
+        "description": "Courses, AI tutor, games, and family tasks — how it all fits together."
+      },
+      "families": {
+        "title": "Families",
+        "description": "Parental controls, multiple guardians, tasks and rewards — everything families can do together."
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "description": "Answers about accounts, safety, pricing, and more."
+      }
+    },
+    "legal": {
+      "badge": "Under construction",
+      "body": "This document is being drafted. For any questions in the meantime, write to us:",
+      "terms": { "title": "Terms & Conditions" },
+      "privacy": { "title": "Privacy Notice" }
+    }
+  },
   "errors": {
     "api": {
       "VALIDATION_ERROR": "Something in the request wasn't right.",
