@@ -1,8 +1,0 @@
-dashscope>=1.19.0
-openai>=1.30.0          # DeepSeek usa API compatible con OpenAI
-supabase>=2.3.0         # Base de datos de lecciones y personajes
-boto3>=1.34.0           # Cloudflare R2 (S3-compatible) — almacenamiento de audio
-python-dotenv>=1.0.0
-requests>=2.31.0
-mutagen>=1.47.0         # Calcular duración del MP3 generado
-tqdm>=4.66.0            # Barra de progreso en CLI
