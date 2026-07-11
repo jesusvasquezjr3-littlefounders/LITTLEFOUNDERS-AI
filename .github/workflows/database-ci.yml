@@ -1,0 +1,32 @@
+name: database CI
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'database/**'
+      - '.github/workflows/database-ci.yml'
+  pull_request:
+    paths:
+      - 'database/**'
+      - '.github/workflows/database-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: database
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # No dependencies — the migration gates are stdlib-only.
+      - run: npm test
+      - name: docs sync + secrets gates
+        working-directory: .
+        run: |
+          bash agent/tools/check-docs-sync.sh
+          bash agent/tools/check-secrets.sh

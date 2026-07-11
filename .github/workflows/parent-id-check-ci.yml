@@ -1,0 +1,33 @@
+name: parent-id-check CI
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'parent-id-check/**'
+      - 'database/types/**'
+      - '.github/workflows/parent-id-check-ci.yml'
+  pull_request:
+    paths:
+      - 'parent-id-check/**'
+      - 'database/types/**'
+      - '.github/workflows/parent-id-check-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: parent-id-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: parent-id-check/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test
