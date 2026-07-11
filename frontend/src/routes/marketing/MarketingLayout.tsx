@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
@@ -37,6 +37,13 @@ export function MarketingLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Every new page starts at the top — SPA navigation doesn't reset scroll
+  // for free (only native full-page loads do that). Explicit 'auto' overrides
+  // the global CSS smooth-scroll so the reset is instant, before paint.
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
+
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
     label: t(`language.${l}`),
@@ -69,6 +76,7 @@ export function MarketingLayout() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Dropdown
+              compact
               value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
               options={localeOptions}
               onChange={(l) => void i18n.changeLanguage(l)}

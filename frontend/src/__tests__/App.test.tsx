@@ -88,7 +88,7 @@ describe('Marketing site', () => {
     renderApp();
     expect(document.querySelector('select')).not.toBeInTheDocument();
 
-    const trigger = screen.getByRole('button', { name: 'Language' });
+    const trigger = screen.getByRole('button', { name: /Language:/ });
     fireEvent.click(trigger);
     fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
 

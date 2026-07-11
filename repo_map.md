@@ -1765,9 +1765,9 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 - **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
+- **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary` (main/confirm), `secondary` (alternative/lower emphasis), `success` (positive completion), `danger` (destructive/irreversible). `accent`/`warning`/`delight` are decorative-only, never a button fill.
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** (the distilled mockups, in our token vocabulary). Open raw `template/` files only when a recipe is ambiguous — and fix the recipe in the same commit. Deviating without human sign-off is a design bug.
 - **Motion is a closed system** (/DESIGN.md §Motion): only the five recipes (page transition via layout, `<Reveal>` scroll reveal with ≤3×80ms stagger, `.lf-pop` panels, press physics, arrow nudge) with `--lf-ease`/`--lf-dur-*` tokens. `.lf-float` is the only infinite animation. Everything reduced-motion safe (wired in index.css).
-- **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 ```
 
 ### frontend/README.md
@@ -1822,7 +1822,7 @@ export default tseslint.config(
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Quicksand:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -2028,14 +2028,14 @@ import { cn } from '@/lib/utils';
  * /DESIGN.md §Components — Button: chunky rounded-md block (NOT a pill),
  * 4px bottom border; press = translate-y + border collapse (the mockup's
  * clay-button physics). Hover: scale(1.02).
+ *
+ * Variant = the action's color, per the Action Color Contract (/DESIGN.md
+ * §Colors): primary = the one main/confirm action, secondary = alternative/
+ * lower-emphasis, success = positive completion, danger = destructive.
+ * Never pick a variant by taste — pick by what the action does.
  */
 
-type Variant = 'primary' | 'secondary';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
-}
-
+type Variant = 'primary' | 'secondary' | 'success' | 'danger';
 ```
 
 ### frontend/src/components/ui/Card.tsx
@@ -2411,7 +2411,7 @@ export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
 ### frontend/src/routes/marketing/MarketingLayout.tsx
 
 ```
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
@@ -2433,6 +2433,10 @@ const NAV_LINKS = [
 ```
 import '@testing-library/jest-dom/vitest';
 import '@/i18n';
+
+// jsdom doesn't implement scrollTo — stub it so the scroll-to-top-on-route-change
+// effect (MarketingLayout) doesn't spam "Not implemented" errors in test output.
+window.scrollTo = () => {};
 ```
 
 ### frontend/src/theme/useTheme.ts
@@ -2493,6 +2497,15 @@ export default {
     "resolveJsonModule": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
+```
+
+### frontend/vercel.json
+
+```
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
 ```
 
 ### frontend/vite.config.ts

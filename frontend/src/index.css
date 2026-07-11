@@ -26,12 +26,21 @@
     --lf-accent: 164 65 0;
     --lf-accent-soft: 255 219 204;
     --lf-on-accent: 255 255 255;
+    --lf-delight: 163 21 125;
+    --lf-delight-soft: 255 215 242;
+    --lf-on-delight: 255 255 255;
     --lf-success: 26 127 55;
     --lf-success-soft: 211 243 221;
+    --lf-success-strong: 20 96 42;
+    --lf-on-success: 255 255 255;
     --lf-warning: 180 83 9;
     --lf-warning-soft: 253 238 205;
+    --lf-warning-strong: 138 63 7;
+    --lf-on-warning: 255 255 255;
     --lf-error: 186 26 26;
     --lf-error-soft: 255 218 214;
+    --lf-error-strong: 140 20 20;
+    --lf-on-error: 255 255 255;
 
     --lf-shadow-clay: 16px 16px 32px rgba(53, 37, 205, 0.06),
       inset 4px 4px 8px rgba(255, 255, 255, 1),
@@ -61,6 +70,15 @@
     --lf-secondary: 138 180 255;
     --lf-secondary-soft: 34 51 94;
     --lf-on-secondary: 0 26 77;
+    /* Semantic/brand fills (success/warning/error/accent/delight) keep their
+       light-mode saturation — they're used as solid fills with white text,
+       which reads fine on dark surfaces too. Only the -soft well/badge tones
+       need to darken so they don't look like light-mode paper on navy. */
+    --lf-accent-soft: 61 36 16;
+    --lf-delight-soft: 58 18 48;
+    --lf-success-soft: 15 43 26;
+    --lf-warning-soft: 46 35 8;
+    --lf-error-soft: 58 20 20;
 
     --lf-shadow-clay: 16px 16px 32px rgba(0, 0, 0, 0.35),
       inset 4px 4px 8px rgba(255, 255, 255, 0.05),
@@ -105,7 +123,7 @@
  */
 @layer components {
   .lf-display-xl {
-    font-family: 'Quicksand', system-ui, sans-serif;
+    font-family: 'Baloo 2', system-ui, sans-serif;
     font-size: 48px;
     font-weight: 700;
     line-height: 56px;
@@ -113,7 +131,7 @@
     text-wrap: balance;
   }
   .lf-display-lg {
-    font-family: 'Quicksand', system-ui, sans-serif;
+    font-family: 'Baloo 2', system-ui, sans-serif;
     font-size: 32px;
     font-weight: 700;
     line-height: 40px;
@@ -121,14 +139,14 @@
     text-wrap: balance;
   }
   .lf-headline {
-    font-family: 'Quicksand', system-ui, sans-serif;
+    font-family: 'Baloo 2', system-ui, sans-serif;
     font-size: 24px;
     font-weight: 600;
     line-height: 32px;
     text-wrap: balance;
   }
   .lf-title {
-    font-family: 'Quicksand', system-ui, sans-serif;
+    font-family: 'Baloo 2', system-ui, sans-serif;
     font-size: 18px;
     font-weight: 600;
     line-height: 26px;

@@ -5,9 +5,14 @@ import { cn } from '@/lib/utils';
  * /DESIGN.md §Components — Button: chunky rounded-md block (NOT a pill),
  * 4px bottom border; press = translate-y + border collapse (the mockup's
  * clay-button physics). Hover: scale(1.02).
+ *
+ * Variant = the action's color, per the Action Color Contract (/DESIGN.md
+ * §Colors): primary = the one main/confirm action, secondary = alternative/
+ * lower-emphasis, success = positive completion, danger = destructive.
+ * Never pick a variant by taste — pick by what the action does.
  */
 
-type Variant = 'primary' | 'secondary';
+type Variant = 'primary' | 'secondary' | 'success' | 'danger';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -18,6 +23,10 @@ const VARIANTS: Record<Variant, string> = {
     'bg-primary text-on-primary border-b-4 border-primary-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
   secondary:
     'bg-surface text-primary border-b-4 border-surface-sunken shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
+  success:
+    'bg-success text-on-success border-b-4 border-success-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
+  danger:
+    'bg-error text-on-error border-b-4 border-error-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
 };
 
 export function Button({ variant = 'primary', className, type, ...props }: ButtonProps) {

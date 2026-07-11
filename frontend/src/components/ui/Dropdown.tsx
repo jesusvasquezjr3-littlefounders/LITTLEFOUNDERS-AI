@@ -20,6 +20,8 @@ interface DropdownProps<T extends string> {
   onChange: (value: T) => void;
   ariaLabel: string;
   className?: string;
+  /** Trigger shows only the prefix (e.g. a flag) — full label stays in the open panel. */
+  compact?: boolean;
 }
 
 export function Dropdown<T extends string>({
@@ -28,6 +30,7 @@ export function Dropdown<T extends string>({
   onChange,
   ariaLabel,
   className,
+  compact = false,
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -55,12 +58,15 @@ export function Dropdown<T extends string>({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={ariaLabel}
+        aria-label={selected ? `${ariaLabel}: ${selected.label}` : ariaLabel}
         onClick={() => setOpen((o) => !o)}
-        className="lf-label motion-safe-press flex min-h-11 items-center gap-1.5 rounded-md bg-surface-sunken px-3 py-2 text-content shadow-clay-sunken transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className={cn(
+          'lf-label motion-safe-press flex min-h-11 items-center gap-1.5 rounded-md bg-surface-sunken text-content shadow-clay-sunken transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          compact ? 'px-2.5 py-2' : 'px-3 py-2',
+        )}
       >
         {selected?.prefix}
-        <span>{selected?.label}</span>
+        {!compact && <span>{selected?.label}</span>}
         <Icon name="expand_more" className={cn('text-base transition-transform', open && 'rotate-180')} />
       </button>
 

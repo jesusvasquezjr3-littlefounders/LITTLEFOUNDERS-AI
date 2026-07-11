@@ -21,13 +21,22 @@ colors:
   accent: "#a44100"              # warm orange — streaks, energy, tertiary chips
   accent-soft: "#ffdbcc"
   on-accent: "#ffffff"
-  # ── Semantic ──
+  delight: "#a3157d"             # signature magenta — celebration moments only
+  delight-soft: "#ffd7f2"
+  on-delight: "#ffffff"
+  # ── Semantic (Action Color Contract — see Colors §) ──
   success: "#1a7f37"
   success-soft: "#d3f3dd"
+  success-strong: "#14602a"      # pressed state + button bottom edge
+  on-success: "#ffffff"
   warning: "#b45309"
   warning-soft: "#fdeecd"
+  warning-strong: "#8a3f07"
+  on-warning: "#ffffff"
   error: "#ba1a1a"
   error-soft: "#ffdad6"
+  error-strong: "#8c1414"
+  on-error: "#ffffff"
   # ── Surfaces & content (dark) ──
   dark-base: "#0f172a"
   dark-surface: "#1e293b"
@@ -43,26 +52,35 @@ colors:
   dark-secondary: "#8ab4ff"      # brightened warm blue — links stay readable on dark surfaces
   dark-secondary-soft: "#22335e"
   dark-on-secondary: "#001a4d"
+  # accent/delight/success/warning/error keep their light-mode hue in dark —
+  # they're solid fills with white text, which reads fine on dark too. Only
+  # the -soft well/badge tones darken (a light-mode pastel would look like
+  # paper pasted on navy):
+  dark-accent-soft: "#3d2410"
+  dark-delight-soft: "#3a1230"
+  dark-success-soft: "#0f2b1a"
+  dark-warning-soft: "#2e2308"
+  dark-error-soft: "#3a1414"
 typography:
   display-xl:                    # hero page titles (landing "Learn by Playing")
-    fontFamily: Quicksand
+    fontFamily: Baloo 2
     fontSize: 48px
     fontWeight: "700"
     lineHeight: 56px
     letterSpacing: -0.02em
   display-lg:                    # page titles ("Solving Quadratic Equations"), big stat numbers
-    fontFamily: Quicksand
+    fontFamily: Baloo 2
     fontSize: 32px
     fontWeight: "700"
     lineHeight: 40px
     letterSpacing: -0.01em
   headline:                      # section headings ("Continue Learning", "Daily Quests")
-    fontFamily: Quicksand
+    fontFamily: Baloo 2
     fontSize: 24px
     fontWeight: "600"
     lineHeight: 32px
   title:                         # card titles ("Algebra II"), nav items
-    fontFamily: Quicksand
+    fontFamily: Baloo 2
     fontSize: 18px
     fontWeight: "600"
     lineHeight: 26px
@@ -126,6 +144,18 @@ components:
     textColor: "{colors.primary}"
     typography: "{typography.label}"
     rounded: "{rounded.full}"
+    padding: 12px 24px
+  button-success:
+    backgroundColor: "{colors.success}"
+    textColor: "{colors.on-success}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: 12px 24px
+  button-danger:
+    backgroundColor: "{colors.error}"
+    textColor: "{colors.on-error}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
     padding: 12px 24px
   card:
     backgroundColor: "{colors.surface}"
@@ -204,16 +234,33 @@ Audience: kids under parental control plus their parents. The UI must evoke opti
 - **`primary` (deep indigo)** — THE action color. Primary buttons, active nav, progress fills, links in nav context. One primary action per view. `primary-strong` is the pressed shade and the "chunky" bottom edge of buttons. `primary-soft` backs icon chips and hint cards.
 - **`secondary` (warm blue)** — inline links, secondary emphasis (e.g., "Resume Lesson" on an already-primary screen), highlighted lesson variables. Never for the main CTA when `primary` is present.
 - **`accent` (warm orange)** — the energy color: streaks, flames, celebration chips. Sparingly — one accent element per card maximum.
-- **Semantic** — `success`/`warning`/`error` (+ their `-soft` fills) are reserved for feedback: correct/incorrect answers, quest completion, destructive confirmations. Never decorative.
-- **Dark mode** — `dark-*` tokens swap in via the `.dark` class. Deep navy base, slate surfaces; `dark-primary` is a brightened indigo (AA on dark). Clay highlights switch from white to low-opacity light (see Elevation) — never harsh glare.
+- **`delight` (signature magenta)** — the one color that exists purely for brand personality: badge-unlocked moments, premium/legendary tiers, confetti accents. Rarer than `accent` — a handful of moments per session, never a button fill for a routine action, never more than one `delight` element on screen at once.
+- **Semantic** — `success`/`warning`/`error` (+ their `-soft`/`-strong`/`on-*` variants) are reserved for feedback and the Action Color Contract below. Never decorative.
+- **Dark mode** — `dark-*` tokens swap in via the `.dark` class. Deep navy base, slate surfaces; `primary`/`secondary` brighten in dark (they carry text/link duty against the dark background). `accent`/`delight`/`success`/`warning`/`error` keep their light-mode hue — they're solid button/badge fills with white text, which reads fine on dark too — but their `-soft` well/badge backgrounds darken so they don't look like light-mode paper on navy. Clay highlights switch from white to low-opacity light (see Elevation) — never harsh glare.
 
 Contrast floor: WCAG 2.1 AA in both modes; kid-facing body text targets AAA where feasible.
 
+### Action Color Contract — NON-NEGOTIABLE
+
+Every interactive action picks its color by **what the action does**, not by taste. This mapping is the standard from this point forward — a new button variant is never invented ad hoc; if none of these fit, that's a design conversation, not a code decision.
+
+| Color | Psychology | Use for | Never for |
+|---|---|---|---|
+| **Primary** (indigo) | Trust, focus, forward motion | The one main/confirming action per view: Start, Continue, Save, Submit, Enroll | More than one per view region |
+| **Secondary** (blue) | Calm, informational | Alternative/lower-emphasis actions: Learn more, secondary nav, non-destructive Cancel | The main CTA when a primary is present |
+| **Success** (green) | Growth, reassurance, "you did it" | Positive completion: Mark complete, Correct-answer feedback, Approve, Confirm-positive | Ambient decoration; only for an actual completed/correct state |
+| **Danger** (red) | Urgency, stop, irreversible | Destructive/irreversible actions: Delete, Remove, Discard, Cancel-subscription | Anything reversible or routine — reserve the alarm for real stakes |
+| **Warning** (amber) | Caution, needs attention | Non-destructive caution: Edit-with-consequences, pending review, expiring soon | Destructive actions (use Danger) or routine actions (use Primary/Secondary) |
+| **Accent** (orange) | Energy, reward, gamification | Decorative only: streaks, XP, flame icons — never a button fill | Any clickable action |
+| **Delight** (magenta) | Celebration, brand personality | Decorative only: unlocked badges, premium tier, confetti — never a button fill | Any clickable action, anything routine |
+
+`Button` ships `primary`/`secondary`/`success`/`danger` variants for this contract; `warning`/`accent`/`delight` stay non-interactive (badges, chips, banners) per the table.
+
 ## Typography
 
-Two families, loaded via Google Fonts (`Quicksand` 600/700, `Nunito Sans` 400/700), fallback `system-ui`:
+Two families, loaded via Google Fonts (`Baloo 2` 600/700/800, `Nunito Sans` 400/700), fallback `system-ui`:
 
-- **Quicksand** — everything structural: `display-xl` (hero), `display-lg` (page titles + big stat numbers), `headline` (section headings), `title` (card titles, nav). Its rounded terminals mirror the clay radii.
+- **Baloo 2** — everything structural: `display-xl` (hero), `display-lg` (page titles + big stat numbers), `headline` (section headings), `title` (card titles, nav). Chunky, confident, rounded-but-grounded terminals — closer to Duolingo's bold display type and Brilliant's assertive headings than Quicksand's thinner, more decorative curves. Swapped 2026-07-11: titles needed more brand weight and character; Nunito Sans stayed for body since it already reads clean at small sizes.
 - **Nunito Sans** — everything read: `body-lg` (lesson prose), `body` (default), `label` (buttons/badges/forms), `caption` (footnotes).
 
 Rules:
@@ -307,7 +354,7 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - **QuestItem** — row: icon chip + `title` + thin progress pill + status icon.
 - **HintCard** — `primary-soft` fill (`dark-primary-soft` in dark), `rounded-lg`, `secondary`-tinted text; for lesson hints only.
 - **Characters** — Dina, Dino, Dr. Rho, Zara Vex (`frontend/src/components/characters/`) are the canonical mascots; avatars are DiceBear `avataaars`. Characters appear on `surface` cards, never floating on raw `base`.
-- **Dropdown** — our own listbox, **never a native `<select>`/browser-default picker**: clay-sunken trigger (icon/flag + label + chevron) → clay floating panel (`surface`, white border, `rounded-md`) on open, options highlight `surface-sunken` on hover and `primary-soft`/`primary` when selected. Closes on outside click, Escape, or selection. Used for the language switcher: each option is a country flag (see exception below) + the language's name **localized into the current UI language** (e.g. under es-MX: "🇺🇸 Inglés"), never a raw locale code like `es-MX`.
+- **Dropdown** — our own listbox, **never a native `<select>`/browser-default picker**: clay-sunken trigger (icon/flag + label + chevron) → clay floating panel (`surface`, white border, `rounded-md`) on open, options highlight `surface-sunken` on hover and `primary-soft`/`primary` when selected. Closes on outside click, Escape, or selection. `compact` prop hides the label in the trigger (flag/icon + chevron only) while the open panel always shows flag + full label — used for the language switcher, whose trigger shows **only the flag**; opening it reveals each option as flag + the language's name **localized into the current UI language** (e.g. under es-MX: "🇺🇸 Inglés"), never a raw locale code like `es-MX`. Accessible name always includes the current selection even when visually hidden.
 - **ThemeToggle** — 3-way segmented pill (`auto` / `light` / `dark`), `surface-sunken` track, active segment gets `primary` fill + `clay-sm`. Icons: `brightness_auto`, `light_mode`, `dark_mode`. `auto` follows the OS scheme live (listens for `prefers-color-scheme` changes) and is the default until the user picks explicitly.
 
 ## Screen Recipes
@@ -361,8 +408,11 @@ Shipped — see `frontend/src/routes/marketing/` (the living reference): sticky 
 - Route all strings through i18n ×3 locales (/AGENTS.md §1.8).
 - **Verify every UI change at mobile (~375px) AND desktop (~1280px) before commit — screenshot both.** Non-negotiable (/AGENTS.md §1.11).
 - Use ONLY the five motion recipes (§Motion) with the `--lf-ease`/`--lf-dur-*` tokens; new pages get the transition for free via the layout.
+- Pick every button/action color from the **Action Color Contract** (§Colors) — never by taste.
 
 **Don't**
+- ❌ A `danger` action colored anything but red, or a routine action colored red/amber "for emphasis."
+- ❌ `accent`/`delight` as a button fill — they're decorative-only per the Action Color Contract.
 - ❌ Raw hex/rgb/arbitrary values (`text-[#3525cd]`, `rounded-[13px]`) — if a value isn't tokenized here, propose a DESIGN.md change first.
 - ❌ Ad-hoc type compositions — the closed scale only.
 - ❌ Sharp corners, 1px-border-defined cards, or flat Material shadows — clay tokens only.
