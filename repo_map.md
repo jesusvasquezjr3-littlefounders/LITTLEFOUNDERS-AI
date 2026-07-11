@@ -1763,11 +1763,11 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Invariants that bite here
 
-- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis.
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
+- **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** if a `template/` mockup screen covers what you're building, replicate its composition section-by-section — mockup governs structure, DESIGN.md governs values. Deviating without human sign-off is a design bug.
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
-- **Characters are canonical assets**: Dina, Dino, Dr. Rho, Zara Vex (`src/components/characters/`). Reuse; no new mascots without sign-off.
 ```
 
 ### frontend/README.md
@@ -1874,14 +1874,14 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 | `pexels-kid-piggybank-12955547.jpg` | https://www.pexels.com/photo/12955547/ |
 
 `/logo-main.png`, `/Hero-Families.webp`, favicons and `og-image.png` are LittleFounders brand assets (recovered from the v1 `main` branch).
+
+`/logo-main-trimmed.png` is a derivative of `/logo-main.png`: the source canvas is 8000×4500 with the wordmark occupying only its central ~23% (huge transparent margins), which made the logo look tiny in the header/footer no matter the CSS height. Trimmed to the alpha-channel content bounding box (+40px padding) via Pillow — `frontend/public/logo-main.png` bbox `(1034, 1605, 6966, 2621)`. Use the trimmed file in UI; keep the original as the untouched brand source.
 ```
 
 ### frontend/src/App.tsx
 
 ```
 import { Route, Routes } from 'react-router-dom';
-import { Layout } from '@/routes/Layout';
-import { SectionPage } from '@/routes/SectionPage';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
@@ -1894,6 +1894,8 @@ export function App() {
         <Route index element={<Landing />} />
         <Route path="how-it-works" element={<ComingSoon page="howItWorks" />} />
         <Route path="families" element={<ComingSoon page="families" />} />
+        <Route path="faq" element={<ComingSoon page="faq" />} />
+        <Route path="legal/terms" element={<LegalPage doc="terms" />} />
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -2056,6 +2058,26 @@ export function Card({ hero = false, interactive = false, className, ...props }:
   return (
 ```
 
+### frontend/src/components/ui/Dropdown.tsx
+
+```
+import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — Dropdown: our own listbox, never a native
+ * <select>/browser-default picker. Clay trigger + clay-sm floating panel.
+ */
+
+export interface DropdownOption<T extends string> {
+  value: T;
+  label: string;
+  prefix?: ReactNode; // e.g. a flag emoji
+}
+```
+
 ### frontend/src/components/ui/Icon.tsx
 
 ```
@@ -2136,11 +2158,34 @@ interface StatCardProps {
 
 ```
 
+### frontend/src/components/ui/ThemeToggle.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { useTheme, type ThemeChoice } from '@/theme/useTheme';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/* /DESIGN.md §Components — ThemeToggle: 3-way segmented pill (auto/light/dark). */
+
+const SEGMENTS: { choice: ThemeChoice; icon: string }[] = [
+  { choice: 'auto', icon: 'brightness_auto' },
+  { choice: 'light', icon: 'light_mode' },
+  { choice: 'dark', icon: 'dark_mode' },
+];
+
+export function ThemeToggle({ className }: { className?: string }) {
+  const { t } = useTranslation();
+```
+
 ### frontend/src/components/ui/index.ts
 
 ```
 export { Button } from './Button';
 export { Icon } from './Icon';
+export { Dropdown } from './Dropdown';
+export type { DropdownOption } from './Dropdown';
+export { ThemeToggle } from './ThemeToggle';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
@@ -2156,16 +2201,16 @@ export { StatCard } from './StatCard';
     "name": "LittleFounders",
     "tagline": "Learn, play, and build your future"
   },
-  "nav": {
-    "learn": "Learn",
-    "tutor": "Tutor",
-    "games": "Games",
-    "tasks": "Tasks",
-    "profile": "Profile"
-  },
   "theme": {
-    "toggle": "Toggle theme",
+    "toggle": "Theme",
+    "auto": "Match system",
     "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "label": "Language",
+    "en-US": "English",
+    "es-MX": "Spanish",
 ```
 
 ### frontend/src/i18n/es-MX.json
@@ -2176,16 +2221,16 @@ export { StatCard } from './StatCard';
     "name": "LittleFounders",
     "tagline": "Aprende, juega y construye tu futuro"
   },
-  "nav": {
-    "learn": "Aprender",
-    "tutor": "Tutor",
-    "games": "Juegos",
-    "tasks": "Tareas",
-    "profile": "Perfil"
-  },
   "theme": {
-    "toggle": "Cambiar tema",
+    "toggle": "Tema",
+    "auto": "Igual que el sistema",
     "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "language": {
+    "label": "Idioma",
+    "en-US": "Inglés",
+    "es-MX": "Español",
 ```
 
 ### frontend/src/i18n/index.ts
@@ -2216,16 +2261,16 @@ void i18n
     "name": "LittleFounders",
     "tagline": "Aprenda, jogue e construa seu futuro"
   },
-  "nav": {
-    "learn": "Aprender",
-    "tutor": "Tutor",
-    "games": "Jogos",
-    "tasks": "Tarefas",
-    "profile": "Perfil"
-  },
   "theme": {
-    "toggle": "Alternar tema",
+    "toggle": "Tema",
+    "auto": "Igual ao sistema",
     "light": "Claro",
+    "dark": "Escuro"
+  },
+  "language": {
+    "label": "Idioma",
+    "en-US": "Inglês",
+    "es-MX": "Espanhol",
 ```
 
 ### frontend/src/index.css
@@ -2282,46 +2327,6 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-### frontend/src/routes/Layout.tsx
-
-```
-import { NavLink, Outlet } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/theme/useTheme';
-import { LOCALES } from '@/i18n';
-import { cn } from '@/lib/utils';
-
-const SECTIONS = ['learn', 'tutor', 'games', 'tasks', 'profile'] as const;
-
-export function Layout() {
-  const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
-
-  return (
-    <div className="min-h-screen bg-base text-content">
-      <header className="mx-auto flex max-w-container flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-```
-
-### frontend/src/routes/SectionPage.tsx
-
-```
-import { useTranslation } from 'react-i18next';
-import { Card, Badge } from '@/components/ui';
-
-export function SectionPage({ section }: { section: 'learn' | 'tutor' | 'games' | 'tasks' | 'profile' }) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="lf-display-lg">{t(`sections.${section}.title`)}</h1>
-      <p className="lf-body-lg mt-2 text-content-muted">{t(`sections.${section}.description`)}</p>
-      <Card hero className="mt-8 text-center">
-        <Badge>{t(`sections.${section}.comingSoon`)}</Badge>
-      </Card>
-    </div>
-  );
-```
-
 ### frontend/src/routes/marketing/ComingSoon.tsx
 
 ```
@@ -2349,9 +2354,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Icon, IconChip } from '@/components/ui';
 
-/* Composition replicates template/tactile_learning_lab_landing_page (DESIGN.md §0):
-   hero (badge → two-line headline w/ gradient line → subtitle → CTA pair → floating
-   illustration) → trust strip → 6-feature clay grid → fact band → motivation → final CTA. */
+/* Composition adapted from template/tactile_learning_lab_landing_page (DESIGN.md §0):
+   hero (two-line headline w/ gradient line → subtitle → CTA pair → floating
+   illustration) → problem/solution → 6-feature clay grid → fact band → motivation →
+   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH). */
 
 const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
@@ -2359,7 +2365,6 @@ const FEATURES = [
   { key: 'f3', icon: 'touch_app', tone: 'accent' },
   { key: 'f4', icon: 'joystick', tone: 'success' },
   { key: 'f5', icon: 'family_restroom', tone: 'warning' },
-  { key: 'f6', icon: 'shield', tone: 'primary' },
 ```
 
 ### frontend/src/routes/marketing/LegalPage.tsx
@@ -2388,9 +2393,8 @@ export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/theme/useTheme';
-import { LOCALES } from '@/i18n';
-import { Button, Icon } from '@/components/ui';
+import { LOCALES, type Locale } from '@/i18n';
+import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 /* Composition per template/tactile_learning_lab_landing_page (DESIGN.md §0). */
@@ -2400,6 +2404,7 @@ const NAV_LINKS = [
   { to: '/families', key: 'families' },
   { to: '/faq', key: 'faq' },
 ] as const;
+
 ```
 
 ### frontend/src/test-setup.ts
@@ -2412,21 +2417,21 @@ import '@/i18n';
 ### frontend/src/theme/useTheme.ts
 
 ```
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type ThemeChoice = 'auto' | 'light' | 'dark';
 
 const STORAGE_KEY = 'lf-theme';
 
-function initialTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
+function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
-  return typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
+
+function resolveIsDark(choice: ThemeChoice): boolean {
+  return choice === 'auto' ? systemPrefersDark() : choice === 'dark';
+}
+
 ```
 
 ### frontend/tailwind.config.js

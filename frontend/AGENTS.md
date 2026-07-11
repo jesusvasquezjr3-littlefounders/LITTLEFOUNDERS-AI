@@ -8,7 +8,8 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Invariants that bite here
 
-- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis.
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
+- **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** if a `template/` mockup screen covers what you're building, replicate its composition section-by-section — mockup governs structure, DESIGN.md governs values. Deviating without human sign-off is a design bug.
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.

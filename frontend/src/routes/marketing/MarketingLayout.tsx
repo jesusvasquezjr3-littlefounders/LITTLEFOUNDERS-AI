@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/theme/useTheme';
-import { LOCALES } from '@/i18n';
-import { Button, Icon } from '@/components/ui';
+import { LOCALES, type Locale } from '@/i18n';
+import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 /* Composition per template/tactile_learning_lab_landing_page (DESIGN.md §0). */
@@ -16,6 +15,15 @@ const NAV_LINKS = [
 
 const CONTACT_EMAIL = 'informame@littlefounders.ai';
 
+// Country flag paired with each locale (DESIGN.md exception: flags are content
+// labels for language identity, not functional UI icons — Material Symbols
+// has no equivalent).
+const LOCALE_FLAGS: Record<Locale, string> = {
+  'en-US': '🇺🇸',
+  'es-MX': '🇲🇽',
+  'pt-BR': '🇧🇷',
+};
+
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return cn(
     'lf-label inline-flex min-h-11 items-center rounded-sm px-1 transition-colors duration-150',
@@ -26,8 +34,13 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 
 export function MarketingLayout() {
   const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
+    value: l,
+    label: t(`language.${l}`),
+    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+  }));
 
   return (
     <div className="min-h-screen bg-base text-content">
@@ -38,7 +51,11 @@ export function MarketingLayout() {
             to="/"
             className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-14 w-auto" />
+            <img
+              src="/logo-main-trimmed.png"
+              alt={t('marketing.hero.logoAlt')}
+              className="h-10 w-auto sm:h-12"
+            />
           </Link>
 
           <nav aria-label={t('app.name')} className="hidden items-center gap-8 lg:flex">
@@ -50,27 +67,14 @@ export function MarketingLayout() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <select
-              aria-label={t('language.label')}
-              className="lf-label min-h-11 rounded-md bg-surface-sunken px-2 py-2 text-content shadow-clay-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              value={i18n.resolvedLanguage ?? 'en-US'}
-              onChange={(e) => void i18n.changeLanguage(e.target.value)}
-            >
-              {LOCALES.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              aria-label={t('theme.toggle')}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name={theme === 'dark' ? 'light_mode' : 'dark_mode'} />
-            </button>
-            <Link to="/learn" className="hidden md:block">
+            <Dropdown
+              value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
+              options={localeOptions}
+              onChange={(l) => void i18n.changeLanguage(l)}
+              ariaLabel={t('language.label')}
+            />
+            <ThemeToggle className="hidden sm:inline-flex" />
+            <Link to="/" className="hidden md:block">
               <Button className="px-6 py-2">{t('marketing.nav.cta')}</Button>
             </Link>
             <button
@@ -100,7 +104,10 @@ export function MarketingLayout() {
                 {t(`marketing.nav.${key}`)}
               </NavLink>
             ))}
-            <Link to="/learn" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
+            <div className="mt-3 flex items-center justify-between sm:hidden">
+              <ThemeToggle />
+            </div>
+            <Link to="/" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
               <Button className="w-full">{t('marketing.nav.cta')}</Button>
             </Link>
           </nav>
@@ -115,7 +122,11 @@ export function MarketingLayout() {
       <footer className="mt-24 border-t border-surface-sunken bg-surface pb-8 pt-16">
         <div className="mx-auto grid max-w-container gap-10 px-4 sm:px-6 md:grid-cols-3">
           <div>
-            <img src="/logo-main.png" alt={t('marketing.hero.logoAlt')} className="h-12 w-auto" />
+            <img
+              src="/logo-main-trimmed.png"
+              alt={t('marketing.hero.logoAlt')}
+              className="h-10 w-auto"
+            />
             <p className="lf-body mt-4 text-content-muted">{t('marketing.footer.tagline')}</p>
           </div>
           <div>

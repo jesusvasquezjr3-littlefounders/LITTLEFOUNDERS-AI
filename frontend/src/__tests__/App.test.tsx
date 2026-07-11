@@ -28,6 +28,13 @@ describe('Marketing site', () => {
     expect(screen.getAllByRole('link', { name: 'Start free' }).length).toBeGreaterThan(0);
   });
 
+  it('CTA links point to the landing page (no app shell yet)', () => {
+    renderApp();
+    for (const link of screen.getAllByRole('link', { name: /Start free/ })) {
+      expect(link).toHaveAttribute('href', '/');
+    }
+  });
+
   it('top nav links to the three marketing pages', () => {
     renderApp();
     for (const name of ['How it works', 'Families', 'FAQ']) {
@@ -35,7 +42,7 @@ describe('Marketing site', () => {
     }
   });
 
-  it('footer has legal links and the contact email', () => {
+  it('footer has legal links, a big logo, and the contact email', () => {
     renderApp();
     expect(screen.getByRole('link', { name: 'Terms & Conditions' })).toHaveAttribute(
       'href',
@@ -63,22 +70,28 @@ describe('Marketing site', () => {
     expect(screen.getByText('Under construction')).toBeInTheDocument();
   });
 
-  it('app sections still render under the app layout', () => {
+  it('no app-shell routes exist (removed until built for real)', () => {
     renderApp('/learn');
-    expect(screen.getByText('Courses are coming soon!')).toBeInTheDocument();
+    expect(screen.queryByText('Courses are coming soon!')).not.toBeInTheDocument();
   });
 
-  it('toggles dark mode from the marketing header', () => {
+  it('theme toggle offers auto/light/dark and switches to dark', () => {
     renderApp();
-    const toggle = screen.getByRole('button', { name: 'Toggle theme' });
     expect(document.documentElement.classList.contains('dark')).toBe(false);
-    fireEvent.click(toggle);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Dark' })[0]!);
     expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(screen.getAllByRole('button', { name: 'Match system' }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: 'Light' }).length).toBeGreaterThan(0);
   });
 
-  it('switches locale on the landing page', async () => {
+  it('language switcher is a custom dropdown (no native select) and switches locale', async () => {
     renderApp();
-    await i18n.changeLanguage('es-MX');
+    expect(document.querySelector('select')).not.toBeInTheDocument();
+
+    const trigger = screen.getByRole('button', { name: 'Language' });
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
+
     expect(await screen.findByText(/aprendida jugando/)).toBeInTheDocument();
   });
 });

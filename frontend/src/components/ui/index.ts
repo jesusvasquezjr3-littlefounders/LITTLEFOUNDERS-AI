@@ -1,5 +1,8 @@
 export { Button } from './Button';
 export { Icon } from './Icon';
+export { Dropdown } from './Dropdown';
+export type { DropdownOption } from './Dropdown';
+export { ThemeToggle } from './ThemeToggle';
 export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';

@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Icon, IconChip } from '@/components/ui';
 
-/* Composition replicates template/tactile_learning_lab_landing_page (DESIGN.md §0):
-   hero (badge → two-line headline w/ gradient line → subtitle → CTA pair → floating
-   illustration) → trust strip → 6-feature clay grid → fact band → motivation → final CTA. */
+/* Composition adapted from template/tactile_learning_lab_landing_page (DESIGN.md §0):
+   hero (two-line headline w/ gradient line → subtitle → CTA pair → floating
+   illustration) → problem/solution → 6-feature clay grid → fact band → motivation →
+   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH). */
 
 const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
@@ -15,12 +16,6 @@ const FEATURES = [
   { key: 'f6', icon: 'shield', tone: 'primary' },
 ] as const;
 
-const REGIONS = [
-  { key: 'us', icon: 'flag' },
-  { key: 'mx', icon: 'flag' },
-  { key: 'br', icon: 'flag' },
-] as const;
-
 export function Landing() {
   const { t } = useTranslation();
 
@@ -29,10 +24,6 @@ export function Landing() {
       {/* 1. Hero */}
       <section className="grid items-center gap-12 py-16 md:grid-cols-2 md:py-24">
         <div className="z-10 flex flex-col items-start gap-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white bg-surface px-4 py-2 text-secondary shadow-clay-sm dark:border-white/10">
-            <Icon name="stars" className="text-sm" />
-            <span className="lf-label">{t('marketing.hero.badge')}</span>
-          </div>
           <h1 className="lf-display-xl lg:text-6xl lg:leading-tight">
             {t('marketing.hero.titleLead')}
             <br />
@@ -42,7 +33,7 @@ export function Landing() {
           </h1>
           <p className="lf-body-lg max-w-lg text-content-muted">{t('marketing.hero.subtitle')}</p>
           <div className="mt-4 flex flex-wrap gap-4">
-            <Link to="/learn">
+            <Link to="/">
               <Button>
                 {t('marketing.hero.ctaPrimary')}
                 <Icon name="arrow_forward" />
@@ -66,23 +57,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* 2. Trust strip */}
-      <section className="flex flex-col items-center justify-center gap-6 border-y border-surface-sunken py-12 opacity-80 md:flex-row md:gap-16">
-        <p className="lf-label uppercase tracking-wider text-content-muted">
-          {t('marketing.trust.label')}
-        </p>
-        <div className="flex flex-wrap justify-center gap-8 text-content-faint">
-          {REGIONS.map(({ key, icon }) => (
-            <div key={key} className="flex items-center gap-2">
-              <Icon name={icon} className="text-2xl" />
-              <span className="lf-label">{t(`marketing.trust.${key}`)}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Problem → solution */}
-      <section className="pt-24">
+      {/* 2. Problem → solution */}
+      <section className="border-t border-surface-sunken pt-16">
         <div className="mb-16 text-center">
           <h2 className="lf-display-lg">{t('marketing.problem.title')}</h2>
         </div>
@@ -104,7 +80,7 @@ export function Landing() {
         </div>
       </section>
 
-      {/* 4. Features grid */}
+      {/* 3. Features grid */}
       <section className="py-24">
         <div className="mb-16 text-center">
           <h2 className="lf-display-lg mb-4">{t('marketing.features.title')}</h2>
@@ -159,7 +135,7 @@ export function Landing() {
           <div>
             <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
             <p className="lf-body-lg mt-3 text-content-muted">{t('marketing.finalCta.body')}</p>
-            <Link to="/learn" className="mt-6 inline-block">
+            <Link to="/" className="mt-6 inline-block">
               <Button>
                 {t('marketing.finalCta.button')}
                 <Icon name="arrow_forward" />

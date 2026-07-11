@@ -3,51 +3,17 @@
     "name": "LittleFounders",
     "tagline": "Aprenda, jogue e construa seu futuro"
   },
-  "nav": {
-    "learn": "Aprender",
-    "tutor": "Tutor",
-    "games": "Jogos",
-    "tasks": "Tarefas",
-    "profile": "Perfil"
-  },
   "theme": {
-    "toggle": "Alternar tema",
+    "toggle": "Tema",
+    "auto": "Igual ao sistema",
     "light": "Claro",
     "dark": "Escuro"
   },
   "language": {
-    "label": "Idioma"
-  },
-  "home": {
-    "welcome": "Bem-vindo ao LittleFounders",
-    "subtitle": "A nova plataforma está em construção. Escolha uma seção para explorar."
-  },
-  "sections": {
-    "learn": {
-      "title": "Aprender",
-      "description": "Cursos gamificados para virar founder.",
-      "comingSoon": "Os cursos chegam em breve!"
-    },
-    "tutor": {
-      "title": "Tutor",
-      "description": "Seu tutor de IA pessoal, ao vivo.",
-      "comingSoon": "Seu tutor está se preparando!"
-    },
-    "games": {
-      "title": "Jogos",
-      "description": "Minijogos que fazem os conceitos grudarem.",
-      "comingSoon": "Os jogos estão carregando!"
-    },
-    "tasks": {
-      "title": "Tarefas",
-      "description": "Complete tarefas, ganhe recompensas.",
-      "comingSoon": "As tarefas estão a caminho!"
-    },
-    "profile": {
-      "title": "Perfil",
-      "description": "Personalize seu avatar e suas configurações.",
-      "comingSoon": "A personalização de avatar chega em breve!"
-    }
+    "label": "Idioma",
+    "en-US": "Inglês",
+    "es-MX": "Espanhol",
+    "pt-BR": "Português"
   },
   "marketing": {
     "nav": {
@@ -57,7 +23,6 @@
       "cta": "Comece grátis"
     },
     "hero": {
-      "badge": "Um novo jeito de aprender sobre dinheiro",
       "titleLead": "Educação financeira,",
       "titleHighlight": "aprendida brincando",
       "subtitle": "O LittleFounders transforma finanças e empreendedorismo em um jogo que seus filhos realmente querem jogar — seguro, guiado e em família.",
@@ -84,12 +49,6 @@
       "body1": "Toda criança que junta moedas em um pote já é uma pequena fundadora: tem uma meta, um plano e a paciência para chegar lá. O que falta é um guia que fale a língua dela.",
       "body2": "O LittleFounders as encontra onde elas brincam: personagens que amam, missões que querem completar e uma família torcendo junto.",
       "imageAlt": "Uma criança contando moedas ao lado do seu pote de economias"
-    },
-    "trust": {
-      "label": "Feito para famílias de todo o continente",
-      "us": "Estados Unidos",
-      "mx": "México",
-      "br": "Brasil"
     },
     "features": {
       "title": "Aprendizado prático, em casa",

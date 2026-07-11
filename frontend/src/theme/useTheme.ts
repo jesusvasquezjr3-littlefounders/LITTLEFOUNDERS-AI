@@ -1,30 +1,42 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type ThemeChoice = 'auto' | 'light' | 'dark';
 
 const STORAGE_KEY = 'lf-theme';
 
-function initialTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
+function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
-  return typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
-export function useTheme(): { theme: Theme; toggleTheme: () => void } {
-  const [theme, setTheme] = useState<Theme>(initialTheme);
+function resolveIsDark(choice: ThemeChoice): boolean {
+  return choice === 'auto' ? systemPrefersDark() : choice === 'dark';
+}
+
+function initialChoice(): ThemeChoice {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored === 'light' || stored === 'dark' || stored === 'auto' ? stored : 'auto';
+}
+
+export function useTheme(): { choice: ThemeChoice; setChoice: (c: ThemeChoice) => void; isDark: boolean } {
+  const [choice, setChoice] = useState<ThemeChoice>(initialChoice);
+  const [isDark, setIsDark] = useState(() => resolveIsDark(initialChoice()));
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    localStorage.setItem(STORAGE_KEY, choice);
+    const apply = () => {
+      const dark = resolveIsDark(choice);
+      document.documentElement.classList.toggle('dark', dark);
+      setIsDark(dark);
+    };
+    apply();
 
-  const toggleTheme = useCallback(() => {
-    setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
-  }, []);
+    if (choice === 'auto' && typeof window.matchMedia === 'function') {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener('change', apply);
+      return () => mq.removeEventListener('change', apply);
+    }
+  }, [choice]);
 
-  return { theme, toggleTheme };
+  return { choice, setChoice, isDark };
 }

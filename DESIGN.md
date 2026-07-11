@@ -280,6 +280,8 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - **QuestItem** — row: icon chip + `title` + thin progress pill + status icon.
 - **HintCard** — `primary-soft` fill (`dark-primary-soft` in dark), `rounded-lg`, `secondary`-tinted text; for lesson hints only.
 - **Characters** — Dina, Dino, Dr. Rho, Zara Vex (`frontend/src/components/characters/`) are the canonical mascots; avatars are DiceBear `avataaars`. Characters appear on `surface` cards, never floating on raw `base`.
+- **Dropdown** — our own listbox, **never a native `<select>`/browser-default picker**: clay-sunken trigger (icon/flag + label + chevron) → clay floating panel (`surface`, white border, `rounded-md`) on open, options highlight `surface-sunken` on hover and `primary-soft`/`primary` when selected. Closes on outside click, Escape, or selection. Used for the language switcher: each option is a country flag (see exception below) + the language's name **localized into the current UI language** (e.g. under es-MX: "🇺🇸 Inglés"), never a raw locale code like `es-MX`.
+- **ThemeToggle** — 3-way segmented pill (`auto` / `light` / `dark`), `surface-sunken` track, active segment gets `primary` fill + `clay-sm`. Icons: `brightness_auto`, `light_mode`, `dark_mode`. `auto` follows the OS scheme live (listens for `prefers-color-scheme` changes) and is the default until the user picks explicitly.
 
 ## Do's and Don'ts
 
@@ -297,7 +299,8 @@ The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do 
 - ❌ Sharp corners, 1px-border-defined cards, or flat Material shadows — clay tokens only.
 - ❌ `transition: all`, animated `width/height/top/left`, `will-change` outside `transform/opacity/filter`.
 - ❌ Glassmorphism, gradients-as-decoration (sole exception: the hero headline gradient text, per the mockup), or more than one shadow style per element.
-- ❌ New mascots, new icon sets (**Material Symbols Outlined only** — what the mockup code uses; corrected from the draft's "Lucide" note), emojis as UI icons, or text baked into images.
+- ❌ New mascots, new icon sets (**Material Symbols Outlined only** — what the mockup code uses; corrected from the draft's "Lucide" note), emojis as UI icons, or text baked into images. **Exception:** country flag emoji are permitted specifically as the language-identity label in the language switcher (no Material Symbol equivalent exists) — never as a general-purpose icon substitute elsewhere.
+- ❌ **Native `<select>`, `<input type="date">`, or any other browser-default picker** as the primary choice control — use the `Dropdown` component (or a purpose-built equivalent like `ThemeToggle`) so styling and interaction stay on-system everywhere.
 - ❌ Noise: decorative borders, double outlines around images, backgrounds behind backgrounds. When a screen feels empty, that's the design working.
 - ❌ Shipping a component checked at only one breakpoint.
 - ❌ A desktop layout that's a stretched mobile column with dead side whitespace, or a mobile layout that crams desktop density into a narrow viewport.

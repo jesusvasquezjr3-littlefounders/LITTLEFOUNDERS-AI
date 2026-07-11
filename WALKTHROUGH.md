@@ -34,6 +34,8 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | 2026-07-11 | **Composition-fidelity rule added as DESIGN.md §0** after the landing shipped visually unlike the mockup: template/ mockups govern composition (structure, rhythm, shapes); DESIGN.md governs values; mockup wins conflicts and DESIGN.md gets amended. Landing rebuilt to the mockup recipe; corrections: buttons are rounded-md chunky w/ 4px bottom border (NOT pills), cards carry the 1px white clay border, icon set is Material Symbols (not Lucide/emojis), hero gradient text is the one gradient exception | Jesús flagged the mismatch; root cause: agent designed "from tokens" instead of replicating the approved mockup |
 
+| 2026-07-11 | Marketing site polish per Jesús feedback: removed the app-shell placeholder routes (`/learn`…`/profile`) — only the shipped marketing pages remain until each section is actually built; CTAs point to `/` meanwhile. Removed hero badge and the "built for families" trust strip. Custom `Dropdown` component replaces the native `<select>` everywhere (DESIGN.md: native pickers now prohibited); language switcher shows a country flag + the language name localized into the current UI language, never a raw locale code. `useTheme` extended to 3-way `auto/light/dark` with a live `prefers-color-scheme` listener when `auto`; new segmented `ThemeToggle` component. Header/footer logo swapped to `logo-main-trimmed.png` (alpha-bbox crop) — the original PNG's wordmark occupied only ~23% of its own canvas height, so sizing by CSS height alone couldn't make it look bigger | User: no browser-native pickers, bigger logo, simpler theme control matching v1's 3-way pattern, drop badge/trust content |
+
 ## Known Issues
 
 _None yet._
