@@ -2,4 +2,152 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DESIGN: pending re-skin — tokens arrive with the mockup-derived DESIGN.md. */
+/*
+ * Token implementation of /DESIGN.md (LittleFounders Tactile).
+ * CSS variables are the single source; tailwind.config.js references them.
+ * RGB triplets so Tailwind opacity modifiers work.
+ */
+@layer base {
+  :root {
+    --lf-base: 247 249 251;
+    --lf-surface: 255 255 255;
+    --lf-surface-sunken: 236 238 240;
+    --lf-content: 25 28 30;
+    --lf-content-muted: 70 69 85;
+    --lf-content-faint: 119 117 135;
+    --lf-outline: 199 196 216;
+    --lf-primary: 53 37 205;
+    --lf-primary-strong: 36 23 149;
+    --lf-primary-soft: 226 223 255;
+    --lf-on-primary: 255 255 255;
+    --lf-secondary: 0 81 213;
+    --lf-secondary-soft: 219 225 255;
+    --lf-on-secondary: 255 255 255;
+    --lf-accent: 164 65 0;
+    --lf-accent-soft: 255 219 204;
+    --lf-on-accent: 255 255 255;
+    --lf-success: 26 127 55;
+    --lf-success-soft: 211 243 221;
+    --lf-warning: 180 83 9;
+    --lf-warning-soft: 253 238 205;
+    --lf-error: 186 26 26;
+    --lf-error-soft: 255 218 214;
+
+    --lf-shadow-clay: 16px 16px 32px rgba(53, 37, 205, 0.06),
+      inset 4px 4px 8px rgba(255, 255, 255, 1),
+      inset -6px -6px 12px rgba(0, 0, 0, 0.04);
+    --lf-shadow-clay-sm: 6px 6px 12px rgba(53, 37, 205, 0.08),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+      inset -3px -3px 6px rgba(0, 0, 0, 0.04);
+    --lf-shadow-clay-pressed: 2px 2px 6px rgba(53, 37, 205, 0.1),
+      inset 4px 4px 8px rgba(0, 0, 0, 0.12),
+      inset -2px -2px 4px rgba(255, 255, 255, 0.2);
+    --lf-shadow-clay-sunken: inset 4px 4px 8px rgba(0, 0, 0, 0.08),
+      inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+  }
+
+  .dark {
+    --lf-base: 15 23 42;
+    --lf-surface: 30 41 59;
+    --lf-surface-sunken: 22 32 58;
+    --lf-content: 239 241 243;
+    --lf-content-muted: 182 185 200;
+    --lf-content-faint: 138 138 157;
+    --lf-outline: 58 63 88;
+    --lf-primary: 143 136 255;
+    --lf-primary-strong: 106 95 255;
+    --lf-primary-soft: 43 39 88;
+    --lf-on-primary: 15 0 105;
+
+    --lf-shadow-clay: 16px 16px 32px rgba(0, 0, 0, 0.35),
+      inset 4px 4px 8px rgba(255, 255, 255, 0.05),
+      inset -6px -6px 12px rgba(0, 0, 0, 0.35);
+    --lf-shadow-clay-sm: 6px 6px 12px rgba(0, 0, 0, 0.3),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+      inset -3px -3px 6px rgba(0, 0, 0, 0.3);
+    --lf-shadow-clay-pressed: 2px 2px 6px rgba(0, 0, 0, 0.35),
+      inset 4px 4px 8px rgba(0, 0, 0, 0.45),
+      inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+    --lf-shadow-clay-sunken: inset 4px 4px 8px rgba(0, 0, 0, 0.45),
+      inset -4px -4px 8px rgba(255, 255, 255, 0.03);
+  }
+
+  body {
+    @apply bg-base font-body text-content antialiased;
+  }
+}
+
+/*
+ * Closed typography scale (/DESIGN.md §Typography). These classes are the ONLY
+ * way to set type. Composing ad-hoc sizes with utilities is prohibited.
+ */
+@layer components {
+  .lf-display-xl {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .lf-display-lg {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .lf-headline {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    text-wrap: balance;
+  }
+  .lf-title {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+  .lf-body-lg {
+    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    text-wrap: pretty;
+  }
+  .lf-body {
+    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-wrap: pretty;
+  }
+  .lf-label {
+    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+  .lf-caption {
+    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+  .lf-number {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe-lift,
+    .motion-safe-press {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}

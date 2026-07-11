@@ -42,6 +42,7 @@ frontend/
     __tests__/
     components/
       characters/
+      ui/
     i18n/
     lib/
     routes/
@@ -53,6 +54,15 @@ parent-id-check/
   src/
     __tests__/
 scripts/
+template/
+  alex_s_profile_tactile_learning_lab/
+  assessment_algebra_final/
+  course_catalog_explore_paths/
+  games_hub_tactile_learning_lab/
+  lesson_interface_quadratic_equations/
+  tactile_learning_lab/
+  tactile_learning_lab_landing_page/
+  user_dashboard_tactile_learning_lab/
 ```
 
 ## File previews (first 15 lines)
@@ -260,21 +270,21 @@ on:
 ### DESIGN.md
 
 ```
-# DESIGN.md — LittleFounders Frontend Design System
-
-> **⚠️ SKELETON.** The authoritative visual spec will be derived from a mockup the team will provide. Until then: **do not invent tokens.** Use plain Tailwind defaults, keep components structurally clean, and flag every new UI surface with `// DESIGN: pending re-skin` so the re-skin pass can find them.
->
-> When the mockup lands, this file will be rewritten using the `design-md` skill format (YAML front-matter tokens + prose rationale).
-
-## What is already locked (build against these today)
-
-- **Modes:** light AND dark are both first-class. Tailwind `darkMode: 'class'`. Every component styles both at write time — never ship light-only.
-- **i18n:** `en-US`, `es-MX`, `pt-BR`. Layouts must tolerate ±35% string length; never bake text into images.
-- **Characters:** the canonical mascots are **Dina, Dino, Dr. Rho, Zara Vex** (`frontend/src/components/characters/`). They are SVG React components — reuse them; do not create new mascots without sign-off.
-- **Avatars:** DiceBear, `avataaars` style. Profile customization builds on DiceBear options — no custom avatar engine.
-- **Accessibility floor:** WCAG 2.1 AA. Kid-readable type (generous sizes, high contrast), ≥44×44px hit areas, visible focus states, `prefers-reduced-motion` respected.
-- **Motion discipline (carried from v1, still applies):** no `transition: all` — transition exact properties only; `will-change` only on `transform`/`opacity`/`filter`.
-
+---
+name: LittleFounders Tactile
+colors:
+  # ── Surfaces (light) ──
+  base: "#f7f9fb"                # page background
+  surface: "#ffffff"             # cards, raised clay elements
+  surface-sunken: "#eceef0"      # wells, equation boxes, sunken inputs
+  # ── Content (light) ──
+  content: "#191c1e"             # default text
+  content-muted: "#464555"       # secondary text, descriptions
+  content-faint: "#777587"       # captions, placeholders, disabled
+  outline: "#c7c4d8"             # hairline borders (rare — shadows do the work)
+  # ── Brand ──
+  primary: "#3525cd"             # deep indigo — the ONE main action color
+  primary-strong: "#241795"      # pressed state + chunky button bottom edge
 ```
 
 ### GLOSSARY.md
@@ -1749,7 +1759,7 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Invariants that bite here
 
-- **DESIGN.md is a skeleton** — do NOT invent design tokens. Tailwind defaults only; mark new surfaces `// DESIGN: pending re-skin`. The re-skin pass happens when the mockup-derived spec lands.
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited.
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
 - **Characters are canonical assets**: Dina, Dino, Dr. Rho, Zara Vex (`src/components/characters/`). Reuse; no new mascots without sign-off.
@@ -1805,12 +1815,15 @@ export default tseslint.config(
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LittleFounders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
 ```
 
 ### frontend/package.json
@@ -1964,6 +1977,137 @@ interface ZaraVexCharacterProps {
 const COLORS = {
 ```
 
+### frontend/src/components/ui/Badge.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — Badge: pill, sunken fill, caption type. */
+
+export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn(
+        'lf-caption inline-flex items-center rounded-full bg-surface-sunken px-3 py-1 text-content-muted',
+        className,
+      )}
+      {...props}
+    />
+  );
+```
+
+### frontend/src/components/ui/Button.tsx
+
+```
+import type { ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — Button: chunky pill, press compression, ≥44px hit area. */
+
+type Variant = 'primary' | 'secondary';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: Variant;
+}
+
+const VARIANTS: Record<Variant, string> = {
+  primary:
+    'bg-primary text-on-primary border-b-4 border-primary-strong hover:-translate-y-0.5 hover:shadow-clay-sm active:translate-y-0.5 active:scale-[0.98] active:shadow-clay-pressed active:border-b-2',
+  secondary:
+```
+
+### frontend/src/components/ui/Card.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — Card: surface + clay + rounded-lg, ≥24px padding. */
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  hero?: boolean;
+  interactive?: boolean;
+}
+
+export function Card({ hero = false, interactive = false, className, ...props }: CardProps) {
+  return (
+    <div
+      className={cn(
+        'bg-surface shadow-clay',
+```
+
+### frontend/src/components/ui/IconChip.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — IconChip: 48px rounded-md square, -soft fill. */
+
+type Tone = 'primary' | 'secondary' | 'accent';
+
+interface IconChipProps extends HTMLAttributes<HTMLSpanElement> {
+  tone?: Tone;
+}
+
+const TONES: Record<Tone, string> = {
+  primary: 'bg-primary-soft text-primary',
+  secondary: 'bg-secondary-soft text-secondary',
+  accent: 'bg-accent-soft text-accent',
+```
+
+### frontend/src/components/ui/ProgressBar.tsx
+
+```
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — ProgressBar: pill track (sunken), primary/accent fill. */
+
+interface ProgressBarProps {
+  value: number; // 0..100
+  tone?: 'primary' | 'accent';
+  label: string; // accessible name (i18n'd by caller)
+  className?: string;
+}
+
+export function ProgressBar({ value, tone = 'primary', label, className }: ProgressBarProps) {
+  const clamped = Math.min(100, Math.max(0, value));
+  return (
+    <div
+```
+
+### frontend/src/components/ui/StatCard.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Card } from '@/components/ui/Card';
+import { IconChip } from '@/components/ui/IconChip';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — StatCard: icon chip, display-lg tabular number, caption label. */
+
+interface StatCardProps {
+  icon: ReactNode;
+  value: string;
+  label: string;
+  tone?: 'primary' | 'secondary' | 'accent';
+  className?: string;
+}
+
+```
+
+### frontend/src/components/ui/index.ts
+
+```
+export { Button } from './Button';
+export { Card } from './Card';
+export { IconChip } from './IconChip';
+export { ProgressBar } from './ProgressBar';
+export { Badge } from './Badge';
+export { StatCard } from './StatCard';
+```
+
 ### frontend/src/i18n/en-US.json
 
 ```
@@ -2051,7 +2195,17 @@ void i18n
 @tailwind components;
 @tailwind utilities;
 
-/* DESIGN: pending re-skin — tokens arrive with the mockup-derived DESIGN.md. */
+/*
+ * Token implementation of /DESIGN.md (LittleFounders Tactile).
+ * CSS variables are the single source; tailwind.config.js references them.
+ * RGB triplets so Tailwind opacity modifiers work.
+ */
+@layer base {
+  :root {
+    --lf-base: 247 249 251;
+    --lf-surface: 255 255 255;
+    --lf-surface-sunken: 236 238 240;
+    --lf-content: 25 28 30;
 ```
 
 ### frontend/src/lib/utils.ts
@@ -2093,19 +2247,19 @@ createRoot(document.getElementById('root')!).render(
 ```
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { IconChip } from '@/components/ui';
 
-/* DESIGN: pending re-skin */
-
-const SECTIONS = ['learn', 'tutor', 'games', 'tasks', 'profile'] as const;
+const SECTIONS = [
+  { key: 'learn', tone: 'primary', emoji: '📚' },
+  { key: 'tutor', tone: 'secondary', emoji: '💬' },
+  { key: 'games', tone: 'accent', emoji: '🎮' },
+  { key: 'tasks', tone: 'secondary', emoji: '✅' },
+  { key: 'profile', tone: 'primary', emoji: '🦖' },
+] as const;
 
 export function Home() {
   const { t } = useTranslation();
 
-  return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-3xl font-bold">{t('home.welcome')}</h1>
-      <p className="mt-2 text-slate-600 dark:text-slate-300">{t('home.subtitle')}</p>
-      <ul className="mt-8 grid gap-4 sm:grid-cols-2">
 ```
 
 ### frontend/src/routes/Layout.tsx
@@ -2117,8 +2271,6 @@ import { useTheme } from '@/theme/useTheme';
 import { LOCALES } from '@/i18n';
 import { cn } from '@/lib/utils';
 
-/* DESIGN: pending re-skin */
-
 const SECTIONS = ['learn', 'tutor', 'games', 'tasks', 'profile'] as const;
 
 export function Layout() {
@@ -2126,26 +2278,28 @@ export function Layout() {
   const { theme, toggleTheme } = useTheme();
 
   return (
+    <div className="min-h-screen bg-base text-content">
+      <header className="mx-auto flex max-w-container flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
 ```
 
 ### frontend/src/routes/SectionPage.tsx
 
 ```
 import { useTranslation } from 'react-i18next';
-
-/* DESIGN: pending re-skin */
+import { Card, Badge } from '@/components/ui';
 
 export function SectionPage({ section }: { section: 'learn' | 'tutor' | 'games' | 'tasks' | 'profile' }) {
   const { t } = useTranslation();
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="text-3xl font-bold">{t(`sections.${section}.title`)}</h1>
-      <p className="mt-2 text-slate-600 dark:text-slate-300">{t(`sections.${section}.description`)}</p>
-      <p className="mt-8 rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-600">
-        {t(`sections.${section}.comingSoon`)}
-      </p>
+      <h1 className="lf-display-lg">{t(`sections.${section}.title`)}</h1>
+      <p className="lf-body-lg mt-2 text-content-muted">{t(`sections.${section}.description`)}</p>
+      <Card hero className="mt-8 text-center">
+        <Badge>{t(`sections.${section}.comingSoon`)}</Badge>
+      </Card>
     </div>
+  );
 ```
 
 ### frontend/src/test-setup.ts
@@ -2178,17 +2332,21 @@ function initialTheme(): Theme {
 ### frontend/tailwind.config.js
 
 ```
+/**
+ * Token implementation of /DESIGN.md — values map 1:1 to its YAML front matter.
+ * Do NOT add values here that DESIGN.md doesn't define.
+ */
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
-    // DESIGN.md is a skeleton — DO NOT add custom tokens here until the
-    // mockup-derived spec lands. Tailwind defaults only.
-    extend: {},
-  },
-  plugins: [],
-};
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      white: '#ffffff',
+      base: 'rgb(var(--lf-base) / <alpha-value>)',
 ```
 
 ### frontend/tsconfig.json
@@ -2589,4 +2747,164 @@ INCLUDE_EXT=(ts tsx js jsx json sql md sh yml yaml css html toml)
 
 PRUNE_ARGS=()
 for d in "${EXCLUDE_NAMES[@]}"; do PRUNE_ARGS+=(-name "$d" -prune -o); done
+```
+
+### template/alex_s_profile_tactile_learning_lab/code.html
+
+```
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab - Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+```
+
+### template/assessment_algebra_final/code.html
+
+```
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiz Assessment - Tactile Learning Lab</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700&amp;family=Quicksand:wght@400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+```
+
+### template/course_catalog_explore_paths/code.html
+
+```
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab - Course Catalog</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+```
+
+### template/games_hub_tactile_learning_lab/code.html
+
+```
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab - Games Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&amp;family=Nunito+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+```
+
+### template/lesson_interface_quadratic_equations/code.html
+
+```
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab - Lesson Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+```
+
+### template/tactile_learning_lab/DESIGN.md
+
+```
+---
+name: Tactile Learning Lab
+colors:
+  surface: '#f7f9fb'
+  surface-dim: '#d8dadc'
+  surface-bright: '#f7f9fb'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#f2f4f6'
+  surface-container: '#eceef0'
+  surface-container-high: '#e6e8ea'
+  surface-container-highest: '#e0e3e5'
+  on-surface: '#191c1e'
+  on-surface-variant: '#464555'
+  inverse-surface: '#2d3133'
+  inverse-on-surface: '#eff1f3'
+```
+
+### template/tactile_learning_lab_landing_page/code.html
+
+```
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+```
+
+### template/user_dashboard_tactile_learning_lab/code.html
+
+```
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactile Learning Lab - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
 ```

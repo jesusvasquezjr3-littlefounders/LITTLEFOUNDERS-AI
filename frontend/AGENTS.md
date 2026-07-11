@@ -8,7 +8,7 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Invariants that bite here
 
-- **DESIGN.md is a skeleton** — do NOT invent design tokens. Tailwind defaults only; mark new surfaces `// DESIGN: pending re-skin`. The re-skin pass happens when the mockup-derived spec lands.
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Tactile). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`). Build UI with the kit in `src/components/ui/` (Button, Card, IconChip, ProgressBar, Badge, StatCard) — no per-view restyling. Clay shadows only (`shadow-clay*`); sharp corners and raw hex are prohibited.
 - **i18n zero tolerance** (§1.8): every string via `t()`, keys in `en-US.json` + `es-MX.json` + `pt-BR.json` in the same commit. Gate: `npm run i18n:check` (root).
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
 - **Characters are canonical assets**: Dina, Dino, Dr. Rho, Zara Vex (`src/components/characters/`). Reuse; no new mascots without sign-off.
