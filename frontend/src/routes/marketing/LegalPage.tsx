@@ -10,7 +10,7 @@ export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="lf-display-lg">{t(`marketing.legal.${doc}.title`)}</h1>
       <Card hero className="mt-10 text-center">
-        <Badge className="bg-warning-soft text-warning">{t('marketing.legal.badge')}</Badge>
+        <Badge className="bg-warning-soft text-warning-strong">{t('marketing.legal.badge')}</Badge>
         <p className="lf-body mt-4 text-content-muted">{t('marketing.legal.body')}</p>
         <a
           href={`mailto:${CONTACT_EMAIL}`}

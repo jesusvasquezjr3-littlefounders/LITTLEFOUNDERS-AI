@@ -18,7 +18,7 @@ export function ProgressBar({ value, tone = 'primary', label, className }: Progr
       aria-valuenow={clamped}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={cn('h-2 w-full rounded-full bg-surface-sunken shadow-clay-sunken', className)}
+      className={cn('h-2 w-full rounded-full bg-surface-sunken', className)}
     >
       <div
         className={cn('h-full rounded-full', tone === 'accent' ? 'bg-accent' : 'bg-primary')}

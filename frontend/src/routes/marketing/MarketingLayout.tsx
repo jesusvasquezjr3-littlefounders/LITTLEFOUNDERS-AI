@@ -5,7 +5,7 @@ import { LOCALES, type Locale } from '@/i18n';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-/* Composition per template/tactile_learning_lab_landing_page (DESIGN.md §0). */
+/* Composition per /DESIGN.md §Screen Recipes → Marketing shell. */
 
 const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
@@ -52,9 +52,9 @@ export function MarketingLayout() {
 
   return (
     <div className="min-h-screen bg-base text-content">
-      {/* Sticky top app bar — mockup: h-20, raised surface, subtle drop shadow */}
-      <header className="sticky top-0 z-40 bg-surface shadow-clay-sm dark:bg-surface">
-        <div className="mx-auto flex h-20 max-w-container items-center justify-between gap-4 px-4 sm:px-6">
+      {/* Sticky top app bar — frosted glass over the page (/DESIGN.md §Elevation) */}
+      <header className="lf-glass sticky top-0 z-40 border-x-0 border-t-0">
+        <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-5 md:px-8">
           <Link
             to="/"
             className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -62,7 +62,7 @@ export function MarketingLayout() {
             <img
               src="/logo-main-trimmed.png"
               alt={t('marketing.hero.logoAlt')}
-              className="h-10 w-auto sm:h-12"
+              className="h-9 w-auto sm:h-10"
             />
           </Link>
 
@@ -101,7 +101,7 @@ export function MarketingLayout() {
         {menuOpen && (
           <nav
             aria-label={t('app.name')}
-            className="lf-pop border-t border-surface-sunken px-4 pb-4 sm:px-6 lg:hidden"
+            className="lf-pop border-t border-outline/60 px-5 pb-4 md:px-8 lg:hidden"
           >
             {NAV_LINKS.map(({ to, key }) => (
               <NavLink
@@ -128,16 +128,16 @@ export function MarketingLayout() {
         <Outlet />
       </main>
 
-      {/* Footer — mockup: white surface, top border, brand + meta rows */}
-      <footer className="mt-24 border-t border-surface-sunken bg-surface pb-8 pt-16">
-        <div className="mx-auto grid max-w-container gap-10 px-4 sm:px-6 md:grid-cols-3">
+      {/* Footer — full-bleed navy band (/DESIGN.md §Layout → Section bands) */}
+      <footer className="mt-24 bg-inverse pb-8 pt-16 text-on-inverse">
+        <div className="mx-auto grid max-w-container gap-10 px-5 md:grid-cols-3 md:px-8">
           <div>
             <img
               src="/logo-main-trimmed.png"
               alt={t('marketing.hero.logoAlt')}
               className="h-10 w-auto"
             />
-            <p className="lf-body mt-4 text-content-muted">{t('marketing.footer.tagline')}</p>
+            <p className="lf-body mt-4 text-on-inverse-muted">{t('marketing.footer.tagline')}</p>
           </div>
           <div>
             <h2 className="lf-title">{t('marketing.footer.legalTitle')}</h2>
@@ -145,7 +145,7 @@ export function MarketingLayout() {
               <li>
                 <Link
                   to="/legal/terms"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
                 >
                   {t('marketing.footer.terms')}
                 </Link>
@@ -153,7 +153,7 @@ export function MarketingLayout() {
               <li>
                 <Link
                   to="/legal/privacy"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-content-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
                 >
                   {t('marketing.footer.privacy')}
                 </Link>
@@ -164,15 +164,15 @@ export function MarketingLayout() {
             <h2 className="lf-title">{t('marketing.footer.contactLabel')}</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="lf-body mt-3 inline-flex min-h-11 items-center gap-2 rounded-sm text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-body mt-3 inline-flex min-h-11 items-center gap-2 rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
             >
               <Icon name="mail" className="text-xl" />
               {CONTACT_EMAIL}
             </a>
           </div>
         </div>
-        <div className="mx-auto mt-10 max-w-container border-t border-surface-sunken px-4 pt-6 sm:px-6">
-          <p className="lf-caption text-content-faint">
+        <div className="mx-auto mt-10 max-w-container border-t border-white/10 px-5 pt-6 md:px-8">
+          <p className="lf-caption text-on-inverse-muted/70">
             © {new Date().getFullYear()} LittleFounders. {t('marketing.footer.rights')}
           </p>
         </div>

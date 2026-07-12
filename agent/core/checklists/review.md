@@ -16,7 +16,7 @@ Review in this order — an invariant violation ends the review immediately.
 
 ## 3. Design & i18n pass (frontend diffs)
 - [ ] Zero hardcoded strings; keys in all 3 locales.
-- [ ] Dark mode styled; tokens strictly per `/DESIGN.md` (closed `lf-*` type scale, clay shadows, no raw hex).
+- [ ] Dark mode styled; tokens strictly per `/DESIGN.md` (closed `lf-*` type scale, liquid-glass elevation, no raw hex).
 - [ ] a11y basics: focus states, hit areas, semantic elements.
 - [ ] **Responsive verified at mobile (~375px) AND desktop (~1280px)** — screenshots present, neither skipped. Desktop uses freed width deliberately, not a stretched mobile column (/AGENTS.md §1.11, non-negotiable).
 

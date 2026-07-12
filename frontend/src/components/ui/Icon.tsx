@@ -10,7 +10,7 @@ interface IconProps {
 
 export function Icon({ name, fill = false, className }: IconProps) {
   return (
-    <span aria-hidden="true" className={cn('lf-icon', fill && 'lf-icon-fill', className)}>
+    <span aria-hidden="true" className={cn('lf-icon text-inherit', fill && 'lf-icon-fill', className)}>
       {name}
     </span>
   );

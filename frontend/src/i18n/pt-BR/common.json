@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "LittleFounders",
+    "tagline": "Aprenda, jogue e construa seu futuro"
+  },
+  "theme": {
+    "toggle": "Tema",
+    "auto": "Igual ao sistema",
+    "light": "Claro",
+    "dark": "Escuro"
+  },
+  "language": {
+    "label": "Idioma",
+    "en-US": "Inglês",
+    "es-MX": "Espanhol",
+    "pt-BR": "Português"
+  }
+}

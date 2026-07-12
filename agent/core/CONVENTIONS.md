@@ -48,5 +48,5 @@ src/
 
 - i18n: `const { t } = useTranslation()` — no user-facing literals. Keys dot-pathed from `en-US`.
 - Dark mode: style both modes at write time (`dark:` variants / CSS vars). Never ship a light-only component.
-- Design tokens: ONLY what `/DESIGN.md` defines (authoritative) — closed `lf-*` type scale, clay shadows, hyper-rounded shapes. Build from `frontend/src/components/ui/` primitives; never restyle per-view or invent values.
+- Design tokens: ONLY what `/DESIGN.md` defines (authoritative) — closed `lf-*` type scale, liquid-glass elevation, pill/rounded shapes. Build from `frontend/src/components/ui/` primitives; never restyle per-view or invent values.
 - **Responsive is non-negotiable** (/AGENTS.md §1.11): design and implement for Desktop (≥1024px) AND Mobile (<768px) from the first commit — not mobile-only with desktop deferred. Verify both in-browser before calling any UI task done.

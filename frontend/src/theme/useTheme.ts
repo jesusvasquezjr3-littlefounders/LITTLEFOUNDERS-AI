@@ -26,8 +26,17 @@ export function useTheme(): { choice: ThemeChoice; setChoice: (c: ThemeChoice) =
     localStorage.setItem(STORAGE_KEY, choice);
     const apply = () => {
       const dark = resolveIsDark(choice);
+      
+      // Inject transitioning class to trigger smooth CSS animations
+      document.documentElement.classList.add('theme-transitioning');
+      
       document.documentElement.classList.toggle('dark', dark);
       setIsDark(dark);
+
+      // Remove after duration matches the CSS (500ms)
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 500);
     };
     apply();
 

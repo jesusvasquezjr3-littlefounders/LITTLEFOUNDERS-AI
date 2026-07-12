@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 
-/* Composition adapted from template/tactile_learning_lab_landing_page (DESIGN.md §0):
-   hero (two-line headline w/ gradient line → subtitle → CTA pair → floating
-   illustration) → problem/solution → 6-feature clay grid → fact band → motivation →
-   final CTA. Badge and trust strip dropped per product decision (WALKTHROUGH).
-   Sections rise in on scroll; grids stagger (DESIGN.md §Motion). */
+/* Composition per /DESIGN.md §Screen Recipes → Landing: full-bleed alternating
+   bands (navy hero → white problem/solution → tinted feature grid → navy fact
+   band → white motivation → final CTA banner). Sections rise in on scroll;
+   grids stagger (DESIGN.md §Motion). */
 
 const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
@@ -21,49 +20,52 @@ export function Landing() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-container px-4 sm:px-6">
-      {/* 1. Hero — no reveal: above the fold, the page-enter transition covers it. */}
-      <section className="grid items-center gap-12 py-16 md:grid-cols-2 md:py-24">
-        <div className="z-10 flex flex-col items-start gap-6">
-          <h1 className="lf-display-xl lg:text-6xl lg:leading-tight">
-            {t('marketing.hero.titleLead')}
-            <br />
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {t('marketing.hero.titleHighlight')}
-            </span>
-          </h1>
-          <p className="lf-body-lg max-w-lg text-content-muted">{t('marketing.hero.subtitle')}</p>
-          <div className="mt-4 flex flex-wrap gap-4">
-            <Link to="/">
-              <Button className="group">
-                {t('marketing.hero.ctaPrimary')}
-                <Icon
-                  name="arrow_forward"
-                  className="transition-transform duration-200 motion-safe:group-hover:translate-x-1"
-                />
-              </Button>
-            </Link>
-            <Link to="/how-it-works">
-              <Button variant="secondary">
+    <div>
+      {/* 1. Hero — navy band; no reveal: the page-enter transition covers it. */}
+      <section className="bg-inverse text-on-inverse">
+        <div className="mx-auto grid max-w-container items-center gap-12 px-5 py-24 md:grid-cols-2 md:px-8 md:py-32 lg:py-40">
+          <div className="z-10 flex flex-col items-start gap-6">
+            <h1 className="lf-display-xl">
+              {t('marketing.hero.titleLead')}
+              <br />
+              <span className="text-accent">{t('marketing.hero.titleHighlight')}</span>
+            </h1>
+            <p className="lf-body-lg max-w-lg text-on-inverse-muted">
+              {t('marketing.hero.subtitle')}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-4">
+              <Link to="/">
+                <Button className="group">
+                  {t('marketing.hero.ctaPrimary')}
+                  <Icon
+                    name="arrow_forward"
+                    className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
+                  />
+                </Button>
+              </Link>
+              <Link
+                to="/how-it-works"
+                className="lf-label lf-glass-deep motion-safe-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-7 py-3.5 text-on-inverse transition-colors duration-200 hover:bg-white/15 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+              >
                 <Icon name="play_circle" />
                 {t('marketing.hero.ctaSecondary')}
-              </Button>
-            </Link>
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="lf-float relative flex w-full items-center justify-center">
-          <div className="absolute inset-0 scale-75 rounded-full bg-primary/5 blur-3xl" />
-          <img
-            src="/Hero-Families.webp"
-            alt={t('marketing.hero.imageAlt')}
-            className="relative z-10 w-full rounded-xl object-contain drop-shadow-2xl"
-          />
+          <div className="lf-float relative flex w-full items-center justify-center">
+            <div className="absolute inset-0 scale-75 rounded-full bg-primary/20 blur-3xl" />
+            <img
+              src="/Hero-Families.webp"
+              alt={t('marketing.hero.imageAlt')}
+              className="relative z-10 w-full rounded-lg object-contain"
+            />
+          </div>
         </div>
       </section>
 
-      {/* 2. Problem → solution */}
-      <section className="border-t border-surface-sunken pt-16">
-        <Reveal className="mb-16 text-center">
+      {/* 2. Problem → solution — white band */}
+      <section className="mx-auto max-w-container px-5 pt-20 md:px-8 sm:pt-28">
+        <Reveal className="mb-14 text-center">
           <h2 className="lf-display-lg">{t('marketing.problem.title')}</h2>
         </Reveal>
         <div className="grid gap-8 md:grid-cols-2">
@@ -88,49 +90,54 @@ export function Landing() {
         </div>
       </section>
 
-      {/* 3. Features grid */}
-      <section className="py-24">
-        <Reveal className="mb-16 text-center">
-          <h2 className="lf-display-lg mb-4">{t('marketing.features.title')}</h2>
-          <p className="lf-body-lg mx-auto max-w-2xl text-content-muted">
-            {t('marketing.features.subtitle')}
-          </p>
-        </Reveal>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ key, icon, tone }, i) => (
-            <Reveal key={key} delay={(i % 3) * 80}>
-              <Card interactive className="flex h-full flex-col gap-4 p-8">
-                <IconChip tone={tone} size="lg">
-                  <Icon name={icon} fill />
-                </IconChip>
-                <h3 className="lf-headline">{t(`marketing.features.${key}.title`)}</h3>
-                <p className="lf-body text-content-muted">{t(`marketing.features.${key}.body`)}</p>
-              </Card>
-            </Reveal>
-          ))}
+      {/* 3. Features grid — tinted band */}
+      <section className="mt-20 bg-band py-20 sm:mt-28 sm:py-28">
+        <div className="mx-auto max-w-container px-5 md:px-8">
+          <Reveal className="mb-14 text-center">
+            <h2 className="lf-display-lg mb-4">{t('marketing.features.title')}</h2>
+            <p className="lf-body-lg mx-auto max-w-2xl text-content-muted">
+              {t('marketing.features.subtitle')}
+            </p>
+          </Reveal>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ key, icon, tone }, i) => (
+              <Reveal key={key} delay={(i % 3) * 80}>
+                <Card interactive className="flex h-full flex-col gap-4 p-8">
+                  <IconChip tone={tone} size="lg">
+                    <Icon name={icon} fill />
+                  </IconChip>
+                  <h3 className="lf-headline">{t(`marketing.features.${key}.title`)}</h3>
+                  <p className="lf-body text-content-muted">{t(`marketing.features.${key}.body`)}</p>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 4. Historical fact */}
-      <Reveal as="section" className="pb-24">
-        <Card hero className="grid items-center gap-8 lg:grid-cols-[auto_1fr]">
-          <p className="lf-display-xl lf-number bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            {t('marketing.fact.stat')}
-          </p>
-          <div>
-            <h2 className="lf-headline">{t('marketing.fact.title')}</h2>
-            <p className="lf-body mt-3 text-content-muted">{t('marketing.fact.body')}</p>
-            <p className="lf-caption mt-3 text-content-faint">{t('marketing.fact.source')}</p>
-          </div>
-        </Card>
-      </Reveal>
+      {/* 4. Historical fact — navy band with a frosted glass card */}
+      <section className="bg-inverse py-20 text-on-inverse sm:py-28">
+        <Reveal className="mx-auto max-w-container px-5 md:px-8">
+          <Card onInverse hero className="grid items-center gap-8 lg:grid-cols-[auto_1fr]">
+            <p className="lf-display-xl lf-number text-delight">{t('marketing.fact.stat')}</p>
+            <div>
+              <h2 className="lf-headline">{t('marketing.fact.title')}</h2>
+              <p className="lf-body mt-3 text-on-inverse-muted">{t('marketing.fact.body')}</p>
+              <p className="lf-caption mt-3 text-on-inverse-muted/70">{t('marketing.fact.source')}</p>
+            </div>
+          </Card>
+        </Reveal>
+      </section>
 
-      {/* 5. Human motivation */}
-      <Reveal as="section" className="grid items-center gap-12 pb-24 md:grid-cols-2">
+      {/* 5. Human motivation — white band */}
+      <Reveal
+        as="section"
+        className="mx-auto grid max-w-container items-center gap-12 px-5 py-20 md:grid-cols-2 md:px-8 sm:py-28"
+      >
         <img
           src="/marketing/pexels-kid-saving-7118210.jpg"
           alt={t('marketing.motivation.imageAlt')}
-          className="aspect-[4/3] w-full rounded-xl border border-white object-cover object-bottom shadow-clay dark:border-white/10"
+          className="aspect-[4/3] w-full rounded-lg object-cover object-bottom shadow-glass"
         />
         <div>
           <h2 className="lf-display-lg">{t('marketing.motivation.title')}</h2>
@@ -139,8 +146,8 @@ export function Landing() {
         </div>
       </Reveal>
 
-      {/* 6. Final CTA */}
-      <Reveal as="section">
+      {/* 6. Final CTA — banner card */}
+      <Reveal as="section" className="mx-auto max-w-container px-5 md:px-8">
         <Card hero className="grid items-center gap-8 text-center lg:grid-cols-2 lg:text-left">
           <div>
             <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
@@ -150,7 +157,7 @@ export function Landing() {
                 {t('marketing.finalCta.button')}
                 <Icon
                   name="arrow_forward"
-                  className="transition-transform duration-200 motion-safe:group-hover:translate-x-1"
+                  className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
                 />
               </Button>
             </Link>
@@ -158,7 +165,7 @@ export function Landing() {
           <img
             src="/marketing/pexels-kid-piggybank-12955547.jpg"
             alt={t('marketing.finalCta.imageAlt')}
-            className="aspect-[3/2] w-full rounded-xl border border-white object-cover shadow-clay dark:border-white/10"
+            className="aspect-[3/2] w-full rounded-lg object-cover shadow-glass"
           />
         </Card>
       </Reveal>

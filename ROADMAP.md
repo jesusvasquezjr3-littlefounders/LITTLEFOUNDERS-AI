@@ -21,7 +21,7 @@ Stamp the 6 Express services + database/ (migrations 0001 identity + 0002 provis
 **DoD:** `gh run list` fully green on littlefounders_v2. — met.
 
 ### Day 3.5 — Design system ✅ DONE (landed ahead of schedule)
-`DESIGN.md` authored from the approved `template/` mockup (LittleFounders Tactile — claymorphism) · tokens implemented (Tailwind + CSS vars) · reusable UI kit (`frontend/src/components/ui/`) · views re-skinned · agent rules hardened: responsive (desktop+mobile) made a non-negotiable product invariant (§1.11), anti-hallucination/instruction-fidelity rules added (§1.12).
+`DESIGN.md` authoritative — **LittleFounders Arcade** (Brilliant.org-style gaming clarity + liquid glass; replaced the initial claymorphism system on 2026-07-12, `template/` deleted) · tokens implemented (Tailwind + CSS vars, light+dark) · reusable UI kit (`frontend/src/components/ui/`) · views re-skinned · i18n fragmented per route area per locale · agent rules hardened: responsive (desktop+mobile) made a non-negotiable product invariant (§1.11), anti-hallucination/instruction-fidelity rules added (§1.12).
 **DoD:** DESIGN.md authoritative, verified in browser light/dark + es-MX, CI green. — met.
 
 ### Day 4–5 — Vault deploy + auth (NEXT)

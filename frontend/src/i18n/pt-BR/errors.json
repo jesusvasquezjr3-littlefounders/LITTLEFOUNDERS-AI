@@ -1,0 +1,11 @@
+{
+  "api": {
+    "VALIDATION_ERROR": "Algo na solicitação não estava certo.",
+    "UNAUTHORIZED": "Você precisa entrar para isso.",
+    "FORBIDDEN": "Você não tem permissão para isso.",
+    "NOT_FOUND": "Não conseguimos encontrar isso.",
+    "CONFLICT": "Isso conflita com algo que já existe.",
+    "RATE_LIMITED": "Muitas tentativas — espere um momento.",
+    "INTERNAL": "Algo deu errado do nosso lado."
+  }
+}

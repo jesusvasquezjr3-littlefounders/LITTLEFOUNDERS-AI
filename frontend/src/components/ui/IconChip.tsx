@@ -17,14 +17,14 @@ interface IconChipProps extends HTMLAttributes<HTMLSpanElement> {
 const TONES: Record<Tone, string> = {
   primary: 'bg-primary-soft text-primary',
   secondary: 'bg-secondary-soft text-secondary',
-  accent: 'bg-accent-soft text-accent',
+  accent: 'bg-accent-soft text-accent-strong',
   success: 'bg-success-soft text-success',
-  warning: 'bg-warning-soft text-warning',
+  warning: 'bg-warning-soft text-warning-strong',
 };
 
 const SIZES: Record<Size, string> = {
-  md: 'h-12 w-12 rounded-md text-xl',
-  lg: 'h-14 w-14 rounded-lg text-2xl',
+  md: 'h-12 w-12 rounded-full text-xl',
+  lg: 'h-14 w-14 rounded-full text-2xl',
 };
 
 export function IconChip({ tone = 'primary', size = 'md', className, ...props }: IconChipProps) {

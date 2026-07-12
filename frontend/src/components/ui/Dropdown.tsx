@@ -5,7 +5,7 @@ import { Icon } from './Icon';
 
 /*
  * /DESIGN.md §Components — Dropdown: our own listbox, never a native
- * <select>/browser-default picker. Clay trigger + clay-sm floating panel.
+ * <select>/browser-default picker. Pill trigger + frosted glass panel.
  */
 
 export interface DropdownOption<T extends string> {
@@ -61,20 +61,20 @@ export function Dropdown<T extends string>({
         aria-label={selected ? `${ariaLabel}: ${selected.label}` : ariaLabel}
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'lf-label motion-safe-press flex min-h-11 items-center gap-1.5 rounded-md bg-surface-sunken text-content shadow-clay-sunken transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          compact ? 'px-2.5 py-2' : 'px-3 py-2',
+          'lf-label motion-safe-press flex min-h-11 items-center gap-1.5 rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          compact ? 'px-2.5 py-2' : 'px-4 py-2',
         )}
       >
         {selected?.prefix}
         {!compact && <span>{selected?.label}</span>}
-        <Icon name="expand_more" className={cn('text-base transition-transform', open && 'rotate-180')} />
+        <Icon name="expand_more" className={cn('text-[16px] transition-all', open && 'rotate-180')} />
       </button>
 
       {open && (
         <ul
           role="listbox"
           aria-label={ariaLabel}
-          className="lf-pop absolute right-0 z-50 mt-2 min-w-full overflow-hidden rounded-md border border-white bg-surface py-1 shadow-clay dark:border-white/10"
+          className="lf-pop lf-glass absolute right-0 z-50 mt-2 min-w-full overflow-hidden rounded-md py-1 shadow-pop"
         >
           {options.map((option) => (
             <li key={option.value} role="presentation">

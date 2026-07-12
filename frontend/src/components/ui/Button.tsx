@@ -2,14 +2,13 @@ import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 /*
- * /DESIGN.md §Components — Button: chunky rounded-md block (NOT a pill),
- * 4px bottom border; press = translate-y + border collapse (the mockup's
- * clay-button physics). Hover: scale(1.02).
+ * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
+ * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
  *
  * Variant = the action's color, per the Action Color Contract (/DESIGN.md
- * §Colors): primary = the one main/confirm action, secondary = alternative/
- * lower-emphasis, success = positive completion, danger = destructive.
- * Never pick a variant by taste — pick by what the action does.
+ * §Colors): primary = the one main CTA (papaya), secondary = alternative/
+ * lower-emphasis (outlined glass), success = positive completion, danger =
+ * destructive. Never pick a variant by taste — pick by what the action does.
  */
 
 type Variant = 'primary' | 'secondary' | 'success' | 'danger';
@@ -19,14 +18,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-primary text-on-primary border-b-4 border-primary-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
+  primary: 'bg-accent text-on-accent shadow-glass-sm hover:bg-accent-strong',
   secondary:
-    'bg-surface text-primary border-b-4 border-surface-sunken shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
-  success:
-    'bg-success text-on-success border-b-4 border-success-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
-  danger:
-    'bg-error text-on-error border-b-4 border-error-strong shadow-clay-sm active:translate-y-1 active:border-b-0 active:shadow-clay-pressed',
+    'border border-outline bg-surface/60 text-content hover:border-primary hover:text-primary',
+  success: 'bg-success text-on-success shadow-glass-sm hover:bg-success-strong',
+  danger: 'bg-error text-on-error shadow-glass-sm hover:bg-error-strong',
 };
 
 export function Button({ variant = 'primary', className, type, ...props }: ButtonProps) {
@@ -34,8 +30,8 @@ export function Button({ variant = 'primary', className, type, ...props }: Butto
     <button
       type={type ?? 'button'}
       className={cn(
-        'lf-label motion-safe-press inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-md px-8 py-4',
-        'transition-[transform,box-shadow,background-color] duration-200 hover:scale-[1.02]',
+        'lf-label motion-safe-press inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full px-7 py-3.5',
+        'transition-[transform,box-shadow,background-color,border-color,color] duration-200 active:translate-y-px',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base',
         'disabled:pointer-events-none disabled:opacity-50',
         VARIANTS[variant],

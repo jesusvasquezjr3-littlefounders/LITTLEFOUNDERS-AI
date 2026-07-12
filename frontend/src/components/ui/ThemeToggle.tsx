@@ -19,7 +19,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <div
       role="group"
       aria-label={t('theme.toggle')}
-      className={cn('inline-flex items-center gap-1 rounded-full bg-surface-sunken p-1 shadow-clay-sunken', className)}
+      className={cn('inline-flex items-center gap-1 rounded-full bg-surface-sunken p-1', className)}
     >
       {SEGMENTS.map(({ choice: segment, icon }) => (
         <button
@@ -32,7 +32,7 @@ export function ThemeToggle({ className }: { className?: string }) {
             'motion-safe-press flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
             choice === segment
-              ? 'bg-primary text-on-primary shadow-clay-sm'
+              ? 'bg-primary text-on-primary shadow-glass-sm'
               : 'text-content-muted hover:text-primary',
           )}
         >

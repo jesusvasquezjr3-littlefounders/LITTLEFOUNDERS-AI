@@ -3,104 +3,122 @@
 @tailwind utilities;
 
 /*
- * Token implementation of /DESIGN.md (LittleFounders Tactile).
+ * Token implementation of /DESIGN.md (LittleFounders Arcade).
  * CSS variables are the single source; tailwind.config.js references them.
  * RGB triplets so Tailwind opacity modifiers work.
  */
 @layer base {
   :root {
-    --lf-base: 247 249 251;
+    /* Neutrals */
+    --lf-base: 255 255 255;
     --lf-surface: 255 255 255;
-    --lf-surface-sunken: 236 238 240;
-    --lf-content: 25 28 30;
-    --lf-content-muted: 70 69 85;
-    --lf-content-faint: 119 117 135;
-    --lf-outline: 199 196 216;
-    --lf-primary: 53 37 205;
-    --lf-primary-strong: 36 23 149;
-    --lf-primary-soft: 226 223 255;
+    --lf-surface-sunken: 242 242 242;
+    --lf-band: 236 240 255; /* blue-100 tinted section band */
+    --lf-content: 30 30 30; /* ink */
+    --lf-content-muted: 85 85 95;
+    --lf-content-faint: 130 130 142;
+    --lf-outline: 229 229 229;
+
+    /* Inverse (navy band) — identical in light & dark, like the hero band */
+    --lf-inverse: 8 15 40; /* blue-950 */
+    --lf-inverse-surface: 20 37 99; /* blue-900 */
+    --lf-on-inverse: 255 255 255;
+    --lf-on-inverse-muted: 236 240 255; /* blue-100 */
+
+    /* Brand blue */
+    --lf-primary: 69 109 255; /* blue-500 */
+    --lf-primary-strong: 55 92 227; /* blue-600 */
+    --lf-primary-soft: 236 240 255; /* blue-100 */
     --lf-on-primary: 255 255 255;
-    --lf-secondary: 0 81 213;
-    --lf-secondary-soft: 219 225 255;
+
+    /* Ink action (secondary emphasis, pill tabs) */
+    --lf-secondary: 30 30 30;
+    --lf-secondary-soft: 242 242 242;
     --lf-on-secondary: 255 255 255;
-    --lf-accent: 164 65 0;
-    --lf-accent-soft: 255 219 204;
-    --lf-on-accent: 255 255 255;
-    --lf-delight: 163 21 125;
-    --lf-delight-soft: 255 215 242;
-    --lf-on-delight: 255 255 255;
-    --lf-success: 26 127 55;
-    --lf-success-soft: 211 243 221;
-    --lf-success-strong: 20 96 42;
+
+    /* Papaya — THE call-to-action color */
+    --lf-accent: 255 119 92; /* papaya-500 */
+    --lf-accent-strong: 229 95 69; /* papaya-600 */
+    --lf-accent-soft: 255 240 237; /* papaya-100 */
+    --lf-on-accent: 8 15 40; /* dark text on papaya */
+
+    /* Pear — celebration / delight highlights, never actions */
+    --lf-delight: 216 232 46; /* pear-500 */
+    --lf-delight-soft: 247 250 213; /* pear-200 */
+    --lf-on-delight: 30 30 30;
+
+    --lf-success: 21 180 65; /* green-600 */
+    --lf-success-strong: 16 150 52;
+    --lf-success-soft: 223 247 230;
     --lf-on-success: 255 255 255;
-    --lf-warning: 180 83 9;
-    --lf-warning-soft: 253 238 205;
-    --lf-warning-strong: 138 63 7;
-    --lf-on-warning: 255 255 255;
+
+    --lf-warning: 255 141 35; /* orange-500 */
+    --lf-warning-strong: 224 116 18;
+    --lf-warning-soft: 255 238 220;
+    --lf-on-warning: 30 30 30;
+
     --lf-error: 186 26 26;
-    --lf-error-soft: 255 218 214;
     --lf-error-strong: 140 20 20;
+    --lf-error-soft: 255 218 214;
     --lf-on-error: 255 255 255;
 
-    --lf-shadow-clay: 16px 16px 32px rgba(53, 37, 205, 0.06),
-      inset 4px 4px 8px rgba(255, 255, 255, 1),
-      inset -6px -6px 12px rgba(0, 0, 0, 0.04);
-    --lf-shadow-clay-sm: 6px 6px 12px rgba(53, 37, 205, 0.08),
-      inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-      inset -3px -3px 6px rgba(0, 0, 0, 0.04);
-    --lf-shadow-clay-pressed: 2px 2px 6px rgba(53, 37, 205, 0.1),
-      inset 4px 4px 8px rgba(0, 0, 0, 0.12),
-      inset -2px -2px 4px rgba(255, 255, 255, 0.2);
-    --lf-shadow-clay-sunken: inset 4px 4px 8px rgba(0, 0, 0, 0.08),
-      inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+    /* Liquid-glass elevation */
+    --lf-shadow-glass: 0 8px 32px rgba(8, 15, 40, 0.1);
+    --lf-shadow-glass-sm: 0 2px 12px rgba(8, 15, 40, 0.08);
+    --lf-shadow-pop: 0 16px 48px rgba(8, 15, 40, 0.18);
+    --lf-glass-border: rgba(255, 255, 255, 0.55);
   }
 
   .dark {
-    --lf-base: 15 23 42;
-    --lf-surface: 30 41 59;
-    --lf-surface-sunken: 22 32 58;
-    --lf-content: 239 241 243;
-    --lf-content-muted: 182 185 200;
-    --lf-content-faint: 138 138 157;
-    --lf-outline: 58 63 88;
-    --lf-primary: 143 136 255;
-    --lf-primary-strong: 106 95 255;
-    --lf-primary-soft: 43 39 88;
-    --lf-on-primary: 15 0 105;
-    --lf-secondary: 138 180 255;
-    --lf-secondary-soft: 34 51 94;
-    --lf-on-secondary: 0 26 77;
-    /* Semantic/brand fills (success/warning/error/accent/delight) keep their
-       light-mode saturation — they're used as solid fills with white text,
-       which reads fine on dark surfaces too. Only the -soft well/badge tones
-       need to darken so they don't look like light-mode paper on navy. */
-    --lf-accent-soft: 61 36 16;
-    --lf-delight-soft: 58 18 48;
-    --lf-success-soft: 15 43 26;
-    --lf-warning-soft: 46 35 8;
+    --lf-base: 8 15 40; /* blue-950 */
+    --lf-surface: 17 27 64;
+    --lf-surface-sunken: 12 20 52;
+    --lf-band: 14 23 58;
+    --lf-content: 240 243 255;
+    --lf-content-muted: 197 206 238;
+    --lf-content-faint: 148 158 199;
+    --lf-outline: 43 56 108;
+
+    --lf-inverse-surface: 24 38 92;
+
+    --lf-primary: 116 145 255; /* blue-400 */
+    --lf-primary-strong: 69 109 255; /* blue-500 */
+    --lf-primary-soft: 26 39 96;
+    --lf-on-primary: 8 15 40;
+
+    --lf-secondary: 240 243 255;
+    --lf-secondary-soft: 24 35 82;
+    --lf-on-secondary: 8 15 40;
+
+    /* Accent/delight fills keep their light values (dark text on warm fills
+       reads fine on navy); only the -soft well tones darken. */
+    --lf-accent-soft: 62 30 26;
+    --lf-delight-soft: 42 47 16;
+    --lf-success-soft: 12 45 26;
+    --lf-warning-soft: 52 36 12;
     --lf-error-soft: 58 20 20;
 
-    --lf-shadow-clay: 16px 16px 32px rgba(0, 0, 0, 0.35),
-      inset 4px 4px 8px rgba(255, 255, 255, 0.05),
-      inset -6px -6px 12px rgba(0, 0, 0, 0.35);
-    --lf-shadow-clay-sm: 6px 6px 12px rgba(0, 0, 0, 0.3),
-      inset 2px 2px 4px rgba(255, 255, 255, 0.04),
-      inset -3px -3px 6px rgba(0, 0, 0, 0.3);
-    --lf-shadow-clay-pressed: 2px 2px 6px rgba(0, 0, 0, 0.35),
-      inset 4px 4px 8px rgba(0, 0, 0, 0.45),
-      inset -2px -2px 4px rgba(255, 255, 255, 0.03);
-    --lf-shadow-clay-sunken: inset 4px 4px 8px rgba(0, 0, 0, 0.45),
-      inset -4px -4px 8px rgba(255, 255, 255, 0.03);
+    --lf-shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --lf-shadow-glass-sm: 0 2px 12px rgba(0, 0, 0, 0.35);
+    --lf-shadow-pop: 0 16px 48px rgba(0, 0, 0, 0.5);
+    --lf-glass-border: rgba(255, 255, 255, 0.12);
   }
 
   :root {
     /* Motion tokens (/DESIGN.md §Motion) — the only easing/durations allowed. */
-    --lf-ease: cubic-bezier(0.22, 1, 0.36, 1); /* "clay" ease-out */
+    --lf-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --lf-dur-fast: 150ms;
     --lf-dur-base: 200ms;
     --lf-dur-slow: 300ms;
     --lf-dur-page: 350ms;
     --lf-dur-reveal: 550ms;
+  }
+
+  /* Global theme transition (Non-negotiable rule) */
+  .theme-transitioning, .theme-transitioning *, .theme-transitioning *::before, .theme-transitioning *::after {
+    transition-property: background-color, border-color, color, fill, stroke !important;
+    transition-timing-function: ease-in-out !important;
+    transition-duration: 500ms !important;
   }
 
   html {
@@ -123,62 +141,87 @@
  */
 @layer components {
   .lf-display-xl {
-    font-family: 'Baloo 2', system-ui, sans-serif;
-    font-size: 48px;
-    font-weight: 700;
-    line-height: 56px;
-    letter-spacing: -0.02em;
+    font-family: 'Figtree', system-ui, sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
   .lf-display-lg {
-    font-family: 'Baloo 2', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 32px;
-    font-weight: 700;
-    line-height: 40px;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
   .lf-headline {
-    font-family: 'Baloo 2', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 32px;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   .lf-title {
-    font-family: 'Baloo 2', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 26px;
   }
   .lf-body-lg {
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 18px;
     font-weight: 400;
-    line-height: 28px;
+    line-height: 29px;
     text-wrap: pretty;
   }
   .lf-body {
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 16px;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 25px;
     text-wrap: pretty;
   }
   .lf-label {
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 14px;
     font-weight: 700;
     line-height: 20px;
   }
   .lf-caption {
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 16px;
   }
   .lf-number {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Liquid glass (/DESIGN.md §Elevation) — the ONLY translucency recipes.
+     .lf-glass = frosted panel on page surfaces (sticky header, dropdown,
+     mobile menu). .lf-glass-deep = frosted panel ON the navy band. */
+  .lf-glass {
+    background-color: rgb(var(--lf-surface) / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid var(--lf-glass-border);
+  }
+  .lf-glass-deep {
+    background-color: rgb(255 255 255 / 0.08);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgb(255 255 255 / 0.14);
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .lf-glass {
+      background-color: rgb(var(--lf-surface) / 0.96);
+    }
+    .lf-glass-deep {
+      background-color: rgb(var(--lf-inverse-surface) / 0.96);
+    }
   }
 
   /* Material Symbols (DESIGN.md: the only icon set). Ligature-based. */
@@ -195,6 +238,7 @@
     direction: ltr;
     -webkit-font-smoothing: antialiased;
     user-select: none;
+    color: currentColor; /* Universal rule: icons always inherit text color */
   }
   .lf-icon-fill {
     font-variation-settings: 'FILL' 1;
@@ -216,12 +260,12 @@
 
   /* Page transition — applied to <main> keyed by route (/DESIGN.md §Motion). */
   .lf-page-enter {
-    animation: lf-page-enter var(--lf-dur-page) var(--lf-ease) both;
+    animation: lf-page-enter var(--lf-dur-page) ease-out both;
   }
   @keyframes lf-page-enter {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(6px);
     }
     to {
       opacity: 1;
@@ -271,6 +315,15 @@
       opacity: 1;
       transform: none;
       transition: none;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .lf-display-xl {
+      font-size: 56px;
+    }
+    .lf-display-lg {
+      font-size: 38px;
     }
   }
 }

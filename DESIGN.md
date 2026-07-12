@@ -1,428 +1,270 @@
 ---
-name: LittleFounders Tactile
+name: LittleFounders Arcade
+direction: >
+  Brilliant.org-style gaming clarity — confident extrabold type, a warm
+  papaya CTA on a deep navy/blue world, full pill buttons, big rounded
+  cards — fused with liquid glass: frosted translucent panels
+  (backdrop-blur + hairline light borders) for all floating chrome.
+modes: [light, dark]              # both first-class, toggled via .dark on <html>
+
 colors:
-  # ── Surfaces (light) ──
-  base: "#f7f9fb"                # page background
-  surface: "#ffffff"             # cards, raised clay elements
-  surface-sunken: "#eceef0"      # wells, equation boxes, sunken inputs
-  # ── Content (light) ──
-  content: "#191c1e"             # default text
-  content-muted: "#464555"       # secondary text, descriptions
-  content-faint: "#777587"       # captions, placeholders, disabled
-  outline: "#c7c4d8"             # hairline borders (rare — shadows do the work)
-  # ── Brand ──
-  primary: "#3525cd"             # deep indigo — the ONE main action color
-  primary-strong: "#241795"      # pressed state + chunky button bottom edge
-  primary-soft: "#e2dfff"        # icon chips, active-nav pill, hint cards (light)
+  # Semantic tokens only in code (rgb triplets in index.css). Raw hex prohibited.
+  # ── Light ──
+  base: "#ffffff"                 # page background
+  surface: "#ffffff"              # cards, panels
+  surface-sunken: "#f2f2f2"       # wells, segmented controls, pill tracks
+  band: "#ecf0ff"                 # tinted full-bleed section band (blue-100)
+  content: "#1e1e1e"              # ink — primary text
+  content-muted: "#55555f"
+  content-faint: "#82828e"        # captions only — below the body contrast floor
+  outline: "#e5e5e5"              # hairline borders
+  primary: "#456dff"              # brand blue — links, focus, selection, info
+  primary-strong: "#375ce3"
+  primary-soft: "#ecf0ff"
   on-primary: "#ffffff"
-  secondary: "#0051d5"           # warm blue — links, secondary emphasis
-  secondary-soft: "#dbe1ff"
+  secondary: "#1e1e1e"            # ink action (active pill tabs)
+  secondary-soft: "#f2f2f2"
   on-secondary: "#ffffff"
-  accent: "#a44100"              # warm orange — streaks, energy, tertiary chips
-  accent-soft: "#ffdbcc"
-  on-accent: "#ffffff"
-  delight: "#a3157d"             # signature magenta — celebration moments only
-  delight-soft: "#ffd7f2"
-  on-delight: "#ffffff"
-  # ── Semantic (Action Color Contract — see Colors §) ──
-  success: "#1a7f37"
-  success-soft: "#d3f3dd"
-  success-strong: "#14602a"      # pressed state + button bottom edge
+  accent: "#ff775c"               # papaya — THE call-to-action color
+  accent-strong: "#e55f45"
+  accent-soft: "#fff0ed"
+  on-accent: "#080f28"            # dark navy text on papaya, never white
+  delight: "#d8e82e"              # pear — celebration highlights, never actions
+  delight-soft: "#f7fad5"
+  on-delight: "#1e1e1e"
+  success: "#15b441"
+  success-strong: "#109634"
+  success-soft: "#dff7e6"
   on-success: "#ffffff"
-  warning: "#b45309"
-  warning-soft: "#fdeecd"
-  warning-strong: "#8a3f07"
-  on-warning: "#ffffff"
+  warning: "#ff8d23"
+  warning-strong: "#e07412"
+  warning-soft: "#ffeedc"
+  on-warning: "#1e1e1e"
   error: "#ba1a1a"
-  error-soft: "#ffdad6"
   error-strong: "#8c1414"
+  error-soft: "#ffdad6"
   on-error: "#ffffff"
-  # ── Surfaces & content (dark) ──
-  dark-base: "#0f172a"
-  dark-surface: "#1e293b"
-  dark-surface-sunken: "#16203a"
-  dark-content: "#eff1f3"
-  dark-content-muted: "#b6b9c8"
-  dark-content-faint: "#8a8a9d"
-  dark-outline: "#3a3f58"
-  dark-primary: "#8f88ff"        # brightened indigo for AA contrast on dark
-  dark-primary-strong: "#6a5fff"
-  dark-primary-soft: "#2b2758"
-  dark-on-primary: "#0f0069"
-  dark-secondary: "#8ab4ff"      # brightened warm blue — links stay readable on dark surfaces
-  dark-secondary-soft: "#22335e"
-  dark-on-secondary: "#001a4d"
-  # accent/delight/success/warning/error keep their light-mode hue in dark —
-  # they're solid fills with white text, which reads fine on dark too. Only
-  # the -soft well/badge tones darken (a light-mode pastel would look like
-  # paper pasted on navy):
-  dark-accent-soft: "#3d2410"
-  dark-delight-soft: "#3a1230"
-  dark-success-soft: "#0f2b1a"
-  dark-warning-soft: "#2e2308"
-  dark-error-soft: "#3a1414"
+  # ── Inverse band (navy) — IDENTICAL in light and dark; the brand's stage ──
+  inverse: "#080f28"              # blue-950 — hero/fact/footer band fill
+  inverse-surface: "#142563"
+  on-inverse: "#ffffff"
+  on-inverse-muted: "#ecf0ff"
+  # ── Dark (the page becomes the navy world) ──
+  dark-base: "#080f28"
+  dark-surface: "#111b40"
+  dark-surface-sunken: "#0c1434"
+  dark-band: "#0e173a"
+  dark-content: "#f0f3ff"
+  dark-content-muted: "#c5ceee"
+  dark-content-faint: "#949ec7"
+  dark-outline: "#2b386c"
+  dark-primary: "#7491ff"         # blue-400 — lifted for contrast on navy
+  dark-primary-strong: "#456dff"
+  dark-primary-soft: "#1a2760"
+  dark-on-primary: "#080f28"
+  dark-secondary: "#f0f3ff"
+  dark-secondary-soft: "#182352"
+  dark-on-secondary: "#080f28"
+  # accent/delight/success/warning/error FILLS keep light values in dark mode;
+  # only their -soft well tones darken (see index.css .dark block).
+
 typography:
-  display-xl:                    # hero page titles (landing "Learn by Playing")
-    fontFamily: Baloo 2
-    fontSize: 48px
-    fontWeight: "700"
-    lineHeight: 56px
-    letterSpacing: -0.02em
-  display-lg:                    # page titles ("Solving Quadratic Equations"), big stat numbers
-    fontFamily: Baloo 2
-    fontSize: 32px
-    fontWeight: "700"
-    lineHeight: 40px
-    letterSpacing: -0.01em
-  headline:                      # section headings ("Continue Learning", "Daily Quests")
-    fontFamily: Baloo 2
-    fontSize: 24px
-    fontWeight: "600"
-    lineHeight: 32px
-  title:                         # card titles ("Algebra II"), nav items
-    fontFamily: Baloo 2
-    fontSize: 18px
-    fontWeight: "600"
-    lineHeight: 26px
-  body-lg:                       # lesson prose, landing subtitles
-    fontFamily: Nunito Sans
-    fontSize: 18px
-    fontWeight: "400"
-    lineHeight: 28px
-  body:                          # default UI text, card descriptions
-    fontFamily: Nunito Sans
-    fontSize: 16px
-    fontWeight: "400"
-    lineHeight: 24px
-  label:                         # buttons, badges, form labels, progress labels
-    fontFamily: Nunito Sans
-    fontSize: 14px
-    fontWeight: "700"
-    lineHeight: 20px
-  caption:                       # footnotes, timestamps, helper text
-    fontFamily: Nunito Sans
-    fontSize: 12px
-    fontWeight: "400"
-    lineHeight: 16px
-rounded:
-  sm: 8px                        # tiny chips, tags
-  md: 16px                       # buttons, inputs, small widgets (BASE radius)
-  lg: 24px                       # standard cards
-  xl: 32px                       # hero cards, lesson canvases, modals
-  full: 9999px                   # pills: progress bars, nav pills, badges
-spacing:
-  unit: 8px
-  card-padding: 24px             # minimum inside clay cards (32px on xl cards)
-  gutter: 24px
-  margin-mobile: 16px
-  container-max: 1280px
-  sidebar-width: 280px
-breakpoints:
-  mobile: 0px                    # <768px — single column, bottom nav, NON-NEGOTIABLE target
-  tablet: 768px                  # 768–1023px — interpolation, not a separate design pass
-  desktop: 1024px                # >=1024px — sidebar + multi-column, NON-NEGOTIABLE target
-shadows:
-  clay: "16px 16px 32px rgba(53,37,205,0.06), inset 4px 4px 8px rgba(255,255,255,1), inset -6px -6px 12px rgba(0,0,0,0.04)"
-  clay-sm: "6px 6px 12px rgba(53,37,205,0.08), inset 2px 2px 4px rgba(255,255,255,0.9), inset -3px -3px 6px rgba(0,0,0,0.04)"
-  clay-pressed: "2px 2px 6px rgba(53,37,205,0.10), inset 4px 4px 8px rgba(0,0,0,0.12), inset -2px -2px 4px rgba(255,255,255,0.2)"
-  clay-sunken: "inset 4px 4px 8px rgba(0,0,0,0.08), inset -4px -4px 8px rgba(255,255,255,0.9)"
-  clay-dark: "16px 16px 32px rgba(0,0,0,0.35), inset 4px 4px 8px rgba(255,255,255,0.05), inset -6px -6px 12px rgba(0,0,0,0.35)"
-  clay-sm-dark: "6px 6px 12px rgba(0,0,0,0.30), inset 2px 2px 4px rgba(255,255,255,0.04), inset -3px -3px 6px rgba(0,0,0,0.30)"
-  clay-pressed-dark: "2px 2px 6px rgba(0,0,0,0.35), inset 4px 4px 8px rgba(0,0,0,0.45), inset -2px -2px 4px rgba(255,255,255,0.03)"
-  clay-sunken-dark: "inset 4px 4px 8px rgba(0,0,0,0.45), inset -4px -4px 8px rgba(255,255,255,0.03)"
-components:
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.label}"
-    rounded: "{rounded.full}"
-    padding: 12px 24px
-  button-primary-pressed:
-    backgroundColor: "{colors.primary-strong}"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.primary}"
-    typography: "{typography.label}"
-    rounded: "{rounded.full}"
-    padding: 12px 24px
-  button-success:
-    backgroundColor: "{colors.success}"
-    textColor: "{colors.on-success}"
-    typography: "{typography.label}"
-    rounded: "{rounded.md}"
-    padding: 12px 24px
-  button-danger:
-    backgroundColor: "{colors.error}"
-    textColor: "{colors.on-error}"
-    typography: "{typography.label}"
-    rounded: "{rounded.md}"
-    padding: 12px 24px
-  card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.card-padding}"
-  card-hero:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.xl}"
-    padding: 32px
-  stat-card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
-    padding: 24px
-  icon-chip:
-    backgroundColor: "{colors.primary-soft}"
-    textColor: "{colors.primary}"
-    rounded: "{rounded.md}"
-    size: 48px
-  input:
-    backgroundColor: "{colors.surface-sunken}"
-    textColor: "{colors.content}"
-    rounded: "{rounded.md}"
-    padding: 12px 16px
-  progress-track:
-    backgroundColor: "{colors.surface-sunken}"
-    rounded: "{rounded.full}"
-    height: 8px
-  progress-fill:
-    backgroundColor: "{colors.primary}"
-    rounded: "{rounded.full}"
-  badge:
-    backgroundColor: "{colors.surface-sunken}"
-    textColor: "{colors.content-muted}"
-    typography: "{typography.caption}"
-    rounded: "{rounded.full}"
-    padding: 4px 12px
-  nav-pill-active:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.md}"
-    padding: 12px 16px
+  family: "Figtree"               # the ONLY UI family; Google Fonts 400–800
+  icons: "Material Symbols Outlined"    # the ONLY icon set (ligatures)
+  scale:                          # CLOSED — use the lf-* classes, never ad-hoc sizes
+    lf-display-xl: {size: 44px (56px ≥sm), weight: 800, tracking: -0.03em, line-height: 1.08}
+    lf-display-lg: {size: 32px (38px ≥sm), weight: 800, tracking: -0.02em, line-height: 1.15}
+    lf-headline:   {size: 24px, weight: 700, tracking: -0.01em, line-height: 32px}
+    lf-title:      {size: 18px, weight: 700, line-height: 26px}
+    lf-body-lg:    {size: 18px, weight: 400, line-height: 29px}
+    lf-body:       {size: 16px, weight: 400, line-height: 25px}
+    lf-label:      {size: 14px, weight: 700, line-height: 20px}
+    lf-caption:    {size: 12px, weight: 500, line-height: 16px}
+  numbers: lf-number              # tabular-nums for stats/XP/currency
+
+rounded:                          # CLOSED
+  sm: 10px                        # small chips, focus rounding on inline links
+  md: 16px                        # inputs, dropdown panels
+  lg: 24px                        # cards
+  xl: 32px                        # hero/banner cards
+  full: 9999px                    # buttons, pills, badges, icon chips, tracks
+
+elevation:                        # liquid glass — CLOSED
+  shadow-glass: "0 8px 32px rgba(8,15,40,.10)"      # resting cards
+  shadow-glass-sm: "0 2px 12px rgba(8,15,40,.08)"   # buttons, small chrome
+  shadow-pop: "0 16px 48px rgba(8,15,40,.18)"       # floating panels
+  lf-glass: "surface/72% + blur(16px) saturate(1.4) + 1px light border"
+  lf-glass-deep: "white/8% + blur(16px) + white/14% border (on navy bands)"
+
+layout:
+  container-max: 1200px           # mx-auto max-w-container px-5 md:px-8
+  section-rhythm: "py-20 sm:py-28"
+  sidebar-width: 280px            # future app shell
+  spacing-unit: 8px
+  breakpoints:
+    mobile: "<768px"              # single column, 20px margins (px-5)
+    tablet: "768–1023px"          # interpolation only, never a separate design
+    desktop: ">=1024px"           # multi-column, deliberate use of width
+
+motion:                           # CLOSED 5-recipe system
+  ease: cubic-bezier(0.22, 1, 0.36, 1)
+  durations: {fast: 150ms, base: 200ms, slow: 300ms, page: 350ms, reveal: 550ms}
 ---
 
-# DESIGN.md — LittleFounders Tactile Design System
+# LittleFounders Arcade — Design System
 
-> **AUTHORITATIVE** for all frontend visual work (authority: /AGENTS.md §1.1 #4). Derived from the approved mockup in `template/` (7 screens). Implementation lives in `frontend/tailwind.config.js` + `frontend/src/index.css` — those files map 1:1 to the tokens above and must never contain values that aren't here.
+> **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
+> The tokens above are CLOSED sets — implemented 1:1 in
+> `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
+> those files don't define. **Last updated:** 2026-07-12.
 
-## §0 Composition fidelity — THE PRIME RULE
+## §0 Composition Fidelity — PRIME RULE
 
-**When a screen in `template/` covers what you're building, you REPLICATE its composition — you do not invent an alternative layout.** The mockup's `code.html` + `screen.png` govern structure, section order, rhythm, component shapes, and interaction treatments; this file's tokens govern the exact values (colors, sizes, shadows). Build order for any mockup-covered surface:
-
-1. Open the matching `template/<screen>/code.html` and `screen.png`. Study both.
-2. Reproduce the composition section by section with our tokens and UI kit.
-3. Adapt only CONTENT (copy, real product features, honest claims — e.g., no fabricated trust logos), never the visual recipe.
-4. If a mockup treatment conflicts with a rule in this file, **the mockup wins** — amend this file in the same commit, don't silently deviate.
-
-Deviating from an existing mockup screen without explicit human sign-off is a design bug, no matter how good the alternative looks.
-
-**Deprecation path for `template/`:** every mockup screen is distilled into §Screen Recipes below, in our token vocabulary. Build new surfaces from the RECIPE first; open the raw mockup only if a recipe feels ambiguous — and when it does, fix the recipe in the same commit. Once all recipes have shipped (or been deliberately superseded with sign-off), `template/` gets deleted and this file becomes the sole design authority.
+Build screens from **§Screen Recipes** below. They are the distilled
+compositions in our token vocabulary. Deviating from a recipe without human
+sign-off is a design bug. If a recipe is ambiguous, fix the recipe in the same
+commit that builds the screen.
 
 ## Overview
 
-**Reference: the mockup in `template/` — think Brilliant.org's minimalism molded in soft clay.** The system is *Tactile Gamification*: a claymorphic aesthetic that makes learning feel physical, toy-like, and safe, while staying ruthlessly minimalist. Every screen has generous whitespace, a single dominant action, and at most a handful of soft "clay" surfaces floating on a near-white base.
-
-Minimalism and gamification are not in tension here — the discipline is: **simple elements, zero noise, high reward**. Gamification lives in the *content* (XP, streaks, quests, progress) and in *micro-physics* (press compression, lift on hover), never in visual clutter. If a screen needs decoration to feel fun, it's wrong; if a tap doesn't feel squishy, it's also wrong.
-
-Audience: kids under parental control plus their parents. The UI must evoke optimism, playfulness, and safety — readable at kid sizes, calm at parent sizes.
+LittleFounders Arcade reads like a premium learning game: calm white (or deep
+navy) pages, one loud warm CTA, extrabold tight headlines, everything pill- or
+big-radius-rounded, and floating chrome rendered as **liquid glass** — frosted
+translucent panels that let the page glow through. It is minimal by default:
+color is spent on meaning (actions, states, celebration), never decoration.
 
 ## Colors
 
-**Everything is a token. Raw hex values outside this file are prohibited.**
-
-- **`base`** — the page. Near-white cool gray that lets clay shadows breathe. Never place text directly on saturated color fields other than `primary`/`secondary` buttons.
-- **`surface`** — pure white cards. The workhorse. All content lives on `surface` islands over `base`.
-- **`surface-sunken`** — wells: equation boxes, inputs, progress tracks, empty drop zones. Concave counterpart to raised cards.
-- **`primary` (deep indigo)** — THE action color. Primary buttons, active nav, progress fills, links in nav context. One primary action per view. `primary-strong` is the pressed shade and the "chunky" bottom edge of buttons. `primary-soft` backs icon chips and hint cards.
-- **`secondary` (warm blue)** — inline links, secondary emphasis (e.g., "Resume Lesson" on an already-primary screen), highlighted lesson variables. Never for the main CTA when `primary` is present.
-- **`accent` (warm orange)** — the energy color: streaks, flames, celebration chips. Sparingly — one accent element per card maximum.
-- **`delight` (signature magenta)** — the one color that exists purely for brand personality: badge-unlocked moments, premium/legendary tiers, confetti accents. Rarer than `accent` — a handful of moments per session, never a button fill for a routine action, never more than one `delight` element on screen at once.
-- **Semantic** — `success`/`warning`/`error` (+ their `-soft`/`-strong`/`on-*` variants) are reserved for feedback and the Action Color Contract below. Never decorative.
-- **Dark mode** — `dark-*` tokens swap in via the `.dark` class. Deep navy base, slate surfaces; `primary`/`secondary` brighten in dark (they carry text/link duty against the dark background). `accent`/`delight`/`success`/`warning`/`error` keep their light-mode hue — they're solid button/badge fills with white text, which reads fine on dark too — but their `-soft` well/badge backgrounds darken so they don't look like light-mode paper on navy. Clay highlights switch from white to low-opacity light (see Elevation) — never harsh glare.
-
-Contrast floor: WCAG 2.1 AA in both modes; kid-facing body text targets AAA where feasible.
-
-### Action Color Contract — NON-NEGOTIABLE
-
-Every interactive action picks its color by **what the action does**, not by taste. This mapping is the standard from this point forward — a new button variant is never invented ad hoc; if none of these fit, that's a design conversation, not a code decision.
-
-| Color | Psychology | Use for | Never for |
-|---|---|---|---|
-| **Primary** (indigo) | Trust, focus, forward motion | The one main/confirming action per view: Start, Continue, Save, Submit, Enroll | More than one per view region |
-| **Secondary** (blue) | Calm, informational | Alternative/lower-emphasis actions: Learn more, secondary nav, non-destructive Cancel | The main CTA when a primary is present |
-| **Success** (green) | Growth, reassurance, "you did it" | Positive completion: Mark complete, Correct-answer feedback, Approve, Confirm-positive | Ambient decoration; only for an actual completed/correct state |
-| **Danger** (red) | Urgency, stop, irreversible | Destructive/irreversible actions: Delete, Remove, Discard, Cancel-subscription | Anything reversible or routine — reserve the alarm for real stakes |
-| **Warning** (amber) | Caution, needs attention | Non-destructive caution: Edit-with-consequences, pending review, expiring soon | Destructive actions (use Danger) or routine actions (use Primary/Secondary) |
-| **Accent** (orange) | Energy, reward, gamification | Decorative only: streaks, XP, flame icons — never a button fill | Any clickable action |
-| **Delight** (magenta) | Celebration, brand personality | Decorative only: unlocked badges, premium tier, confetti — never a button fill | Any clickable action, anything routine |
-
-`Button` ships `primary`/`secondary`/`success`/`danger` variants for this contract; `warning`/`accent`/`delight` stay non-interactive (badges, chips, banners) per the table.
+- **Semantic tokens only.** Components use `bg-accent`, `text-content-muted`,
+  etc. Raw hex anywhere in a component is a bug.
+- **Action Color Contract — NON-NEGOTIABLE.** A button's color is chosen by
+  what the action DOES:
+  - `primary` variant → **papaya** (`accent`): the ONE main CTA per view.
+  - `secondary` variant → outlined glass pill: alternative / lower emphasis.
+  - `success` → positive completion. `danger` (`error`) → destructive.
+  - Blue (`primary` token) colors links, focus rings, selection, progress and
+    info — it is NOT the CTA fill. `delight` (pear) and `warning` are
+    decorative / status only — never button fills.
+- **Section bands.** Pages are composed of full-bleed horizontal bands:
+  `base` (default) · `band` (tinted) · `inverse` (navy). The navy band is
+  identical in both themes — it's the brand's stage. Never nest bands.
+- **Contrast floor (both modes) — text must never blur into its background:**
+  body text ≥ 4.5:1 against its band; `content-faint` and
+  `on-inverse-muted/70` are caption-only. On navy bands, text uses
+  `on-inverse` / `on-inverse-muted` — never `content-*` tokens (they invert
+  with the theme; the band doesn't). On papaya/pear/orange fills, text is dark
+  (`on-accent`/`on-delight`/`on-warning`), never white. Every component styles
+  its dark behavior at write time — semantic tokens give it free; anything
+  hardcoded against a band must be eyeballed in both modes.
 
 ## Typography
 
-Two families, loaded via Google Fonts (`Baloo 2` 600/700/800, `Nunito Sans` 400/700), fallback `system-ui`:
+Figtree everywhere, through the closed `lf-*` classes only. Headlines are
+extrabold and tight (`lf-display-*`); body stays regular with relaxed leading.
+Weight — not size or color — is the first hierarchy tool. Headlines balance
+their lines (`text-balance`, built into the classes); never uppercase body
+text.
 
-- **Baloo 2** — everything structural: `display-xl` (hero), `display-lg` (page titles + big stat numbers), `headline` (section headings), `title` (card titles, nav). Chunky, confident, rounded-but-grounded terminals — closer to Duolingo's bold display type and Brilliant's assertive headings than Quicksand's thinner, more decorative curves. Swapped 2026-07-11: titles needed more brand weight and character; Nunito Sans stayed for body since it already reads clean at small sizes.
-- **Nunito Sans** — everything read: `body-lg` (lesson prose), `body` (default), `label` (buttons/badges/forms), `caption` (footnotes).
+## Layout — Responsive Adaptation (NON-NEGOTIABLE)
 
-Rules:
-- The scale above is **closed**. Composing ad-hoc sizes with Tailwind utilities (`text-[17px]`, `text-sm font-semibold` as a pseudo-title…) is prohibited — use `text-display-xl` … `text-caption` utilities only.
-- Headings get `text-balance`; body/prose gets `text-pretty`; dynamic numbers (XP, streaks, %) get `tabular-nums`.
-- Key lesson terms may be bolded and colored with `secondary` or `accent` to aid memorization — at most a couple per paragraph.
-- Locale tolerance: es-MX/pt-BR run ~35% longer than en-US; components must wrap, never truncate meaning.
+- Everything lives in `mx-auto max-w-container px-5 md:px-8` inside full-bleed
+  band sections (`py-20 sm:py-28`).
+- **Mobile (<768px):** single column, content fills the viewport, no dead
+  vertical rhythm. **Desktop (≥1024px):** deliberate multi-column grids
+  (`md:grid-cols-2`, `lg:grid-cols-3`), zigzag media/text alternation. A
+  stretched mobile column on desktop is a bug; crammed desktop density on
+  mobile is equally a bug.
+- Structural widths only via `container-max`/`sidebar` tokens; everything else
+  reflows (`%`, flex, grid, `clamp()`).
+- Hover-only affordances prohibited without a tap equivalent.
+- **No UI change is done until verified at ~375px AND ~1280px — screenshots.**
 
-## Layout
+## Elevation & Depth — Liquid Glass
 
-- **Mobile-first.** Base classes target mobile; `md:`/`lg:` add up. Breakpoints: <768 mobile (sidebar collapses to bottom nav), 768–1024 tablet, >1024 desktop.
-- **8px rhythm.** All spacing in multiples of the 8px unit. Card padding ≥24px (32px on `xl` cards) — clay's thick inner shadows squeeze content, so err generous.
-- **Container max 1280px**, gutter 24px, mobile margin 16px.
-- **App shell:** fixed 280px left sidebar on desktop (profile block on top, nav pills, streak widget pinned bottom); content area on `base`. Marketing/landing pages are single-column, centered, airy.
-- Density: one idea per card, one section heading per screen region. When in doubt, remove.
+Depth comes from translucency and light, not skeuomorphism:
 
-### Responsive Adaptation — NON-NEGOTIABLE
+1. **Resting cards:** opaque `surface` + `border-outline/70` + `shadow-glass`.
+2. **Floating chrome** (sticky header, dropdown panels, mobile menu, toasts):
+   `.lf-glass` — frosted, blurred, hairline light border; `shadow-pop` when
+   detached from an edge.
+3. **On navy bands:** `.lf-glass-deep` — white-tinted frost with `white/14%`
+   border. This is the ONLY card treatment on `inverse`.
+4. Never stack glass on glass; never blur large scrolling content areas. A
+   `@supports` fallback to near-opaque surface is wired in index.css.
 
-The platform **MUST** render correctly and feel intentional on both **Desktop (≥1024px)** and **Mobile (<768px)**. This is a product requirement, not a styling preference — see `/AGENTS.md` §1.11, which gives it the same weight as a schema invariant. It cannot be relaxed by a task description that doesn't mention it.
+## Motion — closed system
 
-- **Breakpoints** (tokens above): mobile <768px, tablet 768–1023px (the interpolation — never its own design pass), desktop ≥1024px.
-- **Space discipline, not identical layouts.** Mobile is single-column, full-bleed within `margin-mobile`, sidebar collapsed to a bottom nav. Desktop deliberately uses the freed width — multi-column grids, the fixed 280px sidebar, multi-card rows — inside `container-max`, centered.
-  - ❌ **Wrong:** a desktop view that is the mobile column simply stretched wide, with dead whitespace on both sides.
-  - ❌ **Wrong:** a mobile view that crams desktop density (multi-column grids, the full sidebar) into a 375px viewport.
-  - ✅ **Right:** each breakpoint re-composes the same content to fit how much space it actually has.
-- **No fixed pixel widths for layout structure** outside `container-max` / `sidebar-width`. Everything else reflows: `%`, `flex`, `grid`, `min()`/`max()`/`clamp()`.
-- **No hover-only affordances.** Anything revealed on hover needs a tap-accessible equivalent — mobile has no hover.
-- **Verification is mandatory, not implied.** No frontend change is "done" until checked in the browser preview at ~375px (mobile) AND ~1280px (desktop) — screenshot both, every time, however small the change looks. A component checked at only one breakpoint has not been verified.
+Five recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exceptions for page/theme fades):
 
-## Elevation & Depth
+1. **Page transition** — `.lf-page-enter` on `<main>` keyed by route (uses a softer `ease-out` rather than the bouncy default).
+2. **Scroll reveal** — `<Reveal>`; grids stagger ≤3 × 80ms.
+3. **Pop** — `.lf-pop` for floating panels.
+4. **Press physics** — buttons/pills `active:translate-y-px` + color-shift
+   hover (`hover:bg-accent-strong`…). No scale-on-hover, no 3D borders.
+5. **Arrow nudge** — CTA arrow `group-hover:translate-x-0.5`.
+6. **Global theme transition (NON-NEGOTIABLE)** — Every color, background, and border change transitions smoothly when switching themes. Enforced globally in `index.css`.
 
-Flat elevation is replaced by the **three-layer clay system** — exactly four shadow tokens per mode, no others:
-
-| Token | Use |
-|---|---|
-| `clay` | Standard raised card (outer indigo-tinted glow + white top-left inset + dark bottom-right inset) |
-| `clay-sm` | Small widgets, chips, secondary buttons |
-| `clay-pressed` | Active/pressed state: outer shadow shrinks, insets deepen — physical compression |
-| `clay-sunken` | Inputs, wells, tracks: no outer shadow, inverted insets |
-
-Dark mode uses the `-dark` variants (white insets drop to ≤5% opacity; outer shadow deepens). Interaction physics: hover = lift (`clay-sm`→`clay`, `translate-y` −2px); press = `clay-pressed` + `translate-y` +2px + `scale(0.98)`. Transitions animate `transform`, `box-shadow`, `background-color` only — never `transition: all`. `prefers-reduced-motion` disables lifts and compressions (state changes remain instant).
-
-## Motion
-
-Motion makes the clay feel physical and navigation feel organic — it is a **closed system** like the type scale. Tokens (implemented as CSS vars in `frontend/src/index.css`):
-
-| Token | Value | Use |
-|---|---|---|
-| `--lf-ease` | `cubic-bezier(0.22, 1, 0.36, 1)` | THE easing ("clay ease-out") — every transition/animation uses it |
-| `--lf-dur-fast` | 150ms | Pop-ins (dropdown panels, menus), color/hover feedback |
-| `--lf-dur-base` | 200ms | Button press/lift physics, icon nudges |
-| `--lf-dur-slow` | 300ms | Card hover scale |
-| `--lf-dur-page` | 350ms | Route transitions |
-| `--lf-dur-reveal` | 550ms | Scroll reveals |
-
-The five motion recipes — **use these, don't invent new ones**:
-
-1. **Page transition** (`.lf-page-enter`) — `<main>` is keyed by `location.pathname`; on route change the new page fades in and rises 12px. Applied once at the layout level, never per-page.
-2. **Scroll reveal** (`<Reveal>` / `.lf-reveal`) — below-the-fold sections rise 20px + fade as they enter the viewport (IntersectionObserver, fires once). Grids stagger children with `delay` — **≤3 steps of 80ms**; longer chains feel like waiting, not delight. Above-the-fold content never uses reveal (the page transition covers it).
-3. **Pop-in** (`.lf-pop`) — floating panels (Dropdown list, mobile menu): scale 0.96→1 + fade, 150ms, transform-origin at the trigger corner.
-4. **Press physics** — Button/nav: hover `scale(1.02)` or lift; press `translate-y` + bottom-border collapse + `clay-pressed` (see Elevation).
-5. **Icon nudge** — an icon inside a hovered CTA may translate ≤4px in its pointing direction (`motion-safe:group-hover:translate-x-1`); arrows only.
-
-Ambient motion: `.lf-float` (hero illustration soft bounce) is the ONLY infinite animation permitted; anything looping elsewhere needs human sign-off.
-
-Hard rules: everything above is disabled or instant under `prefers-reduced-motion` (already wired in `index.css`). Never animate layout properties (`width/height/top/left/margin`). Never `transition: all`. `::selection` uses `primary-soft`/`primary-strong`; `scroll-behavior: smooth` (auto under reduced motion).
+`.lf-float` (hero illustration) is the only infinite animation. Everything is
+reduced-motion safe (wired in index.css).
 
 ## Shapes
 
-**Hyper-rounded. Sharp corners are prohibited** — they break the clay metaphor.
+Pills (`rounded-full`) for everything interactive-and-small: buttons, badges,
+tabs, icon chips, segmented controls, progress tracks. Big radii (`lg`/`xl`)
+for containers. Sharp corners prohibited.
 
-- `md` **16px** is the base radius (buttons, inputs, icon chips).
-- `lg` **24px** for standard cards; `xl` **32px** for hero cards, lesson canvases, modals.
-- **Pill (`full`)** for progress bars, badges, chips, toggles, and round icon buttons. **Buttons are NOT pills** — they use `rounded-md` chunky blocks (see Components; corrected 2026-07-11 to match the mockup code).
-- Nested elements use concentric radius: inner radius = outer radius − gap.
+## Components (`frontend/src/components/ui/` — the only building blocks)
 
-## Components
-
-The reusable kit lives in `frontend/src/components/ui/`. **Build with these; do not restyle per-view.**
-
-- **Button (primary)** — chunky block, **`rounded-md` (16px), NOT a pill** (mockup: `clay-button-primary`): `primary` fill, `label` type, **4px bottom border in `primary-strong`**. Hover: `scale(1.02)`. Press: `translate-y(4px)` + bottom border collapses to 0 + inset shadow — the physical "push". Generous padding (`px-8 py-4` on CTAs). Secondary variant: `surface` fill, `primary` text, 4px bottom border in `surface-sunken`. Minimum hit area 44×44px. Buttons may carry a Material Symbol beside the label.
-- **Card** — `surface` + `clay` + **1px white border** (`border-white`, dark: `white/10` — part of the clay illusion, the one border exception) + `rounded-lg` + ≥24px padding. Hero/lesson variant: `rounded-xl`, 32px padding. Feature-card hover: `scale(1.02)`.
-- **FeatureCard** (landing/marketing grids) — clay card, 56×56px icon tile (`rounded-lg`) filled with a rotating `-soft` tone, filled Material Symbol inside, `headline`-adjacent title, `body` copy in `content-muted`. 3-col desktop / 1-col mobile.
-- **Hero recipe** (landing, from the mockup): badge pill (clay surface, `secondary` text, star symbol) → `display-xl` headline where the second line is **gradient text `from-primary to-secondary`** (the ONE permitted gradient) → `body-lg` subtitle → primary CTA with arrow + secondary CTA with play symbol → illustration floating free (no card frame): soft-bounce animation + `primary/5` radial blur glow + drop shadow. Bounce disabled under `prefers-reduced-motion`.
-- **StatCard** — square-ish card: icon chip top, `display-lg` number (`tabular-nums`), `caption` label. Icon chip color rotates `primary-soft`/`accent-soft`/`secondary-soft` by stat kind (XP=primary, streak=accent, accuracy=secondary).
-- **IconChip** — 48px `rounded-md` square, `-soft` fill, solid-color icon. The only place decorative color is allowed.
-- **ProgressBar** — pill track in `surface-sunken`, fill in `primary` (or `accent` for streak-quests). Always paired with a `label` value.
-- **Input** — sunken: `surface-sunken` + `clay-sunken`, `rounded-md`, no outer shadow. Focus: 2px `primary` ring (visible, never removed).
-- **Badge** — pill, `surface-sunken` fill, `caption` type ("Intermediate", "Beginner").
-- **Sidebar nav item** — pill row: inactive = transparent + `content-muted`; active = `primary` fill + `on-primary` + `clay-sm`.
-- **QuestItem** — row: icon chip + `title` + thin progress pill + status icon.
-- **HintCard** — `primary-soft` fill (`dark-primary-soft` in dark), `rounded-lg`, `secondary`-tinted text; for lesson hints only.
-- **Characters** — Dina, Dino, Dr. Rho, Zara Vex (`frontend/src/components/characters/`) are the canonical mascots; avatars are DiceBear `avataaars`. Characters appear on `surface` cards, never floating on raw `base`.
-- **Dropdown** — our own listbox, **never a native `<select>`/browser-default picker**: clay-sunken trigger (icon/flag + label + chevron) → clay floating panel (`surface`, white border, `rounded-md`) on open, options highlight `surface-sunken` on hover and `primary-soft`/`primary` when selected. Closes on outside click, Escape, or selection. `compact` prop hides the label in the trigger (flag/icon + chevron only) while the open panel always shows flag + full label — used for the language switcher, whose trigger shows **only the flag**; opening it reveals each option as flag + the language's name **localized into the current UI language** (e.g. under es-MX: "🇺🇸 Inglés"), never a raw locale code like `es-MX`. Accessible name always includes the current selection even when visually hidden.
-- **ThemeToggle** — 3-way segmented pill (`auto` / `light` / `dark`), `surface-sunken` track, active segment gets `primary` fill + `clay-sm`. Icons: `brightness_auto`, `light_mode`, `dark_mode`. `auto` follows the OS scheme live (listens for `prefers-color-scheme` changes) and is the default until the user picks explicitly.
+- **Button** — pill, `lf-label`, `px-7 py-3.5`, variant per the Action Color
+  Contract, `active:translate-y-px`, color-shift hover.
+- **Card** — `rounded-lg p-6` surface card (`hero` → `rounded-xl p-8`;
+  `interactive` → `hover:-translate-y-1` lift; `onInverse` → `.lf-glass-deep`).
+- **Badge** — pill, soft fill, bold caption.
+- **Icon / IconChip** — Material Symbols; chip = circular soft-tinted tile.
+- **Dropdown** — custom listbox (never native pickers); pill trigger,
+  `.lf-glass` + `shadow-pop` panel.
+- **ThemeToggle** — 3-way segmented pill (auto/light/dark).
+- **ProgressBar** — pill track (`surface-sunken`), `primary`/`accent` fill.
+- **StatCard** — icon chip + `lf-display-lg lf-number` + caption.
+- **Reveal** — IntersectionObserver rise-in wrapper.
+- **Characters** — Dina, Dino, Dr. Rho, Zara Vex (canonical; no new mascots
+  without sign-off).
 
 ## Screen Recipes
 
-> The permanent distillation of the 7 approved mockup screens. Vocabulary is OURS (tokens above, kit components); the mockup's Material-style names are translated (`primary-fixed`→`primary-soft`, `surface-container-*`→`surface-sunken`, `tertiary`→`accent`, `rounded-2xl/3xl`→`rounded-lg/xl`). **These recipes — not `template/` — are the build reference.** When every recipe here has shipped or been superseded, `template/` may be deleted (human sign-off; see §0).
+**Marketing shell** — sticky `.lf-glass` header (h-16: logo · nav links ·
+locale Dropdown · ThemeToggle · papaya CTA pill) floating over the page;
+full-bleed navy footer (brand / legal / contact 3-col grid, links in
+`on-inverse-muted` hover `on-inverse`).
 
-### Recurring patterns (define once, reuse everywhere)
+**Landing** — band sequence: ① navy hero (2-col: extrabold headline with a
+`text-accent` highlight line, `on-inverse-muted` subtitle, papaya CTA +
+glass-deep ghost CTA, floating illustration over a soft `primary/20` glow) →
+② white problem/solution 2-card grid → ③ tinted `band` 6-feature card grid
+(circular IconChips) → ④ navy fact band with one `.lf-glass-deep` hero card
+(`delight` stat numeral) → ⑤ white motivation split (photo + copy) →
+⑥ final CTA banner card.
 
-- **App sidebar** — fixed `sidebar-width` (280px) on desktop, `surface` raised: avatar/brand block (clay avatar 80px `rounded-lg` + name + "Level N" subtitle) → XP ProgressBar (`h-3`) → nav items (active = `primary` fill + `on-primary` + pressed inset; inactive = `content-muted`, hover `surface-sunken` + `scale(1.02)`) → `mt-auto` footer: streak StatCard-row + settings. **Mobile: collapses to a sticky top bar (logo + status icons + avatar) and a fixed bottom nav (4–5 icon+label items)**; profile/store screens raise the center item into a floating `primary` circle (notched nav).
-- **Icon tile** — IconChip (48/56px, `-soft` fill + role-colored filled symbol). Gradient medallion variant (`bg-gradient-to-br` role→role, white symbol, `group-hover:scale-110`) reserved for game/course covers only.
-- **Stat card** — vertical (icon tile → `display-lg` `lf-number` → `caption` label) or horizontal (tile left, label+value right; profile bar).
-- **Progress bar** — sunken pill track + role fill; heights by prominence: `h-1.5` (lesson header) / `h-2` (quest rows) / `h-3` (sidebar XP) / `h-4` (course cards, inset-padded).
-- **Pills** — filters/tabs: horizontal-scroll row, active = `primary` clay, inactive = `surface-sunken`; status badges (NEW/POPULAR/FEATURED) = small `error`/`secondary`/`accent` pills on card corners.
-- **Sunken well** — `surface-sunken` + `clay-sunken`: inputs, search bars, drop zones, reward tiles, slider tracks, equation boxes.
+**Dashboard (app, future)** — 280px fixed sidebar (desktop) / bottom tabs
+(mobile); white canvas; StatCard row (`sm:grid-cols-3`), course cards
+`md:grid-cols-2 lg:grid-cols-3` with ProgressBars.
 
-### 1. Dashboard (app home)
+**Lesson** — focused single column (max-w ~720px), glass sticky progress
+header, one activity card at a time, `success` feedback moments.
 
-Sidebar + content (`container-max`, `space-y-8`): greeting (`display-lg` in `primary` + `body` subtitle) → stats grid (2-col mobile / 4-col desktop; XP=primary, lessons=secondary, streak=accent, accuracy=secondary tones) → split `lg:2/3 + 1/3`: **Continue Learning** (course cards: icon tile + difficulty Badge → `title` + subtitle → progress row + `h-4` bar → full-width Button, `primary` "Resume" / secondary "Start") beside **Daily Quests** card (rows: icon tile + `title` over `h-2` mini-bar + trailing check/counter; hover `surface-sunken`).
+**Games hub** — poster-style `rounded-lg` media cards in a
+`md:grid-cols-2 lg:grid-cols-3` grid, hover lift, papaya "Play" pills.
 
-### 2. Lesson interface
-
-No sidebar — focused `flex-col`: sticky top header (back + breadcrumb + **step dots**: done=solid `primary`, current=ringed larger, upcoming=sunken + `h-1.5` progress bar) → content (`lg:8/4` split): main clay card with interactive canvas (grid-lined area, draggable elements, floating hint chip) + equation well + inline input (`clay-sunken` box + `primary` Check button); second card for drag-drop steps (dashed sunken drop zones + draggable chip buttons `cursor-grab`) → aside **HintCard** → sticky footer: secondary "Previous" / primary "Continue". Completion modal: backdrop blur, clay card, trophy medallion, 2-col reward wells (XP/coins/streak), full-width primary CTA.
-
-### 3. Games hub
-
-Sidebar + content: page header → filter pills row → `lg:2/3` **featured game** bento (large `rounded-xl` card, blurred color blobs behind, gradient medallion, FEATURED pill, `check_circle` bullet list, role-gradient CTA) + game-card grid (centered: corner status pill, 80px gradient medallion `group-hover:scale-110`, `title` + `body`, bottom Button) + `1/3` **Leaderboard** card (ranked rows: rank + avatar + name/XP + trend icon; top row sunken highlight; "You" row `primary/5` + `primary` border).
-
-### 4. Profile
-
-Sidebar + content: **profile hero** (`rounded-xl` card: cover gradient band `primary→secondary→accent` with radial glows → overlapping `-mt-16` row: 128–160px clay avatar circle + "Lvl N" corner badge, `display-xl` name + handle/joined meta, secondary "Edit Profile") → horizontal stat bar (4 stat cards) → underline tab bar (active = `primary` text + 4px `primary` bottom border) → bento: `2/3` Current Focus (course mini-cards) + Recent Activity timeline (central gradient spine, role-colored nodes, zig-zag on desktop) · `1/3` Top Badges (circular tiles, `group-hover:scale-110`) + Friends list (avatar rows, online dot / grayscale offline).
-
-### 5. Course catalog
-
-Sidebar + content + right filter rail (`w-72`, sticky, desktop-only): header + clay search bar → category pills → course grid (1/2/3-col): **course card** = pastel gradient thumbnail band (`h-32`, white circle medallion, difficulty pill) → `title` (hover→`primary`) + 2-line clamped `body` → instructor row (avatar, name, ★ rating, students) → footer over hairline: price (`primary` bold + struck original) + Enroll Button; card hover `-translate-y-1`. Filter rail: checkbox group (20px `rounded-sm`, checked = `primary` fill + check), sunken price slider (`primary` fill + white knob), rating pills.
-
-### 6. Assessment / quiz
-
-Chrome suppressed — centered `max-w-[800px]`, vertically centered: status row (clay timer tile with live mm:ss + "Question N of M" `headline`) → **stepper dots** (16px: answered=`primary-soft`, current=`primary` + `scale-1.2` glow, flagged=`accent-soft`, rest sunken; clickable) → question card (`p-8/12`, blurred `primary-soft` corner blob, `display-lg` question with color-coded terms, corner flag button) → **options grid** (1/2-col option cards: raised clay, hover `-translate-y-2`; selected = `primary-soft` fill + `primary` border + pressed inset + trailing `check_circle`; letter badge circle) → footer: secondary Previous / primary Next.
-
-### 7. Landing (marketing)
-
-Shipped — see `frontend/src/routes/marketing/` (the living reference): sticky h-20 header (trimmed logo, plain nav links, Dropdown + ThemeToggle + chunky CTA) → hero (two-line headline w/ gradient second line, icon CTAs, floating illustration + glow) → problem/solution cards → 6-feature grid → fact band → motivation split → final CTA card → white bordered footer (legal + contact).
+**Assessment / Profile / Catalog** — same grammar: bands, cards, pills,
+IconChips; a profile hero may use a navy band with a glass-deep identity card.
 
 ## Do's and Don'ts
 
-**Do**
-- Use tokens for every color, radius, shadow, and type style — no exceptions.
-- Keep one primary action per view; one accent element per card.
-- Style light AND dark at write time; test both before commit.
-- Give every interactive element the press-compression physics and a visible focus ring.
-- Route all strings through i18n ×3 locales (/AGENTS.md §1.8).
-- **Verify every UI change at mobile (~375px) AND desktop (~1280px) before commit — screenshot both.** Non-negotiable (/AGENTS.md §1.11).
-- Use ONLY the five motion recipes (§Motion) with the `--lf-ease`/`--lf-dur-*` tokens; new pages get the transition for free via the layout.
-- Pick every button/action color from the **Action Color Contract** (§Colors) — never by taste.
-
-**Don't**
-- ❌ A `danger` action colored anything but red, or a routine action colored red/amber "for emphasis."
-- ❌ `accent`/`delight` as a button fill — they're decorative-only per the Action Color Contract.
-- ❌ Raw hex/rgb/arbitrary values (`text-[#3525cd]`, `rounded-[13px]`) — if a value isn't tokenized here, propose a DESIGN.md change first.
-- ❌ Ad-hoc type compositions — the closed scale only.
-- ❌ Sharp corners, 1px-border-defined cards, or flat Material shadows — clay tokens only.
-- ❌ `transition: all`, animated `width/height/top/left`, `will-change` outside `transform/opacity/filter`.
-- ❌ Ad-hoc easings/durations, infinite animations beyond `.lf-float`, reveal-staggers longer than 3×80ms, or reveals on above-the-fold content.
-- ❌ Glassmorphism, gradients-as-decoration (sole exception: the hero headline gradient text, per the mockup), or more than one shadow style per element.
-- ❌ New mascots, new icon sets (**Material Symbols Outlined only** — what the mockup code uses; corrected from the draft's "Lucide" note), emojis as UI icons, or text baked into images. **Exception:** country flag emoji are permitted specifically as the language-identity label in the language switcher (no Material Symbol equivalent exists) — never as a general-purpose icon substitute elsewhere.
-- ❌ **Native `<select>`, `<input type="date">`, or any other browser-default picker** as the primary choice control — use the `Dropdown` component (or a purpose-built equivalent like `ThemeToggle`) so styling and interaction stay on-system everywhere.
-- ❌ Noise: decorative borders, double outlines around images, backgrounds behind backgrounds. When a screen feels empty, that's the design working.
-- ❌ Shipping a component checked at only one breakpoint.
-- ❌ A desktop layout that's a stretched mobile column with dead side whitespace, or a mobile layout that crams desktop density into a narrow viewport.
-- ❌ Fixed pixel widths for layout structure outside `container-max`/`sidebar-width`.
-- ❌ Hover-only interactions with no mobile equivalent.
+- ✅ One papaya CTA per view; blue for links/info; pear only to celebrate.
+- ✅ Frosted glass for anything that floats; opaque cards for anything at rest.
+- ✅ Verify both themes and both breakpoints before closing any task.
+- ❌ No raw hex, no ad-hoc font sizes, no sharp corners, no native pickers.
+- ❌ No inset-shadow stacks, no 3D bottom-border buttons, no scale-on-hover
+  buttons (lift is for cards only).
+- ❌ No emojis as icons (country flags in the language switcher are the one
+  exception). No new infinite animations.
