@@ -31,8 +31,10 @@ interface StoredSession {
 
 export interface Profile {
   display_name: string;
+  username: string | null;
   locale: string;
   theme: string;
+  cover: Record<string, unknown>;
 }
 
 export interface SignupInput {
@@ -55,6 +57,8 @@ interface AuthContextValue {
   session: StoredSession | null | undefined;
   profile: Profile | null;
   roles: string[];
+  /** DiceBear Avataaars option set (empty until the user customizes). */
+  avatarOptions: Record<string, unknown>;
   /** true once profile+roles for the current session have been fetched (or there is no session) */
   meLoaded: boolean;
   login(email: string, password: string): Promise<ApiError | null>;
@@ -92,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<StoredSession | null | undefined>(undefined);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const [avatarOptions, setAvatarOptions] = useState<Record<string, unknown>>({});
   const [meLoaded, setMeLoaded] = useState(false);
   const sessionRef = useRef<StoredSession | null>(null);
 
@@ -130,10 +135,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setMeLoaded(true);
       return;
     }
-    const { data } = await api<{ profile: Profile | null; roles: string[] }>('/auth/me', { token });
+    const { data } = await api<{ profile: Profile | null; roles: string[]; avatarOptions: Record<string, unknown> }>(
+      '/auth/me',
+      { token },
+    );
     if (data) {
       setProfile(data.profile);
       setRoles(data.roles);
+      setAvatarOptions(data.avatarOptions ?? {});
     }
     setMeLoaded(true);
   }, [getToken]);
@@ -189,8 +198,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [persist]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ session, profile, roles, meLoaded, login, signup, logout, refreshMe: loadMe, getToken }),
-    [session, profile, roles, meLoaded, login, signup, logout, loadMe, getToken],
+    () => ({ session, profile, roles, avatarOptions, meLoaded, login, signup, logout, refreshMe: loadMe, getToken }),
+    [session, profile, roles, avatarOptions, meLoaded, login, signup, logout, loadMe, getToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

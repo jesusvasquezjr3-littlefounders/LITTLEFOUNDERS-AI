@@ -53,6 +53,7 @@ frontend/
     lib/
     routes/
       app/
+        profile/
       auth/
       marketing/
     theme/
@@ -424,9 +425,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 **Auth + Tutor verification shipped (2026-07-12, E2E-verified locally):** Core `/api/v1/auth/*` (GoTrue proxy, local HS256 JWT verify, CORS pinned to the SPA) and `/api/v1/verification/parent`; Guardian v1 = **stateless local OCR** (tesseract.js `spa+eng+por`, ID photo in-memory only, NEVER stored, verdicts only — Core owns all writes: isolated `parent_verifications` (0004), `parent` grant, audit); frontend `/login`, `/signup` (Tutor-intent checkbox; every signup starts `universal`), `/verify-parent` (privacy-first form, per-check retry guidance), AuthContext + RequireAuth, `auth.json` i18n ×3, new UI-kit form primitives (Field/Checkbox/FileField) codified in DESIGN.md with a new Auth screen recipe. Verified: 47 service tests green; real browser E2E (signup→OCR verify→Tutor badge) at ~375px AND ~1280px, light + dark; impostor E2E rejected without role grant; failed attempts audited with boolean checks only (zero PII). **Development stays local by decision — nothing deploys to Railway/Vercel yet.**
 
-**App dashboard v1 live (2026-07-12):** role-scalable shell (navConfig registry → gamified 280px sidebar / mobile glass bottom tabs; locked-not-hidden role gating; Tutor-upgrade card), Learn home with published-course cards (`GET /api/v1/learn/courses`), AI Tutor/Games/Tasks placeholders (Tasks parent-gated). 6 real test users via `npm run db:seed:users` (password123; Testing Tutor↔Niño linked verified). Browser-verified as universal AND tutor at both breakpoints, light+dark. Next: course consumption (lesson player) and kid-account creation from the Tutor dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
+**App dashboard v1 live (2026-07-12):** role-scalable shell (navConfig registry → gamified 280px sidebar / mobile glass bottom tabs; locked-not-hidden role gating; Tutor-upgrade card), Learn home with published-course cards (`GET /api/v1/learn/courses`), AI Tutor/Games/Tasks placeholders (Tasks parent-gated). 6 real test users via `npm run db:seed:users` (password123; Testing Tutor↔Niño linked verified).
 
-## Decision Log
+**Profile platform live (2026-07-12):** collapsible sidebar (288↔88px, favicon brand collapsed; language selector REMOVED from shell — locale is a DB setting), `/profile` (token-gradient covers ONLY — no upload path exists anywhere, avatar w/ edit indicator, gamified StatCards, share-to-invite "littlefounders.ai/@usuariox"), `/profile/avatar` (DiceBear Avataaars editor, local SVG render, options jsonb in `avatars`), `/profile/settings` (name, unique @username w/ USERNAME_TAKEN, locale-of-record → drives UI+content; email/password pending Courier), public `/@username` profiles (session-required, Core-whitelisted fields, Tutor badge) with follow/unfollow (`follows` table, RLS self-managed edges). Migration 0005; Core profile API 36 tests green; browser-verified end-to-end (avatar save, cover change, es-MX switch-from-DB, follow 0→1) at both breakpoints, light+dark. Next: course consumption (lesson player) and kid-account creation from the Tutor dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
 ```
 
 ### agent/README.md
@@ -1231,6 +1232,26 @@ describe('GET /api/v1/learn/courses', () => {
     const token = mintToken();
 ```
 
+### backend/src/__tests__/profile.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+const PROFILE_ROW = {
+  user_id: 'u-1',
+  display_name: 'Ana',
+  username: 'ana',
+  locale: 'es-MX',
+  theme: 'system',
+  cover: { preset: 'sunset' },
+  created_at: '2026-07-12T00:00:00Z',
+};
+
+```
+
 ### backend/src/__tests__/verification.test.ts
 
 ```
@@ -1258,6 +1279,7 @@ import express from 'express';
 import { cors } from './middleware/cors.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
+import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
@@ -1268,7 +1290,6 @@ export function createApp(): express.Express {
   app.use(cors);
   app.use(express.json({ limit: '64kb' }));
 
-  app.get('/health', (_req, res) => {
 ```
 
 ### backend/src/config.ts
@@ -1375,7 +1396,7 @@ export function cors(req: Request, res: Response, next: NextFunction): void {
   if (origin === getConfig().FRONTEND_URL) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
 ```
 
@@ -1387,7 +1408,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import * as gotrue from '../services/gotrue.js';
-import { getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
 /*
  * /api/v1/auth — email+password today; social providers (Google first, then
@@ -1417,6 +1438,26 @@ export function learnRouter(): Router {
 
   router.get('/courses', requireAuth, async (_req, res) => {
     const rows = await getPublishedCourses(authedUser(res).accessToken);
+```
+
+### backend/src/routes/profile.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import {
+  deleteFollow,
+  findProfileByUsername,
+  getAvatarByUserId,
+  getFollowCounts,
+  getFullOwnProfile,
+  getOwnAvatar,
+  hasRole,
+  insertFollow,
+  isFollowing,
+  patchOwnProfile,
 ```
 
 ### backend/src/routes/verification.ts
@@ -1823,6 +1864,26 @@ CREATE TABLE IF NOT EXISTS public.parent_verifications (
     status        text NOT NULL DEFAULT 'verified' CHECK (status IN ('verified', 'revoked')),
     method        text NOT NULL DEFAULT 'local-ocr',
     given_names   text NOT NULL,
+```
+
+### database/migrations/0005_profile_identity.sql
+
+```
+-- 0005_profile_identity.sql — public profile identity: @username, cover
+-- customization, and the follows social graph. Idempotent delta.
+--
+-- Design constraints (Jesús, 2026-07-12):
+--  * Covers are TOKEN GRADIENTS ONLY — `cover` stores a tiny jsonb config
+--    (preset id). No image uploads exist anywhere in this schema, for
+--    covers OR avatars — avatars are DiceBear option sets (0002.avatars).
+--  * Avatar + cover + username + display_name are PUBLIC to signed-in users,
+--    but exposure happens through Core (service role, whitelisted fields) —
+--    profiles RLS stays self+guardian only.
+
+-- ─────────────────────────────────────────────────────────────
+-- profiles: @username (unique handle) + cover config
+-- ─────────────────────────────────────────────────────────────
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS username text;
 ```
 
 ### database/package.json
@@ -2310,7 +2371,7 @@ import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
-
+import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -2389,6 +2450,26 @@ export function RequireRole({ role, children }: { role: string; children: ReactN
   if (!roles.includes(role)) return <Navigate to={APP_HOME} replace />;
   return <>{children}</>;
 }
+```
+
+### frontend/src/components/Avatar.tsx
+
+```
+import { useMemo } from 'react';
+import { createAvatar } from '@dicebear/core';
+import { avataaars } from '@dicebear/collection';
+import { cn } from '@/lib/utils';
+import type { AvatarOptions } from '@/lib/avatarOptions';
+
+/*
+ * DiceBear Avataaars, rendered LOCALLY (@dicebear/core → SVG data URI) — no
+ * external avatar service, nothing leaves the browser. The platform-wide
+ * face of a user; never an uploaded photo (NON-NEGOTIABLE).
+ */
+
+interface AvatarProps {
+  options: (AvatarOptions & { seed?: string }) | Record<string, unknown>;
+  /** Fallback seed when options carry none (stable per user). */
 ```
 
 ### frontend/src/components/characters/DinaCharacter.tsx
@@ -2804,10 +2885,10 @@ export { FileField } from './FileField';
     "games": "Games",
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
-    "lockedHint": "Unlocks when your account becomes a verified Tutor"
+    "lockedHint": "Unlocks when your account becomes a verified Tutor",
+    "profile": "Profile"
   },
   "upgrade": {
-    "title": "Family plan",
 ```
 
 ### frontend/src/i18n/en-US/errors.json
@@ -2826,8 +2907,8 @@ export { FileField } from './FileField';
     "EMAIL_IN_USE": "There's already an account with that email.",
     "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
-    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one."
-  }
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
+    "USERNAME_TAKEN": "That @username is taken — try another one."
 ```
 
 ### frontend/src/i18n/en-US/marketing.json
@@ -2848,6 +2929,26 @@ export { FileField } from './FileField';
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
     "logoAlt": "LittleFounders"
+```
+
+### frontend/src/i18n/en-US/profile.json
+
+```
+{
+  "editCover": "Edit cover",
+  "editAvatar": "Edit your avatar",
+  "claimUsername": "Choose your @username",
+  "memberSince": "Building since {{date}}",
+  "settingsCta": "Settings",
+  "coverPicker": {
+    "title": "Pick your cover",
+    "hint": "Color blends only — your cover is drawn by the app, never uploaded."
+  },
+  "covers": {
+    "aurora": "Aurora",
+    "sunset": "Sunset",
+    "ocean": "Ocean",
+    "forest": "Forest",
 ```
 
 ### frontend/src/i18n/es-MX/auth.json
@@ -2904,10 +3005,10 @@ export { FileField } from './FileField';
     "games": "Juegos",
     "tasks": "Tareas",
     "lockedBadge": "Tutor",
-    "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado"
+    "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado",
+    "profile": "Perfil"
   },
   "upgrade": {
-    "title": "Plan familiar",
 ```
 
 ### frontend/src/i18n/es-MX/errors.json
@@ -2926,8 +3027,8 @@ export { FileField } from './FileField';
     "EMAIL_IN_USE": "Ya existe una cuenta con ese correo.",
     "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
     "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
-    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada."
-  }
+    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada.",
+    "USERNAME_TAKEN": "Ese @usuario ya está ocupado — prueba con otro."
 ```
 
 ### frontend/src/i18n/es-MX/marketing.json
@@ -2948,6 +3049,26 @@ export { FileField } from './FileField';
     "ctaSecondary": "Cómo funciona",
     "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
     "logoAlt": "LittleFounders"
+```
+
+### frontend/src/i18n/es-MX/profile.json
+
+```
+{
+  "editCover": "Editar portada",
+  "editAvatar": "Edita tu avatar",
+  "claimUsername": "Elige tu @usuario",
+  "memberSince": "Construyendo desde {{date}}",
+  "settingsCta": "Configuración",
+  "coverPicker": {
+    "title": "Elige tu portada",
+    "hint": "Solo mezclas de color — tu portada la dibuja la app, nunca se sube."
+  },
+  "covers": {
+    "aurora": "Aurora",
+    "sunset": "Atardecer",
+    "ocean": "Océano",
+    "forest": "Bosque",
 ```
 
 ### frontend/src/i18n/index.ts
@@ -3024,10 +3145,10 @@ import enErrors from './en-US/errors.json';
     "games": "Jogos",
     "tasks": "Tarefas",
     "lockedBadge": "Tutor",
-    "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado"
+    "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
+    "profile": "Perfil"
   },
   "upgrade": {
-    "title": "Plano familiar",
 ```
 
 ### frontend/src/i18n/pt-BR/errors.json
@@ -3046,8 +3167,8 @@ import enErrors from './en-US/errors.json';
     "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",
     "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
     "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
-    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada."
-  }
+    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
+    "USERNAME_TAKEN": "Esse @usuário já está em uso — tente outro."
 ```
 
 ### frontend/src/i18n/pt-BR/marketing.json
@@ -3068,6 +3189,26 @@ import enErrors from './en-US/errors.json';
     "ctaSecondary": "Como funciona",
     "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
     "logoAlt": "LittleFounders"
+```
+
+### frontend/src/i18n/pt-BR/profile.json
+
+```
+{
+  "editCover": "Editar capa",
+  "editAvatar": "Edite seu avatar",
+  "claimUsername": "Escolha seu @usuário",
+  "memberSince": "Construindo desde {{date}}",
+  "settingsCta": "Configurações",
+  "coverPicker": {
+    "title": "Escolha sua capa",
+    "hint": "Apenas misturas de cores — sua capa é desenhada pelo app, nunca enviada."
+  },
+  "covers": {
+    "aurora": "Aurora",
+    "sunset": "Pôr do sol",
+    "ocean": "Oceano",
+    "forest": "Floresta",
 ```
 
 ### frontend/src/index.css
@@ -3110,6 +3251,46 @@ export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiEr
 
 ```
 
+### frontend/src/lib/avatarOptions.ts
+
+```
+/*
+ * Curated DiceBear Avataaars option catalog — values verified against
+ * @dicebear/collection's avataaars schema (enums) and its color patterns
+ * (hex without '#'). The editor only offers these; Core re-validates.
+ */
+
+export interface AvatarOptions {
+  top?: string[];
+  hairColor?: string[];
+  skinColor?: string[];
+  eyes?: string[];
+  eyebrows?: string[];
+  mouth?: string[];
+  facialHair?: string[];
+  facialHairProbability?: number;
+```
+
+### frontend/src/lib/coverPresets.ts
+
+```
+/*
+ * Profile cover presets — TOKEN GRADIENTS ONLY (Jesús, 2026-07-12,
+ * NON-NEGOTIABLE: no image uploads for covers or avatars, ever). Each preset
+ * is a CSS gradient built from the palette's CSS variables, so covers adapt
+ * to light/dark automatically and can never carry foreign content.
+ */
+
+export interface CoverPreset {
+  id: string;
+  css: string;
+}
+
+const v = (name: string, alpha = 1) => `rgb(var(--lf-${name}) / ${alpha})`;
+
+export const COVER_PRESETS: CoverPreset[] = [
+```
+
 ### frontend/src/lib/utils.ts
 
 ```
@@ -3147,21 +3328,21 @@ createRoot(document.getElementById('root')!).render(
 ### frontend/src/routes/app/AppLayout.tsx
 
 ```
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { LOCALES, type Locale } from '@/i18n';
-import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Badge, Button, Icon, ThemeToggle } from '@/components/ui';
+import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
 
 /*
- * App shell — /DESIGN.md §Screen Recipes → Dashboard: 280px fixed gamified
- * sidebar on desktop, frosted bottom tabs on mobile, white canvas content.
- * Everything renders from navConfig; role-locked items show as locked, never
- * hidden (locked-but-visible sells the upgrade path).
- */
-
+ * App shell — /DESIGN.md §Screen Recipes → Dashboard. Desktop sidebar is
+ * COLLAPSIBLE (288px ↔ 88px, minimal edge chevron, favicon as the collapsed
+ * brand); language now lives in /profile/settings (a persistent DB field),
+ * so the shell carries only the theme control. Role-locked items render
+ * LOCKED, never hidden.
 ```
 
 ### frontend/src/routes/app/LearnPage.tsx
@@ -3222,6 +3403,106 @@ export interface NavItem {
   path: string;
   icon: string; // Material Symbols ligature
   requiresRole?: string;
+```
+
+### frontend/src/routes/app/profile/AvatarEditorPage.tsx
+
+```
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import {
+  AVATAR_CATALOG,
+  defaultAvatarOptions,
+  randomAvatarOptions,
+  type AvatarOptions,
+  type CatalogKey,
+} from '@/lib/avatarOptions';
+import { Avatar } from '@/components/Avatar';
+import { Button, Card, Icon } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+```
+
+### frontend/src/routes/app/profile/ProfileHero.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Avatar } from '@/components/Avatar';
+import { coverCss } from '@/lib/coverPresets';
+
+/*
+ * Shared profile header: token-gradient cover + overlapping Avataaars.
+ * Used by /profile and public /@username views so a profile looks identical
+ * everywhere it appears.
+ */
+export function ProfileHero({
+  cover,
+  avatarOptions,
+  seed,
+  coverAction,
+  avatarAction,
+```
+
+### frontend/src/routes/app/profile/ProfilePage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { COVER_PRESETS } from '@/lib/coverPresets';
+import { Badge, Button, Card, Icon, StatCard } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { ProfileHero } from './ProfileHero';
+
+/*
+ * /profile — the user's own public identity: gradient cover (presets ONLY —
+ * uploads don't exist), Avataaars with an explicit edit indicator, gamified
+ * learning stats, share-to-invite, and the door to /profile/settings.
+ */
+```
+
+### frontend/src/routes/app/profile/PublicProfilePage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { APP_HOME } from '@/routes/app/navConfig';
+import { Badge, Button, Card, Icon, StatCard } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { ProfileHero } from './ProfileHero';
+
+/*
+ * /@username — public profile (session required by routing). Shows exactly
+ * what Core whitelists: name, @username, avatar, cover, member-since,
+ * counts, Tutor badge. Follow/unfollow lives here.
+ */
+```
+
+### frontend/src/routes/app/profile/SettingsPage.tsx
+
+```
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { LOCALES, type Locale } from '@/i18n';
+import { Button, Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * /profile/settings — personal data. `locale` is the user's language of
+ * record (DB field): it drives lessons/games/content AND the UI. Email and
+ * password changes stay disabled until Courier (email-server) ships.
+ */
 ```
 
 ### frontend/src/routes/auth/AuthShell.tsx

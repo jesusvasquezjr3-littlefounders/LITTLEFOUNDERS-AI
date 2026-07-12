@@ -75,6 +75,7 @@ export default {
       },
       spacing: {
         sidebar: '280px',
+        'sidebar-sm': '88px',
       },
     },
   },

@@ -1,0 +1,81 @@
+{
+  "editCover": "Editar capa",
+  "editAvatar": "Edite seu avatar",
+  "claimUsername": "Escolha seu @usuário",
+  "memberSince": "Construindo desde {{date}}",
+  "settingsCta": "Configurações",
+  "coverPicker": {
+    "title": "Escolha sua capa",
+    "hint": "Apenas misturas de cores — sua capa é desenhada pelo app, nunca enviada."
+  },
+  "covers": {
+    "aurora": "Aurora",
+    "sunset": "Pôr do sol",
+    "ocean": "Oceano",
+    "forest": "Floresta",
+    "candy": "Doce",
+    "ember": "Brasa",
+    "midnight": "Meia-noite",
+    "mint": "Menta",
+    "grape": "Uva",
+    "dawn": "Amanhecer"
+  },
+  "stats": {
+    "title": "Estatísticas de aprendizado",
+    "streak": "Dias de sequência",
+    "lessons": "Lições concluídas",
+    "followers": "Seguidores",
+    "following": "Seguindo"
+  },
+  "share": {
+    "title": "Convide seus amigos",
+    "text": "Siga-me na LittleFounders e vamos aprender juntos → littlefounders.ai/@{{username}}",
+    "needUsername": "Escolha seu @usuário para compartilhar seu perfil com amigos.",
+    "copy": "Copiar convite",
+    "copied": "Copiado!"
+  },
+  "avatarEditor": {
+    "title": "Seu avatar",
+    "subtitle": "Deixe com a sua cara — ele aparece em todos os lugares onde seu perfil aparece",
+    "back": "Voltar ao perfil",
+    "randomize": "Surpreenda-me",
+    "save": "Salvar meu visual",
+    "saving": "Salvando…",
+    "none": "Nenhum",
+    "sections": {
+      "skinColor": "Tom de pele",
+      "top": "Cabelo e acessórios de cabeça",
+      "hairColor": "Cor do cabelo",
+      "eyes": "Olhos",
+      "eyebrows": "Sobrancelhas",
+      "mouth": "Boca",
+      "facialHair": "Barba",
+      "clothing": "Roupa",
+      "clothesColor": "Cor da roupa",
+      "accessories": "Óculos e extras"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "back": "Voltar ao perfil",
+    "identity": "Sua identidade",
+    "displayName": "Nome",
+    "username": "Usuário",
+    "usernameHint": "3-20 caracteres: letras, números e sublinhado. Será littlefounders.ai/@você",
+    "usernameInvalid": "Apenas a-z, 0-9 e _ (3-20 caracteres)",
+    "language": "Idioma",
+    "languageHint": "Seu idioma de registro — as lições, os jogos e a interface o seguem.",
+    "account": "Conta",
+    "email": "E-mail",
+    "emailPasswordPending": "A troca de e-mail e senha chega com nosso serviço de e-mail — em breve.",
+    "save": "Salvar alterações",
+    "saving": "Salvando…",
+    "saved": "Salvo!"
+  },
+  "public": {
+    "follow": "Seguir",
+    "following": "Seguindo",
+    "editMine": "Editar meu perfil",
+    "notFound": "Este perfil não existe"
+  }
+}

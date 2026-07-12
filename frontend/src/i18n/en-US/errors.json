@@ -11,6 +11,7 @@
     "EMAIL_IN_USE": "There's already an account with that email.",
     "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
-    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one."
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
+    "USERNAME_TAKEN": "That @username is taken — try another one."
   }
 }

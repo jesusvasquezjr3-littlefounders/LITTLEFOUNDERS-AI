@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import * as gotrue from '../services/gotrue.js';
-import { getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
 /*
  * /api/v1/auth — email+password today; social providers (Google first, then
@@ -88,15 +88,17 @@ export function authRouter(): Router {
 
   router.get('/me', requireAuth, async (_req, res) => {
     const user = authedUser(res);
-    const [profiles, roles] = await Promise.all([
+    const [profiles, roles, avatars] = await Promise.all([
       getOwnProfile(user.accessToken, user.id),
       getOwnRoles(user.accessToken, user.id),
+      getOwnAvatar(user.accessToken, user.id),
     ]);
     if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
     return ok(res, {
       user: { id: user.id, email: user.email },
       profile: profiles[0] ?? null,
       roles: roles.map((r) => r.role),
+      avatarOptions: avatars?.[0]?.options ?? {},
     });
   });
 

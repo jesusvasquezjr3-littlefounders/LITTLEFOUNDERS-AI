@@ -9,7 +9,8 @@
     "games": "Juegos",
     "tasks": "Tareas",
     "lockedBadge": "Tutor",
-    "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado"
+    "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado",
+    "profile": "Perfil"
   },
   "upgrade": {
     "title": "Plan familiar",
@@ -41,5 +42,9 @@
       "title": "Tareas y recompensas",
       "body": "Asigna tareas del mundo real a tus hijos y recompénsalos cuando las cumplan. Este espacio está en construcción."
     }
+  },
+  "sidebar": {
+    "collapse": "Contraer menú",
+    "expand": "Expandir menú"
   }
 }

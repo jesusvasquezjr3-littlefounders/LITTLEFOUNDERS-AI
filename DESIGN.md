@@ -263,17 +263,32 @@ cross-links in `primary`. Status outcomes (success / retry guidance) replace
 the card, never stack on it. Privacy notes render as a `primary-soft` inline
 strip with a shield icon — before the form, not fine print.
 
-**Dashboard (app)** — 280px fixed sidebar (desktop) / frosted bottom tabs
-(mobile); white canvas; course cards `md:grid-cols-2 lg:grid-cols-3` with
-ProgressBars (StatCard row when real stats exist). Sidebar anatomy (top to
-bottom): logo → nav pills from `routes/app/navConfig` (active =
-`primary-soft` pill + filled icon; role-locked items render LOCKED with a
-lock chip, never hidden) → upgrade card (`accent-soft`, one papaya CTA; only
-while the role is missing) → locale + theme controls → user card
-(`surface-sunken`: initials circle, name, role badge, logout). Mobile: glass
-top bar (logo · locale · theme · logout) + glass bottom tabs (icon + caption;
-locked = lock icon, disabled). Adding a section = one navConfig entry + one
-route.
+**Dashboard (app)** — 280px fixed sidebar (desktop, COLLAPSIBLE to the
+`sidebar-sm` 88px token via a minimal edge chevron; collapsed = favicon
+brand, icon-only pills w/ mini lock overlay, avatar + logout stacked) /
+frosted bottom tabs (mobile); white canvas; course cards `md:grid-cols-2
+lg:grid-cols-3` with ProgressBars. Sidebar anatomy (top to bottom): logo →
+nav pills from `routes/app/navConfig` (active = `primary-soft` pill + filled
+icon; role-locked items render LOCKED with a lock chip, never hidden) →
+upgrade card (`accent-soft`, one papaya CTA; only while the role is missing)
+→ theme control (language is a DB setting in /profile/settings, not shell
+chrome) → user card (`surface-sunken`: Avataaars thumb linking /profile,
+name, @username, logout). Mobile: glass top bar (logo · theme · logout) +
+glass bottom tabs (icon + caption; locked = lock icon, disabled). Adding a
+section = one navConfig entry + one route.
+
+**Profile** — public identity, shown identically everywhere: token-gradient
+cover (`lib/coverPresets`, 10 presets — NEVER an uploaded image) with the
+avatar (DiceBear Avataaars via `components/Avatar`, local SVG render)
+overlapping `-mt-14/-mt-16` with `ring-4 ring-base`; own profile adds a
+papaya pencil badge on the avatar (→ /profile/avatar) and a glass "edit
+cover" chip (inline preset-swatch grid in an `.lf-pop` card). Below: display
+name + Tutor badge, `primary` @username, member-since caption, secondary
+Settings pill; StatCard row (2-col mobile / 4-col desktop); share-to-invite
+card with one papaya copy CTA (flips to `success` on copy). Avatar editor:
+sticky live-preview card (desktop) + option-section cards — color swatches
+as `rounded-full` chips, feature options as live Avataaars thumbnails,
+selected = `primary` ring; "Surprise me" secondary + one papaya save.
 
 **Lesson** — focused single column (max-w ~720px), glass sticky progress
 header, one activity card at a time, `success` feedback moments.

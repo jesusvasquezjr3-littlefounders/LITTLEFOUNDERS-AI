@@ -23,6 +23,7 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 - `guardian_links.verification_status` — only Guardian-driven flows move it to `verified`.
 - `audit_logs` append-only: no UPDATE/DELETE policies, ever (`npm test` gates this).
 - Signup bootstrap (`0003`): every `auth.users` INSERT auto-creates a profile + grants `universal` (§1.4 default role). Role grants/revokes are audited into `audit_logs` by trigger.
+- Profile identity (`0005`): `profiles.username` (unique, `^[a-z0-9_]{3,20}$`), `profiles.cover` = jsonb PRESET config and `avatars.options` = DiceBear option sets — **no image/binary storage exists for covers or avatars, NON-NEGOTIABLE**. `follows` edges are self-managed via RLS (you only write rows where you are the follower); public exposure of profile fields happens ONLY through Core's whitelisted endpoint, never by loosening profiles RLS.
 - `0002_content_skeleton.sql` is **PROVISIONAL** — don't deepen logic on it before the dedicated schema session.
 
 ## The pinned Supabase stack (NON-NEGOTIABLE)

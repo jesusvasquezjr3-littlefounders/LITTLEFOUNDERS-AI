@@ -14,7 +14,7 @@ export interface ApiError {
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };
 
 interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   formData?: FormData;
   token?: string | null;

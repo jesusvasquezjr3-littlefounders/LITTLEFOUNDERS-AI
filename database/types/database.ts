@@ -131,6 +131,24 @@ export type Database = {
           },
         ]
       }
+      follows: {
+        Row: {
+          created_at: string
+          followed_id: string
+          follower_id: string
+        }
+        Insert: {
+          created_at?: string
+          followed_id: string
+          follower_id: string
+        }
+        Update: {
+          created_at?: string
+          followed_id?: string
+          follower_id?: string
+        }
+        Relationships: []
+      }
       guardian_links: {
         Row: {
           created_at: string
@@ -240,28 +258,34 @@ export type Database = {
       }
       profiles: {
         Row: {
+          cover: Json
           created_at: string
           display_name: string
           locale: string
           theme: string
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
+          cover?: Json
           created_at?: string
           display_name?: string
           locale?: string
           theme?: string
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
+          cover?: Json
           created_at?: string
           display_name?: string
           locale?: string
           theme?: string
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: []
       }

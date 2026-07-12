@@ -9,7 +9,8 @@
     "games": "Games",
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
-    "lockedHint": "Unlocks when your account becomes a verified Tutor"
+    "lockedHint": "Unlocks when your account becomes a verified Tutor",
+    "profile": "Profile"
   },
   "upgrade": {
     "title": "Family plan",
@@ -41,5 +42,9 @@
       "title": "Tasks & rewards",
       "body": "Assign real-world tasks to your kids and reward them when they deliver. This space is being built."
     }
+  },
+  "sidebar": {
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
   }
 }

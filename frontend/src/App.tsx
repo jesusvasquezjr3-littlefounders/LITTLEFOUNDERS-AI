@@ -12,6 +12,10 @@ import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
+import { ProfilePage } from '@/routes/app/profile/ProfilePage';
+import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
+import { SettingsPage } from '@/routes/app/profile/SettingsPage';
+import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
 
 export function App() {
   return (
@@ -56,6 +60,11 @@ export function App() {
               </RequireRole>
             }
           />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="profile/avatar" element={<AvatarEditorPage />} />
+          <Route path="profile/settings" element={<SettingsPage />} />
+          {/* /@username — public profiles (static routes above always win) */}
+          <Route path=":handle" element={<PublicProfilePage />} />
         </Route>
       </Routes>
     </AuthProvider>

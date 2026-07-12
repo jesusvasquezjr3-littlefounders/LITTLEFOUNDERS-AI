@@ -20,6 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'tutor', path: '/tutor', icon: 'smart_toy' },
   { key: 'games', path: '/games', icon: 'stadia_controller' },
   { key: 'tasks', path: '/tasks', icon: 'checklist', requiresRole: 'parent' },
+  { key: 'profile', path: '/profile', icon: 'account_circle' },
 ];
 
 /** Home route after login. */

@@ -88,6 +88,19 @@ SELECT p.id, k.id, 'verified', now()
 FROM auth.users p, auth.users k
 WHERE p.email = 'tutor@email.com' AND k.email = 'kid@email.com'
 ON CONFLICT ON CONSTRAINT guardian_link_unique DO NOTHING;
+
+-- @usernames for the test accounts (0005)
+UPDATE public.profiles p SET username = v.username
+FROM (VALUES
+    ('universal@email.com', 'universal'),
+    ('tutor@email.com', 'tutor'),
+    ('kid@email.com', 'nino'),
+    ('bigfounder@email.com', 'bigfounder'),
+    ('admin@email.com', 'admin'),
+    ('superadmin@littlefounders.ai', 'superadmin')
+) AS v(email, username)
+JOIN auth.users u ON u.email = v.email
+WHERE p.user_id = u.id AND p.username IS NULL;
 SQL
 
 echo "OK: 6 test users ready (password: password123); Tutor↔Niño linked (verified)"
