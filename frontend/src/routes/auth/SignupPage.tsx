@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
@@ -51,7 +52,7 @@ export function SignupPage() {
       setConfirmationPending(true);
       return;
     }
-    navigate(parentIntent ? '/verify-parent' : '/', { replace: true });
+    navigate(parentIntent ? '/verify-parent' : APP_HOME, { replace: true });
   }
 
   if (confirmationPending) {

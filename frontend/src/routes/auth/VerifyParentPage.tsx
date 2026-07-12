@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
 import { Badge, Button, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
@@ -76,7 +77,7 @@ export function VerifyParentPage() {
         <div className="flex flex-col items-center gap-4 text-center">
           <Badge className="bg-success-soft text-success-strong">{t('auth.verify.tutorBadge')}</Badge>
           <p className="lf-body text-content">{t('auth.verify.alreadyBody')}</p>
-          <Link to="/">
+          <Link to={APP_HOME}>
             <Button variant="secondary">{t('auth.verify.goHome')}</Button>
           </Link>
         </div>
@@ -93,7 +94,7 @@ export function VerifyParentPage() {
           </span>
           <Badge className="bg-success-soft text-success-strong">{t('auth.verify.tutorBadge')}</Badge>
           <p className="lf-body text-content">{t('auth.verify.successBody')}</p>
-          <Link to="/">
+          <Link to={APP_HOME}>
             <Button>{t('auth.verify.goHome')}</Button>
           </Link>
         </div>

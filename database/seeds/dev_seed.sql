@@ -58,3 +58,31 @@ VALUES
     ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000004', 'verified', now()),
     ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000004', 'verified', now())
 ON CONFLICT ON CONSTRAINT guardian_link_unique DO NOTHING;
+
+-- Demo published courses for the learn/ dashboard (0002 content skeleton is
+-- PROVISIONAL — these are placeholders for UI work, not real curriculum).
+INSERT INTO public.courses (id, slug, title, status)
+VALUES
+    ('30000000-0000-0000-0000-000000000001', 'money-basics',
+     '{"en-US": "Money Basics", "es-MX": "Fundamentos del dinero", "pt-BR": "Fundamentos do dinheiro"}'::jsonb,
+     'published'),
+    ('30000000-0000-0000-0000-000000000002', 'saving-superpowers',
+     '{"en-US": "Saving Superpowers", "es-MX": "Superpoderes del ahorro", "pt-BR": "Superpoderes da poupança"}'::jsonb,
+     'published'),
+    ('30000000-0000-0000-0000-000000000003', 'first-business',
+     '{"en-US": "My First Business", "es-MX": "Mi primer negocio", "pt-BR": "Meu primeiro negócio"}'::jsonb,
+     'published'),
+    ('30000000-0000-0000-0000-000000000004', 'draft-course',
+     '{"en-US": "Draft (must never render)", "es-MX": "Borrador (no debe verse)", "pt-BR": "Rascunho (não deve aparecer)"}'::jsonb,
+     'draft')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.lessons (id, course_id, position)
+VALUES
+    ('31000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 1),
+    ('31000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 2),
+    ('31000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 3),
+    ('31000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000002', 1),
+    ('31000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000002', 2),
+    ('31000000-0000-0000-0000-000000000006', '30000000-0000-0000-0000-000000000003', 1)
+ON CONFLICT (id) DO NOTHING;

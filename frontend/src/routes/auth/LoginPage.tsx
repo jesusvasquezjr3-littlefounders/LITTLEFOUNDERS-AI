@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { AuthShell } from './AuthShell';
@@ -30,7 +31,7 @@ export function LoginPage() {
       return;
     }
     const from = (location.state as { from?: string } | null)?.from;
-    navigate(from ?? '/', { replace: true });
+    navigate(from ?? APP_HOME, { replace: true });
   }
 
   return (

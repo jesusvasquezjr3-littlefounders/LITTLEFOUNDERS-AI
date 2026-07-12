@@ -52,6 +52,7 @@ frontend/
       pt-BR/
     lib/
     routes/
+      app/
       auth/
       marketing/
     theme/
@@ -421,11 +422,11 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 **Vault is live locally:** the pinned `supabase/supabase@v1.26.07` self-hosted stack (11 containers, all healthy) runs from `database/supabase/` (gitignored clone; pin = `database/SUPABASE_VERSION`); migrations 0001–0004 applied and reset-from-zero verified; `types/database.ts` is real generated output (11 tables). Session pooler on host port **54322** (5432 is taken by a pre-existing local Postgres).
 
-**Auth + Tutor verification shipped (2026-07-12, E2E-verified locally):** Core `/api/v1/auth/*` (GoTrue proxy, local HS256 JWT verify, CORS pinned to the SPA) and `/api/v1/verification/parent`; Guardian v1 = **stateless local OCR** (tesseract.js `spa+eng+por`, ID photo in-memory only, NEVER stored, verdicts only — Core owns all writes: isolated `parent_verifications` (0004), `parent` grant, audit); frontend `/login`, `/signup` (Tutor-intent checkbox; every signup starts `universal`), `/verify-parent` (privacy-first form, per-check retry guidance), AuthContext + RequireAuth, `auth.json` i18n ×3, new UI-kit form primitives (Field/Checkbox/FileField) codified in DESIGN.md with a new Auth screen recipe. Verified: 47 service tests green; real browser E2E (signup→OCR verify→Tutor badge) at ~375px AND ~1280px, light + dark; impostor E2E rejected without role grant; failed attempts audited with boolean checks only (zero PII). **Development stays local by decision — nothing deploys to Railway/Vercel yet.** Next: user dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
+**Auth + Tutor verification shipped (2026-07-12, E2E-verified locally):** Core `/api/v1/auth/*` (GoTrue proxy, local HS256 JWT verify, CORS pinned to the SPA) and `/api/v1/verification/parent`; Guardian v1 = **stateless local OCR** (tesseract.js `spa+eng+por`, ID photo in-memory only, NEVER stored, verdicts only — Core owns all writes: isolated `parent_verifications` (0004), `parent` grant, audit); frontend `/login`, `/signup` (Tutor-intent checkbox; every signup starts `universal`), `/verify-parent` (privacy-first form, per-check retry guidance), AuthContext + RequireAuth, `auth.json` i18n ×3, new UI-kit form primitives (Field/Checkbox/FileField) codified in DESIGN.md with a new Auth screen recipe. Verified: 47 service tests green; real browser E2E (signup→OCR verify→Tutor badge) at ~375px AND ~1280px, light + dark; impostor E2E rejected without role grant; failed attempts audited with boolean checks only (zero PII). **Development stays local by decision — nothing deploys to Railway/Vercel yet.**
+
+**App dashboard v1 live (2026-07-12):** role-scalable shell (navConfig registry → gamified 280px sidebar / mobile glass bottom tabs; locked-not-hidden role gating; Tutor-upgrade card), Learn home with published-course cards (`GET /api/v1/learn/courses`), AI Tutor/Games/Tasks placeholders (Tasks parent-gated). 6 real test users via `npm run db:seed:users` (password123; Testing Tutor↔Niño linked verified). Browser-verified as universal AND tutor at both breakpoints, light+dark. Next: course consumption (lesson player) and kid-account creation from the Tutor dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
 
 ## Decision Log
-
-| Date | Decision | Why |
 ```
 
 ### agent/README.md
@@ -1210,6 +1211,26 @@ export function mintToken(overrides: Partial<{ sub: string; email: string; role:
   const sig = createHmac('sha256', process.env.SUPABASE_JWT_SECRET as string)
 ```
 
+### backend/src/__tests__/learn.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+afterEach(() => vi.unstubAllGlobals());
+
+describe('GET /api/v1/learn/courses', () => {
+  it('401s without a session', async () => {
+    const res = await request(createApp()).get('/api/v1/learn/courses');
+    expect(res.status).toBe(401);
+  });
+
+  it('lists published courses with lesson counts (user-token RLS read)', async () => {
+    const token = mintToken();
+```
+
 ### backend/src/__tests__/verification.test.ts
 
 ```
@@ -1236,6 +1257,7 @@ const FIELDS = {
 import express from 'express';
 import { cors } from './middleware/cors.js';
 import { authRouter } from './routes/auth.js';
+import { learnRouter } from './routes/learn.js';
 import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
@@ -1247,7 +1269,6 @@ export function createApp(): express.Express {
   app.use(express.json({ limit: '64kb' }));
 
   app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
 ```
 
 ### backend/src/config.ts
@@ -1376,6 +1397,26 @@ import { getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
  * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
  * trigger (migration 0003), not by anything the client sends. `parentIntent`
  * only records that the user wants the Tutor upgrade; the ONLY path to the
+```
+
+### backend/src/routes/learn.ts
+
+```
+import { Router } from 'express';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import { getPublishedCourses } from '../services/supabaseRest.js';
+
+/*
+ * /api/v1/learn — the learn section's read surface. Deliberately shallow
+ * while 0002's content schema is PROVISIONAL (database/AGENTS.md): list
+ * published courses, nothing deeper. RLS does the filtering (user token).
+ */
+export function learnRouter(): Router {
+  const router = Router();
+
+  router.get('/courses', requireAuth, async (_req, res) => {
+    const rows = await getPublishedCourses(authedUser(res).accessToken);
 ```
 
 ### backend/src/routes/verification.ts
@@ -1699,9 +1740,9 @@ npm test            # migration gates: numbering, RLS coverage, append-only audi
 npm run db:sync     # materialize/update the pinned supabase/supabase clone
 npm run db:up       # start the local stack (first run generates .env secrets)
 npm run db:migrate  # apply migrations/*.sql in order (idempotent)
-npm run db:seed     # dev seed (never prod)
+npm run db:seed     # dev seed: role-stub users + demo published courses (never prod)
+npm run db:seed:users  # 6 real login-able test users (password123) + Tutor↔Niño linked
 npm run db:reset    # from-zero: nuke volumes → up → migrate
-npm run db:down     # stop containers (data kept)
 ```
 
 ### database/migrations/0001_identity.sql
@@ -1822,6 +1863,26 @@ CREATE TABLE IF NOT EXISTS public.parent_verifications (
 #   local-stack.sh reset     # nuke → up → migrate  (the from-zero gate)
 #   local-stack.sh migrate   # apply database/migrations/*.sql in order
 #   local-stack.sh seed      # apply database/seeds/dev_seed.sql (DEV ONLY)
+```
+
+### database/scripts/seed-dev-users.sh
+
+```
+#!/usr/bin/env bash
+# seed-dev-users.sh — LOCAL DEV ONLY. Never run against production.
+#
+# Creates 6 real, login-able test users (password: password123), one per
+# role, via the GoTrue admin API + role grants in the DB:
+#
+#   universal@email.com            → universal
+#   tutor@email.com                → parent   (UI term: Tutor)
+#   kid@email.com                  → kid
+#   bigfounder@email.com           → bigfounder
+#   admin@email.com                → admin
+#   superadmin@littlefounders.ai   → superadmin  (NOT @email.com — the §1.3
+#                                    domain trigger rejects anything else)
+#
+# Testing Tutor ↔ Testing Niño are linked: one "Testing Family" with both as
 ```
 
 ### database/scripts/sync-supabase.sh
@@ -2238,6 +2299,7 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/auth/AuthContext';
 import { RequireAuth } from '@/auth/RequireAuth';
+import { RequireRole } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
@@ -2245,11 +2307,10 @@ import { LegalPage } from '@/routes/marketing/LegalPage';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
+import { AppLayout } from '@/routes/app/AppLayout';
+import { LearnPage } from '@/routes/app/LearnPage';
+import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 
-export function App() {
-  return (
-    <AuthProvider>
-      <Routes>
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -2306,6 +2367,26 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (session === undefined) return null; // restoring from storage — avoid a redirect flash
   if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  return <>{children}</>;
+}
+```
+
+### frontend/src/auth/RequireRole.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
+
+/*
+ * Role gate for app routes (client-side UX only — real authorization lives
+ * in RLS + Core; this just keeps locked sections out of reach in the UI).
+ */
+export function RequireRole({ role, children }: { role: string; children: ReactNode }) {
+  const { session, roles, meLoaded } = useAuth();
+  if (session === undefined || (session && !meLoaded)) return null; // roles still loading
+  if (!roles.includes(role)) return <Navigate to={APP_HOME} replace />;
   return <>{children}</>;
 }
 ```
@@ -2709,6 +2790,26 @@ export { FileField } from './FileField';
     "es-MX": "Spanish",
 ```
 
+### frontend/src/i18n/en-US/dashboard.json
+
+```
+{
+  "navLabel": "App sections",
+  "openCta": "My dashboard",
+  "logout": "Sign out",
+  "tutorBadge": "Tutor",
+  "nav": {
+    "learn": "Learn",
+    "tutor": "AI Tutor",
+    "games": "Games",
+    "tasks": "Tasks",
+    "lockedBadge": "Tutor",
+    "lockedHint": "Unlocks when your account becomes a verified Tutor"
+  },
+  "upgrade": {
+    "title": "Family plan",
+```
+
 ### frontend/src/i18n/en-US/errors.json
 
 ```
@@ -2787,6 +2888,26 @@ export { FileField } from './FileField';
     "label": "Idioma",
     "en-US": "Inglés",
     "es-MX": "Español",
+```
+
+### frontend/src/i18n/es-MX/dashboard.json
+
+```
+{
+  "navLabel": "Secciones de la app",
+  "openCta": "Mi tablero",
+  "logout": "Cerrar sesión",
+  "tutorBadge": "Tutor",
+  "nav": {
+    "learn": "Aprende",
+    "tutor": "Tutor IA",
+    "games": "Juegos",
+    "tasks": "Tareas",
+    "lockedBadge": "Tutor",
+    "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado"
+  },
+  "upgrade": {
+    "title": "Plan familiar",
 ```
 
 ### frontend/src/i18n/es-MX/errors.json
@@ -2887,6 +3008,26 @@ import enErrors from './en-US/errors.json';
     "label": "Idioma",
     "en-US": "Inglês",
     "es-MX": "Espanhol",
+```
+
+### frontend/src/i18n/pt-BR/dashboard.json
+
+```
+{
+  "navLabel": "Seções do app",
+  "openCta": "Meu painel",
+  "logout": "Sair",
+  "tutorBadge": "Tutor",
+  "nav": {
+    "learn": "Aprenda",
+    "tutor": "Tutor IA",
+    "games": "Jogos",
+    "tasks": "Tarefas",
+    "lockedBadge": "Tutor",
+    "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado"
+  },
+  "upgrade": {
+    "title": "Plano familiar",
 ```
 
 ### frontend/src/i18n/pt-BR/errors.json
@@ -3003,6 +3144,86 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
+### frontend/src/routes/app/AppLayout.tsx
+
+```
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { LOCALES, type Locale } from '@/i18n';
+import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
+
+/*
+ * App shell — /DESIGN.md §Screen Recipes → Dashboard: 280px fixed gamified
+ * sidebar on desktop, frosted bottom tabs on mobile, white canvas content.
+ * Everything renders from navConfig; role-locked items show as locked, never
+ * hidden (locked-but-visible sells the upgrade path).
+ */
+
+```
+
+### frontend/src/routes/app/LearnPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Badge, Card, Icon, IconChip, ProgressBar } from '@/components/ui';
+import { DinaCharacter } from '@/components/characters/DinaCharacter';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * learn/ — the universal user's home. Course cards per /DESIGN.md §Screen
+ * Recipes → Dashboard (md:grid-cols-2 lg:grid-cols-3 with ProgressBars).
+ * Course consumption ships later — cards say so honestly.
+ */
+
+interface Course {
+```
+
+### frontend/src/routes/app/SectionComingSoon.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Badge, Card, Icon, IconChip } from '@/components/ui';
+
+/*
+ * In-app placeholder for product sections whose real feature ships later.
+ * The section EXISTS in nav (discoverable, gamified) — the content says
+ * honestly that it's on the way.
+ */
+export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'games' | 'tasks'; icon: string }) {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <h1 className="lf-display-lg text-content">{t(`dashboard.nav.${section}`)}</h1>
+      <Card hero className="mt-8 flex flex-col items-center gap-4 py-14 text-center">
+        <IconChip size="lg" tone="accent">
+```
+
+### frontend/src/routes/app/navConfig.ts
+
+```
+/*
+ * The single registry the whole app shell renders from. Adding a product
+ * section = one entry here + a route in App.tsx — sidebar, mobile tabs, and
+ * lock states follow automatically.
+ *
+ * `requiresRole` gates by the 6-role model (/AGENTS.md §1.4): absent = every
+ * signed-in user; present = the item renders LOCKED until the account holds
+ * that role (upgrades happen through verification, never client-side).
+ */
+
+export interface NavItem {
+  key: string; // i18n: dashboard.nav.<key>
+  path: string;
+  icon: string; // Material Symbols ligature
+  requiresRole?: string;
+```
+
 ### frontend/src/routes/auth/AuthShell.tsx
 
 ```
@@ -3050,6 +3271,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { AuthShell } from './AuthShell';
@@ -3060,7 +3282,6 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
 ```
 
 ### frontend/src/routes/auth/SignupPage.tsx
@@ -3070,6 +3291,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
@@ -3080,7 +3302,6 @@ import { ErrorBanner } from './ErrorBanner';
 /*
  * Signup — every account starts as `universal` (server/DB enforced, zero
  * friction). The Tutor checkbox only records intent: the parent role itself
- * is granted exclusively by Guardian verification (/verify-parent).
 ```
 
 ### frontend/src/routes/auth/VerifyParentPage.tsx
@@ -3090,6 +3311,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
 import { Badge, Button, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
@@ -3100,7 +3322,6 @@ import { ErrorBanner } from './ErrorBanner';
 /*
  * universal → Tutor (`parent` role) upgrade — the Guardian OCR flow
  * (Jesús, 2026-07-12). The ID photo goes to Core → Guardian for an in-memory
- * OCR verdict and is never stored anywhere; we say so, prominently.
 ```
 
 ### frontend/src/routes/marketing/ComingSoon.tsx
@@ -3170,6 +3391,8 @@ import { useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -3179,8 +3402,6 @@ const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
   { to: '/families', key: 'families' },
   { to: '/faq', key: 'faq' },
-] as const;
-
 ```
 
 ### frontend/src/test-setup.ts

@@ -14,22 +14,25 @@ import enCommon from './en-US/common.json';
 import enMarketing from './en-US/marketing.json';
 import enErrors from './en-US/errors.json';
 import enAuth from './en-US/auth.json';
+import enDashboard from './en-US/dashboard.json';
 import esCommon from './es-MX/common.json';
 import esMarketing from './es-MX/marketing.json';
 import esErrors from './es-MX/errors.json';
 import esAuth from './es-MX/auth.json';
+import esDashboard from './es-MX/dashboard.json';
 import ptCommon from './pt-BR/common.json';
 import ptMarketing from './pt-BR/marketing.json';
 import ptErrors from './pt-BR/errors.json';
 import ptAuth from './pt-BR/auth.json';
+import ptDashboard from './pt-BR/dashboard.json';
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 const resources = {
-  'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth } },
-  'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth } },
-  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth } },
+  'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth, dashboard: enDashboard } },
+  'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth, dashboard: esDashboard } },
+  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth, dashboard: ptDashboard } },
 };
 
 void i18n

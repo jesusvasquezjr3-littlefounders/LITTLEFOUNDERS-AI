@@ -14,6 +14,7 @@
     "db:reset": "bash scripts/local-stack.sh reset",
     "db:migrate": "bash scripts/local-stack.sh migrate",
     "db:seed": "bash scripts/local-stack.sh seed",
+    "db:seed:users": "bash scripts/seed-dev-users.sh",
     "db:status": "bash scripts/local-stack.sh status",
     "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts"
   }

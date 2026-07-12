@@ -10,7 +10,8 @@ npm test            # migration gates: numbering, RLS coverage, append-only audi
 npm run db:sync     # materialize/update the pinned supabase/supabase clone
 npm run db:up       # start the local stack (first run generates .env secrets)
 npm run db:migrate  # apply migrations/*.sql in order (idempotent)
-npm run db:seed     # dev seed (never prod)
+npm run db:seed     # dev seed: role-stub users + demo published courses (never prod)
+npm run db:seed:users  # 6 real login-able test users (password123) + Tutor↔Niño linked
 npm run db:reset    # from-zero: nuke volumes → up → migrate
 npm run db:down     # stop containers (data kept)
 npm run db:nuke     # stop + delete volumes (data gone)

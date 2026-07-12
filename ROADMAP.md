@@ -33,14 +33,17 @@ Stamp the 6 Express services + database/ (migrations 0001 identity + 0002 provis
 Signup → universal user → profile section → DiceBear avatar customization persisted, using the DESIGN.md tokens + UI kit; app shell (sidebar/dashboard per mockup) built responsive from the start (mobile bottom nav + desktop sidebar).
 **DoD:** a real user can sign up, set an avatar, and see it persist — deployed, verified at mobile AND desktop.
 
-## Immediate next step (user dashboard)
+## Immediate next step
 
-Auth + Tutor verification are live locally. Next (Jesús, 2026-07-12): the
-**user dashboard** — app shell (280px sidebar desktop / bottom tabs mobile,
-DESIGN.md §Screen Recipes → Dashboard) fed by `/api/v1/auth/me` (roles decide
-what renders: universal vs Tutor), then the remaining product sections
-hanging off it. Must follow `agent/prompts/templates/new-component.md` and
-pass the mobile+desktop gate (/AGENTS.md §1.11).
+Dashboard v1 (universal-first, role-scalable shell) shipped 2026-07-12 —
+sections lock/unlock from `frontend/src/routes/app/navConfig.ts`. Next
+candidates, in Jesús's stated order of interest:
+- **learn/ course consumption** — real lesson player behind the course cards
+  (needs the dedicated content-schema session first; 0002 is PROVISIONAL).
+- **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
+  (Testing Tutor ↔ Testing Niño seed pair exists for this).
+- Remaining dashboard sections harden as their features land (AI Tutor,
+  Games, Tasks).
 
 ## Next up (post-sprint backlog, unordered)
 

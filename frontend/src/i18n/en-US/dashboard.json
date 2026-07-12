@@ -1,0 +1,45 @@
+{
+  "navLabel": "App sections",
+  "openCta": "My dashboard",
+  "logout": "Sign out",
+  "tutorBadge": "Tutor",
+  "nav": {
+    "learn": "Learn",
+    "tutor": "AI Tutor",
+    "games": "Games",
+    "tasks": "Tasks",
+    "lockedBadge": "Tutor",
+    "lockedHint": "Unlocks when your account becomes a verified Tutor"
+  },
+  "upgrade": {
+    "title": "Family plan",
+    "body": "Verify your identity to become a Tutor: manage your family and assign tasks with rewards.",
+    "cta": "Become a Tutor"
+  },
+  "learn": {
+    "greeting": "Hi, {{name}}! Ready to keep building?",
+    "greetingAnon": "Hi! Ready to keep building?",
+    "title": "Your courses",
+    "lessonCount_one": "{{count}} lesson",
+    "lessonCount_other": "{{count}} lessons",
+    "progressNew": "Course progress",
+    "comingSoon": "Lessons open here very soon",
+    "emptyTitle": "Your adventure is loading",
+    "emptyBody": "There are no published courses yet. Dina is preparing the first missions — check back soon!"
+  },
+  "sections": {
+    "soonBadge": "On the way",
+    "tutor": {
+      "title": "Your personal AI tutor",
+      "body": "Ask anything about money, saving, and business — a friendly tutor that explains at your pace is coming to this space."
+    },
+    "games": {
+      "title": "Games that teach for real",
+      "body": "Minigames tied to what you learn in your courses will live here. Play, earn, and level up your money skills."
+    },
+    "tasks": {
+      "title": "Tasks & rewards",
+      "body": "Assign real-world tasks to your kids and reward them when they deliver. This space is being built."
+    }
+  }
+}

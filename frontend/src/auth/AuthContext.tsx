@@ -55,6 +55,8 @@ interface AuthContextValue {
   session: StoredSession | null | undefined;
   profile: Profile | null;
   roles: string[];
+  /** true once profile+roles for the current session have been fetched (or there is no session) */
+  meLoaded: boolean;
   login(email: string, password: string): Promise<ApiError | null>;
   signup(input: SignupInput): Promise<{ error: ApiError | null; confirmationRequired: boolean }>;
   logout(): Promise<void>;
@@ -90,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<StoredSession | null | undefined>(undefined);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const [meLoaded, setMeLoaded] = useState(false);
   const sessionRef = useRef<StoredSession | null>(null);
 
   const persist = useCallback((next: StoredSession | null) => {
@@ -123,12 +126,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadMe = useCallback(async () => {
     const token = await getToken();
-    if (!token) return;
+    if (!token) {
+      setMeLoaded(true);
+      return;
+    }
     const { data } = await api<{ profile: Profile | null; roles: string[] }>('/auth/me', { token });
     if (data) {
       setProfile(data.profile);
       setRoles(data.roles);
     }
+    setMeLoaded(true);
   }, [getToken]);
 
   // Restore once on mount.
@@ -137,6 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     sessionRef.current = stored;
     setSession(stored);
     if (stored) void loadMe();
+    else setMeLoaded(true);
   }, [loadMe]);
 
   const login = useCallback(
@@ -176,12 +184,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persist(null);
     setProfile(null);
     setRoles([]);
+    setMeLoaded(true);
     if (token) await api('/auth/logout', { method: 'POST', body: {}, token });
   }, [persist]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ session, profile, roles, login, signup, logout, refreshMe: loadMe, getToken }),
-    [session, profile, roles, login, signup, logout, loadMe, getToken],
+    () => ({ session, profile, roles, meLoaded, login, signup, logout, refreshMe: loadMe, getToken }),
+    [session, profile, roles, meLoaded, login, signup, logout, loadMe, getToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

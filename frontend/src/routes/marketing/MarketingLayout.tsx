@@ -2,6 +2,8 @@ import { useLayoutEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -36,6 +38,11 @@ export function MarketingLayout() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { session } = useAuth();
+
+  // Signed-in visitors get "open my dashboard" instead of "start free".
+  const ctaTo = session ? APP_HOME : '/signup';
+  const ctaLabel = session ? t('dashboard.openCta') : t('marketing.nav.cta');
 
   // Every new page starts at the top — SPA navigation doesn't reset scroll
   // for free (only native full-page loads do that). Explicit 'auto' overrides
@@ -83,8 +90,8 @@ export function MarketingLayout() {
               ariaLabel={t('language.label')}
             />
             <ThemeToggle className="hidden sm:inline-flex" />
-            <Link to="/signup" className="hidden md:block">
-              <Button className="px-6 py-2">{t('marketing.nav.cta')}</Button>
+            <Link to={ctaTo} className="hidden md:block">
+              <Button className="px-6 py-2">{ctaLabel}</Button>
             </Link>
             <button
               type="button"
@@ -116,8 +123,8 @@ export function MarketingLayout() {
             <div className="mt-3 flex items-center justify-between sm:hidden">
               <ThemeToggle />
             </div>
-            <Link to="/signup" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
-              <Button className="w-full">{t('marketing.nav.cta')}</Button>
+            <Link to={ctaTo} onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
+              <Button className="w-full">{ctaLabel}</Button>
             </Link>
           </nav>
         )}

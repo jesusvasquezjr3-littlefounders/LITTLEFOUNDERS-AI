@@ -263,9 +263,17 @@ cross-links in `primary`. Status outcomes (success / retry guidance) replace
 the card, never stack on it. Privacy notes render as a `primary-soft` inline
 strip with a shield icon — before the form, not fine print.
 
-**Dashboard (app, future)** — 280px fixed sidebar (desktop) / bottom tabs
-(mobile); white canvas; StatCard row (`sm:grid-cols-3`), course cards
-`md:grid-cols-2 lg:grid-cols-3` with ProgressBars.
+**Dashboard (app)** — 280px fixed sidebar (desktop) / frosted bottom tabs
+(mobile); white canvas; course cards `md:grid-cols-2 lg:grid-cols-3` with
+ProgressBars (StatCard row when real stats exist). Sidebar anatomy (top to
+bottom): logo → nav pills from `routes/app/navConfig` (active =
+`primary-soft` pill + filled icon; role-locked items render LOCKED with a
+lock chip, never hidden) → upgrade card (`accent-soft`, one papaya CTA; only
+while the role is missing) → locale + theme controls → user card
+(`surface-sunken`: initials circle, name, role badge, logout). Mobile: glass
+top bar (logo · locale · theme · logout) + glass bottom tabs (icon + caption;
+locked = lock icon, disabled). Adding a section = one navConfig entry + one
+route.
 
 **Lesson** — focused single column (max-w ~720px), glass sticky progress
 header, one activity card at a time, `success` feedback moments.

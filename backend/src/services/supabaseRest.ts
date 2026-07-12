@@ -16,15 +16,20 @@ interface RestInit {
 
 async function rest<T>(path: string, token: string, init: RestInit = {}): Promise<T | null> {
   const { SUPABASE_URL, SUPABASE_ANON_KEY } = getConfig();
-  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
-    ...init,
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...init.headers,
-    },
-  });
+  let res: globalThis.Response;
+  try {
+    res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+      ...init,
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        ...init.headers,
+      },
+    });
+  } catch {
+    return null;
+  }
   if (!res.ok) return null;
   // Prefer: return=minimal and 204s come back with an empty body — success.
   const text = await res.text().catch(() => '');
@@ -53,6 +58,18 @@ export function getOwnProfile(accessToken: string, userId: string): Promise<Prof
 
 export function getOwnRoles(accessToken: string, userId: string): Promise<RoleRow[] | null> {
   return rest<RoleRow[]>(`/user_roles?user_id=eq.${userId}&select=role`, accessToken);
+}
+
+export interface CourseRow {
+  id: string;
+  slug: string;
+  title: Record<string, string>;
+  lessons: { count: number }[];
+}
+
+/** Published courses only — the user's own token, so RLS decides. */
+export function getPublishedCourses(accessToken: string): Promise<CourseRow[] | null> {
+  return rest<CourseRow[]>('/courses?select=id,slug,title,lessons(count)&order=slug.asc', accessToken);
 }
 
 // ── Service-role writes ─────────────────────────────────────
