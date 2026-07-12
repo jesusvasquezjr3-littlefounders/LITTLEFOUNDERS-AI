@@ -24,8 +24,8 @@ Stamp the 6 Express services + database/ (migrations 0001 identity + 0002 provis
 `DESIGN.md` authoritative — **LittleFounders Arcade** (Brilliant.org-style gaming clarity + liquid glass; replaced the initial claymorphism system on 2026-07-12, `template/` deleted) · tokens implemented (Tailwind + CSS vars, light+dark) · reusable UI kit (`frontend/src/components/ui/`) · views re-skinned · i18n fragmented per route area per locale · agent rules hardened: responsive (desktop+mobile) made a non-negotiable product invariant (§1.11), anti-hallucination/instruction-fidelity rules added (§1.12).
 **DoD:** DESIGN.md authoritative, verified in browser light/dark + es-MX, CI green. — met.
 
-### Day 4–5 — Vault deploy + auth (NEXT)
-Supabase self-hosted on Railway (template) · apply migrations · GoTrue signup/login wired into backend + frontend (`universal` role on signup) · RUNBOOK backup/restore section written BEFORE any real data.
+### Day 4–5 — Vault deploy + auth (IN PROGRESS)
+**Stack source locked (2026-07-12): pinned `supabase/supabase` clone** (`database/SUPABASE_VERSION`, latest approved release — v1.26.07 today) drives local dev AND production; Railway services deploy the exact image tags from the release's docker-compose (pin table: `database/DEPLOYMENT.md`). ✅ Local stack running from the pin · ✅ migrations applied + reset-twice verified · ✅ signup bootstrap in DB (`0003`: auth.users → profile + `universal` role, role-change audit, scale indexes) · ✅ real generated types. Remaining: Railway deploy (sign-off) · GoTrue signup/login wired into backend + frontend · RUNBOOK backup/restore section BEFORE any real data.
 **DoD:** live signup → session → `/health` chain across deployed Core.
 
 ### Day 6–7 — First vertical slice + buffer

@@ -24,7 +24,10 @@ VALUES
     ('00000000-0000-0000-0000-000000000005', 'Big Founder', 'pt-BR'),
     ('00000000-0000-0000-0000-000000000006', 'Admin', 'en-US'),
     ('00000000-0000-0000-0000-000000000007', 'Super Admin', 'en-US')
-ON CONFLICT (user_id) DO NOTHING;
+-- 0003's signup trigger already created these profiles (empty display_name),
+-- so the seed must UPSERT to win:
+ON CONFLICT (user_id) DO UPDATE
+    SET display_name = EXCLUDED.display_name, locale = EXCLUDED.locale;
 
 INSERT INTO public.user_roles (user_id, role)
 VALUES

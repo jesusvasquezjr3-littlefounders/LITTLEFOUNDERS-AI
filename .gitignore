@@ -38,9 +38,9 @@ npm-debug.log*
 #    frontend/src/**/legal/ and broke the production build) ──
 /LEGAL/
 
-# ── Supabase local dev ──────────────────────────────────────
-database/supabase/.branches/
-database/supabase/.temp/
+# ── Supabase upstream clone (pinned via database/SUPABASE_VERSION,
+#    materialized by database/scripts/sync-supabase.sh — never tracked) ──
+database/supabase/
 
 # ── Databases (local snapshots) ─────────────────────────────
 *.db

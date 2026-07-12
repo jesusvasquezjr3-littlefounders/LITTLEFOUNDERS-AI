@@ -7,9 +7,14 @@
   "engines": { "node": "24.x" },
   "scripts": {
     "test": "node scripts/check-migrations.mjs",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > types/database.ts"
+    "db:sync": "bash scripts/sync-supabase.sh",
+    "db:up": "bash scripts/local-stack.sh up",
+    "db:down": "bash scripts/local-stack.sh down",
+    "db:nuke": "bash scripts/local-stack.sh nuke",
+    "db:reset": "bash scripts/local-stack.sh reset",
+    "db:migrate": "bash scripts/local-stack.sh migrate",
+    "db:seed": "bash scripts/local-stack.sh seed",
+    "db:status": "bash scripts/local-stack.sh status",
+    "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts"
   }
 }

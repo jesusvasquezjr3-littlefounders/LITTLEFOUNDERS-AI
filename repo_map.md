@@ -25,10 +25,6 @@ coursegen/
   src/
     __tests__/
 database/
-  frontend/
-    src/
-      components/
-        characters/
   migrations/
   scripts/
   seeds/
@@ -60,7 +56,6 @@ parent-id-check/
   src/
     __tests__/
 scripts/
-template/
 ```
 
 ## File previews (first 15 lines)
@@ -394,15 +389,15 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 ## Current State (2026-07-12)
 
-v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed (dark/light toggle, en-US↔es-MX switch, mobile layout, zero console errors). 8 per-service CI workflows in place. `DESIGN.md` is authoritative (**LittleFounders Arcade** — Brilliant.org-style gaming clarity + liquid glass; `template/` deleted) with tokens implemented and a reusable UI kit; i18n locales are fragmented per route area (`src/i18n/<locale>/{common,marketing,errors}.json`). Agent rules hardened: responsive (desktop+mobile) is now a non-negotiable product invariant (§1.11) and anti-hallucination/instruction-fidelity rules are codified (§1.12). Nothing is deployed yet (Vault deploy = ROADMAP Day 4–5). Environment is ready for real frontend modeling to begin (see ROADMAP "Immediate next step"). Local-only survivors on disk (gitignored): `.claude/` (skills + archive of v1 characters/env/lesson data), `LEGAL/`, `.github/skills/`.
+v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed. 8 per-service CI workflows in place. `DESIGN.md` is authoritative (**LittleFounders Arcade**) with tokens implemented and a reusable UI kit; i18n fragmented per route area. Agent rules hardened (§1.11 responsive invariant, §1.12 anti-hallucination).
+
+**Vault is live locally (Day 4–5 in progress):** the pinned `supabase/supabase@v1.26.07` self-hosted stack (11 containers, all healthy) runs from `database/supabase/` (gitignored clone; pin = `database/SUPABASE_VERSION`); migrations 0001–0003 applied and reset-from-zero verified twice; signup→profile+`universal` bootstrap, superadmin domain gate, and role auditing all live-tested at DB level; a real GoTrue signup + password login through Kong returned JWTs end-to-end; `types/database.ts` is now real generated output (10 tables). Session pooler on host port **54322** (5432 is taken by a pre-existing local Postgres). Nothing deployed to Railway yet — that plus wiring auth into Core/frontend is the remainder of Day 4–5 (then Guardian). Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`.
 
 ## Decision Log
 
 | Date | Decision | Why |
 |---|---|---|
 | 2026-07-11 | Total v2 rewrite on `littlefounders_v2`; v1 frozen on `main` | Radical platform change; main = rollback path |
-| 2026-07-11 | All services TypeScript + Express (dropped Python/FastAPI) | One toolchain, shared types, sibling-proven patterns |
-| 2026-07-11 | Supabase **self-hosted on Railway** (full stack) replaces Supabase Cloud | Control + one infra provider; accepted ops cost (~$20-40/mo, manual backups) |
 ```
 
 ### agent/README.md
@@ -1396,19 +1391,19 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 ```
 # DEPLOYMENT.md — Supabase Self-Hosted on Railway
 
-> Runbook placeholder — filled in during ROADMAP Day 4–5. Deploying is a BOUNDARIES action.
+> Runbook for ROADMAP Day 4–5. Deploying/applying anything to production is a BOUNDARIES action — human sign-off first.
 
-## Plan
+## Source of truth: the pinned upstream clone (NON-NEGOTIABLE)
 
-1. Deploy the Supabase stack via the Railway template (Postgres, Kong, GoTrue, PostgREST, Realtime, Storage, Studio, postgres-meta).
-2. Pin component versions here (table below) — upgrades are manual and deliberate.
-3. Configure GoTrue: email signups on, JWT secret generated (Railway secret, never committed), site URL = Vercel frontend.
-4. Apply `migrations/` in order; run NO seeds in production.
-5. Wire service env vars (backend `SUPABASE_*`) from Railway shared variables.
-6. **Before any real user data:** backup schedule (`pg_dump` to external storage) + one successful restore drill, recorded in /RUNBOOK.md.
+Local dev **and** production both run the official self-hosting stack from a
+clone of `supabase/supabase`, pinned to the latest **functional/approved
+release** in [`SUPABASE_VERSION`](SUPABASE_VERSION) (currently `v1.26.07`,
+released 2026-07-09). One version string reproduces the whole stack anywhere.
 
-## Component versions (pin at deploy)
+- `npm run db:sync` materializes/updates the clone at the pin (`database/supabase/`, gitignored — blobless sparse checkout of `docker/`).
+- The pin table below MUST mirror `database/supabase/docker/docker-compose.yml` at the pinned tag. Railway services use exactly these image tags — never `latest`.
 
+### Upgrade procedure (keeps us on the newest approved Supabase)
 ```
 
 ### database/README.md
@@ -1419,16 +1414,16 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
 
 **Mission:** Schema, migrations, RLS, seeds, generated shared types.
-**Deploy:** Supabase self-hosted on Railway ([DEPLOYMENT.md](DEPLOYMENT.md)).
+**Stack source:** clone of `supabase/supabase` pinned to the latest approved release in [SUPABASE_VERSION](SUPABASE_VERSION) — same stack locally and in production ([DEPLOYMENT.md](DEPLOYMENT.md)).
 
 ```bash
 npm test            # migration gates: numbering, RLS coverage, append-only audit
-npm run db:start    # local Supabase stack (requires supabase CLI)
-npm run db:reset    # apply all migrations from zero
-npm run db:types    # regenerate types/database.ts
-```
-
-## Layout
+npm run db:sync     # materialize/update the pinned supabase/supabase clone
+npm run db:up       # start the local stack (first run generates .env secrets)
+npm run db:migrate  # apply migrations/*.sql in order (idempotent)
+npm run db:seed     # dev seed (never prod)
+npm run db:reset    # from-zero: nuke volumes → up → migrate
+npm run db:down     # stop containers (data kept)
 ```
 
 ### database/migrations/0001_identity.sql
@@ -1471,6 +1466,26 @@ CREATE TABLE IF NOT EXISTS public.courses (
 CREATE TABLE IF NOT EXISTS public.lessons (
 ```
 
+### database/migrations/0003_auth_bootstrap.sql
+
+```
+-- 0003_auth_bootstrap.sql — signup bootstrap, role-change auditing, scale indexes.
+-- Delta over 0001 (never edit an applied migration). Idempotent.
+-- No new tables here; RLS coverage lives with each table's own migration.
+
+-- ─────────────────────────────────────────────────────────────
+-- New-user bootstrap: every auth.users INSERT gets a profile row
+-- and the 'universal' default role (/AGENTS.md §1.4 — low-friction
+-- signup). This is what makes GoTrue signup → usable account work
+-- without any backend round-trip.
+-- ─────────────────────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+```
+
 ### database/package.json
 
 ```
@@ -1483,12 +1498,52 @@ CREATE TABLE IF NOT EXISTS public.lessons (
   "engines": { "node": "24.x" },
   "scripts": {
     "test": "node scripts/check-migrations.mjs",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > types/database.ts"
-  }
-}
+    "db:sync": "bash scripts/sync-supabase.sh",
+    "db:up": "bash scripts/local-stack.sh up",
+    "db:down": "bash scripts/local-stack.sh down",
+    "db:nuke": "bash scripts/local-stack.sh nuke",
+    "db:reset": "bash scripts/local-stack.sh reset",
+    "db:migrate": "bash scripts/local-stack.sh migrate",
+```
+
+### database/scripts/local-stack.sh
+
+```
+#!/usr/bin/env bash
+# local-stack.sh — drive the pinned self-hosted Supabase stack for local dev.
+#
+# The stack itself lives in database/supabase/docker (the supabase/supabase
+# clone pinned by SUPABASE_VERSION — see sync-supabase.sh). This wrapper
+# delegates to the upstream tooling (run.sh / reset.sh / utils/generate-keys.sh)
+# and adds the LittleFounders pieces: our migrations, seeds, and psql access.
+#
+# Usage:
+#   local-stack.sh up        # ensure .env (secrets generated on first run) + start
+#   local-stack.sh down      # stop containers (data kept)
+#   local-stack.sh nuke      # stop + delete ALL volumes (data gone; .env kept)
+#   local-stack.sh reset     # nuke → up → migrate  (the from-zero gate)
+#   local-stack.sh migrate   # apply database/migrations/*.sql in order
+#   local-stack.sh seed      # apply database/seeds/dev_seed.sql (DEV ONLY)
+```
+
+### database/scripts/sync-supabase.sh
+
+```
+#!/usr/bin/env bash
+# sync-supabase.sh — materialize the supabase/supabase clone at the PINNED release.
+#
+# The pin lives in database/SUPABASE_VERSION (a supabase/supabase release tag,
+# e.g. v1.26.07). Local dev AND production deploys both run the docker stack
+# from this clone, so everything is reproducible from one version string.
+#
+# Upgrade procedure (also in database/AGENTS.md):
+#   1. Check the release is functional/approved: https://github.com/supabase/supabase/releases
+#   2. Edit database/SUPABASE_VERSION to the new tag.
+#   3. Re-run this script, then `npm run db:reset` twice + `npm test`.
+#   4. Update the pin table in database/DEPLOYMENT.md and commit.
+#
+# By default this is a blobless sparse clone of docker/ only (the self-hosting
+# stack — everything else in the monorepo ships as prebuilt Docker images).
 ```
 
 ### database/seeds/dev_seed.sql
@@ -1514,15 +1569,21 @@ VALUES
 ### database/types/database.ts
 
 ```
-// database/types/database.ts — GENERATED shared types (the shared-type hub).
-// Regenerate with `npm run db:types` (requires the local Supabase stack).
-// NEVER hand-edit real generated output. This placeholder is replaced the
-// first time the local stack runs (ROADMAP Day 4–5).
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export type Locale = 'en-US' | 'es-MX' | 'pt-BR';
-export type Role = 'universal' | 'parent' | 'kid' | 'bigfounder' | 'admin' | 'superadmin';
-export type VerificationStatus = 'pending' | 'verified' | 'rejected' | 'revoked';
-export type TaskStatus = 'open' | 'done' | 'approved' | 'cancelled';
+export type Database = {
+  public: {
+    Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
 ```
 
 ### doc_map.md
@@ -2088,7 +2149,7 @@ interface IconProps {
 
 export function Icon({ name, fill = false, className }: IconProps) {
   return (
-    <span aria-hidden="true" className={cn('lf-icon', fill && 'lf-icon-fill', className)}>
+    <span aria-hidden="true" className={cn('lf-icon text-inherit', fill && 'lf-icon-fill', className)}>
       {name}
     </span>
 ```
@@ -2984,7 +3045,7 @@ OUT="repo_map.md"
 # Pruned by NAME at any depth (per-service node_modules/dist/coverage included):
 EXCLUDE_NAMES=(.git node_modules dist coverage .claude LEGAL .vscode .branches .temp)
 # Pruned by exact PATH from root:
-EXCLUDE_PATHS=(.github/skills)
+EXCLUDE_PATHS=(.github/skills database/supabase)
 INCLUDE_EXT=(ts tsx js jsx json sql md sh yml yaml css html toml)
 
 PRUNE_ARGS=()
