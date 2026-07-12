@@ -227,6 +227,16 @@ for containers. Sharp corners prohibited.
 - **ProgressBar** — pill track (`surface-sunken`), `primary`/`accent` fill.
 - **StatCard** — icon chip + `lf-display-lg lf-number` + caption.
 - **Reveal** — IntersectionObserver rise-in wrapper.
+- **Field** — labeled text input: `rounded-md` container radius (inputs are
+  containers, not pills), `surface` fill, hairline outline, `primary` focus
+  ring, `error` border + caption on invalid; optional trailing slot (e.g.
+  show-password toggle).
+- **Checkbox** — custom square-rounded control (native appearance
+  suppressed), `primary` fill when checked, label + help caption in one tap
+  target.
+- **FileField** — custom image picker (never the native control's look):
+  dashed well on `surface-sunken`, `primary` hover/drag state, chosen-file
+  summary with a replace affordance.
 - **Characters** — Dina, Dino, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
 
@@ -244,6 +254,14 @@ glass-deep ghost CTA, floating illustration over a soft `primary/20` glow) →
 (circular IconChips) → ④ navy fact band with one `.lf-glass-deep` hero card
 (`delight` stat numeral) → ⑤ white motivation split (photo + copy) →
 ⑥ final CTA banner card.
+
+**Auth (login / signup / identity verification)** — trust surface: focused
+single centered column on `base` (max-w-md; verification forms max-w-2xl with
+`sm:grid-cols-2` field pairs), soft `primary/10` glow behind ONE resting card,
+`lf-display-lg` title + muted subtitle above the card, one papaya submit CTA,
+cross-links in `primary`. Status outcomes (success / retry guidance) replace
+the card, never stack on it. Privacy notes render as a `primary-soft` inline
+strip with a shield icon — before the form, not fine print.
 
 **Dashboard (app, future)** — 280px fixed sidebar (desktop) / bottom tabs
 (mobile); white canvas; StatCard row (`sm:grid-cols-3`), course cards

@@ -83,7 +83,7 @@ export function MarketingLayout() {
               ariaLabel={t('language.label')}
             />
             <ThemeToggle className="hidden sm:inline-flex" />
-            <Link to="/" className="hidden md:block">
+            <Link to="/signup" className="hidden md:block">
               <Button className="px-6 py-2">{t('marketing.nav.cta')}</Button>
             </Link>
             <button
@@ -116,7 +116,7 @@ export function MarketingLayout() {
             <div className="mt-3 flex items-center justify-between sm:hidden">
               <ThemeToggle />
             </div>
-            <Link to="/" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
+            <Link to="/signup" onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
               <Button className="w-full">{t('marketing.nav.cta')}</Button>
             </Link>
           </nav>

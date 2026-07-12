@@ -1,0 +1,23 @@
+import type { NextFunction, Request, Response } from 'express';
+import { getConfig } from '../config.js';
+
+/*
+ * Minimal CORS for the one known consumer (the SPA at FRONTEND_URL) — no
+ * wildcard, no dependency. Credentials stay off: auth travels in the
+ * Authorization header, never cookies.
+ */
+export function cors(req: Request, res: Response, next: NextFunction): void {
+  const origin = req.get('origin');
+  if (origin === getConfig().FRONTEND_URL) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+  next();
+}

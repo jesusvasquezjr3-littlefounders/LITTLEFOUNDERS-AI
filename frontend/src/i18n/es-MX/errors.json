@@ -6,6 +6,11 @@
     "NOT_FOUND": "No pudimos encontrar eso.",
     "CONFLICT": "Eso choca con algo que ya existe.",
     "RATE_LIMITED": "Demasiados intentos — espera un momento.",
-    "INTERNAL": "Algo salió mal de nuestro lado."
+    "INTERNAL": "Algo salió mal de nuestro lado.",
+    "INVALID_CREDENTIALS": "Ese correo y contraseña no coinciden.",
+    "EMAIL_IN_USE": "Ya existe una cuenta con ese correo.",
+    "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
+    "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
+    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada."
   }
 }

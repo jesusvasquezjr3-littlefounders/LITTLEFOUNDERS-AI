@@ -8,6 +8,7 @@
 |---|---|
 | **universal** | Default role at signup, any age — created to minimize registration friction. Upgrades to parent/kid/bigfounder via verification. |
 | **parent** | Verified guardian/tutor. Manages kid accounts and families; assigns tasks. A family may have **multiple** parents. |
+| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor"). Code, DB, and API always say `parent`. |
 | **kid** | Verified child under parental control; advanced features depend on their guardian. Must always have ≥1 verified guardian link. |
 | **bigfounder** | Verified adult; future exclusive features. |
 | **admin** | Edits courses and platform content; provides tech support. |
@@ -19,7 +20,8 @@
 |---|---|
 | **family** | A household unit grouping parents and kids. Membership lives in `family_members` (join table). |
 | **guardian link** | The verified parent↔kid relation. Created only after identity verification through Guardian (`parent-id-check/`). Has a `verification_status`. |
-| **identity verification** | The Guardian-service flow proving an adult's identity — the only path to `parent`/`bigfounder` status and to linking kids. |
+| **identity verification** | The Guardian-service flow proving an adult's identity — the only path to `parent`/`bigfounder` status and to linking kids. v1 engine: local OCR (tesseract.js); the ID photo is never stored. |
+| **parent verification** | One successful Guardian check: applicant form data matched against their ID document. Recorded in the isolated `parent_verifications` table (data only — never the photo). |
 
 ## Services & codenames
 

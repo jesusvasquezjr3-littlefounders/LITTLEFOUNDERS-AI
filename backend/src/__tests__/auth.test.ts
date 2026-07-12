@@ -1,0 +1,120 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+const SESSION = {
+  access_token: 'at',
+  refresh_token: 'rt',
+  expires_in: 3600,
+  user: { id: 'u-1', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
+};
+
+afterEach(() => vi.unstubAllGlobals());
+
+function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
+  vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => Promise.resolve(handler(String(input), init))));
+}
+
+describe('POST /api/v1/auth/signup', () => {
+  it('creates a session (autoconfirm on)', async () => {
+    stubFetch((url) => {
+      expect(url).toBe('http://supabase.test/auth/v1/signup');
+      return jsonResponse(200, SESSION);
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', locale: 'es-MX', parentIntent: true });
+    expect(res.status).toBe(201);
+    expect(res.body.data.session.accessToken).toBe('at');
+    expect(res.body.data.confirmationRequired).toBe(false);
+  });
+
+  it('flags confirmationRequired when GoTrue returns no session (prod autoconfirm off)', async () => {
+    stubFetch(() => jsonResponse(200, { id: 'u-1', email: 'ana@example.com' }));
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.session).toBeNull();
+    expect(res.body.data.confirmationRequired).toBe(true);
+  });
+
+  it('rejects a short password without calling GoTrue', async () => {
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'short', displayName: 'Ana' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('maps "already registered" to EMAIL_IN_USE', async () => {
+    stubFetch(() => jsonResponse(422, { msg: 'User already registered' }));
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('EMAIL_IN_USE');
+  });
+});
+
+describe('POST /api/v1/auth/login', () => {
+  it('returns the session envelope', async () => {
+    stubFetch((url) => {
+      expect(url).toBe('http://supabase.test/auth/v1/token?grant_type=password');
+      return jsonResponse(200, SESSION);
+    });
+    const res = await request(createApp()).post('/api/v1/auth/login').send({ email: 'ana@example.com', password: 'x'.repeat(8) });
+    expect(res.status).toBe(200);
+    expect(res.body.data.session.user.email).toBe('ana@example.com');
+  });
+
+  it('maps invalid credentials to 401 INVALID_CREDENTIALS', async () => {
+    stubFetch(() => jsonResponse(400, { error_description: 'Invalid login credentials' }));
+    const res = await request(createApp()).post('/api/v1/auth/login').send({ email: 'ana@example.com', password: 'wrongpass' });
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+  });
+});
+
+describe('POST /api/v1/auth/refresh', () => {
+  it('401s on a dead refresh token', async () => {
+    stubFetch(() => jsonResponse(400, { error_description: 'Invalid Refresh Token' }));
+    const res = await request(createApp()).post('/api/v1/auth/refresh').send({ refreshToken: 'dead' });
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('GET /api/v1/auth/me', () => {
+  it('401s without a token', async () => {
+    const res = await request(createApp()).get('/api/v1/auth/me');
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('UNAUTHORIZED');
+  });
+
+  it('401s on a tampered token', async () => {
+    const res = await request(createApp())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${mintToken()}x`);
+    expect(res.status).toBe(401);
+  });
+
+  it('returns user + profile + roles (RLS-scoped fetches)', async () => {
+    const token = mintToken({ sub: 'u-9', email: 'ana@example.com' });
+    stubFetch((url, init) => {
+      const headers = init?.headers as Record<string, string>;
+      expect(headers.Authorization).toBe(`Bearer ${token}`); // user token, not service key
+      if (url.includes('/rest/v1/profiles')) {
+        return jsonResponse(200, [{ user_id: 'u-9', display_name: 'Ana', locale: 'es-MX', theme: 'system' }]);
+      }
+      return jsonResponse(200, [{ role: 'universal' }, { role: 'parent' }]);
+    });
+    const res = await request(createApp()).get('/api/v1/auth/me').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.profile.display_name).toBe('Ana');
+    expect(res.body.data.roles).toEqual(['universal', 'parent']);
+  });
+});

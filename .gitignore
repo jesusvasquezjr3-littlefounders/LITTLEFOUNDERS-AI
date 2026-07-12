@@ -46,3 +46,6 @@ database/supabase/
 *.db
 *.sqlite
 !database/migrations/*.sql
+
+# ── tesseract.js language-data cache (downloaded at runtime) ──
+*.traineddata

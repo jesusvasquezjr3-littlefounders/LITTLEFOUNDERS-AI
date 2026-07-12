@@ -193,6 +193,51 @@ export type Database = {
           },
         ]
       }
+      parent_verifications: {
+        Row: {
+          address: string
+          birth_date: string
+          checks: Json
+          created_at: string
+          document_type: string
+          given_names: string
+          id: string
+          method: string
+          status: string
+          surnames: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          address?: string
+          birth_date: string
+          checks?: Json
+          created_at?: string
+          document_type?: string
+          given_names: string
+          id?: string
+          method?: string
+          status?: string
+          surnames: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          address?: string
+          birth_date?: string
+          checks?: Json
+          created_at?: string
+          document_type?: string
+          given_names?: string
+          id?: string
+          method?: string
+          status?: string
+          surnames?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

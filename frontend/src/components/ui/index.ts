@@ -9,3 +9,6 @@ export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
 export { StatCard } from './StatCard';
+export { Field } from './Field';
+export { Checkbox } from './Checkbox';
+export { FileField } from './FileField';

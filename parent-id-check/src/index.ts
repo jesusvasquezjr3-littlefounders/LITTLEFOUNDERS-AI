@@ -1,6 +1,7 @@
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './config.js';
 
-const port = Number(process.env.PORT ?? 4004);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+const { PORT } = getConfig();
+createApp().listen(PORT, () => {
+  console.log(`[${SERVICE}] listening on :${PORT}`);
 });

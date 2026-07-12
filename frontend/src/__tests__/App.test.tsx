@@ -28,10 +28,10 @@ describe('Marketing site', () => {
     expect(screen.getAllByRole('link', { name: 'Start free' }).length).toBeGreaterThan(0);
   });
 
-  it('CTA links point to the landing page (no app shell yet)', () => {
+  it('CTA links point to signup', () => {
     renderApp();
     for (const link of screen.getAllByRole('link', { name: /Start free/ })) {
-      expect(link).toHaveAttribute('href', '/');
+      expect(link).toHaveAttribute('href', '/signup');
     }
   });
 

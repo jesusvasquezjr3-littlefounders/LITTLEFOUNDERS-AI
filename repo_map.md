@@ -21,6 +21,10 @@ audiogen/
 backend/
   src/
     __tests__/
+    lib/
+    middleware/
+    routes/
+    services/
 coursegen/
   src/
     __tests__/
@@ -38,6 +42,7 @@ frontend/
     marketing/
   src/
     __tests__/
+    auth/
     components/
       characters/
       ui/
@@ -47,6 +52,7 @@ frontend/
       pt-BR/
     lib/
     routes/
+      auth/
       marketing/
     theme/
 gamegen/
@@ -55,6 +61,8 @@ gamegen/
 parent-id-check/
   src/
     __tests__/
+    routes/
+    services/
 scripts/
 ```
 
@@ -293,10 +301,30 @@ colors:
 |---|---|
 | **universal** | Default role at signup, any age — created to minimize registration friction. Upgrades to parent/kid/bigfounder via verification. |
 | **parent** | Verified guardian/tutor. Manages kid accounts and families; assigns tasks. A family may have **multiple** parents. |
+| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor"). Code, DB, and API always say `parent`. |
 | **kid** | Verified child under parental control; advanced features depend on their guardian. Must always have ≥1 verified guardian link. |
 | **bigfounder** | Verified adult; future exclusive features. |
 | **admin** | Edits courses and platform content; provides tech support. |
 | **superadmin** | Super-user: changes roles and access permissions. Only grantable to `@littlefounders.ai` emails. |
+```
+
+### PRODUCT.md
+
+```
+# PRODUCT.md — LittleFounders (skill-facing summary)
+
+> Strategic context for design tooling. Canonical sources (never duplicate,
+> always defer): `agent/core/CONTEXT.md` (product/architecture),
+> `GLOSSARY.md` (terms), `ROADMAP.md` (scope), `DESIGN.md` (visual system —
+> AUTHORITATIVE, root AGENTS.md §1.1 rank 4).
+
+## Register
+
+product — app UI (design serves the product). Marketing pages exist but the
+platform surface (auth, dashboard, learn/tutor/games/tasks/profile) is the
+primary register.
+
+## Who / What / Why
 
 ```
 
@@ -391,13 +419,13 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed. 8 per-service CI workflows in place. `DESIGN.md` is authoritative (**LittleFounders Arcade**) with tokens implemented and a reusable UI kit; i18n fragmented per route area. Agent rules hardened (§1.11 responsive invariant, §1.12 anti-hallucination).
 
-**Vault is live locally (Day 4–5 in progress):** the pinned `supabase/supabase@v1.26.07` self-hosted stack (11 containers, all healthy) runs from `database/supabase/` (gitignored clone; pin = `database/SUPABASE_VERSION`); migrations 0001–0003 applied and reset-from-zero verified twice; signup→profile+`universal` bootstrap, superadmin domain gate, and role auditing all live-tested at DB level; a real GoTrue signup + password login through Kong returned JWTs end-to-end; `types/database.ts` is now real generated output (10 tables). Session pooler on host port **54322** (5432 is taken by a pre-existing local Postgres). Nothing deployed to Railway yet — that plus wiring auth into Core/frontend is the remainder of Day 4–5 (then Guardian). Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`.
+**Vault is live locally:** the pinned `supabase/supabase@v1.26.07` self-hosted stack (11 containers, all healthy) runs from `database/supabase/` (gitignored clone; pin = `database/SUPABASE_VERSION`); migrations 0001–0004 applied and reset-from-zero verified; `types/database.ts` is real generated output (11 tables). Session pooler on host port **54322** (5432 is taken by a pre-existing local Postgres).
+
+**Auth + Tutor verification shipped (2026-07-12, E2E-verified locally):** Core `/api/v1/auth/*` (GoTrue proxy, local HS256 JWT verify, CORS pinned to the SPA) and `/api/v1/verification/parent`; Guardian v1 = **stateless local OCR** (tesseract.js `spa+eng+por`, ID photo in-memory only, NEVER stored, verdicts only — Core owns all writes: isolated `parent_verifications` (0004), `parent` grant, audit); frontend `/login`, `/signup` (Tutor-intent checkbox; every signup starts `universal`), `/verify-parent` (privacy-first form, per-check retry guidance), AuthContext + RequireAuth, `auth.json` i18n ×3, new UI-kit form primitives (Field/Checkbox/FileField) codified in DESIGN.md with a new Auth screen recipe. Verified: 47 service tests green; real browser E2E (signup→OCR verify→Tutor badge) at ~375px AND ~1280px, light + dark; impostor E2E rejected without role grant; failed attempts audited with boolean checks only (zero PII). **Development stays local by decision — nothing deploys to Railway/Vercel yet.** Next: user dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
 
 ## Decision Log
 
 | Date | Decision | Why |
-|---|---|---|
-| 2026-07-11 | Total v2 rewrite on `littlefounders_v2`; v1 frozen on `main` | Radical platform change; main = rollback path |
 ```
 
 ### agent/README.md
@@ -1078,7 +1106,7 @@ The main API and the **only** service the frontend calls. Owns auth session hand
 
 ```bash
 npm install
-cp .env.example .env   # fill values
+cp .env.example .env   # fill values (local Supabase secrets live in database/supabase/docker/.env)
 npm run dev
 npm test
 ```
@@ -1111,15 +1139,35 @@ export default tseslint.config(
   "version": "0.1.0",
   "type": "module",
   "license": "UNLICENSED",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+```
+
+### backend/src/__tests__/auth.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+const SESSION = {
+  access_token: 'at',
+  refresh_token: 'rt',
+  expires_in: 3600,
+  user: { id: 'u-1', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
+};
+
+afterEach(() => vi.unstubAllGlobals());
+
+function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
 ```
 
 ### backend/src/__tests__/health.test.ts
@@ -1142,35 +1190,264 @@ describe('GET /health', () => {
   it('unknown routes return the error envelope', async () => {
 ```
 
+### backend/src/__tests__/helpers.ts
+
+```
+import { createHmac, randomUUID } from 'node:crypto';
+
+/** Mint a GoTrue-shaped HS256 access token with the test secret. */
+export function mintToken(overrides: Partial<{ sub: string; email: string; role: string; exp: number }> = {}): string {
+  const b64url = (s: string | Buffer) => Buffer.from(s).toString('base64url');
+  const header = b64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = b64url(
+    JSON.stringify({
+      sub: overrides.sub ?? randomUUID(),
+      email: overrides.email ?? 'user@example.com',
+      role: overrides.role ?? 'authenticated',
+      exp: overrides.exp ?? Math.floor(Date.now() / 1000) + 3600,
+    }),
+  );
+  const sig = createHmac('sha256', process.env.SUPABASE_JWT_SECRET as string)
+```
+
+### backend/src/__tests__/verification.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+const PNG_1PX = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+const FIELDS = {
+  givenNames: 'María Fernanda',
+  surnames: 'Gómez Hernández',
+  birthDate: '1988-02-14',
+```
+
 ### backend/src/app.ts
 
 ```
 import express from 'express';
+import { cors } from './middleware/cors.js';
+import { authRouter } from './routes/auth.js';
+import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
-  app.use(express.json());
+  app.use(cors);
+  app.use(express.json({ limit: '64kb' }));
 
   app.get('/health', (_req, res) => {
     res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
-  });
+```
 
-  app.use((_req, res) => {
-    res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
+### backend/src/config.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env validated once at boot (agent/core/CONVENTIONS.md). Tests set
+ * process.env in test-setup before the first getConfig() call.
+ */
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4000),
+  FRONTEND_URL: z.url().default('http://localhost:5173'),
+
+  // Supabase self-hosted stack (local: Kong on :8000 — database/README.md).
+  SUPABASE_URL: z.url(),
+  SUPABASE_ANON_KEY: z.string().min(20),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
+  SUPABASE_JWT_SECRET: z.string().min(16),
 ```
 
 ### backend/src/index.ts
 
 ```
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './config.js';
 
-const port = Number(process.env.PORT ?? 4000);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+const { PORT } = getConfig();
+createApp().listen(PORT, () => {
+  console.log(`[${SERVICE}] listening on :${PORT}`);
 });
+```
+
+### backend/src/lib/http.ts
+
+```
+import type { Response } from 'express';
+
+/** Envelope error response (/AGENTS.md §1.6). */
+export function fail(res: Response, status: number, code: string, message: string): Response {
+  return res.status(status).json({ data: null, error: { code, message } });
+}
+
+/** Envelope success response. */
+export function ok<T>(res: Response, data: T, status = 200): Response {
+  return res.status(status).json({ data, error: null });
+}
+```
+
+### backend/src/lib/jwt.ts
+
+```
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+/*
+ * Local verification of GoTrue HS256 access tokens — no network round-trip
+ * per request, no extra dependency. The shared secret is SUPABASE_JWT_SECRET.
+ */
+
+export interface AccessTokenClaims {
+  sub: string;
+  email: string;
+  role: string; // postgres role, e.g. "authenticated"
+  exp: number;
+}
+
+function b64urlDecode(s: string): Buffer {
+```
+
+### backend/src/middleware/auth.ts
+
+```
+import type { NextFunction, Request, Response } from 'express';
+import { getConfig } from '../config.js';
+import { fail } from '../lib/http.js';
+import { verifyAccessToken } from '../lib/jwt.js';
+
+export interface AuthedUser {
+  id: string;
+  email: string;
+  /** The raw access token, for RLS-enforced PostgREST calls on the user's behalf. */
+  accessToken: string;
+}
+
+/** Typed accessor for the user set by requireAuth. */
+export function authedUser(res: Response): AuthedUser {
+  return res.locals.user as AuthedUser;
+```
+
+### backend/src/middleware/cors.ts
+
+```
+import type { NextFunction, Request, Response } from 'express';
+import { getConfig } from '../config.js';
+
+/*
+ * Minimal CORS for the one known consumer (the SPA at FRONTEND_URL) — no
+ * wildcard, no dependency. Credentials stay off: auth travels in the
+ * Authorization header, never cookies.
+ */
+export function cors(req: Request, res: Response, next: NextFunction): void {
+  const origin = req.get('origin');
+  if (origin === getConfig().FRONTEND_URL) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
+```
+
+### backend/src/routes/auth.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import * as gotrue from '../services/gotrue.js';
+import { getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+
+/*
+ * /api/v1/auth — email+password today; social providers (Google first, then
+ * Discord/Facebook…) will add GET /auth/providers + the GoTrue /authorize
+ * redirect flow here without changing existing shapes.
+ *
+ * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
+ * trigger (migration 0003), not by anything the client sends. `parentIntent`
+ * only records that the user wants the Tutor upgrade; the ONLY path to the
+```
+
+### backend/src/routes/verification.ts
+
+```
+import { Router } from 'express';
+import multer from 'multer';
+import { z } from 'zod';
+import { getConfig } from '../config.js';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import {
+  grantRole,
+  hasRole,
+  insertAuditLog,
+  insertParentVerification,
+} from '../services/supabaseRest.js';
+
+/*
+ * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
+```
+
+### backend/src/services/gotrue.ts
+
+```
+import { getConfig } from '../config.js';
+
+/*
+ * Thin GoTrue (Supabase Auth) client over fetch — Core is the only service
+ * the frontend talks to (/AGENTS.md §1.5), so auth flows proxy through here.
+ * Social login (Google first, then Discord/Facebook…) plugs in later via
+ * GoTrue's /authorize provider flow — same envelope, new route; nothing in
+ * this module's shape needs to change.
+ */
+
+export interface GotrueUser {
+  id: string;
+  email: string;
+  user_metadata?: Record<string, unknown>;
+}
+```
+
+### backend/src/services/supabaseRest.ts
+
+```
+import { getConfig } from '../config.js';
+
+/*
+ * PostgREST access in two grades:
+ *  - asUser(token): the USER's JWT — RLS enforced by the database. Default.
+ *  - asServiceRole(): bypasses RLS. ONLY for writes the schema deliberately
+ *    reserves to the service role (role grants, parent_verifications,
+ *    audit_logs) — never for reads on behalf of a user.
+ */
+
+interface RestInit {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
+```
+
+### backend/src/test-setup.ts
+
+```
+// Test env — config.ts validates at first getConfig() call.
+process.env.SUPABASE_URL ??= 'http://supabase.test';
+process.env.SUPABASE_ANON_KEY ??= 'test-anon-key-01234567890';
+process.env.SUPABASE_SERVICE_ROLE_KEY ??= 'test-service-key-01234567890';
+process.env.SUPABASE_JWT_SECRET ??= 'test-jwt-secret-01234567890';
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
+process.env.PARENT_ID_CHECK_URL ??= 'http://guardian.test';
 ```
 
 ### backend/tsconfig.json
@@ -1202,6 +1479,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
   },
 });
 ```
@@ -1484,6 +1762,26 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
+```
+
+### database/migrations/0004_parent_verifications.sql
+
+```
+-- 0004_parent_verifications.sql — isolated storage for Guardian parent
+-- identity verifications (/AGENTS.md §1.4: universal → parent ONLY through
+-- parent-id-check). Idempotent. RLS enabled in this migration.
+--
+-- Privacy contract (Jesús, 2026-07-12): the ID photograph is NEVER stored —
+-- anywhere. Only the applicant-declared data that was matched against the
+-- document lands here, and only for VERIFIED outcomes. Failed attempts leave
+-- an audit_logs row (no PII detail) and nothing else.
+
+CREATE TABLE IF NOT EXISTS public.parent_verifications (
+    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id       uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+    status        text NOT NULL DEFAULT 'verified' CHECK (status IN ('verified', 'revoked')),
+    method        text NOT NULL DEFAULT 'local-ocr',
+    given_names   text NOT NULL,
 ```
 
 ### database/package.json
@@ -1938,20 +2236,20 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 
 ```
 import { Route, Routes } from 'react-router-dom';
+import { AuthProvider } from '@/auth/AuthContext';
+import { RequireAuth } from '@/auth/RequireAuth';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { LegalPage } from '@/routes/marketing/LegalPage';
+import { LoginPage } from '@/routes/auth/LoginPage';
+import { SignupPage } from '@/routes/auth/SignupPage';
+import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 
 export function App() {
   return (
-    <Routes>
-      <Route element={<MarketingLayout />}>
-        <Route index element={<Landing />} />
-        <Route path="how-it-works" element={<ComingSoon page="howItWorks" />} />
-        <Route path="families" element={<ComingSoon page="families" />} />
-        <Route path="faq" element={<ComingSoon page="faq" />} />
-        <Route path="legal/terms" element={<LegalPage doc="terms" />} />
+    <AuthProvider>
+      <Routes>
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -1972,6 +2270,44 @@ function renderApp(path = '/') {
 }
 
 beforeEach(async () => {
+```
+
+### frontend/src/auth/AuthContext.tsx
+
+```
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { api, type ApiError } from '@/lib/api';
+
+/*
+ * Session state for the whole app. Tokens live in localStorage (SPA + Core
+ * on separate origins → Authorization header, not cookies) and refresh via
+```
+
+### frontend/src/auth/RequireAuth.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+
+/** Route guard: unauthenticated visitors are sent to /login (return path kept). */
+export function RequireAuth({ children }: { children: ReactNode }) {
+  const { session } = useAuth();
+  const location = useLocation();
+
+  if (session === undefined) return null; // restoring from storage — avoid a redirect flash
+  if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  return <>{children}</>;
+}
 ```
 
 ### frontend/src/components/characters/DinaCharacter.tsx
@@ -2114,6 +2450,26 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 ```
 
+### frontend/src/components/ui/Checkbox.tsx
+
+```
+import { useId, type InputHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — Checkbox: custom square-rounded control (native
+ * appearance suppressed), primary fill when checked, label + optional help
+ * text form one large tap target.
+ */
+
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  label: string;
+  help?: string;
+}
+
+```
+
 ### frontend/src/components/ui/Dropdown.tsx
 
 ```
@@ -2132,6 +2488,46 @@ export interface DropdownOption<T extends string> {
   label: string;
   prefix?: ReactNode; // e.g. a flag emoji
 }
+```
+
+### frontend/src/components/ui/Field.tsx
+
+```
+import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Field: labeled text input. rounded-md container
+ * radius (inputs are containers, not pills), surface fill, hairline outline,
+ * primary focus ring, error state on the error token. Both themes via
+ * semantic tokens.
+ */
+
+interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  hint?: string;
+  error?: string;
+  trailing?: ReactNode;
+```
+
+### frontend/src/components/ui/FileField.tsx
+
+```
+import { useId, useRef, useState, type ChangeEvent } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — FileField: custom image picker (never the native
+ * control's look). A dashed drop-well on surface-sunken; once a file is
+ * chosen it shows name + size with a clear affordance to replace it.
+ * Keyboard/tap accessible via the wrapped native input (sr-only).
+ */
+
+interface FileFieldProps {
+  label: string;
+  help?: string;
+  error?: string;
 ```
 
 ### frontend/src/components/ui/Icon.tsx
@@ -2268,6 +2664,29 @@ export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
 export { StatCard } from './StatCard';
+export { Field } from './Field';
+export { Checkbox } from './Checkbox';
+export { FileField } from './FileField';
+```
+
+### frontend/src/i18n/en-US/auth.json
+
+```
+{
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to keep building",
+    "email": "Email",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "noAccount": "New to LittleFounders?",
+    "signupLink": "Create an account"
+  },
+  "signup": {
+    "title": "Create your account",
 ```
 
 ### frontend/src/i18n/en-US/common.json
@@ -2301,9 +2720,13 @@ export { StatCard } from './StatCard';
     "NOT_FOUND": "We couldn't find that.",
     "CONFLICT": "That conflicts with something that already exists.",
     "RATE_LIMITED": "Too many tries — wait a moment.",
-    "INTERNAL": "Something went wrong on our side."
+    "INTERNAL": "Something went wrong on our side.",
+    "INVALID_CREDENTIALS": "That email and password don't match.",
+    "EMAIL_IN_USE": "There's already an account with that email.",
+    "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
+    "ALREADY_VERIFIED": "This account is already a verified Tutor.",
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one."
   }
-}
 ```
 
 ### frontend/src/i18n/en-US/marketing.json
@@ -2324,6 +2747,26 @@ export { StatCard } from './StatCard';
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
     "logoAlt": "LittleFounders"
+```
+
+### frontend/src/i18n/es-MX/auth.json
+
+```
+{
+  "login": {
+    "title": "Hola de nuevo",
+    "subtitle": "Inicia sesión para seguir construyendo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión…",
+    "noAccount": "¿Nuevo en LittleFounders?",
+    "signupLink": "Crea una cuenta"
+  },
+  "signup": {
+    "title": "Crea tu cuenta",
 ```
 
 ### frontend/src/i18n/es-MX/common.json
@@ -2357,9 +2800,13 @@ export { StatCard } from './StatCard';
     "NOT_FOUND": "No pudimos encontrar eso.",
     "CONFLICT": "Eso choca con algo que ya existe.",
     "RATE_LIMITED": "Demasiados intentos — espera un momento.",
-    "INTERNAL": "Algo salió mal de nuestro lado."
+    "INTERNAL": "Algo salió mal de nuestro lado.",
+    "INVALID_CREDENTIALS": "Ese correo y contraseña no coinciden.",
+    "EMAIL_IN_USE": "Ya existe una cuenta con ese correo.",
+    "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
+    "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
+    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada."
   }
-}
 ```
 
 ### frontend/src/i18n/es-MX/marketing.json
@@ -2402,6 +2849,26 @@ import enMarketing from './en-US/marketing.json';
 import enErrors from './en-US/errors.json';
 ```
 
+### frontend/src/i18n/pt-BR/auth.json
+
+```
+{
+  "login": {
+    "title": "Bem-vindo de volta",
+    "subtitle": "Entre para continuar construindo",
+    "email": "E-mail",
+    "password": "Senha",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "submit": "Entrar",
+    "submitting": "Entrando…",
+    "noAccount": "Novo na LittleFounders?",
+    "signupLink": "Crie uma conta"
+  },
+  "signup": {
+    "title": "Crie sua conta",
+```
+
 ### frontend/src/i18n/pt-BR/common.json
 
 ```
@@ -2433,9 +2900,13 @@ import enErrors from './en-US/errors.json';
     "NOT_FOUND": "Não conseguimos encontrar isso.",
     "CONFLICT": "Isso conflita com algo que já existe.",
     "RATE_LIMITED": "Muitas tentativas — espere um momento.",
-    "INTERNAL": "Algo deu errado do nosso lado."
+    "INTERNAL": "Algo deu errado do nosso lado.",
+    "INVALID_CREDENTIALS": "Esse e-mail e senha não correspondem.",
+    "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",
+    "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
+    "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
+    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada."
   }
-}
 ```
 
 ### frontend/src/i18n/pt-BR/marketing.json
@@ -2478,6 +2949,26 @@ import enErrors from './en-US/errors.json';
     --lf-surface-sunken: 242 242 242;
 ```
 
+### frontend/src/lib/api.ts
+
+```
+/*
+ * Envelope-aware client for Core — the ONLY service the frontend calls
+ * (/AGENTS.md §1.5). Every response is { data, error } (§1.6); error codes
+ * map to i18n keys `errors.api.<code>`.
+ */
+
+const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
+
+export interface ApiError {
+  code: string;
+  message: string;
+}
+
+export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };
+
+```
+
 ### frontend/src/lib/utils.ts
 
 ```
@@ -2510,6 +3001,106 @@ createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </StrictMode>,
 );
+```
+
+### frontend/src/routes/auth/AuthShell.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Card } from '@/components/ui';
+
+/*
+ * Composition per /DESIGN.md §Screen Recipes → Auth: focused single column
+ * (max-w-md) centered on `base`, soft primary glow behind one resting card.
+ * Wide screens spend their space on calm, not columns — trust surface.
+ */
+export function AuthShell({ title, subtitle, children, footer, wide = false }: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  wide?: boolean;
+}) {
+```
+
+### frontend/src/routes/auth/ErrorBanner.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+
+/** Inline API-error banner — code resolves through errors.api.<code>. */
+export function ErrorBanner({ code }: { code: string }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      role="alert"
+      className="flex items-start gap-3 rounded-md border border-error/40 bg-error-soft px-4 py-3"
+    >
+      <Icon name="error" className="mt-0.5 shrink-0 text-error-strong" />
+      <p className="lf-body text-content">
+        {t(`errors.api.${code}`, { defaultValue: t('errors.api.INTERNAL') })}
+      </p>
+```
+
+### frontend/src/routes/auth/LoginPage.tsx
+
+```
+import { useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { Button, Icon } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { AuthShell } from './AuthShell';
+import { ErrorBanner } from './ErrorBanner';
+
+export function LoginPage() {
+  const { t } = useTranslation();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+```
+
+### frontend/src/routes/auth/SignupPage.tsx
+
+```
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import type { Locale } from '@/i18n';
+import { Button, Icon } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { AuthShell } from './AuthShell';
+import { ErrorBanner } from './ErrorBanner';
+
+/*
+ * Signup — every account starts as `universal` (server/DB enforced, zero
+ * friction). The Tutor checkbox only records intent: the parent role itself
+ * is granted exclusively by Guardian verification (/verify-parent).
+```
+
+### frontend/src/routes/auth/VerifyParentPage.tsx
+
+```
+import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Badge, Button, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { FileField } from '@/components/ui/FileField';
+import { AuthShell } from './AuthShell';
+import { ErrorBanner } from './ErrorBanner';
+
+/*
+ * universal → Tutor (`parent` role) upgrade — the Guardian OCR flow
+ * (Jesús, 2026-07-12). The ID photo goes to Core → Guardian for an in-memory
+ * OCR verdict and is never stored anywhere; we say so, prominently.
 ```
 
 ### frontend/src/routes/marketing/ComingSoon.tsx
@@ -2621,6 +3212,12 @@ function resolveIsDark(choice: ThemeChoice): boolean {
   return choice === 'auto' ? systemPrefersDark() : choice === 'dark';
 }
 
+```
+
+### frontend/src/vite-env.d.ts
+
+```
+/// <reference types="vite/client" />
 ```
 
 ### frontend/tailwind.config.js
@@ -2883,13 +3480,13 @@ export default defineConfig({
 
 Guardian identity verification. **The ONLY path** to `parent` status, verified guardian links, and the `kid`/`bigfounder` verified states. Internal service — `INTERNAL_API_KEY` only (plus provider webhooks with signature verification).
 
-## Open decision
+## Engine — DECIDED (Jesús, 2026-07-12)
 
-**Provider: OPEN** (tracked in ROADMAP.md) — candidates: Stripe Identity, Persona, Veriff, manual review. Code against a provider-agnostic adapter interface; webhook signature verification is mandatory regardless of provider.
-
-## Invariants that bite here
-
-- **Strictest PII handling in the platform.** Verification documents/data: never logged, never stored beyond provider requirements, never sent anywhere but the chosen provider.
+**Local OCR (tesseract.js, WASM, `spa+eng+por`)** — no external provider. The
+ID photograph is processed entirely in memory and NEVER stored (not on disk,
+not in logs, not in any response); it exists only for the duration of one
+`recognize()` call. This service is **stateless**: no DB access, no keys
+beyond `INTERNAL_API_KEY`. It returns `{ verified, checks }` verdicts; Core
 ```
 
 ### parent-id-check/README.md
@@ -2900,7 +3497,9 @@ Guardian identity verification. **The ONLY path** to `parent` status, verified g
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
 
 **Mission:** Guardian identity verification — the only path to verified `parent`/`kid`/`bigfounder` states.
-**Port (dev):** 4004 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`) + signed provider webhooks
+**Port (dev):** 4004 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
+
+**Engine (decided 2026-07-12):** local OCR via tesseract.js (WASM, `spa+eng+por`) — the ID image never leaves our infrastructure and is processed entirely in memory. This service is stateless: no database access, no storage; it returns verdicts and Core owns every write.
 
 ```bash
 npm install
@@ -2908,8 +3507,6 @@ cp .env.example .env
 npm run dev
 npm test
 ```
-
-## Routes
 ```
 
 ### parent-id-check/eslint.config.js
@@ -2937,15 +3534,15 @@ export default tseslint.config(
   "version": "0.1.0",
   "type": "module",
   "license": "UNLICENSED",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
 ```
 
 ### parent-id-check/src/__tests__/health.test.ts
@@ -2968,35 +3565,163 @@ describe('GET /health', () => {
   it('unknown routes return the error envelope', async () => {
 ```
 
+### parent-id-check/src/__tests__/matching.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  birthDateFound,
+  documentNotExpired,
+  matchDocument,
+  namesMatch,
+  normalize,
+} from '../services/matching.js';
+
+// Synthetic INE-style OCR text — no real person.
+const INE_TEXT = `
+INSTITUTO NACIONAL ELECTORAL
+CREDENCIAL PARA VOTAR
+NOMBRE
+GÓMEZ
+```
+
+### parent-id-check/src/__tests__/verifications.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+
+const KEY = process.env.INTERNAL_API_KEY as string;
+
+// Synthetic ID text the mocked OCR "reads" — no real person.
+const OCR_TEXT = `INSTITUTO NACIONAL ELECTORAL CREDENCIAL PARA VOTAR
+NOMBRE GOMEZ HERNANDEZ MARIA FERNANDA
+FECHA DE NACIMIENTO 14/02/1988 VIGENCIA 2032`;
+
+const FIELDS = { givenNames: 'María Fernanda', surnames: 'Gómez Hernández', birthDate: '1988-02-14' };
+const PNG_1PX = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+```
+
 ### parent-id-check/src/app.ts
 
 ```
 import express from 'express';
+import { getConfig } from './config.js';
+import { verificationsRouter } from './routes/verifications.js';
+import { recognize as defaultRecognize, type RecognizeFn } from './services/ocr.js';
 
 export const SERVICE = 'parent-id-check';
 export const VERSION = '0.1.0';
 
-export function createApp(): express.Express {
-  const app = express();
-  app.use(express.json());
+export interface AppDeps {
+  /** Injectable OCR for tests; defaults to the tesseract.js worker. */
+  recognize?: RecognizeFn;
+}
 
-  app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
-  });
+export function createApp(deps: AppDeps = {}): express.Express {
+  const config = getConfig();
+```
 
-  app.use((_req, res) => {
-    res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
+### parent-id-check/src/config.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env is validated once at boot (agent/core/CONVENTIONS.md) — the service
+ * crashes on invalid config, never at request time. Tests import getConfig()
+ * after setting process.env in test-setup.
+ */
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4004),
+  INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
+  // OCR languages for tesseract.js (matches the platform locales).
+  OCR_LANGUAGES: z.string().default('spa+eng+por'),
+});
+
+export type Config = Readonly<z.infer<typeof Env>>;
 ```
 
 ### parent-id-check/src/index.ts
 
 ```
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './config.js';
 
-const port = Number(process.env.PORT ?? 4004);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+const { PORT } = getConfig();
+createApp().listen(PORT, () => {
+  console.log(`[${SERVICE}] listening on :${PORT}`);
 });
+```
+
+### parent-id-check/src/routes/verifications.ts
+
+```
+import { Router } from 'express';
+import multer from 'multer';
+import { z } from 'zod';
+import { matchDocument } from '../services/matching.js';
+import type { RecognizeFn } from '../services/ocr.js';
+
+/*
+ * POST /internal/v1/verifications/parent — stateless verdict endpoint.
+ * Internal-only (INTERNAL_API_KEY, enforced in app.ts). This service NEVER
+ * touches the database and NEVER persists the image (multer memoryStorage,
+ * buffer dropped when the request scope ends). Core owns all writes.
+ */
+
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+```
+
+### parent-id-check/src/services/matching.ts
+
+```
+/*
+ * Pure document-matching logic: OCR text vs applicant-declared data.
+ * No I/O, no logging — OCR text carries PII and must never leave this
+ * function's scope (parent-id-check/AGENTS.md: strictest PII handling).
+ */
+
+export interface ApplicantData {
+  givenNames: string;
+  surnames: string;
+  /** ISO date, yyyy-mm-dd */
+  birthDate: string;
+}
+
+export interface MatchChecks {
+  documentReadable: boolean;
+```
+
+### parent-id-check/src/services/ocr.ts
+
+```
+import { createWorker, type Worker } from 'tesseract.js';
+import { getConfig } from '../config.js';
+
+/*
+ * Local OCR — tesseract.js (WASM). Chosen (Jesús, 2026-07-12) over external
+ * providers so the ID photograph NEVER leaves our infrastructure: the image
+ * buffer lives only in this process's memory for the duration of recognize()
+ * and is never written to disk, logged, or sent anywhere.
+ */
+
+export type RecognizeFn = (image: Buffer) => Promise<string>;
+
+let workerPromise: Promise<Worker> | null = null;
+
+function getWorker(): Promise<Worker> {
+```
+
+### parent-id-check/src/test-setup.ts
+
+```
+// Test env — config.ts validates at first getConfig() call.
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
 ```
 
 ### parent-id-check/tsconfig.json
@@ -3028,6 +3753,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
   },
 });
 ```

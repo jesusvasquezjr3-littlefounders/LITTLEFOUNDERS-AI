@@ -6,6 +6,11 @@
     "NOT_FOUND": "We couldn't find that.",
     "CONFLICT": "That conflicts with something that already exists.",
     "RATE_LIMITED": "Too many tries — wait a moment.",
-    "INTERNAL": "Something went wrong on our side."
+    "INTERNAL": "Something went wrong on our side.",
+    "INVALID_CREDENTIALS": "That email and password don't match.",
+    "EMAIL_IN_USE": "There's already an account with that email.",
+    "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
+    "ALREADY_VERIFIED": "This account is already a verified Tutor.",
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one."
   }
 }

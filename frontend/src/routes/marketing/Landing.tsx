@@ -34,7 +34,7 @@ export function Landing() {
               {t('marketing.hero.subtitle')}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
-              <Link to="/">
+              <Link to="/signup">
                 <Button className="group">
                   {t('marketing.hero.ctaPrimary')}
                   <Icon
@@ -152,7 +152,7 @@ export function Landing() {
           <div>
             <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
             <p className="lf-body-lg mt-3 text-content-muted">{t('marketing.finalCta.body')}</p>
-            <Link to="/" className="mt-6 inline-block">
+            <Link to="/signup" className="mt-6 inline-block">
               <Button className="group">
                 {t('marketing.finalCta.button')}
                 <Icon

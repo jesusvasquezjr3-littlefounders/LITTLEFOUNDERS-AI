@@ -7,13 +7,27 @@
 
 ```bash
 npm install
-cp .env.example .env   # fill values
+cp .env.example .env   # fill values (local Supabase secrets live in database/supabase/docker/.env)
 npm run dev
 npm test
 ```
 
 ## Routes
 
-| Method | Path | Description |
-|---|---|---|
-| GET | /health | Service health envelope |
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | /health | — | Service health envelope |
+| POST | /api/v1/auth/signup | — | Email+password signup via GoTrue; every account starts `universal` (DB trigger). Returns session or `confirmationRequired` |
+| POST | /api/v1/auth/login | — | Password login → session (access/refresh tokens) |
+| POST | /api/v1/auth/refresh | — | Exchange refresh token for a fresh session |
+| POST | /api/v1/auth/logout | Bearer | Best-effort GoTrue sign-out |
+| GET | /api/v1/auth/me | Bearer | User + profile + roles (RLS-scoped reads with the user's own token) |
+| POST | /api/v1/verification/parent | Bearer | multipart form + ID photo → Guardian OCR verdict; on verified: `parent_verifications` row + `parent` role grant. Rate-limited 5/h/user |
+
+Social login (Google first, then Discord/Facebook…) will extend `/api/v1/auth` with the GoTrue provider flow — same envelope, no breaking changes planned.
+
+## Notes
+
+- JWTs are verified locally (HS256, `SUPABASE_JWT_SECRET`) — no per-request GoTrue round-trip.
+- Service-role PostgREST writes are reserved for what RLS deliberately closes to clients: role grants, `parent_verifications`, `audit_logs`.
+- The ID photo is forwarded in memory to Guardian and never persisted here either.
