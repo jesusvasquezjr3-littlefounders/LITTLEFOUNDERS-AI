@@ -36,7 +36,7 @@ let fetchMock: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   process.env.SUPABASE_URL = 'https://vault.example.com';
-  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-test-key-xxxxxxxx';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'srv-test-key';
   resetConfigCache();
 
   fetchMock = vi.fn(async (url: string) => {
@@ -76,8 +76,8 @@ describe('publishLessonSlot', () => {
     await publishLessonSlot(samplePublishInput());
     const init = fetchMock.mock.calls[0]![1] as RequestInit;
     const headers = init.headers as Record<string, string>;
-    expect(headers.apikey).toBe('service-role-test-key-xxxxxxxx');
-    expect(headers.Authorization).toBe('Bearer service-role-test-key-xxxxxxxx');
+    expect(headers.apikey).toBe('srv-test-key');
+    expect(headers.Authorization).toBe('Bearer srv-test-key');
   });
 
   it('lessons row is inserted with status "review", never "published"', async () => {

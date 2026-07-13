@@ -40,8 +40,8 @@ describe('requireGenerationKeys', () => {
   });
 
   it('passes once both keys are set', () => {
-    process.env.DEEPSEEK_API_KEY = 'sk-test-deepseek-key';
-    process.env.QWEN_API_KEY = 'sk-test-qwen-key';
+    process.env.DEEPSEEK_API_KEY = 'sk-test-1';
+    process.env.QWEN_API_KEY = 'sk-test-2';
     resetConfigCache();
     expect(() => requireGenerationKeys()).not.toThrow();
   });

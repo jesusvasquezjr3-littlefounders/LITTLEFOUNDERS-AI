@@ -49,10 +49,20 @@ export interface LoadResult {
   course: CourseCatalog;
 }
 
-// Coverage-oracle quotas (COURSE_ENGINE.md §3) — deviations are WARNINGS, never errors.
-const EXPECTED_SAGAS_PER_ADVENTURE = 4;
-const EXPECTED_TOPICS_PER_SAGA = 6;
+// Coverage-oracle quotas (COURSE_ENGINE.md §3 + §3.1 spaced-review layer) —
+// deviations are WARNINGS, never errors. Shape per adventure: 5 sagas
+// (4 teaching + 1 review); teaching sagas carry 8 topics (6 teaching + 2
+// review: position 7 review_spaced, position 8 review_interleaved); the
+// review saga carries 6 review_quest topics; every topic carries 4 lessons.
+const EXPECTED_SAGAS_PER_ADVENTURE = 5;
+const EXPECTED_TEACHING_SAGAS_PER_ADVENTURE = 4;
+const EXPECTED_REVIEW_SAGAS_PER_ADVENTURE = 1;
+const EXPECTED_TEACHING_SAGA_TOPICS = 8;
+const EXPECTED_TEACHING_TOPICS_PER_TEACHING_SAGA = 6;
+const EXPECTED_REVIEW_SAGA_TOPICS = 6;
 const EXPECTED_LESSONS_PER_TOPIC = 4;
+const REVIEW_SPACED_POSITION = 7;
+const REVIEW_INTERLEAVED_POSITION = 8;
 
 function readYaml(filePath: string): { data: unknown; error?: string } {
   if (!existsSync(filePath)) return { data: undefined, error: 'file not found' };
@@ -163,12 +173,30 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
       }
     }
 
-    // ---- quota warning: sagas per adventure ----
+    // ---- quota warning: sagas per adventure, kind-aware (COURSE_ENGINE §3.1) ----
     if (data.sagas.length !== EXPECTED_SAGAS_PER_ADVENTURE) {
       issues.push({
         level: 'warning',
         file: adventurePath,
-        message: `adventure "${data.adventure.slug}" has ${data.sagas.length} sagas (expected ${EXPECTED_SAGAS_PER_ADVENTURE})`,
+        message:
+          `adventure "${data.adventure.slug}" has ${data.sagas.length} sagas ` +
+          `(expected ${EXPECTED_SAGAS_PER_ADVENTURE}: ${EXPECTED_TEACHING_SAGAS_PER_ADVENTURE} teaching + ${EXPECTED_REVIEW_SAGAS_PER_ADVENTURE} review)`,
+      });
+    }
+    const teachingSagaCount = data.sagas.filter((s) => s.kind === 'teaching').length;
+    const reviewSagaCount = data.sagas.filter((s) => s.kind === 'review').length;
+    if (teachingSagaCount !== EXPECTED_TEACHING_SAGAS_PER_ADVENTURE) {
+      issues.push({
+        level: 'warning',
+        file: adventurePath,
+        message: `adventure "${data.adventure.slug}" has ${teachingSagaCount} teaching-kind saga(s) (expected ${EXPECTED_TEACHING_SAGAS_PER_ADVENTURE})`,
+      });
+    }
+    if (reviewSagaCount !== EXPECTED_REVIEW_SAGAS_PER_ADVENTURE) {
+      issues.push({
+        level: 'warning',
+        file: adventurePath,
+        message: `adventure "${data.adventure.slug}" has ${reviewSagaCount} review-kind saga(s) (expected ${EXPECTED_REVIEW_SAGAS_PER_ADVENTURE})`,
       });
     }
 
@@ -183,12 +211,55 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
       }
       sagaSlugsSeen.add(saga.slug);
 
-      if (saga.topics.length !== EXPECTED_TOPICS_PER_SAGA) {
+      const expectedTopicsForSaga = saga.kind === 'review' ? EXPECTED_REVIEW_SAGA_TOPICS : EXPECTED_TEACHING_SAGA_TOPICS;
+      if (saga.topics.length !== expectedTopicsForSaga) {
         issues.push({
           level: 'warning',
           file: adventurePath,
-          message: `saga "${saga.slug}" has ${saga.topics.length} topics (expected ${EXPECTED_TOPICS_PER_SAGA})`,
+          message: `saga "${saga.slug}" (kind=${saga.kind}) has ${saga.topics.length} topics (expected ${expectedTopicsForSaga})`,
         });
+      }
+
+      if (saga.kind === 'teaching') {
+        const teachingTopicCount = saga.topics.filter((t) => t.kind === 'teaching').length;
+        if (teachingTopicCount !== EXPECTED_TEACHING_TOPICS_PER_TEACHING_SAGA) {
+          issues.push({
+            level: 'warning',
+            file: adventurePath,
+            message:
+              `saga "${saga.slug}" (kind=teaching) has ${teachingTopicCount} teaching-kind topics ` +
+              `(expected ${EXPECTED_TEACHING_TOPICS_PER_TEACHING_SAGA})`,
+          });
+        }
+        const spacedTopic = saga.topics.find((t) => t.position === REVIEW_SPACED_POSITION);
+        if (spacedTopic && spacedTopic.kind !== 'review_spaced') {
+          issues.push({
+            level: 'warning',
+            file: adventurePath,
+            message:
+              `saga "${saga.slug}" topic at position ${REVIEW_SPACED_POSITION} has kind "${spacedTopic.kind}" ` +
+              `(expected "review_spaced")`,
+          });
+        }
+        const interleavedTopic = saga.topics.find((t) => t.position === REVIEW_INTERLEAVED_POSITION);
+        if (interleavedTopic && interleavedTopic.kind !== 'review_interleaved') {
+          issues.push({
+            level: 'warning',
+            file: adventurePath,
+            message:
+              `saga "${saga.slug}" topic at position ${REVIEW_INTERLEAVED_POSITION} has kind "${interleavedTopic.kind}" ` +
+              `(expected "review_interleaved")`,
+          });
+        }
+      } else if (saga.kind === 'review') {
+        const nonQuestTopics = saga.topics.filter((t) => t.kind !== 'review_quest');
+        if (nonQuestTopics.length > 0) {
+          issues.push({
+            level: 'warning',
+            file: adventurePath,
+            message: `saga "${saga.slug}" (kind=review) has ${nonQuestTopics.length} topic(s) not of kind "review_quest"`,
+          });
+        }
       }
 
       const topicSlugsSeen = new Set<string>();
@@ -206,7 +277,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
           issues.push({
             level: 'warning',
             file: adventurePath,
-            message: `topic "${topic.slug}" has ${topic.lessons.length} lessons (expected ${EXPECTED_LESSONS_PER_TOPIC})`,
+            message: `topic "${topic.slug}" (kind=${topic.kind}) has ${topic.lessons.length} lessons (expected ${EXPECTED_LESSONS_PER_TOPIC})`,
           });
         }
 
@@ -250,6 +321,81 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     }
   }
 
+  // ---- review_of path resolution (needs the FULL cross-adventure picture,
+  // so it runs as a second pass over every adventure file loaded above) ----
+  const sagaPaths = new Set<string>();
+  const topicPaths = new Set<string>();
+  for (const { data } of course.adventures) {
+    for (const saga of data.sagas) {
+      sagaPaths.add(`${data.adventure.slug}/${saga.slug}`);
+      for (const topic of saga.topics) {
+        topicPaths.add(`${data.adventure.slug}/${saga.slug}/${topic.slug}`);
+      }
+    }
+  }
+  for (const { file, data } of course.adventures) {
+    for (const saga of data.sagas) {
+      for (const topic of saga.topics) {
+        if (!topic.review_of) continue;
+        for (const ref of topic.review_of) {
+          if (!sagaPaths.has(ref) && !topicPaths.has(ref)) {
+            issues.push({
+              level: 'error',
+              file,
+              message: `topic "${topic.slug}" (kind=${topic.kind}) review_of references unresolved path "${ref}"`,
+            });
+          }
+        }
+      }
+    }
+  }
+
   const ok = issues.every((i) => i.level !== 'error');
   return { ok, issues, course };
+}
+
+// ---- review source resolution for the generation pipeline -----------------
+//
+// Given a topic's `review_of` paths, returns the concept/objective/vocabulary
+// of every teaching topic they resolve to — a saga path expands to ALL of
+// that saga's topics, a topic path resolves to just that topic. Used by
+// pipeline/plan.ts + pipeline/write.ts to ground review lessons in their
+// sources (COURSE_ENGINE.md §3.1). Assumes `course` already passed
+// `loadCourseCatalog` with `ok: true` (paths resolve) — unresolved refs are
+// silently skipped here since loader-time validation already reports them.
+
+export interface ReviewSourceTopic {
+  path: string;
+  concept: string;
+  learningObjective: string;
+  keyVocabulary: string[];
+}
+
+export function resolveReviewSources(course: CourseCatalog, reviewOf: readonly string[]): ReviewSourceTopic[] {
+  const sources: ReviewSourceTopic[] = [];
+  const seenPaths = new Set<string>();
+
+  for (const ref of reviewOf) {
+    const segments = ref.split('/');
+    for (const { data } of course.adventures) {
+      if (data.adventure.slug !== segments[0]) continue;
+      for (const saga of data.sagas) {
+        if (saga.slug !== segments[1]) continue;
+        const matchingTopics = segments.length === 3 ? saga.topics.filter((t) => t.slug === segments[2]) : saga.topics;
+        for (const topic of matchingTopics) {
+          const path = `${data.adventure.slug}/${saga.slug}/${topic.slug}`;
+          if (seenPaths.has(path)) continue;
+          seenPaths.add(path);
+          sources.push({
+            path,
+            concept: topic.concept,
+            learningObjective: topic.learning_objective,
+            keyVocabulary: topic.key_vocabulary,
+          });
+        }
+      }
+    }
+  }
+
+  return sources;
 }

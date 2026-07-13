@@ -339,6 +339,108 @@ sagas:
       suggested_families:
       - story
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de semillas del jardín para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Dar con el Corazón.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Dar con el Corazón.
+    key_vocabulary:
+    - dar
+    - tiempo
+    - necesitar
+    - límite
+    prior_knowledge: Ha completado los seis temas de la saga Dar con el Corazón (aventura 7, saga 1).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/dar-con-el-corazon/que-significa-dar
+    - jardin-compartido/dar-con-el-corazon/dar-tiempo-cosas-dinero
+    - jardin-compartido/dar-con-el-corazon/elegir-a-quien-ayudar
+    - jardin-compartido/dar-con-el-corazon/cuanto-puedo-dar-sin-quedarme-sin-nada
+    - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
+    - jardin-compartido/dar-con-el-corazon/la-alegria-de-compartir
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo explicar qué significa dar y cómo clasificar dar en tiempo, cosas o dinero.
+      narrative_beat: Zara Vex abre un cofre de semillas del jardín y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo elegir a quién ayudar primero y cómo decidir cuánto dar sin comprometer lo propio.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre distinguir dar sincero de dar con condición.
+      narrative_beat: Dr. Rho presenta una escena nueva del jardín y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo describir cómo se siente dar algo a alguien más, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Dar con el Corazón con ideas de aventuras anteriores en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Dar con el Corazón con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - dar
+    prior_knowledge: Conoce Dar con el Corazón (aventura 7) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Dar con el Corazón.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Dar con el Corazón.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del jardín, Dina combina lo aprendido en Dar con el Corazón con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 2
   slug: el-jardin-de-todos
   icon: park
@@ -663,6 +765,108 @@ sagas:
       suggested_families:
       - story
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de semillas del jardín para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Jardín de Todos.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Jardín de Todos.
+    key_vocabulary:
+    - compartido
+    - cuidar
+    - turno
+    - colaborar
+    prior_knowledge: Ha completado los seis temas de la saga El Jardín de Todos (aventura 7, saga 2).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/el-jardin-de-todos/cosas-que-usamos-entre-todos
+    - jardin-compartido/el-jardin-de-todos/cuidar-lo-que-es-de-todos
+    - jardin-compartido/el-jardin-de-todos/turnarse-y-esperar
+    - jardin-compartido/el-jardin-de-todos/que-pasa-si-alguien-no-ayuda
+    - jardin-compartido/el-jardin-de-todos/pedir-ayuda-y-ofrecer-ayuda
+    - jardin-compartido/el-jardin-de-todos/un-jardin-que-crece-con-todos
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo identificar un recurso compartido por varias personas y cómo identificar una acción de cuidado para un recurso compartido.
+      narrative_beat: Zara Vex abre un cofre de semillas del jardín y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo aplicar la idea de turnarse ante un recurso compartido y cómo explicar una consecuencia de no colaborar.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre practicar tanto pedir como ofrecer ayuda.
+      narrative_beat: Dr. Rho presenta una escena nueva del jardín y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo resumir cómo la colaboración ayuda a crecer, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Jardín de Todos con una saga anterior del jardín y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Jardín de Todos con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - compartido
+    prior_knowledge: Conoce El Jardín de Todos (aventura 7) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/con-quien-si-se-comparte
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Jardín de Todos.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Jardín de Todos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del jardín, Dina combina lo aprendido en El Jardín de Todos con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 3
   slug: una-parte-para-el-bien-comun
   icon: handshake
@@ -998,6 +1202,108 @@ sagas:
       suggested_families:
       - money
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de semillas del jardín para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Una Parte para el Bien Común.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Una Parte para el Bien Común.
+    key_vocabulary:
+    - comunidad
+    - aportar
+    - usar
+    - cooperar
+    prior_knowledge: Ha completado los seis temas de la saga Una Parte para el Bien Común (aventura 7, saga 3).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/una-parte-para-el-bien-comun/cosas-que-necesitamos-entre-todos
+    - jardin-compartido/una-parte-para-el-bien-comun/una-parte-pequena-de-cada-quien
+    - jardin-compartido/una-parte-para-el-bien-comun/a-donde-va-esa-parte
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - jardin-compartido/una-parte-para-el-bien-comun/cuando-todos-ponen-su-parte-todos-ganan
+    - jardin-compartido/una-parte-para-el-bien-comun/practicar-repartir-para-el-bien-de-todos
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo nombrar algo que una comunidad entera necesita y cómo explicar que una parte pequeña de cada quien ayuda a mantener lo de todos.
+      narrative_beat: Zara Vex abre un cofre de semillas del jardín y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo explicar en qué se usa el dinero de la caja común y cómo explicar por qué cooperar resuelve mejor un problema grande.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre explicar cómo se benefician todas las familias.
+      narrative_beat: Dr. Rho presenta una escena nueva del jardín y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo repartir un fondo comunitario entre varias necesidades, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Una Parte para el Bien Común con una saga anterior del jardín y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Una Parte para el Bien Común con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - comunidad
+    prior_knowledge: Conoce Una Parte para el Bien Común (aventura 7) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - jardin-compartido/el-jardin-de-todos/turnarse-y-esperar
+    - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Una Parte para el Bien Común.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Una Parte para el Bien Común.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del jardín, Dina combina lo aprendido en Una Parte para el Bien Común con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 4
   slug: celebrar-juntos
   icon: celebration
@@ -1328,3 +1634,424 @@ sagas:
       suggested_families:
       - story
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de semillas del jardín para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Celebrar Juntos.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Celebrar Juntos.
+    key_vocabulary:
+    - celebración
+    - tarea
+    - agradecer
+    - logro
+    prior_knowledge: Ha completado los seis temas de la saga Celebrar Juntos (aventura 7, saga 4).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/celebrar-juntos/organizar-una-fiesta-comunitaria
+    - jardin-compartido/celebrar-juntos/repartir-tareas-y-responsabilidades
+    - jardin-compartido/celebrar-juntos/agradecer-a-quien-ayudo
+    - jardin-compartido/celebrar-juntos/medir-lo-que-logramos-juntos
+    - jardin-compartido/celebrar-juntos/compartir-lo-que-sobro
+    - jardin-compartido/celebrar-juntos/el-jardin-compartido-un-ano-despues
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo identificar los elementos básicos de una celebración comunitaria y cómo repartir tareas de una celebración de forma equilibrada.
+      narrative_beat: Zara Vex abre un cofre de semillas del jardín y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo expresar un agradecimiento concreto a quien ayudó y cómo enumerar logros conseguidos gracias a la cooperación.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre proponer una decisión razonable sobre un sobrante comunitario.
+      narrative_beat: Dr. Rho presenta una escena nueva del jardín y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo imaginar el futuro del jardín compartido, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Celebrar Juntos con una saga anterior del jardín y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Celebrar Juntos con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - celebración
+    prior_knowledge: Conoce Celebrar Juntos (aventura 7) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - aldea-del-ahorro/el-frasco-de-los-suenos/elijo-mi-frasco-de-ahorro
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Celebrar Juntos.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Celebrar Juntos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del jardín, Dina combina lo aprendido en Celebrar Juntos con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-jardin
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Garden's Grand Mission
+    es-MX: La Gran Misión del Jardín
+    pt-BR: A Grande Missão do Jardim
+  description:
+    en-US: A final quest that replays every root of the shared garden -- giving, caring, contributing, and celebrating -- one last time.
+    es-MX: Una misión final que repasa cada raíz del jardín compartido -- dar, cuidar, aportar y celebrar -- una última vez.
+    pt-BR: Uma missão final que revisita cada raiz do jardim compartilhado -- doar, cuidar, contribuir e celebrar -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-de-la-gran-mision-del-jardin
+    kind: review_quest
+    title_es: El Desafío de la Gran Misión del Jardín
+    concept: 'Dr. Rho anuncia la Gran Misión del jardín: un desafío final que reúne, sin enseñar nada nuevo, todo lo aprendido sobre dar con el corazón.'
+    learning_objective: Al final, el niño puede recordar y aplicar qué significa dar, cómo elegir a quién ayudar y cómo dar sin esperar algo a cambio.
+    key_vocabulary:
+    - dar
+    - ayudar
+    - sincero
+    prior_knowledge: Ha completado las cuatro sagas de El Jardín Compartido.
+    fact_refs: []
+    review_of:
+    - jardin-compartido/dar-con-el-corazon/que-significa-dar
+    - jardin-compartido/dar-con-el-corazon/elegir-a-quien-ayudar
+    - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
+    - jardin-compartido/dar-con-el-corazon/la-alegria-de-compartir
+    lessons:
+    - position: 1
+      slug: el-jardin-vuelve-a-florecer
+      micro_objective: Recordar qué significa dar algo propio para ayudar a otra persona.
+      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el jardín y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre dar y cooperar.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-a-quien-ayudar-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir a quién ayudar primero entre varias necesidades.
+      narrative_beat: Zara Vex presenta varias necesidades nuevas del jardín y reta a Dina a elegir, sin repasar la lección, a quién ayudar primero.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: dar-sin-condicion-otra-vez
+      micro_objective: Recordar cómo distinguir dar sinceramente de ayudar solo esperando algo a cambio.
+      narrative_beat: Dino recuerda, sin ayuda, la diferencia entre dar de verdad y dar esperando un favor de regreso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-alegria-de-dar
+      micro_objective: Aplicar con seguridad, describiendo cómo se siente, un acto propio de dar sin condiciones.
+      narrative_beat: Dina describe, sin ayuda de Dr. Rho, cómo se sintió al dar algo propio a una familia nueva del jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 2
+    slug: cuidar-el-jardin-de-la-mision
+    kind: review_quest
+    title_es: Cuidar el Jardín de la Misión
+    concept: Dina y Dino recuerdan cómo cuidar los recursos compartidos del jardín, turnarse con justicia y pedir u ofrecer ayuda.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo cuidar un recurso compartido, turnarse con justicia y ofrecer ayuda sin que se la pidan.
+    key_vocabulary:
+    - compartido
+    - turno
+    - colaborar
+    prior_knowledge: Ha repasado la saga de dar con el corazón (tema anterior).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/el-jardin-de-todos/cosas-que-usamos-entre-todos
+    - jardin-compartido/el-jardin-de-todos/cuidar-lo-que-es-de-todos
+    - jardin-compartido/el-jardin-de-todos/que-pasa-si-alguien-no-ayuda
+    - jardin-compartido/el-jardin-de-todos/pedir-ayuda-y-ofrecer-ayuda
+    lessons:
+    - position: 1
+      slug: el-pozo-comun-otra-vez
+      micro_objective: Recordar qué recursos del jardín usan varias familias en conjunto.
+      narrative_beat: Zara Vex recorre el jardín y reta a Dino a recordar, sin ayuda, qué herramientas y espacios son compartidos por todos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuidar-lo-de-todos-otra-vez
+      micro_objective: Recordar una acción de cuidado apropiada para un recurso compartido.
+      narrative_beat: Dina recuerda, de memoria, cómo cuidar la carretilla y las herramientas comunes del jardín.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: las-consecuencias-otra-vez
+      micro_objective: Recordar qué pasa cuando alguien no cumple su turno de cuidado compartido.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda qué pasó cuando una familia olvidó regar las plantas comunes.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: ofrecer-ayuda-para-la-mision
+      micro_objective: Aplicar con seguridad el ofrecer ayuda antes de que alguien la pida.
+      narrative_beat: Dino ofrece ayuda a una vecina del jardín sin que ella se la pida, tal como aprendió en esta saga.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 3
+    slug: la-caja-comun-de-la-mision
+    kind: review_quest
+    title_es: La Caja Común de la Misión
+    concept: Dina recuerda por qué cada familia aporta una parte pequeña a la caja común y en qué se usa ese dinero.
+    learning_objective: Al final, el niño puede recordar y aplicar por qué una aportación pequeña de cada quien mantiene lo que usa toda la comunidad.
+    key_vocabulary:
+    - aportar
+    - cooperar
+    - beneficio
+    prior_knowledge: Ha repasado la saga de El Jardín de Todos (tema anterior).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/una-parte-para-el-bien-comun/una-parte-pequena-de-cada-quien
+    - jardin-compartido/una-parte-para-el-bien-comun/a-donde-va-esa-parte
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - jardin-compartido/una-parte-para-el-bien-comun/cuando-todos-ponen-su-parte-todos-ganan
+    lessons:
+    - position: 1
+      slug: la-caja-de-madera-otra-vez
+      micro_objective: Recordar por qué cada familia del bosque deja una pequeña parte de sus monedas en la caja común.
+      narrative_beat: Dr. Rho muestra de nuevo la caja común y pregunta a Dina si recuerda por qué cada familia aporta una parte pequeña.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-puente-arreglado-otra-vez
+      micro_objective: Recordar en qué se usó el dinero de la caja común para arreglar algo de todos.
+      narrative_beat: Zara Vex recuerda a Dino el puente roto y le pregunta si recuerda cómo se pagó el arreglo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: cooperar-es-mas-fuerte-otra-vez
+      micro_objective: Recordar por qué cooperar resuelve mejor un problema grande que actuar solo.
+      narrative_beat: Dina recuerda, sin ayuda, por qué la tabla pesada del puente no se pudo levantar sola pero sí entre varios vecinos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: todos-ganan-para-la-mision
+      micro_objective: Aplicar con seguridad la idea de que una aportación pequeña beneficia a toda la comunidad.
+      narrative_beat: Dina explica, sin ayuda de Dr. Rho, por qué vale la pena aportar su parte pequeña a la caja común.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 4
+    slug: la-fiesta-de-la-gran-mision
+    kind: review_quest
+    title_es: La Fiesta de la Gran Misión
+    concept: Dina organiza la celebración final del jardín, recordando cómo repartir tareas, agradecer y decidir qué hacer con lo que sobra.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo repartir tareas de forma equilibrada, agradecer a quien ayudó y decidir qué hacer con un sobrante.
+    key_vocabulary:
+    - celebración
+    - agradecer
+    - sobrante
+    prior_knowledge: Ha repasado la saga de Una Parte para el Bien Común (tema anterior).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/celebrar-juntos/repartir-tareas-y-responsabilidades
+    - jardin-compartido/celebrar-juntos/agradecer-a-quien-ayudo
+    - jardin-compartido/celebrar-juntos/medir-lo-que-logramos-juntos
+    - jardin-compartido/celebrar-juntos/compartir-lo-que-sobro
+    lessons:
+    - position: 1
+      slug: repartir-tareas-otra-vez
+      micro_objective: Recordar cómo repartir las tareas de una celebración comunitaria de forma equilibrada.
+      narrative_beat: Dino recuerda, sin ayuda, cómo repartió las tareas de decoración, comida y música entre las familias del jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: agradecer-otra-vez
+      micro_objective: Recordar una forma apropiada de agradecer a alguien que ayudó en la comunidad.
+      narrative_beat: Dina recuerda, de memoria, una forma sincera de agradecer a quien le prestó herramientas durante la temporada.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: los-logros-del-jardin-otra-vez
+      micro_objective: Recordar al menos dos logros conseguidos gracias a la cooperación del jardín.
+      narrative_beat: 'Zara Vex pregunta a Dino si recuerda los logros del jardín: el puente, el camino y la primera cosecha.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: el-sobrante-para-la-mision
+      micro_objective: Aplicar con seguridad una decisión razonable sobre qué hacer con un sobrante comunitario.
+      narrative_beat: Dina decide, sin ayuda de Dr. Rho, qué hacer con la comida y el dinero que sobraron de la fiesta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 5
+    slug: el-reto-completo-del-jardin
+    kind: review_quest
+    title_es: El Reto Completo del Jardín
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del jardín: dar, cuidar lo compartido, aportar y celebrar juntos.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido dar con el corazón, cuidar lo compartido, aportar al bien común y celebrar en comunidad.
+    key_vocabulary:
+    - comunidad
+    - cooperar
+    - compartir
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/dar-con-el-corazon/la-alegria-de-compartir
+    - jardin-compartido/el-jardin-de-todos/un-jardin-que-crece-con-todos
+    - jardin-compartido/una-parte-para-el-bien-comun/cuando-todos-ponen-su-parte-todos-ganan
+    - jardin-compartido/celebrar-juntos/medir-lo-que-logramos-juntos
+    lessons:
+    - position: 1
+      slug: las-cuatro-raices-del-jardin
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del jardín: dar, cuidar, aportar y celebrar.'
+      narrative_beat: Dr. Rho reúne a todo el jardín y repasa, con Dina y Dino, las cuatro raíces que sostienen la comunidad.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: una-familia-nueva-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas del jardín para ayudar a una familia nueva a integrarse a la comunidad.
+      narrative_beat: Zara Vex presenta a una familia nueva del jardín y reta a Dino a mostrarle cómo dar, cuidar, aportar y celebrar juntos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-raices
+      micro_objective: Aplicar con seguridad las cuatro áreas del jardín en un desafío único que las combina todas.
+      narrative_beat: Dina resuelve un desafío del jardín que combina, de una sola vez, dar, cuidar, aportar y celebrar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-completo-del-jardin
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del jardín aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro raíces del jardín, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 6
+    slug: la-gran-mision-del-jardin
+    kind: review_quest
+    title_es: La Gran Misión del Jardín
+    concept: El gran cierre de la aventura combina la cooperación del jardín con lecciones de aventuras anteriores sobre ganar, ahorrar y confiar.
+    learning_objective: Al final, el niño puede aplicar dar, cuidar y aportar al bien común, conectándolo con lo aprendido sobre ganar dinero, ahorrar en frascos y confiar en la comunidad.
+    key_vocabulary:
+    - dar
+    - cooperar
+    - comunidad
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del jardín (tema anterior).
+    fact_refs: []
+    review_of:
+    - jardin-compartido/dar-con-el-corazon/cuanto-puedo-dar-sin-quedarme-sin-nada
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+    - aldea-del-ahorro/el-frasco-de-los-suenos/elijo-mi-frasco-de-ahorro
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    lessons:
+    - position: 1
+      slug: el-jardin-y-el-bosque
+      micro_objective: Recordar por qué un trabajo ayuda a alguien más, tal como se aprendió en el bosque de la abundancia.
+      narrative_beat: Dr. Rho compara el trabajo del bosque, que ayuda a otros, con la ayuda que las familias se dan en el jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-jardin-y-la-aldea
+      micro_objective: Recordar cómo el frasco de compartir de la aldea del ahorro se relaciona con dar en el jardín.
+      narrative_beat: Zara Vex recuerda a Dino su frasco de compartir de la aldea del ahorro, y cómo se parece al dar del jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: la-gran-mision-en-una-sola-cosecha
+      micro_objective: Aplicar en un desafío final la cooperación del jardín junto con lo recordado sobre trabajo y ahorro.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando la cooperación del jardín con todo lo que recuerda sobre trabajo y ahorro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-jardin-sigue-creciendo-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del jardín.
+      narrative_beat: Con la cosecha compartida entre todos, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión del jardín.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

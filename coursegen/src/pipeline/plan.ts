@@ -27,6 +27,47 @@ export const planSkeletonSchema = z.object({
 export type PlanSegment = z.infer<typeof planSegmentSchema>;
 export type PlanSkeleton = z.infer<typeof planSkeletonSchema>;
 
+// Spaced-review layer (COURSE_ENGINE.md §3.1) — review-kind topics ground
+// their plan/write prompts in the teaching topics they consolidate.
+export type ReviewTopicKind = 'review_spaced' | 'review_interleaved' | 'review_quest';
+
+export interface ReviewSourceSummary {
+  path: string;
+  concept: string;
+  learningObjective: string;
+  keyVocabulary: string[];
+}
+
+export interface PlanReviewContext {
+  kind: ReviewTopicKind;
+  sources: ReviewSourceSummary[];
+}
+
+/** Difficulty ceiling communicated to the model for review-kind lessons. */
+export const REVIEW_DIFFICULTY_CAP: Record<ReviewTopicKind, 1 | 2 | 3 | 4 | 5> = {
+  review_spaced: 2,
+  review_interleaved: 2,
+  review_quest: 3,
+};
+
+export const CONSOLIDATION_INSTRUCTION =
+  'CONSOLIDATION LESSON: retrieval and application ONLY — never introduce a concept absent from the sources.';
+export const INTERLEAVE_INSTRUCTION = 'Interleave at least 2 distinct source topics within this lesson plan.';
+
+export function effectiveDifficulty(ctx: PlanContext): 1 | 2 | 3 | 4 | 5 {
+  if (!ctx.review) return ctx.lesson.difficulty;
+  return Math.min(ctx.lesson.difficulty, REVIEW_DIFFICULTY_CAP[ctx.review.kind]) as 1 | 2 | 3 | 4 | 5;
+}
+
+export function renderReviewSourcesBlock(sources: readonly ReviewSourceSummary[]): string {
+  return sources
+    .map(
+      (s, i) =>
+        `${i + 1}. [${s.path}] concept: ${s.concept}\n   objective: ${s.learningObjective}\n   vocabulary: ${s.keyVocabulary.join(', ')}`,
+    )
+    .join('\n');
+}
+
 export interface PlanContext {
   tier: string;
   taxonomy: TaxonomyFile;
@@ -45,6 +86,8 @@ export interface PlanContext {
     difficulty: 1 | 2 | 3 | 4 | 5;
     suggestedFamilies: string[];
   };
+  /** Present only for review_spaced/review_interleaved/review_quest topics. */
+  review?: PlanReviewContext;
 }
 
 export interface PlanResult {
@@ -196,6 +239,10 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
     'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
     'Use ONLY the type ids listed in the palette below — nothing else.',
+    ctx.review ? CONSOLIDATION_INSTRUCTION : undefined,
+    ctx.review && (ctx.review.kind === 'review_interleaved' || ctx.review.kind === 'review_quest')
+      ? INTERLEAVE_INSTRUCTION
+      : undefined,
   ]
     .filter((line): line is string => Boolean(line))
     .map((line, i) => `${i + 1}. ${line}`)
@@ -211,9 +258,17 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     `Prior knowledge: ${ctx.topic.priorKnowledge}`,
     `Lesson micro-objective: ${ctx.lesson.microObjective}`,
     `Narrative beat: ${ctx.lesson.narrativeBeat}`,
-    `Target difficulty: ${ctx.lesson.difficulty}/5`,
+    `Target difficulty: ${effectiveDifficulty(ctx)}/5`,
     `Suggested families: ${ctx.lesson.suggestedFamilies.join(', ') || '(none specified)'}`,
   ].join('\n');
+
+  const reviewBlock = ctx.review
+    ? [
+        '',
+        `SOURCE TOPICS (this is a ${ctx.review.kind} review lesson — ground every segment in these, introduce nothing new):`,
+        renderReviewSourcesBlock(ctx.review.sources),
+      ].join('\n')
+    : '';
 
   const user = [
     'MIX RULES:',
@@ -221,6 +276,7 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     '',
     'LESSON CONTEXT:',
     context,
+    reviewBlock,
     '',
     'PALETTE (allowed types for this age tier only):',
     paletteText,

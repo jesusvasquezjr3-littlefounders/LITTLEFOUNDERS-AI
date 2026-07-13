@@ -40,15 +40,23 @@ function main(): void {
     const errors = result.issues.filter((i) => i.level === 'error');
     const warnings = result.issues.filter((i) => i.level === 'warning');
 
+    let teachingLessons = 0;
+    let reviewLessons = 0;
+    for (const a of result.course.adventures) {
+      for (const s of a.data.sagas) {
+        for (const t of s.topics) {
+          if (t.kind === 'teaching') teachingLessons += t.lessons.length;
+          else reviewLessons += t.lessons.length;
+        }
+      }
+    }
+
     console.log(`\n── ${path.relative(PACKAGE_ROOT, courseDir) || courseDir} ──`);
     console.log(
       `  slots: ${result.course.adventures.length} adventure file(s) loaded, ` +
         `${result.course.adventures.reduce((n, a) => n + a.data.sagas.length, 0)} sagas, ` +
         `${result.course.adventures.reduce((n, a) => n + a.data.sagas.reduce((m, s) => m + s.topics.length, 0), 0)} topics, ` +
-        `${result.course.adventures.reduce(
-          (n, a) => n + a.data.sagas.reduce((m, s) => m + s.topics.reduce((k, t) => k + t.lessons.length, 0), 0),
-          0,
-        )} lesson blueprints`,
+        `${teachingLessons + reviewLessons} lesson blueprints (${teachingLessons} teaching, ${reviewLessons} review)`,
     );
 
     for (const w of warnings) console.log(`  WARN  ${path.relative(PACKAGE_ROOT, w.file)}: ${w.message}`);

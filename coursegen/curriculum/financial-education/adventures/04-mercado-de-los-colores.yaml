@@ -226,6 +226,85 @@ sagas:
             narrative_beat: "Dina completa su propia clasificación final antes de seguir explorando el mercado de colores."
             difficulty: 3
             suggested_families: [money, choice]
+      - position: 7
+        slug: cofre-del-repaso-de-necesidades
+        title_es: "El Cofre del Repaso de Necesidades"
+        concept: "Antes de ver los precios del mercado, la tripulación abre el cofre de recuerdos y repasa necesidades y deseos."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, la diferencia entre necesidad y deseo, y cómo priorizar con monedas limitadas."
+        key_vocabulary: [necesidad, deseo, prioridad, lista]
+        prior_knowledge: "Completó los 6 temas de Lo Que Necesito de Verdad."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-quiero-pero-no-necesito
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/a-veces-algo-es-necesidad-y-deseo-a-la-vez
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/elijo-que-es-mas-importante
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/mi-lista-de-necesidades-de-hoy
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/separar-necesidades-y-deseos
+        lessons:
+          - position: 1
+            slug: recuerdo-una-necesidad-basica
+            micro_objective: "Recuerda, sin ayuda, una necesidad básica para vivir bien vista en esta saga."
+            narrative_beat: "Rho abre el cofre y recuerda la primera vez que buscó agua en el mercado, antes que cualquier otra cosa."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-un-deseo-sin-culpa
+            micro_objective: "Recuerda, sin ayuda, un deseo propio distinto de sus necesidades, sin sentir culpa por tenerlo."
+            narrative_beat: "Zara recuerda el juguete brillante que deseaba, aunque no lo necesitaba de verdad."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: clasifico-recuerdos-del-mercado
+            micro_objective: "Clasifica, sin ayuda, 4 objetos recordados entre necesidad y deseo."
+            narrative_beat: "Dino clasifica varios recuerdos del cofre entre lo que de verdad necesitaba y lo que solo deseaba."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-de-necesidades
+            micro_objective: "Aplica sin ayuda lo recordado: prioriza una necesidad sobre un deseo con monedas limitadas."
+            narrative_beat: "Dina cierra el cofre de necesidades, lista para ver los precios de todo el mercado."
+            difficulty: 2
+            suggested_families: [money, choice]
+      - position: 8
+        slug: reto-entrelazado-de-necesidades
+        title_es: "Reto Entrelazado de Necesidades"
+        concept: "Mezclamos decidir cuánto guardar y cuánto gastar, como en la aldea, con priorizar necesidades en el mercado."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre guardar y gastar con ideas sobre priorizar necesidades."
+        key_vocabulary: [necesidad, deseo, guardar, gastar]
+        prior_knowledge: "Completó El Cofre del Repaso de Necesidades (tema anterior) y La Aldea del Ahorro (aventura anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - aldea-del-ahorro/metas-de-la-aldea/cuanto-guardo-cuanto-gasto
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/elijo-que-es-mas-importante
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/mi-lista-de-necesidades-de-hoy
+        lessons:
+          - position: 1
+            slug: guardar-o-cubrir-una-necesidad
+            micro_objective: "Combina decidir cuánto guardar y cuánto gastar con priorizar una necesidad frente a un deseo."
+            narrative_beat: "Rho recuerda que en la aldea decidía cuánto guardar, y ahora decide primero cubrir sus necesidades."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: mi-lista-y-mi-frasco
+            micro_objective: "Conecta armar una lista de necesidades con haber ahorrado monedas para poder cubrirlas."
+            narrative_beat: "Zara revisa su lista de necesidades del mercado y recuerda las monedas que guardó en la aldea para esto."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 3
+            slug: elijo-gastar-en-lo-importante
+            micro_objective: "Elige, entre gastar en una necesidad y gastar en un deseo, la opción más importante, aplicando ambas sagas."
+            narrative_beat: "Dino elige gastar primero en lo que necesita, recordando por qué decidía cuánto gastar en la aldea."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cubro-mi-lista-con-lo-que-ahorre
+            micro_objective: "Completa, sin ayuda, la cobertura de una lista de necesidades usando monedas ya ahorradas."
+            narrative_beat: "Dina cubre toda su lista de necesidades del mercado usando las monedas que guardó con paciencia."
+            difficulty: 2
+            suggested_families: [money, storyplay]
 
   - position: 2
     slug: el-mercado-y-sus-precios
@@ -436,6 +515,85 @@ sagas:
             micro_objective: "Elige, sin ayuda, la mejor opción de compra dentro de una historia con varios puestos distintos."
             narrative_beat: "Dina recorre el mercado completo y elige, por sí sola, el mejor precio para su compra final."
             difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-de-precios
+        title_es: "El Cofre del Repaso de Precios"
+        concept: "Repasamos desde el cofre de recuerdos cómo leer, comparar y decidir con precios del mercado."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, leer precios y compararlos entre puestos."
+        key_vocabulary: [precio, comparar, barato, caro]
+        prior_knowledge: "Completó los 6 temas de El Mercado y sus Precios."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - mercado-de-los-colores/el-mercado-y-sus-precios/todo-en-el-mercado-tiene-un-precio
+          - mercado-de-los-colores/el-mercado-y-sus-precios/reviso-el-precio-antes-de-decidir
+          - mercado-de-los-colores/el-mercado-y-sus-precios/dos-puestos-dos-precios
+          - mercado-de-los-colores/el-mercado-y-sus-precios/lo-barato-y-lo-caro
+          - mercado-de-los-colores/el-mercado-y-sus-precios/vale-la-pena-pagar-mas
+          - mercado-de-los-colores/el-mercado-y-sus-precios/elijo-el-mejor-precio
+        lessons:
+          - position: 1
+            slug: recuerdo-leer-un-precio
+            micro_objective: "Recuerda, sin ayuda, cómo leer el precio escrito en la etiqueta de un objeto."
+            narrative_beat: "Rho encuentra en el cofre su primera etiqueta de precio leída en el mercado."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: recuerdo-comparar-dos-puestos
+            micro_objective: "Recuerda, sin ayuda, cómo comparó el mismo objeto en dos puestos distintos."
+            narrative_beat: "Zara recuerda los dos puestos donde comparó el precio de la misma fruta."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-el-precio-mas-conveniente
+            micro_objective: "Elige, entre 2 precios recordados, cuál conviene más para el mismo objeto."
+            narrative_beat: "Dino compara dos precios guardados en su memoria y elige el más conveniente."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-de-precios
+            micro_objective: "Aplica sin ayuda lo recordado: decide si vale la pena pagar más por mejor calidad."
+            narrative_beat: "Dina cierra el cofre de precios, lista para armar su bolsa de compras."
+            difficulty: 2
+            suggested_families: [choice, story]
+      - position: 8
+        slug: reto-entrelazado-de-precios
+        title_es: "Reto Entrelazado de Precios"
+        concept: "Mezclamos identificar una necesidad con comparar su precio, y recordamos tener una meta para no gastar de más."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre necesidades y metas con ideas sobre comparar precios."
+        key_vocabulary: [necesidad, precio, comparar, meta]
+        prior_knowledge: "Completó El Cofre del Repaso de Precios (tema anterior) y Lo Que Necesito de Verdad (saga anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/elijo-que-es-mas-importante
+          - mercado-de-los-colores/el-mercado-y-sus-precios/dos-puestos-dos-precios
+          - aldea-del-ahorro/el-frasco-de-los-suenos/tengo-un-sueno-que-cuesta-monedas
+        lessons:
+          - position: 1
+            slug: comparo-precios-de-lo-que-necesito
+            micro_objective: "Combina identificar una necesidad con comparar su precio en dos puestos distintos."
+            narrative_beat: "Rho identifica que el agua es una necesidad y compara su precio en dos puestos del mercado."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 2
+            slug: mi-meta-y-el-mejor-precio
+            micro_objective: "Conecta tener una meta de ahorro con elegir el mejor precio para no gastar de más."
+            narrative_beat: "Zara recuerda su meta del telescopio mientras busca el mejor precio para su próxima compra."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: priorizo-y-comparo-a-la-vez
+            micro_objective: "Prioriza una necesidad y compara su precio en 2 puestos antes de decidir la compra."
+            narrative_beat: "Dino prioriza lo que necesita y compara precios antes de decidir dónde comprar."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: compro-lo-necesario-al-mejor-precio
+            micro_objective: "Completa, sin ayuda, la compra de una necesidad eligiendo el mejor precio disponible."
+            narrative_beat: "Dina compra lo que necesita al mejor precio del mercado, orgullosa de su decisión."
+            difficulty: 2
             suggested_families: [money, storyplay]
 
   - position: 3
@@ -648,6 +806,85 @@ sagas:
             narrative_beat: "Dina paga su bolsa de compras completa y sonríe: todo cupo justo dentro de sus monedas."
             difficulty: 3
             suggested_families: [money, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-de-la-bolsa
+        title_es: "El Cofre del Repaso de la Bolsa"
+        concept: "Repasamos desde el cofre de recuerdos cómo armar y ajustar una bolsa de compras dentro de un límite."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, contar monedas disponibles y ajustar una lista dentro de un límite."
+        key_vocabulary: [límite, bolsa, cabe, ajustar]
+        prior_knowledge: "Completó los 6 temas de Mi Bolsa de Compras."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        kind: review_spaced
+        review_of:
+          - mercado-de-los-colores/mi-bolsa-de-compras/tengo-solo-estas-monedas-para-gastar
+          - mercado-de-los-colores/mi-bolsa-de-compras/elijo-que-cabe-en-mi-bolsa
+          - mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+          - mercado-de-los-colores/mi-bolsa-de-compras/si-me-sobra-que-me-doy
+          - mercado-de-los-colores/mi-bolsa-de-compras/si-no-me-alcanza-que-cambio
+          - mercado-de-los-colores/mi-bolsa-de-compras/completo-mis-compras-del-mercado
+        lessons:
+          - position: 1
+            slug: recuerdo-cuantas-monedas-tenia
+            micro_objective: "Recuerda, sin ayuda, cómo contó sus monedas disponibles antes de entrar a comprar."
+            narrative_beat: "Rho recuerda contar sus monedas cuidadosamente antes de entrar al mercado."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: recuerdo-que-cupo-en-mi-bolsa
+            micro_objective: "Recuerda, sin ayuda, una combinación de objetos que cupo dentro de su límite de monedas."
+            narrative_beat: "Zara recuerda las dos frutas que juntas cupieron perfecto en su bolsa de compras."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 3
+            slug: ajusto-una-lista-recordada
+            micro_objective: "Ajusta, sin ayuda, una lista de compras recordada que no alcanzaba, cambiando o quitando algo."
+            narrative_beat: "Dino recuerda cuando su lista no alcanzaba y cómo la ajustó para que sí cupiera."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: cierro-el-cofre-de-la-bolsa
+            micro_objective: "Aplica sin ayuda lo recordado: completa una compra que cubre necesidades dentro de un límite."
+            narrative_beat: "Dina cierra el cofre de la bolsa de compras, lista para decidir con más inteligencia todavía."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-de-la-bolsa
+        title_es: "Reto Entrelazado de la Bolsa"
+        concept: "Mezclamos clasificar precios como baratos o caros, priorizar necesidades y contar ganancias del bosque."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre precio y necesidad con contar monedas ganadas."
+        key_vocabulary: [barato, caro, necesidad, monedas]
+        prior_knowledge: "Completó El Cofre del Repaso de la Bolsa (tema anterior) y las sagas previas del mercado."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - mercado-de-los-colores/el-mercado-y-sus-precios/lo-barato-y-lo-caro
+          - mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/cuento-lo-que-gane
+        lessons:
+          - position: 1
+            slug: elijo-lo-barato-para-que-alcance
+            micro_objective: "Combina clasificar un objeto como barato con hacer que su lista de necesidades quepa en su bolsa."
+            narrative_beat: "Rho elige la fruta más barata para que su lista de necesidades quepa dentro de su bolsa."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 2
+            slug: mis-monedas-ganadas-y-mi-bolsa
+            micro_objective: "Conecta contar las monedas ganadas en un día con calcular cuánto cabe en su bolsa de compras."
+            narrative_beat: "Zara recuerda contar sus ganancias del bosque, igual que ahora cuenta lo que cabe en su bolsa."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 3
+            slug: primero-lo-barato-y-necesario
+            micro_objective: "Prioriza objetos baratos y necesarios juntos para armar una bolsa dentro de su límite."
+            narrative_beat: "Dino arma su bolsa eligiendo primero lo barato y necesario, dejando lo caro para después."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: armo-mi-bolsa-barata-y-completa
+            micro_objective: "Completa, sin ayuda, una bolsa de compras que cubre necesidades con objetos de buen precio."
+            narrative_beat: "Dina arma su bolsa completa, feliz de haber elegido bien el precio de cada cosa."
+            difficulty: 2
+            suggested_families: [money, storyplay]
 
   - position: 4
     slug: decisiones-inteligentes
@@ -859,3 +1096,324 @@ sagas:
             narrative_beat: "Dina guarda su bolsa vacía y satisfecha: el mercado de colores queda atrás, y El Taller de los Inventores los espera."
             difficulty: 3
             suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-de-decisiones
+        title_es: "El Cofre del Repaso de Decisiones"
+        concept: "Repasamos desde el cofre de recuerdos cómo pensar antes de comprar, comparar y pedir ayuda cuando hace falta."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, pensar antes de comprar, comparar y pedir ayuda."
+        key_vocabulary: [pensar antes, comparar, ayuda, orgulloso]
+        prior_knowledge: "Completó los 6 temas de Decisiones Inteligentes."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+          - mercado-de-los-colores/decisiones-inteligentes/comparo-antes-de-decidir
+          - mercado-de-los-colores/decisiones-inteligentes/lo-necesito-hoy-o-puede-esperar
+          - mercado-de-los-colores/decisiones-inteligentes/pido-ayuda-para-decidir
+          - mercado-de-los-colores/decisiones-inteligentes/una-compra-de-la-que-estoy-orgulloso
+          - mercado-de-los-colores/decisiones-inteligentes/mercado-de-los-colores-repaso-final
+        lessons:
+          - position: 1
+            slug: recuerdo-pensar-antes-de-comprar
+            micro_objective: "Recuerda, sin ayuda, el hábito de pensar un momento antes de decidir una compra."
+            narrative_beat: "Rho recuerda la vez que se detuvo a pensar antes de comprar por impulso."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-pedir-ayuda
+            micro_objective: "Recuerda, sin ayuda, una vez en que pidió ayuda a un adulto para decidir una compra difícil."
+            narrative_beat: "Zara recuerda cuando le pidió consejo a Dina para elegir entre dos compras parecidas."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-la-mejor-decision-recordada
+            micro_objective: "Elige, entre 2 decisiones recordadas, cuál combinó mejor precio, calidad y necesidad."
+            narrative_beat: "Dino compara dos decisiones de compra del cofre y elige cuál fue más inteligente."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-de-decisiones
+            micro_objective: "Aplica sin ayuda lo recordado: explica por qué se siente orgulloso de una compra bien pensada."
+            narrative_beat: "Dina cierra el cofre de decisiones inteligentes, lista para su gran misión final del mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 8
+        slug: reto-entrelazado-de-decisiones
+        title_es: "Reto Entrelazado de Decisiones"
+        concept: "Mezclamos separar necesidad de deseo, ajustar una lista y comparar, con la paciencia aprendida en la aldea del ahorro."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre necesidad, ajuste y comparación con la paciencia de esperar."
+        key_vocabulary: [necesidad, ajustar, comparar, esperar]
+        prior_knowledge: "Completó El Cofre del Repaso de Decisiones (tema anterior) y las sagas previas del mercado y del valle."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/separar-necesidades-y-deseos
+          - mercado-de-los-colores/mi-bolsa-de-compras/si-no-me-alcanza-que-cambio
+          - mercado-de-los-colores/decisiones-inteligentes/comparo-antes-de-decidir
+          - aldea-del-ahorro/paciencia-de-tortuga/lo-que-quiero-ahora-vs-lo-que-quiero-despues
+        lessons:
+          - position: 1
+            slug: pienso-si-es-necesidad-o-deseo
+            micro_objective: "Combina separar necesidad de deseo con pensar un momento antes de decidir una compra."
+            narrative_beat: "Rho piensa un momento y recuerda separar si lo que ve es una necesidad o solo un deseo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: ajusto-mi-lista-comparando-todo
+            micro_objective: "Ajusta una lista que no alcanza comparando precio, calidad y necesidad juntos."
+            narrative_beat: "Zara ajusta su lista cambiando un objeto caro por uno más barato, comparando todo con calma."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: esto-puede-esperar-como-en-el-valle
+            micro_objective: "Decide si una compra puede esperar, recordando la paciencia aprendida en la aldea del ahorro."
+            narrative_beat: "Dino decide que el juguete puede esperar, recordando la paciencia de la tortuga sabia del valle."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: decido-con-todo-lo-que-se
+            micro_objective: "Completa, sin ayuda, una decisión de compra combinando necesidad, ajuste, comparación y paciencia."
+            narrative_beat: "Dina decide su compra final combinando todo lo aprendido en el mercado y en el valle."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+
+  - position: 5
+    slug: la-gran-mision-del-mercado-de-los-colores
+    icon: celebration
+    title:
+      en-US: "The Market's Great Quest"
+      es-MX: "La Gran Misión del Mercado"
+      pt-BR: "A Grande Missão do Mercado"
+    description:
+      en-US: "A citywide colors festival puts every lesson about needs, prices, and smart choices to the test."
+      es-MX: "Un gran festival de colores en la ciudad pone a prueba todo lo aprendido sobre necesidades, precios y decisiones inteligentes."
+      pt-BR: "Um grande festival de cores na cidade coloca à prova tudo o que foi aprendido sobre necessidades, preços e decisões inteligentes."
+    kind: review
+    topics:
+      - position: 1
+        slug: abrimos-nuestro-propio-puesto
+        title_es: "Abrimos Nuestro Propio Puesto"
+        concept: "El mercado anuncia un gran festival de colores donde cada familia puede abrir su propio puesto, y la tripulación decide qué necesita para el suyo."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, distinguir necesidades de deseos al planear su propio puesto."
+        key_vocabulary: [puesto, necesidad, deseo, festival]
+        prior_knowledge: "Completó Lo Que Necesito de Verdad y Mi Bolsa de Compras."
+        fact_refs: []
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/lo-que-necesito-de-verdad
+          - mercado-de-los-colores/mi-bolsa-de-compras/tengo-solo-estas-monedas-para-gastar
+        lessons:
+          - position: 1
+            slug: el-mercado-anuncia-el-festival
+            micro_objective: "Recuerda, sin ayuda, la diferencia entre necesidad y deseo, al escuchar el anuncio del festival."
+            narrative_beat: "El mercado entero se llena de carteles: llega el Gran Festival de los Colores, y cada quien puede abrir su puesto."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: que-necesita-nuestro-puesto
+            micro_objective: "Clasifica, sin ayuda, lo que el puesto realmente necesita frente a lo que solo sería un lujo."
+            narrative_beat: "Rho hace una lista de lo que el puesto de la tripulación necesita de verdad para abrir."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: contamos-nuestras-monedas-para-el-puesto
+            micro_objective: "Cuenta, sin ayuda, las monedas disponibles antes de armar el puesto del festival."
+            narrative_beat: "Zara cuenta las monedas guardadas de toda la tripulación antes de empezar a comprar materiales."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: decidimos-el-nombre-de-nuestro-puesto
+            micro_objective: "Completa, sin ayuda, la decisión de qué necesita el puesto, priorizando lo esencial primero."
+            narrative_beat: "Dina elige el nombre del puesto de la tripulación: 'El Rincón de las Buenas Decisiones'."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: ponemos-precios-justos
+        title_es: "Ponemos Precios Justos"
+        concept: "Antes de abrir el puesto, la tripulación compara precios del mercado para poner etiquetas justas a lo que van a ofrecer."
+        learning_objective: "Al final, el niño compara, sin nueva enseñanza, precios de referencia para decidir un precio justo propio."
+        key_vocabulary: [precio, comparar, justo, etiqueta]
+        prior_knowledge: "Completó El Mercado y sus Precios."
+        fact_refs: [mxn.reference_prices.paleta, mxn.reference_prices.helado]
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/el-mercado-y-sus-precios
+          - mercado-de-los-colores/decisiones-inteligentes/comparo-antes-de-decidir
+        lessons:
+          - position: 1
+            slug: comparamos-precios-del-mercado
+            micro_objective: "Compara, sin ayuda, los precios de 3 puestos vecinos antes de poner el suyo."
+            narrative_beat: "Rho recorre el mercado comparando precios antes de decidir el de su propio puesto."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 2
+            slug: ni-muy-caro-ni-muy-barato
+            micro_objective: "Elige, entre 3 precios posibles, el que le parece más justo comparado con el mercado."
+            narrative_beat: "Zara compara tres precios posibles y elige uno que no sea ni muy caro ni muy barato."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: escribimos-nuestras-etiquetas
+            micro_objective: "Escribe, sin ayuda, el precio correcto en la etiqueta de un objeto del puesto."
+            narrative_beat: "Dino escribe con cuidado el precio en cada etiqueta del puesto de la tripulación."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: revisamos-todos-nuestros-precios
+            micro_objective: "Revisa, sin ayuda, que todos los precios del puesto sean justos comparados con el resto del mercado."
+            narrative_beat: "Dina revisa una última vez todas las etiquetas del puesto antes del gran día del festival."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 3
+        slug: armamos-nuestra-bolsa-de-materiales
+        title_es: "Armamos Nuestra Bolsa de Materiales"
+        concept: "Con monedas limitadas, la tripulación arma la bolsa de materiales que necesita para su puesto, priorizando lo esencial."
+        learning_objective: "Al final, el niño arma, sin nueva enseñanza, una bolsa de compras que cubre lo necesario dentro de un límite de monedas."
+        key_vocabulary: [bolsa, límite, materiales, prioridad]
+        prior_knowledge: "Completó Mi Bolsa de Compras."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/mi-bolsa-de-compras
+          - mercado-de-los-colores/lo-que-necesito-de-verdad/elijo-que-es-mas-importante
+        lessons:
+          - position: 1
+            slug: elegimos-nuestros-materiales
+            micro_objective: "Elige, entre varios materiales, los que de verdad necesita el puesto para abrir."
+            narrative_beat: "Rho revisa los puestos de materiales del mercado buscando lo que su puesto necesita primero."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 2
+            slug: comparo-el-limite-con-lo-que-necesito
+            micro_objective: "Compara el total de monedas disponible con el precio de los materiales necesarios."
+            narrative_beat: "Zara compara sus monedas disponibles con el precio de la tela y la madera para el puesto."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: ajustamos-nuestra-lista-de-materiales
+            micro_objective: "Ajusta, sin ayuda, una lista de materiales que no alcanzaba, cambiando algo por una opción más barata."
+            narrative_beat: "Dino cambia una tela cara por una más sencilla para que la lista completa sí alcance."
+            difficulty: 3
+            suggested_families: [money, choice]
+          - position: 4
+            slug: completamos-nuestra-bolsa-de-materiales
+            micro_objective: "Completa, sin ayuda, la bolsa de materiales del puesto dentro del límite de monedas disponible."
+            narrative_beat: "Dina termina de armar la bolsa de materiales, justo dentro de las monedas que tenían."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 4
+        slug: decidimos-como-verdaderos-expertos
+        title_es: "Decidimos como Verdaderos Expertos"
+        concept: "Antes de abrir el puesto, la tripulación toma decisiones inteligentes: piensan, comparan y a veces piden ayuda."
+        learning_objective: "Al final, el niño aplica, sin nueva enseñanza, el hábito de pensar, comparar y pedir ayuda antes de decidir."
+        key_vocabulary: [pensar antes, comparar, ayuda, decidir]
+        prior_knowledge: "Completó Decisiones Inteligentes."
+        fact_refs: []
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/decisiones-inteligentes
+          - mercado-de-los-colores/el-mercado-y-sus-precios/vale-la-pena-pagar-mas
+        lessons:
+          - position: 1
+            slug: pensamos-antes-de-decidir-el-puesto
+            micro_objective: "Reconoce, sin ayuda, el momento en que la tripulación se detiene a pensar antes de decidir algo del puesto."
+            narrative_beat: "Rho se detiene un momento antes de decidir qué vender primero en el puesto."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparamos-dos-ideas-para-el-puesto
+            micro_objective: "Compara dos ideas para el puesto, pensando en precio, calidad y necesidad juntos."
+            narrative_beat: "Zara compara dos ideas de decoración para el puesto antes de elegir la mejor."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: pedimos-consejo-para-el-puesto
+            micro_objective: "Reconoce, sin ayuda, una decisión difícil del puesto en la que conviene pedir consejo a un adulto."
+            narrative_beat: "Dino pide consejo a Dina sobre cómo organizar mejor el puesto antes de abrir."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 4
+            slug: decidimos-como-todo-un-equipo-experto
+            micro_objective: "Completa, sin ayuda, una decisión final del puesto combinando pensar, comparar y pedir ayuda."
+            narrative_beat: "Dina reúne a la tripulación para la última decisión antes de abrir su puesto en el festival."
+            difficulty: 3
+            suggested_families: [storyplay, choice]
+      - position: 5
+        slug: el-gran-dia-de-ventas
+        title_es: "El Gran Día de Ventas"
+        concept: "Llega el gran día del festival: la tripulación abre su puesto y aplica todo lo aprendido sobre precios, bolsas y decisiones."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, comparación de precios, límite de monedas y decisiones inteligentes en una venta real."
+        key_vocabulary: [vender, precio, decisión, orgulloso]
+        prior_knowledge: "Completó El Mercado y sus Precios, Mi Bolsa de Compras y Decisiones Inteligentes."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/mi-bolsa-de-compras/completo-mis-compras-del-mercado
+          - mercado-de-los-colores/el-mercado-y-sus-precios/elijo-el-mejor-precio
+          - mercado-de-los-colores/decisiones-inteligentes/una-compra-de-la-que-estoy-orgulloso
+        lessons:
+          - position: 1
+            slug: abrimos-nuestro-puesto-al-fin
+            micro_objective: "Reconoce, sin ayuda, el momento de abrir el puesto tras haber comparado precios y armado la bolsa de materiales."
+            narrative_beat: "Rho descubre la cortina del puesto: por fin está listo para el gran día del festival."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+          - position: 2
+            slug: elegimos-el-mejor-precio-para-vender
+            micro_objective: "Elige, sin ayuda, el mejor precio para un objeto del puesto, comparándolo con el resto del mercado."
+            narrative_beat: "Zara ajusta el precio de un objeto especial comparándolo con los puestos vecinos del festival."
+            difficulty: 3
+            suggested_families: [money, choice]
+          - position: 3
+            slug: decidimos-con-cada-cliente
+            micro_objective: "Aplica, sin ayuda, una decisión inteligente al atender a un cliente del puesto en el festival."
+            narrative_beat: "Dino piensa un momento antes de ofrecer el mejor precio a un cliente curioso del festival."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+          - position: 4
+            slug: cerramos-un-dia-de-ventas-exitoso
+            micro_objective: "Suma, sin ayuda, el total de monedas ganadas en el puesto al final de un día de ventas."
+            narrative_beat: "Dina cuenta con orgullo todas las monedas ganadas en el primer gran día de ventas del puesto."
+            difficulty: 3
+            suggested_families: [money, input]
+      - position: 6
+        slug: la-gran-celebracion-del-mercado
+        title_es: "La Gran Celebración del Mercado"
+        concept: "El festival de colores termina en una gran celebración: la tripulación recuerda todo su viaje, desde el archipiélago hasta el mercado."
+        learning_objective: "Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de dinero, esfuerzo, ahorro y decisiones inteligentes de las cuatro aventuras."
+        key_vocabulary: [festival, celebrar, decisión, moneda]
+        prior_knowledge: "Domina todas las sagas de El Mercado de los Colores."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        kind: review_quest
+        review_of:
+          - mercado-de-los-colores/lo-que-necesito-de-verdad
+          - mercado-de-los-colores/el-mercado-y-sus-precios
+          - mercado-de-los-colores/mi-bolsa-de-compras
+          - mercado-de-los-colores/decisiones-inteligentes
+          - archipielago-del-trueque/nace-el-dinero
+          - aldea-del-ahorro/metas-de-la-aldea
+        lessons:
+          - position: 1
+            slug: recordamos-las-cuatro-aventuras
+            micro_objective: "Recuerda y nombra, sin ayuda, un aprendizaje clave de cada una de las cuatro aventuras vividas hasta ahora."
+            narrative_beat: "Toda la tripulación se sienta en el centro del festival a recordar el archipiélago, el bosque, la aldea y el mercado."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 2
+            slug: de-las-monedas-al-puesto-propio
+            micro_objective: "Explica, combinando toda la aventura, cómo las primeras monedas del archipiélago llevaron a tener su propio puesto hoy."
+            narrative_beat: "Rho recuerda su primera moneda del archipiélago mientras cuenta las ganancias de su propio puesto."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 3
+            slug: compartimos-las-ganancias-del-festival
+            micro_objective: "Divide, sin ayuda, las ganancias del festival entre ahorrar, gastar y compartir, aplicando lo aprendido en la aldea."
+            narrative_beat: "Zara divide las monedas ganadas en el festival entre sus tres frascos, como aprendió en la aldea del ahorro."
+            difficulty: 3
+            suggested_families: [money, arrange]
+          - position: 4
+            slug: el-mercado-de-los-colores-celebra-en-grande
+            micro_objective: "Explica en una frase, combinando las cuatro aventuras, qué fue lo que más le enorgulleció aprender sobre el dinero hasta hoy."
+            narrative_beat: "Dina cierra el Gran Festival de los Colores, orgullosa de todo el camino recorrido desde el archipiélago hasta hoy."
+            difficulty: 3
+            suggested_families: [story, storyplay]

@@ -226,6 +226,85 @@ sagas:
             narrative_beat: "Dina reúne a la tripulación para que cada quien cuente su tarea favorita del bosque."
             difficulty: 2
             suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-de-las-semillas
+        title_es: "El Cofre del Repaso de las Semillas"
+        concept: "Antes de seguir con las chambitas, la tripulación abre el cofre de recuerdos y repasa lo aprendido sobre el esfuerzo."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esfuerzo, equipo y orgullo de esta saga."
+        key_vocabulary: [esfuerzo, equipo, terminar, orgulloso]
+        prior_knowledge: "Completó los 6 temas de Semillas de Esfuerzo."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/hacer-algo-toma-esfuerzo
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/ayudar-en-casa-es-un-trabajo
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/diferentes-trabajos-diferentes-esfuerzos
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/trabajar-con-otros
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/terminar-lo-que-empiezo
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/me-siento-orgulloso-de-mi-trabajo
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-primer-esfuerzo
+            micro_objective: "Recuerda y nombra, sin ayuda, una acción que le costó esfuerzo al inicio del bosque."
+            narrative_beat: "Rho abre el cofre de recuerdos del bosque y encuentra la primera ramita que cargó con esfuerzo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-una-tarea-de-equipo
+            micro_objective: "Recuerda y describe, sin ayuda, una tarea que hizo en equipo durante esta saga."
+            narrative_beat: "Zara recuerda el tronco pesado que cargó junto a Dino entre los dos."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-el-recuerdo-de-mas-orgullo
+            micro_objective: "Elige, entre 3 recuerdos del cofre, cuál le dio más orgullo terminar."
+            narrative_beat: "Dino compara tres recuerdos guardados y elige cuál tarea terminada lo hizo sentir más orgulloso."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: cierro-el-cofre-de-las-semillas
+            micro_objective: "Aplica sin ayuda lo recordado: explica por qué terminar una tarea completa vale más que dejarla a medias."
+            narrative_beat: "Dina cierra el cofre de las semillas de esfuerzo, lista para las chambitas que vienen."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 8
+        slug: reto-entrelazado-de-las-semillas
+        title_es: "Reto Entrelazado de las Semillas"
+        concept: "Mezclamos lo aprendido sobre el esfuerzo del bosque con lo aprendido sobre los trueques justos del archipiélago."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre trueques justos con ideas sobre esfuerzo y trabajo en equipo."
+        key_vocabulary: [esfuerzo, trueque, justo, equipo]
+        prior_knowledge: "Completó El Cofre del Repaso de las Semillas (tema anterior) y El Archipiélago del Trueque (aventura anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/trabajar-con-otros
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/terminar-lo-que-empiezo
+        lessons:
+          - position: 1
+            slug: el-trueque-justo-y-el-trabajo-en-equipo
+            micro_objective: "Compara la idea de un trueque justo del archipiélago con la idea de trabajar en equipo del bosque."
+            narrative_beat: "Rho recuerda que un buen trueque deja contentas a las dos partes, igual que un buen trabajo en equipo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: ambos-quedan-contentos
+            micro_objective: "Reconoce, mezclando ambos temas, que un trueque justo y una tarea en equipo se sienten parecido: los dos quedan contentos."
+            narrative_beat: "Zara compara cómo se sintieron los isleños tras un buen trueque con cómo se sienten Dino y Rho tras cargar el tronco juntos."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: termino-mi-parte-del-trato
+            micro_objective: "Ordena, combinando ambas ideas, los pasos de cumplir su parte en un trueque y en un trabajo en equipo."
+            narrative_beat: "Dino ordena en su mente cómo cumplir su palabra, ya sea en un trueque o en una tarea compartida."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: mi-esfuerzo-tambien-es-justo
+            micro_objective: "Explica, sin ayuda, por qué poner esfuerzo propio en una tarea es tan justo como ofrecer algo justo en un trueque."
+            narrative_beat: "Dina cierra el reto entrelazado comparando su esfuerzo de hoy con los trueques justos del archipiélago."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
 
   - position: 2
     slug: chambitas-del-bosque
@@ -437,6 +516,85 @@ sagas:
             narrative_beat: "Dina elige, realiza y cobra su chambita más grande del bosque hasta ahora."
             difficulty: 2
             suggested_families: [storyplay, money]
+      - position: 7
+        slug: cofre-del-repaso-de-las-chambitas
+        title_es: "El Cofre del Repaso de las Chambitas"
+        concept: "Repasamos desde el cofre de recuerdos qué es una chambita, cómo se pide permiso y cómo se cobra con justicia."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de chambita, permiso y recompensa de esta saga."
+        key_vocabulary: [chambita, permiso, recompensa, elegir]
+        prior_knowledge: "Completó los 6 temas de Chambitas del Bosque."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - bosque-de-la-abundancia/chambitas-del-bosque/que-es-una-chambita
+          - bosque-de-la-abundancia/chambitas-del-bosque/chambitas-en-mi-casa
+          - bosque-de-la-abundancia/chambitas-del-bosque/chambitas-para-mis-vecinos
+          - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+          - bosque-de-la-abundancia/chambitas-del-bosque/elijo-una-chambita-para-hoy
+          - bosque-de-la-abundancia/chambitas-del-bosque/cumpli-mi-chambita
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-primera-chambita-del-bosque
+            micro_objective: "Recuerda y describe, sin ayuda, su primera chambita de esta saga."
+            narrative_beat: "Rho encuentra en el cofre la ramita de su primerísima chambita en el bosque."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-por-que-pido-permiso
+            micro_objective: "Recuerda, sin ayuda, por qué pide permiso a un adulto antes de ayudar a un vecino."
+            narrative_beat: "Zara recuerda la vez que le preguntó a Dina si podía ayudar a la familia búho."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-la-chambita-mas-justa
+            micro_objective: "Elige, entre 2 chambitas recordadas, cuál tuvo una recompensa más justa para el esfuerzo dado."
+            narrative_beat: "Dino compara dos chambitas del cofre y decide cuál recompensa le pareció más justa."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-de-chambitas
+            micro_objective: "Aplica sin ayuda lo recordado: completa el ciclo de elegir, hacer y cobrar una chambita."
+            narrative_beat: "Dina cierra el cofre de chambitas, lista para cosechar más monedas en el bosque."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 8
+        slug: reto-entrelazado-de-las-chambitas
+        title_es: "Reto Entrelazado de las Chambitas"
+        concept: "Mezclamos la idea de esfuerzo y recompensa con lo aprendido sobre por qué usamos monedas."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre esfuerzo y recompensa con ideas sobre el uso de monedas."
+        key_vocabulary: [esfuerzo, recompensa, moneda, chambita]
+        prior_knowledge: "Completó El Cofre del Repaso de las Chambitas (tema anterior) y Semillas de Esfuerzo (saga anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/diferentes-trabajos-diferentes-esfuerzos
+          - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+        lessons:
+          - position: 1
+            slug: mas-esfuerzo-mas-monedas
+            micro_objective: "Combina la idea de que unos trabajos piden más esfuerzo con la idea de que una chambita grande da más recompensa."
+            narrative_beat: "Rho compara cargar un tronco pesado con hacer una chambita larga: ambos piden más esfuerzo y dan más a cambio."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-uso-monedas-para-pagar-chambitas
+            micro_objective: "Explica, mezclando ambos temas, por qué las chambitas se pagan con monedas y no con conchas."
+            narrative_beat: "Zara recuerda por qué el archipiélago eligió monedas, y por qué el bosque las usa igual para pagar chambitas."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: ordeno-esfuerzo-y-recompensa-juntos
+            micro_objective: "Ordena 3 chambitas combinando su nivel de esfuerzo con su recompensa en monedas."
+            narrative_beat: "Dino ordena tres chambitas del bosque pensando a la vez en el esfuerzo y en las monedas que dan."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: elijo-mi-chambita-con-todo-lo-aprendido
+            micro_objective: "Elige, sin ayuda, la mejor chambita combinando esfuerzo, recompensa y el valor real de las monedas."
+            narrative_beat: "Dina elige su próxima chambita usando todo lo que sabe sobre esfuerzo, recompensa y monedas."
+            difficulty: 2
+            suggested_families: [money, storyplay]
 
   - position: 3
     slug: la-cosecha-de-monedas
@@ -648,6 +806,85 @@ sagas:
             narrative_beat: "Toda la tripulación celebra su primera semana completa de ganancias antes de seguir el viaje."
             difficulty: 3
             suggested_families: [story, money, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-de-la-cosecha
+        title_es: "El Cofre del Repaso de la Cosecha"
+        concept: "Repasamos desde el cofre de recuerdos cómo contar, sumar y juntar las monedas ganadas."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, sumar y juntar ganancias de varios días."
+        key_vocabulary: [ganar, sumar, registro, semana]
+        prior_knowledge: "Completó los 6 temas de La Cosecha de Monedas."
+        fact_refs: [math.max_single_coin_count_tier1_late]
+        kind: review_spaced
+        review_of:
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/gano-monedas-por-mi-chambita
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/cuento-lo-que-gane
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/junto-mis-ganancias-de-varios-dias
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/a-veces-gano-mas-a-veces-menos
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/guardo-un-registro-de-lo-que-gano
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/mi-primera-semana-de-ganancias
+        lessons:
+          - position: 1
+            slug: recuerdo-mis-primeras-monedas-ganadas
+            micro_objective: "Recuerda y describe, sin ayuda, el momento en que ganó sus primeras monedas."
+            narrative_beat: "Rho encuentra en el cofre la primera moneda que ganó ayudando en el bosque."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: sumo-monedas-recordadas
+            micro_objective: "Suma, sin ayuda, un grupo pequeño de monedas recordadas del cofre, hasta $20."
+            narrative_beat: "Zara cuenta las monedas guardadas en el cofre, sumándolas una por una."
+            difficulty: 1
+            suggested_families: [money, input]
+          - position: 3
+            slug: comparo-dos-semanas-recordadas
+            micro_objective: "Compara el total de dos semanas de ganancias recordadas y elige cuál fue mayor."
+            narrative_beat: "Dino compara dos páginas de su viejo registro de ganancias del bosque."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: cierro-el-cofre-de-la-cosecha
+            micro_objective: "Aplica sin ayuda lo recordado: calcula el total acumulado de varios días de ganancias."
+            narrative_beat: "Dina cierra el cofre de la cosecha de monedas, lista para su próxima semana de esfuerzo."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-de-la-cosecha
+        title_es: "Reto Entrelazado de la Cosecha"
+        concept: "Mezclamos el ciclo de cumplir una chambita con el conteo de monedas ganadas, igual que en el archipiélago."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, el ciclo de cumplir una chambita con contar y juntar monedas."
+        key_vocabulary: [chambita, ganar, sumar, monedas]
+        prior_knowledge: "Completó El Cofre del Repaso de la Cosecha (tema anterior) y Chambitas del Bosque (saga anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - bosque-de-la-abundancia/chambitas-del-bosque/cumpli-mi-chambita
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/cuento-lo-que-gane
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+        lessons:
+          - position: 1
+            slug: cumplo-y-cuento-a-la-vez
+            micro_objective: "Combina el ciclo de cumplir una chambita con el conteo de las monedas que ganó por ella."
+            narrative_beat: "Rho termina una chambita y, de inmediato, cuenta cuántas monedas ganó por su esfuerzo."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 2
+            slug: junto-mis-ganancias-como-en-el-archipielago
+            micro_objective: "Junta monedas ganadas del bosque de la misma forma en que juntaba monedas en el archipiélago."
+            narrative_beat: "Zara junta sus monedas ganadas hoy igual que aprendió a juntar monedas en las islas del archipiélago."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: dos-chambitas-un-solo-total
+            micro_objective: "Suma las ganancias de dos chambitas distintas combinando el ciclo de chambita y el conteo de monedas."
+            narrative_beat: "Dino cumple dos chambitas en un día y suma con cuidado cuánto ganó entre las dos."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: mi-semana-completa-de-cosecha
+            micro_objective: "Calcula, sin ayuda, el total ganado en una semana combinando cumplimiento de chambitas y conteo de monedas."
+            narrative_beat: "Dina cierra su semana sumando, chambita por chambita, todo lo que ganó en el bosque."
+            difficulty: 2
+            suggested_families: [money, storyplay]
 
   - position: 4
     slug: el-circulo-de-dar-y-recibir
@@ -859,3 +1096,323 @@ sagas:
             narrative_beat: "Dina guarda su cofre lleno de monedas ganadas: el bosque queda atrás, y La Aldea del Ahorro los espera."
             difficulty: 3
             suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-del-circulo
+        title_es: "El Cofre del Repaso del Círculo"
+        concept: "Repasamos desde el cofre de recuerdos los talentos, la ayuda y los oficios distintos del bosque."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, las ideas de talento, ayuda y oficio de esta saga."
+        key_vocabulary: [talento, ayudar, agradecimiento, oficio]
+        prior_knowledge: "Completó los 6 temas de El Círculo de Dar y Recibir."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/todos-podemos-trabajar-en-algo
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/me-pagan-porque-ayude
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/diferentes-personas-diferentes-chambitas
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/que-chambita-me-gustaria-hacer
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/bosque-de-la-abundancia-repaso-final
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-talento
+            micro_objective: "Recuerda y nombra, sin ayuda, un talento propio descubierto en esta saga."
+            narrative_beat: "Rho encuentra en el cofre el recuerdo de su talento para resolver acertijos del bosque."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-a-quien-ayude
+            micro_objective: "Recuerda, sin ayuda, a quién ayudó con una chambita durante esta saga."
+            narrative_beat: "Zara recuerda a la familia ardilla a la que ayudó a guardar su cosecha de bellotas."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-el-oficio-mas-util
+            micro_objective: "Elige, entre 3 oficios del bosque recordados, cuál le parece más útil para su comunidad."
+            narrative_beat: "Dino compara distintos oficios del bosque que conoció y elige cuál le pareció más útil."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 4
+            slug: cierro-el-cofre-del-circulo
+            micro_objective: "Aplica sin ayuda lo recordado: conecta la recompensa recibida con la ayuda real que dio."
+            narrative_beat: "Dina cierra el cofre del círculo de dar y recibir, agradecida por todo lo vivido en el bosque."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 8
+        slug: reto-entrelazado-del-circulo
+        title_es: "Reto Entrelazado del Círculo"
+        concept: "Mezclamos trabajar en equipo, sumar ganancias de una semana y ayudar a otros, con la idea del dinero que ayuda a cambiar."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre equipo, ganancias y ayuda a otros con el propósito del dinero."
+        key_vocabulary: [equipo, ganar, ayudar, moneda]
+        prior_knowledge: "Completó El Cofre del Repaso del Círculo (tema anterior) y las sagas previas del bosque."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/trabajar-con-otros
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/mi-primera-semana-de-ganancias
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-ayuda-a-cambiar
+        lessons:
+          - position: 1
+            slug: ayudar-en-equipo-y-ganar-juntos
+            micro_objective: "Combina la idea de trabajar en equipo con la idea de que un trabajo ayuda a alguien más."
+            narrative_beat: "Rho recuerda cómo cargar el tronco en equipo también ayudó a toda la tripulación a cruzar el río."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: mi-semana-de-ganancias-ayudo-a-otros
+            micro_objective: "Conecta el total de ganancias de una semana con las personas a las que ayudó para lograrlo."
+            narrative_beat: "Zara revisa su semana de ganancias y recuerda a cada vecino que ayudó para conseguirlas."
+            difficulty: 2
+            suggested_families: [money, story]
+          - position: 3
+            slug: el-dinero-tambien-agradece
+            micro_objective: "Explica, mezclando ambos temas, cómo el dinero ayuda a agradecer el trabajo de alguien, igual que en el archipiélago."
+            narrative_beat: "Dino recuerda que las monedas del archipiélago servían para cambiar, y aquí sirven para agradecer ayuda."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: cierro-el-circulo-con-todo-lo-aprendido
+            micro_objective: "Completa, sin ayuda, una escena que combina trabajo en equipo, ayuda a otros y una recompensa justa en monedas."
+            narrative_beat: "Dina cierra el círculo de dar y recibir con una escena que junta equipo, ayuda y monedas ganadas con esfuerzo."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+
+  - position: 5
+    slug: la-gran-mision-del-bosque
+    icon: park
+    title:
+      en-US: "The Forest's Great Quest"
+      es-MX: "La Gran Misión del Bosque"
+      pt-BR: "A Grande Missão da Floresta"
+    description:
+      en-US: "A whole-forest festival puts every lesson about effort and earning to the test."
+      es-MX: "Un gran festival del bosque pone a prueba todo lo aprendido sobre esfuerzo y ganancias."
+      pt-BR: "Um grande festival da floresta coloca à prova tudo o que foi aprendido sobre esforço e ganhos."
+    kind: review
+    topics:
+      - position: 1
+        slug: el-anuncio-del-gran-festival
+        title_es: "El Anuncio del Gran Festival"
+        concept: "Todo el bosque se prepara para un gran festival de la cosecha, y la tripulación recuerda su primer esfuerzo antes de empezar."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, la idea de esfuerzo y trabajo en equipo para prepararse al festival."
+        key_vocabulary: [esfuerzo, equipo, festival, ayudar]
+        prior_knowledge: "Completó Semillas de Esfuerzo y Chambitas del Bosque."
+        fact_refs: []
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo
+          - bosque-de-la-abundancia/chambitas-del-bosque/que-es-una-chambita
+        lessons:
+          - position: 1
+            slug: el-mensajero-del-festival
+            micro_objective: "Recuerda, sin ayuda, qué significa poner esfuerzo en una tarea, al recibir la noticia del festival."
+            narrative_beat: "Un mensajero búho anuncia el Gran Festival de la Cosecha y pide ayuda a toda la tripulación."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recordamos-nuestro-primer-esfuerzo
+            micro_objective: "Recuerda y describe, combinando lo aprendido, su primer esfuerzo y una tarea hecha en equipo."
+            narrative_beat: "Rho y Dino recuerdan juntos el primer tronco que cargaron para cruzar el río del bosque."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elegimos-nuestras-tareas-del-festival
+            micro_objective: "Elige, entre 3 tareas del festival, la que requiere el esfuerzo que mejor conoce hacer."
+            narrative_beat: "Zara revisa el tablón del festival y elige su primera tarea para ayudar a prepararlo."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: formamos-el-equipo-del-festival
+            micro_objective: "Completa, sin ayuda, la formación de un equipo de trabajo para preparar el festival."
+            narrative_beat: "Dina reúne a toda la tripulación para repartirse las tareas del Gran Festival de la Cosecha."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: la-ronda-de-chambitas-del-festival
+        title_es: "La Ronda de Chambitas del Festival"
+        concept: "Antes del festival, hay muchas chambitas por hacer en el bosque, y la tripulación las reparte con permiso y buen ánimo."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, el ciclo de elegir, hacer y cobrar una chambita durante el festival."
+        key_vocabulary: [chambita, permiso, recompensa, tablón]
+        prior_knowledge: "Completó Chambitas del Bosque."
+        fact_refs: [mxn.reference_prices.chambita_pequena]
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/chambitas-del-bosque
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/trabajar-con-otros
+        lessons:
+          - position: 1
+            slug: el-tablon-se-llena-de-chambitas
+            micro_objective: "Reconoce, sin ayuda, varias chambitas nuevas en el tablón del festival."
+            narrative_beat: "Rho ve el tablón del bosque lleno de nuevas chambitas para preparar el festival."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: pido-permiso-para-el-festival
+            micro_objective: "Recuerda y aplica que antes de una chambita para un vecino, pide permiso a un adulto de confianza."
+            narrative_beat: "Zara pide permiso a Dina antes de ayudar a decorar el puesto de la familia búho."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-mi-chambita-del-festival
+            micro_objective: "Elige, entre 3 chambitas del festival, la que mejor se ajusta a su tiempo y esfuerzo."
+            narrative_beat: "Dino compara tres chambitas del tablón y elige la que más le entusiasma para el festival."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cumplo-mi-chambita-del-festival
+            micro_objective: "Completa, sin ayuda, el ciclo de elegir, hacer y cobrar una chambita para el festival."
+            narrative_beat: "Dina termina su chambita del festival y recibe sus monedas justo a tiempo para la fiesta."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 3
+        slug: la-gran-cosecha-de-monedas-del-festival
+        title_es: "La Gran Cosecha de Monedas del Festival"
+        concept: "Con tantas chambitas del festival, la tripulación junta y suma más monedas que nunca antes en el bosque."
+        learning_objective: "Al final, el niño calcula, sin nueva enseñanza, el total de monedas ganadas durante varios días del festival."
+        key_vocabulary: [ganar, sumar, total, semana]
+        prior_knowledge: "Completó La Cosecha de Monedas."
+        fact_refs: [math.max_single_coin_count_tier1_late]
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/la-cosecha-de-monedas
+          - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+        lessons:
+          - position: 1
+            slug: sumo-mis-monedas-del-festival
+            micro_objective: "Suma, sin ayuda, las monedas ganadas en dos chambitas distintas del festival."
+            narrative_beat: "Rho suma las monedas de dos chambitas del festival, orgulloso de su cosecha."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 2
+            slug: comparo-mi-cosecha-de-hoy-y-de-ayer
+            micro_objective: "Compara el total de monedas ganadas hoy con el de ayer y elige cuál fue mayor."
+            narrative_beat: "Zara compara su cosecha de monedas de hoy con la de ayer, ambas del gran festival."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: junto-varios-dias-de-festival
+            micro_objective: "Suma las ganancias de tres días del festival hasta un total acumulado."
+            narrative_beat: "Dino junta, día por día, todas las monedas ganadas durante la semana del festival."
+            difficulty: 3
+            suggested_families: [money, input]
+          - position: 4
+            slug: mi-cosecha-mas-grande-hasta-ahora
+            micro_objective: "Calcula, sin ayuda, su cosecha de monedas más grande de todo el bosque hasta el momento."
+            narrative_beat: "Dina suma con calma su cosecha completa: nunca había ganado tantas monedas juntas en el bosque."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 4
+        slug: el-mercado-de-oficios-del-bosque
+        title_es: "El Mercado de Oficios del Bosque"
+        concept: "El festival reúne a todos los oficios del bosque en un solo lugar: cada quien ayuda a su manera y recibe agradecimiento."
+        learning_objective: "Al final, el niño reconoce, sin nueva enseñanza, cómo distintos oficios ayudan al festival y reciben una recompensa justa."
+        key_vocabulary: [oficio, ayudar, agradecer, comunidad]
+        prior_knowledge: "Completó El Círculo de Dar y Recibir."
+        fact_refs: [mxn.reference_prices.chambita_mediana]
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/mi-primera-semana-de-ganancias
+        lessons:
+          - position: 1
+            slug: cada-oficio-tiene-su-puesto
+            micro_objective: "Empareja 3 oficios del bosque con la tarea que cada uno hace en el festival."
+            narrative_beat: "Rho recorre el mercado de oficios del festival: cada vecino tiene su propio puesto de ayuda."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 2
+            slug: agradezco-cada-ayuda
+            micro_objective: "Reconoce, en 3 escenas del festival, la recompensa que recibió cada oficio por su ayuda."
+            narrative_beat: "Zara agradece, uno por uno, a los vecinos que ayudaron a preparar el festival."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: elijo-que-oficio-probar-en-el-festival
+            micro_objective: "Elige, entre 3 oficios del festival, cuál le gustaría probar hoy."
+            narrative_beat: "Dino prueba por un rato ser guardabosques ayudante en el mercado del festival."
+            difficulty: 3
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: mi-comunidad-del-festival
+            micro_objective: "Explica, sin ayuda, por qué el festival necesita muchos oficios distintos trabajando juntos."
+            narrative_beat: "Dina agradece a toda la comunidad del bosque por hacer posible el gran festival juntos."
+            difficulty: 3
+            suggested_families: [story, storyplay]
+      - position: 5
+        slug: construimos-el-escenario-del-festival
+        title_es: "Construimos el Escenario del Festival"
+        concept: "Con esfuerzo, chambitas y monedas juntas, la tripulación construye el gran escenario del festival del bosque."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, esfuerzo en equipo, cumplimiento de chambitas y ganancias acumuladas para lograr una meta grande."
+        key_vocabulary: [equipo, cumplir, ganancias, meta grande]
+        prior_knowledge: "Completó Semillas de Esfuerzo, Chambitas del Bosque y La Cosecha de Monedas."
+        fact_refs: [math.max_single_coin_count_tier1_late]
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo/trabajar-con-otros
+          - bosque-de-la-abundancia/chambitas-del-bosque/cumpli-mi-chambita
+          - bosque-de-la-abundancia/la-cosecha-de-monedas/junto-mis-ganancias-de-varios-dias
+        lessons:
+          - position: 1
+            slug: el-equipo-arma-el-escenario
+            micro_objective: "Reconoce, combinando esfuerzo y equipo, cómo toda la tripulación arma junta el escenario del festival."
+            narrative_beat: "Rho, Dino, Zara y Dina cargan juntos las maderas para armar el escenario del festival."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+          - position: 2
+            slug: cada-chambita-suma-al-escenario
+            micro_objective: "Ordena 3 chambitas del festival según su aporte para terminar el escenario."
+            narrative_beat: "Zara ordena las chambitas pendientes: decorar, cargar y pintar, hasta terminar el escenario."
+            difficulty: 3
+            suggested_families: [arrange, storyplay]
+          - position: 3
+            slug: sumamos-nuestras-ganancias-para-el-escenario
+            micro_objective: "Suma las ganancias de varios días para pagar los últimos materiales del escenario."
+            narrative_beat: "Dino suma las monedas de toda la semana para comprar las últimas cintas de colores del escenario."
+            difficulty: 3
+            suggested_families: [money, input]
+          - position: 4
+            slug: el-escenario-esta-listo
+            micro_objective: "Completa, sin ayuda, la construcción del escenario combinando esfuerzo, chambitas y monedas juntadas."
+            narrative_beat: "Dina da el último martillazo: el escenario del gran festival del bosque está listo."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: la-gran-celebracion-del-bosque
+        title_es: "La Gran Celebración del Bosque"
+        concept: "El bosque entero celebra el festival: la tripulación recuerda todo su viaje, desde las primeras monedas del archipiélago hasta esta gran cosecha."
+        learning_objective: "Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de esfuerzo, chambitas y dinero desde el archipiélago hasta el bosque."
+        key_vocabulary: [festival, celebrar, esfuerzo, moneda]
+        prior_knowledge: "Domina todas las sagas de El Bosque de la Abundancia."
+        fact_refs: [mxn.reference_prices.chambita_mediana, math.max_single_coin_count_tier1_late]
+        kind: review_quest
+        review_of:
+          - bosque-de-la-abundancia/semillas-de-esfuerzo
+          - bosque-de-la-abundancia/chambitas-del-bosque
+          - bosque-de-la-abundancia/la-cosecha-de-monedas
+          - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir
+          - archipielago-del-trueque/nace-el-dinero
+        lessons:
+          - position: 1
+            slug: recordamos-todo-el-viaje-del-bosque
+            micro_objective: "Recuerda y nombra, sin ayuda, un momento de esfuerzo, una chambita y una ganancia de toda la aventura del bosque."
+            narrative_beat: "Toda la tripulación se reúne en el escenario para recordar juntos su viaje por el bosque."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 2
+            slug: del-archipielago-al-bosque
+            micro_objective: "Conecta, sin ayuda, cómo las monedas del archipiélago se ganaron con esfuerzo en el bosque."
+            narrative_beat: "Rho recuerda las primeras monedas del archipiélago y cómo ahora las gana con esfuerzo propio en el bosque."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 3
+            slug: bailamos-con-nuestras-ganancias
+            micro_objective: "Reparte, sin ayuda, sus ganancias del festival celebrando con la comunidad del bosque."
+            narrative_beat: "Zara baila de alegría mientras reparte parte de sus monedas para la fiesta de todo el bosque."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+          - position: 4
+            slug: el-bosque-celebra-en-grande
+            micro_objective: "Explica en una frase, combinando toda la aventura, qué fue lo que más le enorgulleció aprender en el bosque."
+            narrative_beat: "Dina alza su cofre lleno de monedas ganadas: el Gran Festival del Bosque de la Abundancia es un éxito, y la próxima aventura ya los espera en la Aldea del Ahorro."
+            difficulty: 3
+            suggested_families: [story, storyplay]

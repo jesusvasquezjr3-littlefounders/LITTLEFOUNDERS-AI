@@ -340,6 +340,108 @@ sagas:
       suggested_families:
       - storyplay
       - story
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Sueños con Forma.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Sueños con Forma.
+    key_vocabulary:
+    - sueño
+    - costo
+    - paso
+    - primero
+    prior_knowledge: Ha completado los seis temas de la saga Sueños con Forma (aventura 8, saga 1).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/suenos-con-forma/con-que-sueno
+    - cosmos-del-manana/suenos-con-forma/ponerle-un-tamano-a-mi-sueno
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    - cosmos-del-manana/suenos-con-forma/elegir-el-primer-paso
+    - cosmos-del-manana/suenos-con-forma/imaginar-obstaculos
+    - cosmos-del-manana/suenos-con-forma/mi-sueno-mi-plan-corto
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo nombrar un sueño personal concreto y cómo estimar el costo o tiempo de un sueño.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo dividir un sueño en pasos concretos y cómo elegir el primer paso correcto para comenzar.
+      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre anticipar un obstáculo posible del plan.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo presentar un plan corto y completo del sueño, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Sueños con Forma con ideas de aventuras anteriores en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Sueños con Forma con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - sueño
+    prior_knowledge: Conoce Sueños con Forma (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+    - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Sueños con Forma.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Sueños con Forma.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en Sueños con Forma con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 2
   slug: el-mapa-de-todo-lo-aprendido
   icon: map
@@ -673,6 +775,108 @@ sagas:
       suggested_families:
       - analyze
       - choice
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Mapa de Todo lo Aprendido.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Mapa de Todo lo Aprendido.
+    key_vocabulary:
+    - trueque
+    - trabajo
+    - ahorrar
+    - necesidad
+    prior_knowledge: Ha completado los seis temas de la saga El Mapa de Todo lo Aprendido (aventura 8, saga 2).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-el-trueque-y-el-dinero
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-el-trabajo-y-el-esfuerzo
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-ahorrar-y-esperar
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-comprar-inteligente
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-inventar-poner-precio-y-vender
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-cuidarse-confiar-y-compartir
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo explicar por qué el dinero facilita los intercambios y cómo explicar la relación entre esfuerzo y ganar dinero.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo explicar por qué ahorrar requiere paciencia y cómo explicar qué significa comprar de forma inteligente.
+      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre resumir el ciclo de inventar, poner precio y vender.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo nombrar una lección de seguridad y una de comunidad, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Mapa de Todo lo Aprendido con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Mapa de Todo lo Aprendido con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - trueque
+    prior_knowledge: Conoce El Mapa de Todo lo Aprendido (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Mapa de Todo lo Aprendido.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Mapa de Todo lo Aprendido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en El Mapa de Todo lo Aprendido con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 3
   slug: mi-plan-de-founder
   icon: flight_takeoff
@@ -1005,6 +1209,108 @@ sagas:
       difficulty: 3
       suggested_families:
       - storyplay
+      - story
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Mi Plan de Founder.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Mi Plan de Founder.
+    key_vocabulary:
+    - meta
+    - presupuesto
+    - ahorrar
+    - trampa
+    prior_knowledge: Ha completado los seis temas de la saga Mi Plan de Founder (aventura 8, saga 3).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/mi-plan-de-founder/elegir-mi-meta-de-founder
+    - cosmos-del-manana/mi-plan-de-founder/presupuestar-mi-meta
+    - cosmos-del-manana/mi-plan-de-founder/repartir-ahorrar-gastar-compartir
+    - cosmos-del-manana/mi-plan-de-founder/protegerme-de-trampas-en-el-camino
+    - cosmos-del-manana/mi-plan-de-founder/pedir-ayuda-cuando-la-necesito
+    - cosmos-del-manana/mi-plan-de-founder/mi-plan-completo-listo-para-lanzar
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir una meta de founder que combine varios aprendizajes y cómo armar un presupuesto simple sin exceder un total dado.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo repartir los recursos entre ahorrar, gastar y compartir y cómo identificar una posible trampa que afecte la meta.
+      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre identificar un momento donde conviene pedir ayuda.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo presentar el plan de founder completo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Mi Plan de Founder con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Mi Plan de Founder con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - meta
+    prior_knowledge: Conoce Mi Plan de Founder (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-inventar-poner-precio-y-vender
+    - mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Mi Plan de Founder.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Mi Plan de Founder.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en Mi Plan de Founder con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
       - story
 - position: 4
   slug: el-gran-lanzamiento
@@ -1343,6 +1649,434 @@ sagas:
       narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Dino, Dr. Rho
         y Zara Vex celebran juntos el gran lanzamiento: LittleFounders, para siempre.'
       difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Gran Lanzamiento.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Gran Lanzamiento.
+    key_vocabulary:
+    - historia
+    - presión
+    - logro
+    - reto
+    prior_knowledge: Ha completado los seis temas de la saga El Gran Lanzamiento (aventura 8, saga 4).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-gran-lanzamiento/contar-mi-historia-de-founder
+    - cosmos-del-manana/el-gran-lanzamiento/elegir-bien-bajo-presion
+    - cosmos-del-manana/el-gran-lanzamiento/celebrar-los-logros-del-equipo
+    - cosmos-del-manana/el-gran-lanzamiento/el-reto-final-todo-junto
+    - cosmos-del-manana/el-gran-lanzamiento/que-sigue-despues-de-este-viaje
+    - cosmos-del-manana/el-gran-lanzamiento/lanzamiento-littlefounders-para-siempre
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo narrar la propia historia de founder y cómo tomar decisiones financieras correctas bajo un límite de tiempo.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo nombrar un logro propio y uno del equipo y cómo resolver un desafío que combina habilidades de varias aventuras.
+      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre proponer un próximo paso concreto tras el curso.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo participar en la celebración final del curso, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Gran Lanzamiento con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Gran Lanzamiento con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - historia
+    prior_knowledge: Conoce El Gran Lanzamiento (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/mi-plan-de-founder/repartir-ahorrar-gastar-compartir
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Gran Lanzamiento.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Gran Lanzamiento.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en El Gran Lanzamiento con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-cosmos
+  kind: review
+  icon: workspace_premium
+  title:
+    en-US: The Cosmos's Grand Mission
+    es-MX: La Gran Misión del Cosmos
+    pt-BR: A Grande Missão do Cosmos
+  description:
+    en-US: The course's graduation quest -- a final celebration that interleaves every one of the eight worlds visited on the journey.
+    es-MX: La misión de graduación del curso -- una celebración final que entrelaza cada uno de los ocho mundos visitados en el viaje.
+    pt-BR: A missão de formatura do curso -- uma celebração final que entrelaça cada um dos oito mundos visitados na jornada.
+  topics:
+  - position: 1
+    slug: el-desafio-de-la-graduacion
+    kind: review_quest
+    title_es: El Desafío de la Graduación
+    concept: 'Dr. Rho anuncia el desafío final de la nave: revivir por qué existe el dinero y convertirlo en el primer paso de un sueño de founder.'
+    learning_objective: Al final, el niño puede recordar por qué el dinero facilita los intercambios y nombrar un sueño personal con al menos un paso concreto.
+    key_vocabulary:
+    - dinero
+    - sueño
+    - paso
+    prior_knowledge: Ha viajado por las siete aventuras anteriores y ha comenzado su plan de founder.
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+    - archipielago-del-trueque/el-valor-de-las-cosas/comparo-precios-de-dos-cosas
+    - cosmos-del-manana/suenos-con-forma/con-que-sueno
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    lessons:
+    - position: 1
+      slug: el-primer-mapa-estelar-de-la-graduacion
+      micro_objective: Recordar por qué el dinero reemplazó al trueque directo, tal como se vio en la primera aventura.
+      narrative_beat: 'Dr. Rho enciende el primer mapa estelar del viaje: el archipiélago del trueque, donde todo comenzó.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: de-conchas-a-suenos
+      micro_objective: Recordar cómo comparar el valor de dos cosas antes de decidir cuál conviene más.
+      narrative_beat: Zara Vex compara dos objetos del archipiélago y reta a Dino a recordar cuál valía más y por qué.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: un-sueno-con-forma-otra-vez
+      micro_objective: Recordar cómo nombrar un sueño personal y dividirlo en pasos concretos.
+      narrative_beat: Dina recuerda, sin ayuda, cómo nombró su sueño y lo dividió en pasos al principio de esta aventura.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: mi-primer-paso-de-graduacion
+      micro_objective: Aplicar con seguridad el primer paso de un sueño combinado con la idea de que el dinero facilita los intercambios.
+      narrative_beat: Dina conecta, sin ayuda de Dr. Rho, el primer paso de su sueño con lo que aprendió sobre el dinero en el archipiélago.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 2
+    slug: trabajo-ahorro-y-compras-de-toda-una-vida
+    kind: review_quest
+    title_es: Trabajo, Ahorro y Compras de Toda una Vida
+    concept: Un desafío combina el esfuerzo del bosque, la paciencia de la aldea y las compras inteligentes del mercado con el presupuesto del plan de founder.
+    learning_objective: Al final, el niño puede recordar y combinar el esfuerzo del trabajo, la paciencia de ahorrar y comprar de forma inteligente con el presupuesto de su meta de founder.
+    key_vocabulary:
+    - esfuerzo
+    - ahorrar
+    - presupuesto
+    prior_knowledge: Ha repasado los orígenes del dinero y el primer paso de su sueño (tema anterior).
+    fact_refs: []
+    review_of:
+    - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+    - aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+    - mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+    - cosmos-del-manana/mi-plan-de-founder/presupuestar-mi-meta
+    lessons:
+    - position: 1
+      slug: el-segundo-y-tercer-mapa-estelar
+      micro_objective: Recordar por qué el esfuerzo del trabajo merece una recompensa y por qué ahorrar requiere paciencia.
+      narrative_beat: Dr. Rho enciende los mapas estelares del bosque y de la aldea, y pide a Dina recordar el esfuerzo y la paciencia de esos mundos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-cuarto-mapa-estelar
+      micro_objective: Recordar cómo pensar antes de comprar ayuda a decidir mejor.
+      narrative_beat: Zara Vex recuerda a Dino una compra del mercado de los colores y le pregunta si pensó bien antes de decidir.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: presupuestar-con-todo-lo-aprendido
+      micro_objective: Combinar el esfuerzo, la paciencia y las compras inteligentes con el presupuesto de la meta de founder.
+      narrative_beat: Dina arma su presupuesto de founder recordando el esfuerzo del bosque, la paciencia de la aldea y las compras del mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-presupuesto-de-toda-una-vida
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación de esfuerzo, ahorro y compras inteligentes en el presupuesto propio.
+      narrative_beat: Dina revisa su presupuesto de founder y confirma que refleja todo lo aprendido sobre esfuerzo, ahorro y compras inteligentes.
+      difficulty: 2
+      suggested_families:
+      - money
+      - storyplay
+
+  - position: 3
+    slug: inventar-cuidarse-y-compartir-de-toda-una-vida
+    kind: review_quest
+    title_es: Inventar, Cuidarse y Compartir de Toda una Vida
+    concept: Un desafío combina el precio justo del taller, las señales de alerta del faro y la cooperación del jardín con la protección del plan de founder.
+    learning_objective: Al final, el niño puede recordar y combinar un precio justo, una señal de alerta y la cooperación comunitaria con la protección de su propia meta de founder.
+    key_vocabulary:
+    - precio justo
+    - alerta
+    - cooperar
+    prior_knowledge: Ha combinado esfuerzo, ahorro y compras inteligentes en su presupuesto (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - cosmos-del-manana/mi-plan-de-founder/protegerme-de-trampas-en-el-camino
+    lessons:
+    - position: 1
+      slug: el-quinto-mapa-estelar
+      micro_objective: Recordar cómo reconocer si un precio propuesto es demasiado alto o demasiado bajo.
+      narrative_beat: Dr. Rho enciende el mapa estelar del taller y pide a Dino recordar cómo se ponía un precio justo a un invento.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-sexto-y-septimo-mapa-estelar
+      micro_objective: Recordar una señal de alerta de un mensaje falso y por qué cooperar resuelve mejor un problema grande.
+      narrative_beat: Zara Vex enciende juntos los mapas del faro y del jardín, y reta a Dina a recordar una señal de alerta y una lección de cooperación.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: proteger-mi-meta-con-todo-lo-aprendido
+      micro_objective: Combinar el precio justo, las señales de alerta y la cooperación con la protección de la meta de founder.
+      narrative_beat: Dina revisa una oferta tentadora relacionada con su meta de founder, aplicando precio justo, señales de alerta y cooperación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-meta-protegida-de-toda-una-vida
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación de precio justo, alerta y cooperación para proteger la meta propia.
+      narrative_beat: Dina confirma, sin ayuda de Dr. Rho, que su meta de founder está protegida con todo lo aprendido en el taller, el faro y el jardín.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 4
+    slug: el-reto-de-los-ocho-mundos
+    kind: review_quest
+    title_es: El Reto de los Ocho Mundos
+    concept: El primer gran desafío de la graduación combina, en un solo recorrido, una idea de cada uno de los ocho mundos visitados.
+    learning_objective: Al final, el niño puede aplicar en un solo desafío una idea representativa de cada una de las ocho aventuras del curso.
+    key_vocabulary:
+    - confianza
+    - trabajo
+    - ahorro
+    prior_knowledge: Ha repasado por separado los orígenes del dinero, el trabajo y el ahorro, y la protección del plan (temas anteriores).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+    - aldea-del-ahorro/metas-de-la-aldea/divido-mis-monedas-en-frascos
+    - mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    lessons:
+    - position: 1
+      slug: las-ocho-luces-de-la-nave
+      micro_objective: Recordar, en conjunto, una idea representativa de cada uno de los ocho mundos visitados.
+      narrative_beat: Dr. Rho enciende, una por una, las ocho luces de la nave, cada una representando un mundo del viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-founder-nuevo-en-la-nave
+      micro_objective: Aplicar ideas de varios mundos para ayudar a un personaje nuevo a entender el viaje completo.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo de founder y reta a Dino a explicarle, con ejemplos de varios mundos, cómo funciona el dinero.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-primer-reto-de-los-ocho-mundos
+      micro_objective: Aplicar con seguridad ideas de confianza, trabajo, ahorro, compras, ventas y bancos en un desafío único.
+      narrative_beat: Dina resuelve el primer gran desafío de la nave, combinando de una sola vez ideas de seis mundos distintos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-por-los-ocho-mundos
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, ideas de varios mundos aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido combinando lo aprendido en varios mundos, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 5
+    slug: el-segundo-reto-de-los-ocho-mundos
+    kind: review_quest
+    title_es: El Segundo Reto de los Ocho Mundos
+    concept: Un segundo gran desafío combina, con ejemplos distintos a los del primero, otra idea de cada uno de los ocho mundos visitados.
+    learning_objective: Al final, el niño puede aplicar en un solo desafío una segunda idea representativa de cada una de las ocho aventuras del curso.
+    key_vocabulary:
+    - registro
+    - cuidado
+    - compartir
+    prior_knowledge: Ha completado el primer reto de los ocho mundos (tema anterior).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+    - bosque-de-la-abundancia/la-cosecha-de-monedas/guardo-un-registro-de-lo-que-gano
+    - aldea-del-ahorro/lugares-seguros-para-mis-monedas/cuidar-mi-frasco-de-ahorros
+    - mercado-de-los-colores/el-mercado-y-sus-precios/elijo-el-mejor-precio
+    - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
+    - cosmos-del-manana/el-gran-lanzamiento/celebrar-los-logros-del-equipo
+    lessons:
+    - position: 1
+      slug: las-ocho-luces-brillan-de-nuevo
+      micro_objective: Recordar cómo juntar monedas para llegar a un número y cómo llevar un registro de lo ganado.
+      narrative_beat: Dr. Rho enciende de nuevo las ocho luces de la nave y pide a Dina recordar cómo contaba y registraba sus monedas al inicio del viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: cuidar-y-elegir-de-nuevo
+      micro_objective: Recordar cómo cuidar un frasco de ahorros y cómo elegir el mejor precio entre dos opciones.
+      narrative_beat: Zara Vex reta a Dino a recordar cómo cuidaba su frasco de ahorros y cómo elegía el mejor precio en el mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: el-segundo-reto-de-los-ocho-mundos
+      micro_objective: Aplicar con seguridad ideas de conteo, cuidado, comparación, dar sin condición y celebración en equipo en un desafío único.
+      narrative_beat: Dina resuelve el segundo gran desafío de la nave, combinando de una sola vez ideas de otros seis mundos distintos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-segundo-recorrido-por-los-ocho-mundos
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, una segunda combinación de ideas de varios mundos.
+      narrative_beat: Dina completa su segundo recorrido combinando lo aprendido en varios mundos, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 6
+    slug: la-gran-mision-del-cosmos
+    kind: review_quest
+    title_es: La Gran Misión del Cosmos
+    concept: La graduación final del curso reúne, uno por uno, el cierre de cada uno de los ocho mundos visitados en un solo gran lanzamiento.
+    learning_objective: Al final, el niño puede resumir, con orgullo, la lección de cierre de cada una de las ocho aventuras del curso como parte de su graduación de founder.
+    key_vocabulary:
+    - graduación
+    - founder
+    - celebrar
+    prior_knowledge: Ha completado los dos retos de los ocho mundos y todo el viaje del curso (temas anteriores).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/el-valor-de-las-cosas/isla-del-trueque-repaso-final
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/bosque-de-la-abundancia-repaso-final
+    - aldea-del-ahorro/metas-de-la-aldea/aldea-del-ahorro-repaso-final
+    - mercado-de-los-colores/decisiones-inteligentes/mercado-de-los-colores-repaso-final
+    - taller-de-los-inventores/dia-de-mercado/planear-el-proximo-invento
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    - jardin-compartido/celebrar-juntos/el-jardin-compartido-un-ano-despues
+    - cosmos-del-manana/el-gran-lanzamiento/lanzamiento-littlefounders-para-siempre
+    lessons:
+    - position: 1
+      slug: ocho-mundos-una-sola-nave
+      micro_objective: Recordar, uno por uno, el cierre de cada uno de los ocho mundos visitados durante el curso.
+      narrative_beat: Toda la tripulación se reúne en la nave mientras Dr. Rho repasa, mundo por mundo, el cierre de cada aventura recorrida.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: lo-que-cada-mundo-me-dejo
+      micro_objective: Recordar y ordenar una lección de cierre distinta de cada uno de los ocho mundos.
+      narrative_beat: Zara Vex reparte ocho tarjetas, una por mundo, y reta a Dina a ordenarlas con la lección de cierre de cada una.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: la-graduacion-de-founder
+      micro_objective: Aplicar, en un desafío final integrador, la lección de cierre de los ocho mundos combinada con el plan de founder propio.
+      narrative_beat: Dina enfrenta el desafío final de graduación, combinando el cierre de los ocho mundos con su propio plan de founder.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: littlefounders-para-siempre
+      micro_objective: Celebrar, resumiendo con orgullo, todo el camino recorrido desde el archipiélago hasta el cosmos.
+      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Dino, Dr. Rho y Zara Vex celebran juntos la graduación de founder: LittleFounders, para siempre.'
+      difficulty: 2
       suggested_families:
       - storyplay
       - story

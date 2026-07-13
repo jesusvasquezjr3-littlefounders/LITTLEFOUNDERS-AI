@@ -337,6 +337,108 @@ sagas:
       suggested_families:
       - storyplay
       - analyze
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de señales del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Anuncios y Trampas.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Anuncios y Trampas.
+    key_vocabulary:
+    - anuncio
+    - honesto
+    - gratis
+    - prisa
+    prior_knowledge: Ha completado los seis temas de la saga Anuncios y Trampas (aventura 6, saga 1).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/anuncios-y-trampas/que-es-un-anuncio
+    - faro-de-la-confianza/anuncios-y-trampas/verdad-o-exageracion
+    - faro-de-la-confianza/anuncios-y-trampas/gratis-que-no-es-gratis
+    - faro-de-la-confianza/anuncios-y-trampas/trucos-para-que-compres-rapido
+    - faro-de-la-confianza/anuncios-y-trampas/comparar-anuncio-con-realidad
+    - faro-de-la-confianza/anuncios-y-trampas/decir-espera-antes-de-pedir
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo reconocer que un anuncio busca convencer y cómo distinguir un anuncio honesto de uno que exagera.
+      narrative_beat: Zara Vex abre un cofre de señales del faro y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo reconocer una condición oculta en una oferta gratis y cómo reconocer frases de apuro en un anuncio.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre comparar lo prometido con el producto real.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo aplicar la pausa de esperar y pensar antes de pedir algo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Anuncios y Trampas con ideas de aventuras anteriores en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Anuncios y Trampas con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - anuncio
+    prior_knowledge: Conoce Anuncios y Trampas (aventura 6) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+    - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Anuncios y Trampas.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Anuncios y Trampas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido en Anuncios y Trampas con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 2
   slug: mensajes-sospechosos
   icon: mark_email_unread
@@ -659,6 +761,108 @@ sagas:
       suggested_families:
       - analyze
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de señales del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Mensajes Sospechosos.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Mensajes Sospechosos.
+    key_vocabulary:
+    - desconocido
+    - premio
+    - adulto
+    - señal
+    prior_knowledge: Ha completado los seis temas de la saga Mensajes Sospechosos (aventura 6, saga 2).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/mensajes-sospechosos/mensajes-de-gente-que-no-conoces
+    - faro-de-la-confianza/mensajes-sospechosos/premios-demasiado-buenos
+    - faro-de-la-confianza/mensajes-sospechosos/pedir-ayuda-a-un-adulto-de-confianza
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - faro-de-la-confianza/mensajes-sospechosos/que-hacer-si-algo-se-siente-raro
+    - faro-de-la-confianza/mensajes-sospechosos/practicar-detectar-el-mensaje-falso
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo distinguir un mensaje conocido de uno desconocido y cómo reconocer un premio sospechoso por ser demasiado bueno.
+      narrative_beat: Zara Vex abre un cofre de señales del faro y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo saber cuándo pedir ayuda a un adulto de confianza y cómo listar señales de un mensaje falso.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre aplicar los pasos de detenerse, no responder y avisar.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo identificar un mensaje falso entre varios mezclados, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Mensajes Sospechosos con una saga anterior del faro y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Mensajes Sospechosos con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - desconocido
+    prior_knowledge: Conoce Mensajes Sospechosos (aventura 6) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/anuncios-y-trampas/decir-espera-antes-de-pedir
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Mensajes Sospechosos.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Mensajes Sospechosos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido en Mensajes Sospechosos con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 3
   slug: guardar-datos-guardar-confianza
   icon: shield_lock
@@ -990,6 +1194,108 @@ sagas:
       suggested_families:
       - storyplay
       - analyze
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de señales del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Guardar Datos, Guardar Confianza.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Guardar Datos, Guardar Confianza.
+    key_vocabulary:
+    - privado
+    - compartir
+    - contraseña
+    - foto
+    prior_knowledge: Ha completado los seis temas de la saga Guardar Datos, Guardar Confianza (aventura 6, saga 3).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/que-es-informacion-privada
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/con-quien-si-se-comparte
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/contrasenas-como-llaves-secretas
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/fotos-y-datos-no-son-para-cualquiera
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/pedir-permiso-antes-de-compartir
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/ser-un-buen-guardian-de-la-informacion
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo identificar ejemplos de información privada y cómo identificar el círculo de confianza.
+      narrative_beat: Zara Vex abre un cofre de señales del faro y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo explicar por qué una contraseña se mantiene en secreto y cómo reconocer el cuidado al compartir una foto.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre aplicar el hábito de pedir permiso antes de compartir.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo cuidar también la información privada de otros, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Guardar Datos, Guardar Confianza con una saga anterior del faro y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Guardar Datos, Guardar Confianza con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - privado
+    prior_knowledge: Conoce Guardar Datos, Guardar Confianza (aventura 6) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - aldea-del-ahorro/el-frasco-de-los-suenos/tengo-un-sueno-que-cuesta-monedas
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Guardar Datos, Guardar Confianza.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Guardar Datos, Guardar Confianza.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido en Guardar Datos, Guardar Confianza con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 4
   slug: el-banco-del-faro
   icon: account_balance
@@ -1324,3 +1630,424 @@ sagas:
       suggested_families:
       - storyplay
       - money
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de señales del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Banco del Faro.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Banco del Faro.
+    key_vocabulary:
+    - banco
+    - cuenta de ahorro
+    - interés
+    - ventaja
+    prior_knowledge: Ha completado los seis temas de la saga El Banco del Faro (aventura 6, saga 4).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/el-banco-del-faro/que-es-un-banco
+    - faro-de-la-confianza/el-banco-del-faro/abrir-una-cuenta-de-ahorro
+    - faro-de-la-confianza/el-banco-del-faro/el-banco-te-regala-un-poquito-por-guardar
+    - faro-de-la-confianza/el-banco-del-faro/banco-vs-alcancia
+    - faro-de-la-confianza/el-banco-del-faro/sacar-dinero-cuando-lo-necesitas
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo explicar para qué sirve un banco y cómo describir qué es una cuenta de ahorro.
+      narrative_beat: Zara Vex abre un cofre de señales del faro y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo explicar que el banco agrega un poco extra por guardar y cómo comparar una ventaja del banco y una de la alcancía.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre explicar cómo y cuándo retirar dinero del banco.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo reconocer una señal de confianza de un banco real, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Banco del Faro con una saga anterior del faro y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Banco del Faro con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - banco
+    prior_knowledge: Conoce El Banco del Faro (aventura 6) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/con-quien-si-se-comparte
+    - aldea-del-ahorro/lugares-seguros-para-mis-monedas/donde-guardo-mis-monedas
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Banco del Faro.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Banco del Faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido en El Banco del Faro con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-faro
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Lighthouse's Grand Mission
+    es-MX: La Gran Misión del Faro
+    pt-BR: A Grande Missão do Farol
+  description:
+    en-US: A final quest that replays every warning sign of the lighthouse -- ads, messages, private data, and banks -- one last time.
+    es-MX: Una misión final que repasa todas las señales de alerta del faro -- anuncios, mensajes, datos privados y bancos -- una última vez.
+    pt-BR: Uma missão final que revisita todos os sinais de alerta do farol -- anúncios, mensagens, dados privados e bancos -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-del-gran-faro
+    kind: review_quest
+    title_es: El Desafío del Gran Faro
+    concept: 'Dr. Rho anuncia la Gran Misión del faro: un desafío final que reúne, sin enseñar nada nuevo, todo lo aprendido sobre anuncios y trampas.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo reconocer un anuncio que exagera, una oferta gratis con condición, y un mensaje con apuro.
+    key_vocabulary:
+    - anuncio
+    - exagerar
+    - apurar
+    prior_knowledge: Ha completado las cuatro sagas de El Faro de la Confianza.
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/anuncios-y-trampas/verdad-o-exageracion
+    - faro-de-la-confianza/anuncios-y-trampas/gratis-que-no-es-gratis
+    - faro-de-la-confianza/anuncios-y-trampas/trucos-para-que-compres-rapido
+    - faro-de-la-confianza/anuncios-y-trampas/decir-espera-antes-de-pedir
+    lessons:
+    - position: 1
+      slug: el-faro-vuelve-a-brillar
+      micro_objective: Recordar que un anuncio busca convencer, y que algunos exageran lo que ofrecen.
+      narrative_beat: 'Dr. Rho reúne a Dina y Dino en la cima del faro y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre confianza.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: gratis-con-truco-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo reconocer una oferta gratis que en realidad tiene una condición.
+      narrative_beat: Zara Vex presenta una oferta nueva del muelle y reta a Dina a encontrar, sin repasar la lección, la condición escondida.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: reconocer-el-apuro-otra-vez
+      micro_objective: Recordar cómo identificar una frase de apuro que empuja a comprar sin pensar.
+      narrative_beat: Dino recuerda, sin ayuda, las frases de apuro que aprendió a reconocer en el muelle del archipiélago.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-pausa-para-la-gran-mision
+      micro_objective: Aplicar con seguridad la pausa de esperar y pensar frente a un anuncio nuevo.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, la pausa de esperar y pensar frente a un anuncio nuevo del muelle.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 2
+    slug: mensajes-de-la-gran-mision
+    kind: review_quest
+    title_es: Mensajes de la Gran Misión
+    concept: Dina y Dino recuerdan cómo reconocer señales de un mensaje falso y cuándo pedir ayuda a un adulto de confianza.
+    learning_objective: Al final, el niño puede recordar y aplicar las señales de un mensaje falso y los pasos de detenerse, no responder y avisar.
+    key_vocabulary:
+    - señal
+    - falso
+    - avisar
+    prior_knowledge: Ha repasado la saga de anuncios y trampas (tema anterior).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/mensajes-sospechosos/premios-demasiado-buenos
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - faro-de-la-confianza/mensajes-sospechosos/que-hacer-si-algo-se-siente-raro
+    - faro-de-la-confianza/mensajes-sospechosos/pedir-ayuda-a-un-adulto-de-confianza
+    lessons:
+    - position: 1
+      slug: un-mensaje-en-una-botella-otra-vez
+      micro_objective: Recordar por qué un premio enorme sin esfuerzo es una señal de alerta.
+      narrative_beat: Zara Vex encuentra una botella con un mensaje nuevo en la playa y reta a Dino a reconocer, sin ayuda, la señal de alerta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: juntar-las-senales-otra-vez
+      micro_objective: Recordar y ordenar varias señales de alerta que indican que un mensaje podría ser falso.
+      narrative_beat: Dina ordena, de memoria, las señales de alerta que aprendió a reconocer en los mensajes del faro.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: los-tres-pasos-otra-vez
+      micro_objective: Recordar y aplicar los tres pasos correctos frente a algo que se siente raro.
+      narrative_beat: 'Dr. Rho presenta una situación nueva y pregunta a Dina si recuerda los tres pasos: detenerse, no responder y avisar.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: pedir-ayuda-para-la-mision
+      micro_objective: Aplicar con seguridad el paso de pedir ayuda a un adulto de confianza ante un mensaje sospechoso.
+      narrative_beat: Dino decide, sin que nadie se lo recuerde, llevarle un mensaje sospechoso a Dr. Rho antes de responder nada.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 3
+    slug: guardianes-de-la-informacion
+    kind: review_quest
+    title_es: Guardianes de la Información
+    concept: Dina recuerda qué información es privada, quién forma parte de su círculo de confianza, y por qué las contraseñas se guardan en secreto.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo distinguir información privada, reconocer su círculo de confianza y cuidar una contraseña.
+    key_vocabulary:
+    - privado
+    - confianza
+    - contraseña
+    prior_knowledge: Ha repasado la saga de mensajes sospechosos (tema anterior).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/que-es-informacion-privada
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/con-quien-si-se-comparte
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/contrasenas-como-llaves-secretas
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/pedir-permiso-antes-de-compartir
+    lessons:
+    - position: 1
+      slug: el-cofre-del-faro-otra-vez
+      micro_objective: Recordar qué tipo de datos, como la dirección o el nombre completo, son información privada.
+      narrative_beat: Dr. Rho abre de nuevo el cofre del faro y pregunta a Dina qué datos recuerda que deben guardarse en privado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-circulo-de-confianza-otra-vez
+      micro_objective: Recordar quiénes forman parte del círculo de confianza y quiénes quedan fuera.
+      narrative_beat: Dino ordena de nuevo, sin ayuda, las tarjetas de personas dentro y fuera de su círculo de confianza.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: mi-llave-secreta-otra-vez
+      micro_objective: Recordar por qué una contraseña debe mantenerse en secreto, incluso ante un pedido tentador.
+      narrative_beat: Zara Vex presenta un mensaje que pide una contraseña, y Dina recuerda, sin ayuda, por qué no debe compartirla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: pedir-permiso-para-la-mision
+      micro_objective: Aplicar con seguridad el hábito de pedir permiso antes de compartir información o una foto.
+      narrative_beat: Dina pide permiso, sin que nadie se lo recuerde, antes de compartir un dato nuevo con alguien del muelle.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 4
+    slug: el-banco-de-la-gran-mision
+    kind: review_quest
+    title_es: El Banco de la Gran Misión
+    concept: Dina recuerda para qué sirve un banco, cómo funciona una cuenta de ahorro, y qué señales muestran que un banco es de verdad.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo comparar el banco con la alcancía y cómo reconocer un banco real y confiable.
+    key_vocabulary:
+    - banco
+    - ahorro
+    - confianza
+    prior_knowledge: Ha repasado la saga de guardar datos y guardar confianza (tema anterior).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/el-banco-del-faro/que-es-un-banco
+    - faro-de-la-confianza/el-banco-del-faro/abrir-una-cuenta-de-ahorro
+    - faro-de-la-confianza/el-banco-del-faro/banco-vs-alcancia
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    lessons:
+    - position: 1
+      slug: el-banco-junto-al-faro-otra-vez
+      micro_objective: Recordar para qué sirve un banco y por qué el pueblo guarda ahí su dinero.
+      narrative_beat: Dina recuerda, sin ayuda, por qué el banco del archipiélago guarda con cuidado el dinero de las familias.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: banco-o-alcancia-otra-vez
+      micro_objective: Recordar una ventaja del banco y una ventaja de la alcancía.
+      narrative_beat: Dino compara de nuevo, de memoria, las ventajas del banco y las de su alcancía.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: una-sorpresa-en-la-libreta-otra-vez
+      micro_objective: Recordar que el banco agrega un poco de dinero extra por guardar los ahorros durante un tiempo.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda por qué apareció una moneda extra en su libreta de ahorros.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: confiar-antes-de-guardar-otra-vez
+      micro_objective: Aplicar con seguridad una señal de confianza de un banco real antes de guardar dinero ahí.
+      narrative_beat: Dina reconoce, sin ayuda, las señales de un banco real y confiable antes de abrir una nueva cuenta.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 5
+    slug: el-reto-completo-del-faro
+    kind: review_quest
+    title_es: El Reto Completo del Faro
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del faro: anuncios, mensajes, datos privados y el banco.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido las señales de alerta de anuncios, mensajes, datos privados y bancos falsos.
+    key_vocabulary:
+    - alerta
+    - confianza
+    - seguridad
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/anuncios-y-trampas/trucos-para-que-compres-rapido
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/que-es-informacion-privada
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    lessons:
+    - position: 1
+      slug: las-cuatro-luces-del-faro
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas de alerta del faro: anuncios, mensajes, datos y bancos.'
+      narrative_beat: Dr. Rho enciende las cuatro luces del faro, una por cada área de alerta aprendida en la aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-guardian-nuevo-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas de alerta para ayudar a un personaje nuevo a reconocer una trampa.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del faro y reta a Dino a guiarlo por las cuatro áreas de alerta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-luces
+      micro_objective: Aplicar con seguridad las cuatro áreas de alerta en un desafío único que las combina todas.
+      narrative_beat: Dina resuelve un desafío del faro que combina, de una sola vez, anuncios, mensajes, datos y bancos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-recorrido-completo-del-faro
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas de alerta del faro aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro luces del faro, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 6
+    slug: la-gran-mision-del-faro
+    kind: review_quest
+    title_es: La Gran Misión del Faro
+    concept: El gran cierre de la aventura combina las señales de alerta del faro con lecciones de aventuras anteriores sobre el dinero, el ahorro y los precios justos.
+    learning_objective: Al final, el niño puede aplicar las señales de alerta del faro conectándolas con lo aprendido sobre confiar en el dinero, ahorrar en un lugar seguro y comparar precios justos.
+    key_vocabulary:
+    - confianza
+    - ahorro
+    - precio
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del faro (tema anterior).
+    fact_refs: []
+    review_of:
+    - faro-de-la-confianza/anuncios-y-trampas/comparar-anuncio-con-realidad
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+    - aldea-del-ahorro/lugares-seguros-para-mis-monedas/donde-guardo-mis-monedas
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    lessons:
+    - position: 1
+      slug: el-faro-y-el-archipielago
+      micro_objective: Recordar por qué el pueblo confía en el dinero, tal como se aprendió en el archipiélago del trueque.
+      narrative_beat: Dr. Rho compara la confianza en las monedas del archipiélago con la confianza que se necesita para reconocer un banco real.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-faro-y-la-aldea
+      micro_objective: Recordar por qué guardar monedas en un lugar seguro protege el ahorro, tal como se aprendió en la aldea del ahorro.
+      narrative_beat: Zara Vex recuerda a Dino por qué guardaba sus monedas en un lugar seguro en la aldea, tal como ahora las guarda en el banco del faro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: la-gran-mision-en-una-sola-noche
+      micro_objective: Aplicar en un desafío final las señales de alerta del faro junto con lo recordado sobre dinero, ahorro y precios.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando las señales del faro con todo lo que recuerda sobre el dinero y el ahorro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-faro-sigue-encendido-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del faro.
+      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión del faro.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

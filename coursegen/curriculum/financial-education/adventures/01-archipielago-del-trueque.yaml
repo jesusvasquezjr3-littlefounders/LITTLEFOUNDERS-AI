@@ -226,6 +226,86 @@ sagas:
             narrative_beat: "Toda la tripulación se sienta agotada tras un día de trueques que no salieron a la primera."
             difficulty: 3
             suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-de-los-deseos
+        title_es: "El Cofre del Repaso de los Deseos"
+        concept: "Antes de zarpar a la siguiente isla, la tripulación abre el cofre de recuerdos y repasa todo lo aprendido sobre los deseos y el trueque."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de deseo, elección y trueque justo de esta saga."
+        key_vocabulary: [deseo, elegir, trueque, contento]
+        prior_knowledge: "Completó los 6 temas de Las Islas de los Deseos."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/cosas-que-quiero
+          - archipielago-del-trueque/islas-de-los-deseos/no-todos-queremos-lo-mismo
+          - archipielago-del-trueque/islas-de-los-deseos/solo-tengo-una-cosa-a-la-vez
+          - archipielago-del-trueque/islas-de-los-deseos/cambiar-es-una-idea
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-deseos
+            micro_objective: "Recuerda y nombra, sin ayuda, un deseo propio usando lo aprendido en esta saga."
+            narrative_beat: "Rho encuentra un cofre de madera tallado y, al abrirlo, aparecen recuerdos de todos los deseos de la tripulación."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-mi-trueque-favorito
+            micro_objective: "Recuerda y describe, sin ayuda, un trueque simple ya vivido en la saga."
+            narrative_beat: "Zara saca del cofre una conchita y recuerda el trueque que hizo con ella al principio del viaje."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-el-trueque-mas-justo-del-cofre
+            micro_objective: "Elige, entre 2 trueques recordados del cofre, cuál fue el más justo para ambas partes."
+            narrative_beat: "Dino compara dos recuerdos guardados en el cofre y decide cuál trueque dejó más contentos a los dos isleños."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: cierro-el-cofre-listo-para-seguir
+            micro_objective: "Aplica sin ayuda lo recordado: elige la mejor reacción cuando un deseo no se puede cumplir de inmediato."
+            narrative_beat: "Dina cierra el cofre de recuerdos: la tripulación está lista para seguir explorando el archipiélago."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 8
+        slug: reto-entrelazado-de-los-deseos
+        title_es: "Reto Entrelazado de los Deseos"
+        concept: "Mezclamos ideas de distintos momentos de esta saga para pensarlas juntas, como un verdadero reto de isleño experto."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos temas distintos de esta saga en una sola actividad."
+        key_vocabulary: [deseo, trueque, justo, elegir]
+        prior_knowledge: "Completó El Cofre del Repaso de los Deseos (tema anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/cosas-que-quiero
+          - archipielago-del-trueque/islas-de-los-deseos/no-todos-queremos-lo-mismo
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+        lessons:
+          - position: 1
+            slug: deseo-y-trueque-en-la-misma-escena
+            micro_objective: "Combina, en una sola escena, el deseo de un personaje y el trueque que hizo para conseguirlo."
+            narrative_beat: "Rho arma una escena mezclando el deseo inicial de Dino con el trueque que finalmente hizo para lograrlo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: dos-islenos-dos-trueques-distintos
+            micro_objective: "Compara el deseo y el trueque de dos isleños distintos, aplicando ambos temas a la vez."
+            narrative_beat: "Zara compara dos isleños del archipiélago: cada uno tuvo un deseo distinto y resolvió un trueque distinto."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 3
+            slug: cuando-un-trueque-no-cumple-el-deseo
+            micro_objective: "Reconoce, combinando deseo y trueque trabado, por qué un cambio fallido deja un deseo sin cumplir."
+            narrative_beat: "Dino recuerda cuando nadie quería su concha y su deseo de comer fruta tuvo que esperar."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: armo-un-trueque-justo-para-mi-deseo
+            micro_objective: "Arma, sin ayuda, un trueque justo que cumpla un deseo propio, combinando ambas ideas de la saga."
+            narrative_beat: "Dina cierra el reto entrelazado logrando un trueque justo que por fin cumple su deseo inicial."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
 
   - position: 2
     slug: nace-el-dinero
@@ -437,6 +517,86 @@ sagas:
             narrative_beat: "Toda la tripulación celebra en la playa: el trueque difícil quedó atrás y ahora todos usan monedas."
             difficulty: 3
             suggested_families: [story, choice, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-del-dinero
+        title_es: "El Cofre del Repaso del Dinero"
+        concept: "Repasamos, desde el cofre de recuerdos, cómo nació el dinero en el archipiélago y por qué todos confían en él."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, las ideas de esta saga sobre el nacimiento del dinero."
+        key_vocabulary: [moneda, todos aceptan, confiar, cambiar]
+        prior_knowledge: "Completó los 6 temas de Nace el Dinero."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/algo-que-todos-aceptan
+          - archipielago-del-trueque/nace-el-dinero/de-conchas-a-monedas
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-ayuda-a-cambiar
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-no-se-come
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+        lessons:
+          - position: 1
+            slug: recuerdo-las-conchas-de-antes
+            micro_objective: "Recuerda y nombra, sin ayuda, un objeto antiguo que se usó como dinero antes de las monedas."
+            narrative_beat: "Rho abre el cofre y encuentra una concha vieja: recuerda cuando esa concha servía como dinero."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-confiamos-en-la-moneda
+            micro_objective: "Recuerda, sin ayuda, una razón por la que toda la isla confía en la misma moneda."
+            narrative_beat: "Zara saca del cofre la primera moneda del archipiélago y recuerda por qué todos la aceptan."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-la-mejor-razon-para-usar-monedas
+            micro_objective: "Elige, entre 3 razones recordadas, la que mejor explica por qué las monedas son mejores que las conchas."
+            narrative_beat: "Dino compara en el cofre las conchas rotas con las monedas resistentes y recuerda por qué ganaron las monedas."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 4
+            slug: cierro-el-cofre-del-dinero
+            micro_objective: "Aplica sin ayuda lo recordado: explica en una frase por qué el dinero solo sirve para cambiar, no para comer o jugar."
+            narrative_beat: "Dina cierra el cofre del dinero, lista para seguir explorando con monedas propias en el bolsillo."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 8
+        slug: reto-entrelazado-del-dinero
+        title_es: "Reto Entrelazado del Dinero"
+        concept: "Mezclamos lo aprendido sobre los deseos y el trueque con lo aprendido sobre el nacimiento del dinero."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de la saga de los deseos con ideas de la saga del dinero."
+        key_vocabulary: [deseo, trueque, moneda, confiar]
+        prior_knowledge: "Completó El Cofre del Repaso del Dinero (tema anterior) y Las Islas de los Deseos (saga anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/nace-el-dinero/algo-que-todos-aceptan
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-ayuda-a-cambiar
+        lessons:
+          - position: 1
+            slug: el-trueque-trabado-y-la-solucion-moneda
+            micro_objective: "Combina el problema de un trueque trabado con la solución que ofrece usar monedas."
+            narrative_beat: "Rho recuerda un trueque que se trabó y muestra cómo una moneda lo habría resuelto al instante."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-trueque-justo-y-pago-con-moneda
+            micro_objective: "Compara un trueque justo de la primera saga con un pago justo usando monedas."
+            narrative_beat: "Zara compara dos formas de dejar contento a un isleño: con un buen trueque o con una moneda justa."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: de-la-concha-al-trueque-perfecto
+            micro_objective: "Ordena, mezclando ambas sagas, los pasos desde tener un deseo hasta pagarlo con una moneda de todos."
+            narrative_beat: "Dino ordena en su mente todo el camino: desde su primer deseo hasta pagar con una moneda que todos aceptan."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: resuelvo-un-deseo-con-una-moneda
+            micro_objective: "Resuelve, sin ayuda, un deseo del inicio del viaje usando una moneda del archipiélago."
+            narrative_beat: "Dina resuelve el primer deseo que tuvo en la aventura, esta vez pagando con una sola moneda."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
 
   - position: 3
     slug: monedas-y-billetes-de-mi-tierra
@@ -648,6 +808,86 @@ sagas:
             narrative_beat: "Dina paga con monedas justas al guardián del templo y las puertas del tesoro se abren."
             difficulty: 3
             suggested_families: [money, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-de-monedas-y-billetes
+        title_es: "El Cofre del Repaso de Monedas y Billetes"
+        concept: "Repasamos desde el cofre de recuerdos todas las monedas y billetes que hemos conocido en el archipiélago."
+        learning_objective: "Al final, el niño recuerda y reconoce, sin nueva enseñanza, las monedas y billetes trabajados en esta saga."
+        key_vocabulary: [moneda, billete, vale más, ordenar]
+        prior_knowledge: "Completó los 6 temas de Monedas y Billetes de mi Tierra."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-chiquitas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-grandes
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-los-billetes
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/billetes-de-mas-valor
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/cual-vale-mas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+        lessons:
+          - position: 1
+            slug: reconozco-mis-monedas-del-cofre
+            micro_objective: "Reconoce, sin ayuda, las monedas de $1, $2, $5 y $10 mezcladas en el cofre."
+            narrative_beat: "Rho vuelca el cofre y aparecen todas las monedas que la tripulación ha ido juntando."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 2
+            slug: reconozco-mis-billetes-del-cofre
+            micro_objective: "Reconoce, sin ayuda, los billetes de $20, $50, $100 y $200 mezclados en el cofre."
+            narrative_beat: "Zara encuentra entre los recuerdos del cofre los billetes que ha guardado durante el viaje."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: ordeno-todo-el-tesoro-del-cofre
+            micro_objective: "Ordena, sin ayuda, un grupo mixto de monedas y billetes recordados de menor a mayor valor."
+            narrative_beat: "Dino ordena todo el tesoro del cofre, de la monedita más chica al billete más grande."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: junto-monedas-recordadas
+            micro_objective: "Combina monedas recordadas del cofre para llegar exactamente a un monto de hasta $20."
+            narrative_beat: "Dina junta monedas del cofre hasta llegar justo al número mágico que recuerda de la aventura."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-de-monedas-y-billetes
+        title_es: "Reto Entrelazado de Monedas y Billetes"
+        concept: "Mezclamos lo aprendido sobre el nacimiento del dinero con el reconocimiento de monedas y billetes reales."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre confiar en el dinero con reconocer y contar monedas y billetes."
+        key_vocabulary: [confiar, moneda, billete, contar]
+        prior_knowledge: "Completó El Cofre del Repaso de Monedas y Billetes (tema anterior) y Nace el Dinero (saga anterior)."
+        fact_refs: [mxn.denominations.coins.tier1_subset]
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-chiquitas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-los-billetes
+        lessons:
+          - position: 1
+            slug: confio-y-reconozco-mis-monedas
+            micro_objective: "Combina la idea de confiar en el dinero con reconocer correctamente 3 monedas distintas."
+            narrative_beat: "Rho recuerda por qué confía en las monedas mientras las reconoce una por una en su bolsillo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-confio-en-este-billete
+            micro_objective: "Explica, mezclando ambos temas, por qué confía en un billete aunque nunca lo haya visto antes."
+            narrative_beat: "Zara reconoce un billete nuevo y recuerda que confía en él porque toda la isla lo acepta igual."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: ordeno-y-confio-a-la-vez
+            micro_objective: "Ordena monedas y billetes de menor a mayor mientras explica por qué todos confían en ellos."
+            narrative_beat: "Dino ordena su tesoro y, mientras tanto, recuerda por qué el archipiélago entero confía en esas piezas."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: pago-confiado-con-mi-tesoro
+            micro_objective: "Paga, sin ayuda, un monto exacto combinando monedas y billetes, confiando en que serán aceptados."
+            narrative_beat: "Dina paga con calma un monto exacto, segura de que su tesoro será aceptado en cualquier isla."
+            difficulty: 2
+            suggested_families: [money, storyplay]
 
   - position: 4
     slug: el-valor-de-las-cosas
@@ -857,5 +1097,325 @@ sagas:
             slug: zarpo-hacia-el-bosque
             micro_objective: "Explica en una frase qué aprendió sobre el dinero antes de zarpar hacia la próxima aventura."
             narrative_beat: "Dina iza las velas del barco: el archipiélago del trueque queda atrás, y el Bosque de la Abundancia espera."
+            difficulty: 3
+            suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-del-valor
+        title_es: "El Cofre del Repaso del Valor"
+        concept: "Repasamos desde el cofre de recuerdos cómo comparar precios y reconocer un cambio justo."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, las ideas de esta saga sobre comparar precios y trueques justos."
+        key_vocabulary: [precio, comparar, barato, caro, justo]
+        prior_knowledge: "Completó los 6 temas de El Valor de las Cosas."
+        fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.juguete_pequeno]
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/el-valor-de-las-cosas/las-cosas-grandes-no-siempre-valen-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-poco
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/comparo-precios-de-dos-cosas
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+          - archipielago-del-trueque/el-valor-de-las-cosas/isla-del-trueque-repaso-final
+        lessons:
+          - position: 1
+            slug: recuerdo-que-el-tamano-no-importa
+            micro_objective: "Recuerda y explica, sin ayuda, por qué el tamaño de un objeto no dice cuánto vale."
+            narrative_beat: "Rho saca del cofre una piedra grande y una fruta chica y recuerda cuál costaba más."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-precios-baratos-y-caros
+            micro_objective: "Recuerda y clasifica, sin ayuda, 3 objetos del cofre entre baratos y caros."
+            narrative_beat: "Zara vacía el cofre y separa los recuerdos de compras baratas y compras caras del archipiélago."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: comparo-precios-recordados
+            micro_objective: "Compara dos precios recordados del cofre y elige cuál es mayor."
+            narrative_beat: "Dino compara dos etiquetas de precio que guardó como recuerdo de sus compras en las islas."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-con-un-trueque-justo
+            micro_objective: "Aplica sin ayuda lo recordado: arma un trueque o compra justa usando precios ya conocidos."
+            narrative_beat: "Dina cierra el cofre del valor armando, sin ayuda, un último trueque justo con lo que recuerda."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-del-valor
+        title_es: "Reto Entrelazado del Valor"
+        concept: "Mezclamos todo lo aprendido en el archipiélago: deseos, nacimiento del dinero, monedas y billetes, y el valor de las cosas."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos sagas anteriores con lo aprendido sobre el valor de las cosas."
+        key_vocabulary: [deseo, moneda, billete, precio, justo]
+        prior_knowledge: "Completó El Cofre del Repaso del Valor (tema anterior) y las tres sagas previas del archipiélago."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+        lessons:
+          - position: 1
+            slug: el-trueque-viejo-y-su-precio-real
+            micro_objective: "Revisa un trueque trabado de la primera saga y explica, usando precios, por qué se habría resuelto distinto."
+            narrative_beat: "Rho recuerda un trueque que se trabó al inicio del viaje y ahora lo explica usando lo que sabe de precios."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: junto-monedas-para-pagar-lo-caro
+            micro_objective: "Combina juntar monedas exactas con reconocer si un precio es caro o barato."
+            narrative_beat: "Zara junta sus monedas con cuidado para pagar exactamente un objeto que sabe que es un poco caro."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: comparo-precios-y-cuento-mi-tesoro
+            micro_objective: "Compara dos precios y cuenta si sus monedas y billetes reunidos le alcanzan para el más caro."
+            narrative_beat: "Dino compara dos precios del mercado isleño y cuenta si su tesoro junto le alcanza."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: armo-el-trueque-mas-justo-de-todos
+            micro_objective: "Arma, sin ayuda, un trueque final que combine monedas justas y un precio justo para ambas partes."
+            narrative_beat: "Dina cierra el reto entrelazado armando el trueque más justo de toda su aventura por el archipiélago."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+
+  - position: 5
+    slug: la-gran-mision-del-archipielago
+    icon: anchor
+    title:
+      en-US: "The Archipelago's Great Quest"
+      es-MX: "La Gran Misión del Archipiélago"
+      pt-BR: "A Grande Missão do Arquipélago"
+    description:
+      en-US: "A final voyage puts every lesson about wants, trade, and money to the test before the whole archipelago celebrates together."
+      es-MX: "Un último viaje pone a prueba todo lo aprendido sobre deseos, trueque y dinero, antes de que todo el archipiélago celebre junto."
+      pt-BR: "Uma última viagem coloca à prova tudo o que foi aprendido sobre desejos, troca e dinheiro, antes de todo o arquipélago comemorar junto."
+    kind: review
+    topics:
+      - position: 1
+        slug: el-llamado-del-capitan-fantasma
+        title_es: "El Llamado del Capitán Fantasma"
+        concept: "Un antiguo capitán dejó un mapa que solo se puede leer recordando por qué nacieron los deseos, el trueque y el dinero."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, por qué el trueque nació de los deseos y por qué el dinero resolvió su problema."
+        key_vocabulary: [deseo, trueque, moneda, mapa]
+        prior_knowledge: "Completó Las Islas de los Deseos y Nace el Dinero."
+        fact_refs: []
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/nace-el-dinero
+        lessons:
+          - position: 1
+            slug: el-mapa-del-capitan-fantasma
+            micro_objective: "Recuerda, sin ayuda, por qué la tripulación empezó a usar monedas en vez de trueques."
+            narrative_beat: "Un mapa antiguo aparece flotando junto al barco: el Capitán Fantasma reta a la tripulación a recordar todo su viaje."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recordamos-el-primer-deseo-del-viaje
+            micro_objective: "Recuerda y describe, combinando lo aprendido, el primer deseo y el primer trueque de toda la aventura."
+            narrative_beat: "Rho relee la primera página del mapa: muestra la primera isla donde nació un deseo de la tripulación."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elegimos-la-ruta-correcta
+            micro_objective: "Elige, entre 3 rutas del mapa, la que sigue el orden correcto de deseo, trueque y moneda."
+            narrative_beat: "Zara traza en el mapa la ruta que sigue el mismo orden que vivió la tripulación."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 4
+            slug: aceptamos-el-reto-del-capitan
+            micro_objective: "Completa, sin ayuda, la aceptación del reto explicando por qué el dinero nació de un problema real."
+            narrative_beat: "Dina acepta el reto del Capitán Fantasma: la tripulación zarpa en busca del tesoro final del archipiélago."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: la-prueba-de-las-monedas-perdidas
+        title_es: "La Prueba de las Monedas Perdidas"
+        concept: "El mapa lleva a la tripulación a recuperar monedas y billetes perdidos, reconociéndolos uno por uno."
+        learning_objective: "Al final, el niño reconoce y ordena, sin nueva enseñanza, monedas y billetes conocidos del archipiélago."
+        key_vocabulary: [moneda, billete, reconocer, ordenar]
+        prior_knowledge: "Completó Monedas y Billetes de mi Tierra y Nace el Dinero."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+        lessons:
+          - position: 1
+            slug: encontramos-el-primer-cofre-perdido
+            micro_objective: "Reconoce, sin ayuda, las monedas escondidas en el primer cofre perdido del mapa."
+            narrative_beat: "Rho desentierra el primer cofre perdido: dentro hay monedas mezcladas de todos los valores conocidos."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 2
+            slug: reconocemos-los-billetes-del-capitan
+            micro_objective: "Reconoce, sin ayuda, los billetes guardados por el Capitán Fantasma hace muchos años."
+            narrative_beat: "Zara encuentra billetes viejos entre las pertenencias del capitán y los reconoce sin dudar."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: ordenamos-el-tesoro-encontrado
+            micro_objective: "Ordena, sin ayuda, todo el tesoro encontrado de menor a mayor valor."
+            narrative_beat: "Dino ordena sobre la arena todo el tesoro recuperado, del más chico al más grande."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: explicamos-por-que-confiamos-en-este-tesoro
+            micro_objective: "Explica, sin ayuda, por qué el tesoro recuperado sigue sirviendo aunque sea antiguo."
+            narrative_beat: "Dina explica a la tripulación por qué todos seguirían aceptando ese tesoro hoy mismo."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 3
+        slug: el-desafio-de-los-precios-justos
+        title_es: "El Desafío de los Precios Justos"
+        concept: "En cada isla del mapa, la tripulación debe comparar precios y decidir cuál cambio es justo."
+        learning_objective: "Al final, el niño compara precios y evalúa, sin nueva enseñanza, si un cambio es justo para ambas partes."
+        key_vocabulary: [precio, comparar, justo, cambio]
+        prior_knowledge: "Completó El Valor de las Cosas y Las Islas de los Deseos."
+        fact_refs: [mxn.reference_prices.fruta_pieza]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/el-valor-de-las-cosas
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+        lessons:
+          - position: 1
+            slug: la-isla-de-los-precios-escondidos
+            micro_objective: "Compara, sin ayuda, dos precios escondidos en la siguiente isla del mapa."
+            narrative_beat: "El mapa lleva a la tripulación a una isla donde los precios están escondidos bajo piedras de colores."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 2
+            slug: detectamos-un-cambio-injusto-del-capitan
+            micro_objective: "Identifica, sin ayuda, un cambio injusto dejado como trampa por el Capitán Fantasma."
+            narrative_beat: "Rho descubre una trampa del capitán: un cambio que parece bueno pero no es justo para los dos."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: arreglamos-el-cambio-de-la-trampa
+            micro_objective: "Propone, sin ayuda, un ajuste que vuelve justo el cambio de la trampa del capitán."
+            narrative_beat: "Zara agrega una moneda extra al cambio de la trampa para que quede justo para ambas partes."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 4
+            slug: superamos-la-prueba-de-precios
+            micro_objective: "Completa, sin ayuda, un cambio justo final para superar la prueba de precios de la isla."
+            narrative_beat: "Dino y Dina completan el último cambio justo y la isla les revela la siguiente pista del mapa."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 4
+        slug: la-gran-casa-de-cambios
+        title_es: "La Gran Casa de Cambios"
+        concept: "La tripulación decide construir una Casa de Cambios donde todo el archipiélago pueda cambiar cosas con monedas justas."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, confianza en el dinero, conteo de monedas y precios justos para un proyecto común."
+        key_vocabulary: [confiar, juntar, justo, casa de cambios]
+        prior_knowledge: "Completó Nace el Dinero, Monedas y Billetes de mi Tierra y El Valor de las Cosas."
+        fact_refs: [math.max_single_coin_count_tier1_late]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+        lessons:
+          - position: 1
+            slug: elegimos-el-lugar-de-la-casa-de-cambios
+            micro_objective: "Reconoce, sin ayuda, por qué toda la isla debe confiar en el lugar elegido para cambiar cosas."
+            narrative_beat: "Rho elige, junto a los isleños, el lugar central donde construirán la Gran Casa de Cambios."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: juntamos-monedas-para-construir
+            micro_objective: "Junta, sin ayuda, monedas exactas hasta un monto necesario para los materiales de construcción."
+            narrative_beat: "Zara junta monedas de toda la tripulación hasta llegar justo al monto de los materiales."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: ponemos-precios-justos-en-la-casa
+            micro_objective: "Propone, sin ayuda, precios justos para los primeros cambios que se harán en la Casa de Cambios."
+            narrative_beat: "Dino ayuda a poner las primeras etiquetas de precio justo en la nueva Casa de Cambios."
+            difficulty: 3
+            suggested_families: [money, choice]
+          - position: 4
+            slug: inauguramos-la-casa-de-cambios
+            micro_objective: "Completa, sin ayuda, la inauguración de la Casa de Cambios combinando confianza, monedas y precios justos."
+            narrative_beat: "Dina corta la cinta de la Gran Casa de Cambios ante todo el archipiélago reunido."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 5
+        slug: el-tesoro-final-del-capitan
+        title_es: "El Tesoro Final del Capitán"
+        concept: "El mapa lleva a la tripulación al último cofre, que solo se abre combinando deseos, monedas y precios justos."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, deseos, reconocimiento de dinero y comparación de precios en un solo reto final."
+        key_vocabulary: [deseo, moneda, precio, tesoro final]
+        prior_knowledge: "Completó Las Islas de los Deseos, Monedas y Billetes de mi Tierra y El Valor de las Cosas."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/el-valor-de-las-cosas
+        lessons:
+          - position: 1
+            slug: llegamos-a-la-ultima-isla
+            micro_objective: "Recuerda, sin ayuda, el deseo más grande que tuvo la tripulación en toda la aventura."
+            narrative_beat: "El barco llega a la última isla del mapa, donde brilla un cofre enorme bajo la arena."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: reconocemos-la-llave-de-monedas
+            micro_objective: "Reconoce, sin ayuda, la combinación exacta de monedas y billetes que abre el cofre final."
+            narrative_beat: "Rho descubre que el cofre solo se abre con la combinación exacta de monedas y billetes."
+            difficulty: 3
+            suggested_families: [money, arrange]
+          - position: 3
+            slug: comparamos-el-precio-del-tesoro
+            micro_objective: "Compara, sin ayuda, si el tesoro final vale lo que costó todo el viaje de la tripulación."
+            narrative_beat: "Zara compara con una sonrisa todo lo aprendido con lo que el tesoro final representa."
+            difficulty: 3
+            suggested_families: [choice, story]
+          - position: 4
+            slug: abrimos-el-tesoro-final
+            micro_objective: "Completa, sin ayuda, la apertura del tesoro final combinando deseo, monedas y precio justo."
+            narrative_beat: "Dino y Dina abren juntos el tesoro final: dentro hay un regalo para todo el archipiélago."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: la-gran-celebracion-del-archipielago
+        title_es: "La Gran Celebración del Archipiélago"
+        concept: "Todo el archipiélago celebra junto, recordando el viaje completo: deseos, trueque, dinero, monedas y precios justos."
+        learning_objective: "Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de toda la aventura del archipiélago."
+        key_vocabulary: [celebrar, recordar, aventura completa, justo]
+        prior_knowledge: "Domina todas las sagas de El Archipiélago del Trueque."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/nace-el-dinero
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/el-valor-de-las-cosas
+        lessons:
+          - position: 1
+            slug: contamos-toda-la-aventura
+            micro_objective: "Recuerda y narra, sin ayuda, los momentos clave de la aventura: deseo, trueque, dinero y precios."
+            narrative_beat: "Toda la tripulación se sienta en la playa a contar, isla por isla, la aventura completa del archipiélago."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 2
+            slug: repartimos-el-tesoro-del-capitan
+            micro_objective: "Reparte, sin ayuda, el tesoro final entre la Casa de Cambios y las familias de las islas."
+            narrative_beat: "Rho reparte con cuidado el tesoro del Capitán Fantasma entre toda la comunidad del archipiélago."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 3
+            slug: bailamos-en-la-casa-de-cambios
+            micro_objective: "Completa, sin ayuda, un último cambio justo dentro de la fiesta de la Casa de Cambios."
+            narrative_beat: "Zara y Dino bailan frente a la Casa de Cambios mientras isleños de todas las edades celebran juntos."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+          - position: 4
+            slug: zarpamos-hacia-el-bosque-con-el-corazon-lleno
+            micro_objective: "Explica en una frase, combinando toda la aventura, qué fue lo que más le enorgulleció aprender en el archipiélago."
+            narrative_beat: "Dina alza la vela del barco frente a todo el archipiélago en fiesta: el trueque quedó atrás, y el Bosque de la Abundancia los espera."
             difficulty: 3
             suggested_families: [story, choice]

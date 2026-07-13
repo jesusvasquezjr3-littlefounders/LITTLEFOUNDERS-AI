@@ -7,7 +7,14 @@
 
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
-import type { PlanContext, PlanSkeleton } from './plan.js';
+import {
+  effectiveDifficulty,
+  renderReviewSourcesBlock,
+  CONSOLIDATION_INSTRUCTION,
+  INTERLEAVE_INSTRUCTION,
+  type PlanContext,
+  type PlanSkeleton,
+} from './plan.js';
 import type { FactsFile } from '../catalog/schema.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import { lessonMetaSchema, lessonScoringSchema } from '../contract/core/schemaBase.js';
@@ -52,7 +59,7 @@ function renderFactsBlock(facts: FactsFile, refs: readonly string[]): string {
     .join('\n');
 }
 
-const HARD_RULES = [
+const BASE_HARD_RULES = [
   'Output STRICT JSON only: {"schema_version":1,"meta":{...},"scoring":{...},"segments":[...]}. No markdown fences, no prose outside the JSON.',
   'Produce EXACTLY one segment per skeleton entry, IN THE SAME ORDER, with the SAME `type` as the skeleton.',
   'Every segment.id must be unique within the document (short kebab-case, e.g. "s1-intro").',
@@ -65,7 +72,19 @@ const HARD_RULES = [
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
   'Write in es-MX, warm and encouraging, at a reading level appropriate for the stated age tier. Never mock a wrong answer (P3).',
-].map((line, i) => `${i + 1}. ${line}`).join('\n');
+];
+
+function buildHardRules(ctx: PlanContext): string {
+  const rules = [...BASE_HARD_RULES];
+  if (ctx.review) {
+    rules.push(CONSOLIDATION_INSTRUCTION);
+    rules.push(`No segment.difficulty may exceed ${effectiveDifficulty(ctx)} in this review lesson.`);
+    if (ctx.review.kind === 'review_interleaved' || ctx.review.kind === 'review_quest') {
+      rules.push(INTERLEAVE_INSTRUCTION);
+    }
+  }
+  return rules.map((line, i) => `${i + 1}. ${line}`).join('\n');
+}
 
 function buildWriteMessages(input: WriteInput, factsBlock: string, issues: string | undefined) {
   const system =
@@ -76,9 +95,17 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     .map((s, i) => `${i + 1}. type="${s.type}" — ${s.brief}`)
     .join('\n');
 
+  const reviewBlock = input.ctx.review
+    ? [
+        '',
+        `SOURCE TOPICS (this is a ${input.ctx.review.kind} review lesson — ground every segment in these, introduce nothing new):`,
+        renderReviewSourcesBlock(input.ctx.review.sources),
+      ].join('\n')
+    : '';
+
   const user = [
     'HARD RULES:',
-    HARD_RULES,
+    buildHardRules(input.ctx),
     '',
     'LESSON CONTEXT:',
     `Age tier: ${input.ctx.tier}`,
@@ -89,6 +116,7 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     `Narrative beat: ${input.ctx.lesson.narrativeBeat}`,
     `Lesson slug: ${input.slug}`,
     `Subject: ${input.subject}`,
+    reviewBlock,
     '',
     'FACTS (the ONLY source of numbers, besides pure arithmetic):',
     factsBlock,

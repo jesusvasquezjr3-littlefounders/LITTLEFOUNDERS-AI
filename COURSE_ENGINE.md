@@ -75,6 +75,37 @@ Lives in `coursegen/curriculum/<course-slug>/`, YAML, Zod-validated
   day for ~2 years.** The catalog is the STOP CONDITION: a run is complete
   when every slot has a published document ×3 locales, never before.
 
+### §3.1 Spaced-review layer (pedagogy: spacing effect + retrieval practice + interleaving)
+
+Review is DERIVED content — every review blueprint cites the teaching topics it
+consolidates (`review_of`), so Forge grounds it in already-validated concepts
+and the quality floor is inherited, not re-invented. Review share is capped by
+design at ~37% of the walk (the kid-optimal 25–35%+capstones band): doubling
+the catalog with review alone would saturate learners — if the catalog must
+grow past this, grow TEACHING breadth (e.g. tier2 sagas 6→8 topics), never the
+review ratio.
+
+Three rungs, all inside the existing worlds:
+
+| Rung | Where | Shape | Kind |
+|---|---|---|---|
+| Repaso de saga | topics 7–8 of every saga | 7: "El Cofre del Repaso" — pure retrieval of the saga's 6 topics, light playful types (2–3 min). 8: "Reto Entrelazado" — interleaves this saga with EARLIER sagas/adventures | `review_spaced`, `review_interleaved` |
+| La Gran Misión | saga 5 of every adventure | 6 topics × 4 lessons: cumulative narrative quest re-playing the whole world's concepts + callbacks to previous worlds; gentle difficulty, high celebration | saga `review`, topics `review_quest` |
+| Natural spacing | emergent | a concept returns days later (rung 1), weeks later (rung 2), months later (later worlds' interleaved retos) | — |
+
+Catalog fields: topics carry optional `kind: teaching | review_spaced |
+review_interleaved | review_quest` (default `teaching`) and `review_of:
+[topic/saga slug paths]` (required for review kinds; must resolve). Sagas carry
+optional `kind: teaching | review`. Review lessons: difficulty ≤ teaching
+median, `suggested_families` lean on story/choice/arrange/money/storyplay,
+micro-objectives are RETRIEVAL objectives ("recuerda y aplica X sin re-enseñar").
+The plan/write prompts receive the source topics' concepts and objectives and
+the instruction "consolidate — never introduce new concepts".
+
+**Totals: 8 adventures × (5 sagas) — 4 teaching sagas × 8 topics (6 teaching +
+2 review) + 1 review saga × 6 topics — × 4 lessons = 152 lessons/adventure =
+1,216 total** (768 teaching + 448 review ≈ 3.3 years at 1/day).
+
 Catalog authoring is human-reviewed content design. The Educación Financiera
 catalog progression (ages 6→8):
 

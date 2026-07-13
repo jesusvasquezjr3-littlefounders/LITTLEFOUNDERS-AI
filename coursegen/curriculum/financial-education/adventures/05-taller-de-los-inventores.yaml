@@ -326,6 +326,108 @@ sagas:
       suggested_families:
       - storyplay
       - story
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de recuerdos del taller para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Chispas de Ideas.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Chispas de Ideas.
+    key_vocabulary:
+    - problema
+    - idea
+    - cliente
+    - comparar
+    prior_knowledge: Ha completado los seis temas de la saga Chispas de Ideas (aventura 5, saga 1).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/chispas-de-ideas/problemas-cada-dia
+    - taller-de-los-inventores/chispas-de-ideas/de-problema-a-idea
+    - taller-de-los-inventores/chispas-de-ideas/para-quien-es
+    - taller-de-los-inventores/chispas-de-ideas/elegir-la-mejor-idea
+    - taller-de-los-inventores/chispas-de-ideas/dibujar-el-plan
+    - taller-de-los-inventores/chispas-de-ideas/contarle-la-idea-a-alguien
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo notar un problema cotidiano y cómo convertir un problema en una idea.
+      narrative_beat: Zara Vex encuentra un cofre de recuerdos del taller y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo pensar en quién usaría el invento y cómo comparar ideas y elegir la mejor.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre ordenar los pasos en un plano.
+      narrative_beat: Dr. Rho presenta una escena nueva del taller y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo explicar la idea con claridad, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Chispas de Ideas con ideas de aventuras anteriores en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Chispas de Ideas con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - problema
+    prior_knowledge: Conoce Chispas de Ideas (aventura 5) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+    - mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Chispas de Ideas.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Chispas de Ideas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del taller, Dina combina lo aprendido en Chispas de Ideas con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 2
   slug: manos-a-la-obra
   icon: construction
@@ -640,6 +742,108 @@ sagas:
       suggested_families:
       - analyze
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de recuerdos del taller para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Manos a la Obra.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Manos a la Obra.
+    key_vocabulary:
+    - material
+    - precio
+    - costo total
+    - calidad
+    prior_knowledge: Ha completado los seis temas de la saga Manos a la Obra (aventura 5, saga 2).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/manos-a-la-obra/materiales-que-necesito
+    - taller-de-los-inventores/manos-a-la-obra/cuanto-cuesta-cada-material
+    - taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+    - taller-de-los-inventores/manos-a-la-obra/hacerlo-con-cuidado-y-calidad
+    - taller-de-los-inventores/manos-a-la-obra/probar-el-invento
+    - taller-de-los-inventores/manos-a-la-obra/mejorar-con-lo-que-aprendi
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir los materiales correctos y cómo leer el precio de cada material.
+      narrative_beat: Zara Vex encuentra un cofre de recuerdos del taller y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo sumar los precios para el costo total y cómo trabajar con cuidado y calidad.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre probar si el invento funciona.
+      narrative_beat: Dr. Rho presenta una escena nueva del taller y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo ajustar el invento según la prueba, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Manos a la Obra con una saga anterior del taller y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Manos a la Obra con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - material
+    prior_knowledge: Conoce Manos a la Obra (aventura 5) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/chispas-de-ideas/elegir-la-mejor-idea
+    - bosque-de-la-abundancia/semillas-de-esfuerzo/diferentes-trabajos-diferentes-esfuerzos
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Manos a la Obra.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Manos a la Obra.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del taller, Dina combina lo aprendido en Manos a la Obra con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 3
   slug: el-precio-justo
   icon: sell
@@ -965,6 +1169,108 @@ sagas:
       suggested_families:
       - money
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de recuerdos del taller para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Precio Justo.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Precio Justo.
+    key_vocabulary:
+    - costo
+    - ganancia
+    - equilibrio
+    - comparar
+    prior_knowledge: Ha completado los seis temas de la saga El Precio Justo (aventura 5, saga 3).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/el-precio-justo/el-costo-no-es-el-precio
+    - taller-de-los-inventores/el-precio-justo/un-poquito-mas-por-tu-trabajo
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    - taller-de-los-inventores/el-precio-justo/comparar-con-otros-inventos
+    - taller-de-los-inventores/el-precio-justo/el-precio-en-monedas-y-billetes
+    - taller-de-los-inventores/el-precio-justo/cambiar-el-precio-si-hace-falta
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo distinguir el costo del precio y cómo sumar una ganancia justa.
+      narrative_beat: Zara Vex encuentra un cofre de recuerdos del taller y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo buscar el equilibrio de precio y cómo comparar el precio con el mercado.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre formar el precio con monedas y billetes.
+      narrative_beat: Dr. Rho presenta una escena nueva del taller y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo ajustar el precio con evidencia, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Precio Justo con una saga anterior del taller y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Precio Justo con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - costo
+    prior_knowledge: Conoce El Precio Justo (aventura 5) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+    - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-grandes
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Precio Justo.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Precio Justo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del taller, Dina combina lo aprendido en El Precio Justo con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
 - position: 4
   slug: dia-de-mercado
   icon: storefront
@@ -1292,3 +1598,424 @@ sagas:
       suggested_families:
       - story
       - storyplay
+  - position: 7
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de recuerdos del taller para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Día de Mercado.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Día de Mercado.
+    key_vocabulary:
+    - puesto
+    - útil
+    - cobrar
+    - comentario
+    prior_knowledge: Ha completado los seis temas de la saga Día de Mercado (aventura 5, saga 4).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/dia-de-mercado/preparar-el-puesto
+    - taller-de-los-inventores/dia-de-mercado/explicar-por-que-es-util
+    - taller-de-los-inventores/dia-de-mercado/cobrar-y-dar-cambio
+    - taller-de-los-inventores/dia-de-mercado/escuchar-a-los-clientes
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    - taller-de-los-inventores/dia-de-mercado/planear-el-proximo-invento
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo organizar un puesto de venta y cómo explicar la utilidad al comprador.
+      narrative_beat: Zara Vex encuentra un cofre de recuerdos del taller y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo cobrar y calcular el cambio y cómo usar los comentarios para mejorar.
+      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre repartir las ganancias en tres frascos.
+      narrative_beat: Dr. Rho presenta una escena nueva del taller y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo aplicar lo aprendido al siguiente ciclo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Día de Mercado con una saga anterior del taller y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Día de Mercado con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - puesto
+    prior_knowledge: Conoce Día de Mercado (aventura 5) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/el-precio-justo/un-poquito-mas-por-tu-trabajo
+    - aldea-del-ahorro/metas-de-la-aldea/divido-mis-monedas-en-frascos
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Día de Mercado.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Día de Mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del taller, Dina combina lo aprendido en Día de Mercado con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-taller
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Workshop's Grand Mission
+    es-MX: La Gran Misión del Taller
+    pt-BR: A Grande Missão da Oficina
+  description:
+    en-US: A final quest that replays the whole workshop cycle -- idea, materials, price, and sale -- one last time.
+    es-MX: Una misión final que repasa todo el ciclo del taller -- idea, materiales, precio y venta -- una última vez.
+    pt-BR: Uma missão final que revisita todo o ciclo da oficina -- ideia, materiais, preço e venda -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-de-la-gran-mision
+    kind: review_quest
+    title_es: El Desafío de la Gran Misión
+    concept: 'Dr. Rho anuncia la Gran Misión del taller: un desafío final que reúne, sin enseñar nada nuevo, todo el ciclo de inventar del valle.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo notar un problema y convertirlo en una idea, tal como se aprendió en Chispas de Ideas.
+    key_vocabulary:
+    - problema
+    - idea
+    - usuario
+    prior_knowledge: Ha completado las cuatro sagas de El Taller de los Inventores.
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/chispas-de-ideas/problemas-cada-dia
+    - taller-de-los-inventores/chispas-de-ideas/de-problema-a-idea
+    - taller-de-los-inventores/chispas-de-ideas/para-quien-es
+    - taller-de-los-inventores/chispas-de-ideas/elegir-la-mejor-idea
+    lessons:
+    - position: 1
+      slug: la-nave-de-inventores-abre-sus-puertas
+      micro_objective: Recordar que un invento nace de notar un problema real de alguien.
+      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el taller y anuncia la Gran Misión: recorrer todo el camino de un invento, desde la idea hasta la venta, una vez más.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-un-problema-de-memoria
+      micro_objective: Recordar, sin ayuda nueva, un problema cotidiano y la idea que podría resolverlo.
+      narrative_beat: Zara Vex presenta una escena nueva del valle y reta a Dina a notar el problema y proponer una idea, tal como aprendió en la primera saga.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: pensar-en-quien-la-usaria-otra-vez
+      micro_objective: Recordar y aplicar cómo identificar quién usaría la idea propuesta.
+      narrative_beat: Dino recuerda, sin repasar la lección, para quién sería útil su idea antes de seguir adelante con la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-idea-para-la-gran-mision
+      micro_objective: Elegir, con una razón propia, la idea que llevará durante toda la Gran Misión.
+      narrative_beat: Dina elige, entre varias ideas recordadas, la que llevará como su proyecto para toda la Gran Misión del taller.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 2
+    slug: reunir-materiales-para-la-mision
+    kind: review_quest
+    title_es: Reunir Materiales para la Misión
+    concept: Antes de construir su invento para la Gran Misión, Dina recuerda cómo elegir materiales y calcular su costo total.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo elegir materiales correctos y sumar su costo total, tal como se aprendió en Manos a la Obra.
+    key_vocabulary:
+    - material
+    - costo total
+    - calidad
+    prior_knowledge: Tiene una idea elegida para la Gran Misión (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/manos-a-la-obra/materiales-que-necesito
+    - taller-de-los-inventores/manos-a-la-obra/cuanto-cuesta-cada-material
+    - taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+    - taller-de-los-inventores/manos-a-la-obra/hacerlo-con-cuidado-y-calidad
+    lessons:
+    - position: 1
+      slug: el-estante-vuelve-a-abrirse
+      micro_objective: Recordar qué materiales corresponden a una idea de invento dada.
+      narrative_beat: Dino recorre el estante de materiales del taller y recuerda, sin ayuda, cuáles necesita para el invento de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: sumar-de-memoria
+      micro_objective: Recordar y aplicar cómo sumar el precio de varios materiales para obtener el costo total.
+      narrative_beat: Dina suma, tal como aprendió antes, el precio de cada material que necesita para su invento de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - money
+      - arrange
+    - position: 3
+      slug: revisar-con-cuidado-otra-vez
+      micro_objective: Recordar las señales de un trabajo cuidadoso frente a uno apresurado.
+      narrative_beat: Zara Vex reta a Dino a recordar, sin repasar la lección, qué señales muestran que un invento está bien hecho.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mis-materiales-para-la-mision
+      micro_objective: Aplicar juntos el costo total y el cuidado de calidad al invento propio de la Gran Misión.
+      narrative_beat: Dina termina de reunir y sumar sus materiales para la Gran Misión, cuidando la calidad tal como aprendió en Manos a la Obra.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+
+  - position: 3
+    slug: ponerle-precio-al-invento-de-la-mision
+    kind: review_quest
+    title_es: Ponerle Precio al Invento de la Misión
+    concept: Con su invento casi listo, Dina recuerda cómo distinguir costo de precio y calcular una ganancia justa.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo distinguir costo de precio y sumar una ganancia justa, tal como se aprendió en El Precio Justo.
+    key_vocabulary:
+    - costo
+    - precio
+    - ganancia
+    prior_knowledge: Tiene los materiales de su invento reunidos y sumados (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/el-precio-justo/el-costo-no-es-el-precio
+    - taller-de-los-inventores/el-precio-justo/un-poquito-mas-por-tu-trabajo
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    - taller-de-los-inventores/el-precio-justo/el-precio-en-monedas-y-billetes
+    lessons:
+    - position: 1
+      slug: costo-o-precio-de-nuevo
+      micro_objective: Recordar la diferencia entre el costo de los materiales y el precio de venta.
+      narrative_beat: Dr. Rho pregunta de nuevo a Dina cuánto gastó y en cuánto piensa vender su invento de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: sumar-mi-ganancia-otra-vez
+      micro_objective: Recordar y aplicar cómo sumar una ganancia razonable al costo de un invento.
+      narrative_beat: Dina suma, tal como aprendió antes, una ganancia justa al costo de su invento de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - money
+      - arrange
+    - position: 3
+      slug: ni-muy-caro-ni-muy-barato-otra-vez
+      micro_objective: Recordar cómo reconocer si un precio propuesto es demasiado alto o demasiado bajo.
+      narrative_beat: Zara Vex presenta tres precios posibles para el invento de la Gran Misión y reta a Dina a recordar cuál es equilibrado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-precio-para-la-mision
+      micro_objective: Formar y confirmar el precio final del invento propio con monedas y billetes.
+      narrative_beat: Dina forma con monedas y billetes el precio final de su invento, listo para el día de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+
+  - position: 4
+    slug: el-dia-de-la-gran-mision
+    kind: review_quest
+    title_es: El Día de la Gran Misión
+    concept: Dina monta su puesto para la Gran Misión y recuerda cómo cobrar, escuchar a los clientes y repartir sus ganancias.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo cobrar y dar cambio, y cómo repartir ganancias en tres frascos, tal como se aprendió en Día de Mercado.
+    key_vocabulary:
+    - puesto
+    - cambio
+    - ganancia
+    prior_knowledge: Tiene un precio final listo para su invento (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/dia-de-mercado/preparar-el-puesto
+    - taller-de-los-inventores/dia-de-mercado/cobrar-y-dar-cambio
+    - taller-de-los-inventores/dia-de-mercado/escuchar-a-los-clientes
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    lessons:
+    - position: 1
+      slug: montar-el-puesto-de-la-mision
+      micro_objective: Recordar los elementos básicos de un puesto de venta bien organizado.
+      narrative_beat: Dino recuerda, sin ayuda, cómo acomodar su invento, su cartel y su caja de cobro para la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cobrar-el-cambio-de-la-mision
+      micro_objective: Recordar y aplicar cómo calcular el cambio correcto de una venta.
+      narrative_beat: Dina calcula, tal como aprendió antes, el cambio exacto que debe entregar a un cliente de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - money
+      - arrange
+    - position: 3
+      slug: escuchar-de-nuevo-a-los-clientes
+      micro_objective: Recordar cómo distinguir un comentario útil de uno que no ayuda a mejorar.
+      narrative_beat: Zara Vex recuerda a Dino un par de comentarios de clientes y le pide identificar cuál le ayudaría más a mejorar su invento.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repartir-las-ganancias-de-la-mision
+      micro_objective: Aplicar el reparto de ganancias entre ahorrar, gastar y compartir al cierre de la Gran Misión.
+      narrative_beat: Al cerrar su puesto de la Gran Misión, Dina reparte sus ganancias entre los tres frascos, tal como aprendió en Día de Mercado.
+      difficulty: 2
+      suggested_families:
+      - money
+      - storyplay
+
+  - position: 5
+    slug: el-reto-completo-del-taller
+    kind: review_quest
+    title_es: El Reto Completo del Taller
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro etapas del ciclo del taller: idea, materiales, precio y venta.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido las cuatro etapas del ciclo de inventar, poner precio y vender.
+    key_vocabulary:
+    - ciclo
+    - invento
+    - precio
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/chispas-de-ideas/elegir-la-mejor-idea
+    - taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+    - taller-de-los-inventores/el-precio-justo/un-poquito-mas-por-tu-trabajo
+    - taller-de-los-inventores/dia-de-mercado/cobrar-y-dar-cambio
+    lessons:
+    - position: 1
+      slug: las-cuatro-etapas-juntas
+      micro_objective: 'Recordar, en orden, las cuatro etapas del ciclo del taller: idea, materiales, precio y venta.'
+      narrative_beat: Dr. Rho despliega un mapa del taller con las cuatro etapas del ciclo, y pide a Dina y Dino recordarlas en orden.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-founder-nuevo-necesita-ayuda
+      micro_objective: Aplicar las cuatro etapas del ciclo para ayudar a un personaje nuevo con su propio invento.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del taller y reta a Dino a guiarlo por las cuatro etapas del ciclo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-etapas
+      micro_objective: Aplicar con seguridad las cuatro etapas del ciclo en un desafío único que las combina todas.
+      narrative_beat: Dina resuelve un desafío del taller que combina, de una sola vez, idea, materiales, precio y venta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-ciclo-completo
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, el ciclo completo del taller aplicado al invento propio.
+      narrative_beat: Dina completa su propio recorrido por las cuatro etapas del taller, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - money
+
+  - position: 6
+    slug: la-gran-mision-del-taller
+    kind: review_quest
+    title_es: La Gran Misión del Taller
+    concept: El gran cierre de la aventura combina todo el ciclo del taller con lecciones de aventuras anteriores sobre el dinero y el esfuerzo.
+    learning_objective: Al final, el niño puede aplicar el ciclo completo de inventar, poner precio y vender, conectándolo con lo aprendido sobre el dinero y el trabajo en aventuras anteriores.
+    key_vocabulary:
+    - invento
+    - esfuerzo
+    - dinero
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del taller (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/chispas-de-ideas/de-problema-a-idea
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+    - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+    lessons:
+    - position: 1
+      slug: el-taller-y-el-bosque
+      micro_objective: Recordar por qué el esfuerzo de construir un invento merece una recompensa, tal como el esfuerzo de una chambita.
+      narrative_beat: Dr. Rho compara el esfuerzo de armar un invento con el esfuerzo de una chambita del bosque de la abundancia.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-taller-y-el-archipielago
+      micro_objective: Recordar por qué usamos monedas para cobrar el invento, tal como se aprendió en el archipiélago del trueque.
+      narrative_beat: Zara Vex recuerda a Dino por qué el pueblo del archipiélago dejó el trueque y empezó a usar monedas, igual que en el mercado del valle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: la-gran-mision-en-un-solo-dia
+      micro_objective: Aplicar en un desafío final el ciclo completo del taller junto con lo recordado sobre esfuerzo y dinero.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando el ciclo del taller con todo lo que recuerda sobre el dinero y el trabajo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-taller-sigue-abierto-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del taller.
+      narrative_beat: Con su invento vendido y sus ganancias repartidas, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión del taller.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

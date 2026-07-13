@@ -4,7 +4,7 @@
 
 import path from 'node:path';
 import { getConfig, requireGenerationKeys } from '../env.js';
-import { loadCourseCatalog, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
+import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
@@ -88,7 +88,20 @@ function courseTitleText(catalog: CatalogFile, locale: LessonLocale): string {
   return catalog.course.title[locale];
 }
 
-function buildPlanContext(slot: Slot, catalog: CatalogFile, taxonomy: TaxonomyFile): PlanContext {
+function buildPlanContext(slot: Slot, course: CourseCatalog, catalog: CatalogFile, taxonomy: TaxonomyFile): PlanContext {
+  const review =
+    slot.topic.kind !== 'teaching' && slot.topic.review_of
+      ? {
+          kind: slot.topic.kind,
+          sources: resolveReviewSources(course, slot.topic.review_of).map((s) => ({
+            path: s.path,
+            concept: s.concept,
+            learningObjective: s.learningObjective,
+            keyVocabulary: s.keyVocabulary,
+          })),
+        }
+      : undefined;
+
   return {
     tier: slot.tier,
     taxonomy,
@@ -107,6 +120,7 @@ function buildPlanContext(slot: Slot, catalog: CatalogFile, taxonomy: TaxonomyFi
       difficulty: slot.lesson.difficulty,
       suggestedFamilies: slot.lesson.suggested_families,
     },
+    review,
   };
 }
 
@@ -136,7 +150,7 @@ async function processSlot(
 
     // ---- plan ----
     let current = getSlot(checkpoint, slot.slotId);
-    const planCtx = buildPlanContext(slot, course.catalog, course.taxonomy);
+    const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy);
     let skeleton = current.data?.skeleton as PlanSkeleton | undefined;
     if (!skeleton || current.state === 'pending' || current.state === 'failed') {
       const planResult = await planLesson(planCtx, { ledger });

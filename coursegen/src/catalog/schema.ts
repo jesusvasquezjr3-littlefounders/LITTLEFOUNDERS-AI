@@ -108,21 +108,57 @@ export const lessonBlueprintSchema = z.object({
   suggested_families: z.array(z.string().min(1).max(40)).min(1),
 });
 
-export const topicBlueprintSchema = z.object({
-  position: z.number().int().min(1),
-  slug: slugSchema,
-  title_es: z.string().min(1).max(160),
-  concept: z.string().min(1).max(600),
-  learning_objective: z.string().min(1).max(600),
-  key_vocabulary: z.array(z.string().min(1).max(80)).min(1),
-  prior_knowledge: z.string().min(1).max(600),
-  fact_refs: z.array(z.string().min(1).max(120)).default([]),
-  lessons: z.array(lessonBlueprintSchema).min(1),
-});
+// ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------
+//
+// Sagas default to `teaching`; a saga may instead be the adventure's single
+// `review` saga (La Gran Misión). Topics default to `teaching`; a review-kind
+// topic MUST cite the teaching content it consolidates via `review_of` — a
+// list of slug PATHS of the form "<adventure-slug>/<saga-slug>" (a whole
+// saga) or "<adventure-slug>/<saga-slug>/<topic-slug>" (a single topic).
+// Path RESOLUTION against the loaded catalog happens in loader.ts (it needs
+// the full cross-adventure picture); this schema only enforces the local
+// shape: review kinds require a non-empty review_of, teaching kind must not
+// carry one at all.
+
+export const sagaKindSchema = z.enum(['teaching', 'review']);
+export const topicKindSchema = z.enum(['teaching', 'review_spaced', 'review_interleaved', 'review_quest']);
+export type SagaKind = z.infer<typeof sagaKindSchema>;
+export type TopicKind = z.infer<typeof topicKindSchema>;
+
+export const reviewOfPathSchema = z
+  .string()
+  .regex(
+    /^[a-z0-9]+(-[a-z0-9]+)*\/[a-z0-9]+(-[a-z0-9]+)*(\/[a-z0-9]+(-[a-z0-9]+)*)?$/,
+    'review_of entries must be "<adventure-slug>/<saga-slug>" or "<adventure-slug>/<saga-slug>/<topic-slug>"',
+  );
+
+export const topicBlueprintSchema = z
+  .object({
+    position: z.number().int().min(1),
+    slug: slugSchema,
+    kind: topicKindSchema.default('teaching'),
+    review_of: z.array(reviewOfPathSchema).min(1).optional(),
+    title_es: z.string().min(1).max(160),
+    concept: z.string().min(1).max(600),
+    learning_objective: z.string().min(1).max(600),
+    key_vocabulary: z.array(z.string().min(1).max(80)).min(1),
+    prior_knowledge: z.string().min(1).max(600),
+    fact_refs: z.array(z.string().min(1).max(120)).default([]),
+    lessons: z.array(lessonBlueprintSchema).min(1),
+  })
+  .refine((t) => t.kind === 'teaching' || (t.review_of !== undefined && t.review_of.length > 0), {
+    message: 'review-kind topics (review_spaced/review_interleaved/review_quest) require a non-empty review_of',
+    path: ['review_of'],
+  })
+  .refine((t) => t.kind !== 'teaching' || t.review_of === undefined, {
+    message: 'teaching-kind topics must not carry review_of',
+    path: ['review_of'],
+  });
 
 export const sagaBlueprintSchema = z.object({
   position: z.number().int().min(1),
   slug: slugSchema,
+  kind: sagaKindSchema.default('teaching'),
   icon: z.string().min(1).max(60),
   title: localized(160),
   description: localized(600),

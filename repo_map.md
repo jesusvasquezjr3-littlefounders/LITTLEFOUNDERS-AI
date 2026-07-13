@@ -3194,6 +3194,26 @@ describe('error classification', () => {
   });
 ```
 
+### coursegen/src/__tests__/review-layer.test.ts
+
+```
+// Spaced-review layer tests (COURSE_ENGINE.md §3.1):
+//  - catalog schema: `kind`/`review_of` shape rules on sagas + topics
+//  - loader: review_of path resolution across adventure files, kind-aware
+//    quota warnings, resolveReviewSources()
+//  - pipeline prompts: plan.ts/write.ts ground review lessons in their
+//    sources and carry the consolidation/interleave/difficulty-cap rules
+
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { stringify } from 'yaml';
+import { loadCourseCatalog, resolveReviewSources } from '../catalog/loader.js';
+import { topicBlueprintSchema, sagaBlueprintSchema, reviewOfPathSchema } from '../catalog/schema.js';
+import { planLesson, type PlanContext } from '../pipeline/plan.js';
+```
+
 ### coursegen/src/__tests__/review.test.ts
 
 ```
@@ -3853,7 +3873,7 @@ export const MAX_REVISE_CYCLES = 2;
 
 import path from 'node:path';
 import { getConfig, requireGenerationKeys } from '../env.js';
-import { loadCourseCatalog, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
+import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
@@ -3876,12 +3896,12 @@ import { localizeLesson } from './localize.js';
 
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
-import type { PlanContext, PlanSkeleton } from './plan.js';
-import type { FactsFile } from '../catalog/schema.js';
-import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
-import { lessonMetaSchema, lessonScoringSchema } from '../contract/core/schemaBase.js';
-import { TYPE_TO_SCHEMA, GRADED_TYPES } from '../contract/registry.js';
-import type { LessonLocale } from '../contract/core/types.js';
+import {
+  effectiveDifficulty,
+  renderReviewSourcesBlock,
+  CONSOLIDATION_INSTRUCTION,
+  INTERLEAVE_INSTRUCTION,
+  type PlanContext,
 ```
 
 ### coursegen/src/providers/deepseek.ts
