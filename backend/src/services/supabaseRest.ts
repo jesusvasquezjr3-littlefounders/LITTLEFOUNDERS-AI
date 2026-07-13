@@ -237,6 +237,19 @@ export async function getLearningStatsByUserId(userId: string): Promise<Learning
   return rows?.[0] ?? ZERO_STATS;
 }
 
+/** Same row, plus `updated_at` — the streak proxy `services/streak.ts` needs (see its file header for why). Used only by POST /learn/lessons/:id/complete. */
+export interface LearningStatsForUpdateRow extends LearningStatsRow {
+  updated_at: string;
+}
+
+export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
+  const rows = await rest<LearningStatsForUpdateRow[]>(
+    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days,updated_at`,
+    serviceToken(),
+  );
+  return rows?.[0] ?? { ...ZERO_STATS, updated_at: new Date(0).toISOString() };
+}
+
 // ── Follow / block lists (0006) ──────────────────────────────
 
 export interface ListedUser {
@@ -346,16 +359,246 @@ export async function unblockUser(accessToken: string, blockerId: string, blocke
   return res.ok;
 }
 
-export interface CourseRow {
+// ── Course hierarchy (0007, COURSE_ENGINE.md §2) ─────────────
+// courses -> adventures -> sagas -> topics -> lessons -> lesson_documents.
+// All hierarchy reads use the USER's own token — RLS's "published + every
+// ancestor published" chain (0007) already does the filtering; Core layers
+// per-user UNLOCK state on top in services/courseTree.ts (never in SQL).
+// lesson_documents has NO SELECT policy at all (0007) — service role only,
+// see getLessonDocument below.
+
+type Json = Record<string, unknown>;
+
+export interface CourseHierarchyRow {
   id: string;
   slug: string;
-  title: Record<string, string>;
-  lessons: { count: number }[];
+  title: Json;
+  description: Json;
+  subject: string;
+  position: number;
 }
 
-/** Published courses only — the user's own token, so RLS decides. */
-export function getPublishedCourses(accessToken: string): Promise<CourseRow[] | null> {
-  return rest<CourseRow[]>('/courses?select=id,slug,title,lessons(count)&order=slug.asc', accessToken);
+const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position';
+
+export function getPublishedCourseRows(accessToken: string): Promise<CourseHierarchyRow[] | null> {
+  return rest<CourseHierarchyRow[]>(`/courses?status=eq.published&select=${COURSE_HIERARCHY_FIELDS}&order=position.asc`, accessToken);
+}
+
+export async function getPublishedCourseBySlug(accessToken: string, slug: string): Promise<CourseHierarchyRow | null> {
+  const rows = await rest<CourseHierarchyRow[]>(
+    `/courses?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
+    accessToken,
+  );
+  return rows?.[0] ?? null;
+}
+
+export async function getPublishedCourseById(accessToken: string, courseId: string): Promise<CourseHierarchyRow | null> {
+  const rows = await rest<CourseHierarchyRow[]>(
+    `/courses?id=eq.${courseId}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
+    accessToken,
+  );
+  return rows?.[0] ?? null;
+}
+
+export interface AdventureHierarchyRow {
+  id: string;
+  course_id: string;
+  position: number;
+  slug: string;
+  title: Json;
+  description: Json;
+  theme: string;
+}
+
+const ADVENTURE_FIELDS = 'id,course_id,position,slug,title,description,theme';
+
+/** `in.(...)` filters short-circuit to [] on an empty id list — never send `in.()` to PostgREST. */
+function inFilter(ids: string[]): string {
+  return `in.(${ids.join(',')})`;
+}
+
+export function getAdventuresByCourseIds(accessToken: string, courseIds: string[]): Promise<AdventureHierarchyRow[] | null> {
+  if (courseIds.length === 0) return Promise.resolve([]);
+  return rest<AdventureHierarchyRow[]>(`/adventures?course_id=${inFilter(courseIds)}&select=${ADVENTURE_FIELDS}`, accessToken);
+}
+
+export async function getAdventureById(accessToken: string, adventureId: string): Promise<AdventureHierarchyRow | null> {
+  const rows = await rest<AdventureHierarchyRow[]>(`/adventures?id=eq.${adventureId}&select=${ADVENTURE_FIELDS}`, accessToken);
+  return rows?.[0] ?? null;
+}
+
+export interface SagaHierarchyRow {
+  id: string;
+  adventure_id: string;
+  position: number;
+  slug: string;
+  title: Json;
+  icon: string;
+}
+
+const SAGA_FIELDS = 'id,adventure_id,position,slug,title,icon';
+
+export function getSagasByAdventureIds(accessToken: string, adventureIds: string[]): Promise<SagaHierarchyRow[] | null> {
+  if (adventureIds.length === 0) return Promise.resolve([]);
+  return rest<SagaHierarchyRow[]>(`/sagas?adventure_id=${inFilter(adventureIds)}&select=${SAGA_FIELDS}`, accessToken);
+}
+
+export async function getSagaById(accessToken: string, sagaId: string): Promise<SagaHierarchyRow | null> {
+  const rows = await rest<SagaHierarchyRow[]>(`/sagas?id=eq.${sagaId}&select=${SAGA_FIELDS}`, accessToken);
+  return rows?.[0] ?? null;
+}
+
+export interface TopicHierarchyRow {
+  id: string;
+  saga_id: string;
+  position: number;
+  slug: string;
+  title: Json;
+}
+
+const TOPIC_FIELDS = 'id,saga_id,position,slug,title';
+
+export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Promise<TopicHierarchyRow[] | null> {
+  if (sagaIds.length === 0) return Promise.resolve([]);
+  return rest<TopicHierarchyRow[]>(`/topics?saga_id=${inFilter(sagaIds)}&select=${TOPIC_FIELDS}`, accessToken);
+}
+
+export async function getTopicById(accessToken: string, topicId: string): Promise<TopicHierarchyRow | null> {
+  const rows = await rest<TopicHierarchyRow[]>(`/topics?id=eq.${topicId}&select=${TOPIC_FIELDS}`, accessToken);
+  return rows?.[0] ?? null;
+}
+
+export interface LessonHierarchyRow {
+  id: string;
+  topic_id: string;
+  position: number;
+  slug: string;
+  title: Json;
+  difficulty: number;
+  xp_total: number;
+  estimated_minutes: number;
+}
+
+const LESSON_FIELDS = 'id,topic_id,position,slug,title,difficulty,xp_total,estimated_minutes';
+
+export function getLessonsByTopicIds(accessToken: string, topicIds: string[]): Promise<LessonHierarchyRow[] | null> {
+  if (topicIds.length === 0) return Promise.resolve([]);
+  return rest<LessonHierarchyRow[]>(`/lessons?topic_id=${inFilter(topicIds)}&select=${LESSON_FIELDS}`, accessToken);
+}
+
+/** Single lesson by id — RLS's published-chain policy means a hit here also proves "published w/ published ancestors". */
+export async function getLessonById(accessToken: string, lessonId: string): Promise<LessonHierarchyRow | null> {
+  const rows = await rest<LessonHierarchyRow[]>(`/lessons?id=eq.${lessonId}&select=${LESSON_FIELDS}`, accessToken);
+  return rows?.[0] ?? null;
+}
+
+export interface LessonProgressRow {
+  lesson_id: string;
+  best_score: number;
+  passed: boolean;
+  attempts: number;
+  xp_earned: number;
+}
+
+export function getLessonProgressForLessons(accessToken: string, userId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
+  if (lessonIds.length === 0) return Promise.resolve([]);
+  return rest<LessonProgressRow[]>(
+    `/lesson_progress?user_id=eq.${userId}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+    accessToken,
+  );
+}
+
+export async function getLessonProgressRow(accessToken: string, userId: string, lessonId: string): Promise<LessonProgressRow | null> {
+  const rows = await rest<LessonProgressRow[]>(
+    `/lesson_progress?user_id=eq.${userId}&lesson_id=eq.${lessonId}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+    accessToken,
+  );
+  return rows?.[0] ?? null;
+}
+
+// ── Lesson documents (0007) — SERVICE ROLE ONLY, no SELECT policy exists ───
+
+export interface LessonDocumentRow {
+  lesson_id: string;
+  locale: string;
+  schema_version: number;
+  document: Json;
+  answer_keys: Json;
+}
+
+/** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback (LESSON_ENGINE.md §3). */
+export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
+  return rest<LessonDocumentRow[]>(
+    `/lesson_documents?lesson_id=eq.${lessonId}&select=lesson_id,locale,schema_version,document,answer_keys`,
+    serviceToken(),
+  );
+}
+
+// ── Lesson segment attempts (0007) — SERVICE ROLE writes, self-read RLS ────
+
+export interface SegmentAttemptRow {
+  segment_id: string;
+  attempt_number: number;
+  score: number;
+}
+
+/** Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own token is enough. */
+export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string): Promise<SegmentAttemptRow[] | null> {
+  return rest<SegmentAttemptRow[]>(
+    `/lesson_segment_attempts?user_id=eq.${userId}&lesson_id=eq.${lessonId}&select=segment_id,attempt_number,score`,
+    accessToken,
+  );
+}
+
+export async function countSegmentAttempts(accessToken: string, userId: string, lessonId: string, segmentId: string): Promise<number> {
+  const rows = await rest<unknown[]>(
+    `/lesson_segment_attempts?user_id=eq.${userId}&lesson_id=eq.${lessonId}&segment_id=eq.${encodeURIComponent(segmentId)}&select=segment_id`,
+    accessToken,
+  );
+  return rows?.length ?? 0;
+}
+
+/** No client INSERT policy (0007) — Core (service role) records every graded attempt. */
+export async function insertSegmentAttempt(
+  userId: string,
+  lessonId: string,
+  segmentId: string,
+  attemptNumber: number,
+  score: number,
+): Promise<boolean> {
+  const res = await rest<unknown>('/lesson_segment_attempts', serviceToken(), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ user_id: userId, lesson_id: lessonId, segment_id: segmentId, attempt_number: attemptNumber, score }),
+  });
+  return res !== null;
+}
+
+/** No client INSERT/UPDATE policy (0007) — Core (service role) is the only writer. Upsert by (user_id, lesson_id). */
+export async function upsertLessonProgress(
+  userId: string,
+  lessonId: string,
+  patch: { best_score: number; passed: boolean; attempts: number; xp_earned: number; completed_at: string | null },
+): Promise<boolean> {
+  const res = await restRaw('/lesson_progress?on_conflict=user_id,lesson_id', serviceToken(), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({ user_id: userId, lesson_id: lessonId, ...patch }),
+  });
+  return res.ok;
+}
+
+/** Learning stats are system-written only (0006) — Core applies the XP/lesson/minute/streak delta via service role. */
+export async function patchLearningStats(
+  userId: string,
+  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number },
+): Promise<boolean> {
+  const res = await restRaw(`/learning_stats?user_id=eq.${userId}`, serviceToken(), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(patch),
+  });
+  return res.ok;
 }
 
 // ── Service-role writes ─────────────────────────────────────

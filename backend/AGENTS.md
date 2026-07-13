@@ -18,6 +18,9 @@ The main API and the **only** service the frontend calls. Owns auth session hand
 - Envelope + /api/v1/ + Zod on every route (§1.6). Error codes → frontend `errors.api.*` keys.
 - Child data: parent visibility invariant; nothing kid-identifying to third-party APIs (§1.9).
 - External IO with timeouts; internal calls carry `INTERNAL_API_KEY`.
+- **Lesson grading is SERVER-AUTHORITATIVE — never trust a client-reported score or XP.** `POST /learn/lessons/:id/grade` and `/complete` are the only writers of `lesson_segment_attempts` / `lesson_progress` / `learning_stats`; the client submits a raw answer and Core alone decides the score, using `lesson_documents.answer_keys` (service-role only, no client can ever read it) and the graders in `src/lesson-contract/`.
+- **`src/lesson-contract/` parity is a standing invariant, not a one-time copy.** It mirrors `frontend/src/lesson-engine/{core/scoring.ts, core/types.ts (trimmed), families/*/grade.ts}` because the platform has no npm workspaces (/AGENTS.md §1.2) — Core cannot import the frontend package directly. Any edit to a frontend grading validator MUST be mirrored here in the same commit; `npm run contract:check` enforces this and is a pre-commit gate (§5) whenever either side changes.
+- The course/lesson unlock rule (locked/available/current/passed, COURSE_ENGINE.md §2) is computed in exactly one place — `src/services/unlockRules.ts` + `courseTree.ts` — and never re-derived by the client.
 
 ## Read before touching
 
