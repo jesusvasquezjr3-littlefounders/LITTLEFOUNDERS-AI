@@ -1,0 +1,79 @@
+/* Ambient keyframes for the six adventure-map scenes (COURSE_ENGINE.md §2
+ * `adventures.theme`). Ported + improved from LittleFounders v1's CSS-drawn
+ * worlds (AdventureCard.tsx). These are ILLUSTRATION ASSETS like the
+ * character SVGs (frontend/AGENTS.md "Characters are canonical assets") —
+ * raw colors/gradients/shadows painted inside the scene components are
+ * exempt from the /DESIGN.md semantic-token rule, and the infinite ambient
+ * motion below joins the characters' one exemption to the closed 5-recipe
+ * motion system (/DESIGN.md §Motion, recipe note "scene ambient animations
+ * join the characters' illustration exemption").
+ *
+ * Every keyframe is switched off under prefers-reduced-motion via the
+ * `.lf-scene` guard below — nothing here is exempt from that.
+ */
+
+@keyframes lf-scene-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes lf-scene-float-h {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+}
+@keyframes lf-scene-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.05); }
+}
+@keyframes lf-scene-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+@keyframes lf-scene-flame {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+@keyframes lf-scene-sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@keyframes lf-scene-hover-rotate {
+  0%, 100% { transform: translateY(0) rotate(4deg); }
+  50% { transform: translateY(-14px) rotate(-2deg); }
+}
+@keyframes lf-scene-drive {
+  from { left: -15%; }
+  to { left: 115%; }
+}
+@keyframes lf-scene-rise {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+@keyframes lf-scene-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes lf-scene-pulse-soft {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+@keyframes lf-scene-shimmer {
+  0%, 100% { transform: translateX(-60%); opacity: 0; }
+  50% { opacity: 0.9; }
+  80% { transform: translateX(60%); opacity: 0; }
+}
+@keyframes lf-scene-bird {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -8px); }
+  100% { transform: translate(40px, 0); }
+}
+@keyframes lf-scene-shoot {
+  0% { transform: translateX(0) translateY(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateX(120px) translateY(40px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-scene [class*="animate-"] {
+    animation: none !important;
+  }
+}

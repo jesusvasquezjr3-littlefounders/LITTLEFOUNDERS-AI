@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Badge, Card, Icon, IconChip, ProgressBar } from '@/components/ui';
@@ -9,7 +10,8 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 /*
  * learn/ — the universal user's home. Course cards per /DESIGN.md §Screen
  * Recipes → Dashboard (md:grid-cols-2 lg:grid-cols-3 with ProgressBars).
- * Course consumption ships later — cards say so honestly.
+ * Cards link into the gamified course map (routes/app/learn/CoursePage.tsx,
+ * COURSE_ENGINE.md §2) with real server-computed progress.
  */
 
 interface Course {
@@ -17,6 +19,7 @@ interface Course {
   slug: string;
   title: Record<string, string>;
   lessonCount: number;
+  progress: { passed: number; total: number; pct: number };
 }
 
 const COURSE_ICONS: Record<string, string> = {
@@ -86,24 +89,33 @@ export function LearnPage() {
         {state.status === 'ready' && state.courses.length > 0 && (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {state.courses.map((course) => (
-              <Card key={course.id} interactive className="flex flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <IconChip>
-                    <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} />
-                  </IconChip>
-                  <Badge>
-                    {t('dashboard.learn.lessonCount', { count: course.lessonCount })}
-                  </Badge>
-                </div>
-                <h2 className="lf-title mt-4 text-content">{course.title[locale] ?? course.title['en-US'] ?? course.slug}</h2>
-                <div className="mt-auto pt-6">
-                  <ProgressBar value={0} label={t('dashboard.learn.progressNew')} />
-                  <p className="lf-caption mt-3 flex items-center gap-1.5 text-content-muted">
-                    <Icon name="rocket_launch" className="!text-[16px] text-primary" />
-                    {t('dashboard.learn.comingSoon')}
-                  </p>
-                </div>
-              </Card>
+              <Link
+                key={course.id}
+                to={`/learn/${course.slug}`}
+                className="rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Card interactive className="flex h-full flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <IconChip>
+                      <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} />
+                    </IconChip>
+                    <Badge>
+                      {t('dashboard.learn.lessonCount', { count: course.lessonCount })}
+                    </Badge>
+                  </div>
+                  <h2 className="lf-title mt-4 text-content">{course.title[locale] ?? course.title['en-US'] ?? course.slug}</h2>
+                  <div className="mt-auto pt-6">
+                    <ProgressBar
+                      value={course.progress.pct}
+                      label={t('dashboard.learn.progressLabel', { passed: course.progress.passed, total: course.progress.total })}
+                    />
+                    <p className="lf-caption lf-number mt-3 flex items-center gap-1.5 text-content-muted">
+                      <Icon name="rocket_launch" className="!text-[16px] text-primary" />
+                      {t('dashboard.learn.progressLabel', { passed: course.progress.passed, total: course.progress.total })}
+                    </p>
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

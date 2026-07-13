@@ -14,5 +14,10 @@
     "en-US": "Inglês",
     "es-MX": "Espanhol",
     "pt-BR": "Português"
+  },
+  "characters": {
+    "dino": {
+      "default_greeting": "Oi! Eu sou o Dino!"
+    }
   }
 }

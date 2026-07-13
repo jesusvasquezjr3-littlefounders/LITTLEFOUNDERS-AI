@@ -1,0 +1,20 @@
+{
+  "loading": "Cargando tu aventura…",
+  "startHere": "Empieza aquí",
+  "goToMyLesson": "Ir a mi lección",
+  "lessonsProgress": "{{passed}}/{{total}}",
+  "locked": "Bloqueado",
+  "completed": "Completado",
+  "xp": "{{xp}} XP",
+  "minutes_one": "{{count}} min",
+  "minutes_other": "{{count}} min",
+  "backToCourse": "Volver al curso",
+  "emptyTitle": "Esta aventura está cargando",
+  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones — ¡vuelve pronto!",
+  "state": {
+    "locked": "bloqueado",
+    "available": "disponible",
+    "current": "empieza aquí",
+    "passed": "completado"
+  }
+}

@@ -23,8 +23,7 @@
     "title": "Tus cursos",
     "lessonCount_one": "{{count}} lección",
     "lessonCount_other": "{{count}} lecciones",
-    "progressNew": "Progreso del curso",
-    "comingSoon": "Las lecciones abren aquí muy pronto",
+    "progressLabel": "{{passed}}/{{total}} lecciones",
     "emptyTitle": "Tu aventura está cargando",
     "emptyBody": "Aún no hay cursos publicados. Dina está preparando las primeras misiones — ¡vuelve pronto!"
   },
