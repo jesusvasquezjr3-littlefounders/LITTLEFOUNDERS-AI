@@ -48,6 +48,7 @@ All routes below `/internal` require `x-internal-api-key: <INTERNAL_API_KEY>`
 | `TTS_VOICE_EN_US` | `Jennifer` | Per-locale default voice (see "Voice map" below) |
 | `TTS_VOICE_ES_MX` | `Li` | |
 | `TTS_VOICE_PT_BR` | `Ryan` | |
+| `TTS_VOICE_{DINA,DINO,RHO,ZARA}_{EN_US,ES_MX,PT_BR}` | unset | Per-character voice overrides (12 vars, all optional — see "Voice map" below) |
 | `SUPABASE_URL` | — | Required; Vault (Supabase self-hosted) |
 | `SUPABASE_SERVICE_ROLE_KEY` | — | Required; service-role writes only |
 | `FILEBASE_URL` | — | Required |
@@ -58,13 +59,37 @@ All routes below `/internal` require `x-internal-api-key: <INTERNAL_API_KEY>`
 
 ## Voice map
 
-`TTS_VOICE_{EN_US,ES_MX,PT_BR}` are **placeholder per-locale defaults**, not
-final casting. LESSON_ENGINE.md §12 says voice casting is Echo's decision:
-the end state is a voice map keyed by `CharacterId × locale` (Dina/Dino/Rho/
-Zara each get a distinct, locale-appropriate voice), matching a segment's
-`narrator.character` when present. That map is a follow-up — v1 narrates
-every unit with the single per-locale default voice above regardless of
-`narrator`.
+Implemented (`src/env.ts` `voiceFor()`). Per **unit** — not per lesson —
+Echo resolves the voice from the narrating character (COURSE_ENGINE.md §7:
+"voice = the segment's narrator character"):
+
+1. `story_dialogue` lines and `story_scene` bodies carry their OWN
+   `character` (a dialogue can have several speakers in one segment) — used
+   first when present.
+2. Otherwise, the segment envelope's `narrator.character` (LESSON_ENGINE.md
+   §3), if set.
+3. Otherwise, the locale default (`TTS_VOICE_{EN_US,ES_MX,PT_BR}`).
+
+Steps 1–2 only resolve to a real voice for `dina`/`dino`/`rho`/`zara` (the 4
+canon characters) AND only when that character's `TTS_VOICE_<CHARACTER>_<LOCALE>`
+env var is set — any other character string, or an unset var, falls straight
+to step 3. This means the map is safe to fill in incrementally (one
+character/locale at a time) with zero code changes and zero risk of an
+unrecognized value reaching the TTS provider.
+
+Each var is just a `voice` string handed to `synthesizeSpeech()` — it works
+identically whether that string is a DashScope **built-in preset name** (e.g.
+`Cherry`) or a **cloned voice id** registered from a reference audio sample
+via DashScope's voice-clone flow (`qwen3-tts-vc`). The clone *registration*
+step itself (upload a reference sample → get back a voice id) is NOT yet
+implemented here — its exact request/response contract wasn't verified
+against a real character sample at the time this map was built. Once
+reference audio lands for a character, either (a) it turns out to be preset
+names to type directly into these vars, or (b) it needs a one-time clone
+registration whose output (a voice id) then goes into these same vars — no
+call-site changes either way. `AudioUnitEntry.voice` on every generated unit
+records exactly which voice was used, so a wrong mapping is always visible
+in the manifest.
 
 ## Cost warning
 

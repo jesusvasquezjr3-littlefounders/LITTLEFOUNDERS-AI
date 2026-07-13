@@ -1,5 +1,5 @@
 import { downloadWav, synthesizeSpeech } from '../tts/dashscopeClient.js';
-import { getConfig, defaultVoiceFor, languageTypeFor, type LessonLocale } from '../env.js';
+import { getConfig, defaultVoiceFor, voiceFor, languageTypeFor, type LessonLocale } from '../env.js';
 import { uploadFile } from '../filebase/client.js';
 import {
   getLessonDocument,
@@ -65,7 +65,6 @@ export async function narrateLesson(
   if (!row) return null;
 
   const units = extractNarratables(row.document);
-  const voice = defaultVoiceFor(locale, config);
   const languageType = languageTypeFor(locale);
   const model = config.TTS_MODEL;
   const existing = row.audio?.units ?? {};
@@ -76,6 +75,10 @@ export async function narrateLesson(
   const finalUnits: Record<string, AudioUnitEntry> = {};
 
   await runPool(units, config.AUDIOGEN_CONCURRENCY, async (unit) => {
+    // Voice = the segment's narrator character (COURSE_ENGINE.md §7),
+    // resolved per unit so a lesson can mix narrators; falls back to the
+    // locale default when unnarrated or the character has no override yet.
+    const voice = voiceFor(unit.character, locale, config);
     const hash = contentHash(unit.text, voice, model);
     const prior = existing[unit.unit_id];
 
@@ -118,7 +121,10 @@ export async function narrateLesson(
   });
 
   const patchedDocument = stampAudioSegmentIds(row.document, finalUnits);
-  const manifest: LessonAudioManifest = { version: 1, voice_profile: voice, units: finalUnits };
+  // voice_profile is a lesson-level SUMMARY label (the locale default); the
+  // actual voice used per unit — which may differ per narrator character —
+  // lives on each AudioUnitEntry.voice.
+  const manifest: LessonAudioManifest = { version: 1, voice_profile: defaultVoiceFor(locale, config), units: finalUnits };
   await deps.patchLessonDocumentAudio(row.lesson_id, row.locale, patchedDocument, manifest);
 
   return { units_total: units.length, generated, reused, failed };

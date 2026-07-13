@@ -138,6 +138,19 @@ export const lessonBlueprintSchema = z.object({
   narrative_beat: z.string().min(1).max(600),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
   suggested_families: z.array(z.string().min(1).max(40)).min(1),
+  /**
+   * QA/authoring override (COURSE_ENGINE.md §4 addendum) — pins the exact
+   * segment-type skeleton for this lesson, bypassing the plan stage's LLM
+   * call entirely (run.ts builds the skeleton deterministically instead).
+   * 1-14 exercise-type ids from the LESSON_ENGINE contract, in the exact
+   * order they should appear. Used by smoke-test catalogs to isolate one
+   * type per lesson (or a few, to test in-lesson sequencing) cheaply and
+   * deterministically — write (real content authoring), gates, judge,
+   * localization, images and publish still all run for real. Entries are
+   * resolved against the canonical type list in loader.ts (schema.ts has
+   * no contract import), same pattern as `review_of`/`prerequisites`.
+   */
+  forced_types: z.array(z.string().min(1).max(60)).min(1).max(14).optional(),
 });
 
 // ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------

@@ -1,0 +1,580 @@
+schema_version: 1
+# QA/authoring content (COURSE_ENGINE.md §4 addendum). Every lesson below
+# pins `forced_types` — the plan-stage LLM call is skipped entirely; write,
+# gates, judge, localization, images and publish all still run for real.
+# One lesson per LESSON_ENGINE segment type (56 total), plus a few combined
+# lessons to test in-lesson sequencing, plus a minimal review-layer lesson.
+adventure:
+  position: 1
+  slug: estacion-de-pruebas
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: "The Testing Station"
+    es-MX: "La Estación de Pruebas"
+    pt-BR: "A Estação de Testes"
+  description:
+    en-US: "A diagnostics station where every exercise type gets checked before a real course launches."
+    es-MX: "Una estación de diagnóstico donde se revisa cada tipo de ejercicio antes de lanzar un curso real."
+    pt-BR: "Uma estação de diagnóstico onde cada tipo de exercício é verificado antes de lançar um curso real."
+  narrative_arc: "Antes de lanzar un curso real, dina, dino, rho y zara recorren la Estación de Pruebas y encienden, uno por uno, los paneles de diagnóstico del Motor de Lecciones — para asegurarse de que todo funcione a la perfección."
+sagas:
+  - position: 1
+    slug: camara-de-tipos
+    icon: science
+    title:
+      en-US: "Chamber of Types"
+      es-MX: "Cámara de Tipos"
+      pt-BR: "Câmara de Tipos"
+    description:
+      en-US: "One diagnostic panel per exercise type, grouped by family."
+      es-MX: "Un panel de diagnóstico por tipo de ejercicio, agrupado por familia."
+      pt-BR: "Um painel de diagnóstico por tipo de exercício, agrupado por família."
+    topics:
+      - position: 1
+        slug: tipos-story
+        title_es: "Panel de Historia"
+        concept: "Los 5 tipos de contenido narrativo del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia story se genera y renderiza correctamente."
+        key_vocabulary: [historia, personaje, escena]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: story-dialogue
+            micro_objective: 'Verificar el ejercicio "story_dialogue" de forma aislada.'
+            narrative_beat: "Dina enciende el panel de diálogo y prueba una escena con dos personajes hablando."
+            difficulty: 1
+            suggested_families: [story]
+            forced_types: [story_dialogue]
+          - position: 2
+            slug: story-scene
+            micro_objective: 'Verificar el ejercicio "story_scene" de forma aislada.'
+            narrative_beat: "Dino revisa una escena ilustrada de fondo completo."
+            difficulty: 1
+            suggested_families: [story]
+            forced_types: [story_scene]
+          - position: 3
+            slug: key-ideas
+            micro_objective: 'Verificar el ejercicio "key_ideas" de forma aislada.'
+            narrative_beat: "Rho revisa un panel de tarjetas de ideas clave."
+            difficulty: 1
+            suggested_families: [story]
+            forced_types: [key_ideas]
+          - position: 4
+            slug: concept-reveal
+            micro_objective: 'Verificar el ejercicio "concept_reveal" de forma aislada.'
+            narrative_beat: "Zara voltea tarjetas para revelar un concepto escondido."
+            difficulty: 1
+            suggested_families: [story]
+            forced_types: [concept_reveal]
+          - position: 5
+            slug: checkpoint
+            micro_objective: 'Verificar el ejercicio "checkpoint" de forma aislada.'
+            narrative_beat: "Dina revisa el panel de repaso y autoevaluación."
+            difficulty: 1
+            suggested_families: [story]
+            forced_types: [checkpoint]
+      - position: 2
+        slug: tipos-choice
+        title_es: "Panel de Selección"
+        concept: "Los 8 tipos de la familia choice del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia choice se genera y renderiza correctamente."
+        key_vocabulary: [opción, respuesta, elegir]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: quiz-mcq
+            micro_objective: 'Verificar el ejercicio "quiz_mcq" de forma aislada.'
+            narrative_beat: "Dino prueba una pregunta de opción múltiple."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [quiz_mcq]
+          - position: 2
+            slug: true-false
+            micro_objective: 'Verificar el ejercicio "true_false" de forma aislada.'
+            narrative_beat: "Rho prueba una afirmación verdadero o falso con justificación."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [true_false]
+          - position: 3
+            slug: picture-choice
+            micro_objective: 'Verificar el ejercicio "picture_choice" de forma aislada (incluye generación de imágenes).'
+            narrative_beat: "Zara prueba un panel de opciones ilustradas."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [picture_choice]
+          - position: 4
+            slug: odd-one-out
+            micro_objective: 'Verificar el ejercicio "odd_one_out" de forma aislada.'
+            narrative_beat: "Dina busca el elemento que no pertenece al grupo."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [odd_one_out]
+          - position: 5
+            slug: best-decision
+            micro_objective: 'Verificar el ejercicio "best_decision" de forma aislada.'
+            narrative_beat: "Dino evalúa varias decisiones posibles ante un dilema."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [best_decision]
+          - position: 6
+            slug: yes-no-cases
+            micro_objective: 'Verificar el ejercicio "yes_no_cases" de forma aislada.'
+            narrative_beat: "Rho aplica una regla a varios casos, sí o no."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [yes_no_cases]
+          - position: 7
+            slug: speed-tap
+            micro_objective: 'Verificar el ejercicio "speed_tap" de forma aislada (flujo cronometrado).'
+            narrative_beat: "Zara toca rápido los elementos correctos antes de que se acabe el tiempo."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [speed_tap]
+          - position: 8
+            slug: confidence-quiz
+            micro_objective: 'Verificar el ejercicio "confidence_quiz" de forma aislada.'
+            narrative_beat: "Dina responde y califica qué tan segura está de su respuesta."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [confidence_quiz]
+      - position: 3
+        slug: tipos-input
+        title_es: "Panel de Entrada"
+        concept: "Los 6 tipos de la familia input del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia input se genera y renderiza correctamente."
+        key_vocabulary: [número, respuesta, escribir]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: type-answer
+            micro_objective: 'Verificar el ejercicio "type_answer" de forma aislada.'
+            narrative_beat: "Dino escribe una respuesta corta en el panel."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [type_answer]
+          - position: 2
+            slug: fill-blank
+            micro_objective: 'Verificar el ejercicio "fill_blank" de forma aislada.'
+            narrative_beat: "Rho completa los espacios en blanco de una frase."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [fill_blank]
+          - position: 3
+            slug: number-input
+            micro_objective: 'Verificar el ejercicio "number_input" de forma aislada.'
+            narrative_beat: "Zara escribe un número en el teclado numérico."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [number_input]
+          - position: 4
+            slug: estimate-slider
+            micro_objective: 'Verificar el ejercicio "estimate_slider" de forma aislada.'
+            narrative_beat: "Dina mueve una barra para estimar una cantidad."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [estimate_slider]
+          - position: 5
+            slug: count-objects
+            micro_objective: 'Verificar el ejercicio "count_objects" de forma aislada.'
+            narrative_beat: "Dino cuenta los objetos que aparecen en la escena."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [count_objects]
+          - position: 6
+            slug: equation-builder
+            micro_objective: 'Verificar el ejercicio "equation_builder" de forma aislada.'
+            narrative_beat: "Rho arma una ecuación con fichas de números y símbolos."
+            difficulty: 1
+            suggested_families: [input]
+            forced_types: [equation_builder]
+      - position: 4
+        slug: tipos-arrange
+        title_es: "Panel de Orden"
+        concept: "Los 10 tipos de la familia arrange del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia arrange se genera y renderiza correctamente."
+        key_vocabulary: [orden, pareja, grupo]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: match-pairs
+            micro_objective: 'Verificar el ejercicio "match_pairs" de forma aislada.'
+            narrative_beat: "Zara empareja elementos de dos columnas."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [match_pairs]
+          - position: 2
+            slug: memory-flip
+            micro_objective: 'Verificar el ejercicio "memory_flip" de forma aislada (flujo de memoria).'
+            narrative_beat: "Dina voltea cartas para encontrar parejas."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [memory_flip]
+          - position: 3
+            slug: sort-buckets
+            micro_objective: 'Verificar el ejercicio "sort_buckets" de forma aislada.'
+            narrative_beat: "Dino clasifica objetos en distintas canastas."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [sort_buckets]
+          - position: 4
+            slug: order-steps
+            micro_objective: 'Verificar el ejercicio "order_steps" de forma aislada.'
+            narrative_beat: "Rho ordena los pasos de un procedimiento."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [order_steps]
+          - position: 5
+            slug: rank-choices
+            micro_objective: 'Verificar el ejercicio "rank_choices" de forma aislada.'
+            narrative_beat: "Zara ordena opciones según un criterio."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [rank_choices]
+          - position: 6
+            slug: build-sentence
+            micro_objective: 'Verificar el ejercicio "build_sentence" de forma aislada.'
+            narrative_beat: "Dina arma una frase con fichas de palabras."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [build_sentence]
+          - position: 7
+            slug: timeline-order
+            micro_objective: 'Verificar el ejercicio "timeline_order" de forma aislada.'
+            narrative_beat: "Dino coloca eventos en una línea del tiempo."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [timeline_order]
+          - position: 8
+            slug: pattern-complete
+            micro_objective: 'Verificar el ejercicio "pattern_complete" de forma aislada.'
+            narrative_beat: "Rho completa un patrón visual."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [pattern_complete]
+          - position: 9
+            slug: group-sets
+            micro_objective: 'Verificar el ejercicio "group_sets" de forma aislada.'
+            narrative_beat: "Zara agrupa elementos en zonas tipo diagrama de conjuntos."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [group_sets]
+          - position: 10
+            slug: number-line
+            micro_objective: 'Verificar el ejercicio "number_line" de forma aislada.'
+            narrative_beat: "Dina ubica un valor sobre una recta numérica."
+            difficulty: 1
+            suggested_families: [arrange]
+            forced_types: [number_line]
+      - position: 5
+        slug: tipos-money
+        title_es: "Panel de Dinero"
+        concept: "Los 9 tipos de la familia money del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia money se genera y renderiza correctamente."
+        key_vocabulary: [moneda, precio, ahorro]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: [mxn.denominations.coins, mxn.denominations.bills, qa.reference_price.toy, qa.reference_price.snack]
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: coin-count
+            micro_objective: 'Verificar el ejercicio "coin_count" de forma aislada.'
+            narrative_beat: "Dino paga una cantidad exacta con monedas y billetes."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [coin_count]
+          - position: 2
+            slug: make-change
+            micro_objective: 'Verificar el ejercicio "make_change" de forma aislada.'
+            narrative_beat: "Rho da el cambio correcto tras una compra."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [make_change]
+          - position: 3
+            slug: piggy-split
+            micro_objective: 'Verificar el ejercicio "piggy_split" de forma aislada.'
+            narrative_beat: "Zara reparte sus ingresos entre distintos frascos de ahorro."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [piggy_split]
+          - position: 4
+            slug: needs-wants
+            micro_objective: 'Verificar el ejercicio "needs_wants" de forma aislada.'
+            narrative_beat: "Dina separa necesidades de gustos."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [needs_wants]
+          - position: 5
+            slug: price-compare
+            micro_objective: 'Verificar el ejercicio "price_compare" de forma aislada.'
+            narrative_beat: "Dino compara dos ofertas para ver cuál conviene más."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [price_compare]
+          - position: 6
+            slug: budget-fit
+            micro_objective: 'Verificar el ejercicio "budget_fit" de forma aislada.'
+            narrative_beat: "Rho arma un carrito de compras dentro de un presupuesto."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [budget_fit]
+          - position: 7
+            slug: savings-goal
+            micro_objective: 'Verificar el ejercicio "savings_goal" de forma aislada.'
+            narrative_beat: "Zara calcula cuántas semanas le tomará llegar a su meta de ahorro."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [savings_goal]
+          - position: 8
+            slug: fair-trade
+            micro_objective: 'Verificar el ejercicio "fair_trade" de forma aislada.'
+            narrative_beat: "Dina decide si un intercambio es justo."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [fair_trade]
+          - position: 9
+            slug: interest-peek
+            micro_objective: 'Verificar el ejercicio "interest_peek" de forma aislada (flujo de predicción).'
+            narrative_beat: "Dino predice cómo crecerá su ahorro con el tiempo."
+            difficulty: 1
+            suggested_families: [money]
+            forced_types: [interest_peek]
+      - position: 6
+        slug: tipos-analyze
+        title_es: "Panel de Análisis"
+        concept: "Los 7 tipos de la familia analyze del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia analyze se genera y renderiza correctamente."
+        key_vocabulary: [analizar, revisar, evidencia]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: spot-error
+            micro_objective: 'Verificar el ejercicio "spot_error" de forma aislada.'
+            narrative_beat: "Rho encuentra el paso equivocado en un procedimiento."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [spot_error]
+          - position: 2
+            slug: cause-effect
+            micro_objective: 'Verificar el ejercicio "cause_effect" de forma aislada.'
+            narrative_beat: "Zara arma la cadena de causa y efecto."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [cause_effect]
+          - position: 3
+            slug: compare-table
+            micro_objective: 'Verificar el ejercicio "compare_table" de forma aislada.'
+            narrative_beat: "Dina llena una tabla comparativa."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [compare_table]
+          - position: 4
+            slug: read-chart
+            micro_objective: 'Verificar el ejercicio "read_chart" de forma aislada.'
+            narrative_beat: "Dino lee una gráfica y responde preguntas sobre ella."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [read_chart]
+          - position: 5
+            slug: evidence-hunt
+            micro_objective: 'Verificar el ejercicio "evidence_hunt" de forma aislada.'
+            narrative_beat: "Rho subraya las frases que apoyan una afirmación."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [evidence_hunt]
+          - position: 6
+            slug: red-flags
+            micro_objective: 'Verificar el ejercicio "red_flags" de forma aislada.'
+            narrative_beat: "Zara detecta señales sospechosas en un anuncio falso."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [red_flags]
+          - position: 7
+            slug: fact-opinion
+            micro_objective: 'Verificar el ejercicio "fact_opinion" de forma aislada.'
+            narrative_beat: "Dina separa hechos de opiniones en varias frases."
+            difficulty: 1
+            suggested_families: [analyze]
+            forced_types: [fact_opinion]
+      - position: 7
+        slug: tipos-storyplay
+        title_es: "Panel de Historias Interactivas"
+        concept: "Los 5 tipos de la familia storyplay del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia storyplay se genera y renderiza correctamente."
+        key_vocabulary: [decisión, historia, elegir]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: story-branch
+            micro_objective: 'Verificar el ejercicio "story_branch" de forma aislada (flujo ramificado).'
+            narrative_beat: "Dino toma decisiones en una historia ramificada."
+            difficulty: 1
+            suggested_families: [storyplay]
+            forced_types: [story_branch]
+          - position: 2
+            slug: dialogue-choice
+            micro_objective: 'Verificar el ejercicio "dialogue_choice" de forma aislada (flujo de diálogo).'
+            narrative_beat: "Rho conversa con un personaje eligiendo qué responder."
+            difficulty: 1
+            suggested_families: [storyplay]
+            forced_types: [dialogue_choice]
+          - position: 3
+            slug: flash-match
+            micro_objective: 'Verificar el ejercicio "flash_match" de forma aislada (flujo cronometrado).'
+            narrative_beat: "Zara empareja elementos rápido antes de que se acabe el tiempo."
+            difficulty: 1
+            suggested_families: [storyplay]
+            forced_types: [flash_match]
+          - position: 4
+            slug: lightning-round
+            micro_objective: 'Verificar el ejercicio "lightning_round" de forma aislada (flujo cronometrado).'
+            narrative_beat: "Dina responde una ronda rápida de preguntas."
+            difficulty: 1
+            suggested_families: [storyplay]
+            forced_types: [lightning_round]
+          - position: 5
+            slug: would-you-rather
+            micro_objective: 'Verificar el ejercicio "would_you_rather" de forma aislada.'
+            narrative_beat: "Dino elige entre dos opciones y descubre qué gana cada una."
+            difficulty: 1
+            suggested_families: [storyplay]
+            forced_types: [would_you_rather]
+      - position: 8
+        slug: tipos-maker
+        title_es: "Panel de Construcción"
+        concept: "Los 6 tipos de la familia maker del Motor de Lecciones."
+        learning_objective: "Confirmar que cada tipo de la familia maker se genera y renderiza correctamente."
+        key_vocabulary: [construir, medir, programar]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: []
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: code-order
+            micro_objective: 'Verificar el ejercicio "code_order" de forma aislada.'
+            narrative_beat: "Rho ordena bloques de código en el orden correcto."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [code_order]
+          - position: 2
+            slug: robot-path
+            micro_objective: 'Verificar el ejercicio "robot_path" de forma aislada (flujo de simulación).'
+            narrative_beat: "Zara programa el camino de un robot en una cuadrícula."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [robot_path]
+          - position: 3
+            slug: debug-hunt
+            micro_objective: 'Verificar el ejercicio "debug_hunt" de forma aislada.'
+            narrative_beat: "Dina encuentra el bloque de código con el error."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [debug_hunt]
+          - position: 4
+            slug: balance-scale
+            micro_objective: 'Verificar el ejercicio "balance_scale" de forma aislada.'
+            narrative_beat: "Dino equilibra una balanza colocando pesas."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [balance_scale]
+          - position: 5
+            slug: measure-read
+            micro_objective: 'Verificar el ejercicio "measure_read" de forma aislada.'
+            narrative_beat: "Rho lee la medida que marca un instrumento."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [measure_read]
+          - position: 6
+            slug: machine-io
+            micro_objective: 'Verificar el ejercicio "machine_io" de forma aislada.'
+            narrative_beat: "Zara descubre la regla de una máquina de funciones a partir de ejemplos."
+            difficulty: 1
+            suggested_families: [maker]
+            forced_types: [machine_io]
+  - position: 2
+    slug: secuencias-y-repaso
+    icon: repeat
+    title:
+      en-US: "Sequences & Review"
+      es-MX: "Secuencias y Repaso"
+      pt-BR: "Sequências e Revisão"
+    description:
+      en-US: "A few multi-type lessons to test in-lesson sequencing, plus a minimal review-layer check."
+      es-MX: "Algunas lecciones con varios tipos para probar la secuencia dentro de una lección, más una prueba mínima de la capa de repaso."
+      pt-BR: "Algumas lições com vários tipos para testar a sequência dentro de uma lição, além de uma verificação mínima da camada de revisão."
+    topics:
+      - position: 1
+        slug: combinaciones
+        title_es: "Combinaciones"
+        concept: "Lecciones con 2 a 4 tipos de ejercicio en secuencia, para probar que el jugador avanza correctamente entre tipos distintos dentro de una misma lección."
+        learning_objective: "Confirmar que el player renderiza y califica correctamente una lección con varios tipos de segmento en orden."
+        key_vocabulary: [secuencia, combinación]
+        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
+        fact_refs: [mxn.denominations.coins]
+        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        lessons:
+          - position: 1
+            slug: combo-narrativa-choice
+            micro_objective: "Verificar que una narrativa seguida de una pregunta de opción múltiple fluya en secuencia."
+            narrative_beat: "Dina cuenta una breve historia y después hace una pregunta sobre ella."
+            difficulty: 2
+            suggested_families: [story, choice]
+            forced_types: [story_scene, quiz_mcq]
+          - position: 2
+            slug: combo-dialogo-doble-choice
+            micro_objective: "Verificar una secuencia de diálogo seguida de dos tipos de selección distintos."
+            narrative_beat: "Dino conversa con un amigo y luego resuelve dos preguntas sobre lo que dijeron."
+            difficulty: 2
+            suggested_families: [story, choice]
+            forced_types: [story_dialogue, true_false, picture_choice]
+          - position: 3
+            slug: combo-dinero
+            micro_objective: "Verificar una secuencia de tres ejercicios de dinero encadenados."
+            narrative_beat: "Rho paga, recibe cambio y calcula cuánto le falta ahorrar, todo en una misma visita a la tienda."
+            difficulty: 2
+            suggested_families: [money]
+            forced_types: [coin_count, make_change, savings_goal]
+          - position: 4
+            slug: combo-arrange-largo
+            micro_objective: "Verificar una secuencia larga de cuatro tipos de la familia arrange."
+            narrative_beat: "Zara ordena, empareja, clasifica y ubica eventos en una sola sesión de práctica."
+            difficulty: 3
+            suggested_families: [arrange]
+            forced_types: [match_pairs, order_steps, sort_buckets, timeline_order]
+      - position: 2
+        slug: repaso-veloz
+        kind: review_spaced
+        review_of: [estacion-de-pruebas/camara-de-tipos/tipos-choice]
+        title_es: "Repaso Veloz"
+        concept: "Retoma dos tipos de la familia choice ya probados en la Cámara de Tipos, para verificar el flujo de la capa de repaso espaciado."
+        learning_objective: "Confirmar que un topic de kind review_spaced con review_of genera contenido de consolidación (nunca conceptos nuevos)."
+        key_vocabulary: [repaso, recordar]
+        prior_knowledge: "Panel de Selección (tipos-choice)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: repaso-quiz-mcq
+            micro_objective: "Verificar la generación de un repaso de tipo quiz_mcq."
+            narrative_beat: "Dina abre el cofre de repaso y recuerda una pregunta de opción múltiple."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [quiz_mcq]
+          - position: 2
+            slug: repaso-true-false
+            micro_objective: "Verificar la generación de un repaso de tipo true_false."
+            narrative_beat: "Dino recuerda una afirmación verdadero o falso del panel anterior."
+            difficulty: 1
+            suggested_families: [choice]
+            forced_types: [true_false]

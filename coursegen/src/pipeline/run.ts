@@ -8,7 +8,7 @@ import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type Loade
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
-import { planLesson, type PlanContext, type PlanSkeleton } from './plan.js';
+import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } from './plan.js';
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { reviewLesson } from './review.js';
@@ -182,8 +182,12 @@ async function processSlot(
     const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy, register);
     let skeleton = current.data?.skeleton as PlanSkeleton | undefined;
     if (!skeleton || current.state === 'pending' || current.state === 'failed') {
-      const planResult = await planLesson(planCtx, { ledger });
-      skeleton = planResult.skeleton;
+      // QA/authoring override (COURSE_ENGINE.md §4 addendum): forced_types
+      // skips the plan-stage LLM call entirely — deterministic, free, and
+      // exact-coverage by construction.
+      skeleton = slot.lesson.forced_types
+        ? buildForcedSkeleton(slot.lesson.forced_types, slot.lesson.micro_objective)
+        : (await planLesson(planCtx, { ledger })).skeleton;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'planned', { data: { skeleton } });
       await store.save(checkpoint);
     }

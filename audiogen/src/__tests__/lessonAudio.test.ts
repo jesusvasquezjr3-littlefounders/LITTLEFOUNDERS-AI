@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { narrateLesson } from '../service/lessonAudio.js';
 import { contentHash } from '../narrate/types.js';
+import { resetConfigCache } from '../env.js';
 import type { LessonDocument } from '../types/lessonDocument.js';
 import type { LessonDocumentRow, AudioUnitEntry } from '../db/lessonDocumentsRepo.js';
 
@@ -198,5 +199,45 @@ describe('narrateLesson', () => {
     expect(deps.patchLessonDocumentAudio).toHaveBeenCalledTimes(1);
     const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { units: Record<string, unknown> };
     expect(manifest.units['s1.line.0']).toBeUndefined(); // no prior entry to fall back to
+  });
+
+  it('resolves voice PER UNIT by narrator character — a two-speaker dialogue uses two voices', async () => {
+    process.env.TTS_VOICE_DINA_EN_US = 'VoiceDina';
+    process.env.TTS_VOICE_DINO_EN_US = 'VoiceDino';
+    resetConfigCache();
+    try {
+      const document: LessonDocument = {
+        schema_version: 1,
+        meta: { slug: 'demo', title: 'Demo', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina', 'dino'] },
+        scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
+        segments: [
+          {
+            id: 's1',
+            type: 'story_dialogue',
+            prompt_md: 'A conversation',
+            difficulty: 1,
+            xp: 0,
+            payload: {
+              lines: [
+                { character: 'dina', text_md: 'Hola!' },
+                { character: 'dino', text_md: 'Hey!' },
+              ],
+            },
+          },
+        ],
+      };
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document, audio: null };
+      const deps = makeDeps(row);
+
+      await narrateLesson('lesson-1', 'en-US', deps);
+
+      const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { units: Record<string, AudioUnitEntry> };
+      expect(manifest.units['s1.line.0']?.voice).toBe('VoiceDina');
+      expect(manifest.units['s1.line.1']?.voice).toBe('VoiceDino');
+    } finally {
+      delete process.env.TTS_VOICE_DINA_EN_US;
+      delete process.env.TTS_VOICE_DINO_EN_US;
+      resetConfigCache();
+    }
   });
 });

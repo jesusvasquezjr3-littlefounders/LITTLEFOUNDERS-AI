@@ -52,6 +52,8 @@ coursegen/
       adventures/
     investing/
       adventures/
+    qa-lesson-engine-smoketest/
+      adventures/
   src/
     __tests__/
     catalog/
@@ -1222,6 +1224,7 @@ describe('GET /health', () => {
 import { describe, expect, it, vi } from 'vitest';
 import { narrateLesson } from '../service/lessonAudio.js';
 import { contentHash } from '../narrate/types.js';
+import { resetConfigCache } from '../env.js';
 import type { LessonDocument } from '../types/lessonDocument.js';
 import type { LessonDocumentRow, AudioUnitEntry } from '../db/lessonDocumentsRepo.js';
 
@@ -1233,7 +1236,26 @@ function tinyWav(): ArrayBuffer {
   const samples = new Int16Array(160); // 20ms
   for (let i = 0; i < samples.length; i += 1) samples[i] = Math.round(Math.sin(i / 5) * 5000);
   const buffer = new ArrayBuffer(44 + samples.length * 2);
-  const view = new DataView(buffer);
+```
+
+### audiogen/src/__tests__/voiceFor.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { getConfig, resetConfigCache, voiceFor, defaultVoiceFor } from '../env.js';
+
+const CHARACTER_ENV_KEYS = [
+  'TTS_VOICE_DINA_EN_US',
+  'TTS_VOICE_DINA_ES_MX',
+  'TTS_VOICE_DINA_PT_BR',
+  'TTS_VOICE_DINO_EN_US',
+  'TTS_VOICE_DINO_ES_MX',
+  'TTS_VOICE_DINO_PT_BR',
+  'TTS_VOICE_RHO_EN_US',
+  'TTS_VOICE_RHO_ES_MX',
+  'TTS_VOICE_RHO_PT_BR',
+  'TTS_VOICE_ZARA_EN_US',
+  'TTS_VOICE_ZARA_ES_MX',
 ```
 
 ### audiogen/src/__tests__/wavMp3.test.ts
@@ -1345,10 +1367,10 @@ import { z } from 'zod';
  * Env validated once at boot (agent/core/CONVENTIONS.md). Tests set
  * process.env in test-setup before the first getConfig() call.
  *
- * Voice defaults below are PLACEHOLDER per-locale voices for Qwen3-TTS
- * (qwen3-tts-flash). Final CHARACTER voices (Dina/Dino/Rho/Zara, per
- * locale) land later via a voice map keyed by CharacterId — see README.md
- * "Voice map" section and AGENTS.md.
+ * Voice resolution is two-tier: TTS_VOICE_{EN_US,ES_MX,PT_BR} are per-locale
+ * defaults; TTS_VOICE_<CHARACTER>_<LOCALE> (12 vars, all optional) override
+ * per canon character when a segment's narrator is known — see `voiceFor()`
+ * below and README.md "Voice map".
  */
 const Env = z.object({
   PORT: z.coerce.number().int().positive().default(4002),
@@ -1450,10 +1472,10 @@ export interface NarrationUnit {
   field: string;
   /** Plain narration text — MarkdownLite already stripped. */
   text: string;
+  /** `segment.narrator?.character` (dina/dino/rho/zara) when the segment declares one — undefined otherwise. */
+  character?: string;
 }
 
-/** Idempotency key: sha256(text + voice + model). Unchanged text/voice/model → reused. */
-export function contentHash(text: string, voice: string, model: string): string {
 ```
 
 ### audiogen/src/narrateAll.ts
@@ -1495,7 +1517,7 @@ const NarrateSegmentBody = z.object({
 
 ```
 import { downloadWav, synthesizeSpeech } from '../tts/dashscopeClient.js';
-import { getConfig, defaultVoiceFor, languageTypeFor, type LessonLocale } from '../env.js';
+import { getConfig, defaultVoiceFor, voiceFor, languageTypeFor, type LessonLocale } from '../env.js';
 import { uploadFile } from '../filebase/client.js';
 import {
   getLessonDocument,
@@ -3302,6 +3324,86 @@ schema_version: 1
 themes: [archipelago, forest, city, valley, kingdom, cosmos]
 ```
 
+### coursegen/curriculum/qa-lesson-engine-smoketest/adventures/01-estacion-de-pruebas.yaml
+
+```
+schema_version: 1
+# QA/authoring content (COURSE_ENGINE.md §4 addendum). Every lesson below
+# pins `forced_types` — the plan-stage LLM call is skipped entirely; write,
+# gates, judge, localization, images and publish all still run for real.
+# One lesson per LESSON_ENGINE segment type (56 total), plus a few combined
+# lessons to test in-lesson sequencing, plus a minimal review-layer lesson.
+adventure:
+  position: 1
+  slug: estacion-de-pruebas
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: "The Testing Station"
+    es-MX: "La Estación de Pruebas"
+    pt-BR: "A Estação de Testes"
+```
+
+### coursegen/curriculum/qa-lesson-engine-smoketest/catalog.yaml
+
+```
+schema_version: 1
+course:
+  slug: qa-lesson-engine-smoketest
+  subject: mixed
+  title:
+    en-US: "Lesson Engine QA — Smoke Test"
+    es-MX: "Motor de Lecciones — Prueba de Humo"
+    pt-BR: "Motor de Lições — Teste de Fumaça"
+  description:
+    en-US: "Internal QA content — one isolated exercise per Lesson Engine type, used to validate the full generation pipeline (text, gates, judge, localization, images, audio, endpoints) before a real course run. Not for learners."
+    es-MX: "Contenido interno de QA — un ejercicio aislado por cada tipo del Motor de Lecciones, para validar el pipeline completo de generación (texto, gates, juez, localización, imágenes, audio, endpoints) antes de una corrida real. No es para alumnos."
+    pt-BR: "Conteúdo interno de QA — um exercício isolado por tipo do Motor de Lições, para validar todo o pipeline de geração (texto, gates, juiz, localização, imagens, áudio, endpoints) antes de uma execução real. Não é para alunos."
+  authoring_locale: es-MX
+adventures:
+  - file: adventures/01-estacion-de-pruebas.yaml
+```
+
+### coursegen/curriculum/qa-lesson-engine-smoketest/facts.yaml
+
+```
+schema_version: 1
+facts:
+  mxn.denominations.coins:
+    value: [1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas — no un curso real."
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200]
+    unit: MXN
+    label_es: "Billetes de México (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas."
+  qa.reference_price.toy:
+```
+
+### coursegen/curriculum/qa-lesson-engine-smoketest/taxonomy.yaml
+
+```
+schema_version: 1
+# QA/authoring content — never shown to real learners (COURSE_ENGINE.md §4
+# addendum: forced_types). Deliberately permissive: family_allowlist_by_tier
+# covers all 8 families and type_exceptions bans nothing, so every one of
+# the 56 LESSON_ENGINE segment types is selectable for isolated testing.
+themes:
+  - cosmos
+age_tiers:
+  tier2:
+    ages: "8-10"
+    forbidden_vocabulary:
+      es-MX: [porcentaje, interés compuesto, hipoteca, acciones, bolsa de valores, dividendo, criptomoneda]
+      en-US: [percentage, compound interest, mortgage, stocks, stock market, dividend, cryptocurrency]
+      pt-BR: [porcentagem, juros compostos, hipoteca, ações, bolsa de valores, dividendo, criptomoeda]
+families:
+```
+
 ### coursegen/eslint.config.js
 
 ```
@@ -3496,6 +3598,26 @@ export function baseSegments() {
       difficulty: 1 as const,
       xp: 0,
       payload: { backdrop: 'base' as const, body_md: 'Había una vez una isla llena de monedas.' },
+```
+
+### coursegen/src/__tests__/forced-skeleton.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { buildForcedSkeleton } from '../pipeline/plan.js';
+import { ALL_TYPES } from '../contract/registry.js';
+
+describe('buildForcedSkeleton (COURSE_ENGINE.md §4 addendum — QA override)', () => {
+  it('maps each forced type to one segment, in order', () => {
+    const skeleton = buildForcedSkeleton(['quiz_mcq', 'true_false'], 'Practica reconocer monedas');
+    expect(skeleton.segments.map((s) => s.type)).toEqual(['quiz_mcq', 'true_false']);
+  });
+
+  it('does not enforce MIN_SEGMENTS — a single-type skeleton is valid', () => {
+    const skeleton = buildForcedSkeleton(['coin_count'], 'Practica contar monedas');
+    expect(skeleton.segments).toHaveLength(1);
+  });
+
 ```
 
 ### coursegen/src/__tests__/gate6-anti-genericity.test.ts
@@ -4441,7 +4563,7 @@ import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type Loade
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
-import { planLesson, type PlanContext, type PlanSkeleton } from './plan.js';
+import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } from './plan.js';
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { reviewLesson } from './review.js';

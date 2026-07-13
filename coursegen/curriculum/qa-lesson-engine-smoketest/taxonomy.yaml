@@ -1,0 +1,28 @@
+schema_version: 1
+# QA/authoring content — never shown to real learners (COURSE_ENGINE.md §4
+# addendum: forced_types). Deliberately permissive: family_allowlist_by_tier
+# covers all 8 families and type_exceptions bans nothing, so every one of
+# the 56 LESSON_ENGINE segment types is selectable for isolated testing.
+themes:
+  - cosmos
+age_tiers:
+  tier2:
+    ages: "8-10"
+    forbidden_vocabulary:
+      es-MX: [porcentaje, interés compuesto, hipoteca, acciones, bolsa de valores, dividendo, criptomoneda]
+      en-US: [percentage, compound interest, mortgage, stocks, stock market, dividend, cryptocurrency]
+      pt-BR: [porcentagem, juros compostos, hipoteca, ações, bolsa de valores, dividendo, criptomoeda]
+families:
+  - story
+  - choice
+  - input
+  - arrange
+  - money
+  - analyze
+  - storyplay
+  - maker
+family_allowlist_by_tier:
+  tier2: [story, choice, input, arrange, money, analyze, storyplay, maker]
+type_exceptions:
+  tier2_extra_allowed: []
+  tier2_banned_types: []

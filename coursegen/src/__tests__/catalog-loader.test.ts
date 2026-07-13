@@ -173,4 +173,21 @@ describe('loadCourseCatalog', () => {
     expect(result.ok).toBe(false);
     expect(result.issues.some((i) => i.message.includes('suggested_families'))).toBe(true);
   });
+
+  it('accepts a lesson with valid forced_types (QA override, §4 addendum)', () => {
+    const adv = adventureFixture();
+    (adv.sagas[0]!.topics[0]!.lessons[0] as Record<string, unknown>).forced_types = ['quiz_mcq', 'true_false'];
+    writeCourse({ adventure: adv });
+    const result = loadCourseCatalog(courseDir);
+    expect(result.ok).toBe(true);
+  });
+
+  it('errors on an unknown forced_types entry', () => {
+    const adv = adventureFixture();
+    (adv.sagas[0]!.topics[0]!.lessons[0] as Record<string, unknown>).forced_types = ['not_a_real_type'];
+    writeCourse({ adventure: adv });
+    const result = loadCourseCatalog(courseDir);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((i) => i.message.includes('forced_types') && i.message.includes('not_a_real_type'))).toBe(true);
+  });
 });

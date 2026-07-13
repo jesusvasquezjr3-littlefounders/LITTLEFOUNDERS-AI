@@ -1,0 +1,28 @@
+schema_version: 1
+facts:
+  mxn.denominations.coins:
+    value: [1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas — no un curso real."
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200]
+    unit: MXN
+    label_es: "Billetes de México (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas."
+  qa.reference_price.toy:
+    value: 80
+    unit: MXN
+    label_es: "Precio de referencia de un juguete pequeño (aproximado)"
+    verified: false
+    enforce: false
+    notes: "Solo da contexto narrativo a lecciones de ejemplo — no es un precio verificado."
+  qa.reference_price.snack:
+    value: 15
+    unit: MXN
+    label_es: "Precio de referencia de una golosina (aproximado)"
+    verified: false
+    enforce: false
+    notes: "Contexto narrativo únicamente."

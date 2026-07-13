@@ -257,6 +257,27 @@ checked before every call; every call logged to `runs/<id>/ledger.jsonl`
 (provider, model, tokens, est. USD). **Concurrency:** small pool
 (`FORGE_CONCURRENCY`, default 2).
 
+### §4 addendum — `forced_types` (QA/authoring override)
+
+A lesson blueprint may carry `forced_types: [type_id, ...]` (1-14 entries,
+each a real LESSON_ENGINE segment type id, validated at load time). When
+present, `run.ts` **skips the plan stage's DeepSeek call entirely** and
+builds the segment skeleton deterministically — one segment per listed type,
+in that exact order — instead of asking the model to design one. Every other
+stage runs unchanged: `write` (the real content-authoring call), the 6
+deterministic gates, the Qwen judge, localization, images, and publish. MIX
+RULES (narrative-first, ≥5 distinct types, 8-14 segments) do not apply to a
+forced skeleton — it is a deliberate hand-pinned exception, not a model
+output to validate against them.
+
+This exists to make per-exercise-type pipeline verification cheap and exact
+before a full paid curriculum run: a smoke-test catalog with one
+`forced_types: [x]` lesson per type (plus a few multi-type lessons to
+exercise in-lesson sequencing) proves every stage — text generation, gates,
+judging, translation, image generation, audio narration, and every Core/
+frontend endpoint — end to end, for a fraction of a real course's cost,
+before trusting the model to plan on its own at scale.
+
 ## §5 Providers
 
 | Role | Provider / model | Why |
@@ -291,7 +312,28 @@ either generated programmatically or re-verified programmatically.
 
 On publish (or on demand), Echo receives `{lesson_id, locale}`; it reads the
 CLIENT-SAFE document (never answer keys), narrates the narratable fields
-(LESSON_ENGINE §12), voice = per-locale default until character voices land
-(voice map is config), encodes mono MP3 (small, quality-preserving), stores in
-filebase `lesson-audio`, and patches `audio_segment_id`s + an `audio` manifest
-into the lesson_documents row. Idempotent by (lesson, locale, segment, text-hash).
+(LESSON_ENGINE §12). **Voice map implemented** (`audiogen/src/env.ts`
+`voiceFor()`): per UNIT — `story_dialogue` line / `story_scene` character →
+segment envelope `narrator.character` → per-locale default, in that order;
+per-character overrides are 12 optional env vars
+(`TTS_VOICE_<DINA|DINO|RHO|ZARA>_<LOCALE>`), unset = falls through to the
+locale default, so the map fills in incrementally with zero code changes.
+Encodes mono MP3 (small, quality-preserving), stores in filebase
+`lesson-audio`, and patches `audio_segment_id`s + an `audio` manifest into
+the lesson_documents row. Idempotent by (lesson, locale, segment, voice,
+text-hash) — a voice change alone re-narrates just that unit.
+
+## §8 QA catalog — `coursegen/curriculum/qa-lesson-engine-smoketest/`
+
+A deliberately tiny, non-shipping course (62 lessons, never appears in §3.1b's
+sequence) that exercises the ENTIRE pipeline end to end before trusting it
+with a real, expensive course run: one `forced_types`-pinned lesson per every
+one of the 56 LESSON_ENGINE segment types (isolated, cheap, exact coverage),
+4 multi-type combo lessons (in-lesson sequencing), and a minimal
+`review_spaced` topic (the review pathway). Exercises text generation, all 6
+gates, the judge, both localizations, image generation (`picture_choice`),
+and — once narrated — Echo end to end, plus every Core/frontend endpoint a
+real course would hit. `catalog:check` reports 0 errors and ~19 shape-quota
+WARNINGS by design (a compact QA catalog doesn't match real-course grammar —
+warnings, never errors, are the expected and correct outcome here). Run it
+first: `npm run generate -- --course qa-lesson-engine-smoketest`.

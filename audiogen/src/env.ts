@@ -4,10 +4,10 @@ import { z } from 'zod';
  * Env validated once at boot (agent/core/CONVENTIONS.md). Tests set
  * process.env in test-setup before the first getConfig() call.
  *
- * Voice defaults below are PLACEHOLDER per-locale voices for Qwen3-TTS
- * (qwen3-tts-flash). Final CHARACTER voices (Dina/Dino/Rho/Zara, per
- * locale) land later via a voice map keyed by CharacterId — see README.md
- * "Voice map" section and AGENTS.md.
+ * Voice resolution is two-tier: TTS_VOICE_{EN_US,ES_MX,PT_BR} are per-locale
+ * defaults; TTS_VOICE_<CHARACTER>_<LOCALE> (12 vars, all optional) override
+ * per canon character when a segment's narrator is known — see `voiceFor()`
+ * below and README.md "Voice map".
  */
 const Env = z.object({
   PORT: z.coerce.number().int().positive().default(4002),
@@ -22,10 +22,32 @@ const Env = z.object({
   TTS_API_KEY: z.string().min(1, 'TTS_API_KEY is required'),
   TTS_MODEL: z.string().min(1).default('qwen3-tts-flash'),
 
-  // Per-locale default voices (placeholder until the character voice map lands).
+  // Per-locale default voices — used whenever a segment has no narrator, or
+  // the narrator's character has no override below for that locale.
   TTS_VOICE_EN_US: z.string().min(1).default('Jennifer'),
   TTS_VOICE_ES_MX: z.string().min(1).default('Li'),
   TTS_VOICE_PT_BR: z.string().min(1).default('Ryan'),
+
+  // Per-character × per-locale voice overrides (the "voice map" — README.md
+  // "Voice map" section). All optional: an unset var falls back to the
+  // locale default above. Each value is just a `voice` string handed to
+  // synthesizeSpeech() — it works identically whether that string is a
+  // DashScope BUILT-IN preset name (e.g. "Cherry") or a CLONED voice id
+  // registered from a reference sample (the exact registration flow is a
+  // separate, not-yet-implemented step — once a clone id exists for a
+  // character/locale, set it here and no code changes are needed).
+  TTS_VOICE_DINA_EN_US: z.string().min(1).optional(),
+  TTS_VOICE_DINA_ES_MX: z.string().min(1).optional(),
+  TTS_VOICE_DINA_PT_BR: z.string().min(1).optional(),
+  TTS_VOICE_DINO_EN_US: z.string().min(1).optional(),
+  TTS_VOICE_DINO_ES_MX: z.string().min(1).optional(),
+  TTS_VOICE_DINO_PT_BR: z.string().min(1).optional(),
+  TTS_VOICE_RHO_EN_US: z.string().min(1).optional(),
+  TTS_VOICE_RHO_ES_MX: z.string().min(1).optional(),
+  TTS_VOICE_RHO_PT_BR: z.string().min(1).optional(),
+  TTS_VOICE_ZARA_EN_US: z.string().min(1).optional(),
+  TTS_VOICE_ZARA_ES_MX: z.string().min(1).optional(),
+  TTS_VOICE_ZARA_PT_BR: z.string().min(1).optional(),
 
   // Vault (Supabase self-hosted) — service role, bypasses RLS by design
   // (lesson_documents writes are a service-role-only surface, mirroring
@@ -79,4 +101,34 @@ export function defaultVoiceFor(locale: LessonLocale, config: Config): string {
     'pt-BR': config.TTS_VOICE_PT_BR,
   };
   return byLocale[locale];
+}
+
+/** The four canonical mascots (frontend/src/components/characters/) — the only valid voice-map keys. */
+export const CANON_CHARACTERS = ['dina', 'dino', 'rho', 'zara'] as const;
+export type CanonCharacter = (typeof CANON_CHARACTERS)[number];
+
+const CHARACTER_VOICE_ENV: Record<CanonCharacter, Record<LessonLocale, keyof Config>> = {
+  dina: { 'en-US': 'TTS_VOICE_DINA_EN_US', 'es-MX': 'TTS_VOICE_DINA_ES_MX', 'pt-BR': 'TTS_VOICE_DINA_PT_BR' },
+  dino: { 'en-US': 'TTS_VOICE_DINO_EN_US', 'es-MX': 'TTS_VOICE_DINO_ES_MX', 'pt-BR': 'TTS_VOICE_DINO_PT_BR' },
+  rho: { 'en-US': 'TTS_VOICE_RHO_EN_US', 'es-MX': 'TTS_VOICE_RHO_ES_MX', 'pt-BR': 'TTS_VOICE_RHO_PT_BR' },
+  zara: { 'en-US': 'TTS_VOICE_ZARA_EN_US', 'es-MX': 'TTS_VOICE_ZARA_ES_MX', 'pt-BR': 'TTS_VOICE_ZARA_PT_BR' },
+};
+
+function isCanonCharacter(value: string): value is CanonCharacter {
+  return (CANON_CHARACTERS as readonly string[]).includes(value);
+}
+
+/**
+ * Resolves the voice for one narration unit (COURSE_ENGINE.md §7 — "voice =
+ * the segment's narrator character"). Falls back to `defaultVoiceFor` when
+ * the unit has no narrator, the narrator isn't one of the 4 canon
+ * characters, or that character has no override set for this locale yet.
+ */
+export function voiceFor(character: string | undefined, locale: LessonLocale, config: Config): string {
+  if (character && isCanonCharacter(character)) {
+    const envKey = CHARACTER_VOICE_ENV[character][locale];
+    const override = config[envKey] as string | undefined;
+    if (override) return override;
+  }
+  return defaultVoiceFor(locale, config);
 }

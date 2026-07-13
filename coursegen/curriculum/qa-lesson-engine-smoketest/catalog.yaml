@@ -1,0 +1,15 @@
+schema_version: 1
+course:
+  slug: qa-lesson-engine-smoketest
+  subject: mixed
+  title:
+    en-US: "Lesson Engine QA — Smoke Test"
+    es-MX: "Motor de Lecciones — Prueba de Humo"
+    pt-BR: "Motor de Lições — Teste de Fumaça"
+  description:
+    en-US: "Internal QA content — one isolated exercise per Lesson Engine type, used to validate the full generation pipeline (text, gates, judge, localization, images, audio, endpoints) before a real course run. Not for learners."
+    es-MX: "Contenido interno de QA — un ejercicio aislado por cada tipo del Motor de Lecciones, para validar el pipeline completo de generación (texto, gates, juez, localización, imágenes, audio, endpoints) antes de una corrida real. No es para alumnos."
+    pt-BR: "Conteúdo interno de QA — um exercício isolado por tipo do Motor de Lições, para validar todo o pipeline de geração (texto, gates, juiz, localização, imagens, áudio, endpoints) antes de uma execução real. Não é para alunos."
+  authoring_locale: es-MX
+adventures:
+  - file: adventures/01-estacion-de-pruebas.yaml

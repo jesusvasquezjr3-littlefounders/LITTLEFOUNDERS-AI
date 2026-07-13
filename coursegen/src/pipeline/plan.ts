@@ -325,6 +325,25 @@ export interface PlanDeps {
   complete?: typeof completeDeepSeek;
 }
 
+/**
+ * QA/authoring override (COURSE_ENGINE.md §4 addendum) — builds a
+ * `PlanSkeleton` directly from a catalog lesson's `forced_types`, bypassing
+ * `planLesson`'s DeepSeek call and MIX RULES entirely (no MIN_SEGMENTS/
+ * MIN_DISTINCT_TYPES enforcement — this is a deliberate, hand-pinned
+ * skeleton, not a model-authored one). `write`/`gates`/`review`/`localize`/
+ * `images`/`publish` all still run unchanged downstream, so this exercises
+ * the real content-authoring pipeline for exactly the requested type(s)
+ * while making per-type coverage deterministic and cheap to verify.
+ */
+export function buildForcedSkeleton(types: readonly string[], microObjective: string): PlanSkeleton {
+  return {
+    segments: types.map((type) => ({
+      type,
+      brief: `Práctica aislada del tipo "${type}" — ${microObjective}`,
+    })),
+  };
+}
+
 export async function planLesson(ctx: PlanContext, deps: PlanDeps = {}): Promise<PlanResult> {
   const complete = deps.complete ?? completeDeepSeek;
   const { allowed } = resolveAllowedTypes(ctx.taxonomy, ctx.tier, { fullPalette: ctx.register?.fullPalette });

@@ -108,6 +108,26 @@ describe('extractNarratables', () => {
     expect(line1?.text).toBe('Save first.');
   });
 
+  it('tags each story_dialogue line with its OWN speaker (not one narrator per segment)', () => {
+    const units = extractNarratables(fixture);
+    expect(units.find((u) => u.unit_id === 's1.line.0')?.character).toBe('dina');
+    expect(units.find((u) => u.unit_id === 's1.line.1')?.character).toBe('dino');
+  });
+
+  it('leaves character undefined when a segment has no narrator and the field has no per-line speaker', () => {
+    const units = extractNarratables(fixture);
+    expect(units.find((u) => u.unit_id === 's1.prompt')?.character).toBeUndefined();
+    expect(units.find((u) => u.unit_id === 's2.body')?.character).toBeUndefined();
+  });
+
+  it('falls back to the segment envelope narrator when a story field has no character of its own', () => {
+    const narrated: LessonDocument = structuredClone(fixture);
+    narrated.segments[1]!.narrator = { character: 'rho' };
+    const units = extractNarratables(narrated);
+    expect(units.find((u) => u.unit_id === 's2.body')?.character).toBe('rho');
+    expect(units.find((u) => u.unit_id === 's2.prompt')?.character).toBe('rho');
+  });
+
   it('extracts story_scene body_md, list syntax stripped', () => {
     const units = extractNarratables(fixture);
     const body = units.find((u) => u.unit_id === 's2.body');

@@ -28,23 +28,37 @@ export function extractNarratables(document: LessonDocument): NarrationUnit[] {
   return units;
 }
 
-function push(units: NarrationUnit[], segment: LessonSegment, field: string, raw: string | undefined): void {
+function push(
+  units: NarrationUnit[],
+  segment: LessonSegment,
+  field: string,
+  raw: string | undefined,
+  characterOverride?: string,
+): void {
   if (!raw) return;
   const text = stripMarkdown(raw);
   if (text.length === 0) return;
-  units.push({ unit_id: `${segment.id}.${field}`, segment_id: segment.id, field, text });
+  units.push({
+    unit_id: `${segment.id}.${field}`,
+    segment_id: segment.id,
+    field,
+    text,
+    character: characterOverride ?? segment.narrator?.character,
+  });
 }
 
 function pushStoryBodies(units: NarrationUnit[], segment: LessonSegment): void {
   switch (segment.type) {
     case 'story_dialogue': {
+      // Each line names its own speaker — more precise than the segment's
+      // (usually absent) envelope-level narrator.
       const payload = segment.payload as unknown as StoryDialoguePayload;
-      payload.lines?.forEach((line, i) => push(units, segment, `line.${i}`, line.text_md));
+      payload.lines?.forEach((line, i) => push(units, segment, `line.${i}`, line.text_md, line.character));
       break;
     }
     case 'story_scene': {
       const payload = segment.payload as unknown as StoryScenePayload;
-      push(units, segment, 'body', payload.body_md);
+      push(units, segment, 'body', payload.body_md, payload.character);
       break;
     }
     case 'key_ideas': {

@@ -56,6 +56,8 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **Piaget gate** | The hard-fail forbidden-vocabulary scan per age tier per locale (tier1 6-7, tier2 8-10, tier3 10-12 — tier3 unlocks investing vocabulary concretely, still bans leverage/derivatives/trading jargon). |
 | **course sequence** | The 3-course track (COURSE_ENGINE §3.1b): financial-education → entrepreneurship → investing, wired by `courses.requires` (the course-level placement edge). |
 | **fact anchor** | An entry in the catalog's `facts.yaml` — the only source of real-world numbers in generated lessons. |
+| **forced_types** | A catalog blueprint override (COURSE_ENGINE §4 addendum) that pins a lesson's exact segment-type skeleton, skipping the plan-stage LLM call. Powers the QA smoke-test catalog's exact per-type coverage. |
+| **voice map** | Echo's per-character × per-locale TTS voice resolution (COURSE_ENGINE §7) — `TTS_VOICE_<CHARACTER>_<LOCALE>` env overrides, falling back to the per-locale default. |
 
 ## Product sections
 

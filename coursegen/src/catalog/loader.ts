@@ -23,6 +23,7 @@ import {
   type CatalogFile,
   type AdventureFile,
 } from './schema.js';
+import { ALL_TYPES } from '../contract/registry.js';
 
 export interface LoadIssue {
   level: 'error' | 'warning';
@@ -380,6 +381,20 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
                   level: 'error',
                   file: adventurePath,
                   message: `lesson "${lesson.slug}" suggested_families includes unknown family "${family}"`,
+                });
+              }
+            }
+          }
+
+          // QA/authoring override (COURSE_ENGINE.md §4 addendum) — every
+          // forced_types entry must be a real LESSON_ENGINE segment type id.
+          if (lesson.forced_types) {
+            for (const type of lesson.forced_types) {
+              if (!ALL_TYPES.includes(type)) {
+                issues.push({
+                  level: 'error',
+                  file: adventurePath,
+                  message: `lesson "${lesson.slug}" forced_types includes unknown segment type "${type}"`,
                 });
               }
             }

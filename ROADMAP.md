@@ -71,6 +71,20 @@ sequence seeded (FE published, the other two draft until generated). Estimated
 full FE generation run: ~$225–320 USD all-in (text+TTS×3+images), ~5–6 GB in
 Depot, ~1.5–3 dedicated days; calibrate with a 1-saga pilot first.
 
+**Pipeline QA-ready, not yet executed (2026-07-13):** Forge gained
+`forced_types` (COURSE_ENGINE §4 addendum — pins a lesson's exact segment
+skeleton, skipping the plan-stage LLM call) and Echo gained the real
+per-character × per-locale **voice map** (`voiceFor()` — story/scene speaker →
+segment narrator → locale default, 12 optional override env vars). A 4th,
+non-shipping course — `qa-lesson-engine-smoketest` (62 lessons: one per each
+of the 56 LESSON_ENGINE types, 4 sequencing combos, a review-layer check) —
+exercises text, all gates, the judge, both localizations, images, and (once
+narrated) Echo end to end for a fraction of a real course's cost. GEMINI_API_KEY
+verified live against the real API (HTTP 200, `gemini-2.5-flash-image`
+confirmed available). Not yet run — `npm run generate -- --course
+qa-lesson-engine-smoketest` still costs real money and needs a go-ahead;
+character voice files are pending (owner to provide the location).
+
 Next, in Jesús's stated order of interest:
 - **Execute the Forge run for Educación Financiera** (operator-triggered:
   `npm run generate -- --course financial-education`; needs GEMINI_API_KEY for
