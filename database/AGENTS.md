@@ -24,7 +24,8 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 - `audit_logs` append-only: no UPDATE/DELETE policies, ever (`npm test` gates this).
 - Signup bootstrap (`0003`): every `auth.users` INSERT auto-creates a profile + grants `universal` (§1.4 default role). Role grants/revokes are audited into `audit_logs` by trigger.
 - Profile identity (`0005`): `profiles.username` (unique, `^[a-z0-9_]{3,20}$`), `profiles.cover` = jsonb PRESET config and `avatars.options` = DiceBear option sets — **no image/binary storage exists for covers or avatars, NON-NEGOTIABLE**. `follows` edges are self-managed via RLS (you only write rows where you are the follower); public exposure of profile fields happens ONLY through Core's whitelisted endpoint, never by loosening profiles RLS.
-- `0002_content_skeleton.sql` is **PROVISIONAL** — don't deepen logic on it before the dedicated schema session.
+- `0002_content_skeleton.sql` is **PROVISIONAL** — its `lessons` table was superseded by `0007_course_hierarchy.sql`'s real hierarchy (`courses → adventures → sagas → topics → lessons → lesson_documents`, COURSE_ENGINE.md §2); `courses` itself was kept and extended, not dropped.
+- `lesson_documents` (`0007`) has **NO RLS SELECT policy at all, by design** — RLS is row-level, not column-level, so any policy that exposed the row to authenticated clients would also expose `answer_keys` (server-only) sitting right next to the client-safe `document` on the same row. Zero permissive policies = deny to `authenticated`/`anon`; only the service role (Core, which bypasses RLS) may read this table, and Core is responsible for stripping `answer_keys` before serving `document` to a browser. Never add a client SELECT policy here — split the answer key out of the table first if that ever needs to change.
 
 ## The pinned Supabase stack (NON-NEGOTIABLE)
 

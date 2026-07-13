@@ -9,6 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      adventures: {
+        Row: {
+          age_tier: string
+          course_id: string
+          created_at: string
+          description: Json
+          id: string
+          narrative_arc: string | null
+          position: number
+          slug: string
+          status: string
+          theme: string
+          title: Json
+        }
+        Insert: {
+          age_tier?: string
+          course_id: string
+          created_at?: string
+          description?: Json
+          id?: string
+          narrative_arc?: string | null
+          position: number
+          slug: string
+          status?: string
+          theme: string
+          title?: Json
+        }
+        Update: {
+          age_tier?: string
+          course_id?: string
+          created_at?: string
+          description?: Json
+          id?: string
+          narrative_arc?: string | null
+          position?: number
+          slug?: string
+          status?: string
+          theme?: string
+          title?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adventures_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -78,23 +128,32 @@ export type Database = {
       courses: {
         Row: {
           created_at: string
+          description: Json
           id: string
+          position: number
           slug: string
           status: string
+          subject: string
           title: Json
         }
         Insert: {
           created_at?: string
+          description?: Json
           id?: string
+          position?: number
           slug: string
           status?: string
+          subject?: string
           title?: Json
         }
         Update: {
           created_at?: string
+          description?: Json
           id?: string
+          position?: number
           slug?: string
           status?: string
+          subject?: string
           title?: Json
         }
         Relationships: []
@@ -221,37 +280,169 @@ export type Database = {
         }
         Relationships: []
       }
-      lessons: {
+      lesson_documents: {
         Row: {
-          content: Json
-          course_id: string
-          created_at: string
-          id: string
-          position: number
+          answer_keys: Json
+          audio: Json
+          document: Json
+          lesson_id: string
+          locale: string
           schema_version: number
+          updated_at: string
         }
         Insert: {
-          content?: Json
-          course_id: string
-          created_at?: string
-          id?: string
-          position?: number
+          answer_keys?: Json
+          audio?: Json
+          document: Json
+          lesson_id: string
+          locale: string
           schema_version?: number
+          updated_at?: string
         }
         Update: {
-          content?: Json
-          course_id?: string
-          created_at?: string
-          id?: string
-          position?: number
+          answer_keys?: Json
+          audio?: Json
+          document?: Json
+          lesson_id?: string
+          locale?: string
           schema_version?: number
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "lessons_course_id_fkey"
-            columns: ["course_id"]
+            foreignKeyName: "lesson_documents_lesson_id_fkey"
+            columns: ["lesson_id"]
             isOneToOne: false
-            referencedRelation: "courses"
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_progress: {
+        Row: {
+          attempts: number
+          best_score: number
+          completed_at: string | null
+          lesson_id: string
+          passed: boolean
+          updated_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          attempts?: number
+          best_score?: number
+          completed_at?: string | null
+          lesson_id: string
+          passed?: boolean
+          updated_at?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          attempts?: number
+          best_score?: number
+          completed_at?: string | null
+          lesson_id?: string
+          passed?: boolean
+          updated_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_segment_attempts: {
+        Row: {
+          attempt_number: number
+          created_at: string
+          id: string
+          lesson_id: string
+          score: number
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          attempt_number: number
+          created_at?: string
+          id?: string
+          lesson_id: string
+          score: number
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          attempt_number?: number
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          score?: number
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          cast: Json
+          created_at: string
+          difficulty: number
+          estimated_minutes: number
+          id: string
+          position: number
+          slug: string
+          status: string
+          title: Json
+          topic_id: string
+          xp_total: number
+        }
+        Insert: {
+          cast?: Json
+          created_at?: string
+          difficulty?: number
+          estimated_minutes?: number
+          id?: string
+          position: number
+          slug: string
+          status?: string
+          title?: Json
+          topic_id: string
+          xp_total?: number
+        }
+        Update: {
+          cast?: Json
+          created_at?: string
+          difficulty?: number
+          estimated_minutes?: number
+          id?: string
+          position?: number
+          slug?: string
+          status?: string
+          title?: Json
+          topic_id?: string
+          xp_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -337,6 +528,50 @@ export type Database = {
         }
         Relationships: []
       }
+      sagas: {
+        Row: {
+          adventure_id: string
+          created_at: string
+          description: Json
+          icon: string
+          id: string
+          position: number
+          slug: string
+          status: string
+          title: Json
+        }
+        Insert: {
+          adventure_id: string
+          created_at?: string
+          description?: Json
+          icon?: string
+          id?: string
+          position: number
+          slug: string
+          status?: string
+          title?: Json
+        }
+        Update: {
+          adventure_id?: string
+          created_at?: string
+          description?: Json
+          icon?: string
+          id?: string
+          position?: number
+          slug?: string
+          status?: string
+          title?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sagas_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assigned_by: string
@@ -374,6 +609,56 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          concept_md: string
+          created_at: string
+          id: string
+          key_vocabulary: Json
+          learning_objective: Json
+          position: number
+          prior_knowledge: string
+          saga_id: string
+          slug: string
+          status: string
+          title: Json
+        }
+        Insert: {
+          concept_md?: string
+          created_at?: string
+          id?: string
+          key_vocabulary?: Json
+          learning_objective?: Json
+          position: number
+          prior_knowledge?: string
+          saga_id: string
+          slug: string
+          status?: string
+          title?: Json
+        }
+        Update: {
+          concept_md?: string
+          created_at?: string
+          id?: string
+          key_vocabulary?: Json
+          learning_objective?: Json
+          position?: number
+          prior_knowledge?: string
+          saga_id?: string
+          slug?: string
+          status?: string
+          title?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_saga_id_fkey"
+            columns: ["saga_id"]
+            isOneToOne: false
+            referencedRelation: "sagas"
             referencedColumns: ["id"]
           },
         ]
