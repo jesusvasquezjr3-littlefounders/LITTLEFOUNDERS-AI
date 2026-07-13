@@ -25,7 +25,9 @@
     "streak": "Day streak",
     "lessons": "Lessons completed",
     "followers": "Followers",
-    "following": "Following"
+    "following": "Following",
+    "xp": "XP points",
+    "minutesLearned": "Minutes learned"
   },
   "share": {
     "title": "Invite your friends",
@@ -70,12 +72,31 @@
     "emailPasswordPending": "Email and password changes arrive with our mail service — coming soon.",
     "save": "Save changes",
     "saving": "Saving…",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "birthDate": "Date of birth",
+    "birthDateHint": "Format: yyyy-mm-dd",
+    "birthDateInvalid": "Use the format yyyy-mm-dd",
+    "blockedTitle": "Blocked accounts",
+    "blockedEmpty": "You haven't blocked anyone.",
+    "unblock": "Unblock"
   },
   "public": {
     "follow": "Follow",
     "following": "Following",
     "editMine": "Edit my profile",
-    "notFound": "This profile doesn't exist"
+    "notFound": "This profile doesn't exist",
+    "block": "Block",
+    "blockConfirm": "Confirm block?"
+  },
+  "followers": {
+    "title": "Followers",
+    "unfollow": "Unfollow",
+    "emptyTitle": "No followers yet",
+    "emptyBody": "Share your @username and invite friends to follow your progress."
+  },
+  "following": {
+    "title": "Following",
+    "emptyTitle": "You're not following anyone yet",
+    "emptyBody": "Follow friends to see them show up here."
   }
 }

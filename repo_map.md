@@ -427,7 +427,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 **App dashboard v1 live (2026-07-12):** role-scalable shell (navConfig registry → gamified 280px sidebar / mobile glass bottom tabs; locked-not-hidden role gating; Tutor-upgrade card), Learn home with published-course cards (`GET /api/v1/learn/courses`), AI Tutor/Games/Tasks placeholders (Tasks parent-gated). 6 real test users via `npm run db:seed:users` (password123; Testing Tutor↔Niño linked verified).
 
-**Profile platform live (2026-07-12):** collapsible sidebar (288↔88px, favicon brand collapsed; language selector REMOVED from shell — locale is a DB setting), `/profile` (token-gradient covers ONLY — no upload path exists anywhere, avatar w/ edit indicator, gamified StatCards, share-to-invite "littlefounders.ai/@usuariox"), `/profile/avatar` (DiceBear Avataaars editor, local SVG render, options jsonb in `avatars`), `/profile/settings` (name, unique @username w/ USERNAME_TAKEN, locale-of-record → drives UI+content; email/password pending Courier), public `/@username` profiles (session-required, Core-whitelisted fields, Tutor badge) with follow/unfollow (`follows` table, RLS self-managed edges). Migration 0005; Core profile API 36 tests green; browser-verified end-to-end (avatar save, cover change, es-MX switch-from-DB, follow 0→1) at both breakpoints, light+dark. Next: course consumption (lesson player) and kid-account creation from the Tutor dashboard. Local-only survivors on disk (gitignored): `.claude/`, `LEGAL/`, `.github/skills/`, `database/supabase/`, per-service `.env`.
+**Profile platform live (2026-07-12):** collapsible sidebar (288↔88px, favicon brand collapsed; language selector REMOVED from shell — locale is a DB setting), `/profile` (token-gradient covers ONLY — no upload path exists anywhere, avatar w/ edit indicator, gamified StatCards, share-to-invite "littlefounders.ai/@usuariox"), `/profile/avatar` (DiceBear Avataaars editor, local SVG render, options jsonb in `avatars`), `/profile/settings` (name, unique @username w/ USERNAME_TAKEN, locale-of-record → drives UI+content; email/password pending Courier), public `/@username` profiles (session-required, Core-whitelisted fields, Tutor badge) with follow/unfollow (`follows` table, RLS self-managed edges). Migration 0005.
 ```
 
 ### agent/README.md
@@ -1247,9 +1247,9 @@ const PROFILE_ROW = {
   locale: 'es-MX',
   theme: 'system',
   cover: { preset: 'sunset' },
+  birth_date: '1990-05-01',
   created_at: '2026-07-12T00:00:00Z',
 };
-
 ```
 
 ### backend/src/__tests__/verification.test.ts
@@ -1448,16 +1448,16 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import {
+  blockUser,
   deleteFollow,
   findProfileByUsername,
   getAvatarByUserId,
   getFollowCounts,
   getFullOwnProfile,
+  getLearningStats,
+  getLearningStatsByUserId,
   getOwnAvatar,
   hasRole,
-  insertFollow,
-  isFollowing,
-  patchOwnProfile,
 ```
 
 ### backend/src/routes/verification.ts
@@ -1884,6 +1884,26 @@ CREATE TABLE IF NOT EXISTS public.parent_verifications (
 -- profiles: @username (unique handle) + cover config
 -- ─────────────────────────────────────────────────────────────
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS username text;
+```
+
+### database/migrations/0006_social_and_stats.sql
+
+```
+-- 0006_social_and_stats.sql — birth date, learning stats, and the social
+-- graph's second edge (blocks). Idempotent delta.
+--
+-- Design (Jesús, 2026-07-12):
+--  * birth_date is personal profile data for ANY user (not the adult-only
+--    field verified in parent_verifications — those stay separate and
+--    unrelated).
+--  * learning_stats is a dedicated table so the future lesson/game engines
+--    have one obvious place to increment XP/minutes/streak — never derived
+--    ad hoc, never stored on `profiles`.
+--  * Blocking is enforced at the DB level: a block prevents new follow rows
+--    in EITHER direction (is_blocked() in the follows INSERT policy) and
+--    Core clears any existing follow edges when a block is created.
+
+-- ─────────────────────────────────────────────────────────────
 ```
 
 ### database/package.json
@@ -3425,6 +3445,46 @@ import { Button, Card, Icon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 ```
 
+### frontend/src/routes/app/profile/FollowersPage.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { UserListPage } from './UserListPage';
+
+/** /profile/followers — my own followers (read-only; unfollowing is only ever mine to do on MY following list). */
+export function FollowersPage() {
+  const { t } = useTranslation();
+  return (
+    <UserListPage
+      title={t('profile.followers.title')}
+      fetchPath="/profile/followers"
+      backPath="/profile"
+      backLabel={t('profile.settings.back')}
+      emptyTitle={t('profile.followers.emptyTitle')}
+      emptyBody={t('profile.followers.emptyBody')}
+    />
+```
+
+### frontend/src/routes/app/profile/FollowingPage.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { UserListPage } from './UserListPage';
+
+/** /profile/following — who I follow; each row can be unfollowed (my own edges). */
+export function FollowingPage() {
+  const { t } = useTranslation();
+  return (
+    <UserListPage
+      title={t('profile.following.title')}
+      fetchPath="/profile/following"
+      backPath="/profile"
+      backLabel={t('profile.settings.back')}
+      emptyTitle={t('profile.following.emptyTitle')}
+      emptyBody={t('profile.following.emptyBody')}
+      allowUnfollow
+```
+
 ### frontend/src/routes/app/profile/ProfileHero.tsx
 
 ```
@@ -3465,11 +3525,51 @@ import { ProfileHero } from './ProfileHero';
  */
 ```
 
+### frontend/src/routes/app/profile/PublicFollowersPage.tsx
+
+```
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { UserListPage } from './UserListPage';
+
+/** /@handle/followers — read-only: viewing someone else's followers, not managing your own edges. */
+export function PublicFollowersPage() {
+  const { t } = useTranslation();
+  const { handle = '' } = useParams();
+  const username = handle.startsWith('@') ? handle.slice(1).toLowerCase() : '';
+  return (
+    <UserListPage
+      title={t('profile.followers.title')}
+      fetchPath={`/profiles/${username}/followers`}
+      backPath={`/${handle}`}
+      backLabel={t('profile.settings.back')}
+```
+
+### frontend/src/routes/app/profile/PublicFollowingPage.tsx
+
+```
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { UserListPage } from './UserListPage';
+
+/** /@handle/following — read-only: viewing who someone else follows. */
+export function PublicFollowingPage() {
+  const { t } = useTranslation();
+  const { handle = '' } = useParams();
+  const username = handle.startsWith('@') ? handle.slice(1).toLowerCase() : '';
+  return (
+    <UserListPage
+      title={t('profile.following.title')}
+      fetchPath={`/profiles/${username}/following`}
+      backPath={`/${handle}`}
+      backLabel={t('profile.settings.back')}
+```
+
 ### frontend/src/routes/app/profile/PublicProfilePage.tsx
 
 ```
-import { useEffect, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
@@ -3481,8 +3581,8 @@ import { ProfileHero } from './ProfileHero';
 /*
  * /@username — public profile (session required by routing). Shows exactly
  * what Core whitelists: name, @username, avatar, cover, member-since,
- * counts, Tutor badge. Follow/unfollow lives here.
- */
+ * counts, Tutor badge, and public learning stats. Follow/unfollow and
+ * blocking both live here.
 ```
 
 ### frontend/src/routes/app/profile/SettingsPage.tsx
@@ -3497,11 +3597,51 @@ import { LOCALES, type Locale } from '@/i18n';
 import { Button, Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { UserListItem, type ListedUser } from './UserListItem';
 
 /*
  * /profile/settings — personal data. `locale` is the user's language of
  * record (DB field): it drives lessons/games/content AND the UI. Email and
  * password changes stay disabled until Courier (email-server) ships.
+```
+
+### frontend/src/routes/app/profile/UserListItem.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { Avatar } from '@/components/Avatar';
+import { Badge } from '@/components/ui';
+
+/** Shape returned by every followers/following/blocked list endpoint. */
+export interface ListedUser {
+  userId: string;
+  displayName: string;
+  username: string | null;
+  avatarOptions: Record<string, unknown>;
+  isTutor: boolean;
+}
+
+/** One row in a followers/following/blocked list — avatar, name, @handle, optional action slot. */
+```
+
+### frontend/src/routes/app/profile/UserListPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Icon } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { UserListItem, type ListedUser } from './UserListItem';
+
+/*
+ * Generic followers/following list — powers both own (/profile/followers,
+ * /profile/following) and public (/@handle/followers, /@handle/following)
+ * routes from one component. `allowUnfollow` only makes sense on the
+ * viewer's OWN following list (these are edges the viewer controls).
  */
 ```
 

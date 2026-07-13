@@ -36,10 +36,11 @@ Signup → universal user → profile section → DiceBear avatar customization 
 ## Immediate next step
 
 Dashboard v1 + the profile platform (collapsible sidebar, Avataaars avatars,
-gradient covers, @usernames, public profiles + follows, settings with
-locale-of-record) shipped 2026-07-12 — sections lock/unlock from
-`frontend/src/routes/app/navConfig.ts`. Next candidates, in Jesús's stated
-order of interest:
+gradient covers, @usernames, public profiles + follows/blocks, followers/
+following lists, birth date, real learning-stat fields, settings with
+locale-of-record, DESIGN.md's non-negotiable Grid Systems) shipped
+2026-07-12 — sections lock/unlock from `frontend/src/routes/app/navConfig.ts`.
+Next candidates, in Jesús's stated order of interest:
 - **learn/ course consumption** — real lesson player behind the course cards
   (needs the dedicated content-schema session first; 0002 is PROVISIONAL).
 - **Kid accounts from the Tutor dashboard** — creation + guardian linking UX

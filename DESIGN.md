@@ -179,6 +179,27 @@ text.
 - Hover-only affordances prohibited without a tap equivalent.
 - **No UI change is done until verified at ~375px AND ~1280px — screenshots.**
 
+### Grid Systems — every repeating pattern has a DEFINED grid (NON-NEGOTIABLE)
+
+A repeating pattern (stat rows, card grids, list rows) never "wraps
+whatever fits" — it declares an exact column count at each named breakpoint
+(mobile <768px / tablet 768–1023px / desktop ≥1024px), chosen deliberately
+for that content's density. Three closed categories; every new repeating
+pattern picks one, it doesn't invent a fourth:
+
+| Category | Mobile | Tablet (`md:`) | Desktop (`lg:`) | Used for |
+|---|---|---|---|---|
+| **Stat row** | 2 cols | 3 cols | 6 cols | Profile/dashboard StatCard rows |
+| **Card grid** | 1 col | 2 cols | 3 cols | Course cards, feature grids |
+| **List rows** | single column, full width | — (same) | — (same, centered in a `max-w-xl`/`max-w-2xl` reading column) | Followers/following/blocked rows, settings sections |
+
+Stat rows and card grids ALWAYS use `gap-4` (or the section's established
+gap) at every breakpoint — no breakpoint-specific gap changes, which read as
+accidental rather than designed. A 4th, 5th, or odd-numbered stat/card count
+still uses these exact column tracks (the last row is intentionally
+incomplete, never re-flowed to "fill nicely") — a designed grid with a
+short last row beats an ad hoc one that's always full.
+
 ## Elevation & Depth — Liquid Glass
 
 Depth comes from translucency and light, not skeuomorphism:
@@ -284,11 +305,23 @@ overlapping `-mt-14/-mt-16` with `ring-4 ring-base`; own profile adds a
 papaya pencil badge on the avatar (→ /profile/avatar) and a glass "edit
 cover" chip (inline preset-swatch grid in an `.lf-pop` card). Below: display
 name + Tutor badge, `primary` @username, member-since caption, secondary
-Settings pill; StatCard row (2-col mobile / 4-col desktop); share-to-invite
-card with one papaya copy CTA (flips to `success` on copy). Avatar editor:
-sticky live-preview card (desktop) + option-section cards — color swatches
-as `rounded-full` chips, feature options as live Avataaars thumbnails,
-selected = `primary` ring; "Surprise me" secondary + one papaya save.
+Settings pill; StatCard row is the **Stat row grid** (2/3/6, §Layout → Grid
+Systems: streak, lessons, XP, minutes learned, followers, following — the
+last two link out to their list pages); share-to-invite card with one papaya
+copy CTA (flips to `success` on copy). Avatar editor: sticky live-preview
+card (desktop) + option-section cards — color swatches as `rounded-full`
+chips, feature options as live Avataaars thumbnails, selected = `primary`
+ring; "Surprise me" secondary + one papaya save.
+
+**Followers / Following / Blocked (list rows)** — the **List rows** grid
+(§Layout → Grid Systems): single-column rows in one resting `Card`,
+centered `max-w-xl`, each row = avatar + name + @username (+ Tutor badge) +
+one right-aligned action slot (Unfollow / Unblock secondary pill, or none
+for read-only public lists). Empty state = centered icon + title + body in
+a `hero` card, same grammar as Learn's empty state. Destructive-ish actions
+that aren't truly destructive (block) use a two-step inline confirm — label
+flips to a `danger`-tone confirmation for a few seconds — rather than a
+modal; true modals stay reserved for nothing in this app so far.
 
 **Lesson** — focused single column (max-w ~720px), glass sticky progress
 header, one activity card at a time, `success` feedback moments.

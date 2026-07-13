@@ -3,18 +3,27 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import {
+  blockUser,
   deleteFollow,
   findProfileByUsername,
   getAvatarByUserId,
   getFollowCounts,
   getFullOwnProfile,
+  getLearningStats,
+  getLearningStatsByUserId,
   getOwnAvatar,
   hasRole,
   insertFollow,
+  isBlockedEitherWay,
   isFollowing,
+  listBlocked,
+  listFollowers,
+  listFollowing,
   patchOwnProfile,
+  unblockUser,
   upsertOwnAvatar,
   type FullProfileRow,
+  type LearningStatsRow,
 } from '../services/supabaseRest.js';
 
 /*
@@ -25,6 +34,13 @@ import {
  *    client-side — again: no images.
  *  - Public profiles (avatar/cover/name/@username) require a session and are
  *    served exclusively here with whitelisted fields; table RLS stays tight.
+ *
+ * Extended 2026-07-12: birth date (personal data, any user — distinct from
+ * Guardian's verified adult birth_date), real learning stats (xp/minutes/
+ * lessons/streak — zeroed until the lesson engine exists, never faked), and
+ * the social graph's second edge: blocking. A block removes any existing
+ * follow in either direction and hides both profiles from each other
+ * (mutual 404 — never leaks WHO blocked whom).
  */
 
 export const COVER_PRESETS = [
@@ -43,6 +59,11 @@ export const COVER_PRESETS = [
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
+function isValidPastDate(d: string): boolean {
+  const t = Date.parse(d);
+  return !Number.isNaN(t) && t <= Date.now() && Number(d.slice(0, 4)) >= 1900;
+}
+
 const ProfilePatchBody = z
   .object({
     displayName: z.string().trim().min(1).max(80).optional(),
@@ -53,6 +74,11 @@ const ProfilePatchBody = z
       .regex(USERNAME_RE, 'Username must be 3-20 chars: a-z, 0-9, _')
       .optional(),
     locale: z.enum(LOCALES).optional(),
+    birthDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'birthDate must be yyyy-mm-dd')
+      .refine(isValidPastDate, 'Enter a valid birth date')
+      .optional(),
   })
   .refine((b) => Object.keys(b).length > 0, 'Nothing to update');
 
@@ -93,17 +119,22 @@ function publicShape(profile: FullProfileRow, avatarOptions: Record<string, unkn
   };
 }
 
-/** /api/v1/profile — the signed-in user's own profile. */
+function statsShape(s: LearningStatsRow) {
+  return { xpPoints: s.xp_points, minutesLearned: s.minutes_learned, lessonsCompleted: s.lessons_completed, streakDays: s.streak_days };
+}
+
+/** /api/v1/profile — the signed-in user's own profile + social lists. */
 export function ownProfileRouter(): Router {
   const router = Router();
   router.use(requireAuth);
 
   router.get('/', async (_req, res) => {
     const user = authedUser(res);
-    const [profiles, avatars, counts] = await Promise.all([
+    const [profiles, avatars, counts, stats] = await Promise.all([
       getFullOwnProfile(user.accessToken, user.id),
       getOwnAvatar(user.accessToken, user.id),
       getFollowCounts(user.id),
+      getLearningStats(user.accessToken, user.id),
     ]);
     if (!profiles?.[0]) return fail(res, 502, 'INTERNAL', 'Profile unreachable');
     return ok(res, {
@@ -111,8 +142,10 @@ export function ownProfileRouter(): Router {
       email: user.email,
       locale: profiles[0].locale,
       theme: profiles[0].theme,
+      birthDate: profiles[0].birth_date,
       followers: counts.followers,
       following: counts.following,
+      learningStats: statsShape(stats),
     });
   });
 
@@ -126,6 +159,7 @@ export function ownProfileRouter(): Router {
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.username !== undefined) patch.username = parsed.data.username;
     if (parsed.data.locale !== undefined) patch.locale = parsed.data.locale;
+    if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
 
     const outcome = await patchOwnProfile(user.accessToken, user.id, patch);
     if (outcome === 'conflict') return fail(res, 409, 'USERNAME_TAKEN', 'That @username is already in use');
@@ -153,6 +187,21 @@ export function ownProfileRouter(): Router {
     return ok(res, { updated: true });
   });
 
+  router.get('/followers', async (_req, res) => {
+    const users = await listFollowers(authedUser(res).id);
+    return ok(res, { users });
+  });
+
+  router.get('/following', async (_req, res) => {
+    const users = await listFollowing(authedUser(res).id);
+    return ok(res, { users });
+  });
+
+  router.get('/blocked', async (_req, res) => {
+    const users = await listBlocked(authedUser(res).id);
+    return ok(res, { users });
+  });
+
   return router;
 }
 
@@ -167,15 +216,24 @@ export function publicProfilesRouter(): Router {
     return rows?.[0] ?? null;
   }
 
+  /** Visible profile lookup: NOT_FOUND for both "doesn't exist" and "blocked" — never leaks which. */
+  async function resolveVisible(username: string, viewerId: string): Promise<FullProfileRow | null> {
+    const profile = await resolve(username);
+    if (!profile) return null;
+    if (profile.user_id !== viewerId && (await isBlockedEitherWay(viewerId, profile.user_id))) return null;
+    return profile;
+  }
+
   router.get('/:username', async (req, res) => {
-    const profile = await resolve(req.params.username.toLowerCase());
-    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const user = authedUser(res);
-    const [avatars, counts, following, tutor] = await Promise.all([
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    const [avatars, counts, following, tutor, stats] = await Promise.all([
       getAvatarByUserId(profile.user_id),
       getFollowCounts(profile.user_id),
       isFollowing(user.id, profile.user_id),
       hasRole(profile.user_id, 'parent'),
+      getLearningStatsByUserId(profile.user_id),
     ]);
     return ok(res, {
       ...publicShape(profile, avatars?.[0]?.options ?? {}),
@@ -184,13 +242,28 @@ export function publicProfilesRouter(): Router {
       isFollowing: following,
       isSelf: profile.user_id === user.id,
       isTutor: tutor,
+      learningStats: statsShape(stats),
     });
   });
 
-  router.post('/:username/follow', async (req, res) => {
-    const profile = await resolve(req.params.username.toLowerCase());
-    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+  router.get('/:username/followers', async (req, res) => {
     const user = authedUser(res);
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    return ok(res, { users: await listFollowers(profile.user_id) });
+  });
+
+  router.get('/:username/following', async (req, res) => {
+    const user = authedUser(res);
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    return ok(res, { users: await listFollowing(profile.user_id) });
+  });
+
+  router.post('/:username/follow', async (req, res) => {
+    const user = authedUser(res);
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot follow yourself');
     const done = await insertFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not follow');
@@ -198,12 +271,33 @@ export function publicProfilesRouter(): Router {
   });
 
   router.delete('/:username/follow', async (req, res) => {
+    const user = authedUser(res);
     const profile = await resolve(req.params.username.toLowerCase());
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
-    const user = authedUser(res);
     const done = await deleteFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
     return ok(res, { following: false });
+  });
+
+  // Block/unblock intentionally use resolve() (not resolveVisible): you must
+  // be able to unblock someone whose profile a block is currently hiding.
+  router.post('/:username/block', async (req, res) => {
+    const user = authedUser(res);
+    const profile = await resolve(req.params.username.toLowerCase());
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot block yourself');
+    const done = await blockUser(user.accessToken, user.id, profile.user_id);
+    if (!done) return fail(res, 502, 'INTERNAL', 'Could not block this account');
+    return ok(res, { blocked: true });
+  });
+
+  router.delete('/:username/block', async (req, res) => {
+    const user = authedUser(res);
+    const profile = await resolve(req.params.username.toLowerCase());
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    const done = await unblockUser(user.accessToken, user.id, profile.user_id);
+    if (!done) return fail(res, 502, 'INTERNAL', 'Could not unblock this account');
+    return ok(res, { blocked: false });
   });
 
   return router;

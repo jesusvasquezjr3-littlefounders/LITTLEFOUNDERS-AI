@@ -57,6 +57,24 @@ export type Database = {
         }
         Relationships: []
       }
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           created_at: string
@@ -176,6 +194,33 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_stats: {
+        Row: {
+          lessons_completed: number
+          minutes_learned: number
+          streak_days: number
+          updated_at: string
+          user_id: string
+          xp_points: number
+        }
+        Insert: {
+          lessons_completed?: number
+          minutes_learned?: number
+          streak_days?: number
+          updated_at?: string
+          user_id: string
+          xp_points?: number
+        }
+        Update: {
+          lessons_completed?: number
+          minutes_learned?: number
+          streak_days?: number
+          updated_at?: string
+          user_id?: string
+          xp_points?: number
+        }
+        Relationships: []
+      }
       lessons: {
         Row: {
           content: Json
@@ -258,6 +303,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          birth_date: string | null
           cover: Json
           created_at: string
           display_name: string
@@ -268,6 +314,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          birth_date?: string | null
           cover?: Json
           created_at?: string
           display_name?: string
@@ -278,6 +325,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          birth_date?: string | null
           cover?: Json
           created_at?: string
           display_name?: string
@@ -356,6 +404,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
     }
     Enums: {

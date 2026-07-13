@@ -25,6 +25,8 @@
 | **@username** | A profile's unique public handle (`profiles.username`, lowercase). Share URL vision: `littlefounders.ai/@usuariox`. Viewing any profile requires a session. |
 | **follow** | A user→user edge in `follows` ("sígueme en LittleFounders"). Self-managed via RLS; counts are public profile data. |
 | **avatar** | The user's DiceBear **Avataaars** option set (`avatars.options`), rendered locally as SVG. Never an uploaded photo — same rule for covers (token-gradient presets only). |
+| **block** | A one-directional `blocks` edge that (a) prevents new `follows` rows between the pair in either direction (DB-enforced, `is_blocked()`) and (b) hides both public profiles from each other (mutual 404 — never reveals who blocked whom). Blocking clears any existing follow edge both ways. |
+| **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, streak days. One row per user (auto-created at signup), system-written only; zero until the lesson/game engines exist. |
 
 ## Services & codenames
 

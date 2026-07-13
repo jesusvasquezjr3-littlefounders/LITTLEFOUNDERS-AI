@@ -25,7 +25,9 @@
     "streak": "Dias de sequência",
     "lessons": "Lições concluídas",
     "followers": "Seguidores",
-    "following": "Seguindo"
+    "following": "Seguindo",
+    "xp": "Pontos XP",
+    "minutesLearned": "Minutos aprendidos"
   },
   "share": {
     "title": "Convide seus amigos",
@@ -70,12 +72,31 @@
     "emailPasswordPending": "A troca de e-mail e senha chega com nosso serviço de e-mail — em breve.",
     "save": "Salvar alterações",
     "saving": "Salvando…",
-    "saved": "Salvo!"
+    "saved": "Salvo!",
+    "birthDate": "Data de nascimento",
+    "birthDateHint": "Formato: aaaa-mm-dd",
+    "birthDateInvalid": "Use o formato aaaa-mm-dd",
+    "blockedTitle": "Contas bloqueadas",
+    "blockedEmpty": "Você não bloqueou ninguém.",
+    "unblock": "Desbloquear"
   },
   "public": {
     "follow": "Seguir",
     "following": "Seguindo",
     "editMine": "Editar meu perfil",
-    "notFound": "Este perfil não existe"
+    "notFound": "Este perfil não existe",
+    "block": "Bloquear",
+    "blockConfirm": "Confirmar bloqueio?"
+  },
+  "followers": {
+    "title": "Seguidores",
+    "unfollow": "Deixar de seguir",
+    "emptyTitle": "Ainda sem seguidores",
+    "emptyBody": "Compartilhe seu @usuário e convide amigos para seguir seu progresso."
+  },
+  "following": {
+    "title": "Seguindo",
+    "emptyTitle": "Você ainda não segue ninguém",
+    "emptyBody": "Siga amigos para vê-los aparecer aqui."
   }
 }

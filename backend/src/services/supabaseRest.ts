@@ -107,10 +107,11 @@ export interface FullProfileRow {
   locale: string;
   theme: string;
   cover: Record<string, unknown>;
+  birth_date: string | null;
   created_at: string;
 }
 
-const PROFILE_FIELDS = 'user_id,display_name,username,locale,theme,cover,created_at';
+const PROFILE_FIELDS = 'user_id,display_name,username,locale,theme,cover,birth_date,created_at';
 
 export function getFullOwnProfile(accessToken: string, userId: string): Promise<FullProfileRow[] | null> {
   return rest<FullProfileRow[]>(`/profiles?user_id=eq.${userId}&select=${PROFILE_FIELDS}`, accessToken);
@@ -121,6 +122,7 @@ export interface ProfilePatch {
   username?: string;
   locale?: string;
   cover?: Record<string, unknown>;
+  birth_date?: string;
 }
 
 export type PatchOutcome = 'ok' | 'conflict' | 'error';
@@ -201,6 +203,143 @@ export async function insertFollow(accessToken: string, followerId: string, foll
 
 export async function deleteFollow(accessToken: string, followerId: string, followedId: string): Promise<boolean> {
   const res = await restRaw(`/follows?follower_id=eq.${followerId}&followed_id=eq.${followedId}`, accessToken, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' },
+  });
+  return res.ok;
+}
+
+// ── Learning stats (0006) ────────────────────────────────────
+
+export interface LearningStatsRow {
+  xp_points: number;
+  minutes_learned: number;
+  lessons_completed: number;
+  streak_days: number;
+}
+
+const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0 };
+
+/** Self or guardian, per RLS. Every user has a row (0006 trigger) — zeroed default is a defensive fallback only. */
+export async function getLearningStats(accessToken: string, userId: string): Promise<LearningStatsRow> {
+  const rows = await rest<LearningStatsRow[]>(
+    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    accessToken,
+  );
+  return rows?.[0] ?? ZERO_STATS;
+}
+
+export async function getLearningStatsByUserId(userId: string): Promise<LearningStatsRow> {
+  const rows = await rest<LearningStatsRow[]>(
+    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    serviceToken(),
+  );
+  return rows?.[0] ?? ZERO_STATS;
+}
+
+// ── Follow / block lists (0006) ──────────────────────────────
+
+export interface ListedUser {
+  userId: string;
+  displayName: string;
+  username: string | null;
+  avatarOptions: Record<string, unknown>;
+  isTutor: boolean;
+}
+
+/** Batch-hydrate raw user ids into whitelisted public cards, service role (mirrors the public-profile window). */
+async function hydrateUsers(ids: string[]): Promise<ListedUser[]> {
+  if (ids.length === 0) return [];
+  const idList = ids.join(',');
+  const [profiles, avatars, tutorRoles] = await Promise.all([
+    rest<Pick<FullProfileRow, 'user_id' | 'display_name' | 'username'>[]>(
+      `/profiles?user_id=in.(${idList})&select=user_id,display_name,username`,
+      serviceToken(),
+    ),
+    rest<(AvatarRow & { user_id: string })[]>(`/avatars?user_id=in.(${idList})&select=user_id,options`, serviceToken()),
+    rest<{ user_id: string }[]>(`/user_roles?user_id=in.(${idList})&role=eq.parent&select=user_id`, serviceToken()),
+  ]);
+  const profileById = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+  const avatarById = new Map((avatars ?? []).map((a) => [a.user_id, a.options]));
+  const tutorIds = new Set((tutorRoles ?? []).map((r) => r.user_id));
+
+  return ids
+    .map((id) => {
+      const p = profileById.get(id);
+      if (!p) return null;
+      return {
+        userId: id,
+        displayName: p.display_name,
+        username: p.username,
+        avatarOptions: avatarById.get(id) ?? {},
+        isTutor: tutorIds.has(id),
+      };
+    })
+    .filter((u): u is ListedUser => u !== null);
+}
+
+const LIST_LIMIT = 60;
+
+export async function listFollowers(userId: string): Promise<ListedUser[]> {
+  const rows = await rest<{ follower_id: string }[]>(
+    `/follows?followed_id=eq.${userId}&select=follower_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    serviceToken(),
+  );
+  return hydrateUsers((rows ?? []).map((r) => r.follower_id));
+}
+
+export async function listFollowing(userId: string): Promise<ListedUser[]> {
+  const rows = await rest<{ followed_id: string }[]>(
+    `/follows?follower_id=eq.${userId}&select=followed_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    serviceToken(),
+  );
+  return hydrateUsers((rows ?? []).map((r) => r.followed_id));
+}
+
+export async function listBlocked(userId: string): Promise<ListedUser[]> {
+  const rows = await rest<{ blocked_id: string }[]>(
+    `/blocks?blocker_id=eq.${userId}&select=blocked_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    serviceToken(),
+  );
+  return hydrateUsers((rows ?? []).map((r) => r.blocked_id));
+}
+
+/** Either direction — mirrors the DB's is_blocked(), read via the service role. */
+export async function isBlockedEitherWay(a: string, b: string): Promise<boolean> {
+  const rows = await rest<unknown[]>(
+    `/blocks?select=blocker_id&or=(and(blocker_id.eq.${a},blocked_id.eq.${b}),and(blocker_id.eq.${b},blocked_id.eq.${a}))`,
+    serviceToken(),
+  );
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+/**
+ * Block: the blocker's own row is a user-token write (RLS-owned); cleaning
+ * up any EXISTING follow in either direction needs the service role, since
+ * the reverse edge (them following the blocker) isn't the actor's own row.
+ */
+export async function blockUser(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
+  const inserted = await restRaw('/blocks', accessToken, {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({ blocker_id: blockerId, blocked_id: blockedId }),
+  });
+  if (!inserted.ok) return false;
+  await Promise.all([
+    restRaw(`/follows?follower_id=eq.${blockerId}&followed_id=eq.${blockedId}`, serviceToken(), {
+      method: 'DELETE',
+      headers: { Prefer: 'return=minimal' },
+    }),
+    restRaw(`/follows?follower_id=eq.${blockedId}&followed_id=eq.${blockerId}`, serviceToken(), {
+      method: 'DELETE',
+      headers: { Prefer: 'return=minimal' },
+    }),
+  ]);
+  return true;
+}
+
+export async function unblockUser(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
+  const res = await restRaw(`/blocks?blocker_id=eq.${blockerId}&blocked_id=eq.${blockedId}`, accessToken, {
     method: 'DELETE',
     headers: { Prefer: 'return=minimal' },
   });

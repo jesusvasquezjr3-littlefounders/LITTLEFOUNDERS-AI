@@ -14,6 +14,13 @@ import { ProfileHero } from './ProfileHero';
  * learning stats, share-to-invite, and the door to /profile/settings.
  */
 
+interface LearningStats {
+  xpPoints: number;
+  minutesLearned: number;
+  lessonsCompleted: number;
+  streakDays: number;
+}
+
 interface OwnProfile {
   displayName: string;
   username: string | null;
@@ -24,6 +31,7 @@ interface OwnProfile {
   locale: string;
   followers: number;
   following: number;
+  learningStats: LearningStats;
 }
 
 export function ProfilePage() {
@@ -174,12 +182,26 @@ export function ProfilePage() {
         </Link>
       </div>
 
-      {/* Gamified stats — real numbers (progress systems light up as they ship) */}
-      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={<Icon name="local_fire_department" />} tone="accent" value="0" label={t('profile.stats.streak')} />
-        <StatCard icon={<Icon name="school" />} tone="primary" value="0" label={t('profile.stats.lessons')} />
-        <StatCard icon={<Icon name="group" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
-        <StatCard icon={<Icon name="favorite" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
+      {/* Gamified stats — real numbers (progress systems light up as the lesson engine ships).
+          Grid is a fixed, defined breakpoint set (/DESIGN.md §Layout — Grid Systems): 2 cols
+          mobile, 3 cols tablet, 6 cols desktop — never an ad hoc wrap. */}
+      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <StatCard icon={<Icon name="local_fire_department" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
+        <StatCard icon={<Icon name="military_tech" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
+        <StatCard icon={<Icon name="bolt" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
+        <StatCard icon={<Icon name="schedule" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
+        <Link
+          to="/profile/followers"
+          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+        >
+          <StatCard icon={<Icon name="group" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
+        </Link>
+        <Link
+          to="/profile/following"
+          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+        >
+          <StatCard icon={<Icon name="favorite" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
+        </Link>
       </section>
 
       {/* Share / invite */}

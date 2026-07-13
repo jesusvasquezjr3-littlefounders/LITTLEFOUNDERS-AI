@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
@@ -11,8 +11,21 @@ import { ProfileHero } from './ProfileHero';
 /*
  * /@username — public profile (session required by routing). Shows exactly
  * what Core whitelists: name, @username, avatar, cover, member-since,
- * counts, Tutor badge. Follow/unfollow lives here.
+ * counts, Tutor badge, and public learning stats. Follow/unfollow and
+ * blocking both live here.
+ *
+ * Blocking (Jesús, 2026-07-12): a two-step inline confirm (no modal — this
+ * is a rare, deliberate action, not worth a dialog) rather than an
+ * irreversible single click. On success the profile is no longer visible
+ * to either party (mutual 404), so we navigate away.
  */
+
+interface LearningStats {
+  xpPoints: number;
+  minutesLearned: number;
+  lessonsCompleted: number;
+  streakDays: number;
+}
 
 interface PublicProfile {
   displayName: string;
@@ -25,17 +38,23 @@ interface PublicProfile {
   isFollowing: boolean;
   isSelf: boolean;
   isTutor: boolean;
+  learningStats: LearningStats;
 }
+
+const BLOCK_CONFIRM_WINDOW_MS = 4000;
 
 export function PublicProfilePage() {
   const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
   const { handle = '' } = useParams();
+  const navigate = useNavigate();
   const username = handle.startsWith('@') ? handle.slice(1).toLowerCase() : null;
 
   const [data, setData] = useState<PublicProfile | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmingBlock, setConfirmingBlock] = useState(false);
+  const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!username) return;
@@ -51,6 +70,10 @@ export function PublicProfilePage() {
       cancelled = true;
     };
   }, [username, getToken]);
+
+  useEffect(() => () => {
+    if (confirmTimer.current) clearTimeout(confirmTimer.current);
+  }, []);
 
   if (!username) return <Navigate to={APP_HOME} replace />;
   if (errorCode === 'NOT_FOUND') {
@@ -98,6 +121,29 @@ export function PublicProfilePage() {
     );
   }
 
+  function onBlockClick() {
+    if (!confirmingBlock) {
+      setConfirmingBlock(true);
+      confirmTimer.current = setTimeout(() => setConfirmingBlock(false), BLOCK_CONFIRM_WINDOW_MS);
+      return;
+    }
+    void block();
+  }
+
+  async function block() {
+    if (!data) return;
+    if (confirmTimer.current) clearTimeout(confirmTimer.current);
+    setBusy(true);
+    const token = await getToken();
+    const { error } = await api(`/profiles/${data.username}/block`, { method: 'POST', token });
+    setBusy(false);
+    if (error) {
+      setErrorCode(error.code);
+      return;
+    }
+    navigate(APP_HOME, { replace: true });
+  }
+
   const memberSince = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'long', year: 'numeric' }).format(
     new Date(data.memberSince),
   );
@@ -123,21 +169,49 @@ export function PublicProfilePage() {
             </Button>
           </Link>
         ) : (
-          <Button
-            onClick={() => void toggleFollow()}
-            disabled={busy}
-            variant={data.isFollowing ? 'secondary' : 'primary'}
-            className="gap-2"
-          >
-            <Icon name={data.isFollowing ? 'check' : 'person_add'} />
-            {data.isFollowing ? t('profile.public.following') : t('profile.public.follow')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => void toggleFollow()}
+              disabled={busy}
+              variant={data.isFollowing ? 'secondary' : 'primary'}
+              className="gap-2"
+            >
+              <Icon name={data.isFollowing ? 'check' : 'person_add'} />
+              {data.isFollowing ? t('profile.public.following') : t('profile.public.follow')}
+            </Button>
+            <Button
+              onClick={onBlockClick}
+              disabled={busy}
+              variant={confirmingBlock ? 'danger' : 'secondary'}
+              aria-label={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
+              title={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
+              className="gap-2 px-4"
+            >
+              <Icon name={confirmingBlock ? 'report' : 'block'} />
+              <span className="hidden sm:inline">{confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}</span>
+            </Button>
+          </div>
         )}
       </div>
 
-      <section className="mt-8 grid grid-cols-2 gap-4 sm:max-w-sm">
-        <StatCard icon={<Icon name="group" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
-        <StatCard icon={<Icon name="favorite" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
+      {/* Fixed 2/3/6 grid, matching the own-profile stat layout (/DESIGN.md §Layout — Grid Systems). */}
+      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <StatCard icon={<Icon name="local_fire_department" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
+        <StatCard icon={<Icon name="military_tech" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
+        <StatCard icon={<Icon name="bolt" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
+        <StatCard icon={<Icon name="schedule" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
+        <Link
+          to={`/${handle}/followers`}
+          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+        >
+          <StatCard icon={<Icon name="group" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
+        </Link>
+        <Link
+          to={`/${handle}/following`}
+          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+        >
+          <StatCard icon={<Icon name="favorite" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
+        </Link>
       </section>
     </div>
   );

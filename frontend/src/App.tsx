@@ -15,7 +15,11 @@ import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
 import { SettingsPage } from '@/routes/app/profile/SettingsPage';
+import { FollowersPage } from '@/routes/app/profile/FollowersPage';
+import { FollowingPage } from '@/routes/app/profile/FollowingPage';
 import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
+import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
+import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
 
 export function App() {
   return (
@@ -63,7 +67,11 @@ export function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="profile/avatar" element={<AvatarEditorPage />} />
           <Route path="profile/settings" element={<SettingsPage />} />
+          <Route path="profile/followers" element={<FollowersPage />} />
+          <Route path="profile/following" element={<FollowingPage />} />
           {/* /@username — public profiles (static routes above always win) */}
+          <Route path=":handle/followers" element={<PublicFollowersPage />} />
+          <Route path=":handle/following" element={<PublicFollowingPage />} />
           <Route path=":handle" element={<PublicProfilePage />} />
         </Route>
       </Routes>
