@@ -97,10 +97,11 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `gamegen/` | Arcade | Personalized minigames bound to learn/ concepts | 4003 | Railway |
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
+| `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser.
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
 
 ### §1.6 API conventions
 

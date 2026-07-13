@@ -18,6 +18,7 @@
 | [`gamegen/`](gamegen/) | Arcade | Personalized educational minigame generation | 4003 | Railway |
 | [`parent-id-check/`](parent-id-check/) | Guardian | Guardian identity verification (kid/bigfounder gating) | 4004 | Railway |
 | [`email-server/`](email-server/) | Courier | Open-source transactional email (Resend replacement) | 4005 | Railway |
+| [`filebase/`](filebase/) | Depot | Media storage — lesson audio & generated images (Railway volume) | 4006 | Railway |
 
 ## Stack
 

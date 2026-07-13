@@ -40,8 +40,21 @@
 | `gamegen/` | **Arcade** | Personalized educational minigames |
 | `parent-id-check/` | **Guardian** | Identity verification service |
 | `email-server/` | **Courier** | Transactional email (open-source Resend replacement) |
+| `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
 
 The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed **Oracle**.
+
+## Course hierarchy terms (spec: /COURSE_ENGINE.md)
+
+| Term | Definition |
+|---|---|
+| **adventure** | A themed world inside a course (CSS-drawn scene: archipelago, forest, city, valley, kingdom, cosmos). Unlocks when the previous adventure's lessons are all passed. |
+| **saga** | A chapter inside an adventure (4 per adventure). |
+| **topic (tema)** | A concept unit inside a saga (~6 per saga) carrying objective/vocabulary/prior-knowledge metadata. |
+| **catalog** | The curated curriculum map in `coursegen/curriculum/<course>/` — taxonomy + facts + every planned lesson blueprint. The generation coverage oracle and stop condition. |
+| **blueprint** | One planned lesson slot in the catalog: micro-objective, narrative beat, difficulty, suggested families. |
+| **Piaget gate** | The hard-fail forbidden-vocabulary scan per age tier per locale (tier1 6-7, tier2 8-10). |
+| **fact anchor** | An entry in the catalog's `facts.yaml` — the only source of real-world numbers in generated lessons. |
 
 ## Product sections
 
@@ -58,3 +71,19 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **internal service** | Any service other than backend/frontend; reachable only service-to-service via `INTERNAL_API_KEY`. |
 | **team-mode skill** | An opt-in agent skill that must be proposed to the human before use (TEAM_PROTOCOL.md). |
 | **characters** | The four canonical mascots: **Dina, Dino, Dr. Rho, Zara Vex**. |
+
+## Lesson Engine terms (spec: /LESSON_ENGINE.md)
+
+| Term | Definition |
+|---|---|
+| **Lesson Engine** | The frontend lesson runtime (`frontend/src/lesson-engine/`): document contract, 56-type exercise taxonomy, registry, session state machine, player. |
+| **lesson document** | One self-contained, single-locale lesson JSON (`LessonDocument`) played start-to-finish. Forge emits one per locale. |
+| **segment** | One ordered unit inside a lesson — story content or a graded exercise. Discriminated by `type`. |
+| **exercise family** | One of the 8 groups (`story, choice, input, arrange, money, analyze, storyplay, maker`) sharing primitives and grading helpers; each owns its own directory slice. |
+| **answer key** | The server-only `answer` block of a segment. Stripped by `stripAnswers()`; never shipped to production clients. |
+| **verdict / tier** | A grading result: score 0–100 + tier `perfect/great/almost/tryAgain`. Feedback teaches, never punishes (P3). |
+| **grader (boundary)** | The pluggable grading interface. Production = Core endpoint (future content-schema session); `/dev/lesson-lab` = local dev grader. |
+| **cheer mode / arcade mode** | Lesson session modes: `hearts: null` (kid default, no fail state) vs numbered hearts (exhausted wrong segments cost one; 0 ends the run at results). |
+| **Character Control** | The unified emotion/action API over the four characters (`components/characters/control/`): `CharacterActor`, `lf-act-*` wrapper keyframes, `lf-rig-*` limb hooks. Appearance is NON-NEGOTIABLE — the rig never alters colors/shapes/composition. |
+| **director** | The engine layer mapping session events (correct, streak, hint…) to rotating character reactions. |
+| **lesson-lab** | Dev-only harness at `/dev/lesson-lab`: plays every fixture and the full showcase through the real player with the local grader. |

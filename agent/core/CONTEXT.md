@@ -37,10 +37,11 @@ backend "Core" (Railway, 4000) ──────────────┐ INT
 database "Vault"                             ├── audiogen   "Echo"     4002  (lesson TTS, 3 locales)
 Supabase self-hosted on Railway              ├── gamegen    "Arcade"   4003  (personalized minigames)
 (Postgres·GoTrue·PostgREST·                  ├── parent-id-check "Guardian" 4004 (identity verification)
- Realtime·Storage·Studio·Kong)               └── email-server "Courier" 4005 (transactional email)
+ Realtime·Storage·Studio·Kong)               ├── email-server "Courier" 4005 (transactional email)
+                                             └── filebase   "Depot"    4006  (media storage: lesson audio/images)
 ```
 
-Data flow rules: the browser only ever calls `backend` (plus Supabase Auth directly for session handling). Generation services write results back through `backend` or directly to the DB with service credentials. `database/types/` (generated TS types) is the shared-type hub every TS service consumes.
+Data flow rules: the browser only ever calls `backend` (plus Supabase Auth directly for session handling, and Depot's public file route for PII-free lesson media). Generation services write results back through `backend` or directly to the DB with service credentials. `database/types/` (generated TS types) is the shared-type hub every TS service consumes. Engine specs: `/LESSON_ENGINE.md` (lesson runtime) and `/COURSE_ENGINE.md` (hierarchy + generation).
 
 ## Platform constants
 

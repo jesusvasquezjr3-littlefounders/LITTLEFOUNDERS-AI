@@ -35,29 +35,44 @@ Signup → universal user → profile section → DiceBear avatar customization 
 
 ## Immediate next step
 
-Dashboard v1 + the profile platform (collapsible sidebar, Avataaars avatars,
-gradient covers, @usernames, public profiles + follows/blocks, followers/
-following lists, birth date, real learning-stat fields, settings with
-locale-of-record, DESIGN.md's non-negotiable Grid Systems) shipped
-2026-07-12 — sections lock/unlock from `frontend/src/routes/app/navConfig.ts`.
-Next candidates, in Jesús's stated order of interest:
-- **learn/ course consumption** — real lesson player behind the course cards
-  (needs the dedicated content-schema session first; 0002 is PROVISIONAL).
+**Lesson Engine v1 shipped 2026-07-12** (`/LESSON_ENGINE.md` authoritative):
+56 exercise types across 8 families in `frontend/src/lesson-engine/`, fullscreen
+player (cheer/arcade modes, streak/XP/hints, tiered growth-mindset feedback),
+Character Control rig over the 4 canonical characters, `/dev/lesson-lab` harness,
+229 frontend tests. Grading runs behind a pluggable boundary — the local grader
+is dev-only; production grading lands in Core with the content-schema session.
+**Course platform shipped on top of it (2026-07-12, same session, `/COURSE_ENGINE.md`
+authoritative):** real hierarchy in Vault (0007: courses→adventures→sagas→topics→
+lessons→lesson_documents; answer keys service-role-only), server-authoritative
+grading + progress/XP in Core (`/api/v1/learn/*`, unlock rule computed in one
+place), the gamified adventure-map course viewer (6 CSS-drawn world scenes,
+per-lesson path nodes, auto-scroll to current), the new **Depot** (`filebase/`,
+4006) media-storage service with CI, **Echo** implemented (qwen3-tts-flash →
+mono MP3 → Depot, operator-triggered batch), and **Forge** fully implemented
+(catalog → plan → write → 5 deterministic gates incl. Piaget vocabulary +
+arithmetic re-execution → independent Qwen judge → structure-frozen localization
+→ nanobanana images → publish-as-review) with the complete **Educación
+Financiera catalog: 768 lesson blueprints** (8 adventures × 4 sagas × 6 topics ×
+4 lessons ≈ 2 years at 1/day), `catalog:check` green. E2E browser-verified:
+login → adventure map → real lesson → Core-graded verdicts → complete → XP/streak
+→ next lesson unlocked; both breakpoints, light+dark. 524 tests across services.
+
+Next, in Jesús's stated order of interest:
+- **Execute the Forge run for Educación Financiera** (operator-triggered:
+  `npm run generate -- --course financial-education`; needs GEMINI_API_KEY for
+  images, character voices for Echo; lessons land as `review` for human publish).
 - **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
   (Testing Tutor ↔ Testing Niño seed pair exists for this).
-- Remaining dashboard sections harden as their features land (AI Tutor,
-  Games, Tasks).
 
 ## Next up (post-sprint backlog, unordered)
 
 - Guardian verification flow (provider decision: Stripe Identity / Persona / Veriff / manual)
-- learn/ course consumption MVP + Forge pipeline v1 (survey→plan→scaffold→lessons, checkpoint/resume)
 - tutor/ Oracle MVP with moderation + cite-or-refuse posture
 - tasks/ parent→kid assignment + rewards
-- Echo TTS provider decision + per-locale voices
+- Character voices for Echo (voice map ready; owner supplies voices pre-run)
 - Arcade first generated minigame bound to a learn concept
 - Courier engine decision (Postal / Maddy / Haraka / Stalwart) + templates
-- CD wiring (platform-native: Vercel Git integration, Railway watch-paths)
+- CD wiring (platform-native: Vercel Git integration, Railway watch-paths) — now incl. Depot volume
 
 ## Open decisions
 

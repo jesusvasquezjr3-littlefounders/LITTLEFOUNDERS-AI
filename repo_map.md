@@ -18,16 +18,54 @@ agent/
 audiogen/
   src/
     __tests__/
+    concurrency/
+    db/
+    filebase/
+    narrate/
+    routes/
+    service/
+    tts/
+    types/
 backend/
+  scripts/
   src/
     __tests__/
+    lesson-contract/
+      core/
+      families/
+        analyze/
+        arrange/
+        choice/
+        input/
+        maker/
+        money/
+        storyplay/
     lib/
     middleware/
     routes/
     services/
 coursegen/
+  curriculum/
+    financial-education/
+      adventures/
   src/
     __tests__/
+    catalog/
+    contract/
+      core/
+      families/
+        analyze/
+        arrange/
+        choice/
+        input/
+        maker/
+        money/
+        story/
+        storyplay/
+    pipeline/
+      prompts/
+    providers/
+    vault/
 database/
   migrations/
   scripts/
@@ -37,6 +75,11 @@ email-server/
   src/
     __tests__/
     services/
+filebase/
+  src/
+    __tests__/
+    lib/
+    routes/
 frontend/
   public/
     marketing/
@@ -45,14 +88,31 @@ frontend/
     auth/
     components/
       characters/
+        control/
       ui/
     i18n/
       en-US/
       es-MX/
       pt-BR/
+    lesson-engine/
+      core/
+      families/
+        analyze/
+        arrange/
+        choice/
+        input/
+        maker/
+        money/
+        story/
+        storyplay/
+      lab/
+      player/
     lib/
     routes/
       app/
+        learn/
+          __tests__/
+          scenes/
         profile/
       auth/
       marketing/
@@ -170,6 +230,26 @@ jobs:
   ci:
 ```
 
+### .github/workflows/filebase-ci.yml
+
+```
+name: filebase CI
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'filebase/**'
+      - 'database/types/**'
+      - '.github/workflows/filebase-ci.yml'
+  pull_request:
+    paths:
+      - 'filebase/**'
+      - 'database/types/**'
+      - '.github/workflows/filebase-ci.yml'
+
+```
+
 ### .github/workflows/frontend-ci.yml
 
 ```
@@ -270,6 +350,26 @@ on:
 5. **Scope** — confirm the task against the active sprint in `ROADMAP.md`.
 ```
 
+### COURSE_ENGINE.md
+
+```
+# COURSE_ENGINE.md — Forge: the Course & Lesson Generation Engine
+
+> **Authority:** engine spec doc (level 6 in /AGENTS.md §1.1), sibling of
+> /LESSON_ENGINE.md. Authoritative for the content hierarchy, the curriculum
+> catalog format, the generation pipeline, its quality gates and its providers.
+> The lesson DOCUMENT contract itself lives in /LESSON_ENGINE.md — Forge
+> produces documents that validate against it, byte for byte.
+>
+> **Status:** v1 — hierarchy live in Vault (0007), pipeline implemented in
+> `coursegen/`, first course catalog authored (`financial-education`).
+> Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
+> never started by CI or by any automatic process (/AGENTS.md sign-off rule).
+> **Last updated:** 2026-07-12 · Language: English (project rule).
+
+---
+```
+
 ### DESIGN.md
 
 ```
@@ -308,6 +408,26 @@ colors:
 | **bigfounder** | Verified adult; future exclusive features. |
 | **admin** | Edits courses and platform content; provides tech support. |
 | **superadmin** | Super-user: changes roles and access permissions. Only grantable to `@littlefounders.ai` emails. |
+```
+
+### LESSON_ENGINE.md
+
+```
+# LESSON_ENGINE.md — The LittleFounders Lesson Engine Specification
+
+> **Authority:** Engine spec doc (level 6 in /AGENTS.md §1.1). Authoritative for the lesson
+> content contract, the exercise taxonomy, grading semantics, session rules, and the
+> Character Control API. `coursegen/` (Forge) MUST generate against this contract;
+> `audiogen/` (Echo) narrates the fields marked narratable here. On conflict with
+> /AGENTS.md or DESIGN.md, those win and this file gets fixed.
+>
+> **Status:** v1 — engine implemented in `frontend/src/lesson-engine/`. Server-side
+> grading in Core + the definitive content schema in Vault land in the dedicated
+> content-schema session (0002 is provisional until then).
+> **Last updated:** 2026-07-12 · Language: English (project rule).
+
+---
+
 ```
 
 ### PRODUCT.md
@@ -520,6 +640,7 @@ In every touched service:
 - [ ] `npm run type-check` clean
 - [ ] `npm run lint` clean
 - [ ] `npm test` green; new logic has tests (happy + sad path)
+- [ ] `npm run build` green (verify CI in all services)
 
 From repo root:
 
@@ -527,7 +648,6 @@ From repo root:
 - [ ] `npm run secrets:check` — no credential patterns
 - [ ] `npm run i18n:check` — if frontend strings changed
 - [ ] `npm run repo:map` — if files were added/moved/deleted
-- [ ] `npm run deps:check` — if any package.json changed
 ```
 
 ### agent/core/checklists/preflight.md
@@ -737,7 +857,7 @@ inputs:
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-SERVICES=(backend frontend coursegen audiogen gamegen parent-id-check email-server database)
+SERVICES=(backend frontend coursegen audiogen gamegen parent-id-check email-server filebase database)
 DEPS=(express zod typescript tsx vitest supertest eslint typescript-eslint react react-dom vite tailwindcss)
 
 TMP="$(mktemp)"
@@ -925,15 +1045,15 @@ for s in "${SERVICES[@]}"; do
 
 ## Mission
 
-Generates TTS audio for lessons (and wherever else the platform needs speech). Internal service — `INTERNAL_API_KEY` only.
+Generates TTS audio for lessons (and wherever else the platform needs speech). Internal service — `x-internal-api-key` only.
 
-## Open decision
+## Provider decision — RESOLVED
 
-**TTS provider: OPEN** (tracked in ROADMAP.md). Sibling precedent: Qwen3-TTS voice clone. The provider is abstracted behind `TTS_PROVIDER`/`TTS_API_KEY` env — code against an adapter interface, not a vendor SDK surface.
-
-## Invariants that bite here
-
-- **Per-locale voices:** every audio asset exists for en-US, es-MX, pt-BR — same parity rule as text i18n (§1.8).
+**TTS provider: Qwen3-TTS (DashScope REST), model `qwen3-tts-flash`.** Owner
+sign-off recorded in the audiogen build task; no longer OPEN. Client lives in
+`src/tts/dashscopeClient.ts` behind a narrow `synthesizeSpeech()` seam (text,
+voice, languageType → temporary WAV URL) — swapping providers later means
+replacing that one module, not the narration/service layer above it.
 ```
 
 ### audiogen/README.md
@@ -944,16 +1064,16 @@ Generates TTS audio for lessons (and wherever else the platform needs speech). I
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
 
 **Mission:** TTS audio generation for lessons, per-locale voices (en-US, es-MX, pt-BR).
-**Port (dev):** 4002 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
+**Port (dev):** 4002 · **Deploy:** Railway · **Access:** internal only (`x-internal-api-key`)
 
 ```bash
 npm install
-cp .env.example .env
+cp .env.example .env   # fill in real TTS/Supabase/Filebase values
 npm run dev
 npm test
 ```
 
-## Routes
+## What it does
 ```
 
 ### audiogen/eslint.config.js
@@ -983,13 +1103,93 @@ export default tseslint.config(
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+```
+
+### audiogen/src/__tests__/audioRoutes.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import type { LessonDocument } from '../types/lessonDocument.js';
+import type { LessonDocumentRow } from '../db/lessonDocumentsRepo.js';
+
+const KEY = 'test-internal-key-0123456789'; // matches test-setup.ts INTERNAL_API_KEY
+
+function tinyWav(): ArrayBuffer {
+  const samples = new Int16Array(80);
+  for (let i = 0; i < samples.length; i += 1) samples[i] = Math.round(Math.sin(i / 4) * 4000);
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  const ascii = (offset: number, text: string) => {
+    for (let i = 0; i < text.length; i += 1) view.setUint8(offset + i, text.charCodeAt(i));
+```
+
+### audiogen/src/__tests__/backoff.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { computeBackoffMs, isRetryableStatus } from '../tts/backoff.js';
+
+describe('isRetryableStatus', () => {
+  it('retries 429 and 5xx', () => {
+    expect(isRetryableStatus(429)).toBe(true);
+    expect(isRetryableStatus(500)).toBe(true);
+    expect(isRetryableStatus(503)).toBe(true);
+    expect(isRetryableStatus(599)).toBe(true);
+  });
+
+  it('does not retry 4xx other than 429, or 2xx/3xx', () => {
+    expect(isRetryableStatus(400)).toBe(false);
+    expect(isRetryableStatus(401)).toBe(false);
+    expect(isRetryableStatus(404)).toBe(false);
+```
+
+### audiogen/src/__tests__/dashscopeClient.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { synthesizeSpeech } from '../tts/dashscopeClient.js';
+import { TtsError } from '../tts/errors.js';
+
+const baseOpts = {
+  apiUrl: 'https://dashscope-intl.example/generation',
+  apiKey: 'k',
+  model: 'qwen3-tts-flash',
+  sleep: async () => undefined,
+  rand: () => 0,
+};
+
+const input = { text: 'hello', voice: 'Jennifer', languageType: 'English' };
+
+function jsonResponse(status: number, body: unknown): Response {
+```
+
+### audiogen/src/__tests__/extractNarratables.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { extractNarratables } from '../narrate/extractNarratables.js';
+import { stripMarkdown } from '../narrate/stripMarkdown.js';
+import type { LessonDocument } from '../types/lessonDocument.js';
+
+// Covers every `story` family type (LESSON_ENGINE.md §5.1) plus a graded
+// type, to prove Echo narrates prompt_md + explanation_md everywhere but
+// only walks story bodies for story types (§12).
+const fixture: LessonDocument = {
+  schema_version: 1,
+  meta: {
+    slug: 'demo-lesson',
+    title: 'Demo',
+    locale: 'en-US',
+    subject: 'money',
 ```
 
 ### audiogen/src/__tests__/health.test.ts
@@ -1012,35 +1212,446 @@ describe('GET /health', () => {
   it('unknown routes return the error envelope', async () => {
 ```
 
+### audiogen/src/__tests__/lessonAudio.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { narrateLesson } from '../service/lessonAudio.js';
+import { contentHash } from '../narrate/types.js';
+import type { LessonDocument } from '../types/lessonDocument.js';
+import type { LessonDocumentRow, AudioUnitEntry } from '../db/lessonDocumentsRepo.js';
+
+const VOICE = 'Jennifer'; // TTS_VOICE_EN_US default
+const MODEL = 'qwen3-tts-flash'; // TTS_MODEL default
+
+function tinyWav(): ArrayBuffer {
+  const sampleRate = 8000;
+  const samples = new Int16Array(160); // 20ms
+  for (let i = 0; i < samples.length; i += 1) samples[i] = Math.round(Math.sin(i / 5) * 5000);
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+```
+
+### audiogen/src/__tests__/wavMp3.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { parseWav, WavParseError } from '../tts/wav.js';
+import { encodeMp3 } from '../tts/mp3.js';
+
+/** Builds a canonical 44-byte-header PCM16 WAV, mono or interleaved-stereo. */
+function buildWav(sampleRate: number, channels: 1 | 2, interleaved: Int16Array): ArrayBuffer {
+  const dataSize = interleaved.length * 2;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+  writeAscii(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeAscii(view, 8, 'WAVE');
+  writeAscii(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+```
+
 ### audiogen/src/app.ts
 
 ```
 import express from 'express';
+import { getConfig } from './env.js';
+import { audioRouter, type AudioRouterDeps } from './routes/audio.js';
 
 export const SERVICE = 'audiogen';
 export const VERSION = '0.1.0';
 
-export function createApp(): express.Express {
+export interface AppDeps {
+  audio?: AudioRouterDeps;
+}
+
+export function createApp(deps: AppDeps = {}): express.Express {
+  const config = getConfig();
   const app = express();
   app.use(express.json());
+```
 
-  app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
-  });
+### audiogen/src/batch.ts
 
-  app.use((_req, res) => {
-    res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
+```
+import { listPendingLessonDocuments } from './db/lessonDocumentsRepo.js';
+import { narrateLesson } from './service/lessonAudio.js';
+
+/*
+ * Batch narration — OPERATOR-OPT-IN (AUDIOGEN_RUN_ON_START), a paid action
+ * per /AGENTS.md BOUNDARIES. Narrates every published lesson_documents row
+ * missing an audio manifest. Log-only failures: one lesson's failure never
+ * aborts the batch.
+ */
+export async function runBatchNarration(): Promise<void> {
+  const pending = await listPendingLessonDocuments();
+  console.log(`[audiogen] batch narration: ${pending.length} lesson_documents pending`);
+
+  for (const row of pending) {
+    try {
+```
+
+### audiogen/src/concurrency/pool.ts
+
+```
+/** Runs `tasks` with at most `concurrency` in flight; each task's own errors are caught by the caller. */
+export async function runPool<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let cursor = 0;
+
+  async function runNext(): Promise<void> {
+    const index = cursor;
+    cursor += 1;
+    if (index >= items.length) return;
+    const item = items[index];
+    if (item !== undefined) {
+      results[index] = await worker(item, index);
+    }
+    return runNext();
+  }
+```
+
+### audiogen/src/db/lessonDocumentsRepo.ts
+
+```
+import { getConfig } from '../env.js';
+import type { LessonDocument, LessonLocale } from '../types/lessonDocument.js';
+
+/*
+ * Service-role PostgREST access to `lesson_documents` — mirrors
+ * backend/src/services/supabaseRest.ts's asServiceRole() pattern (writes
+ * reserved to the service role; Echo never reads on behalf of a user).
+ *
+ * Schema: database/migrations/0007_course_hierarchy.sql —
+ *   lesson_documents(lesson_id uuid, locale text, schema_version int,
+ *                     document jsonb, answer_keys jsonb, audio jsonb,
+ *                     updated_at) PRIMARY KEY (lesson_id, locale)
+ * No SELECT RLS policy exists on this table BY DESIGN (0007's comment: a
+ * "published chain" policy would still expose `answer_keys` on the same
+ * row) — only the service role can read it, which is exactly what this
+```
+
+### audiogen/src/env.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env validated once at boot (agent/core/CONVENTIONS.md). Tests set
+ * process.env in test-setup before the first getConfig() call.
+ *
+ * Voice defaults below are PLACEHOLDER per-locale voices for Qwen3-TTS
+ * (qwen3-tts-flash). Final CHARACTER voices (Dina/Dino/Rho/Zara, per
+ * locale) land later via a voice map keyed by CharacterId — see README.md
+ * "Voice map" section and AGENTS.md.
+ */
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4002),
+
+  // Service-to-service auth (/AGENTS.md §1.5).
+```
+
+### audiogen/src/filebase/client.ts
+
+```
+/*
+ * Client for the filebase (Filebase) internal upload contract:
+ *   POST {FILEBASE_URL}/api/v1/files  multipart(file, bucket, visibility)
+ *   header: x-internal-api-key: {FILEBASE_INTERNAL_KEY}
+ *   → { data: { id: '<bucket>/<sha256>.<ext>', url, bytes, mime, deduplicated } }
+ * Public GET at {FILEBASE_URL}/files/<id>.
+ *
+ * NOTE: filebase source is intentionally NOT read/modified here — this
+ * module codes strictly against the contract above (confirmed FINISHED,
+ * header corrected to x-internal-api-key).
+ */
+
+export class FilebaseError extends Error {
+  constructor(message: string) {
+    super(message);
 ```
 
 ### audiogen/src/index.ts
 
 ```
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './env.js';
+import { runBatchNarration } from './batch.js';
 
-const port = Number(process.env.PORT ?? 4002);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+const config = getConfig();
+
+createApp().listen(config.PORT, () => {
+  console.log(`[${SERVICE}] listening on :${config.PORT}`);
 });
+
+// Batch narration is OPERATOR-OPT-IN (paid API calls) — never runs by default.
+if (config.AUDIOGEN_RUN_ON_START) {
+  runBatchNarration().catch((err) => {
+    console.error('[audiogen] AUDIOGEN_RUN_ON_START batch failed:', err);
+  });
+```
+
+### audiogen/src/narrate/extractNarratables.ts
+
+```
+import type {
+  CheckpointPayload,
+  ConceptRevealPayload,
+  KeyIdeasPayload,
+  LessonDocument,
+  LessonSegment,
+  StoryDialoguePayload,
+  StoryScenePayload,
+} from '../types/lessonDocument.js';
+import { stripMarkdown } from './stripMarkdown.js';
+import type { NarrationUnit } from './types.js';
+
+/*
+ * Walks a LessonDocument and returns the ORDERED narratable units
+ * (LESSON_ENGINE.md §12): `prompt_md` on every segment; the `story` family's
+```
+
+### audiogen/src/narrate/stripMarkdown.ts
+
+```
+/*
+ * Strips MarkdownLite syntax (LESSON_ENGINE.md §8: **bold**, *italic*, `code`,
+ * line breaks, "- " lists — nothing else is valid) down to plain narration
+ * text for TTS. Mirrors what frontend/src/lesson-engine/core/MarkdownLite.tsx
+ * renders visually, but flattens to prose instead of DOM nodes.
+ */
+export function stripMarkdown(text: string): string {
+  const lines = text.split(/\r?\n/);
+  const sentences: string[] = [];
+
+  for (const rawLine of lines) {
+    const trimmed = rawLine.trim();
+    if (trimmed.length === 0) continue;
+    const isListItem = trimmed.startsWith('- ');
+    const body = isListItem ? trimmed.slice(2) : trimmed;
+```
+
+### audiogen/src/narrate/types.ts
+
+```
+import { createHash } from 'node:crypto';
+
+/** One ordered narratable unit extracted from a LessonDocument (LESSON_ENGINE.md §12). */
+export interface NarrationUnit {
+  /** Deterministic id: `${segment_id}.${field}`. */
+  unit_id: string;
+  segment_id: string;
+  /** e.g. 'prompt' | 'explanation' | 'body' | 'recap' | 'line.0' | 'idea.1' | 'card.2.back'. */
+  field: string;
+  /** Plain narration text — MarkdownLite already stripped. */
+  text: string;
+}
+
+/** Idempotency key: sha256(text + voice + model). Unchanged text/voice/model → reused. */
+export function contentHash(text: string, voice: string, model: string): string {
+```
+
+### audiogen/src/narrateAll.ts
+
+```
+// Manual trigger: `npm run narrate:all` — same batch as AUDIOGEN_RUN_ON_START,
+// runnable on demand without restarting the service. Operator-opt-in, paid.
+import { runBatchNarration } from './batch.js';
+
+runBatchNarration()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error('[audiogen] narrate:all failed:', err);
+    process.exit(1);
+  });
+```
+
+### audiogen/src/routes/audio.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { narrateLesson, type NarrateLessonDeps } from '../service/lessonAudio.js';
+import { narrateSegment, type NarrateSegmentDeps } from '../service/segmentAudio.js';
+import { getLessonDocument } from '../db/lessonDocumentsRepo.js';
+
+const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
+
+const NarrateLessonBody = z.object({
+  lesson_id: z.string().min(1),
+  locale: z.enum(LOCALES),
+});
+
+const NarrateSegmentBody = z.object({
+  text: z.string().min(1).max(4000),
+```
+
+### audiogen/src/service/lessonAudio.ts
+
+```
+import { downloadWav, synthesizeSpeech } from '../tts/dashscopeClient.js';
+import { getConfig, defaultVoiceFor, languageTypeFor, type LessonLocale } from '../env.js';
+import { uploadFile } from '../filebase/client.js';
+import {
+  getLessonDocument,
+  patchLessonDocumentAudio,
+  type AudioUnitEntry,
+  type LessonAudioManifest,
+} from '../db/lessonDocumentsRepo.js';
+import { extractNarratables } from '../narrate/extractNarratables.js';
+import { contentHash } from '../narrate/types.js';
+import { encodeMp3 } from '../tts/mp3.js';
+import { parseWav } from '../tts/wav.js';
+import { runPool } from '../concurrency/pool.js';
+import type { LessonDocument } from '../types/lessonDocument.js';
+```
+
+### audiogen/src/service/segmentAudio.ts
+
+```
+import { downloadWav, synthesizeSpeech } from '../tts/dashscopeClient.js';
+import { getConfig, defaultVoiceFor, languageTypeFor, type LessonLocale } from '../env.js';
+import { uploadFile } from '../filebase/client.js';
+import { encodeMp3 } from '../tts/mp3.js';
+import { parseWav } from '../tts/wav.js';
+import { stripMarkdown } from '../narrate/stripMarkdown.js';
+
+export interface NarrateSegmentResult {
+  file_id: string;
+  url: string;
+}
+
+export interface NarrateSegmentDeps {
+  synthesizeSpeech: typeof synthesizeSpeech;
+  downloadWav: typeof downloadWav;
+```
+
+### audiogen/src/test-setup.ts
+
+```
+// Test env — env.ts validates at first getConfig() call.
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
+process.env.TTS_API_KEY ??= 'test-tts-key';
+process.env.SUPABASE_URL ??= 'http://localhost:8000';
+process.env.SUPABASE_SERVICE_ROLE_KEY ??= 'test-service-role-key-0123456789';
+process.env.FILEBASE_URL ??= 'http://localhost:4006';
+process.env.FILEBASE_INTERNAL_KEY ??= 'test-filebase-key-0123456789';
+```
+
+### audiogen/src/tts/backoff.ts
+
+```
+/** 429/5xx are transient — everything else (400s, network parse errors) is not. */
+export function isRetryableStatus(status: number): boolean {
+  return status === 429 || (status >= 500 && status < 600);
+}
+
+const MIN_MS = 500;
+const MAX_MS = 8000;
+
+/**
+ * Jittered exponential backoff, 0.5s–8s, for attempt 1..N (1-indexed).
+ * `rand` is injectable so tests can assert bounds deterministically.
+ */
+export function computeBackoffMs(attempt: number, rand: () => number = Math.random): number {
+  const exp = Math.min(MAX_MS, MIN_MS * 2 ** (attempt - 1));
+  const jitter = MIN_MS + rand() * (exp - MIN_MS || 1);
+```
+
+### audiogen/src/tts/dashscopeClient.ts
+
+```
+import { computeBackoffMs, isRetryableStatus } from './backoff.js';
+import { TtsError } from './errors.js';
+
+export interface SynthesizeInput {
+  text: string;
+  voice: string;
+  languageType: string;
+}
+
+export interface DashscopeClientOptions {
+  apiUrl: string;
+  apiKey: string;
+  model: string;
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+```
+
+### audiogen/src/tts/errors.ts
+
+```
+/** Typed TTS failures — never leak raw provider payloads to callers/logs. */
+export class TtsError extends Error {
+  constructor(
+    public readonly code: 'TTS_TIMEOUT' | 'TTS_RATE_LIMITED' | 'TTS_PROVIDER_ERROR' | 'TTS_BAD_RESPONSE' | 'TTS_DOWNLOAD_FAILED',
+    message: string,
+  ) {
+    super(message);
+    this.name = 'TtsError';
+  }
+}
+```
+
+### audiogen/src/tts/mp3.ts
+
+```
+import { Mp3Encoder } from '@breezystack/lamejs';
+import type { DecodedWav } from './wav.js';
+
+const SAMPLES_PER_FRAME = 1152; // lamejs encodes in fixed-size chunks
+
+/** Encodes decoded mono PCM16 to a small mono MP3 Buffer at `bitrateKbps`. */
+export function encodeMp3(wav: DecodedWav, bitrateKbps: number): Buffer {
+  const encoder = new Mp3Encoder(1, wav.sampleRate, bitrateKbps);
+  const chunks: Uint8Array[] = [];
+
+  for (let i = 0; i < wav.samples.length; i += SAMPLES_PER_FRAME) {
+    const chunk = wav.samples.subarray(i, i + SAMPLES_PER_FRAME);
+    const encoded = encoder.encodeBuffer(chunk);
+    if (encoded.length > 0) chunks.push(encoded);
+  }
+```
+
+### audiogen/src/tts/wav.ts
+
+```
+/*
+ * Minimal RIFF/WAVE parser for the PCM 16-bit WAVs DashScope returns
+ * (24kHz mono per the provider spec, but parsed generically — including
+ * stereo downmix — so Echo doesn't silently mis-decode a provider change).
+ */
+
+export class WavParseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'WavParseError';
+  }
+}
+
+export interface DecodedWav {
+  sampleRate: number;
+```
+
+### audiogen/src/types/lessonDocument.ts
+
+```
+/*
+ * Structural copy of the CLIENT-SAFE LessonDocument contract — LESSON_ENGINE.md
+ * §3, §5.1, §12. Per the "no workspaces" convention (§3: "Core imports this
+ * contract [as a] copy, validated by tests — no workspaces"), Echo keeps its
+ * own narrow mirror instead of importing frontend/src/lesson-engine directly.
+ *
+ * Echo never receives answer keys — this mirror intentionally omits `answer`.
+ * Only the shapes Echo actually reads (envelope + the 5 `story` family
+ * payloads, per §12) are modeled; other families' payloads are read as opaque
+ * `Record<string, unknown>` since Echo never narrates into them beyond the
+ * shared envelope fields (`prompt_md`, `explanation_md`).
+ */
+
+export type LessonLocale = 'en-US' | 'es-MX' | 'pt-BR';
+
 ```
 
 ### audiogen/tsconfig.json
@@ -1072,6 +1683,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
   },
 });
 ```
@@ -1111,9 +1723,9 @@ npm install
 cp .env.example .env   # fill values (local Supabase secrets live in database/supabase/docker/.env)
 npm run dev
 npm test
+npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity gate
 ```
 
-## Routes
 ```
 
 ### backend/eslint.config.js
@@ -1145,11 +1757,31 @@ export default tseslint.config(
     "node": "24.x"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
+```
+
+### backend/scripts/contract-check.ts
+
+```
+#!/usr/bin/env -S npx tsx
+// contract:check — the no-workspaces parity gate for backend/src/lesson-contract/
+// (AGENTS.md §1.2: "8 independent npm packages — no workspaces" means Core
+// cannot import frontend/src/lesson-engine directly, so the pure grading
+// modules are COPIED under backend/src/lesson-contract/ instead). This script
+// diffs each copy against its frontend original so the two never silently
+// drift — run it whenever either side changes.
+//
+// Two comparison modes:
+//  1. Full-file parity (core/scoring.ts, families/*/grade.ts): these are
+//     meant to be verbatim copies save for import specifiers (backend's
+//     NodeNext ESM requires the `.js` extension the frontend bundler doesn't
+//     use). Normalizing strips import lines + whitespace, then compares.
+//  2. Symbol parity (core/types.ts): that file is a DELIBERATELY TRIMMED
+//     subset of the frontend original (the React/ComponentType registry
 ```
 
 ### backend/src/__tests__/auth.test.ts
@@ -1170,6 +1802,46 @@ const SESSION = {
 afterEach(() => vi.unstubAllGlobals());
 
 function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
+```
+
+### backend/src/__tests__/courseTree.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { assembleCourseTree, findLessonNode, summarizeCourseTree } from '../services/courseTree.js';
+
+const course = { id: 'course-1', slug: 'financial-education', title: { 'en-US': 'FinEd' }, description: {}, subject: 'money' };
+
+const adventures = [
+  { id: 'a1', course_id: 'course-1', position: 1, slug: 'adventure-1', title: {}, description: {}, theme: 'archipelago' },
+  { id: 'a2', course_id: 'course-1', position: 2, slug: 'adventure-2', title: {}, description: {}, theme: 'forest' },
+];
+
+const sagas = [
+  { id: 's1', adventure_id: 'a1', position: 1, slug: 'saga-1', title: {}, icon: 'auto_stories' },
+  { id: 's2', adventure_id: 'a2', position: 1, slug: 'saga-2', title: {}, icon: 'auto_stories' },
+];
+
+```
+
+### backend/src/__tests__/fakePostgrest.ts
+
+```
+/*
+ * A minimal in-memory PostgREST stand-in for tests that exercise
+ * routes/learn.ts end to end (it makes many sequential REST calls per
+ * request — course-chain walks, tree assembly, attempts, progress, stats —
+ * hand-sequencing every fetch() call per test would be unreadable). Supports
+ * just enough of the query-string dialect services/supabaseRest.ts actually
+ * emits: `eq.`, `in.(...)`, `select=` / `order=` / `on_conflict=` (ignored
+ * for filtering), plus GET/POST/PATCH.
+ */
+
+export type FakeRow = Record<string, unknown>;
+export type FakeDb = Record<string, FakeRow[]>;
+
+function matchesFilters(row: FakeRow, params: URLSearchParams): boolean {
+  for (const [key, value] of params.entries()) {
 ```
 
 ### backend/src/__tests__/health.test.ts
@@ -1215,21 +1887,61 @@ export function mintToken(overrides: Partial<{ sub: string; email: string; role:
 ### backend/src/__tests__/learn.test.ts
 
 ```
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { mintToken } from './helpers.js';
+import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+import { COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
 
-afterEach(() => vi.unstubAllGlobals());
+let db: FakeDb;
+let userId: string;
+let token: string;
 
-describe('GET /api/v1/learn/courses', () => {
-  it('401s without a session', async () => {
-    const res = await request(createApp()).get('/api/v1/learn/courses');
-    expect(res.status).toBe(401);
+beforeEach(() => {
+  userId = 'user-11111111-1111-1111-1111-111111111111';
+  token = mintToken({ sub: userId });
+  db = makeDb(userId);
+```
+
+### backend/src/__tests__/learnFixtures.ts
+
+```
+import type { FakeDb } from './fakePostgrest.js';
+
+/*
+ * A tiny published course-hierarchy fixture (1 course -> 1 adventure -> 1
+ * saga -> 1 topic -> 2 lessons) used by the /api/v1/learn HTTP tests.
+ * lesson-1 carries a graded quiz_mcq segment with a REAL answer key so
+ * grading/completion can be exercised end to end.
+ */
+
+export const COURSE_ID = 'course-1';
+export const ADVENTURE_ID = 'adventure-1';
+export const SAGA_ID = 'saga-1';
+export const TOPIC_ID = 'topic-1';
+export const LESSON_1_ID = 'lesson-1';
+export const LESSON_2_ID = 'lesson-2';
+```
+
+### backend/src/__tests__/lessonDocument.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
+
+const rows = [
+  { lesson_id: 'l1', locale: 'en-US', schema_version: 1, document: { locale: 'en-US' }, answer_keys: {} },
+  { lesson_id: 'l1', locale: 'es-MX', schema_version: 1, document: { locale: 'es-MX' }, answer_keys: {} },
+  { lesson_id: 'l1', locale: 'pt-BR', schema_version: 1, document: { locale: 'pt-BR' }, answer_keys: {} },
+];
+
+describe('pickLessonLocale', () => {
+  it("picks the caller's locale when present", () => {
+    expect(pickLessonLocale(rows, 'pt-BR')?.locale).toBe('pt-BR');
   });
 
-  it('lists published courses with lesson counts (user-token RLS read)', async () => {
-    const token = mintToken();
+  it('falls back to es-MX (authoring locale) when the caller locale row is missing', () => {
 ```
 
 ### backend/src/__tests__/profile.test.ts
@@ -1250,6 +1962,46 @@ const PROFILE_ROW = {
   birth_date: '1990-05-01',
   created_at: '2026-07-12T00:00:00Z',
 };
+```
+
+### backend/src/__tests__/streak.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { nextStreak } from '../services/streak.js';
+
+const NOW = new Date('2026-07-12T18:00:00.000Z');
+
+describe('nextStreak', () => {
+  it('increments when the last update was yesterday', () => {
+    expect(nextStreak('2026-07-11T09:00:00.000Z', 3, NOW)).toBe(4);
+  });
+
+  it('does not double-increment when already updated today', () => {
+    expect(nextStreak('2026-07-12T08:00:00.000Z', 3, NOW)).toBe(3);
+  });
+
+  it('starts a first-ever streak at 1, even if the row was created today with streak_days=0', () => {
+```
+
+### backend/src/__tests__/unlockRules.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { computeAdventureState, computeLessonStates, progressOf } from '../services/unlockRules.js';
+
+describe('computeLessonStates', () => {
+  it('marks passed lessons as passed, the first non-passed as current, and everything after as locked', () => {
+    const lessons = [{ id: 'l1' }, { id: 'l2' }, { id: 'l3' }, { id: 'l4' }];
+    const { states, currentLessonId } = computeLessonStates(lessons, new Set(['l1', 'l2']));
+    expect(states.get('l1')).toBe('passed');
+    expect(states.get('l2')).toBe('passed');
+    expect(states.get('l3')).toBe('current');
+    expect(states.get('l4')).toBe('locked');
+    expect(currentLessonId).toBe('l3');
+  });
+
+  it('marks the very first lesson current when nothing is passed yet', () => {
 ```
 
 ### backend/src/__tests__/verification.test.ts
@@ -1322,6 +2074,206 @@ const { PORT } = getConfig();
 createApp().listen(PORT, () => {
   console.log(`[${SERVICE}] listening on :${PORT}`);
 });
+```
+
+### backend/src/lesson-contract/core/scoring.ts
+
+```
+// Pure scoring helpers — LESSON_ENGINE.md §6.
+// Dependency-free on purpose: Core will reuse these server-side when the
+// content-schema session lands. Keep every function pure and numerically tested.
+
+export function clampScore(n: number): number {
+  if (Number.isNaN(n)) return 0
+  return Math.max(0, Math.min(100, Math.round(n)))
+}
+
+export function binary(condition: boolean): number {
+  return condition ? 100 : 0
+}
+
+export function ratio(hits: number, total: number): number {
+  if (total <= 0) return 0
+```
+
+### backend/src/lesson-contract/core/types.ts
+
+```
+// Lesson Engine contract types — TRIMMED, SERVER-SIDE COPY.
+//
+// Source of truth: frontend/src/lesson-engine/core/types.ts (LESSON_ENGINE.md
+// §3, §6, §7). This file exists because the platform has NO shared-package
+// workspace (/AGENTS.md §1.2 — "8 independent npm packages, no workspaces"):
+// Core needs the same grading contract the frontend engine and dev harness
+// use, so the pure (non-React) parts are copied here instead of re-derived.
+//
+// PARITY CONTRACT: `VerdictTier`, `Verdict`, `GradeMeta`, `Grader`,
+// `GradeOutcome`, `FamilyGrader`, `tierFor` and `verdictFrom` must stay
+// byte-for-byte identical (modulo import lines/whitespace) to the frontend
+// original — enforced by `npm run contract:check`
+// (backend/scripts/contract-check.ts). Never hand-edit those symbols here
+// without mirroring the edit in frontend/src/lesson-engine/core/types.ts in
+// the SAME commit.
+```
+
+### backend/src/lesson-contract/families/analyze/grade.ts
+
+```
+// `analyze` family — pure validators (LESSON_ENGINE.md §5.6, §6).
+// Malformed answers → score 0, never throw. Tier microcopy is the UI's job (i18n).
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { decisionAccuracy, jaccard, positional, ratio, signalDetection } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function strArray(v: unknown): string[] | null {
+  return Array.isArray(v) && v.every((x) => typeof x === 'string') ? (v as string[]) : null
+}
+```
+
+### backend/src/lesson-contract/families/arrange/grade.ts
+
+```
+// `arrange` family — pure validators (LESSON_ENGINE.md §5.4, §6).
+// Malformed answers → score 0, never throw. All partial credit uses the shared
+// scoring helpers (kendall, footrule, positional, ratio, linearFalloff).
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { footrule, kendall, linearFalloff, positional, ratio } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function num(v: unknown): number | null {
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
+```
+
+### backend/src/lesson-contract/families/choice/grade.ts
+
+```
+// `choice` family — pure validators (LESSON_ENGINE.md §5.2, §6).
+// Malformed answers → score 0, never throw. feedback_md comes from authored
+// content (per-distractor rationale); tier microcopy is the UI's job (i18n).
+
+import type { FamilyGrader, GradeOutcome, SegmentBase } from '../../core/types.js'
+import { binary, calibration, decisionAccuracy, signalDetection } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### backend/src/lesson-contract/families/input/grade.ts
+
+```
+// `input` family — pure validators (LESSON_ENGINE.md §5.3, §6).
+// Malformed answers → score 0, never throw. All helpers are dependency-free so
+// Core can reuse them server-side.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { fuzzyEquals, keywordCoverage, linearFalloff, ratio, toleranceBands } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### backend/src/lesson-contract/families/maker/grade.ts
+
+```
+// `maker` family — pure validators (LESSON_ENGINE.md §5.8, §6).
+// Malformed answers → score 0, never throw. robot_path re-simulates the
+// submitted program authoritatively; the renderer reuses the same simulator
+// so what the kid watched IS what gets graded.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { binary, decisionAccuracy, kendall, sumEquals, toleranceBands } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+```
+
+### backend/src/lesson-contract/families/money/grade.ts
+
+```
+// `money` family — pure validators (LESSON_ENGINE.md §5.5, §6).
+// Malformed answers → score 0, never throw. This module is react-free: any
+// currency FORMATTING happens in the components (Intl); here we only compute
+// numbers and put them in `reveal` for the renderer to localize.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { binary, decisionAccuracy, ratio, sumEquals, toleranceBands, allocationRanges } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+```
+
+### backend/src/lesson-contract/families/storyplay/grade.ts
+
+```
+// `storyplay` family — pure validators (LESSON_ENGINE.md §5.7, §6).
+// Malformed answers → score 0, never throw. Qualities/reactions come from the
+// server-only answer key; the client sends only the walked path/replies/pairs.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
+import { clampScore, meanQuality, ratio } from '../../core/scoring.js'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### backend/src/lesson-contract/registry.ts
+
+```
+// Server-side grader registry — mirrors frontend/src/lesson-engine/registry.ts's
+// GRADERS composition (families only; no components/registry entries, Core
+// never renders anything). `story` is intentionally absent: its 5 types are
+// ungraded content (LESSON_ENGINE.md §5.1) and never reach the grade endpoint.
+
+import type { FamilyGrader } from './core/types.js';
+import { choiceGraders } from './families/choice/grade.js';
+import { inputGraders } from './families/input/grade.js';
+import { arrangeGraders } from './families/arrange/grade.js';
+import { moneyGraders } from './families/money/grade.js';
+import { analyzeGraders } from './families/analyze/grade.js';
+import { storyplayGraders } from './families/storyplay/grade.js';
+import { makerGraders } from './families/maker/grade.js';
+
+export const GRADERS: Record<string, FamilyGrader> = {
 ```
 
 ### backend/src/lib/http.ts
@@ -1424,20 +2376,20 @@ import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRe
 
 ```
 import { Router } from 'express';
+import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { getPublishedCourses } from '../services/supabaseRest.js';
-
-/*
- * /api/v1/learn — the learn section's read surface. Deliberately shallow
- * while 0002's content schema is PROVISIONAL (database/AGENTS.md): list
- * published courses, nothing deeper. RLS does the filtering (user token).
- */
-export function learnRouter(): Router {
-  const router = Router();
-
-  router.get('/courses', requireAuth, async (_req, res) => {
-    const rows = await getPublishedCourses(authedUser(res).accessToken);
+import { GRADERS } from '../lesson-contract/registry.js';
+import { verdictFrom } from '../lesson-contract/core/types.js';
+import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
+import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
+import { nextStreak } from '../services/streak.js';
+import {
+  countSegmentAttempts,
+  getAdventureById,
+  getAdventuresByCourseIds,
+  getFullOwnProfile,
+  getLearningStatsForUpdate,
 ```
 
 ### backend/src/routes/profile.ts
@@ -1480,6 +2432,26 @@ import {
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
 ```
 
+### backend/src/services/courseTree.ts
+
+```
+import { computeAdventureState, computeLessonStates, progressOf, type LessonState } from './unlockRules.js';
+
+/*
+ * Pure assembly of the COURSE_ENGINE.md §2 hierarchy
+ * (courses → adventures → sagas → topics → lessons) plus per-user unlock
+ * state, from already-fetched rows. No I/O here — routes/learn.ts fetches
+ * rows via services/supabaseRest.ts and hands them to this module, which
+ * keeps the shaping/unlock logic unit-testable without mocking fetch.
+ */
+
+type Json = Record<string, unknown>;
+
+export interface CourseRowLite {
+  id: string;
+  slug: string;
+```
+
 ### backend/src/services/gotrue.ts
 
 ```
@@ -1500,6 +2472,46 @@ export interface GotrueUser {
 }
 ```
 
+### backend/src/services/lessonDocument.ts
+
+```
+import type { LessonDocumentRow } from './supabaseRest.js';
+
+/*
+ * Pure helpers around a lesson_documents row — locale selection, the
+ * answer-key stripper, and assembling a gradeable segment. No I/O here
+ * (routes/learn.ts fetches rows via services/supabaseRest.ts) so this stays
+ * unit-testable with plain fixtures.
+ */
+
+type Json = Record<string, unknown>;
+
+/** Caller's profile locale → es-MX (authoring locale) → whatever's there (LESSON_ENGINE.md §3, COURSE_ENGINE.md §4 "es-MX is the authoring locale"). */
+export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocale: string | null | undefined): LessonDocumentRow | null {
+  if (rows.length === 0) return null;
+  const byLocale = new Map(rows.map((r) => [r.locale, r]));
+```
+
+### backend/src/services/streak.ts
+
+```
+/*
+ * Pure streak computation for POST /learn/lessons/:id/complete.
+ *
+ * DOCUMENTED LIMITATION: no schema change was in scope for this session, so
+ * there is no dedicated "last activity date" column — `learning_stats` has
+ * no other writer than this endpoint (0006: system-written only, no client
+ * INSERT/UPDATE), so its `updated_at` doubles as a reasonably faithful proxy
+ * for "the last day the learner passed a lesson". A future session that adds
+ * a real `last_active_date` column should replace this proxy.
+ */
+export function nextStreak(lastUpdatedAt: string, currentStreakDays: number, now: Date = new Date()): number {
+  const dateOnly = (d: Date): string => d.toISOString().slice(0, 10);
+  const today = dateOnly(now);
+  const yesterday = dateOnly(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+  const lastDate = dateOnly(new Date(lastUpdatedAt));
+```
+
 ### backend/src/services/supabaseRest.ts
 
 ```
@@ -1518,6 +2530,26 @@ interface RestInit {
   headers?: Record<string, string>;
   body?: string;
 }
+```
+
+### backend/src/services/unlockRules.ts
+
+```
+/*
+ * Pure unlock-rule computation — COURSE_ENGINE.md §2: "the course-tree
+ * endpoint returns locked/available/current/passed per node. No client
+ * re-derivation." Core is the SINGLE SOURCE OF TRUTH for this; the frontend
+ * only ever renders whatever state this module computes.
+ *
+ * Kept dependency-free and side-effect-free on purpose (no PostgREST/fetch
+ * here) so it is unit-testable with plain fixtures — see
+ * src/__tests__/unlockRules.test.ts.
+ *
+ * State-assignment precedence (per lesson, walking the GLOBAL order —
+ * adventure.position, saga.position, topic.position, lesson.position):
+ *   1. `lesson_progress.passed === true`             → 'passed'
+ *   2. it is the first non-passed lesson encountered  → 'current'
+ *   3. it comes BEFORE that first non-passed lesson    → 'available'
 ```
 
 ### backend/src/test-setup.ts
@@ -1572,18 +2604,18 @@ export default defineConfig({
 # AGENTS.md — coursegen (Forge)
 
 > Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+> **Engine spec (authoritative for the pipeline):** [/COURSE_ENGINE.md](../COURSE_ENGINE.md). Content contract (authoritative for what Forge generates): [/LESSON_ENGINE.md](../LESSON_ENGINE.md).
 
 ## Mission
 
-Generates courses and lessons for learn/ using **DeepSeek + Qwen**. Internal service — reachable only with `INTERNAL_API_KEY`.
+Generates courses and lessons for learn/ using **DeepSeek + Qwen**. Two things live in this package:
 
-## Intended shape (engine spec `COURSE_ENGINE.md` — planned)
+1. An Express `/health` service (internal, reachable only with `INTERNAL_API_KEY` — currently just the health envelope; not yet called service-to-service by anything).
+2. **Forge**, a CLI pipeline (`npm run generate`) that turns a curated curriculum catalog into published `LessonDocument`s in Vault. Forge is **operator-triggered only** — never run by CI or any automatic process (/AGENTS.md sign-off rule, `agent/core/BOUNDARIES.md` #8).
 
-A map-reduce pipeline with **checkpoint/resume** and safe failure:
-`survey → plan → scaffold → lessons → resources → finalize`.
-Each stage's output is Zod-validated before the next stage runs; a malformed AI response fails the stage, not the run.
+## Pipeline shape (implemented — see `/COURSE_ENGINE.md` §4 for the full spec)
 
-## Invariants that bite here
+```
 ```
 
 ### coursegen/README.md
@@ -1591,19 +2623,239 @@ Each stage's output is Zod-validated before the next stage runs; a malformed AI 
 ```
 # coursegen (Forge)
 
-> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md). Pipeline spec: [/COURSE_ENGINE.md](../COURSE_ENGINE.md). Content contract: [/LESSON_ENGINE.md](../LESSON_ENGINE.md).
 
-**Mission:** Course & lesson generation pipeline (DeepSeek + Qwen) for the learn/ section.
+**Mission:** Course & lesson generation pipeline (DeepSeek + Qwen) for the learn/ section, plus a minimal internal `/health` service.
 **Port (dev):** 4001 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
 
 ```bash
 npm install
 cp .env.example .env
-npm run dev
+npm run dev        # Express /health service
 npm test
 ```
 
 ## Routes
+```
+
+### coursegen/curriculum/financial-education/adventures/01-archipielago-del-trueque.yaml
+
+```
+schema_version: 1
+
+adventure:
+  position: 1
+  slug: archipielago-del-trueque
+  theme: archipelago
+  age_tier: tier1
+  title:
+    en-US: "The Archipelago of Trade"
+    es-MX: "El Archipiélago del Trueque"
+    pt-BR: "O Arquipélago da Troca"
+  description:
+    en-US: "Sail between tiny islands to discover what wants are, why trading things is tricky, and how coins were born."
+    es-MX: "Navega entre islitas para descubrir qué son los deseos, por qué cambiar cosas es difícil y cómo nacieron las monedas."
+    pt-BR: "Navegue entre ilhotas para descobrir o que são desejos, por que trocar coisas é difícil e como nasceram as moedas."
+```
+
+### coursegen/curriculum/financial-education/adventures/02-bosque-de-la-abundancia.yaml
+
+```
+schema_version: 1
+
+adventure:
+  position: 2
+  slug: bosque-de-la-abundancia
+  theme: forest
+  age_tier: tier1
+  title:
+    en-US: "The Forest of Plenty"
+    es-MX: "El Bosque de la Abundancia"
+    pt-BR: "A Floresta da Abundância"
+  description:
+    en-US: "The crew discovers that effort and small jobs turn into coins — and that earning feels good."
+    es-MX: "La tripulación descubre que el esfuerzo y las pequeñas chambitas se convierten en monedas, y que ganarlas se siente bien."
+    pt-BR: "A tripulação descobre que o esforço e pequenas tarefinhas se transformam em moedas, e que ganhá-las é gratificante."
+```
+
+### coursegen/curriculum/financial-education/adventures/03-aldea-del-ahorro.yaml
+
+```
+schema_version: 1
+
+adventure:
+  position: 3
+  slug: aldea-del-ahorro
+  theme: valley
+  age_tier: tier1
+  title:
+    en-US: "The Savings Village"
+    es-MX: "La Aldea del Ahorro"
+    pt-BR: "A Vila da Poupança"
+  description:
+    en-US: "In a peaceful valley, the crew learns to set goals, wait with patience, and keep their coins safe."
+    es-MX: "En un valle tranquilo, la tripulación aprende a ponerse metas, esperar con paciencia y cuidar sus monedas."
+    pt-BR: "Em um vale tranquilo, a tripulação aprende a criar metas, esperar com paciência e cuidar de suas moedas."
+```
+
+### coursegen/curriculum/financial-education/adventures/04-mercado-de-los-colores.yaml
+
+```
+schema_version: 1
+
+adventure:
+  position: 4
+  slug: mercado-de-los-colores
+  theme: city
+  age_tier: tier1
+  title:
+    en-US: "The Market of Colors"
+    es-MX: "El Mercado de los Colores"
+    pt-BR: "O Mercado das Cores"
+  description:
+    en-US: "In a bustling market city, the crew learns to tell needs from wants, compare prices, and shop within a limit."
+    es-MX: "En una ciudad de mercado lleno de color, la tripulación aprende a distinguir necesidades de deseos, comparar precios y comprar dentro de un límite."
+    pt-BR: "Em uma cidade de mercado cheia de cores, a tripulação aprende a distinguir necessidades de desejos, comparar preços e comprar dentro de um limite."
+```
+
+### coursegen/curriculum/financial-education/adventures/05-taller-de-los-inventores.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 5
+  slug: taller-de-los-inventores
+  theme: valley
+  age_tier: tier1
+  title:
+    en-US: The Inventors' Workshop
+    es-MX: El Taller de los Inventores
+    pt-BR: A Oficina dos Inventores
+  description:
+    en-US: Dina and Dino discover a magical workshop where ideas become inventions, fair prices, and happy
+      sales.
+    es-MX: Dina y Dino descubren un taller mágico donde las ideas se convierten en inventos, precios justos
+      y ventas felices.
+```
+
+### coursegen/curriculum/financial-education/adventures/06-faro-de-la-confianza.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 6
+  slug: faro-de-la-confianza
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Lighthouse of Trust
+    es-MX: El Faro de la Confianza
+    pt-BR: O Farol da Confiança
+  description:
+    en-US: Across a chain of islands, Dina and Dino learn to spot tricks, fake messages, and keep their
+      information safe with help from Dr. Rho's lighthouse.
+    es-MX: En un archipiélago de islas, Dina y Dino aprenden a reconocer trampas, mensajes falsos y a
+      cuidar su información con la ayuda del faro de Dr. Rho.
+```
+
+### coursegen/curriculum/financial-education/adventures/07-jardin-compartido.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 7
+  slug: jardin-compartido
+  theme: forest
+  age_tier: tier2
+  title:
+    en-US: The Shared Garden
+    es-MX: El Jardín Compartido
+    pt-BR: O Jardim Compartilhado
+  description:
+    en-US: In a forest community garden, Dina and Dino discover the joy of giving, cooperating, and caring
+      together for what belongs to everyone.
+    es-MX: En un jardín comunitario del bosque, Dina y Dino descubren la alegría de dar, cooperar y cuidar
+      juntos lo que es de todos.
+```
+
+### coursegen/curriculum/financial-education/adventures/08-cosmos-del-manana.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 8
+  slug: cosmos-del-manana
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: Tomorrow's Cosmos
+    es-MX: El Cosmos del Mañana
+    pt-BR: O Cosmos do Amanhã
+  description:
+    en-US: Aboard Dr. Rho's ship, Dina, Dino, and Zara Vex revisit everything they've learned and build
+      their own founder plan for the future.
+    es-MX: A bordo de la nave de Dr. Rho, Dina, Dino y Zara Vex repasan todo lo aprendido y construyen
+      su propio plan de founder hacia el futuro.
+```
+
+### coursegen/curriculum/financial-education/catalog.yaml
+
+```
+schema_version: 1
+
+course:
+  slug: financial-education
+  subject: money
+  title:
+    en-US: "Financial Education"
+    es-MX: "Educación Financiera"
+    pt-BR: "Educação Financeira"
+  description:
+    en-US: "A two-year story adventure that teaches kids what money is, how to earn it, save it and spend it wisely."
+    es-MX: "Una aventura de dos años que enseña a los niños qué es el dinero, cómo ganarlo, ahorrarlo y gastarlo con inteligencia."
+    pt-BR: "Uma aventura de dois anos que ensina às crianças o que é o dinheiro, como ganhá-lo, poupá-lo e gastá-lo com inteligência."
+  authoring_locale: es-MX
+
+```
+
+### coursegen/curriculum/financial-education/facts.yaml
+
+```
+schema_version: 1
+
+# Canonical numeric ground truth (COURSE_ENGINE.md §3). Every number Forge
+# puts in a money exercise must either come from here or be pure arithmetic
+# the deterministic gate can re-verify. `verified: true` = safe to state as
+# fact (denominations, calendar math). `verified: false` = a REFERENCE value
+# for exercise flavor only — `enforce: false` means the gate must NOT treat
+# it as a hard-pinned constant (a "paleta" can cost $12 or $18 in different
+# lessons; only the ORDER OF MAGNITUDE and MXN-plausibility matter).
+#
+# NEVER-INVENTED: no precise regulatory/legal numbers (minimum ages for bank
+# products, tax brackets, interest rates) appear here. If a fact can't be
+# stated with confidence it is omitted, not guessed.
+
+facts:
+```
+
+### coursegen/curriculum/financial-education/taxonomy.yaml
+
+```
+schema_version: 1
+
+# Closed vocabulary for the financial-education course catalog.
+# Consumed by Forge (coursegen) as a HARD-FAIL gate (COURSE_ENGINE.md §3, §4):
+# the forbidden-vocabulary lists are checked against every generated string
+# (titles, concepts, objectives, prompts) for the matching age tier + locale.
+
+themes: [archipelago, forest, city, valley, kingdom, cosmos]
+
+age_tiers:
+  tier1:
+    ages: "6-7"
+    # Piaget-gate: no abstract financial jargon at this age. Concepts are
+    # taught only through concrete objects, stories and counted coins —
+    # never through the words below, in any locale.
 ```
 
 ### coursegen/eslint.config.js
@@ -1633,13 +2885,133 @@ export default tseslint.config(
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+```
+
+### coursegen/src/__tests__/catalog-loader.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { stringify } from 'yaml';
+import { loadCourseCatalog } from '../catalog/loader.js';
+
+function taxonomyFixture() {
+  return {
+    schema_version: 1,
+    themes: ['archipelago'],
+    age_tiers: {
+      tier1: { ages: '6-7', forbidden_vocabulary: { 'es-MX': ['préstamo'], 'en-US': ['loan'], 'pt-BR': ['empréstimo'] } },
+    },
+    families: ['story', 'choice', 'money'],
+```
+
+### coursegen/src/__tests__/checkpoint.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import {
+  CheckpointStore,
+  newRunCheckpoint,
+  getSlot,
+  setSlotState,
+  isSlotDone,
+} from '../pipeline/checkpoint.js';
+
+let dir: string;
+
+beforeEach(() => {
+```
+
+### coursegen/src/__tests__/corrective-retry.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { withCorrectiveRetry, CorrectiveRetryExhaustedError, safeJsonParse, formatZodIssues } from '../pipeline/correctiveRetry.js';
+
+describe('withCorrectiveRetry', () => {
+  it('succeeds on the first attempt when parsing succeeds', async () => {
+    const callModel = vi.fn().mockResolvedValue('{"ok":true}');
+    const result = await withCorrectiveRetry<{ ok: boolean }>({
+      maxAttempts: 3,
+      callModel,
+      parse: (raw) => {
+        const json = JSON.parse(raw) as { ok: boolean };
+        return { ok: true, data: json };
+      },
+    });
+    expect(result.data).toEqual({ ok: true });
+```
+
+### coursegen/src/__tests__/env.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { getConfig, resetConfigCache, requireGenerationKeys, requirePublishKeys } from '../env.js';
+
+const SNAPSHOT_KEYS = ['DEEPSEEK_API_KEY', 'QWEN_API_KEY', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] as const;
+let snapshot: Record<string, string | undefined>;
+
+beforeEach(() => {
+  snapshot = Object.fromEntries(SNAPSHOT_KEYS.map((k) => [k, process.env[k]]));
+  for (const k of SNAPSHOT_KEYS) delete process.env[k];
+  resetConfigCache();
+});
+
+afterEach(() => {
+  for (const k of SNAPSHOT_KEYS) {
+    if (snapshot[k] === undefined) delete process.env[k];
+```
+
+### coursegen/src/__tests__/fixtures.ts
+
+```
+// Shared test fixtures — NOT a test file itself (vitest only picks up
+// `*.test.ts`), just builders reused across the suite.
+
+import type { LessonDocumentParsed } from '../contract/schema.js';
+import type { TaxonomyFile, FactsFile } from '../catalog/schema.js';
+
+export function baseSegments() {
+  return [
+    {
+      id: 's1',
+      type: 'story_scene' as const,
+      prompt_md: 'Bienvenido a la aventura.',
+      difficulty: 1 as const,
+      xp: 0,
+      payload: { backdrop: 'base' as const, body_md: 'Había una vez una isla llena de monedas.' },
+```
+
+### coursegen/src/__tests__/gates.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  runContractGate,
+  runVocabularyGate,
+  runFactGate,
+  runArithmeticGate,
+  runRationaleAndCanonGate,
+  runAllGates,
+} from '../pipeline/gates.js';
+import { buildDocument, buildTaxonomy, buildFacts } from './fixtures.js';
+
+describe('gate 1: contract', () => {
+  it('accepts a valid document', () => {
+    const result = runContractGate(buildDocument());
+    expect(result.ok).toBe(true);
 ```
 
 ### coursegen/src/__tests__/health.test.ts
@@ -1662,6 +3034,226 @@ describe('GET /health', () => {
   it('unknown routes return the error envelope', async () => {
 ```
 
+### coursegen/src/__tests__/images.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { illustrateSegments } from '../pipeline/images.js';
+import { ProviderNotConfiguredError } from '../providers/errors.js';
+import { buildDocument } from './fixtures.js';
+
+function docWithPictureChoice() {
+  return buildDocument({
+    segments: [
+      ...buildDocument().segments,
+      {
+        id: 'pc1',
+        type: 'picture_choice',
+        prompt_md: 'Elige la moneda correcta.',
+        difficulty: 1,
+        xp: 10,
+```
+
+### coursegen/src/__tests__/localize.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { localizeLesson } from '../pipeline/localize.js';
+import { buildDocument, buildTaxonomy, buildFacts } from './fixtures.js';
+import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
+
+function makeIdentityTranslateMock() {
+  return vi.fn(async (req: ChatCompleteRequest): Promise<ChatCompleteResult> => {
+    const lastLine = req.messages[req.messages.length - 1]!.content.split('\n').pop()!;
+    const map = JSON.parse(lastLine) as Record<string, string>;
+    const translated: Record<string, string> = {};
+    for (const [k, v] of Object.entries(map)) translated[k] = `EN:${v}`;
+    return { content: JSON.stringify(translated), promptTokens: 5, completionTokens: 5 };
+  });
+}
+
+```
+
+### coursegen/src/__tests__/palette.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { PALETTE_GUIDE, PALETTE_EXAMPLES, resolveAllowedTypes, renderPalette } from '../pipeline/prompts/palette.js';
+import { ALL_TYPES } from '../contract/registry.js';
+import { buildTaxonomy } from './fixtures.js';
+
+describe('palette exhaustiveness', () => {
+  it('has exactly one PALETTE_GUIDE entry per type actually present in the Zod contract (56 total)', () => {
+    const guideKeys = Object.keys(PALETTE_GUIDE).sort();
+    const contractTypes = [...ALL_TYPES].sort();
+    expect(guideKeys).toEqual(contractTypes);
+    expect(contractTypes).toHaveLength(56);
+  });
+
+  it('every PALETTE_EXAMPLES key is a real type', () => {
+    for (const type of Object.keys(PALETTE_EXAMPLES)) {
+```
+
+### coursegen/src/__tests__/plan-repair.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { planRepair, type PlanSkeleton } from '../pipeline/plan.js';
+import { resolveAllowedTypes } from '../pipeline/prompts/palette.js';
+import { buildTaxonomy } from './fixtures.js';
+
+const { allowed } = resolveAllowedTypes(buildTaxonomy(), 'tier1');
+
+function skeleton(types: string[]): PlanSkeleton {
+  return { segments: types.map((type, i) => ({ type, brief: `segment ${i}` })) };
+}
+
+describe('planRepair', () => {
+  it('is deterministic: same input always produces the same output', () => {
+    const input = skeleton(['quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq']);
+    const a = planRepair(input, allowed, false);
+```
+
+### coursegen/src/__tests__/png-transparency.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { PNG } from 'pngjs';
+import { makeBackgroundTransparent } from '../providers/pngTransparency.js';
+
+function solidPngWithCenterSquare(size: number, bg: [number, number, number], fg: [number, number, number]): Buffer {
+  const png = new PNG({ width: size, height: size });
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (size * y + x) << 2;
+      const inCenter = x > size / 4 && x < (3 * size) / 4 && y > size / 4 && y < (3 * size) / 4;
+      const [r, g, b] = inCenter ? fg : bg;
+      png.data[idx] = r;
+      png.data[idx + 1] = g;
+      png.data[idx + 2] = b;
+      png.data[idx + 3] = 255;
+```
+
+### coursegen/src/__tests__/publish-split.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { splitDocument, computeXpTotal } from '../pipeline/publish.js';
+import { buildDocument } from './fixtures.js';
+
+describe('splitDocument', () => {
+  it('strips `answer` from every segment in the client document', () => {
+    const doc = buildDocument();
+    const { clientDocument } = splitDocument(doc);
+    const segments = (clientDocument as { segments: Record<string, unknown>[] }).segments;
+    for (const segment of segments) {
+      expect('answer' in segment).toBe(false);
+    }
+  });
+
+  it('produces an answer_keys entry for every graded segment, keyed by segment id', () => {
+```
+
+### coursegen/src/__tests__/publish-vault.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { resetConfigCache } from '../env.js';
+import { publishLessonSlot, type PublishInput } from '../pipeline/publish.js';
+import { buildDocument } from './fixtures.js';
+
+const localized = { 'en-US': 'x', 'es-MX': 'x', 'pt-BR': 'x' };
+
+function samplePublishInput(): PublishInput {
+  return {
+    course: { slug: 'financial-education', subject: 'money', title: localized, description: localized, position: 0 },
+    adventure: {
+      slug: 'archipelago-1',
+      position: 1,
+      theme: 'archipelago',
+      ageTier: 'tier1',
+```
+
+### coursegen/src/__tests__/retry.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { withTransportRetry } from '../providers/retry.js';
+import { ProviderHttpError, ProviderNetworkError, isRetryableError } from '../providers/errors.js';
+
+const noSleep = () => Promise.resolve();
+const fixedRandom = () => 0.5;
+
+describe('error classification', () => {
+  it('429 is retryable', () => {
+    expect(new ProviderHttpError('test', 429, '').retryable).toBe(true);
+  });
+  it('5xx is retryable', () => {
+    expect(new ProviderHttpError('test', 500, '').retryable).toBe(true);
+    expect(new ProviderHttpError('test', 503, '').retryable).toBe(true);
+  });
+```
+
+### coursegen/src/__tests__/review.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { reviewLesson, ReviewFailedError, MAX_REVISE_CYCLES } from '../pipeline/review.js';
+import { buildDocument, buildTaxonomy, buildFacts } from './fixtures.js';
+import type { ChatCompleteResult } from '../providers/openaiChat.js';
+
+const gateCtx = { taxonomy: buildTaxonomy(), tier: 'tier1', facts: buildFacts() };
+
+function rubricResponse(overrides: Partial<Record<string, number>> = {}, notes = 'looks good'): ChatCompleteResult {
+  return {
+    content: JSON.stringify({
+      age_fit: 5,
+      pedagogy: 5,
+      narrative_quality: 5,
+      kid_safety: 5,
+      naturalness: 5,
+```
+
+### coursegen/src/__tests__/usage-ledger.test.ts
+
+```
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { UsageLedger, BudgetExceededError, estimateCostUsd } from '../providers/usage.js';
+import { resetConfigCache } from '../env.js';
+
+let dir: string;
+
+beforeEach(() => {
+  dir = mkdtempSync(path.join(tmpdir(), 'forge-ledger-'));
+  resetConfigCache();
+});
+
+afterEach(() => {
+```
+
+### coursegen/src/__tests__/write.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { writeLessonDocument, type WriteInput } from '../pipeline/write.js';
+import { buildFacts, baseSegments } from './fixtures.js';
+import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
+
+function baseInput(): WriteInput {
+  return {
+    ctx: {
+      tier: 'tier1',
+      taxonomy: undefined as never,
+      courseTitle: 'Educación Financiera',
+      adventureNarrativeArc: 'x',
+      topic: { concept: 'x', learningObjective: 'x', keyVocabulary: ['moneda'], priorKnowledge: 'x', factRefs: [] },
+      lesson: { microObjective: 'x', narrativeBeat: 'x', difficulty: 1, suggestedFamilies: ['money'] },
+    },
+```
+
 ### coursegen/src/app.ts
 
 ```
@@ -1682,6 +3274,365 @@ export function createApp(): express.Express {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
 ```
 
+### coursegen/src/catalog/check.ts
+
+```
+#!/usr/bin/env node
+// catalog:check CLI — `npm run catalog:check [-- <path>]`.
+// With no path, validates every course directory under coursegen/curriculum/.
+// With a path, validates just that course directory (absolute or relative
+// to the coursegen package root).
+
+import { readdirSync, statSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { loadCourseCatalog } from './loader.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PACKAGE_ROOT = path.resolve(__dirname, '../..');
+const CURRICULUM_ROOT = path.join(PACKAGE_ROOT, 'curriculum');
+
+```
+
+### coursegen/src/catalog/loader.ts
+
+```
+// Curriculum catalog loader — COURSE_ENGINE.md §3.
+//
+// Loads taxonomy.yaml + facts.yaml + catalog.yaml from a course directory,
+// resolves the adventure files catalog.yaml points at (relative to
+// catalog.yaml itself), Zod-validates every file, and cross-validates
+// referential integrity (fact_refs, slug uniqueness per parent, theme/tier/
+// family membership against taxonomy, quota deviations as warnings).
+//
+// Never throws on malformed/missing content — always returns a LoadResult
+// with `ok` + a flat issue list, so `catalog:check` can report everything
+// wrong in one pass instead of stopping at the first error.
+
+import { readFileSync, existsSync } from 'node:fs';
+import path from 'node:path';
+import { parse as parseYaml } from 'yaml';
+```
+
+### coursegen/src/catalog/schema.ts
+
+```
+// Zod schemas for the curriculum catalog files — COURSE_ENGINE.md §3.
+//
+// Two intentional widenings versus the terse task brief, discovered against
+// the real `coursegen/curriculum/financial-education/*.yaml` authored by a
+// sibling agent (reported in the final task summary, content NOT altered):
+//   1. `facts.<id>.value` also accepts string[] and Record<string,string>
+//      (e.g. `characters.canon_ids`, `characters.roles`) — the brief said
+//      "number|number[]|string" but real facts legitimately need a labeled
+//      map and a string list.
+//   2. `facts.<id>.range` (a `[min,max]` authoring aid on `verified:false`
+//      reference-price facts) is accepted as an optional extra field.
+
+import { z } from 'zod';
+
+export const LOCALE_KEYS = ['en-US', 'es-MX', 'pt-BR'] as const;
+```
+
+### coursegen/src/cli.ts
+
+```
+#!/usr/bin/env node
+// Forge CLI — the ONLY entry point that spends money (COURSE_ENGINE.md §4).
+// `npm run generate -- --course financial-education [--slots a1-s1-t1-l1,...]
+//   [--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>]`
+//
+// Operator-triggered only — never run by CI or any automatic process
+// (/AGENTS.md sign-off rule, BOUNDARIES.md #8).
+
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { runGeneration } from './pipeline/run.js';
+import type { LessonLocale } from './contract/core/types.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
+```
+
+### coursegen/src/contract/check.ts
+
+```
+#!/usr/bin/env node
+// contract:check — the no-workspaces parity gate (task brief §4).
+//
+// coursegen/src/contract/** is a COPY of frontend/src/lesson-engine's Zod
+// contract (schemaBase.ts + schema.ts + the 8 families' schema.ts). Copies
+// drift; this script catches it. It normalizes each pair (strip import
+// statements, strip all whitespace, strip semicolons — coursegen and
+// frontend use different formatting conventions, that's not drift) and
+// diffs the result. Any real difference (a field added/removed, a
+// min/max/enum changed, a type renamed) fails the gate.
+//
+// Deliberately NOT diffed: contract/core/types.ts (an intentional MINIMAL
+// subset of the frontend original — see that file's header) and
+// contract/registry.ts (Forge-only, no frontend counterpart).
+
+```
+
+### coursegen/src/contract/core/schemaBase.ts
+
+```
+// Zod building blocks for the lesson document — LESSON_ENGINE.md §3.
+// Families build their segment schemas with segmentSchema(); the top-level
+// composition (all 56 types) lives in lesson-engine/schema.ts.
+
+import { z } from 'zod';
+import { LESSON_LOCALES, LESSON_SUBJECTS } from './types.js';
+
+export const idSchema = z.string().min(1).max(64);
+
+export const markdownLite = z.string().min(1).max(4000);
+
+export const idText = z.object({ id: idSchema, text_md: markdownLite });
+export const idLabel = z.object({ id: idSchema, label: z.string().min(1).max(120) });
+
+/** Option with the P7 rule: wrong options MUST carry a teaching rationale.
+```
+
+### coursegen/src/contract/core/types.ts
+
+```
+// Minimal type/const subset copied from
+// frontend/src/lesson-engine/core/types.ts — ONLY the pieces schemaBase.ts
+// needs (LESSON_LOCALES, LESSON_SUBJECTS). The frontend original also
+// exports React-dependent registry/grading types (ComponentType, Grader,
+// Registry…) that have no reason to exist in a Node CLI and are
+// deliberately NOT copied here (contract-copy rule, COURSE_ENGINE.md /
+// AGENTS.md §0.4). NOT part of the contract:check byte-diff — see
+// src/contract/check.ts for which files ARE diffed.
+
+export const LESSON_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
+export type LessonLocale = (typeof LESSON_LOCALES)[number];
+
+export const LESSON_SUBJECTS = ['money', 'math', 'science', 'economics', 'code', 'mixed'] as const;
+export type LessonSubject = (typeof LESSON_SUBJECTS)[number];
+```
+
+### coursegen/src/contract/families/analyze/schema.ts
+
+```
+// `analyze` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.6, types 39–45).
+
+import { z } from 'zod';
+import { idSchema, idText, idLabel, markdownLite, segmentSchema } from '../../core/schemaBase.js';
+
+export const spotError = segmentSchema(
+  'spot_error',
+  z.object({
+    context_md: markdownLite.optional(),
+    steps: z.array(idText).min(3).max(10),
+  }),
+  z.object({ error_ids: z.array(idSchema).min(1), correction_md: markdownLite.optional() }),
+);
+
+export const causeEffect = segmentSchema(
+```
+
+### coursegen/src/contract/families/arrange/schema.ts
+
+```
+// `arrange` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.4, types 20–29).
+
+import { z } from 'zod';
+import {
+  idSchema,
+  idText,
+  idLabel,
+  markdownLite,
+  segmentSchema,
+  iconName,
+} from '../../core/schemaBase.js';
+
+/** Visual tint palette shared by icon tiles (matches BigIconTile tints). */
+export const tileTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight']);
+
+```
+
+### coursegen/src/contract/families/choice/schema.ts
+
+```
+// `choice` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.2, types 6–13).
+
+import { z } from 'zod';
+import {
+  idSchema,
+  idText,
+  markdownLite,
+  optionWithRationale,
+  segmentSchema,
+  iconName,
+} from '../../core/schemaBase.js';
+
+export const quizMcq = segmentSchema(
+  'quiz_mcq',
+  z.object({
+```
+
+### coursegen/src/contract/families/input/schema.ts
+
+```
+// `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
+
+import { z } from 'zod';
+import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase.js';
+
+const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight']);
+
+export const typeAnswer = segmentSchema(
+  'type_answer',
+  z.object({
+    placeholder: z.string().min(1).max(80).optional(),
+    max_chars: z.number().int().min(1).max(80),
+  }),
+  z.object({
+    accept: z.array(z.string().min(1).max(80)).min(1),
+```
+
+### coursegen/src/contract/families/maker/schema.ts
+
+```
+// `maker` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.8, types 51–56).
+
+import { z } from 'zod';
+import { idSchema, idText, markdownLite, segmentSchema } from '../../core/schemaBase.js';
+
+export const robotDirSchema = z.enum(['up', 'right', 'down', 'left']);
+export const robotCommandSchema = z.enum(['forward', 'left', 'right']);
+
+const gridCoord = z.number().int().min(0).max(5);
+
+export const codeOrder = segmentSchema(
+  'code_order',
+  z.object({
+    blocks: z.array(idText).min(3).max(8),
+    language_hint: z.string().min(1).max(40).optional(),
+```
+
+### coursegen/src/contract/families/money/schema.ts
+
+```
+// `money` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.5, types 30–38).
+
+import { z } from 'zod';
+import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase.js';
+
+export const currencySchema = z.enum(['MXN', 'USD', 'BRL']);
+
+const moneyAmount = z.number().positive().max(1_000_000);
+const denomination = z.number().positive().max(10_000);
+
+export const coinCount = segmentSchema(
+  'coin_count',
+  z.object({
+    currency: currencySchema,
+    denominations: z.array(denomination).min(2).max(9),
+```
+
+### coursegen/src/contract/families/story/schema.ts
+
+```
+// `story` family — payload Zod schemas (LESSON_ENGINE.md §5.1, types 1–5).
+// Content types carry NO answer schema: they are ungraded, ship with `xp: 0`
+// and always count as complete on advance (§3).
+
+import { z } from 'zod';
+import {
+  characterActionSchema,
+  characterEmotionSchema,
+  characterIdSchema,
+  iconName,
+  markdownLite,
+  segmentSchema,
+} from '../../core/schemaBase.js';
+
+/** Icon tint vocabulary — mirrors BigIconTile's tint prop (core/primitives). */
+```
+
+### coursegen/src/contract/families/storyplay/schema.ts
+
+```
+// `storyplay` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.7, types 46–50).
+
+import { z } from 'zod';
+import {
+  characterEmotionSchema,
+  characterIdSchema,
+  iconName,
+  idSchema,
+  idText,
+  markdownLite,
+  segmentSchema,
+} from '../../core/schemaBase.js';
+
+const quality = z.number().min(0).max(100);
+
+```
+
+### coursegen/src/contract/registry.ts
+
+```
+// Forge-only derived registry over the copied contract (NOT part of the
+// byte-diffed contract-parity set in src/contract/check.ts — this file has
+// no frontend counterpart). Builds type→family/schema lookups straight from
+// the family `*Schemas` arrays so the 56-type list can never drift from the
+// actual Zod contract: add a type to a family schema.ts and it appears here
+// automatically without touching this file.
+
+import type { z } from 'zod';
+import { storySchemas } from './families/story/schema.js';
+import { choiceSchemas } from './families/choice/schema.js';
+import { inputSchemas } from './families/input/schema.js';
+import { arrangeSchemas } from './families/arrange/schema.js';
+import { moneySchemas } from './families/money/schema.js';
+import { analyzeSchemas } from './families/analyze/schema.js';
+import { storyplaySchemas } from './families/storyplay/schema.js';
+```
+
+### coursegen/src/contract/schema.ts
+
+```
+// The composed LessonDocument Zod schema — LESSON_ENGINE.md §3.
+// This is the contract Forge (coursegen) generates against and Core will
+// validate with server-side (pure TS, dependency-free beyond zod, by design).
+
+import { z } from 'zod';
+import { lessonMetaSchema, lessonScoringSchema } from './core/schemaBase.js';
+import { storySchemas } from './families/story/schema.js';
+import { choiceSchemas } from './families/choice/schema.js';
+import { inputSchemas } from './families/input/schema.js';
+import { arrangeSchemas } from './families/arrange/schema.js';
+import { moneySchemas } from './families/money/schema.js';
+import { analyzeSchemas } from './families/analyze/schema.js';
+import { storyplaySchemas } from './families/storyplay/schema.js';
+import { makerSchemas } from './families/maker/schema.js';
+
+```
+
+### coursegen/src/env.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env validated once at boot (agent/core/CONVENTIONS.md). Provider keys
+ * (DEEPSEEK_API_KEY, QWEN_API_KEY) are OPTIONAL here on purpose — the
+ * Express /health service and all offline commands (catalog:check,
+ * contract:check, tests) must never require paid-API keys to run.
+ * `requireGenerationKeys()` is the lazy gate the CLI calls right before it
+ * would spend money (COURSE_ENGINE.md §4/§5).
+ */
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4001),
+
+  // ---- Author / judge providers ----
+  DEEPSEEK_API_KEY: z.string().min(8).optional(),
+```
+
 ### coursegen/src/index.ts
 
 ```
@@ -1691,6 +3642,426 @@ const port = Number(process.env.PORT ?? 4001);
 createApp().listen(port, () => {
   console.log(`[${SERVICE}] listening on :${port}`);
 });
+```
+
+### coursegen/src/pipeline/arithmetic.ts
+
+```
+// Tiny, safe arithmetic helpers for gate 4 (ARITHMETIC RE-EXECUTION,
+// COURSE_ENGINE.md §4). No `eval`, no Function constructor — everything is
+// a hand-rolled evaluator or brute-force search bounded to kid-content
+// scale (small denominations, ≤8 weights, targets in the hundreds).
+
+/** Currency amounts have at most 2 decimals (MXN centavos, USD cents, BRL centavos) — scale to integer cents. */
+export function toCents(value: number): number {
+  return Math.round(value * 100);
+}
+
+const SUBSET_SUM_CAP_CENTS = 200_000; // 2,000 currency units — generous for kid-content amounts
+
+/** Unbounded subset-sum (coins/bills may repeat) — used by coin_count / make_change. */
+export function reachableWithRepetition(
+  targetCents: number,
+```
+
+### coursegen/src/pipeline/checkpoint.ts
+
+```
+// File checkpoint — runs/<run-id>/checkpoint.json (COURSE_ENGINE.md §4).
+// Per-slot state machine: planned → written → reviewed → localized →
+// illustrated → published | failed. Resuming a run just means re-invoking
+// the CLI with the same --course/--slots: each stage in run.ts checks the
+// slot's current state and no-ops past whatever already succeeded.
+
+import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
+import path from 'node:path';
+
+export type SlotState =
+  | 'pending'
+  | 'planned'
+  | 'written'
+  | 'reviewed'
+  | 'localized'
+```
+
+### coursegen/src/pipeline/correctiveRetry.ts
+
+```
+// Schema-corrective retry loop — SEPARATE counter from providers/retry.ts's
+// transport retries (COURSE_ENGINE.md §4). Used by plan.ts, write.ts and
+// localize.ts: call the model, try to parse+validate its JSON, and on
+// failure feed the issues back into the NEXT call instead of giving up.
+
+export interface CorrectiveRetryResult<T> {
+  data: T;
+  attempts: number;
+  raw: string;
+}
+
+export type ParseOutcome<T> = { ok: true; data: T } | { ok: false; issues: string };
+
+export class CorrectiveRetryExhaustedError extends Error {
+  constructor(maxAttempts: number, issues: string) {
+```
+
+### coursegen/src/pipeline/gates.ts
+
+```
+// The 5 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
+// network calls, run in order. Gate 1 (contract) gates the rest: if the raw
+// JSON doesn't parse against the Zod contract there is no typed document to
+// run gates 2-5 against.
+
+import type { TaxonomyFile, FactsFile } from '../catalog/schema.js';
+import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import {
+  toCents,
+  reachableWithRepetition,
+  existsSubsetSumOnce,
+  evaluateInfixTokens,
+  extractFirstNumber,
+  approxEqual,
+} from './arithmetic.js';
+```
+
+### coursegen/src/pipeline/images.ts
+
+```
+// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Generates
+// illustrations for visual-option segments missing `image_url` (today:
+// `picture_choice`), uploads them to filebase, and patches the url back in.
+// Skips CLEANLY (never fails the run) when `--no-images` is passed or
+// Gemini has no API key configured — icons remain the fallback, never
+// emojis (DESIGN.md / LESSON_ENGINE.md §5.2 #8).
+
+import { getConfig } from '../env.js';
+import { generateImage } from '../providers/gemini.js';
+import { ProviderNotConfiguredError } from '../providers/errors.js';
+import type { UsageLedger } from '../providers/usage.js';
+import type { LessonDocumentParsed } from '../contract/schema.js';
+
+export interface FilebaseUploadResult {
+  id: string;
+```
+
+### coursegen/src/pipeline/localize.ts
+
+```
+// localize stage — es-MX → {en-US, pt-BR} (COURSE_ENGINE.md §4). Structure
+// is FROZEN programmatically: only learner-visible strings are extracted
+// into an indexed map, DeepSeek translates just the map, and the result is
+// re-injected at the exact same paths — ids/numbers/answers are never seen
+// by the model, so they cannot drift. Re-gates vocabulary for the TARGET
+// locale afterwards (forbidden-word lists are per-locale).
+
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
+import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import type { LessonLocale } from '../contract/core/types.js';
+import { runVocabularyGate, NON_VISIBLE_KEYS, type GateProblem, type GateContext } from './gates.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+
+type PathSegment = string | number;
+```
+
+### coursegen/src/pipeline/plan.ts
+
+```
+// plan stage — blueprint → segment skeleton (COURSE_ENGINE.md §4).
+// DeepSeek, temp 0.3, JSON mode. MIX RULES are enforced by a deterministic
+// planRepair() BEFORE any LLM retry is spent — cheaper and more reliable
+// than hoping the model self-corrects.
+
+import { z } from 'zod';
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
+import { resolveAllowedTypes, renderPalette } from './prompts/palette.js';
+import { TYPE_TO_FAMILY, CONTENT_TYPES, MONEY_TYPES, FLOW_TYPES, type FamilyName } from '../contract/registry.js';
+import type { TaxonomyFile } from '../catalog/schema.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+
+export const MIN_SEGMENTS = 8;
+export const MAX_SEGMENTS = 14;
+```
+
+### coursegen/src/pipeline/prompts/palette.ts
+
+```
+// The 56-type palette prompt (COURSE_ENGINE.md §4/§5) — the single source
+// DeepSeek's plan/write prompts render from. PALETTE_GUIDE is typed against
+// a hand-written literal union (ExerciseTypeId) mirroring LESSON_ENGINE.md
+// §5 exactly, so TypeScript refuses to compile if a type is added to a
+// family schema and forgotten here — the runtime half of that guarantee
+// (that ExerciseTypeId still matches the ACTUAL contract, not just this
+// file's belief about it) is `src/__tests__/palette.test.ts`.
+
+import type { TaxonomyFile } from '../../catalog/schema.js';
+import { ALL_TYPES, TYPE_TO_FAMILY, type FamilyName } from '../../contract/registry.js';
+
+// prettier-ignore
+export type ExerciseTypeId =
+  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint'
+  | 'quiz_mcq' | 'true_false' | 'picture_choice' | 'odd_one_out' | 'best_decision' | 'yes_no_cases' | 'speed_tap' | 'confidence_quiz'
+```
+
+### coursegen/src/pipeline/publish.ts
+
+```
+// publish stage — COURSE_ENGINE.md §4/§6. Splits each locale's document into
+// the client-safe `document` (answer stripped from every segment) +
+// server-only `answer_keys` map, then upserts the full hierarchy path by
+// slug (course → adventure → saga → topic → lesson → lesson_documents×N).
+// Lessons land as status='review' — publishing to 'published' is a human
+// action (blocking gate for kids' content, non-negotiable, §6).
+
+import { vaultUpsert } from '../vault/restClient.js';
+import type { LessonDocumentParsed } from '../contract/schema.js';
+import type { LessonLocale } from '../contract/core/types.js';
+
+export interface ClientSafeSegment {
+  [key: string]: unknown;
+}
+
+```
+
+### coursegen/src/pipeline/review.ts
+
+```
+// review stage — independent judge (Qwen, decorrelated provider),
+// COURSE_ENGINE.md §4. kid_safety < 5 or age_fit < 4 triggers a revise call
+// to DeepSeek with the judge's notes, then a full re-gate (the 5
+// deterministic gates must still pass after revision) and re-judge. Max 2
+// revise cycles — after that the slot fails, it never silently ships.
+
+import { z } from 'zod';
+import { completeQwen } from '../providers/qwen.js';
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
+import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import { runAllGates, type GateContext } from './gates.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+
+export const MAX_REVISE_CYCLES = 2;
+```
+
+### coursegen/src/pipeline/run.ts
+
+```
+// Run orchestration — wires validate→plan→write→gate→review→localize→
+// images→publish per slot, with checkpoint/resume, a small concurrency
+// pool, and the budget kill switches (COURSE_ENGINE.md §4).
+
+import path from 'node:path';
+import { getConfig, requireGenerationKeys } from '../env.js';
+import { loadCourseCatalog, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
+import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
+import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
+import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
+import { planLesson, type PlanContext, type PlanSkeleton } from './plan.js';
+import { writeLessonDocument } from './write.js';
+import { runAllGates, type GateContext } from './gates.js';
+import { reviewLesson } from './review.js';
+import { localizeLesson } from './localize.js';
+```
+
+### coursegen/src/pipeline/write.ts
+
+```
+// write stage — skeleton → full LessonDocument (COURSE_ENGINE.md §4).
+// DeepSeek, temp 0.4, JSON mode, es-MX first (the authoring locale).
+// Corrective retries (max 4) feed truncated Zod issues back to the model;
+// if those are exhausted, per-segment salvage keeps whatever segments DID
+// validate (dropping the rest, if ≥6 survive incl ≥1 graded); if salvage
+// also fails, one last-resort regen at temp 0.2 is the final attempt.
+
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
+import type { PlanContext, PlanSkeleton } from './plan.js';
+import type { FactsFile } from '../catalog/schema.js';
+import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import { lessonMetaSchema, lessonScoringSchema } from '../contract/core/schemaBase.js';
+import { TYPE_TO_SCHEMA, GRADED_TYPES } from '../contract/registry.js';
+import type { LessonLocale } from '../contract/core/types.js';
+```
+
+### coursegen/src/providers/deepseek.ts
+
+```
+// DeepSeek — the author provider (plan/write/localize), COURSE_ENGINE.md §5.
+
+import { getConfig } from '../env.js';
+import { ProviderNotConfiguredError } from './errors.js';
+import { openAiCompatibleComplete, type ChatCompleteRequest, type ChatCompleteResult } from './openaiChat.js';
+import type { UsageLedger } from './usage.js';
+
+export interface CompleteOptions {
+  /** Ledger operation label — 'plan' | 'write' | 'localize' | 'revise' etc. */
+  operation: string;
+  ledger?: UsageLedger;
+}
+
+/** The chokepoint: every DeepSeek call in the pipeline goes through this function. */
+export async function completeDeepSeek(req: ChatCompleteRequest, opts: CompleteOptions): Promise<ChatCompleteResult> {
+```
+
+### coursegen/src/providers/errors.ts
+
+```
+// Typed provider errors — the transport-retry / non-retryable split
+// (COURSE_ENGINE.md §4 "Retries & backoff") lives on `retryable`.
+
+export class ProviderHttpError extends Error {
+  readonly status: number;
+  readonly retryable: boolean;
+  readonly provider: string;
+
+  constructor(provider: string, status: number, body: string) {
+    super(`${provider} HTTP ${status}: ${body.slice(0, 500)}`);
+    this.name = 'ProviderHttpError';
+    this.provider = provider;
+    this.status = status;
+    // 429 and any 5xx are transient — everything else (400/401/403/404…) is
+    // a real failure and must NOT burn transport-retry budget.
+```
+
+### coursegen/src/providers/gemini.ts
+
+```
+// Gemini image generation ("nanobanana") — COURSE_ENGINE.md §4/§5 images
+// stage. Optional: with no GEMINI_API_KEY the module throws a clear
+// ProviderNotConfiguredError that pipeline/images.ts treats as "skip
+// cleanly", never as a pipeline failure.
+
+import { getConfig } from '../env.js';
+import { ProviderHttpError, ProviderNetworkError, ProviderNotConfiguredError, ProviderTimeoutError } from './errors.js';
+import { withTransportRetry } from './retry.js';
+import { makeBackgroundTransparent } from './pngTransparency.js';
+import type { UsageLedger } from './usage.js';
+
+export interface GenerateImageRequest {
+  /** Learner-visible image concept — kid-safe, no minor PII (§1.9). */
+  prompt: string;
+  operation: string;
+```
+
+### coursegen/src/providers/openaiChat.ts
+
+```
+// Shared OpenAI-compatible chat/completions transport — the ONE fetch
+// chokepoint DeepSeek and Qwen (DashScope compatible-mode) both go through.
+// COURSE_ENGINE.md §5: "All clients are raw fetch behind one providers/
+// chokepoint with usage logging."
+
+import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError } from './errors.js';
+import { withTransportRetry } from './retry.js';
+
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatCompleteRequest {
+  messages: ChatMessage[];
+```
+
+### coursegen/src/providers/pngTransparency.ts
+
+```
+// Pure-JS PNG background removal — no native deps (pngjs only).
+// Gemini is prompted for a FLAT LIGHT background; we sample the 4 corners,
+// then flood-fill outward from them, punching alpha=0 into any pixel within
+// `tolerance` color distance of the sampled background. This intentionally
+// only clears the CONNECTED background region (a flood fill, not a global
+// color-key) so a light-colored object touching the image interior is not
+// hollowed out.
+
+import { PNG } from 'pngjs';
+
+export interface TransparencyOptions {
+  /** Euclidean RGB distance under which a pixel counts as "background". Default 24 (out of ~441 max). */
+  tolerance?: number;
+}
+
+```
+
+### coursegen/src/providers/qwen.ts
+
+```
+// Qwen (DashScope compatible-mode) — the independent judge provider
+// (review stage), COURSE_ENGINE.md §5. Deliberately a SEPARATE provider
+// from DeepSeek so its blind spots decorrelate from the author's (LF-Brain
+// pattern, COURSE_ENGINE.md §1).
+
+import { getConfig } from '../env.js';
+import { ProviderNotConfiguredError } from './errors.js';
+import { openAiCompatibleComplete, type ChatCompleteRequest, type ChatCompleteResult } from './openaiChat.js';
+import type { UsageLedger } from './usage.js';
+
+export interface CompleteOptions {
+  operation: string;
+  ledger?: UsageLedger;
+}
+
+```
+
+### coursegen/src/providers/retry.ts
+
+```
+// Transport-retry: jittered exponential backoff 0.5s→8s, max 4 attempts,
+// ONLY for retryable errors (429/5xx/network/timeout). Non-retryable errors
+// (4xx other than 429) throw immediately. SEPARATE counter from the
+// schema-corrective retries in pipeline/write.ts / plan.ts (COURSE_ENGINE.md §4).
+
+import { isRetryableError } from './errors.js';
+
+export interface RetryOptions {
+  maxAttempts?: number;
+  baseMs?: number;
+  maxMs?: number;
+  /** Injectable for tests — avoids real sleeps. */
+  sleep?: (ms: number) => Promise<void>;
+  /** Injectable for tests — avoids non-deterministic jitter in assertions. */
+  random?: () => number;
+```
+
+### coursegen/src/providers/usage.ts
+
+```
+// Usage ledger — one JSONL line per provider call, appended to
+// runs/<run-id>/ledger.jsonl, plus an in-memory running total the kill
+// switches (FORGE_MAX_TOKENS_PER_RUN / FORGE_MAX_USD_PER_RUN) check before
+// every call (COURSE_ENGINE.md §4 "Budget").
+
+import { appendFile, mkdir } from 'node:fs/promises';
+import path from 'node:path';
+import { getConfig } from '../env.js';
+
+export type UsageProvider = 'deepseek' | 'qwen' | 'gemini-image';
+
+export interface UsageRecord {
+  provider: UsageProvider;
+  model: string;
+  operation: string;
+```
+
+### coursegen/src/vault/restClient.ts
+
+```
+// Service-role PostgREST client for Vault writes — mirrors the pattern in
+// backend/src/services/supabaseRest.ts + backend/src/lib/http.ts. Forge
+// NEVER has a user JWT (it's an offline CLI, not a request handler), so
+// every call here is service-role, bypassing RLS on purpose: hierarchy rows
+// land as 'draft'/'review' and are invisible to clients until a human (or
+// Core) flips them to 'published' (COURSE_ENGINE.md §4/§6).
+
+import { getConfig, requirePublishKeys } from '../env.js';
+
+interface RestInit {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
+
 ```
 
 ### coursegen/tsconfig.json
@@ -1906,6 +4277,26 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS username text;
 -- ─────────────────────────────────────────────────────────────
 ```
 
+### database/migrations/0007_course_hierarchy.sql
+
+```
+-- 0007_course_hierarchy.sql — the real content hierarchy (COURSE_ENGINE.md §2).
+-- Delta over 0001-0006 (never edit an applied migration). Idempotent.
+--
+-- courses ── adventures ── sagas ── topics ── lessons ── lesson_documents (×3 locales)
+--
+-- The 0002-provisional `lessons` table (course_id + raw `content` jsonb) was a
+-- day-1 placeholder — DEV-ONLY demo seeds, no real data, never deepened past
+-- its original shape (database/AGENTS.md: "0002_content_skeleton.sql is
+-- PROVISIONAL"). It is replaced here by a real 5-level hierarchy; `courses`
+-- is kept and extended (it already carries real published rows).
+
+-- ─────────────────────────────────────────────────────────────
+-- Retire the 0002-provisional `lessons` table. CASCADE also drops its RLS
+-- policy, its 0003 index (idx_lessons_course_position), and any dev rows —
+-- all of it was placeholder data, never real content.
+```
+
 ### database/package.json
 
 ```
@@ -2020,10 +4411,10 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      audit_logs: {
+      adventures: {
         Row: {
-          action: string
-          actor_id: string | null
+          age_tier: string
+          course_id: string
 ```
 
 ### doc_map.md
@@ -2113,7 +4504,7 @@ export default tseslint.config(
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
@@ -2242,6 +4633,428 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+  },
+});
+```
+
+### filebase/AGENTS.md
+
+```
+# AGENTS.md — filebase (Depot)
+
+> Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+
+## Mission
+
+Depot is the platform's media storage service: a content-addressed object
+store for lesson audio and images (and any other binary media the platform
+generates). `coursegen` (Forge) and `audiogen` (Echo) write objects here;
+`backend` (Core) issues download URLs; the frontend reads `public` objects
+directly, no proxy hop through Core required.
+
+## Owns / does not own
+
+- **Owns:** the object bytes themselves, their content hash, mime type,
+```
+
+### filebase/README.md
+
+```
+# filebase (Depot)
+
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+
+**Mission:** content-addressed media storage for lesson audio and images — the write target for `coursegen` (Forge) and `audiogen` (Echo), and the read source the frontend streams from directly for `public` objects.
+**Port (dev):** 4006 · **Deploy:** Railway (persistent volume) · **Access:** management API is internal only (`INTERNAL_API_KEY`); the download route is public for `public`-visibility objects.
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
+npm test
+```
+
+## Storage layout
+```
+
+### filebase/eslint.config.js
+
+```
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  { ignores: ['dist/'] },
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+);
+```
+
+### filebase/package.json
+
+```
+{
+  "name": "@littlefounders/filebase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+```
+
+### filebase/src/__tests__/delete.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { fakeAudio, KEY, upload } from './helpers.js';
+
+describe('DELETE /api/v1/files/:bucket/:hash.:ext', () => {
+  it('removes the object and its metadata', async () => {
+    const app = createApp();
+    const res = await upload(app, { bucket: 'lesson-audio', mime: 'audio/ogg', bytes: fakeAudio(128, 3) });
+    const id = res.body.data.id as string;
+
+    const del = await request(app).delete(`/api/v1/files/${id}`).set('x-internal-api-key', KEY());
+    expect(del.status).toBe(200);
+    expect(del.body.data).toEqual({ deleted: true, id });
+
+```
+
+### filebase/src/__tests__/health.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp, SERVICE } from '../app.js';
+
+describe('GET /health', () => {
+  it('returns the ok envelope', async () => {
+    const res = await request(createApp()).get('/health');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      data: { service: SERVICE, version: expect.any(String), status: 'ok' },
+      error: null,
+    });
+  });
+
+  it('unknown routes return the error envelope', async () => {
+```
+
+### filebase/src/__tests__/helpers.ts
+
+```
+import request from 'supertest';
+import type { Express } from 'express';
+
+export const KEY = () => process.env.INTERNAL_API_KEY as string;
+
+export function upload(
+  app: Express,
+  opts: { bucket: string; visibility?: 'public' | 'internal'; mime: string; bytes: Buffer; filename?: string },
+) {
+  const req = request(app).post('/api/v1/files').set('x-internal-api-key', KEY());
+  req.field('bucket', opts.bucket);
+  req.field('visibility', opts.visibility ?? 'public');
+  req.attach('file', opts.bytes, { filename: opts.filename ?? 'asset.bin', contentType: opts.mime });
+  return req;
+}
+```
+
+### filebase/src/__tests__/listing.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { fakeAudio, KEY, upload } from './helpers.js';
+
+describe('GET /api/v1/files (pagination)', () => {
+  it('paginates via cursor', async () => {
+    const app = createApp();
+    for (let i = 0; i < 3; i++) {
+      const res = await upload(app, { bucket: 'lesson-images', mime: 'image/png', bytes: fakeAudio(50, 10 + i) });
+      expect(res.status).toBe(200);
+    }
+
+    const page1 = await request(app)
+      .get('/api/v1/files')
+```
+
+### filebase/src/__tests__/range.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { fakeAudio, upload } from './helpers.js';
+
+describe('Range requests', () => {
+  it('returns a 206 with the correct byte slice', async () => {
+    const app = createApp();
+    const bytes = fakeAudio(2000, 11);
+    const res = await upload(app, { bucket: 'lesson-audio', mime: 'audio/mpeg', bytes });
+
+    const range = await request(app).get(`/files/${res.body.data.id}`).set('Range', 'bytes=100-199');
+    expect(range.status).toBe(206);
+    expect(range.headers['content-range']).toBe(`bytes 100-199/${bytes.length}`);
+    expect(range.headers['content-length']).toBe('100');
+```
+
+### filebase/src/__tests__/security.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+
+describe('path traversal defenses', () => {
+  it('rejects a traversal payload in the hash/ext segment (400 or 404, never 200)', async () => {
+    const app = createApp();
+    const attempts = [
+      '/files/lesson-audio/..%2f..%2f..%2fetc%2fpasswd',
+      '/files/lesson-audio/....//....//etc/passwd.mp3',
+      '/files/lesson-audio/%2e%2e%2f%2e%2e%2fpackage.json',
+    ];
+    for (const path of attempts) {
+      const res = await request(app).get(path);
+      expect([400, 404]).toContain(res.status);
+```
+
+### filebase/src/__tests__/upload-download.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { fakeAudio, KEY, upload } from './helpers.js';
+
+describe('upload → download roundtrip', () => {
+  it('stores an object and serves back byte-identical content', async () => {
+    const app = createApp();
+    const bytes = fakeAudio(4096);
+
+    const res = await upload(app, { bucket: 'lesson-audio', mime: 'audio/mpeg', bytes });
+    expect(res.status).toBe(200);
+    expect(res.body.error).toBeNull();
+    expect(res.body.data.deduplicated).toBe(false);
+    expect(res.body.data.bytes).toBe(bytes.length);
+```
+
+### filebase/src/__tests__/visibility.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { fakeAudio, KEY, upload } from './helpers.js';
+
+describe('object visibility', () => {
+  it('serves a public object without any credentials', async () => {
+    const app = createApp();
+    const res = await upload(app, {
+      bucket: 'lesson-audio',
+      visibility: 'public',
+      mime: 'audio/mpeg',
+      bytes: fakeAudio(64, 1),
+    });
+    const dl = await request(app).get(`/files/${res.body.data.id}`);
+```
+
+### filebase/src/app.ts
+
+```
+import express, { type NextFunction, type Request, type Response } from 'express';
+import { getConfig } from './config.js';
+import { downloadRouter } from './routes/download.js';
+import { filesRouter } from './routes/files.js';
+
+export const SERVICE = 'filebase';
+export const VERSION = '0.1.0';
+
+export function createApp(): express.Express {
+  const config = getConfig();
+  const app = express();
+  app.use(express.json());
+
+  app.get('/health', (_req, res) => {
+    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
+```
+
+### filebase/src/config.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env is validated once at boot (agent/core/CONVENTIONS.md) — the service
+ * crashes on invalid config, never at request time. Tests import getConfig()
+ * after test-setup.ts has set process.env.
+ *
+ * INTERNAL_API_KEY has no default in production: a missing key must crash
+ * boot, not silently serve unauthenticated. In development/test it falls
+ * back to a fixed placeholder so `npm run dev`/`npm test` work without a
+ * `.env` file.
+ */
+const Env = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  PORT: z.coerce.number().int().positive().default(4006),
+```
+
+### filebase/src/index.ts
+
+```
+import { createApp, SERVICE } from './app.js';
+import { getConfig } from './config.js';
+
+const { PORT } = getConfig();
+createApp().listen(PORT, () => {
+  console.log(`[${SERVICE}] listening on :${PORT}`);
+});
+```
+
+### filebase/src/lib/storage.ts
+
+```
+import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
+import { copyFile, mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { getConfig } from '../config.js';
+
+/*
+ * Content-addressed object store — no database, no S3 SDK (/AGENTS.md §1.2:
+ * this service keeps deps minimal on purpose). Layout:
+ *
+ *   <FILEBASE_ROOT>/<bucket>/<sha256[0:2]>/<sha256>.<ext>      the object bytes
+ *   <FILEBASE_ROOT>/<bucket>/<sha256[0:2]>/<sha256>.json       metadata sidecar
+ *
+ * Dedup key is the hash ALONE (per bucket) — the metadata sidecar is looked
+ * up by hash before the extension is ever needed, so identical bytes always
+```
+
+### filebase/src/lib/validation.ts
+
+```
+/*
+ * Every filesystem path filebase ever touches is built from these three
+ * validated segments. A traversal payload (`..`, `/`, encoded variants)
+ * cannot satisfy any of these patterns, so it is rejected before it ever
+ * reaches `path.join()` — this IS the traversal defense, not a courtesy
+ * check on top of one.
+ */
+export const BUCKET_RE = /^[a-z0-9-]{3,40}$/;
+export const HASH_RE = /^[a-f0-9]{64}$/;
+export const EXT_RE = /^[a-z0-9]{2,5}$/;
+
+export function isValidBucket(value: string): boolean {
+  return BUCKET_RE.test(value);
+}
+
+```
+
+### filebase/src/routes/download.ts
+
+```
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
+import { Router, type Request, type Response } from 'express';
+import { getConfig } from '../config.js';
+import { objectPath, readMetadata } from '../lib/storage.js';
+import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
+
+/*
+ * Public streaming download — GET/HEAD /files/:bucket/:hash.:ext.
+ *
+ * This is the documented exception to the envelope rule (/AGENTS.md §1.6):
+ * a 200/206 success response streams raw object bytes with binary headers,
+ * because it has to work as the `src` of an <audio>/<img> tag. Every ERROR
+ * status from this route still uses the standard `{ data, error }` envelope
+ * — only the successful payload is non-JSON.
+```
+
+### filebase/src/routes/files.ts
+
+```
+import { randomUUID } from 'node:crypto';
+import { mkdir } from 'node:fs/promises';
+import { Router, type Request, type Response } from 'express';
+import multer, { MulterError } from 'multer';
+import { z } from 'zod';
+import { getConfig } from '../config.js';
+import {
+  ALLOWED_MIME,
+  commitObject,
+  deleteObject,
+  extForMime,
+  hashFile,
+  listBucketHashes,
+  readMetadata,
+  tmpDir,
+```
+
+### filebase/src/test-setup.ts
+
+```
+// Test env — config.ts validates at first getConfig() call. Each test file
+// gets its own isolated module registry (Vitest default), so this runs
+// once per file and gives every file a private FILEBASE_ROOT temp dir.
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterAll } from 'vitest';
+
+process.env.NODE_ENV ??= 'test';
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
+
+const dir = mkdtempSync(join(tmpdir(), 'filebase-test-'));
+process.env.FILEBASE_ROOT = dir;
+
+afterAll(() => {
+```
+
+### filebase/tsconfig.json
+
+```
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["src/__tests__"]
+```
+
+### filebase/vitest.config.ts
+
+```
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
   },
 });
 ```
@@ -2390,8 +5203,8 @@ import { SignupPage } from '@/routes/auth/SignupPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
-import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
-import { ProfilePage } from '@/routes/app/profile/ProfilePage';
+import { CoursePage } from '@/routes/app/learn/CoursePage';
+import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -2570,6 +5383,66 @@ interface ZaraVexCharacterProps {
 }
 
 const COLORS = {
+```
+
+### frontend/src/components/characters/control/CharacterActor.tsx
+
+```
+import { useEffect, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
+import DinaCharacter from '../DinaCharacter'
+import DinoCharacter, { type DinoMood } from '../DinoCharacter'
+import DrRhoCharacter, { type RhoMood } from '../DrRhoCharacter'
+import ZaraVexCharacter, { type ZaraMood } from '../ZaraVexCharacter'
+import {
+  ACTION_DURATION_MS,
+  EMOTION_TO_NATIVE,
+  LOOPABLE_ACTIONS,
+  type CharacterAction,
+  type CharacterEmotion,
+  type CharacterId,
+} from './types'
+import './rig.css'
+```
+
+### frontend/src/components/characters/control/rig.css
+
+```
+/* Character Control rig — LESSON_ENGINE.md §9.
+ * Wrapper-level action keyframes + limb animation via the lf-rig-* hooks that the
+ * four character SVGs expose. NEVER animates head/pupil groups (RAF-owned by the
+ * characters' own tracking loops). Appearance (paths, colors) is untouched.
+ * All one-shot; durations mirror ACTION_DURATION_MS in control/types.ts. */
+
+.lf-actor { position: relative; }
+.lf-actor > * { width: 100%; height: 100%; }
+
+/* Limb pivots: percentage origins over each limb's own bbox (fill-box) — no
+ * per-character coordinate math, safe against internal attribute transforms. */
+.lf-rig-arm-f, .lf-rig-arm-b { transform-box: fill-box; transform-origin: 50% 10%; }
+.lf-rig-leg-f, .lf-rig-leg-b { transform-box: fill-box; transform-origin: 50% 10%; }
+.lf-rig-tail                 { transform-box: fill-box; transform-origin: 100% 100%; }
+
+```
+
+### frontend/src/components/characters/control/types.ts
+
+```
+// Character Control — unified emotion/action vocabulary over the four canonical
+// characters (LESSON_ENGINE.md §9). Appearance is NON-NEGOTIABLE: this layer only
+// maps to each character's existing prop surface and adds wrapper/rig animation.
+
+export const CHARACTER_IDS = ['dina', 'dino', 'rho', 'zara'] as const
+export type CharacterId = (typeof CHARACTER_IDS)[number]
+
+export const CHARACTER_EMOTIONS = [
+  'neutral',
+  'happy',
+  'excited',
+  'thinking',
+  'surprised',
+  'encouraging',
+  'proud',
 ```
 
 ### frontend/src/components/ui/Badge.tsx
@@ -2928,7 +5801,47 @@ export { FileField } from './FileField';
     "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
     "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
-    "USERNAME_TAKEN": "That @username is taken — try another one."
+    "USERNAME_TAKEN": "That @username is taken — try another one.",
+```
+
+### frontend/src/i18n/en-US/learn.json
+
+```
+{
+  "loading": "Loading your adventure…",
+  "startHere": "Start here",
+  "goToMyLesson": "Go to my lesson",
+  "lessonsProgress": "{{passed}}/{{total}}",
+  "locked": "Locked",
+  "completed": "Completed",
+  "xp": "{{xp}} XP",
+  "minutes_one": "{{count}} min",
+  "minutes_other": "{{count}} min",
+  "backToCourse": "Back to course",
+  "emptyTitle": "This adventure is loading",
+  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions — check back soon!",
+  "state": {
+    "locked": "locked",
+```
+
+### frontend/src/i18n/en-US/lesson.json
+
+```
+{
+  "check": "Check",
+  "progress": "Lesson progress",
+  "checking": "Checking…",
+  "continue": "Continue",
+  "retry": "Try again",
+  "hint": "Hint",
+  "exit": "Exit lesson",
+  "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
+  "gradeError": "We couldn't check your answer right now. Give it another try!",
+  "chips": {
+    "hearts_one": "{{count}} heart left",
+    "hearts_other": "{{count}} hearts left"
+  },
+  "intro": {
 ```
 
 ### frontend/src/i18n/en-US/marketing.json
@@ -2939,7 +5852,8 @@ export { FileField } from './FileField';
     "howItWorks": "How it works",
     "families": "Families",
     "faq": "FAQ",
-    "cta": "Start free"
+    "cta": "Start free",
+    "loginCta": "I already have an account"
   },
   "hero": {
     "titleLead": "Money skills,",
@@ -2948,7 +5862,6 @@ export { FileField } from './FileField';
     "ctaPrimary": "Start free",
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
-    "logoAlt": "LittleFounders"
 ```
 
 ### frontend/src/i18n/en-US/profile.json
@@ -3048,7 +5961,47 @@ export { FileField } from './FileField';
     "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
     "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
     "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada.",
-    "USERNAME_TAKEN": "Ese @usuario ya está ocupado — prueba con otro."
+    "USERNAME_TAKEN": "Ese @usuario ya está ocupado — prueba con otro.",
+```
+
+### frontend/src/i18n/es-MX/learn.json
+
+```
+{
+  "loading": "Cargando tu aventura…",
+  "startHere": "Empieza aquí",
+  "goToMyLesson": "Ir a mi lección",
+  "lessonsProgress": "{{passed}}/{{total}}",
+  "locked": "Bloqueado",
+  "completed": "Completado",
+  "xp": "{{xp}} XP",
+  "minutes_one": "{{count}} min",
+  "minutes_other": "{{count}} min",
+  "backToCourse": "Volver al curso",
+  "emptyTitle": "Esta aventura está cargando",
+  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones — ¡vuelve pronto!",
+  "state": {
+    "locked": "bloqueado",
+```
+
+### frontend/src/i18n/es-MX/lesson.json
+
+```
+{
+  "check": "Comprobar",
+  "progress": "Progreso de la lección",
+  "checking": "Revisando…",
+  "continue": "Continuar",
+  "retry": "Intentar de nuevo",
+  "hint": "Pista",
+  "exit": "Salir de la lección",
+  "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
+  "gradeError": "No pudimos revisar tu respuesta ahora mismo. ¡Inténtalo otra vez!",
+  "chips": {
+    "hearts_one": "Queda {{count}} corazón",
+    "hearts_other": "Quedan {{count}} corazones"
+  },
+  "intro": {
 ```
 
 ### frontend/src/i18n/es-MX/marketing.json
@@ -3059,7 +6012,8 @@ export { FileField } from './FileField';
     "howItWorks": "Cómo funciona",
     "families": "Familias",
     "faq": "Preguntas frecuentes",
-    "cta": "Empieza gratis"
+    "cta": "Empieza gratis",
+    "loginCta": "Ya tengo cuenta"
   },
   "hero": {
     "titleLead": "Educación financiera,",
@@ -3068,7 +6022,6 @@ export { FileField } from './FileField';
     "ctaPrimary": "Empieza gratis",
     "ctaSecondary": "Cómo funciona",
     "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
-    "logoAlt": "LittleFounders"
 ```
 
 ### frontend/src/i18n/es-MX/profile.json
@@ -3188,7 +6141,47 @@ import enErrors from './en-US/errors.json';
     "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
     "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
     "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
-    "USERNAME_TAKEN": "Esse @usuário já está em uso — tente outro."
+    "USERNAME_TAKEN": "Esse @usuário já está em uso — tente outro.",
+```
+
+### frontend/src/i18n/pt-BR/learn.json
+
+```
+{
+  "loading": "Carregando sua aventura…",
+  "startHere": "Comece aqui",
+  "goToMyLesson": "Ir para minha lição",
+  "lessonsProgress": "{{passed}}/{{total}}",
+  "locked": "Bloqueado",
+  "completed": "Concluído",
+  "xp": "{{xp}} XP",
+  "minutes_one": "{{count}} min",
+  "minutes_other": "{{count}} min",
+  "backToCourse": "Voltar ao curso",
+  "emptyTitle": "Esta aventura está carregando",
+  "emptyBody": "Ainda não há aventuras publicadas para este curso. A Dina está preparando as primeiras missões — volte em breve!",
+  "state": {
+    "locked": "bloqueado",
+```
+
+### frontend/src/i18n/pt-BR/lesson.json
+
+```
+{
+  "check": "Verificar",
+  "progress": "Progresso da lição",
+  "checking": "Verificando…",
+  "continue": "Continuar",
+  "retry": "Tentar de novo",
+  "hint": "Dica",
+  "exit": "Sair da lição",
+  "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
+  "gradeError": "Não conseguimos verificar sua resposta agora. Tente de novo!",
+  "chips": {
+    "hearts_one": "{{count}} coração restante",
+    "hearts_other": "{{count}} corações restantes"
+  },
+  "intro": {
 ```
 
 ### frontend/src/i18n/pt-BR/marketing.json
@@ -3199,7 +6192,8 @@ import enErrors from './en-US/errors.json';
     "howItWorks": "Como funciona",
     "families": "Famílias",
     "faq": "Perguntas frequentes",
-    "cta": "Comece grátis"
+    "cta": "Comece grátis",
+    "loginCta": "Já tenho conta"
   },
   "hero": {
     "titleLead": "Educação financeira,",
@@ -3208,7 +6202,6 @@ import enErrors from './en-US/errors.json';
     "ctaPrimary": "Comece grátis",
     "ctaSecondary": "Como funciona",
     "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
-    "logoAlt": "LittleFounders"
 ```
 
 ### frontend/src/i18n/pt-BR/profile.json
@@ -3249,6 +6242,1259 @@ import enErrors from './en-US/errors.json';
     --lf-base: 255 255 255;
     --lf-surface: 255 255 255;
     --lf-surface-sunken: 242 242 242;
+```
+
+### frontend/src/lesson-engine/core/MarkdownLite.tsx
+
+```
+import { Fragment, type ReactNode } from 'react'
+import { cn } from '@/lib/utils'
+
+/**
+ * MarkdownLite — LESSON_ENGINE.md §8. Renders ONLY **bold**, *italic*, `code`,
+ * line breaks and `- ` lists. Hand-rolled and injection-safe: raw HTML renders as
+ * literal text (we never use dangerouslySetInnerHTML).
+ */
+
+function renderInline(text: string, keyPrefix: string): ReactNode[] {
+  const nodes: ReactNode[] = []
+  // Tokenize: **bold** | *italic* | `code`
+  const re = /(\*\*([^*]+)\*\*)|(\*([^*]+)\*)|(`([^`]+)`)/g
+  let last = 0
+  let m: RegExpExecArray | null
+```
+
+### frontend/src/lesson-engine/core/director.ts
+
+```
+// The director — maps session events to character reactions (LESSON_ENGINE.md §9).
+// Wrong answers get ENCOURAGING reactions, never mocking (P3). Rotation avoids
+// two identical consecutive reactions.
+
+import type {
+  CharacterAction,
+  CharacterEmotion,
+  CharacterId,
+} from '@/components/characters/control/types'
+
+export type DirectorEvent =
+  | 'lesson_start'
+  | 'correct'
+  | 'perfect'
+  | 'almost'
+```
+
+### frontend/src/lesson-engine/core/primitives.tsx
+
+```
+// Shared interaction primitives — every exercise renderer builds from these so
+// look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first:
+// no drag-and-drop; ≥44px hit areas; keyboard/focus-visible on everything.
+
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
+import MarkdownLite from './MarkdownLite'
+
+export type OptionVisualState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dimmed'
+
+export function optionStateClasses(state: OptionVisualState): string {
+  switch (state) {
+    case 'selected':
+```
+
+### frontend/src/lesson-engine/core/schemaBase.ts
+
+```
+// Zod building blocks for the lesson document — LESSON_ENGINE.md §3.
+// Families build their segment schemas with segmentSchema(); the top-level
+// composition (all 56 types) lives in lesson-engine/schema.ts.
+
+import { z } from 'zod'
+import { LESSON_LOCALES, LESSON_SUBJECTS } from './types'
+
+export const idSchema = z.string().min(1).max(64)
+
+export const markdownLite = z.string().min(1).max(4000)
+
+export const idText = z.object({ id: idSchema, text_md: markdownLite })
+export const idLabel = z.object({ id: idSchema, label: z.string().min(1).max(120) })
+
+/** Option with the P7 rule: wrong options MUST carry a teaching rationale.
+```
+
+### frontend/src/lesson-engine/core/scoring.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import {
+  allocationRanges,
+  binary,
+  calibration,
+  decisionAccuracy,
+  footrule,
+  fuzzyEquals,
+  jaccard,
+  kendall,
+  keywordCoverage,
+  levenshtein,
+  linearFalloff,
+  meanQuality,
+  normalizeText,
+```
+
+### frontend/src/lesson-engine/core/scoring.ts
+
+```
+// Pure scoring helpers — LESSON_ENGINE.md §6.
+// Dependency-free on purpose: Core will reuse these server-side when the
+// content-schema session lands. Keep every function pure and numerically tested.
+
+export function clampScore(n: number): number {
+  if (Number.isNaN(n)) return 0
+  return Math.max(0, Math.min(100, Math.round(n)))
+}
+
+export function binary(condition: boolean): number {
+  return condition ? 100 : 0
+}
+
+export function ratio(hits: number, total: number): number {
+  if (total <= 0) return 0
+```
+
+### frontend/src/lesson-engine/core/session.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import type { LessonDocument, Verdict } from './types'
+import { verdictFrom } from './types'
+import {
+  createSessionReducer,
+  earnedXp,
+  initialSession,
+  lessonScore,
+  progressPct,
+  type SessionState,
+} from './session'
+
+function doc(overrides?: Partial<LessonDocument['scoring']>): LessonDocument {
+  return {
+    schema_version: 1,
+```
+
+### frontend/src/lesson-engine/core/session.ts
+
+```
+// Lesson session state machine — LESSON_ENGINE.md §7. Pure reducer, unit-tested.
+
+import type { LessonDocument, SegmentBase, Verdict } from './types'
+
+export type SessionPhase = 'intro' | 'playing' | 'results'
+export type StepPhase = 'answer' | 'checking' | 'feedback'
+
+export interface SegmentState {
+  attempts: number
+  hintsShown: number
+  /** Best penalized score so far — retries can only improve (P3). */
+  best: number
+  done: boolean
+  verdict: Verdict | null
+  /** true = correct on attempt 1; false = completed without first-try correct. */
+```
+
+### frontend/src/lesson-engine/core/strip.ts
+
+```
+import type { LessonDocument } from './types'
+
+/**
+ * The single sanctioned answer-key stripper (LESSON_ENGINE.md §3).
+ * Production clients only ever receive stripped documents; Core will apply this
+ * same function server-side once the content-schema session lands.
+ */
+export function stripAnswers(doc: LessonDocument): LessonDocument {
+  return {
+    ...doc,
+    segments: doc.segments.map((segment) => {
+      const copy = { ...segment }
+      delete copy.answer
+      return copy
+    }),
+```
+
+### frontend/src/lesson-engine/core/types.ts
+
+```
+// Lesson Engine contract types — LESSON_ENGINE.md §3, §6, §7.
+// Payload/answer shapes per type live in families/*/schema.ts (Zod-inferred).
+
+import type { ComponentType } from 'react'
+import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
+
+export const LESSON_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const
+export type LessonLocale = (typeof LESSON_LOCALES)[number]
+
+export const LESSON_SUBJECTS = ['money', 'math', 'science', 'economics', 'code', 'mixed'] as const
+export type LessonSubject = (typeof LESSON_SUBJECTS)[number]
+
+export interface LessonMeta {
+  slug: string
+  title: string
+```
+
+### frontend/src/lesson-engine/families/analyze/components.tsx
+
+```
+// `analyze` family renderers (LESSON_ENGINE.md §5.6). All controlled input kind;
+// the shell owns the Check button. The read_chart SVG chart is rendered here —
+// no chart libs, DESIGN.md tokens only (CSS vars, never raw hex).
+
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
+import type { ExerciseProps } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import { OptionCard, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+
+type Dict = Record<string, unknown>
+const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
+
+```
+
+### frontend/src/lesson-engine/families/analyze/fixtures.ts
+
+```
+// `analyze` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const analyzeFixtures: SegmentBase[] = [
+  {
+    id: 'fx-spot-error',
+    type: 'spot_error',
+    prompt_md: 'Dino calculó su cambio. Encuentra el paso con **error**.',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Revisa la resta: ¿cuánto es $50 menos $25?'],
+    explanation_md: 'Para revisar un cálculo, sigue **cada paso** con calma: el error casi siempre se esconde en uno solo.',
+    narrator: { character: 'rho', emotion: 'thinking' },
+```
+
+### frontend/src/lesson-engine/families/analyze/grade.test.ts
+
+```
+// `analyze` family — numeric grading tests (LESSON_ENGINE.md §5.6, §6).
+// Per type: correct → 100, partial → exact expected value, malformed → 0, never throw.
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { analyzeGraders } from './grade'
+
+function segment(type: string, payload: Record<string, unknown>, answer: Record<string, unknown>): SegmentBase {
+  return {
+    id: `test-${type}`,
+    type,
+    prompt_md: 'test',
+    difficulty: 1,
+    xp: 10,
+    payload,
+```
+
+### frontend/src/lesson-engine/families/analyze/grade.ts
+
+```
+// `analyze` family — pure validators (LESSON_ENGINE.md §5.6, §6).
+// Malformed answers → score 0, never throw. Tier microcopy is the UI's job (i18n).
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { decisionAccuracy, jaccard, positional, ratio, signalDetection } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function strArray(v: unknown): string[] | null {
+  return Array.isArray(v) && v.every((x) => typeof x === 'string') ? (v as string[]) : null
+}
+```
+
+### frontend/src/lesson-engine/families/analyze/register.ts
+
+```
+// `analyze` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  CauseEffect,
+  CompareTable,
+  EvidenceHunt,
+  FactOpinion,
+  ReadChart,
+  RedFlags,
+  SpotError,
+  analyzeCanSubmit,
+  buildFactOpinionAnswer,
+} from './components'
+
+```
+
+### frontend/src/lesson-engine/families/analyze/schema.ts
+
+```
+// `analyze` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.6, types 39–45).
+
+import { z } from 'zod'
+import { idSchema, idText, idLabel, markdownLite, segmentSchema } from '../../core/schemaBase'
+
+export const spotError = segmentSchema(
+  'spot_error',
+  z.object({
+    context_md: markdownLite.optional(),
+    steps: z.array(idText).min(3).max(10),
+  }),
+  z.object({ error_ids: z.array(idSchema).min(1), correction_md: markdownLite.optional() }),
+)
+
+export const causeEffect = segmentSchema(
+```
+
+### frontend/src/lesson-engine/families/arrange/components.tsx
+
+```
+// `arrange` family renderers (LESSON_ENGINE.md §5.4). Tap-first everywhere:
+// tap a token → it fills the next slot; tap a placed token → it returns to the
+// bank. All input types are controlled; the shell owns the Check button.
+// memory_flip is the family's one flow and drives itself.
+
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
+import type { ExerciseProps, SegmentBase } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import { KidSlider, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+
+type Dict = Record<string, unknown>
+const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
+```
+
+### frontend/src/lesson-engine/families/arrange/fixtures.ts
+
+```
+// `arrange` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const arrangeFixtures: SegmentBase[] = [
+  {
+    id: 'fx-match-pairs',
+    type: 'match_pairs',
+    prompt_md: 'Une cada **moneda** con lo que puedes comprar con ella.',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Empieza por la moneda más grande: ¿qué cosa cuesta más?'],
+    explanation_md: 'Cada cosa tiene un **precio** distinto — conocerlos te ayuda a planear tus compras.',
+    narrator: { character: 'dina', emotion: 'happy' },
+```
+
+### frontend/src/lesson-engine/families/arrange/grade.test.ts
+
+```
+// `arrange` family — numeric grading tests (LESSON_ENGINE.md §5.4, §6).
+// Per type: perfect → 100, partial → exact expected value, malformed → 0 without throwing.
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { arrangeGraders } from './grade'
+
+function seg(
+  type: string,
+  payload: Record<string, unknown>,
+  answer?: Record<string, unknown>,
+): SegmentBase {
+  return {
+    id: `test-${type}`,
+    type,
+```
+
+### frontend/src/lesson-engine/families/arrange/grade.ts
+
+```
+// `arrange` family — pure validators (LESSON_ENGINE.md §5.4, §6).
+// Malformed answers → score 0, never throw. All partial credit uses the shared
+// scoring helpers (kendall, footrule, positional, ratio, linearFalloff).
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { footrule, kendall, linearFalloff, positional, ratio } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function num(v: unknown): number | null {
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
+```
+
+### frontend/src/lesson-engine/families/arrange/register.ts
+
+```
+// `arrange` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  BuildSentence,
+  GroupSets,
+  MatchPairs,
+  MemoryFlip,
+  NumberLine,
+  OrderSteps,
+  PatternComplete,
+  RankChoices,
+  SortBuckets,
+  TimelineOrder,
+  arrangeCanSubmit,
+```
+
+### frontend/src/lesson-engine/families/arrange/schema.ts
+
+```
+// `arrange` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.4, types 20–29).
+
+import { z } from 'zod'
+import {
+  idSchema,
+  idText,
+  idLabel,
+  markdownLite,
+  segmentSchema,
+  iconName,
+} from '../../core/schemaBase'
+
+/** Visual tint palette shared by icon tiles (matches BigIconTile tints). */
+export const tileTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
+
+```
+
+### frontend/src/lesson-engine/families/choice/components.tsx
+
+```
+// `choice` family renderers (LESSON_ENGINE.md §5.2). All controlled; the shell
+// owns the Check button (input kind). speed_tap is a flow and drives itself.
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui'
+import type { ExerciseProps } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import {
+  BigIconTile,
+  GentleTimerBar,
+  KidSlider,
+  OptionCard,
+  SunkenWell,
+  TokenChip,
+```
+
+### frontend/src/lesson-engine/families/choice/fixtures.ts
+
+```
+// `choice` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const choiceFixtures: SegmentBase[] = [
+  {
+    id: 'fx-quiz-mcq',
+    type: 'quiz_mcq',
+    prompt_md: '¿Qué es el **ahorro**?',
+    difficulty: 1,
+    xp: 10,
+    hints: ['Piensa en tu alcancía: ¿qué haces con las monedas que guardas?'],
+    explanation_md: 'Ahorrar es **guardar una parte** de tu dinero hoy para poder usarlo después.',
+    narrator: { character: 'dina', emotion: 'happy' },
+```
+
+### frontend/src/lesson-engine/families/choice/grade.ts
+
+```
+// `choice` family — pure validators (LESSON_ENGINE.md §5.2, §6).
+// Malformed answers → score 0, never throw. feedback_md comes from authored
+// content (per-distractor rationale); tier microcopy is the UI's job (i18n).
+
+import type { FamilyGrader, GradeOutcome, SegmentBase } from '../../core/types'
+import { binary, calibration, decisionAccuracy, signalDetection } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### frontend/src/lesson-engine/families/choice/register.ts
+
+```
+// `choice` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  BestDecision,
+  ConfidenceQuiz,
+  OddOneOut,
+  PictureChoice,
+  QuizMcq,
+  SpeedTap,
+  TrueFalse,
+  YesNoCases,
+  buildYesNoAnswer,
+  choiceCanSubmit,
+} from './components'
+```
+
+### frontend/src/lesson-engine/families/choice/schema.ts
+
+```
+// `choice` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.2, types 6–13).
+
+import { z } from 'zod'
+import {
+  idSchema,
+  idText,
+  markdownLite,
+  optionWithRationale,
+  segmentSchema,
+  iconName,
+} from '../../core/schemaBase'
+
+export const quizMcq = segmentSchema(
+  'quiz_mcq',
+  z.object({
+```
+
+### frontend/src/lesson-engine/families/input/components.tsx
+
+```
+// `input` family renderers (LESSON_ENGINE.md §5.3). All controlled; the shell
+// owns the Check button. Tap-first, ≥44px hit areas, semantic tokens only.
+
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
+import type { ExerciseProps } from '../../core/types'
+import { fuzzyEquals } from '../../core/scoring'
+import {
+  KidSlider,
+  NumberPad,
+  SunkenWell,
+  TokenChip,
+  optionStateClasses,
+```
+
+### frontend/src/lesson-engine/families/input/fixtures.ts
+
+```
+// `input` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const inputFixtures: SegmentBase[] = [
+  {
+    id: 'fx-type-answer',
+    type: 'type_answer',
+    prompt_md: '¿Cómo se llama el cochinito donde guardas tus **monedas** en casa?',
+    difficulty: 1,
+    xp: 10,
+    hints: ['Empieza con "al…" y a veces tiene forma de puerquito.'],
+    explanation_md: 'La **alcancía** es tu primer banco: ahí empieza el hábito de ahorrar.',
+    narrator: { character: 'dina', emotion: 'happy' },
+```
+
+### frontend/src/lesson-engine/families/input/grade.test.ts
+
+```
+// `input` family — numeric grading tests (LESSON_ENGINE.md §5.3, §6).
+// Every type: correct → 100, wrong → lower/0, malformed → 0 without throwing.
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { evaluateTokenTexts, inputGraders } from './grade'
+
+function seg(type: string, payload: Record<string, unknown>, answer: Record<string, unknown>): SegmentBase {
+  return {
+    id: `test-${type}`,
+    type,
+    prompt_md: 'test',
+    difficulty: 1,
+    xp: 10,
+    payload,
+```
+
+### frontend/src/lesson-engine/families/input/grade.ts
+
+```
+// `input` family — pure validators (LESSON_ENGINE.md §5.3, §6).
+// Malformed answers → score 0, never throw. All helpers are dependency-free so
+// Core can reuse them server-side.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { fuzzyEquals, keywordCoverage, linearFalloff, ratio, toleranceBands } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### frontend/src/lesson-engine/families/input/register.ts
+
+```
+// `input` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  CountObjects,
+  EquationBuilder,
+  EstimateSlider,
+  FillBlank,
+  NumberInput,
+  TypeAnswer,
+  buildNumericAnswer,
+  buildSliderAnswer,
+  inputCanSubmit,
+} from './components'
+
+```
+
+### frontend/src/lesson-engine/families/input/schema.ts
+
+```
+// `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
+
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase'
+
+const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
+
+export const typeAnswer = segmentSchema(
+  'type_answer',
+  z.object({
+    placeholder: z.string().min(1).max(80).optional(),
+    max_chars: z.number().int().min(1).max(80),
+  }),
+  z.object({
+    accept: z.array(z.string().min(1).max(80)).min(1),
+```
+
+### frontend/src/lesson-engine/families/maker/components.tsx
+
+```
+// `maker` family renderers (LESSON_ENGINE.md §5.8). All controlled; the shell
+// owns the Check button (input kind). robot_path is a flow and drives itself —
+// it animates the SAME simulation the grader re-runs authoritatively.
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon } from '@/components/ui'
+import type { ExerciseProps, SegmentBase } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import {
+  NumberPad,
+  OptionCard,
+  SunkenWell,
+  TokenChip,
+```
+
+### frontend/src/lesson-engine/families/maker/fixtures.ts
+
+```
+// `maker` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const makerFixtures: SegmentBase[] = [
+  {
+    id: 'fx-code-order',
+    type: 'code_order',
+    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Dino.',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Todo programa empieza con `inicio` y termina mostrando el resultado.'],
+    explanation_md:
+      'Primero **empiezas**, luego **repites** el paso de guardar, y al final **miras** cuánto juntaste.',
+```
+
+### frontend/src/lesson-engine/families/maker/grade.test.ts
+
+```
+// `maker` family — numeric grader tests (LESSON_ENGINE.md §6).
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { makerGraders, simulateRobot } from './grade'
+
+function seg(
+  type: string,
+  payload: Record<string, unknown>,
+  answer?: Record<string, unknown>,
+): SegmentBase {
+  return { id: `t-${type}`, type, prompt_md: 'x', difficulty: 1, xp: 10, payload, ...(answer ? { answer } : {}) }
+}
+
+const grade = (s: SegmentBase, answer: unknown) => {
+```
+
+### frontend/src/lesson-engine/families/maker/grade.ts
+
+```
+// `maker` family — pure validators (LESSON_ENGINE.md §5.8, §6).
+// Malformed answers → score 0, never throw. robot_path re-simulates the
+// submitted program authoritatively; the renderer reuses the same simulator
+// so what the kid watched IS what gets graded.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { binary, decisionAccuracy, kendall, sumEquals, toleranceBands } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+```
+
+### frontend/src/lesson-engine/families/maker/register.ts
+
+```
+// `maker` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  BalanceScale,
+  CodeOrder,
+  DebugHunt,
+  MachineIo,
+  MeasureRead,
+  RobotPath,
+  buildMachineAnswer,
+  buildMeasureAnswer,
+  makerCanSubmit,
+} from './components'
+
+```
+
+### frontend/src/lesson-engine/families/maker/schema.ts
+
+```
+// `maker` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.8, types 51–56).
+
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema } from '../../core/schemaBase'
+
+export const robotDirSchema = z.enum(['up', 'right', 'down', 'left'])
+export const robotCommandSchema = z.enum(['forward', 'left', 'right'])
+
+const gridCoord = z.number().int().min(0).max(5)
+
+export const codeOrder = segmentSchema(
+  'code_order',
+  z.object({
+    blocks: z.array(idText).min(3).max(8),
+    language_hint: z.string().min(1).max(40).optional(),
+```
+
+### frontend/src/lesson-engine/families/money/components.tsx
+
+```
+// `money` family renderers (LESSON_ENGINE.md §5.5). All controlled; the shell
+// owns the Check button (input kind). interest_peek is a flow and drives itself.
+// MONEY RULE (/AGENTS.md §1.8): currency is ALWAYS rendered via Intl.NumberFormat
+// with the payload's currency — never string-built.
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon } from '@/components/ui'
+import type { ExerciseProps } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import {
+  KidSlider,
+  NumberPad,
+  OptionCard,
+```
+
+### frontend/src/lesson-engine/families/money/fixtures.ts
+
+```
+// `money` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// MXN denominations: coins ≤ $10, bills ≥ $20.
+
+import type { SegmentBase } from '../../core/types'
+
+export const moneyFixtures: SegmentBase[] = [
+  {
+    id: 'fx-coin-count',
+    type: 'coin_count',
+    prompt_md: 'Dina quiere comprar un cuaderno. Paga la cantidad **exacta** tocando monedas y billetes.',
+    difficulty: 1,
+    xp: 10,
+    hints: ['Empieza con el billete más grande que no se pase.'],
+    explanation_md: 'Hay varias combinaciones que suman **$37**: por ejemplo $20 + $10 + $5 + $2.',
+```
+
+### frontend/src/lesson-engine/families/money/grade.test.ts
+
+```
+// `money` family — numeric grader tests (LESSON_ENGINE.md §5.5, §6).
+// Per type: correct → 100, near/partial → expected band, malformed → 0 without throwing.
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { moneyGraders } from './grade'
+import { moneyFixtures } from './fixtures'
+import { moneySchemas } from './schema'
+
+function seg(type: string, payload: Record<string, unknown>, answer?: Record<string, unknown>): SegmentBase {
+  return { id: `t-${type}`, type, prompt_md: 'x', difficulty: 1, xp: 10, payload, answer }
+}
+
+function grade(type: string, segment: SegmentBase, answer: unknown) {
+  const grader = moneyGraders[type]
+```
+
+### frontend/src/lesson-engine/families/money/grade.ts
+
+```
+// `money` family — pure validators (LESSON_ENGINE.md §5.5, §6).
+// Malformed answers → score 0, never throw. This module is react-free: any
+// currency FORMATTING happens in the components (Intl); here we only compute
+// numbers and put them in `reveal` for the renderer to localize.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { binary, decisionAccuracy, ratio, sumEquals, toleranceBands, allocationRanges } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+```
+
+### frontend/src/lesson-engine/families/money/register.ts
+
+```
+// `money` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  BudgetFit,
+  CoinCount,
+  FairTrade,
+  InterestPeek,
+  MakeChange,
+  NeedsWants,
+  PiggySplit,
+  PriceCompare,
+  SavingsGoal,
+  buildNeedsWantsAnswer,
+  buildSavingsGoalAnswer,
+```
+
+### frontend/src/lesson-engine/families/money/schema.ts
+
+```
+// `money` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.5, types 30–38).
+
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase'
+
+export const currencySchema = z.enum(['MXN', 'USD', 'BRL'])
+
+const moneyAmount = z.number().positive().max(1_000_000)
+const denomination = z.number().positive().max(10_000)
+
+export const coinCount = segmentSchema(
+  'coin_count',
+  z.object({
+    currency: currencySchema,
+    denominations: z.array(denomination).min(2).max(9),
+```
+
+### frontend/src/lesson-engine/families/story/components.tsx
+
+```
+// `story` family renderers (LESSON_ENGINE.md §5.1). All registry kind
+// 'content': nothing is graded; each renderer reports completion through
+// onContentDone(). The shell owns the Continue button that advances segments —
+// mount-complete types (story_scene, key_ideas) fire onContentDone immediately,
+// interactive ones (story_dialogue, concept_reveal, checkpoint) fire it when
+// the kid finishes the beat.
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon } from '@/components/ui'
+import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import type { ExerciseProps } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import { SunkenWell } from '../../core/primitives'
+```
+
+### frontend/src/lesson-engine/families/story/fixtures.ts
+
+```
+// `story` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// Content types are ungraded and carry xp: 0 (LESSON_ENGINE.md §3, §5.1).
+
+import type { SegmentBase } from '../../core/types'
+
+export const storyFixtures: SegmentBase[] = [
+  {
+    id: 'fx-story-dialogue',
+    type: 'story_dialogue',
+    prompt_md: 'La gran idea de la limonada',
+    difficulty: 1,
+    xp: 0,
+    narrator: { character: 'dina', emotion: 'happy' },
+    payload: {
+```
+
+### frontend/src/lesson-engine/families/story/grade.ts
+
+```
+// `story` family — content types are ungraded (LESSON_ENGINE.md §5.1): they
+// carry no answer keys and complete on advance / self-mark, never through the
+// Grader boundary. The empty record keeps the per-family naming convention so
+// registry composition stays uniform across all 8 families.
+
+import type { FamilyGrader } from '../../core/types'
+
+export const storyGraders: Record<string, FamilyGrader> = {}
+```
+
+### frontend/src/lesson-engine/families/story/register.ts
+
+```
+// `story` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import { Checkpoint, ConceptReveal, KeyIdeas, StoryDialogue, StoryScene } from './components'
+
+export { storySchemas } from './schema'
+export { storyGraders } from './grade'
+export { storyFixtures } from './fixtures'
+
+export const storyRegistry: Registry = {
+  story_dialogue: { kind: 'content', component: StoryDialogue },
+  story_scene: { kind: 'content', component: StoryScene },
+  key_ideas: { kind: 'content', component: KeyIdeas },
+  concept_reveal: { kind: 'content', component: ConceptReveal },
+  checkpoint: { kind: 'content', component: Checkpoint },
+```
+
+### frontend/src/lesson-engine/families/story/schema.test.ts
+
+```
+// `story` family — schema tests: every fixture parses; malformed samples reject.
+
+import { describe, expect, it } from 'vitest'
+import {
+  checkpoint,
+  conceptReveal,
+  keyIdeas,
+  storyDialogue,
+  storyScene,
+  storySchemas,
+} from './schema'
+import { storyFixtures } from './fixtures'
+import { storyGraders } from './grade'
+import { storyRegistry } from './register'
+
+```
+
+### frontend/src/lesson-engine/families/story/schema.ts
+
+```
+// `story` family — payload Zod schemas (LESSON_ENGINE.md §5.1, types 1–5).
+// Content types carry NO answer schema: they are ungraded, ship with `xp: 0`
+// and always count as complete on advance (§3).
+
+import { z } from 'zod'
+import {
+  characterActionSchema,
+  characterEmotionSchema,
+  characterIdSchema,
+  iconName,
+  markdownLite,
+  segmentSchema,
+} from '../../core/schemaBase'
+
+/** Icon tint vocabulary — mirrors BigIconTile's tint prop (core/primitives). */
+```
+
+### frontend/src/lesson-engine/families/storyplay/components.tsx
+
+```
+// `storyplay` family renderers (LESSON_ENGINE.md §5.7). Four self-driving flows
+// (story_branch, dialogue_choice, flash_match, lightning_round) + one input
+// (would_you_rather). Flows report onFinish EXACTLY once (ref-guarded).
+// Correctness never leaks into a running flow: answer keys are server-side.
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon } from '@/components/ui'
+import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
+import type { ExerciseProps } from '../../core/types'
+import MarkdownLite from '../../core/MarkdownLite'
+import {
+  GentleTimerBar,
+```
+
+### frontend/src/lesson-engine/families/storyplay/fixtures.ts
+
+```
+// `storyplay` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const storyplayFixtures: SegmentBase[] = [
+  {
+    id: 'fx-story-branch',
+    type: 'story_branch',
+    prompt_md: 'Tu **puesto de limonada** abre hoy. Cada decisión cuenta.',
+    difficulty: 3,
+    xp: 20,
+    explanation_md:
+      'Invertir en **calidad**, avisar a tus clientes y poner un **precio justo** hace que vuelvan mañana.',
+    narrator: { character: 'dina', emotion: 'excited' },
+```
+
+### frontend/src/lesson-engine/families/storyplay/grade.test.ts
+
+```
+// `storyplay` family — grading tests (LESSON_ENGINE.md §5.7, §6).
+// Every type: best → 100 (or top quality), mixed → exact expected mean,
+// malformed → 0 without throwing. Plus flash_match overtime cap and
+// lightning_round null answers.
+
+import { describe, expect, it } from 'vitest'
+import type { SegmentBase } from '../../core/types'
+import { storyplayGraders } from './grade'
+
+function seg(
+  type: string,
+  payload: Record<string, unknown>,
+  answer?: Record<string, unknown>,
+): SegmentBase {
+  return {
+```
+
+### frontend/src/lesson-engine/families/storyplay/grade.ts
+
+```
+// `storyplay` family — pure validators (LESSON_ENGINE.md §5.7, §6).
+// Malformed answers → score 0, never throw. Qualities/reactions come from the
+// server-only answer key; the client sends only the walked path/replies/pairs.
+
+import type { FamilyGrader, GradeOutcome } from '../../core/types'
+import { clampScore, meanQuality, ratio } from '../../core/scoring'
+
+type Dict = Record<string, unknown>
+
+function obj(v: unknown): Dict | null {
+  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as Dict) : null
+}
+
+function str(v: unknown): string | null {
+  return typeof v === 'string' ? v : null
+```
+
+### frontend/src/lesson-engine/families/storyplay/register.ts
+
+```
+// `storyplay` family registry slice — composed by lesson-engine/registry.ts.
+
+import type { Registry } from '../../core/types'
+import {
+  DialogueChoice,
+  FlashMatch,
+  LightningRound,
+  StoryBranch,
+  WouldYouRather,
+  storyplayCanSubmit,
+} from './components'
+
+export { storyplaySchemas } from './schema'
+export { storyplayGraders } from './grade'
+export { storyplayFixtures } from './fixtures'
+```
+
+### frontend/src/lesson-engine/families/storyplay/schema.ts
+
+```
+// `storyplay` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.7, types 46–50).
+
+import { z } from 'zod'
+import {
+  characterEmotionSchema,
+  characterIdSchema,
+  iconName,
+  idSchema,
+  idText,
+  markdownLite,
+  segmentSchema,
+} from '../../core/schemaBase'
+
+const quality = z.number().min(0).max(100)
+
+```
+
+### frontend/src/lesson-engine/lab/LessonLabPage.tsx
+
+```
+// /dev/lesson-lab — the visual QA surface and living authoring contract
+// (LESSON_ENGINE.md §10). Dev-gated in App.tsx; never ships to production nav.
+
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Badge, Button, Card, Icon, ThemeToggle } from '@/components/ui'
+import type { LessonDocument, SegmentBase } from '../core/types'
+import { stripAnswers } from '../core/strip'
+import { FIXTURES_BY_FAMILY, GRADED_TYPES, ALL_TYPES } from '../registry'
+import { createLocalGrader } from './localGrader'
+import LessonPlayer from '../player/LessonPlayer'
+import type { CharacterId } from '@/components/characters/control/types'
+
+function makeLabDocument(segments: SegmentBase[], title: string, hearts: number | null): LessonDocument {
+  const cast = Array.from(
+```
+
+### frontend/src/lesson-engine/lab/localGrader.ts
+
+```
+// DEV-ONLY local grader (LESSON_ENGINE.md §3, §6). Powers /dev/lesson-lab and
+// fixtures. Production lessons are graded by Core server-side — this module must
+// never be imported from a production route (registry-completeness test asserts
+// the lab route is dev-gated).
+
+import type { GradeMeta, Grader, LessonDocument, Verdict } from '../core/types'
+import { tierFor } from '../core/types'
+import { GRADERS } from '../registry'
+
+export function createLocalGrader(fullDocument: LessonDocument): Grader {
+  const { pass_threshold, max_attempts } = fullDocument.scoring
+  return {
+    grade(segmentId: string, answer: unknown, meta: GradeMeta): Promise<Verdict> {
+      const segment = fullDocument.segments.find((s) => s.id === segmentId)
+      const grader = segment ? GRADERS[segment.type] : undefined
+```
+
+### frontend/src/lesson-engine/player/LessonPlayer.tsx
+
+```
+// The fullscreen Lesson Player — LESSON_ENGINE.md §7, §10 and DESIGN.md
+// §Screen Recipes → Lesson: focused ~720px column, sticky glass progress header,
+// one segment at a time, earned celebration, results screen.
+
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon, ProgressBar } from '@/components/ui'
+import CharacterActor from '@/components/characters/control/CharacterActor'
+import type { CharacterId } from '@/components/characters/control/types'
+import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
+import {
+  createSessionReducer,
+  earnedXp,
+  initialSession,
+```
+
+### frontend/src/lesson-engine/registry.test.tsx
+
+```
+// Registry-completeness gate (LESSON_ENGINE.md §11): every declared type is
+// registered, every input type can gate submission, every graded type has a
+// grader, every fixture round-trips through its grader without throwing.
+
+import { describe, expect, it } from 'vitest'
+import { render } from '@testing-library/react'
+import { ALL_TYPES, FIXTURES_BY_FAMILY, GRADERS, REGISTRY, getRegistryEntry } from './registry'
+import { lessonDocumentSchema } from './schema'
+import { stripAnswers } from './core/strip'
+import type { LessonDocument } from './core/types'
+import MarkdownLite from './core/MarkdownLite'
+
+const ALL_FIXTURES = Object.values(FIXTURES_BY_FAMILY).flat()
+
+describe('registry completeness', () => {
+```
+
+### frontend/src/lesson-engine/registry.ts
+
+```
+// Central registry — composes the family slices (LESSON_ENGINE.md §4, §11).
+// Adding a family = one import block here; families never edit each other.
+
+import type { FamilyGrader, Registry, RegistryEntry } from './core/types'
+import { choiceFixtures, choiceGraders, choiceRegistry } from './families/choice/register'
+import { storyFixtures, storyGraders, storyRegistry } from './families/story/register'
+import { inputFixtures, inputGraders, inputRegistry } from './families/input/register'
+import { arrangeFixtures, arrangeGraders, arrangeRegistry } from './families/arrange/register'
+import { analyzeFixtures, analyzeGraders, analyzeRegistry } from './families/analyze/register'
+import { storyplayFixtures, storyplayGraders, storyplayRegistry } from './families/storyplay/register'
+import { makerFixtures, makerGraders, makerRegistry } from './families/maker/register'
+import { moneyFixtures, moneyGraders, moneyRegistry } from './families/money/register'
+
+export const REGISTRY: Registry = {
+  ...storyRegistry,
+```
+
+### frontend/src/lesson-engine/schema.ts
+
+```
+// The composed LessonDocument Zod schema — LESSON_ENGINE.md §3.
+// This is the contract Forge (coursegen) generates against and Core will
+// validate with server-side (pure TS, dependency-free beyond zod, by design).
+
+import { z } from 'zod'
+import { lessonMetaSchema, lessonScoringSchema } from './core/schemaBase'
+import { storySchemas } from './families/story/register'
+import { choiceSchemas } from './families/choice/register'
+import { inputSchemas } from './families/input/register'
+import { arrangeSchemas } from './families/arrange/register'
+import { moneySchemas } from './families/money/register'
+import { analyzeSchemas } from './families/analyze/register'
+import { storyplaySchemas } from './families/storyplay/register'
+import { makerSchemas } from './families/maker/register'
+
 ```
 
 ### frontend/src/lib/api.ts
@@ -3370,6 +7616,7 @@ import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
 ```
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Badge, Card, Icon, IconChip, ProgressBar } from '@/components/ui';
@@ -3379,10 +7626,9 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 /*
  * learn/ — the universal user's home. Course cards per /DESIGN.md §Screen
  * Recipes → Dashboard (md:grid-cols-2 lg:grid-cols-3 with ProgressBars).
- * Course consumption ships later — cards say so honestly.
+ * Cards link into the gamified course map (routes/app/learn/CoursePage.tsx,
+ * COURSE_ENGINE.md §2) with real server-computed progress.
  */
-
-interface Course {
 ```
 
 ### frontend/src/routes/app/SectionComingSoon.tsx
@@ -3403,6 +7649,403 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'games
       <h1 className="lf-display-lg text-content">{t(`dashboard.nav.${section}`)}</h1>
       <Card hero className="mt-8 flex flex-col items-center gap-4 py-14 text-center">
         <IconChip size="lg" tone="accent">
+```
+
+### frontend/src/routes/app/learn/AdventureBanner.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+import { GradientFallbackScene, SCENES, isKnownScene } from './scenes';
+import { localizedText, type AdventureNode } from './types';
+
+/*
+ * One vertically-stacked adventure banner on the course map (DESIGN.md
+ * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
+ * composition follows the Dashboard/Lesson recipes' grammar: scene +
+ * .lf-glass-deep chrome on a navy-equivalent illustrated band; documented
+ * here per §0 Composition Fidelity since the recipe itself wasn't extended
+ * (frontend/AGENTS.md forbids touching root docs from this task).
+ */
+
+interface AdventureBannerProps {
+```
+
+### frontend/src/routes/app/learn/CoursePage.tsx
+
+```
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card, Icon, ProgressBar } from '@/components/ui';
+import CharacterActor from '@/components/characters/control/CharacterActor';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { AdventureBanner } from './AdventureBanner';
+import { SagaSection } from './SagaSection';
+import { findAdventureForLesson, localizedText, type CourseTree } from './types';
+
+/*
+ * /learn/:courseSlug — the gamified "mapa de Aventuras" (COURSE_ENGINE.md §2:
+ * courses → adventures → sagas → topics → lessons, all server-computed
+```
+
+### frontend/src/routes/app/learn/LessonPathNode.tsx
+
+```
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { Icon } from '@/components/ui';
+import { localizedText, type LessonNode } from './types';
+
+/*
+ * One circular node on a saga's wavy lesson path (DESIGN.md §Layout closed
+ * grid categories don't cover this shape — a path, not a grid — kept single
+ * column per the task brief; see AdventureBanner's composition note).
+ */
+
+const STATE_CLASSES: Record<LessonNode['state'], string> = {
+  passed: 'bg-success text-on-success shadow-glass-sm',
+```
+
+### frontend/src/routes/app/learn/LessonRoute.tsx
+
+```
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Icon } from '@/components/ui';
+import CharacterActor from '@/components/characters/control/CharacterActor';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
+import type { LessonDocument } from '@/lesson-engine/core/types';
+import { createCoreGrader } from './coreGrader';
+
+/*
+ * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
+ * (COURSE_ENGINE.md §2, LESSON_ENGINE.md §7). Registered OUTSIDE the
+```
+
+### frontend/src/routes/app/learn/SagaSection.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Icon, IconChip, ProgressBar } from '@/components/ui';
+import { LessonPathNode } from './LessonPathNode';
+import { localizedText, type SagaNode } from './types';
+
+interface SagaSectionProps {
+  saga: SagaNode;
+  locale: string;
+  courseSlug: string;
+  nextLessonId: string | null;
+  registerNodeRef: (lessonId: string, el: HTMLElement | null) => void;
+}
+
+/** One saga: icon chip + title + progress header, then its topics threaded into ONE continuous wavy lesson path (one node per lesson — improves on v1's per-topic grouping). */
+export function SagaSection({ saga, locale, courseSlug, nextLessonId, registerNodeRef }: SagaSectionProps) {
+```
+
+### frontend/src/routes/app/learn/__tests__/CoursePage.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import i18n from '@/i18n';
+import { api } from '@/lib/api';
+import type { CourseTree } from '../types';
+import { CoursePage } from '../CoursePage';
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+// getToken must be a STABLE reference — the page's fetch effect depends on it
+// (in the real app it's a memoized useCallback from AuthContext). A fresh
+// function per render would re-fire the effect forever.
+vi.mock('@/auth/AuthContext', () => {
+  const getToken = async () => 'token-123';
+  return { useAuth: () => ({ getToken }) };
+```
+
+### frontend/src/routes/app/learn/__tests__/LessonRoute.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import type { ComponentProps } from 'react';
+import i18n from '@/i18n';
+import { api } from '@/lib/api';
+import type { LessonDocument } from '@/lesson-engine/core/types';
+import type LessonPlayerType from '@/lesson-engine/player/LessonPlayer';
+import { LessonRoute } from '../LessonRoute';
+
+const mockNavigate = vi.fn();
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+// getToken must be a STABLE reference — the route's fetch effect depends on it
+// (in the real app it's a memoized useCallback from AuthContext). A fresh
+```
+
+### frontend/src/routes/app/learn/__tests__/coreGrader.test.ts
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { api } from '@/lib/api';
+import type { Verdict } from '@/lesson-engine/core/types';
+import { createCoreGrader } from '../coreGrader';
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+
+const mockedApi = vi.mocked(api);
+
+describe('createCoreGrader', () => {
+  beforeEach(() => {
+    mockedApi.mockReset();
+  });
+
+  it('POSTs the segment attempt to Core and returns the server verdict', async () => {
+```
+
+### frontend/src/routes/app/learn/coreGrader.ts
+
+```
+import { api } from '@/lib/api';
+import type { GradeMeta, Grader, Verdict } from '@/lesson-engine/core/types';
+
+/*
+ * Production Grader (LESSON_ENGINE.md §6-§7) — POSTs each segment attempt to
+ * Core's /learn/lessons/:id/grade (backend/src/routes/learn.ts). Core is the
+ * single source of truth for attempt counting and the score; the
+ * client-declared `attempt_number` is just the honest local counter the
+ * Grader contract asks for (GradeMeta) — the server re-derives and caps it
+ * independently.
+ *
+ * Error mapping (documented choice, per the task brief):
+ *  - 409 ATTEMPTS_EXHAUSTED → mapped to a terminal Verdict (score 0,
+ *    tier 'tryAgain', allowRetry false) so the player's normal feedback flow
+ *    renders and closes out cleanly instead of falling into the generic
+```
+
+### frontend/src/routes/app/learn/scenes/ArchipelagoScene.tsx
+
+```
+// Archipelago — adventure 1 ("El Archipiélago del Trueque", COURSE_ENGINE.md
+// §3). ILLUSTRATION ASSET: see scenes.css header for the raw-color + ambient
+// motion exemption. Ported + recomposed from LittleFounders v1's
+// AdventureCard scene.
+import { Atmosphere, Birds, Celestial, StarField } from './sceneParts'
+
+export default function ArchipelagoScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-b from-[#7fe3f0] via-[#37bfe8] to-[#cdeff5] dark:from-[#06182f] dark:via-[#0b3a5c] dark:to-[#0a5d7a]">
+      <StarField />
+      <div className="absolute inset-x-0 bottom-[34%] z-0 h-24 bg-gradient-to-t from-amber-200/40 to-transparent blur-md dark:from-sky-300/10" />
+      <Celestial className="right-10 top-9" />
+      <Birds className="left-[26%] top-[52px]" />
+
+      <div className="absolute left-8 top-10 z-[1] h-[22px] w-[70px] animate-[lf-scene-float-h_8s_ease-in-out_infinite_alternate] rounded-[20px] bg-white/90 blur-[1px] dark:bg-white/10" />
+```
+
+### frontend/src/routes/app/learn/scenes/CityScene.tsx
+
+```
+// City — adventure 4 ("El Mercado de los Colores", COURSE_ENGINE.md §3).
+// ILLUSTRATION ASSET: see scenes.css header for the raw-color + ambient
+// motion exemption. Ported + recomposed from LittleFounders v1's
+// AdventureCard scene.
+import { Atmosphere, Celestial, StarField, Tower } from './sceneParts'
+
+export default function CityScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-b from-[#8b93f5] via-[#a5b4fc] to-[#d6ddfe] dark:from-[#1b1745] dark:via-[#262061] dark:to-[#1e3a6e]">
+      <StarField />
+      <Celestial className="right-10 top-8" />
+
+      {/* Background skyline */}
+      <div className="absolute bottom-10 z-[1] flex w-full justify-around opacity-60">
+        <div className="h-[100px] w-10 rounded-t bg-[#4f46e5]" />
+```
+
+### frontend/src/routes/app/learn/scenes/CosmosScene.tsx
+
+```
+// Cosmos — adventure 8 ("El Cosmos del Mañana", the capstone; COURSE_ENGINE.md
+// §3). ILLUSTRATION ASSET: see scenes.css header for the raw-color + ambient
+// motion exemption. Ported + recomposed from LittleFounders v1's
+// AdventureCard scene.
+import { StarField } from './sceneParts'
+
+export default function CosmosScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-b from-[#241a6b] via-[#1e2f7e] to-[#05030f]">
+      <StarField alwaysOn />
+
+      <div className="absolute -top-12 right-0 z-0 h-2/3 w-2/3 blur-2xl" style={{ background: 'radial-gradient(circle, rgba(217,70,239,0.28), transparent 70%)' }} />
+      <div className="absolute -left-6 bottom-0 z-0 h-2/3 w-2/3 blur-2xl" style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.20), transparent 70%)' }} />
+
+      {/* Big ringed planet */}
+```
+
+### frontend/src/routes/app/learn/scenes/ForestScene.tsx
+
+```
+// Forest — adventure 2 ("El Bosque de la Abundancia", COURSE_ENGINE.md §3).
+// ILLUSTRATION ASSET: see scenes.css header for the raw-color + ambient
+// motion exemption. Ported + recomposed from LittleFounders v1's
+// AdventureCard scene.
+import { Atmosphere, Birds, Celestial, Pine, StarField } from './sceneParts'
+
+export default function ForestScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-b from-[#7cc6f5] via-[#a7d8f6] to-[#d8ecfb] dark:from-[#0c1b40] dark:via-[#16265c] dark:to-[#243a72]">
+      <StarField />
+      <Celestial className="right-10 top-9" />
+      <Birds className="left-[18%] top-[44px]" />
+      <div className="absolute left-10 top-8 z-[1] h-5 w-[70px] animate-[lf-scene-float-h_8s_ease-in-out_infinite_alternate] rounded-[20px] bg-white/85 blur-[1px] dark:bg-white/10" />
+
+      <div className="absolute inset-x-0 bottom-[120px] z-0 h-16 bg-gradient-to-t from-emerald-200/30 to-transparent blur-md dark:from-emerald-400/10" />
+```
+
+### frontend/src/routes/app/learn/scenes/GradientFallbackScene.tsx
+
+```
+// Fallback for an unrecognized adventure.theme (COURSE_ENGINE.md §2: theme
+// is a closed-but-extensible id — new content can land before the matching
+// scene ships in code). ILLUSTRATION ASSET, same exemption as the named
+// scenes (see scenes.css header).
+export default function GradientFallbackScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-br from-primary/70 via-primary-strong/60 to-[#080f28]">
+      <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_30%_20%,rgba(255,255,255,0.18),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(125%_105%_at_50%_28%,transparent_50%,rgba(0,0,0,0.34)_100%)]" />
+    </div>
+  )
+}
+```
+
+### frontend/src/routes/app/learn/scenes/KingdomScene.tsx
+
+```
+// Kingdom — adventure 6 ("El Faro de la Confianza", archipelago-night
+// variant reuses this castle set piece; COURSE_ENGINE.md §3). ILLUSTRATION
+// ASSET: see scenes.css header for the raw-color + ambient motion exemption.
+// Ported + recomposed from LittleFounders v1's AdventureCard scene.
+import { Atmosphere, Celestial, StarField } from './sceneParts'
+
+function Turret({ tall = false, torchSide }: { tall?: boolean; torchSide?: 'left' | 'right' }) {
+  return (
+    <div className={`relative mx-0.5 w-[25px] rounded bg-[#bdbdbd] ${tall ? 'h-[100px] shadow-[inset_-5px_0_0_rgba(0,0,0,0.2)]' : 'h-[70px] bg-[#9e9e9e]'}`}>
+      <div
+        className="absolute -left-0.5 -top-5 h-[25px] w-[115%] bg-[#c62828]"
+        style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}
+      />
+      <div className="absolute -top-9 left-1/2 h-4 w-0.5 bg-[#333]">
+        <div className="absolute left-0.5 top-0 h-2 w-3 animate-[lf-scene-sway_2s_ease-in-out_infinite] bg-[#ffca28]" />
+```
+
+### frontend/src/routes/app/learn/scenes/ValleyScene.tsx
+
+```
+// Valley — adventure 3 ("La Aldea del Ahorro", COURSE_ENGINE.md §3).
+// ILLUSTRATION ASSET: see scenes.css header for the raw-color + ambient
+// motion exemption. Ported + recomposed from LittleFounders v1's
+// AdventureCard scene.
+import { Atmosphere, Birds, Celestial, StarField } from './sceneParts'
+
+export default function ValleyScene() {
+  return (
+    <div className="lf-scene relative h-full w-full overflow-hidden bg-gradient-to-b from-[#88cdf2] via-[#bbe3f6] to-[#dcefdf] dark:from-[#0d2742] dark:via-[#163a5c] dark:to-[#1d5230]">
+      <StarField />
+      <Celestial className="right-10 top-8" />
+      <Birds className="left-[16%] top-10" />
+      <div className="absolute left-[20%] top-11 z-[1] h-6 w-20 animate-[lf-scene-float-h_8s_ease-in-out_infinite_alternate] rounded-[20px] bg-white/85 blur-[1px] dark:bg-white/10" />
+
+      {/* Rolling hills */}
+```
+
+### frontend/src/routes/app/learn/scenes/index.tsx
+
+```
+// Data-driven scene registry for the adventure map (COURSE_ENGINE.md §2:
+// `adventures.theme` is a closed-but-extensible scene id). One import of
+// scenes.css here is enough — every scene component below lives under this
+// directory and shares the same ambient keyframes.
+import './scenes.css'
+import type { ComponentType } from 'react'
+import ArchipelagoScene from './ArchipelagoScene'
+import ForestScene from './ForestScene'
+import CityScene from './CityScene'
+import ValleyScene from './ValleyScene'
+import KingdomScene from './KingdomScene'
+import CosmosScene from './CosmosScene'
+import GradientFallbackScene from './GradientFallbackScene'
+
+export type SceneTheme = 'archipelago' | 'forest' | 'city' | 'valley' | 'kingdom' | 'cosmos'
+```
+
+### frontend/src/routes/app/learn/scenes/sceneParts.tsx
+
+```
+// Shared decorative primitives for the adventure scenes — illustration
+// assets, exempt from the semantic-token rule (see scenes.css header).
+// Internal to scenes/, not part of the public SCENES registry.
+import { cn } from '@/lib/utils'
+
+export function Atmosphere() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-30">
+      <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/15 to-transparent" />
+      <div className="absolute inset-x-0 bottom-[24%] h-1/3 bg-gradient-to-t from-white/10 to-transparent blur-lg" />
+      <div className="absolute inset-0 bg-[radial-gradient(125%_105%_at_50%_28%,transparent_50%,rgba(0,0,0,0.34)_100%)]" />
+    </div>
+  )
+}
+
+```
+
+### frontend/src/routes/app/learn/scenes/scenes.css
+
+```
+/* Ambient keyframes for the six adventure-map scenes (COURSE_ENGINE.md §2
+ * `adventures.theme`). Ported + improved from LittleFounders v1's CSS-drawn
+ * worlds (AdventureCard.tsx). These are ILLUSTRATION ASSETS like the
+ * character SVGs (frontend/AGENTS.md "Characters are canonical assets") —
+ * raw colors/gradients/shadows painted inside the scene components are
+ * exempt from the /DESIGN.md semantic-token rule, and the infinite ambient
+ * motion below joins the characters' one exemption to the closed 5-recipe
+ * motion system (/DESIGN.md §Motion, recipe note "scene ambient animations
+ * join the characters' illustration exemption").
+ *
+ * Every keyframe is switched off under prefers-reduced-motion via the
+ * `.lf-scene` guard below — nothing here is exempt from that.
+ */
+
+@keyframes lf-scene-float {
+```
+
+### frontend/src/routes/app/learn/types.ts
+
+```
+// Local mirror of Core's /learn/courses/:slug/tree response shape
+// (backend/src/services/courseTree.ts — COURSE_ENGINE.md §2). No shared-type
+// package exists between services (/AGENTS.md §1.2: 8 independent npm
+// packages, no workspaces), so the frontend re-declares the wire shape here.
+
+export type Json = Record<string, unknown>
+
+export type LessonState = 'locked' | 'available' | 'current' | 'passed'
+export type AdventureState = 'locked' | 'available' | 'completed'
+
+export interface ProgressShape {
+  passed: number
+  total: number
+  pct: number
+}
 ```
 
 ### frontend/src/routes/app/navConfig.ts
@@ -3834,6 +8477,11 @@ import '@/i18n';
 // jsdom doesn't implement scrollTo — stub it so the scroll-to-top-on-route-change
 // effect (MarketingLayout) doesn't spam "Not implemented" errors in test output.
 window.scrollTo = () => {};
+
+// jsdom doesn't implement scrollIntoView either — stub it so the course map's
+// auto-scroll-to-current-lesson effect (routes/app/learn/CoursePage.tsx)
+// doesn't spam "Not implemented" errors in test output.
+window.HTMLElement.prototype.scrollIntoView = () => {};
 ```
 
 ### frontend/src/theme/useTheme.ts
@@ -3998,7 +8646,7 @@ export default tseslint.config(
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
@@ -4180,7 +8828,7 @@ export default tseslint.config(
     "node": "24.x"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",

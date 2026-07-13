@@ -23,6 +23,8 @@
 | Product/architecture context (canonical) | agent/core/CONTEXT.md | all |
 | Code conventions (copy-paste shapes) | agent/core/CONVENTIONS.md | all |
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
+| Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
+| Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |
@@ -34,8 +36,9 @@
 | database (Vault) | database/AGENTS.md · deploy: database/DEPLOYMENT.md |
 | backend (Core) | backend/AGENTS.md |
 | frontend | frontend/AGENTS.md |
-| coursegen (Forge) | coursegen/AGENTS.md · engine spec: planned COURSE_ENGINE.md |
+| coursegen (Forge) | coursegen/AGENTS.md · lesson contract: /LESSON_ENGINE.md · pipeline spec: /COURSE_ENGINE.md |
 | audiogen (Echo) | audiogen/AGENTS.md |
 | gamegen (Arcade) | gamegen/AGENTS.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine candidates: email-server/README.md |
+| filebase (Depot) | filebase/AGENTS.md |
