@@ -49,3 +49,7 @@ database/supabase/
 
 # ── tesseract.js language-data cache (downloaded at runtime) ──
 *.traineddata
+
+# ── Forge (coursegen) generation run artifacts — checkpoints/ledgers,
+#    never tracked (COURSE_ENGINE.md §4, coursegen/README.md) ──
+coursegen/runs/

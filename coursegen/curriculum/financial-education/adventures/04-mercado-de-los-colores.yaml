@@ -1,0 +1,861 @@
+schema_version: 1
+
+adventure:
+  position: 4
+  slug: mercado-de-los-colores
+  theme: city
+  age_tier: tier1
+  title:
+    en-US: "The Market of Colors"
+    es-MX: "El Mercado de los Colores"
+    pt-BR: "O Mercado das Cores"
+  description:
+    en-US: "In a bustling market city, the crew learns to tell needs from wants, compare prices, and shop within a limit."
+    es-MX: "En una ciudad de mercado lleno de color, la tripulación aprende a distinguir necesidades de deseos, comparar precios y comprar dentro de un límite."
+    pt-BR: "Em uma cidade de mercado cheia de cores, a tripulação aprende a distinguir necessidades de desejos, comparar preços e comprar dentro de um limite."
+  narrative_arc: "El barco atraca en una ciudad de puestos coloridos donde todo se puede comprar, pero las monedas no alcanzan para todo. Dina, Dino, Rho y Zara aprenden a pensar antes de comprar: qué necesitan de verdad, qué solo desean, cuál puesto ofrece el mejor precio, y cómo hacer que su bolsa de compras rinda para lo más importante."
+
+sagas:
+  - position: 1
+    slug: lo-que-necesito-de-verdad
+    icon: checklist
+    title:
+      en-US: "What I Really Need"
+      es-MX: "Lo Que Necesito de Verdad"
+      pt-BR: "O Que Eu Realmente Preciso"
+    description:
+      en-US: "The crew learns to separate what they truly need from what they simply want."
+      es-MX: "La tripulación aprende a separar lo que de verdad necesita de lo que solo desea."
+      pt-BR: "A tripulação aprende a separar o que realmente precisa do que apenas deseja."
+    topics:
+      - position: 1
+        slug: cosas-que-necesito-para-vivir-bien
+        title_es: "Cosas que necesito para vivir bien"
+        concept: "Hay cosas que mi cuerpo y mi vida necesitan de verdad, como comida, agua y un lugar donde dormir."
+        learning_objective: "Al final, el niño puede nombrar 3 cosas que una persona necesita para vivir bien."
+        key_vocabulary: [necesito, para vivir, importante]
+        prior_knowledge: "Sabe dividir monedas entre ahorro, gasto y compartir (aventura anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: lo-que-mi-cuerpo-necesita
+            micro_objective: "Reconoce en la historia una cosa que el cuerpo necesita de verdad para estar bien."
+            narrative_beat: "Dina llega a la ciudad con hambre y busca primero un puesto de comida, no de juguetes."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: tres-cosas-que-necesito
+            micro_objective: "Elige, entre 6 tarjetas, las 3 que muestran cosas que una persona necesita para vivir bien."
+            narrative_beat: "Dino recorre el mercado señalando lo que cree que todos necesitan para vivir bien."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: ordeno-lo-mas-importante
+            micro_objective: "Ordena 3 necesidades básicas de la más urgente a la menos urgente en una escena."
+            narrative_beat: "Rho ayuda a un viajero cansado a pensar qué necesita primero: agua, sombra o descanso."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: mi-lista-de-necesidades
+            micro_objective: "Arma en la historia una lista de 3 necesidades básicas propias."
+            narrative_beat: "Zara escribe su propia lista de necesidades antes de empezar a recorrer el mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 2
+        slug: cosas-que-quiero-pero-no-necesito
+        title_es: "Cosas que quiero pero no necesito"
+        concept: "Hay cosas que me gustaría tener, pero que no son indispensables para vivir bien: eso es un deseo."
+        learning_objective: "Al final, el niño puede nombrar algo que desea pero reconoce que no es una necesidad."
+        key_vocabulary: [deseo, no indispensable, me gustaría]
+        prior_knowledge: "Sabe nombrar necesidades básicas (tema anterior)."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        lessons:
+          - position: 1
+            slug: el-juguete-brillante
+            micro_objective: "Reconoce en la historia un objeto que el personaje desea, pero no necesita para vivir."
+            narrative_beat: "Dino ve un juguete brillante en un puesto y admite que le encanta, aunque no lo necesita."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: deseo-o-necesidad
+            micro_objective: "Clasifica 4 objetos entre 'deseo' y 'necesidad', usando lo aprendido en el tema anterior."
+            narrative_beat: "Rho separa los puestos del mercado entre los que venden necesidades y los que venden deseos."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: puedo-desear-sin-culpa
+            micro_objective: "Reconoce que desear algo que no es una necesidad está bien, no es motivo de culpa."
+            narrative_beat: "Zara le asegura a Dino que está bien desear el juguete brillante, solo hay que pensarlo con calma."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: nombro-mi-propio-deseo
+            micro_objective: "Nombra, dentro de la historia, un deseo propio distinto de sus necesidades."
+            narrative_beat: "Dina piensa en algo que le encantaría tener del mercado, aunque no lo necesite de verdad."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 3
+        slug: a-veces-algo-es-necesidad-y-deseo-a-la-vez
+        title_es: "A veces algo es necesidad y deseo a la vez"
+        concept: "Algunas cosas pueden ser necesidad y deseo al mismo tiempo, como un zapato que necesito y que además me gusta mucho."
+        learning_objective: "Al final, el niño puede reconocer un ejemplo donde algo es necesidad y deseo a la vez."
+        key_vocabulary: [las dos cosas, necesito y me gusta]
+        prior_knowledge: "Distingue deseos de necesidades por separado (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: unos-zapatos-que-me-encantan
+            micro_objective: "Reconoce en la historia un objeto que es necesidad y deseo al mismo tiempo."
+            narrative_beat: "Rho necesita zapatos nuevos para el viaje, y además encuentra unos de su color favorito."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: encuentro-ejemplos-de-las-dos-cosas
+            micro_objective: "Elige, entre 4 objetos, cuáles podrían ser necesidad y deseo a la vez."
+            narrative_beat: "Zara revisa el mercado buscando objetos que sean útiles y también le encanten."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: explico-mi-ejemplo
+            micro_objective: "Explica en una frase por qué un objeto elegido es necesidad y deseo a la vez."
+            narrative_beat: "Dino explica por qué su mochila nueva es algo que necesita y también algo que le fascina."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: celebro-cuando-coinciden
+            micro_objective: "Reconoce en la historia que es una suerte cuando lo que necesito también me gusta mucho."
+            narrative_beat: "Dina celebra haber encontrado unos zapatos que necesitaba y que además ama."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+      - position: 4
+        slug: elijo-que-es-mas-importante
+        title_es: "Elijo qué es más importante"
+        concept: "Cuando tengo monedas limitadas, puedo elegir primero lo que es más importante entre varias opciones."
+        learning_objective: "Al final, el niño puede elegir, entre una necesidad y un deseo, cuál priorizar con monedas limitadas."
+        key_vocabulary: [prioridad, más importante, elegir primero]
+        prior_knowledge: "Reconoce que algo puede ser necesidad y deseo a la vez (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: solo-me-alcanza-para-uno
+            micro_objective: "Reconoce en la historia que el personaje solo tiene monedas para una de dos opciones."
+            narrative_beat: "Rho solo tiene monedas para comprar agua o para comprar un dulce, no para las dos cosas."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: elijo-la-necesidad-primero
+            micro_objective: "Elige, entre una necesidad y un deseo, la opción más importante para priorizar."
+            narrative_beat: "Zara ayuda a Rho a decidir: primero el agua que necesita, después puede pensar en el dulce."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: a-veces-el-deseo-puede-esperar
+            micro_objective: "Reconoce en la historia que un deseo puede esperar sin desaparecer para siempre."
+            narrative_beat: "Dino guarda la idea del juguete brillante para más adelante, después de cubrir lo importante."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: priorizo-en-la-historia
+            micro_objective: "Completa en la historia una decisión de prioridad entre necesidad y deseo con monedas limitadas."
+            narrative_beat: "Dina decide con calma qué comprar primero, pensando en lo que es más importante hoy."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 5
+        slug: mi-lista-de-necesidades-de-hoy
+        title_es: "Mi lista de necesidades de hoy"
+        concept: "Antes de entrar al mercado, puedo armar una lista corta de lo que de verdad necesito hoy."
+        learning_objective: "Al final, el niño puede armar una lista corta de necesidades antes de una compra."
+        key_vocabulary: [lista, antes de comprar, hoy necesito]
+        prior_knowledge: "Sabe priorizar entre necesidad y deseo (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: antes-de-entrar-al-mercado
+            micro_objective: "Reconoce en la historia el momento en que un personaje arma su lista antes de comprar."
+            narrative_beat: "Rho se sienta afuera del mercado y anota en un pergamino lo que necesita hoy."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: armo-mi-lista-corta
+            micro_objective: "Arma una lista corta de 2-3 necesidades antes de entrar a comprar en la historia."
+            narrative_beat: "Zara hace su propia lista corta antes de perderse entre los puestos coloridos."
+            difficulty: 2
+            suggested_families: [story, arrange]
+          - position: 3
+            slug: sigo-mi-lista
+            micro_objective: "Reconoce en la historia cómo seguir la lista ayuda a no comprar cosas de más."
+            narrative_beat: "Dino revisa su lista varias veces mientras camina entre los puestos tentadores del mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: termino-mi-lista-completa
+            micro_objective: "Completa en la historia una compra siguiendo toda su lista de necesidades."
+            narrative_beat: "Dina termina de comprar todo lo de su lista y se siente satisfecha, sin gastar de más."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: separar-necesidades-y-deseos
+        title_es: "Separar necesidades y deseos"
+        concept: "Con práctica, puedo mirar una lista de cosas y separar rápido cuáles son necesidades y cuáles deseos."
+        learning_objective: "Al final, el niño puede clasificar correctamente una lista de objetos entre necesidades y deseos."
+        key_vocabulary: [separar, clasificar, necesidad, deseo]
+        prior_knowledge: "Sabe armar una lista de necesidades antes de comprar (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: repaso-necesidad-o-deseo
+            micro_objective: "Repasa la diferencia entre necesidad y deseo con 3 ejemplos de la historia."
+            narrative_beat: "Rho repasa con la tripulación todo lo aprendido sobre necesidades y deseos en el mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: clasifico-una-lista-completa
+            micro_objective: "Clasifica una lista de 8 objetos entre necesidades y deseos."
+            narrative_beat: "Zara clasifica todos los objetos que vio hoy en el mercado en dos grandes grupos."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: reviso-mis-aciertos
+            micro_objective: "Revisa su clasificación anterior y corrige un objeto mal clasificado dentro de la historia."
+            narrative_beat: "Dino revisa su lista con Rho y corrige un objeto que había puesto en el grupo equivocado."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: lo-que-necesito-de-verdad-repaso
+            micro_objective: "Clasifica sin ayuda una lista nueva de objetos entre necesidades y deseos, como cierre de la saga."
+            narrative_beat: "Dina completa su propia clasificación final antes de seguir explorando el mercado de colores."
+            difficulty: 3
+            suggested_families: [money, choice]
+
+  - position: 2
+    slug: el-mercado-y-sus-precios
+    icon: storefront
+    title:
+      en-US: "The Market and Its Prices"
+      es-MX: "El Mercado y sus Precios"
+      pt-BR: "O Mercado e Seus Preços"
+    description:
+      en-US: "Every stall has a price tag — the crew learns to read, compare and question prices."
+      es-MX: "Cada puesto tiene una etiqueta de precio: la tripulación aprende a leerlas, compararlas y cuestionarlas."
+      pt-BR: "Cada barraca tem uma etiqueta de preço: a tripulação aprende a lê-las, compará-las e questioná-las."
+    topics:
+      - position: 1
+        slug: todo-en-el-mercado-tiene-un-precio
+        title_es: "Todo en el mercado tiene un precio"
+        concept: "Cada objeto en el mercado tiene una etiqueta que dice cuántas monedas cuesta."
+        learning_objective: "Al final, el niño puede leer el precio escrito en la etiqueta de un objeto."
+        key_vocabulary: [precio, etiqueta, cuesta]
+        prior_knowledge: "Sabe clasificar necesidades y deseos (saga anterior)."
+        fact_refs: [mxn.reference_prices.paleta]
+        lessons:
+          - position: 1
+            slug: la-etiqueta-del-precio
+            micro_objective: "Reconoce en la historia dónde está escrito el precio de un objeto en el mercado."
+            narrative_beat: "Rho encuentra su primera etiqueta de precio colgada de una fruta jugosa en el puesto."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: leo-un-precio
+            micro_objective: "Lee correctamente un precio de una cifra dentro de un rango de $5 a $50."
+            narrative_beat: "Zara practica leer en voz alta los precios de distintos puestos del mercado."
+            difficulty: 1
+            suggested_families: [money, input]
+          - position: 3
+            slug: comparo-el-precio-con-mis-monedas
+            micro_objective: "Compara un precio con la cantidad de monedas que tiene el personaje y determina si le alcanza."
+            narrative_beat: "Dino cuenta sus monedas y las compara con el precio de la fruta que quiere comprar."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: reviso-varios-precios
+            micro_objective: "Revisa 3 etiquetas de precio distintas en la historia y las lee correctamente en voz alta."
+            narrative_beat: "Dina recorre varios puestos leyendo cada etiqueta de precio con atención."
+            difficulty: 2
+            suggested_families: [money, choice]
+      - position: 2
+        slug: reviso-el-precio-antes-de-decidir
+        title_es: "Reviso el precio antes de decidir"
+        concept: "Antes de comprar algo, es buena idea revisar su precio primero, sin apurarse."
+        learning_objective: "Al final, el niño puede describir por qué revisar el precio antes de decidir es una buena costumbre."
+        key_vocabulary: [revisar antes, sin apurarse, decidir con calma]
+        prior_knowledge: "Sabe leer precios en etiquetas (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: casi-compro-sin-mirar
+            micro_objective: "Reconoce en la historia el riesgo de comprar algo sin revisar antes su precio."
+            narrative_beat: "Rho casi compra un juguete sin fijarse en el precio, hasta que Zara le recuerda revisarlo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: me-tomo-mi-tiempo
+            micro_objective: "Elige, entre 2 respuestas posibles, la que muestra tomarse un momento para revisar el precio antes de decidir."
+            narrative_beat: "Dino respira y se toma un momento para leer bien el precio antes de decidir comprar."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: comparo-antes-de-comprar
+            micro_objective: "Revisa 2 precios distintos de objetos parecidos antes de decidir cuál comprar en la historia."
+            narrative_beat: "Zara revisa dos puestos de fruta antes de decidir en cuál va a comprar."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: decido-con-el-precio-en-mente
+            micro_objective: "Completa en la historia una decisión de compra tomada después de revisar el precio con calma."
+            narrative_beat: "Dina revisa el precio, lo compara con sus monedas, y decide comprar con seguridad."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 3
+        slug: dos-puestos-dos-precios
+        title_es: "Dos puestos, dos precios"
+        concept: "El mismo objeto puede costar distinto en dos puestos diferentes del mercado."
+        learning_objective: "Al final, el niño puede comparar el precio del mismo objeto en dos puestos distintos."
+        key_vocabulary: [mismo objeto, distinto precio, comparar puestos]
+        prior_knowledge: "Sabe revisar un precio antes de decidir (tema anterior)."
+        fact_refs: [mxn.reference_prices.helado, mxn.reference_prices.paleta]
+        lessons:
+          - position: 1
+            slug: la-misma-fruta-dos-precios
+            micro_objective: "Reconoce en la historia que el mismo objeto cuesta distinto en dos puestos diferentes."
+            narrative_beat: "Rho encuentra la misma fruta en dos puestos del mercado, cada uno con un precio distinto."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cual-puesto-cobra-menos
+            micro_objective: "Compara los precios de dos puestos para el mismo objeto y elige cuál cobra menos."
+            narrative_beat: "Zara compara los dos precios de la misma fruta y elige el puesto más conveniente."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: comparo-tres-puestos
+            micro_objective: "Compara el precio del mismo objeto en 3 puestos distintos y los ordena de menor a mayor."
+            narrative_beat: "Dino recorre tres puestos distintos que venden el mismo juguete, anotando cada precio."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: elijo-el-mejor-puesto
+            micro_objective: "Elige, en la historia, el puesto más conveniente tras comparar precios del mismo objeto."
+            narrative_beat: "Dina elige comprar en el puesto donde el mismo objeto le cuesta menos monedas."
+            difficulty: 2
+            suggested_families: [money, choice]
+      - position: 4
+        slug: lo-barato-y-lo-caro
+        title_es: "Lo barato y lo caro"
+        concept: "Puedo clasificar los objetos del mercado como baratos o caros, comparándolos con precios que ya conozco."
+        learning_objective: "Al final, el niño puede clasificar un objeto como barato o caro comparándolo con referencias conocidas."
+        key_vocabulary: [barato, caro, comparar con lo que ya sé]
+        prior_knowledge: "Sabe comparar el precio del mismo objeto en distintos puestos (tema anterior)."
+        fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.juguete_pequeno]
+        lessons:
+          - position: 1
+            slug: esto-es-barato-o-caro
+            micro_objective: "Reconoce en la historia si un objeto le parece barato o caro, comparándolo con precios ya conocidos."
+            narrative_beat: "Rho compara el precio de un juguete nuevo con lo que ya sabe que cuestan las cosas del mercado."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: clasifico-por-precio
+            micro_objective: "Clasifica 4 objetos del mercado entre baratos y caros, usando referencias conocidas."
+            narrative_beat: "Zara recorre el mercado clasificando cada puesto según si le parece barato o caro."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: explico-mi-clasificacion
+            micro_objective: "Explica en una frase por qué considera un objeto barato o caro dentro de la historia."
+            narrative_beat: "Dino explica a Rho por qué considera que cierto juguete es caro comparado con otros."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: mi-mapa-de-precios
+            micro_objective: "Arma en la historia un mapa simple del mercado marcando qué puestos son baratos y cuáles caros."
+            narrative_beat: "Dina dibuja un mapa del mercado marcando con colores los puestos baratos y los caros."
+            difficulty: 2
+            suggested_families: [arrange, story]
+      - position: 5
+        slug: vale-la-pena-pagar-mas
+        title_es: "¿Vale la pena pagar más?"
+        concept: "A veces pagar un poco más vale la pena si el objeto dura más o es de mejor calidad."
+        learning_objective: "Al final, el niño puede reconocer una razón simple por la que pagar más a veces conviene."
+        key_vocabulary: [dura más, mejor calidad, vale la pena]
+        prior_knowledge: "Sabe clasificar objetos como baratos o caros (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: el-juguete-que-se-rompe-rapido
+            micro_objective: "Reconoce en la historia que un juguete barato se rompió más rápido que uno un poco más caro."
+            narrative_beat: "Rho compra el juguete más barato del mercado, pero se rompe apenas dos días después."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-calidad-y-precio
+            micro_objective: "Compara dos versiones del mismo objeto —una barata, una un poco más cara— y reconoce la diferencia de calidad."
+            narrative_beat: "Zara compara dos juguetes parecidos: uno económico y otro un poco más caro pero más resistente."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: no-siempre-lo-mas-caro-es-mejor
+            micro_objective: "Reconoce en la historia que pagar más no siempre garantiza algo mejor."
+            narrative_beat: "Dino nota que un objeto carísimo del mercado no es mejor que uno de precio medio."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: decido-si-vale-la-pena
+            micro_objective: "Decide en la historia, con una razón, si vale la pena pagar un poco más por un objeto."
+            narrative_beat: "Dina decide pagar un poco más por un juguete que sabe que le durará mucho más tiempo."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: elijo-el-mejor-precio
+        title_es: "Elijo el mejor precio"
+        concept: "Combinando lo que sé de comparar precios y de calidad, puedo elegir la mejor opción de compra."
+        learning_objective: "Al final, el niño puede elegir la mejor opción de compra combinando precio y calidad."
+        key_vocabulary: [mejor opción, combinar precio y calidad]
+        prior_knowledge: "Sabe cuándo pagar más puede valer la pena (tema anterior)."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        lessons:
+          - position: 1
+            slug: repaso-de-precios-del-mercado
+            micro_objective: "Repasa con 3 ejemplos lo aprendido sobre comparar precios en el mercado."
+            narrative_beat: "Rho repasa con la tripulación todo lo aprendido sobre precios en esta saga del mercado."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-tres-opciones-completas
+            micro_objective: "Compara 3 opciones de compra considerando precio y calidad, y elige la mejor."
+            narrative_beat: "Zara compara tres puestos distintos, pensando tanto en el precio como en la calidad del objeto."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: explico-mi-eleccion-final
+            micro_objective: "Explica en una frase por qué eligió determinada opción como la mejor del mercado."
+            narrative_beat: "Dino explica a sus amigos por qué eligió cierto puesto como el mejor de todo el mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: el-mercado-y-sus-precios-repaso
+            micro_objective: "Elige, sin ayuda, la mejor opción de compra dentro de una historia con varios puestos distintos."
+            narrative_beat: "Dina recorre el mercado completo y elige, por sí sola, el mejor precio para su compra final."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+
+  - position: 3
+    slug: mi-bolsa-de-compras
+    icon: shopping_bag
+    title:
+      en-US: "My Shopping Bag"
+      es-MX: "Mi Bolsa de Compras"
+      pt-BR: "Minha Sacola de Compras"
+    description:
+      en-US: "With a limited number of coins, the crew learns to fit their needs into one shopping bag."
+      es-MX: "Con monedas limitadas, la tripulación aprende a hacer que sus necesidades quepan en una sola bolsa de compras."
+      pt-BR: "Com moedas limitadas, a tripulação aprende a fazer suas necessidades caberem em uma única sacola de compras."
+    topics:
+      - position: 1
+        slug: tengo-solo-estas-monedas-para-gastar
+        title_es: "Tengo solo estas monedas para gastar"
+        concept: "Antes de comprar, reviso cuántas monedas tengo disponibles para gastar hoy en el mercado."
+        learning_objective: "Al final, el niño puede identificar el monto total de monedas disponibles antes de una compra."
+        key_vocabulary: [monedas disponibles, cuánto tengo]
+        prior_knowledge: "Sabe comparar precios y elegir el mejor (saga anterior)."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: cuento-mis-monedas-antes-de-entrar
+            micro_objective: "Cuenta el total de monedas disponibles antes de entrar a comprar en la historia."
+            narrative_beat: "Rho cuenta sus monedas cuidadosamente antes de entrar al mercado con su bolsa vacía."
+            difficulty: 1
+            suggested_families: [money, input]
+          - position: 2
+            slug: mi-bolsa-tiene-un-limite
+            micro_objective: "Reconoce en la historia que la bolsa de compras tiene un límite de monedas disponibles."
+            narrative_beat: "Zara se da cuenta de que su bolsa solo tiene espacio para lo que sus monedas alcancen."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: comparo-mi-limite-con-precios
+            micro_objective: "Compara el total de monedas disponible con el precio de 2-3 objetos para ver qué alcanza a comprar."
+            narrative_beat: "Dino compara sus monedas con los precios del mercado para saber qué puede comprar hoy."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: reviso-mi-bolsa-completa
+            micro_objective: "Confirma en la historia el monto total disponible antes de comenzar a elegir compras."
+            narrative_beat: "Dina revisa su bolsa completa una última vez antes de empezar a recorrer los puestos."
+            difficulty: 2
+            suggested_families: [money, story]
+      - position: 2
+        slug: elijo-que-cabe-en-mi-bolsa
+        title_es: "Elijo qué cabe en mi bolsa"
+        concept: "Puedo elegir varios objetos cuyo precio total no pase de las monedas que tengo disponibles."
+        learning_objective: "Al final, el niño puede elegir un conjunto de objetos cuyo precio total no exceda su límite de monedas."
+        key_vocabulary: [total no pasa, cabe en mi bolsa]
+        prior_knowledge: "Sabe cuántas monedas tiene disponibles para gastar (tema anterior)."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: dos-objetos-que-si-caben
+            micro_objective: "Elige 2 objetos cuyo precio total no exceda el límite de monedas disponible en la historia."
+            narrative_beat: "Rho elige dos frutas que juntas caben perfecto dentro de su límite de monedas."
+            difficulty: 1
+            suggested_families: [money]
+          - position: 2
+            slug: este-objeto-no-cabe
+            micro_objective: "Reconoce en la historia un objeto que, sumado a otros, excede el límite disponible."
+            narrative_beat: "Zara se da cuenta de que agregar un tercer objeto haría que se pasara de sus monedas."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: pruebo-distintas-combinaciones
+            micro_objective: "Prueba 2 combinaciones distintas de objetos que caben dentro del mismo límite de monedas."
+            narrative_beat: "Dino prueba distintas combinaciones de compras hasta encontrar una que le guste y le alcance."
+            difficulty: 2
+            suggested_families: [money, arrange]
+          - position: 4
+            slug: armo-mi-combinacion-final
+            micro_objective: "Arma en la historia una combinación final de 2-3 objetos que cabe dentro de su límite de monedas."
+            narrative_beat: "Dina arma su combinación final de compras, revisando que el total quepa en su bolsa."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 3
+        slug: primero-lo-que-necesito
+        title_es: "Primero lo que necesito"
+        concept: "Cuando armo mi bolsa de compras, primero incluyo lo que necesito, y solo después pienso en deseos."
+        learning_objective: "Al final, el niño puede armar una bolsa de compras que cubra primero sus necesidades."
+        key_vocabulary: [primero necesidades, después deseos]
+        prior_knowledge: "Sabe elegir combinaciones de objetos dentro de un límite (tema anterior)."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: reviso-mi-lista-de-necesidades-primero
+            micro_objective: "Reconoce en la historia que el personaje revisa primero su lista de necesidades antes de comprar deseos."
+            narrative_beat: "Rho revisa su lista de necesidades antes de siquiera mirar los puestos de juguetes."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cubro-mis-necesidades
+            micro_objective: "Elige objetos que cubren todas las necesidades de una lista antes de gastar en algo más."
+            narrative_beat: "Zara compra primero agua y fruta, cubriendo lo que su lista de necesidades le pedía."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: me-sobra-para-un-deseo
+            micro_objective: "Reconoce en la historia cuánto le sobra tras cubrir necesidades, y si alcanza para un deseo."
+            narrative_beat: "Dino cubre sus necesidades y descubre que aún le sobran monedas para un pequeño gusto."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: armo-mi-bolsa-en-orden
+            micro_objective: "Completa en la historia una bolsa de compras armada en el orden correcto: necesidades primero."
+            narrative_beat: "Dina termina su bolsa de compras, feliz de haber cubierto primero lo más importante."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 4
+        slug: si-me-sobra-que-me-doy
+        title_es: "Si me sobra, ¿qué me doy?"
+        concept: "Si tras cubrir mis necesidades me sobran monedas, puedo darme un pequeño gusto con lo que resta."
+        learning_objective: "Al final, el niño puede elegir un pequeño deseo dentro del monto que le sobra tras cubrir necesidades."
+        key_vocabulary: [me sobra, pequeño gusto, con lo que resta]
+        prior_knowledge: "Sabe armar una bolsa priorizando necesidades (tema anterior)."
+        fact_refs: [mxn.reference_prices.paleta, mxn.reference_prices.helado]
+        lessons:
+          - position: 1
+            slug: cuanto-me-sobro
+            micro_objective: "Calcula cuánto le sobró tras cubrir sus necesidades en una compra de la historia."
+            narrative_beat: "Rho cuenta las monedas que le sobraron después de comprar todo lo de su lista."
+            difficulty: 1
+            suggested_families: [money, input]
+          - position: 2
+            slug: elijo-mi-pequeno-gusto
+            micro_objective: "Elige, entre 2-3 opciones, un pequeño gusto que cabe dentro del monto sobrante."
+            narrative_beat: "Zara elige entre un dulce y una fruta especial con las monedas que le quedaron."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: disfruto-mi-pequeno-gusto
+            micro_objective: "Reconoce en la historia el disfrute de un pequeño gusto ganado tras cubrir lo importante primero."
+            narrative_beat: "Dino disfruta su paleta especial, sabiendo que ya cubrió todo lo que necesitaba primero."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: completo-mi-compra-feliz
+            micro_objective: "Completa en la historia una compra feliz que cubre necesidades y un pequeño gusto dentro del límite."
+            narrative_beat: "Dina cierra su día de compras satisfecha: cubrió lo importante y se dio un pequeño gusto."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 5
+        slug: si-no-me-alcanza-que-cambio
+        title_es: "Si no me alcanza, ¿qué cambio?"
+        concept: "Si mi lista cuesta más de lo que tengo, puedo cambiar algo por una opción más barata o quitarlo por ahora."
+        learning_objective: "Al final, el niño puede ajustar una lista de compras que excede su límite de monedas."
+        key_vocabulary: [no me alcanza, cambio por, quito por ahora]
+        prior_knowledge: "Sabe elegir un pequeño gusto con lo que sobra (tema anterior)."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: mi-lista-cuesta-de-mas
+            micro_objective: "Reconoce en la historia que una lista de compras cuesta más de lo que el personaje tiene disponible."
+            narrative_beat: "Rho suma su lista y descubre que le falta un poquito de monedas para completarla toda."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: cambio-por-algo-mas-barato
+            micro_objective: "Elige un reemplazo más barato para un objeto de la lista, sin dejar de cubrir la necesidad."
+            narrative_beat: "Zara cambia una fruta cara por otra más barata que cumple el mismo propósito."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: quito-algo-por-ahora
+            micro_objective: "Reconoce en la historia que quitar un deseo de la lista, por ahora, ayuda a que el total alcance."
+            narrative_beat: "Dino decide dejar el juguete para otra visita, así su lista completa sí le alcanza hoy."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 4
+            slug: ajusto-mi-lista-y-completo-la-compra
+            micro_objective: "Ajusta una lista de compras que no alcanzaba y completa la compra dentro del límite disponible."
+            narrative_beat: "Dina ajusta su lista con calma y logra completar su compra sin pasarse de sus monedas."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 6
+        slug: completo-mis-compras-del-mercado
+        title_es: "Completo mis compras del mercado"
+        concept: "Puedo armar, sin ayuda, una bolsa de compras completa que cubra necesidades dentro de mi límite de monedas."
+        learning_objective: "Al final, el niño puede completar sin ayuda una compra que cubra sus necesidades dentro de un límite dado."
+        key_vocabulary: [compra completa, sin ayuda, límite de monedas]
+        prior_knowledge: "Sabe ajustar una lista que no alcanza (tema anterior)."
+        fact_refs: [math.budget_fit_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: repaso-mi-bolsa-de-compras
+            micro_objective: "Repasa con 3 ejemplos lo aprendido sobre armar una bolsa de compras dentro de un límite."
+            narrative_beat: "Rho repasa con la tripulación todo lo aprendido sobre armar una bolsa de compras inteligente."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: armo-mi-bolsa-sin-ayuda
+            micro_objective: "Arma sin ayuda una bolsa de compras que cubre necesidades dentro de un límite dado."
+            narrative_beat: "Zara arma sola, sin pedir ayuda, su bolsa de compras completa para el día."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: reviso-mi-total-final
+            micro_objective: "Revisa que el total de su bolsa de compras no exceda su límite de monedas disponible."
+            narrative_beat: "Dino revisa una última vez el total de su bolsa antes de pagar en el puesto principal."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: mi-bolsa-de-compras-repaso
+            micro_objective: "Completa, sin ayuda, una compra final que cubre necesidades y respeta su límite de monedas, como cierre de la saga."
+            narrative_beat: "Dina paga su bolsa de compras completa y sonríe: todo cupo justo dentro de sus monedas."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+
+  - position: 4
+    slug: decisiones-inteligentes
+    icon: emoji_objects
+    title:
+      en-US: "Smart Decisions"
+      es-MX: "Decisiones Inteligentes"
+      pt-BR: "Decisões Inteligentes"
+    description:
+      en-US: "The crew brings everything together: thinking before buying, comparing, and asking for help when needed."
+      es-MX: "La tripulación junta todo lo aprendido: pensar antes de comprar, comparar y pedir ayuda cuando hace falta."
+      pt-BR: "A tripulação reúne tudo o que aprendeu: pensar antes de comprar, comparar e pedir ajuda quando necessário."
+    topics:
+      - position: 1
+        slug: pienso-antes-de-comprar
+        title_es: "Pienso antes de comprar"
+        concept: "Antes de comprar algo, me detengo un momento a pensar si de verdad lo quiero o lo necesito."
+        learning_objective: "Al final, el niño puede describir el hábito de pensar un momento antes de decidir una compra."
+        key_vocabulary: [pensar antes, detenerme, de verdad lo quiero]
+        prior_knowledge: "Sabe armar una bolsa de compras dentro de un límite (saga anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: me-detengo-un-momento
+            micro_objective: "Reconoce en la historia el momento en que un personaje se detiene a pensar antes de comprar."
+            narrative_beat: "Rho está a punto de comprar algo por impulso, pero se detiene un momento a pensarlo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: me-pregunto-si-lo-necesito
+            micro_objective: "Elige, entre 2 preguntas, la que ayuda mejor a pensar antes de una compra."
+            narrative_beat: "Zara se pregunta a sí misma si de verdad necesita el objeto que está por comprar."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: comparo-comprar-rapido-y-pensar-antes
+            micro_objective: "Compara dos finales de historia: comprar de inmediato o pensar un momento antes."
+            narrative_beat: "Dino compara cómo le fue la vez que compró rápido con cómo le fue cuando pensó antes."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: practico-pensar-antes-de-comprar
+            micro_objective: "Practica en la historia el hábito de pensar antes de decidir una compra."
+            narrative_beat: "Dina se detiene, piensa, y luego decide su compra con más seguridad que antes."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: comparo-antes-de-decidir
+        title_es: "Comparo antes de decidir"
+        concept: "Antes de decidir una compra, puedo comparar precios, calidad y si de verdad lo necesito."
+        learning_objective: "Al final, el niño puede aplicar junto precio, calidad y necesidad antes de decidir una compra."
+        key_vocabulary: [comparar todo, antes de decidir]
+        prior_knowledge: "Sabe pensar un momento antes de comprar (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: reviso-precio-calidad-y-necesidad
+            micro_objective: "Reconoce en la historia los tres factores que un personaje revisa antes de decidir: precio, calidad y necesidad."
+            narrative_beat: "Rho revisa el precio, la calidad y si de verdad necesita el objeto antes de decidir comprarlo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-dos-opciones-completas
+            micro_objective: "Compara dos opciones de compra usando precio, calidad y necesidad juntos."
+            narrative_beat: "Zara compara dos mochilas pensando en su precio, su calidad y si de verdad la necesita."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: elijo-con-todos-los-datos
+            micro_objective: "Elige la mejor opción de compra tras comparar los tres factores en la historia."
+            narrative_beat: "Dino elige su mochila final después de comparar todo lo importante con calma."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: explico-mi-decision-completa
+            micro_objective: "Explica en una frase completa por qué eligió cierta opción, mencionando precio, calidad y necesidad."
+            narrative_beat: "Dina explica a la tripulación por qué su elección final fue la más inteligente del mercado."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 3
+        slug: lo-necesito-hoy-o-puede-esperar
+        title_es: "¿Lo necesito hoy o puede esperar?"
+        concept: "Puedo preguntarme si algo lo necesito de verdad hoy, o si puede esperar a otro momento."
+        learning_objective: "Al final, el niño puede decidir si una compra es urgente hoy o puede esperar."
+        key_vocabulary: [hoy o después, urgente, puede esperar]
+        prior_knowledge: "Sabe comparar precio, calidad y necesidad (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: esto-lo-necesito-ya
+            micro_objective: "Reconoce en la historia una compra urgente que sí debe hacerse hoy."
+            narrative_beat: "Rho necesita agua ahora mismo porque tiene mucha sed tras caminar bajo el sol."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: esto-puede-esperar
+            micro_objective: "Reconoce en la historia una compra que puede esperar a otro momento sin problema."
+            narrative_beat: "Zara se da cuenta de que el juguete que le gusta puede esperar hasta su próxima visita al mercado."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: clasifico-hoy-o-despues
+            micro_objective: "Clasifica 4 posibles compras entre 'hoy' y 'puede esperar'."
+            narrative_beat: "Dino clasifica su lista de deseos entre lo urgente de hoy y lo que puede esperar."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 4
+            slug: decido-que-espera
+            micro_objective: "Decide en la historia qué compra hacer hoy y cuál dejar para después, con una razón."
+            narrative_beat: "Dina decide qué comprar hoy y qué dejar para su próxima visita al mercado de colores."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 4
+        slug: pido-ayuda-para-decidir
+        title_es: "Pido ayuda para decidir"
+        concept: "Cuando una decisión de compra es difícil, está bien pedir ayuda o consejo a un adulto de confianza."
+        learning_objective: "Al final, el niño puede reconocer una situación en la que conviene pedir ayuda antes de decidir una compra."
+        key_vocabulary: [pedir ayuda, adulto de confianza, consejo]
+        prior_knowledge: "Sabe decidir si algo puede esperar (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: esta-decision-es-dificil
+            micro_objective: "Reconoce en la historia una decisión de compra que le resulta difícil a un personaje."
+            narrative_beat: "Rho no logra decidir entre dos opciones parecidas y se siente un poco confundido."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: pido-consejo-a-un-adulto
+            micro_objective: "Reconoce en la historia el momento en que un personaje pide consejo a un adulto de confianza."
+            narrative_beat: "Zara le pide consejo a Dina, la mayor del grupo, para decidir entre dos compras."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: escucho-el-consejo
+            micro_objective: "Reconoce en la historia cómo escuchar un consejo ayuda a decidir mejor."
+            narrative_beat: "Dino escucha con atención el consejo de Rho antes de tomar su decisión final."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: decido-con-ayuda
+            micro_objective: "Completa en la historia una decisión de compra tomada con ayuda de un consejo confiable."
+            narrative_beat: "Dina toma su decisión final después de escuchar el consejo de toda su tripulación."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 5
+        slug: una-compra-de-la-que-estoy-orgulloso
+        title_es: "Una compra de la que estoy orgulloso"
+        concept: "Cuando pienso, comparo y decido con calma, termino con una compra de la que me siento orgulloso."
+        learning_objective: "Al final, el niño puede describir una compra propia bien pensada y explicar por qué se siente orgulloso de ella."
+        key_vocabulary: [orgulloso de mi compra, bien pensada]
+        prior_knowledge: "Sabe pedir ayuda cuando una decisión es difícil (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: mi-mejor-compra-del-viaje
+            micro_objective: "Reconoce en la historia la compra de la que un personaje se siente más orgulloso."
+            narrative_beat: "Rho mira su telescopio, comprado con paciencia y buenas decisiones, y sonríe orgulloso."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-estoy-orgulloso
+            micro_objective: "Explica en una frase por qué se siente orgulloso de una compra bien pensada."
+            narrative_beat: "Zara explica que está orgullosa de su mochila porque la eligió pensando en todo lo aprendido."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: comparo-con-mi-yo-del-principio
+            micro_objective: "Compara cómo decidiría una compra ahora frente a cómo lo hacía al inicio de la aventura."
+            narrative_beat: "Dino recuerda cómo compraba sin pensar al inicio del viaje, y ve cuánto ha cambiado."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: cuento-mi-compra-favorita
+            micro_objective: "Comparte, dentro de la historia, cuál fue su compra favorita y por qué la piensa bien elegida."
+            narrative_beat: "Dina comparte con la tripulación cuál fue su compra favorita de todo el mercado de colores."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+      - position: 6
+        slug: mercado-de-los-colores-repaso-final
+        title_es: "Mercado de los Colores: repaso final"
+        concept: "Repasamos todo el viaje: necesidades, deseos, precios, límites de compra y decisiones inteligentes."
+        learning_objective: "Al final, el niño puede recordar y aplicar juntos los conceptos clave de la aventura del mercado."
+        key_vocabulary: [repaso, recuerdo, todo el viaje]
+        prior_knowledge: "Domina todos los temas previos de la aventura del mercado."
+        fact_refs: [math.budget_fit_ceiling_tier1, mxn.reference_prices.juguete_pequeno]
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-primera-necesidad
+            micro_objective: "Recuerda y describe la primera necesidad que identificó en toda la aventura del mercado."
+            narrative_beat: "Rho reúne a la tripulación en el centro del mercado para recordar juntos todo lo vivido."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-precios-como-experto
+            micro_objective: "Compara precios de 3 puestos nuevos, aplicando todo lo aprendido sobre comparar y decidir."
+            narrative_beat: "Zara propone un último reto de comparar precios antes de dejar el mercado de colores."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: armo-mi-bolsa-final-del-mercado
+            micro_objective: "Arma sin ayuda una bolsa de compras final que cubre necesidades dentro de un límite dado."
+            narrative_beat: "Dino arma su última bolsa de compras del mercado, sin necesitar ayuda de nadie."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 4
+            slug: zarpo-hacia-el-taller-de-los-inventores
+            micro_objective: "Explica en una frase todo lo que aprendió sobre comprar con inteligencia antes de zarpar hacia la próxima aventura."
+            narrative_beat: "Dina guarda su bolsa vacía y satisfecha: el mercado de colores queda atrás, y El Taller de los Inventores los espera."
+            difficulty: 3
+            suggested_families: [story, choice]

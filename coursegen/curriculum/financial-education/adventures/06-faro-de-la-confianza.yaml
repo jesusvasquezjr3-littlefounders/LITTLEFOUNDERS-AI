@@ -1,0 +1,1326 @@
+schema_version: 1
+adventure:
+  position: 6
+  slug: faro-de-la-confianza
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Lighthouse of Trust
+    es-MX: El Faro de la Confianza
+    pt-BR: O Farol da Confiança
+  description:
+    en-US: Across a chain of islands, Dina and Dino learn to spot tricks, fake messages, and keep their
+      information safe with help from Dr. Rho's lighthouse.
+    es-MX: En un archipiélago de islas, Dina y Dino aprenden a reconocer trampas, mensajes falsos y a
+      cuidar su información con la ayuda del faro de Dr. Rho.
+    pt-BR: Em um arquipélago de ilhas, Dina e Dino aprendem a reconhecer armadilhas, mensagens falsas
+      e a cuidar de suas informações com a ajuda do farol do Dr. Rho.
+  narrative_arc: 'Dina y Dino navegan más allá del valle del mercado hasta un archipiélago coronado por
+    un viejo faro donde Dr. Rho vigila a los barcos por la noche. Zara Vex llega con trucos y acertijos
+    para poner a prueba qué tan bien pueden reconocer una mala oferta, un mensaje falso o un dato compartido
+    sin cuidado, enseñándoles el verdadero trabajo del faro: cuidar la confianza, no solo guiar barcos.'
+sagas:
+- position: 1
+  slug: anuncios-y-trampas
+  icon: campaign
+  title:
+    en-US: Ads and Traps
+    es-MX: Anuncios y Trampas
+    pt-BR: Anúncios e Armadilhas
+  description:
+    en-US: Learn to tell an honest ad apart from a trap that exaggerates or tricks.
+    es-MX: Aprende a distinguir un anuncio honesto de una trampa que exagera o engaña.
+    pt-BR: Aprenda a distinguir um anúncio honesto de uma armadilha que exagera ou engana.
+  topics:
+  - position: 1
+    slug: que-es-un-anuncio
+    title_es: Qué es un anuncio
+    concept: Un anuncio es un mensaje que busca convencerte de comprar o hacer algo, y reconocerlo es
+      el primer paso para pensar antes de actuar.
+    learning_objective: Al final, el niño puede identificar cuándo un mensaje es un anuncio publicitario.
+    key_vocabulary:
+    - anuncio
+    - publicidad
+    - convencer
+    - mensaje
+    prior_knowledge: Ha comprado y vendido en el mercado del valle (aventura 5).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-islas-del-faro
+      micro_objective: Reconocer que un anuncio es un mensaje diseñado para convencer a alguien de comprar.
+      narrative_beat: Dina y Dino llegan en barco a un archipiélago donde un faro brillante guía a los
+        navegantes; Dr. Rho los recibe y les muestra carteles coloridos pegados en el muelle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: anuncio-o-no
+      micro_objective: Distinguir un anuncio de un mensaje informativo neutral.
+      narrative_beat: Zara Vex reparte volantes del muelle y reta a Dino a separar cuáles son anuncios
+        y cuáles son simples avisos del pueblo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: donde-aparecen-los-anuncios
+      micro_objective: Identificar distintos lugares donde puede aparecer un anuncio.
+      narrative_beat: Dr. Rho señala anuncios en carteles, en el periódico del pueblo y hasta pintados
+        en un barco de pesca.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primer-anuncio-detectado
+      micro_objective: Detectar, en una escena nueva, todos los anuncios presentes entre varios mensajes.
+      narrative_beat: Antes de subir al faro, Dina encuentra tres mensajes distintos en el muelle y separa
+        cuáles quieren venderle algo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 2
+    slug: verdad-o-exageracion
+    title_es: Anuncios que dicen la verdad vs. que exageran
+    concept: Algunos anuncios describen el producto tal como es, y otros exageran para que parezca mejor
+      de lo que realmente es.
+    learning_objective: Al final, el niño puede distinguir un anuncio honesto de uno que exagera.
+    key_vocabulary:
+    - verdad
+    - exagerar
+    - honesto
+    - real
+    prior_knowledge: Reconoce qué es un anuncio (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-pescado-mas-grande-del-mundo
+      micro_objective: Reconocer una exageración evidente en un anuncio.
+      narrative_beat: Un cartel en el muelle promete 'el pescado más grande del mundo' y Dino se ríe al
+        ver que es un pez normal.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-dos-anuncios
+      micro_objective: Comparar dos anuncios del mismo producto y decidir cuál exagera más.
+      narrative_beat: Dr. Rho muestra dos anuncios de la misma tienda de velas y pide a Dina identificar
+        cuál se acerca más a la realidad.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: palabras-que-exageran
+      micro_objective: Reconocer palabras típicas de exageración publicitaria (siempre, el mejor, nunca
+        falla).
+      narrative_beat: Zara Vex enseña a Dina a detectar palabras como 'siempre' o 'el mejor de todos'
+        como señal de exageración.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-anuncio-honesto
+      micro_objective: Elegir, entre varias versiones de un anuncio, la que describe el producto con honestidad.
+      narrative_beat: En el taller del faro, Dina ayuda a un vendedor del muelle a reescribir su anuncio
+        sin exagerar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: gratis-que-no-es-gratis
+    title_es: '''Gratis'' que no es gratis'
+    concept: Algunas ofertas dicen 'gratis' pero en realidad piden algo a cambio, como comprar otra cosa
+      o dar información.
+    learning_objective: Al final, el niño puede identificar cuándo una oferta 'gratis' en realidad tiene
+      una condición oculta.
+    key_vocabulary:
+    - gratis
+    - condición
+    - oferta
+    - a cambio
+    prior_knowledge: Distingue anuncios honestos de exagerados (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-regalo-con-truco
+      micro_objective: Reconocer que una oferta 'gratis' puede tener una condición escondida.
+      narrative_beat: Un cartel ofrece 'una vela gratis' y Dino descubre, leyendo con cuidado, que solo
+        aplica si compras tres primero.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: leer-la-letra-pequena
+      micro_objective: Buscar la condición escondida en una oferta 'gratis' dada.
+      narrative_beat: Dr. Rho enseña a Dina a leer con calma toda la oferta, incluida la parte escrita
+        más pequeña.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: gratis-de-verdad
+      micro_objective: Distinguir una oferta realmente gratis de una que solo lo parece.
+      narrative_beat: Zara Vex presenta tres ofertas del muelle y reta a Dino a decidir cuál es gratis
+        de verdad.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: decidir-si-me-conviene
+      micro_objective: Decidir si una oferta 'gratis' con condición conviene o no, según lo que pide a
+        cambio.
+      narrative_beat: Con toda la información leída, Dina decide si vale la pena aceptar la oferta del
+        vendedor de velas.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: trucos-para-que-compres-rapido
+    title_es: Trucos para que compres rápido
+    concept: Algunos anuncios usan la prisa ('solo hoy', 'quedan pocos') para que decidas comprar sin
+      pensarlo bien.
+    learning_objective: Al final, el niño puede reconocer un mensaje que usa la prisa para apurar una
+      decisión de compra.
+    key_vocabulary:
+    - prisa
+    - apurar
+    - pensar
+    - esperar
+    prior_knowledge: Reconoce ofertas con condiciones ocultas (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: solo-hoy
+      micro_objective: Reconocer la frase 'solo hoy' como una señal de apuro en un anuncio.
+      narrative_beat: Un vendedor grita '¡solo hoy, no lo pienses más!' y Dino siente el impulso de comprar
+        sin mirar bien.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quedan-pocos
+      micro_objective: Identificar otras frases de apuro comunes en anuncios (quedan pocos, se acaba).
+      narrative_beat: Dr. Rho recopila frases de apuro escuchadas en el muelle y pide a Dina reconocerlas
+        en nuevos anuncios.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: pausar-antes-de-decidir
+      micro_objective: Aplicar la estrategia de pausar y pensar frente a un anuncio con apuro.
+      narrative_beat: 'Zara Vex le muestra a Dino un truco simple: contar hasta cinco antes de decidir
+        cuando un anuncio mete prisa.'
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: resistir-el-apuro
+      micro_objective: Decidir con calma frente a un anuncio apurado, sin dejarse llevar por la prisa.
+      narrative_beat: Frente a un cartel que grita 'última oportunidad', Dina se detiene, respira y decide
+        con calma.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: comparar-anuncio-con-realidad
+    title_es: Comparar el anuncio con la realidad
+    concept: Revisar el producto real junto al anuncio ayuda a ver si lo prometido coincide con lo que
+      en verdad ofrece.
+    learning_objective: Al final, el niño puede comparar lo que promete un anuncio con las características
+      reales del producto.
+    key_vocabulary:
+    - promesa
+    - realidad
+    - comparar
+    - revisar
+    prior_knowledge: Reconoce exageraciones y apuros en anuncios (temas anteriores).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-vela-del-anuncio
+      micro_objective: Observar la diferencia entre lo mostrado en un anuncio y el producto real.
+      narrative_beat: El anuncio mostraba una vela enorme y brillante, pero la vela real en la tienda
+        es bastante más pequeña.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: que-promete-y-que-cumple
+      micro_objective: Separar, en un ejemplo, qué promete el anuncio y qué cumple realmente el producto.
+      narrative_beat: Dr. Rho hace una lista de promesas del anuncio y otra de lo que el producto realmente
+        tiene.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: decidir-con-la-comparacion
+      micro_objective: Decidir si conviene comprar un producto después de comparar el anuncio con la realidad.
+      narrative_beat: Zara Vex pregunta a Dina si aún quiere comprar la vela después de ver la comparación
+        completa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-revision-final
+      micro_objective: Aplicar el proceso de comparación completo a un anuncio nuevo antes de decidir.
+      narrative_beat: Dina practica sola, comparando un nuevo anuncio del muelle con el producto real
+        antes de recomendarlo a Dino.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 6
+    slug: decir-espera-antes-de-pedir
+    title_es: Decir 'espera' antes de pedir algo
+    concept: Detenerse a pensar antes de pedir que te compren algo evita decisiones apuradas por un anuncio.
+    learning_objective: Al final, el niño puede aplicar la pausa de 'espera y piensa' antes de pedir una
+      compra influida por un anuncio.
+    key_vocabulary:
+    - esperar
+    - pensar
+    - decidir
+    - pedir
+    prior_knowledge: Ha practicado comparar anuncios con la realidad (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-ganas-de-pedirlo-ya
+      micro_objective: Reconocer el momento en que un anuncio genera ganas inmediatas de pedir algo.
+      narrative_beat: Dino ve un anuncio brillante y corre a pedirle a Dr. Rho que se lo compre de inmediato.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: tres-preguntas-antes-de-pedir
+      micro_objective: Aplicar tres preguntas simples (¿lo necesito?, ¿es verdad?, ¿puedo esperar?) antes
+        de pedir algo.
+      narrative_beat: Dr. Rho enseña a Dina tres preguntas rápidas para hacerse antes de pedir cualquier
+        cosa vista en un anuncio.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: practicar-la-pausa
+      micro_objective: Aplicar la pausa de 'espera y piensa' frente a un anuncio nuevo dentro de una historia.
+      narrative_beat: Zara Vex pone a prueba a Dino con un anuncio muy tentador para ver si recuerda detenerse
+        antes de pedir.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-decision-pensada
+      micro_objective: Decidir con calma, tras aplicar la pausa completa, si pedir o no una compra anunciada.
+      narrative_beat: Frente al anuncio más llamativo del muelle, Dina se detiene, piensa y toma su propia
+        decisión sin prisa.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - analyze
+- position: 2
+  slug: mensajes-sospechosos
+  icon: mark_email_unread
+  title:
+    en-US: Suspicious Messages
+    es-MX: Mensajes Sospechosos
+    pt-BR: Mensagens Suspeitas
+  description:
+    en-US: Recognize fake messages and know what to do when something feels off.
+    es-MX: Reconoce mensajes falsos y sabe qué hacer cuando algo se siente raro.
+    pt-BR: Reconheça mensagens falsas e saiba o que fazer quando algo parece estranho.
+  topics:
+  - position: 1
+    slug: mensajes-de-gente-que-no-conoces
+    title_es: Mensajes de gente que no conoces
+    concept: Un mensaje de alguien desconocido merece más cuidado que uno de una persona conocida y de
+      confianza.
+    learning_objective: Al final, el niño puede identificar cuándo un mensaje viene de alguien desconocido.
+    key_vocabulary:
+    - mensaje
+    - desconocido
+    - conocido
+    - confianza
+    prior_knowledge: Distingue anuncios de mensajes informativos (aventura 6, saga 1).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-botella-en-el-mar
+      micro_objective: Reconocer la diferencia entre un mensaje de alguien conocido y uno de un desconocido.
+      narrative_beat: En la playa del faro, Dino encuentra una botella con un mensaje de alguien que nadie
+        en el pueblo conoce.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: conocido-o-desconocido
+      micro_objective: Clasificar varios mensajes según si vienen de alguien conocido o desconocido.
+      narrative_beat: Dr. Rho muestra una pila de mensajes recibidos en el faro y pide a Dina separarlos
+        según quién los envía.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: mas-cuidado-con-lo-desconocido
+      micro_objective: Explicar por qué un mensaje desconocido merece más cuidado antes de responder.
+      narrative_beat: Zara Vex explica a Dino que no todo lo que llega en una botella dice la verdad sobre
+        quién lo envió.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: revisar-antes-de-responder
+      micro_objective: Decidir la acción correcta (ignorar, avisar a un adulto, responder) frente a un
+        mensaje desconocido dado.
+      narrative_beat: Frente a un nuevo mensaje sin firma, Dina decide qué hacer antes de responder nada.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: premios-demasiado-buenos
+    title_es: Premios que parecen demasiado buenos
+    concept: Un premio o regalo que parece enorme sin ningún esfuerzo suele ser una señal de alerta.
+    learning_objective: Al final, el niño puede reconocer un premio sospechoso por ser demasiado bueno
+      para ser verdad.
+    key_vocabulary:
+    - premio
+    - sospechoso
+    - alerta
+    - señal
+    prior_knowledge: Reconoce mensajes de desconocidos (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: ganaste-un-tesoro
+      micro_objective: Reconocer una señal de alerta en un mensaje que promete un premio enorme sin esfuerzo.
+      narrative_beat: 'Un mensaje en el faro anuncia: ''¡Ganaste un tesoro! Solo responde con tu nombre
+        completo y dirección.'''
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: demasiado-bueno-para-ser-verdad
+      micro_objective: Comparar un premio realista con uno exageradamente bueno para identificar la señal
+        de alerta.
+      narrative_beat: Dr. Rho compara el mensaje del tesoro con un premio real y pequeño ganado en una
+        feria del pueblo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: que-pide-a-cambio
+      micro_objective: Identificar qué información pide un mensaje de premio sospechoso a cambio del supuesto
+        regalo.
+      narrative_beat: Zara Vex señala que el mensaje del tesoro pide datos personales antes de entregar
+        nada.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: reconocer-el-premio-falso
+      micro_objective: Aplicar las señales aprendidas para reconocer un premio falso en un mensaje nuevo.
+      narrative_beat: Frente a otro mensaje de premio, Dina aplica todo lo aprendido y decide que es una
+        trampa.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 3
+    slug: pedir-ayuda-a-un-adulto-de-confianza
+    title_es: Pedir ayuda a un adulto de confianza
+    concept: Cuando un mensaje genera duda, pedir ayuda a un adulto de confianza es siempre una decisión
+      segura.
+    learning_objective: Al final, el niño puede identificar el momento correcto para pedir ayuda a un
+      adulto de confianza.
+    key_vocabulary:
+    - adulto
+    - confianza
+    - ayuda
+    - pedir
+    prior_knowledge: Reconoce premios y mensajes sospechosos (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: quien-es-un-adulto-de-confianza
+      micro_objective: Identificar quiénes son adultos de confianza en la vida de un niño (padres, tutores,
+        maestros).
+      narrative_beat: Dr. Rho explica a Dina que un adulto de confianza es alguien que la cuida y conoce
+        bien, como sus padres o un maestro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuando-pedir-ayuda
+      micro_objective: Reconocer situaciones donde conviene pedir ayuda a un adulto antes de actuar.
+      narrative_beat: Zara Vex presenta varias situaciones del faro y pregunta en cuáles conviene avisar
+        a un adulto de confianza.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: como-pedir-ayuda
+      micro_objective: Practicar cómo contarle a un adulto de confianza sobre un mensaje sospechoso.
+      narrative_beat: Dino practica con Dr. Rho cómo explicar con calma el mensaje raro que encontró en
+        la botella.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-plan-de-ayuda
+      micro_objective: Aplicar el paso de pedir ayuda a un adulto frente a un mensaje sospechoso nuevo.
+      narrative_beat: Frente a un nuevo mensaje confuso, Dina decide directamente llevarlo con Dr. Rho
+        antes de hacer cualquier otra cosa.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: senales-de-un-mensaje-falso
+    title_es: Señales de un mensaje falso
+    concept: 'Los mensajes falsos suelen compartir señales: apuro, errores raros, piden datos, o prometen
+      demasiado.'
+    learning_objective: Al final, el niño puede listar señales que indican que un mensaje podría ser falso.
+    key_vocabulary:
+    - señal
+    - falso
+    - sospecha
+    - revisar
+    prior_knowledge: Sabe pedir ayuda ante un mensaje sospechoso (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-faro-de-las-senales
+      micro_objective: Reconocer una señal de alerta común (apuro) en un mensaje sospechoso.
+      narrative_beat: Dr. Rho enciende el faro y explica que, igual que guía a los barcos, hay señales
+        que guían para detectar mensajes falsos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: juntar-las-senales
+      micro_objective: Identificar varias señales de alerta (apuro, pide datos, promesa exagerada) en
+        un mismo mensaje.
+      narrative_beat: Dina examina un mensaje del muelle y encuentra varias señales de alerta juntas.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: practicar-con-varios-mensajes
+      micro_objective: Aplicar las señales aprendidas para auditar varios mensajes distintos.
+      narrative_beat: Zara Vex reta a Dino a revisar cinco mensajes del faro y marcar cuáles tienen señales
+        de alerta.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-lista-de-senales
+      micro_objective: Elaborar, con ejemplos propios, una lista de señales para reconocer mensajes falsos.
+      narrative_beat: Dina arma su propia lista de señales de alerta y la cuelga junto a la puerta del
+        faro.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - arrange
+  - position: 5
+    slug: que-hacer-si-algo-se-siente-raro
+    title_es: Qué hacer si algo se siente raro
+    concept: Cuando algo se siente raro aunque no se sepa exactamente por qué, detenerse y contarlo a
+      un adulto es la mejor decisión.
+    learning_objective: Al final, el niño puede aplicar los pasos correctos (detenerse, no responder,
+      avisar) frente a algo que se siente raro.
+    key_vocabulary:
+    - raro
+    - detenerse
+    - avisar
+    - seguro
+    prior_knowledge: Conoce señales de mensajes falsos (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-sensacion-rara
+      micro_objective: Reconocer la sensación de que algo 'se siente raro' como una señal válida de alerta.
+      narrative_beat: Dino no sabe explicar por qué, pero un mensaje nuevo le da mala espina apenas lo
+        lee.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-tres-pasos
+      micro_objective: Ordenar los tres pasos correctos (detenerse, no responder, avisar) frente a algo
+        raro.
+      narrative_beat: 'Dr. Rho enseña a Dina los tres pasos del faro: detenerse, no responder, y avisar
+        a un adulto.'
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: practicar-los-pasos
+      micro_objective: Aplicar los tres pasos en un escenario dado dentro de una historia.
+      narrative_beat: Zara Vex pone a prueba a Dino con una situación nueva para ver si sigue los tres
+        pasos del faro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - arrange
+    - position: 4
+      slug: confiar-en-mi-sensacion
+      micro_objective: Decidir actuar según los tres pasos frente a una situación nueva que se siente
+        rara.
+      narrative_beat: Frente a un mensaje confuso en la playa, Dina confía en su sensación y sigue los
+        tres pasos sin dudar.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: practicar-detectar-el-mensaje-falso
+    title_es: 'Practicar: detectar el mensaje falso'
+    concept: Repasar todo lo aprendido sobre mensajes sospechosos ayuda a reconocerlos con seguridad en
+      situaciones nuevas.
+    learning_objective: Al final, el niño puede identificar un mensaje falso entre varios mensajes mezclados,
+      aplicando todas las señales aprendidas.
+    key_vocabulary:
+    - detectar
+    - repasar
+    - seguridad
+    - práctica
+    prior_knowledge: Conoce señales, pasos y a quién pedir ayuda ante mensajes sospechosos (temas anteriores).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-desafio-del-faro
+      micro_objective: Recordar, en conjunto, las señales principales de un mensaje falso aprendidas en
+        la saga.
+      narrative_beat: Dr. Rho reúne a Dina y Dino en la cima del faro para el gran desafío final de detección
+        de mensajes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: revisar-varios-mensajes-mezclados
+      micro_objective: Clasificar un grupo de mensajes mezclados entre reales y falsos, usando las señales
+        aprendidas.
+      narrative_beat: Zara Vex mezcla diez mensajes, reales y falsos, y reta a Dino a separarlos con cuidado.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: explicar-por-que-es-falso
+      micro_objective: Justificar con al menos una señal concreta por qué un mensaje identificado es falso.
+      narrative_beat: Por cada mensaje falso encontrado, Dina explica en voz alta qué señal la ayudó a
+        descubrirlo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: guardiana-de-mensajes
+      micro_objective: Aplicar el proceso completo de detección a un desafío final con mensajes nuevos
+        y variados.
+      narrative_beat: Con el faro iluminando el archipiélago, Dina se convierte en la primera 'guardiana
+        de mensajes' honoraria del pueblo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - storyplay
+- position: 3
+  slug: guardar-datos-guardar-confianza
+  icon: shield_lock
+  title:
+    en-US: Guarding Data, Guarding Trust
+    es-MX: Guardar Datos, Guardar Confianza
+    pt-BR: Guardar Dados, Guardar Confiança
+  description:
+    en-US: Discover which information is private and how to guard it like treasure.
+    es-MX: Descubre qué información es privada y cómo cuidarla como un tesoro.
+    pt-BR: Descubra quais informações são privadas e como guardá-las como um tesouro.
+  topics:
+  - position: 1
+    slug: que-es-informacion-privada
+    title_es: Qué es información privada
+    concept: La información privada es aquella que solo debe conocer uno mismo y las personas de mucha
+      confianza.
+    learning_objective: Al final, el niño puede identificar ejemplos de información privada (dirección,
+      contraseñas, nombre completo).
+    key_vocabulary:
+    - privado
+    - información
+    - dato
+    - personal
+    prior_knowledge: Sabe reconocer mensajes de desconocidos (aventura 6, saga 2).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cofre-del-faro
+      micro_objective: Reconocer que ciertos datos personales, como la dirección o el nombre completo,
+        son privados.
+      narrative_beat: Dr. Rho muestra un cofre en el faro donde guarda los datos importantes del pueblo
+        bajo llave.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: privado-o-publico
+      micro_objective: Clasificar distintos datos entre privados (dirección, contraseña) y públicos (color
+        favorito, nombre del barco).
+      narrative_beat: Dina separa tarjetas con datos distintos entre la caja de 'privado' y la caja de
+        'se puede compartir'.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: por-que-se-guarda
+      micro_objective: Explicar por qué cierta información se guarda en privado y no se comparte con cualquiera.
+      narrative_beat: Zara Vex pregunta a Dino por qué su dirección no debería aparecer en un mensaje
+        a un desconocido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-lista-de-datos-privados
+      micro_objective: Elaborar una lista propia de qué información considera privada y por qué.
+      narrative_beat: Dina arma su propia lista de datos privados y la guarda, como Dr. Rho, en su cofre
+        personal.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 2
+    slug: con-quien-si-se-comparte
+    title_es: Con quién sí se comparte
+    concept: La información privada solo se comparte con adultos de confianza específicos, nunca con cualquier
+      persona.
+    learning_objective: Al final, el niño puede identificar con qué personas es seguro compartir información
+      privada.
+    key_vocabulary:
+    - compartir
+    - familia
+    - confianza
+    - seguro
+    prior_knowledge: Reconoce qué información es privada (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-circulo-de-confianza
+      micro_objective: Reconocer que existe un grupo pequeño de personas con quienes sí es seguro compartir
+        datos privados.
+      narrative_beat: 'Dr. Rho dibuja un círculo pequeño en la arena con los nombres de quienes cuidan
+        a Dina: su círculo de confianza.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: dentro-o-fuera-del-circulo
+      micro_objective: Clasificar distintas personas (mamá, un desconocido en línea, la maestra) como
+        dentro o fuera del círculo de confianza.
+      narrative_beat: Dino ordena tarjetas de personas y decide cuáles van dentro del círculo de confianza
+        y cuáles no.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: cuando-alguien-nuevo-pregunta
+      micro_objective: Decidir la respuesta correcta cuando alguien fuera del círculo de confianza pide
+        información privada.
+      narrative_beat: Un desconocido en el muelle le pregunta a Dino dónde vive, y él debe decidir cómo
+        responder.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-circulo-de-confianza
+      micro_objective: Elaborar el propio círculo de confianza con personas reales de su vida.
+      narrative_beat: Dina dibuja su propio círculo de confianza junto al de Dr. Rho, con las personas
+        que la cuidan de verdad.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 3
+    slug: contrasenas-como-llaves-secretas
+    title_es: Contraseñas como llaves secretas
+    concept: Una contraseña es como una llave secreta que protege algo importante, y no se comparte con
+      cualquiera.
+    learning_objective: Al final, el niño puede explicar por qué una contraseña debe mantenerse en secreto.
+    key_vocabulary:
+    - contraseña
+    - secreto
+    - llave
+    - proteger
+    prior_knowledge: Conoce su círculo de confianza (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-llave-del-faro
+      micro_objective: Reconocer que una contraseña funciona como una llave secreta que protege algo valioso.
+      narrative_beat: Dr. Rho muestra la llave secreta que abre la puerta de la sala de mapas del faro
+        y explica que una contraseña funciona igual.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: a-quien-le-doy-mi-llave
+      micro_objective: Decidir con quién, si acaso, es seguro compartir una contraseña.
+      narrative_beat: Zara Vex pregunta a Dino si le prestaría la llave del faro a un desconocido, y lo
+        compara con compartir una contraseña.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: senales-de-pedir-mi-llave
+      micro_objective: Reconocer cuándo un mensaje está pidiendo, de forma sospechosa, una contraseña.
+      narrative_beat: Un mensaje extraño le pide a Dina 'confirmar su llave secreta' para ganar un premio,
+        y ella reconoce la trampa.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: cuidar-mi-llave-secreta
+      micro_objective: Aplicar la regla de no compartir contraseñas frente a una situación nueva dentro
+        de una historia.
+      narrative_beat: Frente a un nuevo pedido sospechoso de contraseña, Dina recuerda la llave del faro
+        y responde con seguridad que no la compartirá.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: fotos-y-datos-no-son-para-cualquiera
+    title_es: Fotos y datos no son para cualquiera
+    concept: Las fotos y los datos personales, igual que otra información privada, solo se comparten con
+      el círculo de confianza.
+    learning_objective: Al final, el niño puede reconocer cuándo compartir una foto o dato personal requiere
+      pensarlo con cuidado.
+    key_vocabulary:
+    - foto
+    - compartir
+    - cuidado
+    - permiso
+    prior_knowledge: Entiende el concepto de contraseñas secretas (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-album-del-faro
+      micro_objective: Reconocer que las fotos personales también son información que merece cuidado al
+        compartirse.
+      narrative_beat: Dino encuentra un álbum de fotos del pueblo y se pregunta quién puede verlas y quién
+        no.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: antes-de-compartir-una-foto
+      micro_objective: Identificar el paso correcto (pedir permiso) antes de compartir una foto de otra
+        persona.
+      narrative_beat: Dr. Rho recuerda a Dina que antes de mostrar una foto de Dino a alguien más, debe
+        preguntarle a él primero.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: cuando-decir-que-no
+      micro_objective: Decidir cuándo es correcto decir que no a compartir una foto o dato, aunque alguien
+        insista.
+      narrative_beat: Zara Vex pone a prueba a Dino con un personaje que insiste en pedir una foto suya
+        sin motivo claro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-regla-de-fotos-y-datos
+      micro_objective: Aplicar la regla de pedir y dar permiso antes de compartir fotos o datos en una
+        situación nueva.
+      narrative_beat: 'Frente a una nueva petición de foto, Dina aplica su regla: pensar, preguntar y
+        solo entonces decidir.'
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: pedir-permiso-antes-de-compartir
+    title_es: Pedir permiso antes de compartir
+    concept: Pedir permiso a un adulto de confianza antes de compartir cualquier información es un hábito
+      que cuida a todos.
+    learning_objective: Al final, el niño puede aplicar el hábito de pedir permiso antes de compartir
+      información en un escenario dado.
+    key_vocabulary:
+    - permiso
+    - pedir
+    - compartir
+    - cuidar
+    prior_knowledge: Sabe cuándo decir que no a compartir datos o fotos (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: antes-de-decir-que-si
+      micro_objective: Reconocer el momento correcto para pedir permiso antes de compartir algo.
+      narrative_beat: A Dino le piden compartir el mapa secreto del faro, y antes de responder, recuerda
+        que debe preguntar primero.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: a-quien-le-pido-permiso
+      micro_objective: Identificar a quién pedir permiso según la situación (padre, tutor, Dr. Rho).
+      narrative_beat: Dr. Rho explica a Dina que, según la situación, el permiso se pide a distintos adultos
+        de confianza.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-pedir-permiso
+      micro_objective: Practicar, dentro de una historia, cómo pedir permiso antes de compartir información.
+      narrative_beat: Zara Vex representa una situación donde Dino debe practicar pedir permiso antes
+        de compartir algo importante.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-habito-de-pedir-permiso
+      micro_objective: Aplicar el hábito completo de pedir permiso frente a una situación nueva sin ayuda.
+      narrative_beat: Frente a una nueva petición de compartir información, Dina pide permiso sin que
+        nadie se lo recuerde.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: ser-un-buen-guardian-de-la-informacion
+    title_es: Ser un buen guardián de la información de otros
+    concept: Cuidar la información privada de otras personas, tal como se cuida la propia, es parte de
+      ser un buen guardián de la confianza.
+    learning_objective: Al final, el niño puede identificar una acción correcta para proteger la información
+      privada de otra persona.
+    key_vocabulary:
+    - guardián
+    - cuidar
+    - respeto
+    - confianza
+    prior_knowledge: Ha practicado pedir permiso antes de compartir (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-secreto-de-un-amigo
+      micro_objective: Reconocer que la información privada de un amigo también merece cuidado, no solo
+        la propia.
+      narrative_beat: Dino sabe algo privado sobre un amigo del pueblo y decide, sin que nadie se lo pida,
+        mantenerlo en secreto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuidar-lo-de-otros
+      micro_objective: Identificar una acción correcta para cuidar la información privada de otra persona
+        en una situación dada.
+      narrative_beat: Dr. Rho presenta una situación donde Dina debe decidir si compartir o guardar un
+        dato privado de Dino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: romper-la-confianza
+      micro_objective: Reconocer las consecuencias de compartir sin permiso la información privada de
+        alguien más.
+      narrative_beat: Zara Vex cuenta una historia de un guardián del faro que rompió la confianza de
+        un amigo al compartir su secreto.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: buen-guardian-del-faro
+      micro_objective: Aplicar, en un desafío final, las reglas de cuidar la información propia y la de
+        otros a la vez.
+      narrative_beat: Dr. Rho nombra a Dina 'guardiana del faro' tras verla cuidar con esmero tanto su
+        información como la de sus amigos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - analyze
+- position: 4
+  slug: el-banco-del-faro
+  icon: account_balance
+  title:
+    en-US: The Lighthouse Bank
+    es-MX: El Banco del Faro
+    pt-BR: O Banco do Farol
+  description:
+    en-US: Visit a real bank and learn how it keeps your money safe and helps it grow little by little.
+    es-MX: Visita un banco de verdad y aprende cómo guarda tu dinero seguro y lo hace crecer poquito a
+      poco.
+    pt-BR: Visite um banco de verdade e aprenda como ele guarda seu dinheiro em segurança e o faz crescer
+      aos poucos.
+  topics:
+  - position: 1
+    slug: que-es-un-banco
+    title_es: Qué es un banco
+    concept: Un banco es un lugar seguro donde las personas guardan su dinero para protegerlo y usarlo
+      cuando lo necesitan.
+    learning_objective: Al final, el niño puede explicar con sus palabras para qué sirve un banco.
+    key_vocabulary:
+    - banco
+    - guardar
+    - seguro
+    - dinero
+    prior_knowledge: Conoce lugares seguros para guardar dinero, como la alcancía (aventura 3).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-edificio-junto-al-faro
+      micro_objective: Reconocer que un banco es un lugar diseñado para guardar dinero de forma segura.
+      narrative_beat: 'Junto al faro, Dina descubre un edificio con puertas gruesas: el banco del archipiélago,
+        donde el pueblo guarda sus ahorros.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: banco-o-alcancia
+      micro_objective: Comparar guardar dinero en un banco con guardarlo en una alcancía en casa.
+      narrative_beat: Dr. Rho compara la alcancía de Dino con la bóveda del banco y pregunta qué diferencias
+        nota.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: quien-trabaja-en-el-banco
+      micro_objective: Identificar el rol de las personas que trabajan cuidando el dinero en un banco.
+      narrative_beat: Zara Vex presenta a la encargada del banco, que explica cómo cuida el dinero de
+        cada familia del pueblo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: para-que-sirve-el-banco
+      micro_objective: Explicar con una frase propia para qué sirve un banco, usando lo aprendido en la
+        saga.
+      narrative_beat: Al salir del banco, Dina le explica a Dino, con sus propias palabras, para qué sirve
+        ese edificio junto al faro.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: abrir-una-cuenta-de-ahorro
+    title_es: Abrir una cuenta de ahorro
+    concept: Una cuenta de ahorro es un espacio en el banco donde una persona guarda su dinero poco a
+      poco para un objetivo.
+    learning_objective: Al final, el niño puede describir qué es una cuenta de ahorro y para qué se usa.
+    key_vocabulary:
+    - cuenta de ahorro
+    - meta
+    - depositar
+    - guardar
+    prior_knowledge: Sabe qué es un banco (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-cuenta-solo-para-mi
+      micro_objective: Reconocer que una cuenta de ahorro es un espacio personal para guardar dinero en
+        el banco.
+      narrative_beat: 'La encargada del banco le muestra a Dina una libreta especial: su propia cuenta
+        de ahorro, solo para ella.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: depositar-poquito-a-poquito
+      micro_objective: Reconocer que se puede depositar dinero en una cuenta de ahorro varias veces, poco
+        a poco.
+      narrative_beat: Dino deposita unas monedas en su cuenta cada semana, y ve cómo la cantidad crece
+        poco a poco en la libreta.
+      difficulty: 2
+      suggested_families:
+      - money
+      - input
+    - position: 3
+      slug: mi-meta-de-ahorro-en-el-banco
+      micro_objective: Relacionar una meta de ahorro con el uso de una cuenta bancaria para alcanzarla.
+      narrative_beat: 'Dina decide abrir su cuenta de ahorro pensando en su meta: un telescopio para ver
+        el faro de noche.'
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 4
+      slug: mi-cuenta-lista
+      micro_objective: Simular el proceso completo de abrir y depositar por primera vez en una cuenta
+        de ahorro.
+      narrative_beat: Con ayuda de Dr. Rho, Dina completa el proceso de abrir su cuenta de ahorro y hace
+        su primer depósito.
+      difficulty: 3
+      suggested_families:
+      - money
+      - storyplay
+  - position: 3
+    slug: el-banco-te-regala-un-poquito-por-guardar
+    title_es: El banco te regala un poquito por guardar
+    concept: 'Cuando guardas dinero en el banco por un tiempo, el banco te regala un poquito extra por
+      dejarlo ahí: eso se llama interés.'
+    learning_objective: Al final, el niño puede explicar que el banco agrega un poco de dinero extra por
+      guardar los ahorros, y calcular un ejemplo simple.
+    key_vocabulary:
+    - interés
+    - regalo
+    - extra
+    - guardar
+    prior_knowledge: Tiene una cuenta de ahorro abierta (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-sorpresa-en-la-libreta
+      micro_objective: Reconocer que el banco agregó un poco más de dinero del que Dina depositó, sin
+        que ella hiciera nada extra.
+      narrative_beat: 'Al revisar su libreta, Dina nota unas monedas extra que ella no depositó: la encargada
+        del banco le explica que es un regalo por guardar su dinero ahí.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-el-banco-regala-un-poco
+      micro_objective: Explicar con palabras simples por qué el banco agrega un poco de dinero extra a
+        quienes guardan sus ahorros.
+      narrative_beat: Dr. Rho explica que el banco usa el dinero guardado para ayudar a otras familias,
+        y por eso regala un poquito a quien lo dejó guardado.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: calcular-el-poquito-extra
+      micro_objective: Calcular, con un ejemplo simple dado, cuánto extra recibe una cantidad de ahorro
+        guardada un tiempo.
+      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto extra recibirá si guarda sus ahorros en
+        el banco durante varias semanas.
+      difficulty: 3
+      suggested_families:
+      - money
+      - input
+    - position: 4
+      slug: mi-ahorro-que-crece-solo
+      micro_objective: Predecir y luego comprobar cuánto crecerá una cantidad de ahorro guardada en el
+        banco con el interés dado.
+      narrative_beat: Dina predice cuánto crecerán sus ahorros guardados y observa, semana a semana en
+        su libreta, si acertó.
+      difficulty: 3
+      suggested_families:
+      - money
+      - storyplay
+  - position: 4
+    slug: banco-vs-alcancia
+    title_es: Guardar en el banco vs. guardar en la alcancía
+    concept: Guardar en el banco y guardar en la alcancía tienen ventajas distintas, y elegir depende
+      de la meta y la situación.
+    learning_objective: Al final, el niño puede comparar una ventaja del banco y una ventaja de la alcancía.
+    key_vocabulary:
+    - ventaja
+    - comparar
+    - banco
+    - alcancía
+    prior_knowledge: Entiende el concepto de interés simple (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-formas-de-guardar
+      micro_objective: 'Reconocer que existen dos formas distintas de guardar dinero: el banco y la alcancía.'
+      narrative_beat: Dr. Rho pone la alcancía de Dino junto a la libreta del banco de Dina y pregunta
+        qué diferencias ven entre las dos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-ofrece-cada-uno
+      micro_objective: Identificar una ventaja específica del banco (seguridad, interés) y una de la alcancía
+        (acceso inmediato).
+      narrative_beat: Zara Vex hace una lista de ventajas de cada forma de guardar dinero, mientras Dina
+        y Dino la completan juntos.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: elegir-segun-la-meta
+      micro_objective: Decidir cuál forma de guardar conviene más según una meta de ahorro dada.
+      narrative_beat: Dr. Rho presenta dos metas distintas y pregunta cuál forma de guardar conviene más
+        para cada una.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-estrategia-de-guardar
+      micro_objective: Proponer una combinación propia de banco y alcancía para las metas de ahorro personales
+        del niño.
+      narrative_beat: Dina decide guardar una parte de sus ahorros en el banco y otra en su alcancía,
+        según lo que necesita para cada meta.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 5
+    slug: sacar-dinero-cuando-lo-necesitas
+    title_es: Sacar dinero cuando lo necesitas
+    concept: El dinero guardado en el banco se puede retirar cuando se necesita, aunque a veces conviene
+      planearlo con anticipación.
+    learning_objective: Al final, el niño puede explicar cómo y cuándo retirar dinero de una cuenta de
+      ahorro.
+    key_vocabulary:
+    - retirar
+    - sacar
+    - planear
+    - necesitar
+    prior_knowledge: Compara ventajas de banco y alcancía (tema anterior).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: necesito-mi-dinero
+      micro_objective: Reconocer que el dinero guardado en el banco pertenece a quien lo guardó y se puede
+        retirar.
+      narrative_beat: Dino necesita dinero para reparar su bote y recuerda que puede ir al banco a retirar
+        parte de sus ahorros.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pedir-el-retiro
+      micro_objective: Reconocer los pasos simples para retirar dinero de una cuenta de ahorro (avisar,
+        pedir, recibir).
+      narrative_beat: La encargada del banco muestra a Dino cómo pedir que le entreguen parte de su dinero
+        guardado.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: planear-antes-de-sacar
+      micro_objective: Decidir si conviene retirar dinero de inmediato o esperar, según la urgencia de
+        la necesidad.
+      narrative_beat: Dr. Rho ayuda a Dina a pensar si de verdad necesita sacar su dinero ahora o si puede
+        esperar un poco más.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-retiro-planeado
+      micro_objective: Simular el proceso completo de decidir, planear y retirar dinero de una cuenta
+        de ahorro para una necesidad real.
+      narrative_beat: Dina planea con cuidado cuánto retirar de su cuenta para comprar el telescopio,
+        dejando el resto guardado.
+      difficulty: 3
+      suggested_families:
+      - money
+      - storyplay
+  - position: 6
+    slug: confiar-en-un-banco-de-verdad
+    title_es: Confiar en un banco de verdad
+    concept: Un banco de verdad tiene señales claras de confianza, y ante la duda siempre conviene preguntar
+      a un adulto de confianza.
+    learning_objective: Al final, el niño puede nombrar una señal de confianza de un banco real y sabe
+      a quién preguntar ante la duda.
+    key_vocabulary:
+    - confianza
+    - real
+    - señal
+    - preguntar
+    prior_knowledge: Conoce el funcionamiento básico de una cuenta de ahorro (temas anteriores).
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-banco-del-archipielago
+      micro_objective: Reconocer señales de un banco real y establecido, como un edificio conocido y personal
+        identificado.
+      narrative_beat: Dr. Rho recuerda a Dina que el banco del archipiélago lleva generaciones cuidando
+        el dinero del pueblo, con personas conocidas trabajando ahí.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-banco-que-no-conoces
+      micro_objective: Reconocer una señal de alerta cuando algo que dice ser un 'banco' resulta desconocido
+        o sospechoso.
+      narrative_beat: Zara Vex cuenta la historia de un barco misterioso que ofrecía guardar dinero 'mejor
+        que ningún banco', y nadie del pueblo confió en él.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: preguntar-antes-de-confiar
+      micro_objective: Decidir que la acción correcta ante la duda sobre un banco es preguntar a un adulto
+        de confianza.
+      narrative_beat: Dino se pregunta si debería confiarle sus ahorros a alguien nuevo, y Dr. Rho le
+        recuerda preguntar siempre primero a un adulto de confianza.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: guardian-de-mi-dinero
+      micro_objective: Aplicar todo lo aprendido sobre bancos y confianza en un repaso final de la saga.
+      narrative_beat: Con su cuenta de ahorro creciendo y su confianza bien puesta, Dina se despide del
+        faro lista para cuidar su dinero con sabiduría.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - money

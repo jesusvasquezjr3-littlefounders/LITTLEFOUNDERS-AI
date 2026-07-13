@@ -1,0 +1,173 @@
+// review stage — independent judge (Qwen, decorrelated provider),
+// COURSE_ENGINE.md §4. kid_safety < 5 or age_fit < 4 triggers a revise call
+// to DeepSeek with the judge's notes, then a full re-gate (the 5
+// deterministic gates must still pass after revision) and re-judge. Max 2
+// revise cycles — after that the slot fails, it never silently ships.
+
+import { z } from 'zod';
+import { completeQwen } from '../providers/qwen.js';
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
+import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import { runAllGates, type GateContext } from './gates.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+
+export const MAX_REVISE_CYCLES = 2;
+const MAX_JUDGE_ATTEMPTS = 2;
+const MAX_REVISE_ATTEMPTS = 3;
+
+export const reviewRubricSchema = z.object({
+  age_fit: z.number().min(1).max(5),
+  pedagogy: z.number().min(1).max(5),
+  narrative_quality: z.number().min(1).max(5),
+  kid_safety: z.number().min(1).max(5),
+  naturalness: z.number().min(1).max(5),
+  notes: z.string().min(1).max(2000),
+});
+export type ReviewRubric = z.infer<typeof reviewRubricSchema>;
+
+export class ReviewFailedError extends Error {
+  readonly rubric: ReviewRubric;
+  readonly cycles: number;
+
+  constructor(rubric: ReviewRubric, cycles: number) {
+    super(
+      `review: kid_safety/age_fit gate failed after ${cycles} revise cycle(s) ` +
+        `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}). Notes: ${rubric.notes}`,
+    );
+    this.name = 'ReviewFailedError';
+    this.rubric = rubric;
+    this.cycles = cycles;
+  }
+}
+
+function passesJudgeGate(rubric: ReviewRubric): boolean {
+  return rubric.kid_safety >= 5 && rubric.age_fit >= 4;
+}
+
+async function judgeDocument(
+  document: LessonDocumentParsed,
+  judge: typeof completeQwen,
+  ledger: UsageLedger | undefined,
+): Promise<ReviewRubric> {
+  const system =
+    'You are an INDEPENDENT quality judge for a children\'s financial-literacy lesson platform (LittleFounders). ' +
+    'You did not write this lesson — review it critically. Output ONLY strict JSON, no prose outside the JSON.';
+  const user = [
+    'Rate this lesson document 1-5 on each dimension:',
+    '- age_fit: is the language/complexity right for the stated age band?',
+    '- pedagogy: does it teach the stated concept effectively (concrete-before-abstract, formative feedback)?',
+    '- narrative_quality: is the story engaging and coherent with the canon characters?',
+    '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns?',
+    '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)?',
+    '',
+    'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"notes":"..."}',
+    '`notes` must be actionable — if any score is low, say exactly what to fix.',
+    '',
+    'LESSON DOCUMENT:',
+    JSON.stringify(document),
+  ].join('\n');
+
+  const { data } = await withCorrectiveRetry<ReviewRubric>({
+    maxAttempts: MAX_JUDGE_ATTEMPTS,
+    callModel: async (issues) => {
+      const messages = [
+        { role: 'system' as const, content: system },
+        { role: 'user' as const, content: issues ? `${user}\n\nYour previous reply was invalid JSON: ${issues}. Resend valid JSON only.` : user },
+      ];
+      const result = await judge({ messages, temperature: 0.2, jsonMode: true }, { operation: 'review', ledger });
+      return result.content;
+    },
+    parse: (raw) => {
+      const json = safeJsonParse(raw);
+      if (!json.ok) return { ok: false, issues: json.error };
+      const parsed = reviewRubricSchema.safeParse(json.value);
+      if (!parsed.success) return { ok: false, issues: formatZodIssues(parsed.error.issues) };
+      return { ok: true, data: parsed.data };
+    },
+  });
+  return data;
+}
+
+async function reviseDocument(
+  document: LessonDocumentParsed,
+  judgeNotes: string,
+  author: typeof completeDeepSeek,
+  ledger: UsageLedger | undefined,
+): Promise<unknown> {
+  const system =
+    'You are Forge, revising a children\'s lesson document based on independent judge feedback. ' +
+    'Preserve segment ids, order and count where possible; only change what the judge notes require. ' +
+    'Output ONLY the full corrected JSON document — same shape as the input.';
+  const user = [
+    `JUDGE NOTES (fix these):\n${judgeNotes}`,
+    '',
+    'CURRENT DOCUMENT:',
+    JSON.stringify(document),
+  ].join('\n');
+
+  const { data } = await withCorrectiveRetry<unknown>({
+    maxAttempts: MAX_REVISE_ATTEMPTS,
+    callModel: async (issues) => {
+      const messages = [
+        { role: 'system' as const, content: system },
+        { role: 'user' as const, content: issues ? `${user}\n\nYour previous JSON was invalid: ${issues}. Resend the FULL corrected JSON.` : user },
+      ];
+      const result = await author({ messages, temperature: 0.4, jsonMode: true }, { operation: 'revise', ledger });
+      return result.content;
+    },
+    parse: (raw) => {
+      const json = safeJsonParse(raw);
+      if (!json.ok) return { ok: false, issues: json.error };
+      // Structural-only check here — the FULL gate cascade re-runs after this.
+      const shapeCheck = lessonDocumentSchema.safeParse(json.value);
+      if (!shapeCheck.success) return { ok: true, data: json.value }; // let runAllGates report the real issues
+      return { ok: true, data: shapeCheck.data };
+    },
+  });
+  return data;
+}
+
+export interface ReviewDeps {
+  ledger?: UsageLedger;
+  judge?: typeof completeQwen;
+  author?: typeof completeDeepSeek;
+}
+
+export interface ReviewResult {
+  document: LessonDocumentParsed;
+  rubric: ReviewRubric;
+  cycles: number;
+}
+
+export async function reviewLesson(
+  document: LessonDocumentParsed,
+  gateCtx: GateContext,
+  deps: ReviewDeps = {},
+): Promise<ReviewResult> {
+  const judge = deps.judge ?? completeQwen;
+  const author = deps.author ?? completeDeepSeek;
+
+  let current = document;
+  let rubric = await judgeDocument(current, judge, deps.ledger);
+  let cycles = 0;
+
+  while (!passesJudgeGate(rubric) && cycles < MAX_REVISE_CYCLES) {
+    cycles++;
+    const revised = await reviseDocument(current, rubric.notes, author, deps.ledger);
+    const gateReport = runAllGates(revised, gateCtx);
+    if (!gateReport.ok || !gateReport.document) {
+      const gateSummary = gateReport.problems.slice(0, 3).map((p) => p.message).join('; ');
+      rubric = { ...rubric, notes: `${rubric.notes}\n(revise cycle ${cycles} broke deterministic gates: ${gateSummary})` };
+      continue;
+    }
+    current = gateReport.document;
+    rubric = await judgeDocument(current, judge, deps.ledger);
+  }
+
+  if (!passesJudgeGate(rubric)) {
+    throw new ReviewFailedError(rubric, cycles);
+  }
+
+  return { document: current, rubric, cycles };
+}

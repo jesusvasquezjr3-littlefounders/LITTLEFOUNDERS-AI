@@ -1,0 +1,861 @@
+schema_version: 1
+
+adventure:
+  position: 3
+  slug: aldea-del-ahorro
+  theme: valley
+  age_tier: tier1
+  title:
+    en-US: "The Savings Village"
+    es-MX: "La Aldea del Ahorro"
+    pt-BR: "A Vila da Poupança"
+  description:
+    en-US: "In a peaceful valley, the crew learns to set goals, wait with patience, and keep their coins safe."
+    es-MX: "En un valle tranquilo, la tripulación aprende a ponerse metas, esperar con paciencia y cuidar sus monedas."
+    pt-BR: "Em um vale tranquilo, a tripulação aprende a criar metas, esperar com paciência e cuidar de suas moedas."
+  narrative_arc: "El barco llega a un valle sereno donde cada familia guarda un frasco especial para sus sueños. Dina, Dino, Rho y Zara aprenden que guardar un poquito de sus monedas cada semana, en un lugar seguro, los acerca a metas que no podrían comprar de un solo golpe. La paciencia se vuelve su nueva herramienta."
+
+sagas:
+  - position: 1
+    slug: el-frasco-de-los-suenos
+    icon: savings
+    title:
+      en-US: "The Jar of Dreams"
+      es-MX: "El Frasco de los Sueños"
+      pt-BR: "O Pote dos Sonhos"
+    description:
+      en-US: "Every villager keeps a jar for something they're dreaming of — the crew starts their own."
+      es-MX: "Cada aldeano guarda un frasco para algo que sueña tener: la tripulación empieza el suyo."
+      pt-BR: "Cada aldeão guarda um pote para algo que sonha ter: a tripulação começa o seu."
+    topics:
+      - position: 1
+        slug: guardar-para-despues
+        title_es: "Guardar para después"
+        concept: "En vez de gastar todas mis monedas hoy, puedo guardar algunas para usarlas más adelante."
+        learning_objective: "Al final, el niño puede explicar con sus palabras la idea de guardar monedas para después."
+        key_vocabulary: [guardar, después, ahorrar]
+        prior_knowledge: "Sabe ganar y contar sus propias monedas (aventura anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: no-gasto-todo-hoy
+            micro_objective: "Reconoce en la historia el momento en que un personaje decide no gastar todas sus monedas."
+            narrative_beat: "Dina guarda una moneda en su bolsillo en lugar de gastarla toda en el puesto del valle."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: gastar-hoy-o-guardar
+            micro_objective: "Distingue, entre 4 escenas, cuáles muestran a alguien guardando monedas y cuáles gastándolas."
+            narrative_beat: "Dino compara dos aldeanos: uno gasta todo de inmediato, otro guarda un poco cada vez."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: para-que-guardo
+            micro_objective: "Explica en una frase para qué podría servir guardar monedas en vez de gastarlas."
+            narrative_beat: "Rho pregunta a los aldeanos del valle por qué guardan monedas en sus frascos."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 4
+            slug: guardo-mi-primera-moneda
+            micro_objective: "Guarda su primera moneda dentro de la historia, en lugar de gastarla de inmediato."
+            narrative_beat: "Zara guarda su primera moneda del valle en un frasquito de vidrio recién estrenado."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 2
+        slug: tengo-un-sueno-que-cuesta-monedas
+        title_es: "Tengo un sueño que cuesta monedas"
+        concept: "Puedo elegir algo que sueño tener y darme cuenta de cuántas monedas necesito para conseguirlo."
+        learning_objective: "Al final, el niño puede nombrar una meta personal que le gustaría comprar con sus ahorros."
+        key_vocabulary: [meta, sueño, cuesta]
+        prior_knowledge: "Entiende la idea de guardar monedas para después (tema anterior)."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        lessons:
+          - position: 1
+            slug: mi-sueno-en-el-valle
+            micro_objective: "Reconoce en la historia el sueño que un personaje quiere alcanzar con sus ahorros."
+            narrative_beat: "Rho sueña con un telescopio especial para observar las estrellas del valle."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cuanto-cuesta-mi-sueno
+            micro_objective: "Relaciona una meta con el número de monedas aproximado que necesita para lograrla."
+            narrative_beat: "Zara pregunta al comerciante del valle cuántas monedas cuesta el telescopio de Rho."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: elijo-mi-propia-meta
+            micro_objective: "Elige, entre 3 opciones, una meta propia que le gustaría lograr con ahorros."
+            narrative_beat: "Dino piensa en voz alta qué le gustaría comprar si juntara suficientes monedas."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: dibujo-mi-sueno
+            micro_objective: "Describe en una frase su propia meta de ahorro y por qué la eligió."
+            narrative_beat: "Dina dibuja su meta de ahorro en un pergamino para recordarla cada día."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+      - position: 3
+        slug: elijo-mi-frasco-de-ahorro
+        title_es: "Elijo mi frasco de ahorro"
+        concept: "Puedo elegir un frasco o lugar especial donde guardar las monedas destinadas a mi meta."
+        learning_objective: "Al final, el niño puede identificar y elegir un lugar apropiado para guardar sus ahorros."
+        key_vocabulary: [frasco, lugar especial, guardar ahí]
+        prior_knowledge: "Tiene una meta personal de ahorro (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: el-frasco-de-rho
+            micro_objective: "Reconoce en la historia el frasco que un personaje eligió para su meta de ahorro."
+            narrative_beat: "Rho elige un frasco de vidrio transparente para ver crecer sus ahorros para el telescopio."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cual-frasco-elijo
+            micro_objective: "Elige, entre 3 frascos distintos, el que le parece más adecuado para guardar monedas."
+            narrative_beat: "Zara compara distintos frascos del mercado del valle antes de elegir el suyo."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: le-pongo-nombre-a-mi-frasco
+            micro_objective: "Nombra su propio frasco de ahorro con el nombre de su meta."
+            narrative_beat: "Dino escribe 'Mi Barquito Nuevo' en una etiqueta y la pega en su frasco de ahorro."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: mi-frasco-esta-listo
+            micro_objective: "Completa en la historia la preparación de su propio frasco de ahorro para comenzar."
+            narrative_beat: "Dina coloca su frasco vacío en un estante especial, lista para empezar a ahorrar."
+            difficulty: 2
+            suggested_families: [storyplay, story]
+      - position: 4
+        slug: cada-moneda-cuenta
+        title_es: "Cada moneda cuenta"
+        concept: "No importa si guardo una moneda grande o chica: cada una que meto al frasco me acerca a mi meta."
+        learning_objective: "Al final, el niño puede reconocer que cada moneda guardada suma hacia la meta, sin importar su tamaño."
+        key_vocabulary: [cada moneda, suma, acercarse a la meta]
+        prior_knowledge: "Tiene su propio frasco de ahorro listo (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: una-moneda-mas-cerca
+            micro_objective: "Reconoce en la historia que guardar una moneda más acerca al personaje a su meta."
+            narrative_beat: "Rho guarda una moneda de $2 en su frasco y siente que está un poquito más cerca del telescopio."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: monedas-chicas-tambien-cuentan
+            micro_objective: "Reconoce que una moneda chica también ayuda a llegar a la meta, aunque tome más tiempo."
+            narrative_beat: "Zara guarda una moneda de $1 y nota que también cuenta, aunque sea la más chiquita."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: cuento-mi-frasco
+            micro_objective: "Cuenta el total actual de monedas guardadas en su frasco, hasta $20."
+            narrative_beat: "Dino cuenta con cuidado todas las monedas que lleva guardadas hasta ahora en su frasco."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: mi-frasco-crece-poquito-a-poquito
+            micro_objective: "Registra el crecimiento de su frasco tras guardar varias monedas distintas en la historia."
+            narrative_beat: "Dina observa emocionada cómo su frasco va subiendo de nivel con cada moneda guardada."
+            difficulty: 2
+            suggested_families: [money, story]
+      - position: 5
+        slug: a-veces-quiero-gastar-ya
+        title_es: "A veces quiero gastar ya"
+        concept: "A veces siento ganas de gastar mis monedas guardadas de inmediato en algo que veo hoy; es normal sentirlo."
+        learning_objective: "Al final, el niño puede reconocer el impulso de gastar ya y nombrarlo sin sentirse mal por sentirlo."
+        key_vocabulary: [impulso, quiero ya, sentirlo está bien]
+        prior_knowledge: "Sabe que cada moneda guardada suma hacia su meta (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: vi-algo-que-quiero-ya
+            micro_objective: "Reconoce en la historia el momento en que un personaje siente ganas de gastar sus ahorros de inmediato."
+            narrative_beat: "Rho ve un dulce brillante en el mercado del valle y siente muchas ganas de comprarlo ahora mismo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: sentirlo-esta-bien
+            micro_objective: "Reconoce que sentir ganas de gastar de inmediato es normal y no está mal sentirlo."
+            narrative_beat: "Zara le dice a Rho que está bien sentir esas ganas, lo importante es qué decide hacer después."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: lo-pienso-un-momento
+            micro_objective: "Elige, entre 2 respuestas posibles, la que muestra pensar un momento antes de decidir gastar los ahorros."
+            narrative_beat: "Dino respira hondo y piensa un momento antes de decidir si gasta o guarda su moneda."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: decido-con-calma
+            micro_objective: "Completa en la historia una decisión calmada entre gastar ahora o seguir ahorrando para la meta."
+            narrative_beat: "Dina decide, después de pensarlo, seguir guardando sus monedas para su meta más grande."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 6
+        slug: espero-un-poquito-mas
+        title_es: "Espero un poquito más"
+        concept: "Cuando decido esperar en vez de gastar de inmediato, me acerco más rápido a lograr mi meta grande."
+        learning_objective: "Al final, el niño puede elegir esperar en una situación simple de tentación de gasto."
+        key_vocabulary: [esperar, un poquito más, mi meta grande]
+        prior_knowledge: "Reconoce el impulso de gastar de inmediato (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: rho-decide-esperar
+            micro_objective: "Reconoce en la historia el resultado de esperar en lugar de gastar de inmediato."
+            narrative_beat: "Rho no compra el dulce brillante y, semanas después, se compra su telescopio soñado."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-esperar-y-no-esperar
+            micro_objective: "Compara dos finales de historia: uno donde el personaje espera y otro donde gasta de inmediato."
+            narrative_beat: "Zara compara dos caminos posibles para Dino: gastar hoy o esperar y lograr su meta grande."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: elijo-esperar-hoy
+            micro_objective: "Elige esperar en una situación de tentación simple dentro de la historia."
+            narrative_beat: "Dino ve otro dulce brillante, pero esta vez decide esperar y seguir ahorrando para su barquito."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+          - position: 4
+            slug: el-frasco-de-los-suenos-repaso
+            micro_objective: "Explica en una frase por qué esperar un poquito más ayudó a lograr una meta en la historia."
+            narrative_beat: "Toda la tripulación celebra que esperar un poquito más los acercó a sus sueños del valle."
+            difficulty: 2
+            suggested_families: [story, choice]
+
+  - position: 2
+    slug: paciencia-de-tortuga
+    icon: hourglass_top
+    title:
+      en-US: "Turtle Patience"
+      es-MX: "Paciencia de Tortuga"
+      pt-BR: "Paciência de Tartaruga"
+    description:
+      en-US: "Slow and steady: the crew learns to count weeks and celebrate small progress toward a goal."
+      es-MX: "Despacio pero seguro: la tripulación aprende a contar semanas y celebrar el progreso hacia una meta."
+      pt-BR: "Devagar mas sempre: a tripulação aprende a contar semanas e celebrar o progresso rumo a uma meta."
+    topics:
+      - position: 1
+        slug: lo-que-quiero-ahora-vs-lo-que-quiero-despues
+        title_es: "Lo que quiero ahora vs. lo que quiero después"
+        concept: "Puedo comparar algo pequeño que quiero ahora con algo más grande que quiero lograr después."
+        learning_objective: "Al final, el niño puede comparar una recompensa pequeña inmediata con una meta más grande a futuro."
+        key_vocabulary: [ahora, después, más grande]
+        prior_knowledge: "Sabe elegir esperar en una situación simple (saga anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: la-tortuga-sabia-del-valle
+            micro_objective: "Reconoce en la historia la diferencia entre una recompensa chica ahora y una grande después."
+            narrative_beat: "Una tortuga sabia del valle le muestra a Zara dos caminos: uno rápido y chico, otro lento y grande."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-dos-recompensas
+            micro_objective: "Compara dos recompensas presentadas en la historia y elige cuál es mayor."
+            narrative_beat: "Rho compara un dulce pequeño de hoy con un telescopio grande dentro de varias semanas."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: cuanto-vale-esperar
+            micro_objective: "Explica en una frase por qué a veces vale la pena esperar por algo más grande."
+            narrative_beat: "Dino le pregunta a la tortuga sabia por qué esperar puede valer la pena."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: elijo-mi-camino
+            micro_objective: "Elige, entre el camino rápido y el camino lento, considerando la recompensa de cada uno."
+            narrative_beat: "Dina elige seguir el camino lento de la tortuga, pensando en la recompensa que le espera."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: contar-los-dias-que-faltan
+        title_es: "Contar los días que faltan"
+        concept: "Puedo contar cuántos días faltan para algo, usando números pequeños."
+        learning_objective: "Al final, el niño puede contar hacia adelante o hacia atrás un número pequeño de días."
+        key_vocabulary: [días que faltan, contar hacia adelante]
+        prior_knowledge: "Compara recompensas inmediatas y futuras (tema anterior)."
+        fact_refs: [calendar.days_per_week]
+        lessons:
+          - position: 1
+            slug: cuantos-dias-faltan
+            micro_objective: "Cuenta cuántos días faltan para un evento simple mencionado en la historia."
+            narrative_beat: "Rho marca en su calendario de hojas cuántos días faltan para el festival del valle."
+            difficulty: 1
+            suggested_families: [story, input]
+          - position: 2
+            slug: tacho-los-dias
+            micro_objective: "Marca visualmente los días que van pasando en un calendario simple de una semana."
+            narrative_beat: "Zara tacha cada día que pasa en su calendario mientras espera el festival del valle."
+            difficulty: 1
+            suggested_families: [input, arrange]
+          - position: 3
+            slug: cuento-hacia-atras
+            micro_objective: "Cuenta hacia atrás desde un número pequeño de días hasta llegar a cero."
+            narrative_beat: "Dino cuenta hacia atrás los días que faltan para su cumpleaños en el valle."
+            difficulty: 2
+            suggested_families: [input]
+          - position: 4
+            slug: ya-casi-llega-el-dia
+            micro_objective: "Reconoce en la historia que el número de días que faltan disminuye cada vez que pasa uno."
+            narrative_beat: "Dina se emociona al ver que ya solo faltan 2 días para el festival tan esperado."
+            difficulty: 2
+            suggested_families: [story, input]
+      - position: 3
+        slug: ahorro-un-poco-cada-semana
+        title_es: "Ahorro un poco cada semana"
+        concept: "Puedo decidir guardar la misma cantidad de monedas cada semana para llegar más rápido a mi meta."
+        learning_objective: "Al final, el niño puede describir un plan simple de ahorro semanal constante."
+        key_vocabulary: [cada semana, lo mismo, plan]
+        prior_knowledge: "Sabe contar días que faltan para un evento (tema anterior)."
+        fact_refs: [math.savings_weekly_options_tier1]
+        lessons:
+          - position: 1
+            slug: guardo-lo-mismo-cada-semana
+            micro_objective: "Reconoce en la historia que un personaje guarda la misma cantidad de monedas cada semana."
+            narrative_beat: "Rho decide guardar siempre $10 cada semana para su telescopio, sin importar cuánto gane."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: elijo-mi-plan-semanal
+            micro_objective: "Elige, entre 3 montos, cuánto le gustaría guardar cada semana en la historia."
+            narrative_beat: "Zara compara distintos planes de ahorro semanal antes de elegir el que mejor le funciona."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: dos-semanas-de-ahorro
+            micro_objective: "Suma el total guardado tras dos semanas de ahorro constante."
+            narrative_beat: "Dino suma sus dos primeras semanas de ahorro y ve cómo va creciendo su frasco."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: mi-plan-esta-funcionando
+            micro_objective: "Reconoce en la historia que un plan de ahorro semanal constante acerca a la meta paso a paso."
+            narrative_beat: "Dina revisa su frasco tras varias semanas y nota que su plan de ahorro sí está funcionando."
+            difficulty: 2
+            suggested_families: [story, money]
+      - position: 4
+        slug: cuantas-semanas-me-faltan
+        title_es: "¿Cuántas semanas me faltan?"
+        concept: "Si sé cuánto guardo cada semana y cuánto necesito en total, puedo calcular cuántas semanas me faltan."
+        learning_objective: "Al final, el niño puede calcular cuántas semanas faltan para alcanzar una meta de ahorro simple."
+        key_vocabulary: [semanas que faltan, meta total, calcular]
+        prior_knowledge: "Tiene un plan de ahorro semanal constante (tema anterior)."
+        fact_refs: [math.savings_goal_ceiling_tier1, math.savings_weekly_options_tier1]
+        lessons:
+          - position: 1
+            slug: mi-meta-y-mi-ahorro-semanal
+            micro_objective: "Reconoce en la historia los dos datos necesarios para saber cuántas semanas faltan: la meta y el ahorro semanal."
+            narrative_beat: "Rho anota en su pergamino cuánto cuesta el telescopio y cuánto guarda cada semana."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: cuento-semanas-con-monedas
+            micro_objective: "Calcula, usando conteo de monedas, cuántas semanas le faltan para una meta pequeña."
+            narrative_beat: "Zara cuenta semana por semana, moneda por moneda, cuánto le falta para su meta."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 3
+            slug: si-guardo-mas-semanas-son-menos
+            micro_objective: "Reconoce que guardar más monedas por semana reduce el número de semanas que faltan."
+            narrative_beat: "Dino descubre que si guarda un poco más cada semana, su meta llega más rápido."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: calculo-mis-semanas-para-la-meta
+            micro_objective: "Calcula cuántas semanas faltan para una meta de ahorro dentro de la historia, dado un ahorro semanal fijo."
+            narrative_beat: "Dina calcula con calma cuántas semanas le faltan para comprar su instrumento musical soñado."
+            difficulty: 3
+            suggested_families: [money, input]
+      - position: 5
+        slug: celebro-cuando-ahorro
+        title_es: "Celebro cuando ahorro"
+        concept: "Cada vez que guardo monedas nuevas o llego a la mitad de mi meta, puedo celebrar mi progreso."
+        learning_objective: "Al final, el niño puede reconocer un hito de progreso en su meta de ahorro y celebrarlo."
+        key_vocabulary: [progreso, celebrar, a la mitad]
+        prior_knowledge: "Sabe calcular semanas que faltan para una meta (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: llegue-a-la-mitad
+            micro_objective: "Reconoce en la historia el momento en que un personaje llega a la mitad de su meta de ahorro."
+            narrative_beat: "Rho revisa su frasco y descubre, emocionado, que ya llegó a la mitad de su meta."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: como-celebro-mi-progreso
+            micro_objective: "Elige, entre 3 formas, la manera más sana de celebrar un avance en el ahorro."
+            narrative_beat: "Zara decide cómo celebrar su progreso: con un dibujo especial en su diario del valle."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: comparto-mi-progreso
+            micro_objective: "Comparte, dentro de la historia, su progreso de ahorro con un personaje de confianza."
+            narrative_beat: "Dino le cuenta emocionado a Dina cuánto ha logrado guardar hasta ahora."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+          - position: 4
+            slug: celebro-y-sigo-adelante
+            micro_objective: "Completa en la historia una celebración de progreso y decide seguir ahorrando hacia la meta."
+            narrative_beat: "Dina celebra su progreso con un pequeño baile y luego sigue guardando monedas cada semana."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 6
+        slug: a-veces-mi-meta-cambia
+        title_es: "A veces mi meta cambia"
+        concept: "Está bien cambiar de meta de ahorro si descubro algo que me interesa más; puedo empezar un frasco nuevo."
+        learning_objective: "Al final, el niño puede reconocer que cambiar de meta de ahorro es una decisión válida y normal."
+        key_vocabulary: [cambiar de meta, nueva meta, está bien]
+        prior_knowledge: "Sabe celebrar el progreso de una meta de ahorro (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: ya-no-quiero-lo-mismo
+            micro_objective: "Reconoce en la historia el momento en que un personaje decide cambiar su meta de ahorro."
+            narrative_beat: "A Rho ahora le encanta la música y decide que ya no quiere el telescopio, sino un violín del valle."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: puedo-empezar-de-nuevo
+            micro_objective: "Reconoce que las monedas ya guardadas se pueden usar para una meta nueva, sin perderlas."
+            narrative_beat: "Zara le explica a Rho que sus monedas guardadas siguen sirviendo aunque cambie de meta."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 3
+            slug: elijo-mi-nueva-meta
+            micro_objective: "Elige una nueva meta de ahorro dentro de la historia y explica por qué la prefiere."
+            narrative_beat: "Dino elige una nueva meta después de pensarlo con calma junto a sus amigos."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: paciencia-de-tortuga-repaso
+            micro_objective: "Explica en una frase qué aprendió sobre la paciencia y el cambio de metas en esta saga."
+            narrative_beat: "Toda la tripulación agradece a la tortuga sabia sus lecciones de paciencia antes de seguir el viaje."
+            difficulty: 2
+            suggested_families: [story, choice]
+
+  - position: 3
+    slug: lugares-seguros-para-mis-monedas
+    icon: lock
+    title:
+      en-US: "Safe Places for My Coins"
+      es-MX: "Lugares Seguros para mis Monedas"
+      pt-BR: "Lugares Seguros para Minhas Moedas"
+    description:
+      en-US: "Not every spot is a good spot for savings — the crew learns to protect their jars."
+      es-MX: "No cualquier lugar sirve para guardar ahorros: la tripulación aprende a cuidar sus frascos."
+      pt-BR: "Nem todo lugar serve para guardar poupança: a tripulação aprende a cuidar de seus potes."
+    topics:
+      - position: 1
+        slug: donde-guardo-mis-monedas
+        title_es: "Dónde guardo mis monedas"
+        concept: "Hay lugares mejores que otros para guardar mis monedas: un frasco cerrado es mejor que el suelo."
+        learning_objective: "Al final, el niño puede elegir, entre varias opciones, un lugar apropiado para guardar monedas."
+        key_vocabulary: [lugar apropiado, cerrado, seguro]
+        prior_knowledge: "Tiene experiencia guardando monedas en un frasco (saga anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: el-frasco-o-el-suelo
+            micro_objective: "Compara dos lugares para guardar monedas y elige el más adecuado."
+            narrative_beat: "Dino ve dos opciones: dejar sus monedas tiradas en el pasto o guardarlas en su frasco cerrado."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: elijo-el-mejor-lugar
+            micro_objective: "Elige, entre 4 lugares distintos, cuál es el más adecuado para guardar monedas."
+            narrative_beat: "Zara compara distintos rincones de su cabaña buscando el mejor lugar para su frasco."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: por-que-ese-lugar-es-mejor
+            micro_objective: "Explica en una frase por qué un lugar cerrado es mejor que uno abierto para guardar monedas."
+            narrative_beat: "Rho le explica a Dino por qué un cajón cerrado protege mejor las monedas que el pasto."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: guardo-mi-frasco-en-su-lugar
+            micro_objective: "Completa en la historia la acción de guardar el frasco en el lugar más seguro disponible."
+            narrative_beat: "Dina coloca su frasco en un estantecito de madera, lejos del alcance de la lluvia."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: cuidar-mi-frasco-de-ahorros
+        title_es: "Cuidar mi frasco de ahorros"
+        concept: "Cuidar mi frasco significa revisarlo, mantenerlo cerrado y no dejarlo tirado por ahí."
+        learning_objective: "Al final, el niño puede nombrar una acción concreta para cuidar su frasco de ahorros."
+        key_vocabulary: [cuidar, revisar, mantener cerrado]
+        prior_knowledge: "Sabe elegir un buen lugar para guardar monedas (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: cierro-bien-mi-frasco
+            micro_objective: "Reconoce en la historia la importancia de cerrar bien el frasco después de guardar una moneda."
+            narrative_beat: "Rho cierra con cuidado la tapa de su frasco después de guardar una nueva moneda."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: reviso-mi-frasco-con-cuidado
+            micro_objective: "Elige, entre 3 gestos de cuidado, el que muestra cuidar correctamente un frasco de ahorros."
+            narrative_beat: "Zara revisa con cuidado que su frasco no tenga ninguna grieta antes de guardarlo."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: que-pasa-si-no-lo-cuido
+            micro_objective: "Reconoce en una escena una consecuencia de no cuidar bien el frasco de ahorros."
+            narrative_beat: "Dino deja su frasco destapado y una moneda casi se cae al pasto."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: cuido-mi-frasco-cada-dia
+            micro_objective: "Completa en la historia una rutina simple de cuidado diario de su frasco de ahorros."
+            narrative_beat: "Dina revisa su frasco cada noche antes de dormir, como parte de su rutina del valle."
+            difficulty: 2
+            suggested_families: [storyplay, story]
+      - position: 3
+        slug: comparto-mi-meta-con-mi-familia
+        title_es: "Comparto mi meta con mi familia"
+        concept: "Contarle a mi familia sobre mi meta de ahorro me ayuda a que me apoyen y me recuerden mi plan."
+        learning_objective: "Al final, el niño puede reconocer el beneficio de compartir su meta de ahorro con un adulto de confianza."
+        key_vocabulary: [compartir, familia, apoyo]
+        prior_knowledge: "Sabe cuidar su frasco de ahorros (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: le-cuento-a-mi-familia
+            micro_objective: "Reconoce en la historia el momento en que un personaje comparte su meta de ahorro con su familia."
+            narrative_beat: "Rho le cuenta a su familia del valle sobre su meta de ahorrar para un telescopio."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: mi-familia-me-anima
+            micro_objective: "Reconoce en una escena una reacción de apoyo familiar hacia una meta de ahorro."
+            narrative_beat: "La familia de Zara le sonríe y le anima a seguir guardando monedas cada semana."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: pido-ayuda-para-recordar
+            micro_objective: "Elige, entre 2 opciones, una forma en que la familia puede ayudar a recordar la meta de ahorro."
+            narrative_beat: "Dino le pide a su familia que le recuerde guardar su moneda cada semana."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: celebramos-en-familia
+            micro_objective: "Completa en la historia una celebración familiar por el progreso de una meta de ahorro."
+            narrative_beat: "Dina celebra junto a su familia haber llegado a la mitad de su meta de ahorro."
+            difficulty: 2
+            suggested_families: [storyplay, story]
+      - position: 4
+        slug: si-pierdo-una-moneda
+        title_es: "Si pierdo una moneda"
+        concept: "A veces una moneda se puede perder por accidente; eso pasa a veces y no es motivo para dejar de ahorrar."
+        learning_objective: "Al final, el niño puede reconocer que perder una moneda no significa que deba dejar de ahorrar."
+        key_vocabulary: [perder, accidente, seguir intentando]
+        prior_knowledge: "Sabe compartir su meta de ahorro con su familia (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: se-me-cayo-una-moneda
+            micro_objective: "Reconoce en la historia el momento en que un personaje pierde una moneda por accidente."
+            narrative_beat: "A Rho se le cae una moneda entre las flores del valle y no logra encontrarla."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: como-me-siento-si-pierdo-algo
+            micro_objective: "Elige, entre 3 respuestas posibles, la más sana ante la pérdida accidental de una moneda."
+            narrative_beat: "Zara se siente un poco triste al saber que Rho perdió una moneda sin querer."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: sigo-ahorrando-igual
+            micro_objective: "Reconoce en la historia que el personaje sigue ahorrando después de perder una moneda."
+            narrative_beat: "Dino anima a Rho a seguir guardando monedas la próxima semana, sin desanimarse."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: cuido-mejor-la-proxima-vez
+            micro_objective: "Propone en la historia una forma de cuidar mejor sus monedas después de una pérdida accidental."
+            narrative_beat: "Dina ayuda a Rho a coser un bolsillo extra para que no se le vuelvan a caer monedas."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 5
+        slug: un-lugar-seguro-en-casa
+        title_es: "Un lugar seguro en casa"
+        concept: "En mi propia casa puedo encontrar, con ayuda de un adulto, el lugar más seguro para guardar mis ahorros."
+        learning_objective: "Al final, el niño puede describir un lugar seguro de su propia casa para guardar sus ahorros."
+        key_vocabulary: [en mi casa, con un adulto, lugar seguro]
+        prior_knowledge: "Sabe que perder una moneda no significa dejar de ahorrar (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: busco-con-un-adulto
+            micro_objective: "Reconoce en la historia que buscar un lugar seguro se hace junto con un adulto de confianza."
+            narrative_beat: "Rho busca junto a su familia el mejor rincón de la cabaña para guardar su frasco."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-lugares-de-mi-casa
+            micro_objective: "Compara 3 lugares posibles de una casa y elige el más seguro para guardar ahorros."
+            narrative_beat: "Zara compara un estante alto, un cajón cerrado y una ventana abierta para su frasco."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: mi-lugar-secreto-y-seguro
+            micro_objective: "Describe en una frase el lugar que eligió para guardar sus propios ahorros."
+            narrative_beat: "Dino elige un rincón especial de su cuarto, junto a su cama, para guardar su frasco."
+            difficulty: 2
+            suggested_families: [story, storyplay]
+          - position: 4
+            slug: mi-frasco-ya-tiene-casa
+            micro_objective: "Completa en la historia la instalación final de su frasco en un lugar seguro del hogar."
+            narrative_beat: "Dina coloca su frasco en su nuevo lugar seguro y lo mira con una gran sonrisa."
+            difficulty: 2
+            suggested_families: [storyplay, story]
+      - position: 6
+        slug: reviso-mi-frasco-cada-semana
+        title_es: "Reviso mi frasco cada semana"
+        concept: "Revisar mi frasco cada semana me ayuda a ver mi progreso y a mantener mi meta en mente."
+        learning_objective: "Al final, el niño puede describir una rutina semanal simple de revisión de sus ahorros."
+        key_vocabulary: [revisar, cada semana, rutina]
+        prior_knowledge: "Tiene un lugar seguro para guardar su frasco en casa (tema anterior)."
+        fact_refs: [calendar.days_per_week]
+        lessons:
+          - position: 1
+            slug: mi-dia-de-revision
+            micro_objective: "Reconoce en la historia el día especial que un personaje eligió para revisar su frasco cada semana."
+            narrative_beat: "Rho elige los domingos como su día especial para revisar el progreso de su frasco."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cuento-mi-frasco-cada-semana
+            micro_objective: "Cuenta el total de monedas en su frasco durante una revisión semanal dentro de la historia."
+            narrative_beat: "Zara cuenta con calma todas sus monedas cada domingo, anotando el total en su diario."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 3
+            slug: comparo-semana-con-semana
+            micro_objective: "Compara el total de dos semanas distintas de revisión y reconoce el progreso logrado."
+            narrative_beat: "Dino compara su frasco de esta semana con el de la semana pasada y ve que ha crecido."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: lugares-seguros-repaso
+            micro_objective: "Explica en una frase toda la rutina de cuidar, guardar y revisar sus ahorros semanalmente."
+            narrative_beat: "Dina reúne a la tripulación para compartir su rutina semanal de cuidado de sus frascos."
+            difficulty: 2
+            suggested_families: [story, choice]
+
+  - position: 4
+    slug: metas-de-la-aldea
+    icon: flag
+    title:
+      en-US: "Village Goals"
+      es-MX: "Metas de la Aldea"
+      pt-BR: "Metas da Vila"
+    description:
+      en-US: "The crew learns to split earnings into jars and plan bigger, shared savings goals."
+      es-MX: "La tripulación aprende a dividir sus ganancias en frascos y a planear metas de ahorro más grandes en familia."
+      pt-BR: "A tripulação aprende a dividir seus ganhos em potes e a planejar metas de poupança maiores em família."
+    topics:
+      - position: 1
+        slug: divido-mis-monedas-en-frascos
+        title_es: "Divido mis monedas en frascos"
+        concept: "Puedo dividir mis monedas ganadas en varios frascos: uno para ahorrar, uno para gastar y uno para compartir."
+        learning_objective: "Al final, el niño puede dividir un monto de monedas entre 2-3 frascos con un propósito distinto cada uno."
+        key_vocabulary: [ahorrar, gastar, compartir, dividir]
+        prior_knowledge: "Tiene una rutina de revisión semanal de ahorros (saga anterior)."
+        fact_refs: [math.piggy_split_income_tier1]
+        lessons:
+          - position: 1
+            slug: tres-frascos-distintos
+            micro_objective: "Reconoce en la historia los tres frascos distintos que un personaje usa para sus monedas."
+            narrative_beat: "Rho recibe sus monedas ganadas y las reparte entre tres frascos: ahorrar, gastar y compartir."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: para-que-sirve-cada-frasco
+            micro_objective: "Empareja cada uno de los 3 frascos con el propósito que cumple."
+            narrative_beat: "Zara explica a Dino para qué sirve cada uno de sus tres frascos de monedas."
+            difficulty: 1
+            suggested_families: [arrange]
+          - position: 3
+            slug: reparto-mis-primeras-monedas
+            micro_objective: "Divide un monto pequeño de monedas entre 2 frascos con un propósito cada uno."
+            narrative_beat: "Dino reparte por primera vez sus monedas ganadas entre su frasco de ahorro y el de compartir."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 4
+            slug: reparto-entre-tres-frascos
+            micro_objective: "Divide un monto de monedas entre 3 frascos, asignando una cantidad razonable a cada uno."
+            narrative_beat: "Dina reparte sus ganancias de la semana entre sus tres frascos, con cuidado y calma."
+            difficulty: 2
+            suggested_families: [money, arrange]
+      - position: 2
+        slug: cuanto-guardo-cuanto-gasto
+        title_es: "Cuánto guardo, cuánto gasto"
+        concept: "Puedo decidir cuánto de mis monedas guardar y cuánto gastar, según lo que quiero lograr."
+        learning_objective: "Al final, el niño puede justificar una división simple entre ahorrar y gastar."
+        key_vocabulary: [cuánto guardo, cuánto gasto, decidir]
+        prior_knowledge: "Sabe dividir monedas en frascos con propósito (tema anterior)."
+        fact_refs: [math.piggy_split_income_tier1]
+        lessons:
+          - position: 1
+            slug: guardo-mas-esta-semana
+            micro_objective: "Reconoce en la historia por qué un personaje decidió guardar más de lo habitual esta semana."
+            narrative_beat: "Rho decide guardar más monedas esta semana porque su meta está cerca de completarse."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: gasto-un-poco-hoy
+            micro_objective: "Reconoce en la historia por qué un personaje decidió gastar un poco más esta semana."
+            narrative_beat: "Zara decide gastar un poco más porque quiere un helado especial del festival del valle."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-mi-division
+            micro_objective: "Elige, entre 2 divisiones posibles de un mismo monto, la que mejor refleja sus propias prioridades."
+            narrative_beat: "Dino compara dos formas de repartir sus monedas y elige la que más le hace sentido."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: divido-mis-monedas-a-mi-manera
+            micro_objective: "Divide un monto de monedas entre ahorro y gasto, justificando su elección dentro de la historia."
+            narrative_beat: "Dina reparte sus monedas de la semana explicando por qué eligió esa cantidad para cada frasco."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 3
+        slug: una-meta-grande-muchos-pasos-pequenos
+        title_es: "Una meta grande, muchos pasos pequeños"
+        concept: "Una meta grande se logra sumando muchos pasos chicos, uno por uno, semana tras semana."
+        learning_objective: "Al final, el niño puede describir una meta grande como una suma de varios pasos pequeños."
+        key_vocabulary: [meta grande, pasos pequeños, poco a poco]
+        prior_knowledge: "Sabe justificar cuánto ahorrar y cuánto gastar (tema anterior)."
+        fact_refs: [math.savings_goal_ceiling_tier1]
+        lessons:
+          - position: 1
+            slug: la-meta-mas-grande-del-valle
+            micro_objective: "Reconoce en la historia una meta de ahorro más grande que las anteriores."
+            narrative_beat: "Rho sueña con un telescopio gigante del observatorio del valle, su meta más grande hasta ahora."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: la-divido-en-pasos
+            micro_objective: "Divide una meta grande en 3 pasos semanales más pequeños."
+            narrative_beat: "Zara ayuda a Rho a dividir su meta grande en pasos semanales más manejables."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 3
+            slug: cumplo-un-paso-a-la-vez
+            micro_objective: "Reconoce en la historia el cumplimiento de un paso pequeño dentro de una meta más grande."
+            narrative_beat: "Dino celebra haber completado el primer paso pequeño de su meta más ambiciosa."
+            difficulty: 2
+            suggested_families: [story, money]
+          - position: 4
+            slug: sumo-todos-mis-pasos
+            micro_objective: "Suma los pasos pequeños completados hasta el momento para ver el progreso hacia la meta grande."
+            narrative_beat: "Dina suma, paso por paso, todo lo que ha avanzado hacia su meta más grande del valle."
+            difficulty: 3
+            suggested_families: [money, input]
+      - position: 4
+        slug: ahorro-para-algo-especial-en-familia
+        title_es: "Ahorro para algo especial en familia"
+        concept: "A veces toda la familia ahorra junta para algo especial, como un paseo o una celebración."
+        learning_objective: "Al final, el niño puede describir una meta de ahorro compartida con su familia."
+        key_vocabulary: [en familia, meta compartida, juntos]
+        prior_knowledge: "Sabe dividir una meta grande en pasos pequeños (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: una-meta-de-toda-la-familia
+            micro_objective: "Reconoce en la historia una meta de ahorro en la que participa toda una familia."
+            narrative_beat: "La familia de Rho decide ahorrar junta para un paseo especial al río del valle."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cada-quien-aporta-un-poco
+            micro_objective: "Reconoce que en una meta familiar, cada integrante puede aportar una parte."
+            narrative_beat: "Cada miembro de la familia de Zara guarda una moneda distinta para la meta compartida."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: sumamos-en-familia
+            micro_objective: "Suma los aportes de 2-3 miembros de una familia para ver el total hacia una meta compartida."
+            narrative_beat: "Dino suma lo que aportó cada miembro de su familia para el paseo especial."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: celebramos-la-meta-familiar
+            micro_objective: "Completa en la historia el logro de una meta de ahorro familiar compartida."
+            narrative_beat: "Dina y su familia celebran juntos haber logrado ahorrar para su paseo especial al río."
+            difficulty: 2
+            suggested_families: [storyplay, story]
+      - position: 5
+        slug: comparo-dos-metas-de-ahorro
+        title_es: "Comparo dos metas de ahorro"
+        concept: "Puedo comparar dos metas de ahorro distintas y decidir cuál priorizar según lo que más me importa."
+        learning_objective: "Al final, el niño puede comparar dos metas de ahorro y elegir cuál priorizar con una razón."
+        key_vocabulary: [priorizar, comparar metas, cuál primero]
+        prior_knowledge: "Sabe describir una meta familiar compartida (tema anterior)."
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: dos-metas-al-mismo-tiempo
+            micro_objective: "Reconoce en la historia dos metas de ahorro distintas que un personaje quiere lograr."
+            narrative_beat: "Rho quiere tanto un telescopio como un violín, y debe pensar cuál meta priorizar primero."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cual-me-importa-mas
+            micro_objective: "Elige, entre dos metas, cuál le importa más y explica brevemente por qué."
+            narrative_beat: "Zara ayuda a Rho a pensar cuál de sus dos metas le hace más ilusión lograr primero."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: cual-cuesta-menos-esperar
+            micro_objective: "Compara dos metas de ahorro y elige cuál tomaría menos semanas de espera."
+            narrative_beat: "Dino compara cuántas semanas le tomaría cada una de sus dos metas posibles."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: elijo-mi-meta-prioritaria
+            micro_objective: "Completa en la historia la decisión de priorizar una meta de ahorro sobre otra, con una razón clara."
+            narrative_beat: "Dina decide priorizar su meta más importante y guarda la segunda para más adelante."
+            difficulty: 3
+            suggested_families: [storyplay, choice]
+      - position: 6
+        slug: aldea-del-ahorro-repaso-final
+        title_es: "Aldea del Ahorro: repaso final"
+        concept: "Repasamos todo el viaje: guardar, esperar con paciencia, cuidar mis monedas y planear metas grandes."
+        learning_objective: "Al final, el niño puede recordar y aplicar juntos los conceptos clave de la aventura del ahorro."
+        key_vocabulary: [repaso, recuerdo, todo el viaje]
+        prior_knowledge: "Domina todos los temas previos de la aventura de la aldea."
+        fact_refs: [math.savings_goal_ceiling_tier1, math.piggy_split_income_tier1]
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-primer-frasco
+            micro_objective: "Recuerda y describe su primer frasco de ahorro de toda la aventura de la aldea."
+            narrative_beat: "Rho reúne a la tripulación junto al río para recordar su primer frasco de ahorro juntos."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: calculo-semanas-para-una-meta-final
+            micro_objective: "Calcula cuántas semanas faltan para una meta de ahorro nueva, aplicando todo lo aprendido."
+            narrative_beat: "Zara plantea un último reto de cálculo de semanas antes de dejar la aldea del ahorro."
+            difficulty: 3
+            suggested_families: [money, input]
+          - position: 3
+            slug: divido-mi-ultimo-cofre
+            micro_objective: "Divide sin ayuda un monto de monedas entre ahorro, gasto y compartir, como cierre de la aventura."
+            narrative_beat: "Dino reparte su cofre final del valle entre sus tres frascos, sin necesitar ayuda esta vez."
+            difficulty: 3
+            suggested_families: [money, arrange]
+          - position: 4
+            slug: navego-hacia-el-mercado-de-los-colores
+            micro_objective: "Explica en una frase qué hará con sus ahorros al llegar al próximo destino del viaje."
+            narrative_beat: "Dina guarda sus frascos con cuidado: la aldea del ahorro queda atrás, y El Mercado de los Colores los espera."
+            difficulty: 3
+            suggested_families: [story, choice]

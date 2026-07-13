@@ -1,0 +1,148 @@
+schema_version: 1
+
+# Closed vocabulary for the financial-education course catalog.
+# Consumed by Forge (coursegen) as a HARD-FAIL gate (COURSE_ENGINE.md §3, §4):
+# the forbidden-vocabulary lists are checked against every generated string
+# (titles, concepts, objectives, prompts) for the matching age tier + locale.
+
+themes: [archipelago, forest, city, valley, kingdom, cosmos]
+
+age_tiers:
+  tier1:
+    ages: "6-7"
+    # Piaget-gate: no abstract financial jargon at this age. Concepts are
+    # taught only through concrete objects, stories and counted coins —
+    # never through the words below, in any locale.
+    forbidden_vocabulary:
+      es-MX:
+        - porcentaje
+        - interés
+        - interés compuesto
+        - crédito
+        - deuda
+        - hipoteca
+        - inversión
+        - acciones
+        - bolsa de valores
+        - dividendo
+        - inflación
+        - impuesto sobre la renta
+        - tasa
+        - criptomoneda
+        - préstamo
+        - cuenta bancaria
+        - tarjeta de crédito
+        - presupuesto  # tier1 uses "bolsa de compras" / "lo que puedo gastar", never the abstract noun
+      en-US:
+        - percentage
+        - interest
+        - compound interest
+        - credit
+        - debt
+        - mortgage
+        - investment
+        - stocks
+        - stock market
+        - dividend
+        - inflation
+        - income tax
+        - rate
+        - cryptocurrency
+        - loan
+        - bank account
+        - credit card
+        - budget
+      pt-BR:
+        - porcentagem
+        - juros
+        - juros compostos
+        - crédito
+        - dívida
+        - hipoteca
+        - investimento
+        - ações
+        - bolsa de valores
+        - dividendo
+        - inflação
+        - imposto de renda
+        - taxa
+        - criptomoeda
+        - empréstimo
+        - conta bancária
+        - cartão de crédito
+        - orçamento
+
+  tier2:
+    ages: "8-10"
+    # Smaller list — simple-interest / percent CONCEPTS may be taught if
+    # grounded in a concrete manipulative (interest_peek animates growth
+    # step by step); the jargon words themselves stay banned. Anything not
+    # listed here (e.g. "interés" used concretely, "presupuesto") becomes
+    # allowed once explained through a manipulative, per adventure 5-8 design.
+    forbidden_vocabulary:
+      es-MX:
+        - interés compuesto
+        - hipoteca
+        - acciones
+        - bolsa de valores
+        - dividendo
+        - criptomoneda
+        - apalancamiento
+        - derivados
+        - amortización
+        - tasa de interés anual
+      en-US:
+        - compound interest
+        - mortgage
+        - stocks
+        - stock market
+        - dividend
+        - cryptocurrency
+        - leverage
+        - derivatives
+        - amortization
+        - annual percentage rate
+      pt-BR:
+        - juros compostos
+        - hipoteca
+        - ações
+        - bolsa de valores
+        - dividendo
+        - criptomoeda
+        - alavancagem
+        - derivativos
+        - amortização
+        - taxa de juros anual
+
+families: [story, choice, input, arrange, money, analyze, storyplay, maker]
+
+# Which of the 8 families a plan/write prompt may draw exercise TYPES from,
+# per age tier. This is a family-level allowlist; type_exceptions below
+# punches narrow, named holes in it (LESSON_ENGINE.md §5 types only).
+family_allowlist_by_tier:
+  tier1: [story, choice, input, arrange, money, storyplay]
+  tier2: [story, choice, input, arrange, money, analyze, storyplay, maker]
+
+type_exceptions:
+  # Individual analyze/maker TYPES allowed in tier1 despite their family
+  # being excluded above — each one is concrete/visual enough to clear the
+  # Piaget gate on its own (pattern recognition, physical grid-walking,
+  # fact-vs-opinion as a simple sorting game, red_flags only from adventure
+  # 6 "El Faro de la Confianza" onward, once safety content begins).
+  tier1_extra_allowed:
+    - red_flags        # t6+ adventures only (safety arc) — not used in 1-4
+    - robot_path        # grid-walking is concrete, not abstract
+    - pattern_complete   # pre-algebra pattern recognition, fully visual
+    - fact_opinion       # simple sorting game, no financial jargon required
+
+  # Types explicitly too abstract / too jargon-adjacent for tier1 even as
+  # exceptions — listed for the plan-prompt palette to hard-exclude.
+  tier1_banned_types:
+    - confidence_quiz    # calibration/certainty rating is a tier2 metacognitive skill
+    - rank_choices       # Spearman-footrule ranking of 3-7 items is too abstract at 6-7
+    - compare_table       # grid-of-cells reasoning is a tier2 skill
+    - evidence_hunt        # Jaccard textual-evidence matching needs reading fluency tier1 lacks
+    - interest_peek         # growth-prediction flow is reserved for when "interest" concepts unlock (tier2)
+    - machine_io              # function-induction from examples is a tier2 pre-algebra skill
+    - debug_hunt                # multi-line code reading is a tier2/maker skill
+    - code_order                  # code-block ordering needs reading fluency tier1 lacks
